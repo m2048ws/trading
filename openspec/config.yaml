@@ -1,0 +1,47 @@
+schema: spec-driven
+
+context: |
+  Project: trading
+  Build: Scala 3 multi-module SBT
+
+  Current module:
+    SBT ID: quantities
+    Directory: quantities
+    Artifact: trading-quantities
+    Primary package: trading.quantity
+
+  Production package structure:
+    trading.quantity
+    trading.quantity.grid
+    trading.quantity.refinement
+    trading.quantity.runtime
+    trading.quantity.algebra
+
+  Current scope is exact dimension-safe quantities, uniform-grid arithmetic
+  and projection, checked refinements, runtime quantity identity, logical
+  grid-quantity reconstruction, and optional exact algebra.
+
+  Instruments, orders, positions, accounts, wallets, and other trading
+  domain modules are deferred.
+
+# Per-artifact rules (optional)
+# Add custom rules for specific artifacts.
+# Example:
+#   rules:
+#     proposal:
+#       - Keep proposals under 500 words
+#       - Always include a "Non-goals" section
+#     tasks:
+#       - Break tasks into chunks of max 2 hours
+
+# Per-operation guidance (optional)
+# Add advisory guidance for how apply and archive work should be conducted.
+# This is separate from artifact rules above.
+# Example:
+#   operations:
+#     apply:
+#       guidance:
+#         - Keep test summaries concise
+#     archive:
+#       guidance:
+#         - Summarize the archive outcome before finishing
