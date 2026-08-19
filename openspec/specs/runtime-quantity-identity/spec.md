@@ -4,9 +4,7 @@
 
 Defines runtime dimensions and assets, registered grid provenance, heterogeneous exact arithmetic, and logical packing
 for registered grid quantities.
-
 ## Requirements
-
 ### Requirement: Runtime dimensions and assets
 The runtime layer SHALL create opaque dimension witnesses for runtime identifiers and SHALL normalize compound
 dimensions through canonical `DimensionKey` values. `AssetRef` SHALL bind an asset identity to its canonical dimension
@@ -62,12 +60,21 @@ remain immutable and SHALL be obtainable only through the registry-produced witn
 - **THEN** registration fails without replacing the canonical definition
 
 ### Requirement: Checked runtime evidence
-`SameDimension` SHALL be recovered only after canonical dimension equality, and SHALL expose only `coerceQuantity` and
-`coerceGrid`. `trading.quantity.grid.SameGrid` SHALL be generic mathematical grid-identity evidence: it MAY be recovered
-for matching generative `GridRef` values without registered provenance, and SHALL check ordinary canonical dimension,
-grid ID, version, and quantum compatibility. `RuntimeEvidence.sameGrid` SHALL be the registry-aware operation. It SHALL
-first verify that both registered witnesses share registry ownership and, only after that succeeds, SHALL delegate to
-or perform the ordinary `SameGrid` compatibility checks.
+`SameDimension[A, B]` SHALL be one restricted capability accepted by dimension-safe operations whether it was derived
+from statically visible equivalent powers or recovered from authoritative runtime witnesses. Runtime recovery SHALL issue
+`SameDimension` only after canonical dimension equality and, for registered witnesses, shared registry ownership.
+`SameDimension` SHALL expose controlled quantity and grid coercion and MAY be consumed as contextual evidence by
+dimension-safe operations; it SHALL NOT expose unrestricted Scala type equality. `trading.quantity.grid.SameGrid` SHALL
+remain generic mathematical grid-identity evidence: it MAY be recovered for matching generative `GridRef` values without
+registered provenance, and SHALL check ordinary canonical dimension, grid ID, version, and quantum compatibility.
+`RuntimeEvidence.sameGrid` SHALL remain the registry-aware operation. It SHALL first verify that both registered witnesses
+share registry ownership and, only after that succeeds, SHALL delegate to or perform the ordinary `SameGrid` compatibility
+checks. Runtime evidence SHALL remain a scoped success value rather than a global implicit conversion or an unchecked
+claim derived from identifiers alone. Reflexive `SameDimension[D, D]` SHALL remain structural type identity and SHALL
+NOT certify that `D` is a canonical static power representation. Static operation-result validation and checked runtime
+witness recovery remain independent trust boundaries.
+Transparent Scala type annotations SHALL NOT alter runtime dimension identity: accepted annotated static inputs SHALL
+normalize to the same canonical output and `DimensionKey` as their unannotated underlying dimensions.
 
 #### Scenario: Coerce an exact quantity
 - **WHEN** two registry witnesses have checked-equal canonical dimensions
@@ -77,6 +84,15 @@ or perform the ordinary `SameGrid` compatibility checks.
 - **WHEN** checked dimension equality is available for a grid quantity
 - **THEN** `coerceGrid` preserves its grid type and integer coordinate
 
+#### Scenario: Consume static and runtime evidence uniformly
+- **WHEN** a dimension-safe operation receives `SameDimension[A, B]` from either static derivation or successful runtime
+  recovery
+- **THEN** it accepts the same restricted capability without requiring the caller to use a different arithmetic API
+
+#### Scenario: Reject runtime dimension mismatch
+- **WHEN** independently resolved witnesses have different canonical dimension keys
+- **THEN** runtime recovery returns an explicit mismatch and no `SameDimension` capability is issued
+
 #### Scenario: Recover generic evidence for generative grids
 - **WHEN** two generative `GridRef` values have matching canonical dimension, grid ID, version, and quantum
 - **THEN** `SameGrid.between` can recover mathematical grid-identity evidence without registry provenance
@@ -84,6 +100,10 @@ or perform the ordinary `SameGrid` compatibility checks.
 #### Scenario: Check registry ownership before grid compatibility
 - **WHEN** `RuntimeEvidence.sameGrid` compares equal-looking registered grids owned by different registries
 - **THEN** it returns a foreign-registry failure before performing ordinary grid compatibility checks
+
+#### Scenario: Ignore transparent annotations in runtime identity
+- **WHEN** accepted static arithmetic uses an annotated atom, reducible expression, or transparent alias
+- **THEN** its authoritative runtime key equals the key produced from the corresponding unannotated operands
 
 ### Requirement: Heterogeneous grid quantities recover evidence before arithmetic
 Heterogeneous registered values SHALL be represented as `ResolvedAssetGridQuantity` or `ResolvedGridQuantity`. Same-grid
@@ -174,3 +194,58 @@ fail-closed inventory SHALL include `ResolvedAssetGridQuantity`, `ResolvedGridQu
 #### Scenario: Decode logical boundary data
 - **WHEN** an in-memory packed record is passed directly to its checked decoder
 - **THEN** normal registry validation and reconstruction proceed
+
+### Requirement: Public DimRef atom authority is unique
+`DimRef[D]` SHALL be the authoritative public association between an inhabited static dimension type `D` and its runtime
+`DimensionKey`. For every singleton key `K` whose `Atom[K]` is inhabitable through supported public `DimRef` APIs, any two
+publicly obtained values of type `DimRef[Atom[K]]` SHALL have equal `DimensionKey` values. This uniqueness requirement
+SHALL apply only to publicly inhabitable atom types; the set of keys accepted by `Normalize[Atom[K]]` MAY be larger, and
+normalization alone SHALL NOT make an atom type runtime-inhabitable.
+
+Public atom construction SHALL bind static and runtime identity at one authority-bearing boundary. Literal construction
+SHALL derive the runtime atom identifier from the accepted literal singleton. Nominal construction SHALL bind the result
+to the supplied stable object's exact singleton type and to the runtime identifier owned by that object. Generative and
+fresh runtime witnesses SHALL bind their path-dependent atom type to the identity captured by that same witness. No
+supported public constructor SHALL accept a caller-selected static atom type independently from a caller-selected runtime
+identity.
+
+The public `DimRef` identity witness SHALL bind `One` to `DimensionKey.one`. Product, inverse, and quotient operations
+SHALL preserve the static/runtime association inductively: each SHALL return the canonical static output established by
+the complete `Normalize` operation and the corresponding runtime key produced from its authoritative input keys.
+Supported downstream code SHALL NOT directly construct or implement `DimRef` to bypass these roots and operations.
+
+#### Scenario: Repeat literal construction
+- **WHEN** supported callers construct `DimRef.atom["BTC"]` more than once
+- **THEN** every result has type `DimRef[Atom["BTC"]]` and the same runtime dimension key derived from `"BTC"`
+
+#### Scenario: Repeat nominal construction
+- **WHEN** a stable `NominalAtom` object is supplied to `DimRef.atom` more than once
+- **THEN** every result retains that object's exact singleton atom type and the same object-owned runtime identity
+
+#### Scenario: Reject caller-selected literal widening
+- **WHEN** a caller supplies different `ValueOf[String & Singleton]` values and requests the same widened
+  `DimRef[Atom[String & Singleton]]` type
+- **THEN** construction is rejected because the widened key is not accepted by `Normalize[Atom[K]]`
+
+#### Scenario: Reject caller-selected nominal widening
+- **WHEN** distinct nominal objects are widened to a shared nominal singleton supertype before construction
+- **THEN** the results cannot both inhabit one caller-selected `DimRef[Atom[K]]` type and retain their distinct runtime
+  identities
+
+#### Scenario: Preserve generative authority
+- **WHEN** a generative or fresh runtime witness exposes its dimension repeatedly
+- **THEN** that witness's exact path-dependent atom type always denotes the runtime identity captured by that witness,
+  while a different witness has a distinct path-dependent atom type
+
+#### Scenario: Do not totalize normalized keys
+- **WHEN** `Normalize[Atom[K]]` succeeds for a concrete stable key outside the supported public `DimRef` authority sources
+- **THEN** no `DimRef[Atom[K]]` constructor or runtime key is inferred from normalization alone
+
+#### Scenario: Preserve authority through witness algebra
+- **WHEN** public `DimRef` product, inverse, or quotient combines authoritative input witnesses
+- **THEN** the returned `DimRef` has the canonical normalized output type and the exactly corresponding runtime
+  `DimensionKey` operation result
+
+#### Scenario: Reject downstream witness forgery
+- **WHEN** supported downstream source attempts to implement `DimRef[D]` or invoke an unbound static/runtime constructor
+- **THEN** construction is unavailable and no contradictory runtime identity can inhabit the chosen static type

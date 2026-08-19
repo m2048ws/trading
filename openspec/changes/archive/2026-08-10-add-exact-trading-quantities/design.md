@@ -75,7 +75,8 @@ Divide[A, B]
 ```
 
 Runtime keys normalize expression shape. Atomic and runtime witnesses are generative; canonical equality recovers only
-the supported `SameDimension.coerceQuantity` and `coerceGrid` operations.
+the supported `SameDimension.coerceQuantity` and `coerceGrid` operations. Reflexive `SameDimension[D, D]` denotes
+structural type identity only; later static-normalization work validates canonical operation representations separately.
 
 ## 4. Uniform grids
 
