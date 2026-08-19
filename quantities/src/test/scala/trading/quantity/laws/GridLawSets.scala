@@ -14,7 +14,7 @@ import trading.quantity.testkit.ExactGenerators
  *
  * Expected results use independent `BigInt` coordinate equations and `coordinate × quantum` rational equations.
  */
-final class GridEmbeddingLaws[D <: Dimension, G](grid: GridRef.Grid[D, G]) extends Laws:
+final class GridEmbeddingLaws[D <: Dimension, G](grid: GridRef.Grid[D, G])(using Normalize[D]) extends Laws:
 
   val embedding: RuleSet = new SimpleRuleSet(
     "grid module and embedding",
@@ -88,7 +88,12 @@ end GridEmbeddingLaws
  *
  * Expected success and coordinates use independent numerator/denominator divisibility arithmetic.
  */
-final class ExactNarrowingLaws[D <: Dimension, G](grid: GridRef.Grid[D, G])(using Arbitrary[Rational]) extends Laws:
+final class ExactNarrowingLaws[D <: Dimension, G](
+  grid: GridRef.Grid[D, G]
+)(using
+  Arbitrary[Rational],
+  Normalize[D])
+  extends Laws:
 
   private def independentCoordinate(c: Rational): Option[BigInt] =
     val quantum           = grid.quantum.unrefined
@@ -126,7 +131,8 @@ end ExactNarrowingLaws
  * Expected directed coordinates use integer quotient/remainder models; nearest results use independently selected
  * coordinate neighbors and an explicit tie table. No expected coordinate calls quantization.
  */
-final class QuantizationLaws[D <: Dimension, G](grid: GridRef.Grid[D, G])(using Arbitrary[Rational]) extends Laws:
+final class QuantizationLaws[D <: Dimension, G](grid: GridRef.Grid[D, G])(using Arbitrary[Rational], Normalize[D])
+  extends Laws:
   import QuantizationPolicy.*
 
   private def quantity(c: Rational): Quantity[D] =
@@ -275,7 +281,7 @@ end QuantizationLaws
  *
  * The expected model is pure `BigInt` reconstruction, bounds, sums, and spread.
  */
-final class DivisionAndAllocationLaws[D <: Dimension, G](grid: GridRef.Grid[D, G]) extends Laws:
+final class DivisionAndAllocationLaws[D <: Dimension, G](grid: GridRef.Grid[D, G])(using Normalize[D]) extends Laws:
 
   val divisionAndAllocation: RuleSet = new SimpleRuleSet(
     "division and allocation",

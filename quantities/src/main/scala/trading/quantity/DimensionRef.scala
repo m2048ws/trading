@@ -1,9 +1,12 @@
 package trading.quantity
 
 /**
- * Type-carrying evidence that dimension `D` has a particular canonical runtime key.
+ * Authoritative public association between an inhabited dimension type `D` and one canonical runtime key.
  *
- * This is the bridge between compile-time dimensional safety and dimensions assembled or resolved at runtime.
+ * Runtime authority is a single-valued partial-domain mapping: all supported public witnesses for the same exact atom
+ * type have the same [[DimensionKey]], while a statically available [[Normalize]] does not imply that a `DimRef`
+ * exists. Conversely, generic code possessing a `DimRef[D]` must still accept and forward `Normalize[D]` when static
+ * arithmetic requires it.
  *
  * @tparam D the represented dimension
  */
@@ -18,7 +21,7 @@ sealed trait DimRef[D <: Dimension]:
  */
 sealed trait SomeDimensionRef:
   /** Fresh static dimension represented by this runtime witness. */
-  type D <: Dimension
+  type D = Atom[this.type]
   def dimension: DimRef[D]
 
 /** A generative witness that gives one runtime atom identity a fresh compile-time dimension type. */
@@ -26,14 +29,23 @@ sealed trait AtomicDimensionRef extends SomeDimensionRef:
   def atomId: AtomId
 
 /**
- * Creates dimension witnesses and lifts the dimension algebra's identity, product, inverse, and quotient operations to
- * them.
+ * Creates authoritative dimension witnesses and lifts the dimension algebra's identity, product, inverse, and quotient
+ * operations to them.
  *
- * Each operation constructs both the corresponding type expression and its normalized [[DimensionKey]]. Algebraically
- * equal expressions can remain different Scala types; [[SameDimension]] witnesses their equality after their canonical
- * keys agree.
+ * Root constructors bind the static type and runtime identity at one boundary; callers cannot select them
+ * independently. Each algebra operation uses one complete [[Normalize]] result for its static output and the matching
+ * [[DimensionKey]] operation on authoritative inputs. Algebraically equal expressions can remain different Scala types;
+ * [[SameDimension]] witnesses their equality after their canonical keys agree.
  */
 object DimRef:
+
+  /**
+   * Base class for a stable nominal singleton key with one authoritative runtime atom identity.
+   *
+   * Extend this class with an `object`, then pass that object to [[DimRef.atom]]. The final constructor-owned
+   * [[AtomId]] prevents the same singleton type from being associated with contradictory runtime keys.
+   */
+  abstract class NominalAtom protected (final val atomId: AtomId) extends JavaSerializationUnsupported
 
   private final class Canonical[D <: Dimension](val key: DimensionKey) extends DimRef[D]
 
@@ -41,18 +53,9 @@ object DimRef:
     new Canonical[D](k)
 
   private final class Fresh(canonicalKey: DimensionKey) extends SomeDimensionRef:
-    sealed trait FreshDimension extends Dimension
-
-    type D = FreshDimension
-
     val dimension: DimRef[D] = canonical[D](canonicalKey)
 
   private final class Atomic(val atomId: AtomId) extends AtomicDimensionRef:
-
-    sealed trait AtomicDimension extends Dimension
-
-    type D = AtomicDimension
-
     val dimension: DimRef[D] = canonical[D](DimensionKey.atom(atomId))
 
   /** Creates a fresh path-dependent type for a checked canonical runtime key. */
@@ -63,38 +66,53 @@ object DimRef:
   def atomic(id: AtomId): AtomicDimensionRef =
     new Atomic(id)
 
+  /**
+   * Creates an authoritative atom whose compile-time and runtime identities are the same validated literal string.
+   *
+   * `Normalize[Atom[K]]` rejects caller-selected broad singleton types even when a caller supplies `ValueOf[K]`.
+   */
+  def atom[K <: String & Singleton](
+    using
+    key: ValueOf[K],
+    valid: Normalize[Atom[K]]
+  ): DimRef[Atom[K]] =
+    val _ = valid
+    canonical(DimensionKey.atom(AtomId(key.value)))
+
+  /** Creates an authoritative atom keyed by the supplied stable nominal value's exact singleton identity. */
+  def atom(
+    key: NominalAtom & Singleton
+  )(using valid: Normalize[Atom[key.type]]
+  ): DimRef[Atom[key.type]] =
+    val _ = valid
+    canonical(DimensionKey.atom(key.atomId))
+
   def one: DimRef[One] =
     canonical(DimensionKey.one)
 
-  def times[A <: Dimension, B <: Dimension](l: DimRef[A], r: DimRef[B]): DimRef[Times[A, B]] =
-    canonical(DimensionKey.multiply(l.key, r.key))
+  def times[A <: Dimension, B <: Dimension](
+    l: DimRef[A],
+    r: DimRef[B]
+  )(using
+    operation: Normalize[Times[A, B]]
+  ): DimRef[operation.Out] =
+    val _ = operation
+    canonical[operation.Out](DimensionKey.multiply(l.key, r.key))
 
-  def inverse[A <: Dimension](v: DimRef[A]): DimRef[Inverse[A]] =
-    canonical(DimensionKey.inverse(v.key))
+  def inverse[A <: Dimension](
+    v: DimRef[A]
+  )(using operation: Normalize[Inverse[A]]
+  ): DimRef[operation.Out] =
+    val _ = operation
+    canonical[operation.Out](DimensionKey.inverse(v.key))
 
-  def divide[A <: Dimension, B <: Dimension](n: DimRef[A], d: DimRef[B]): DimRef[Divide[A, B]] =
-    times(n, inverse(d))
+  def divide[A <: Dimension, B <: Dimension](
+    n: DimRef[A],
+    d: DimRef[B]
+  )(using
+    operation: Normalize[Divide[A, B]]
+  ): DimRef[operation.Out] =
+    val _ = operation
+    canonical[operation.Out](DimensionKey.multiply(n.key, DimensionKey.inverse(d.key)))
 
 end DimRef
-
-/**
- * Evidence that dimension types `A` and `B` have the same canonical runtime identity.
- *
- * The evidence permits safe coercion between otherwise distinct static types and can only be obtained after their
- * dimension keys agree.
- */
-final class SameDimension[A <: Dimension, B <: Dimension] private ():
-  def coerceQuantity(v: Quantity[A]): Quantity[B] =
-    v.asInstanceOf[Quantity[B]]
-
-  def coerceGrid[G](v: GridQuantity[A, G]): GridQuantity[B, G] =
-    v.asInstanceOf[GridQuantity[B, G]]
-
-/** Recovers [[SameDimension]] evidence after comparing canonical runtime keys. */
-object SameDimension:
-  /** Recover type evidence only after the canonical runtime identities agree. */
-  def between[A <: Dimension, B <: Dimension](l: DimRef[A], r: DimRef[B]): Option[SameDimension[A, B]] =
-    Option.when(l.key == r.key):
-      new SameDimension()
-
-end SameDimension

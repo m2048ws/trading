@@ -38,12 +38,15 @@ class RuntimeEvidenceSuite extends FunSuite:
     val rightValue: Quantity[right.D] =
       evidence.coerceQuantity:
         leftValue
+    given SameDimension[left.D, right.D] = evidence
+    val sum: Quantity[left.D]            = leftValue + Quantity(right.dimension.asDimensionRef, 5)
 
     assertEquals(
       rightValue.coefficient,
       Rational:
         10
     )
+    assertEquals(sum.coefficient, Rational(15))
 
   test("same-dimension evidence rejects distinct canonical assets"):
     val registry = new QuantityRegistry

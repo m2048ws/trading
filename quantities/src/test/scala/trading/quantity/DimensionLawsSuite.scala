@@ -83,4 +83,13 @@ class DimensionLawsSuite extends ScalaCheckSuite:
       val right = DimRef.fresh(distinct)
       assertEquals(SameDimension.between(left.dimension, right.dimension), None)
 
+  test("checked core evidence can be installed locally for additive arithmetic"):
+    val left                             = DimRef.atomic(AtomId("checked-local-addition"))
+    val right                            = DimRef.atomic(AtomId("checked-local-addition"))
+    val evidence                         = SameDimension.between(left.dimension, right.dimension).get
+    given SameDimension[left.D, right.D] = evidence
+
+    val sum: Quantity[left.D] = Quantity(left.dimension, 2) + Quantity(right.dimension, 3)
+    assertEquals(sum.coefficient, Rational(5))
+
 end DimensionLawsSuite

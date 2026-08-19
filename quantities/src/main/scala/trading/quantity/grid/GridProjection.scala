@@ -10,7 +10,12 @@ final case class NotOnGrid[D <: Dimension](source: Rational, target: GridKey, ta
 /** Exact narrowing operations that reject nonrepresentable values instead of rounding them. */
 object GridProjection:
 
-  def narrowExactlyTo[D <: Dimension](t: GridRef[D])(v: Quantity[D]): Either[NotOnGrid[D], GridQuantity[D, t.G]] =
+  def narrowExactlyTo[D <: Dimension](
+    t: GridRef[D]
+  )(
+    v: Quantity[D]
+  )(using Normalize[D]
+  ): Either[NotOnGrid[D], GridQuantity[D, t.G]] =
     val coefficient = v.coefficient
     val quantum     = t.quantum.unrefined
     val coordinate  = coefficient.divideBy(t.quantum.asNonZero)
@@ -25,6 +30,7 @@ object GridProjection:
     t: GridRef[D]
   )(
     v: GridQuantity[D, g.G]
+  )(using Normalize[D]
   ): Either[NotOnGrid[D], GridQuantity[D, t.G]] =
     narrowExactlyTo(t)(g.asQuantity(v))
 
@@ -33,13 +39,22 @@ end GridProjection
 /** Validation façade for requiring that an exact quantity inhabits a particular grid. */
 object GridConstraint:
 
-  def validate[D <: Dimension](g: GridRef[D])(v: Quantity[D]): Either[NotOnGrid[D], GridQuantity[D, g.G]] =
+  def validate[D <: Dimension](
+    g: GridRef[D]
+  )(
+    v: Quantity[D]
+  )(using Normalize[D]
+  ): Either[NotOnGrid[D], GridQuantity[D, g.G]] =
     GridProjection.narrowExactlyTo(g)(v)
 
 extension [D <: Dimension](v: Quantity[D])
-  def narrowExactlyTo(t: GridRef[D]): Either[NotOnGrid[D], GridQuantity[D, t.G]] =
+  def narrowExactlyTo(t: GridRef[D])(using Normalize[D]): Either[NotOnGrid[D], GridQuantity[D, t.G]] =
     GridProjection.narrowExactlyTo(t)(v)
 
 extension [D <: Dimension, G](v: GridQuantity[D, G])
-  def narrowExactlyTo(g: GridRef.Grid[D, G], t: GridRef[D]): Either[NotOnGrid[D], GridQuantity[D, t.G]] =
+  def narrowExactlyTo(
+    g: GridRef.Grid[D, G],
+    t: GridRef[D]
+  )(using Normalize[D]
+  ): Either[NotOnGrid[D], GridQuantity[D, t.G]] =
     GridProjection.narrowGridExactlyTo(g, t)(v)

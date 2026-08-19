@@ -19,12 +19,13 @@ private def checkedNonNegativeResult[A](v: A)(using Sign[A]): NonNegative[A] =
 extension [D <: Dimension, G](v: NonNegative[GridQuantity[D, G]])
 
   @targetName("subtractNonNegativeGrid")
-  def subtract(r: NonNegative[GridQuantity[D, G]]): GridQuantity[D, G] =
+  def subtract(r: NonNegative[GridQuantity[D, G]])(using Normalize[D]): GridQuantity[D, G] =
     NonNegative.unrefined(v) - NonNegative.unrefined(r)
 
   @targetName("subtractCheckedNonNegativeGrid")
   def subtractChecked(
     r: NonNegative[GridQuantity[D, G]]
+  )(using Normalize[D]
   ): Either[ExpectedNonNegative.type, NonNegative[GridQuantity[D, G]]] =
     NonNegative(NonNegative.unrefined(v) - NonNegative.unrefined(r))
 
@@ -33,6 +34,7 @@ extension [D <: Dimension, G](v: NonNegative[GridQuantity[D, G]])
     g: GridRef.Grid[D, G],
     t: GridRef[D],
     p: QuantizationPolicy
+  )(using Normalize[D]
   ): RefinedQuantization[NonNegative[GridQuantity[D, t.G]], D] =
     val q = Quantization.gridToGrid(g, t)(NonNegative.unrefined(v), p)
     RefinedQuantization(checkedNonNegativeResult(q.value), q.residual)
@@ -42,15 +44,22 @@ end extension
 extension [D <: Dimension](v: NonNegative[Quantity[D]])
 
   @targetName("subtractNonNegativeQuantity")
-  def subtract(r: NonNegative[Quantity[D]]): Quantity[D] =
+  def subtract(r: NonNegative[Quantity[D]])(using Normalize[D]): Quantity[D] =
     NonNegative.unrefined(v) - NonNegative.unrefined(r)
 
   @targetName("subtractCheckedNonNegativeQuantity")
-  def subtractChecked(r: NonNegative[Quantity[D]]): Either[ExpectedNonNegative.type, NonNegative[Quantity[D]]] =
+  def subtractChecked(
+    r: NonNegative[Quantity[D]]
+  )(using Normalize[D]
+  ): Either[ExpectedNonNegative.type, NonNegative[Quantity[D]]] =
     NonNegative(NonNegative.unrefined(v) - NonNegative.unrefined(r))
 
   @targetName("quantizeNonNegativeQuantity")
-  def quantizeTo(t: GridRef[D], p: QuantizationPolicy): RefinedQuantization[NonNegative[GridQuantity[D, t.G]], D] =
+  def quantizeTo(
+    t: GridRef[D],
+    p: QuantizationPolicy
+  )(using Normalize[D]
+  ): RefinedQuantization[NonNegative[GridQuantity[D, t.G]], D] =
     val q = Quantization.toGrid(t)(NonNegative.unrefined(v), p)
     RefinedQuantization(checkedNonNegativeResult(q.value), q.residual)
 
@@ -59,7 +68,7 @@ end extension
 extension [D <: Dimension, G](v: Positive[GridQuantity[D, G]])
 
   @targetName("subtractPositiveGrid")
-  def subtract(r: Positive[GridQuantity[D, G]]): GridQuantity[D, G] =
+  def subtract(r: Positive[GridQuantity[D, G]])(using Normalize[D]): GridQuantity[D, G] =
     Positive.unrefined(v) - Positive.unrefined(r)
 
   @targetName("quantizePositiveGrid")
@@ -67,6 +76,7 @@ extension [D <: Dimension, G](v: Positive[GridQuantity[D, G]])
     g: GridRef.Grid[D, G],
     t: GridRef[D],
     p: QuantizationPolicy
+  )(using Normalize[D]
   ): RefinedQuantization[NonNegative[GridQuantity[D, t.G]], D] =
     val q = Quantization.gridToGrid(g, t)(Positive.unrefined(v), p)
     RefinedQuantization(checkedNonNegativeResult(q.value), q.residual)
@@ -76,11 +86,15 @@ end extension
 extension [D <: Dimension](v: Positive[Quantity[D]])
 
   @targetName("subtractPositiveQuantity")
-  def subtract(r: Positive[Quantity[D]]): Quantity[D] =
+  def subtract(r: Positive[Quantity[D]])(using Normalize[D]): Quantity[D] =
     Positive.unrefined(v) - Positive.unrefined(r)
 
   @targetName("quantizePositiveQuantity")
-  def quantizeTo(t: GridRef[D], p: QuantizationPolicy): RefinedQuantization[NonNegative[GridQuantity[D, t.G]], D] =
+  def quantizeTo(
+    t: GridRef[D],
+    p: QuantizationPolicy
+  )(using Normalize[D]
+  ): RefinedQuantization[NonNegative[GridQuantity[D, t.G]], D] =
     val q = Quantization.toGrid(t)(Positive.unrefined(v), p)
     RefinedQuantization(checkedNonNegativeResult(q.value), q.residual)
 
@@ -89,7 +103,12 @@ end extension
 extension [D <: Dimension, G](v: NonZero[GridQuantity[D, G]])
 
   @targetName("quantizeNonZeroGrid")
-  def quantizeTo(g: GridRef.Grid[D, G], t: GridRef[D], p: QuantizationPolicy): Quantization[D, t.G] =
+  def quantizeTo(
+    g: GridRef.Grid[D, G],
+    t: GridRef[D],
+    p: QuantizationPolicy
+  )(using Normalize[D]
+  ): Quantization[D, t.G] =
     Quantization.gridToGrid(g, t)(NonZero.unrefined(v), p)
 
 end extension
@@ -97,7 +116,7 @@ end extension
 extension [D <: Dimension](v: NonZero[Quantity[D]])
 
   @targetName("quantizeNonZeroQuantity")
-  def quantizeTo(t: GridRef[D], p: QuantizationPolicy): Quantization[D, t.G] =
+  def quantizeTo(t: GridRef[D], p: QuantizationPolicy)(using Normalize[D]): Quantization[D, t.G] =
     Quantization.toGrid(t)(NonZero.unrefined(v), p)
 
 end extension

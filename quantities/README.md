@@ -28,6 +28,50 @@ Ratio
 | `trading.quantity.runtime` | Runtime witnesses, registry, heterogeneous values, and logical persistence |
 | `trading.quantity.algebra` | Optional Typelevel Algebra integration |
 
+## Static and runtime capabilities
+
+Four public capabilities remain deliberately independent:
+
+| Capability | Establishes | Does not establish |
+| --- | --- | --- |
+| `Normalize[D]` | `D` is a valid closed static expression and has one canonical `Out` | A `DimRef`, runtime key, or runtime inhabitation |
+| `DimRef[D]` | This inhabited `D` has one authoritative `DimensionKey` | Contextual `Normalize[D]` evidence in generic code |
+| `SameDimension[A, B]` | Controlled retagging between equivalent indices | Validity, a runtime witness, or a runtime key by itself |
+| `Quantity[D]` | An exact coefficient indexed by `D` | A stored or recoverable `DimRef[D]` or `DimensionKey` |
+
+Runtime atom authority is a single-valued partial-domain mapping. Every supported public `DimRef[Atom[K]]` for the same
+exact inhabitable `K` has the same runtime key, but the keys accepted by static normalization form a larger set. Literal
+string atoms, `NominalAtom` objects, atomic witnesses, fresh witnesses, and `One` are supported authority roots; an
+arbitrary stable singleton accepted by `Normalize` does not thereby gain a runtime constructor.
+
+For example, a stable module identity is a valid static key even though this object is not a public `DimRef` authority
+source:
+
+```scala
+import trading.quantity.*
+
+object StaticOnlyKey
+type StaticOnly = Atom[StaticOnlyKey.type]
+
+val normalization: Normalize[StaticOnly] = summon
+val empty: Quantity[StaticOnly] = Quantity.zero[StaticOnly]
+// No supported DimRef.atom(StaticOnlyKey) constructor exists.
+```
+
+That zero is purely static and exact. Attaching a caller-supplied nonzero—or any other caller-supplied coefficient—still
+starts from an authoritative witness:
+
+```scala
+type USD = Atom["asset:USD"]
+val usd: DimRef[USD] = DimRef.atom["asset:USD"]
+val amount: Quantity[USD] = Quantity(usd, Rational(3, 2))
+```
+
+The separation also matters in generic code: a `DimRef[D]` can expose its runtime key, but it does not synthesize the
+`Normalize[D]` context required by dimension-preserving arithmetic. Such code accepts and forwards both capabilities
+when it needs both. Likewise, reflexive `SameDimension[D, D]` is only Scala type identity; malformed `D` still cannot
+normalize or participate in arithmetic.
+
 `Quantity[D]` is rational-backed and may represent values that are not on any registered grid, including
 `6000.001 USD`, `2 / 100001 XBT`, and `17 / 3 EUR`. `GridQuantity[D, G]` is coordinate-backed: its value is an
 arbitrary-precision integer coordinate multiplied by grid `G`'s positive rational quantum.
@@ -53,9 +97,56 @@ val exact: Quantity[usd.D] =
 assert(exact.coefficient == Rational(6_000_001, 1_000))
 ```
 
-Exact addition and subtraction preserve the dimension. Quantity multiplication combines dimensions, division requires
-checked nonzero evidence, same-dimension division produces `Ratio`, and a `Rate[From, To]` has mathematical dimension
-`To / From`.
+Exact addition and subtraction preserve the left dimension and accept a right dimension only with trusted
+`SameDimension` evidence. Multiplication and checked division normalize static powers: products flatten, inverse powers
+are negated, duplicate atoms combine, and zero powers disappear. Surviving tuple order is representational, so
+`SameDimension` proves equivalent permutations without imposing an atom ordering. `asDimension[Target]` performs an
+explicit evidence-checked phantom retag; there is no global quantity conversion.
+
+Every dimension-preserving arithmetic operation also requires `Normalize[D]`. This validates a caller-written closed
+dimension expression independently of reflexive `SameDimension[D, D]`. Generic code forwards `Normalize[D]`; it does
+not require `Normalize.Aux[D, D]`, so valid source spellings such as the `Divide[To, From]` carried by `Rate[From, To]`
+remain usable. Dimension-changing product and quotient operations continue to require only one `Normalize` for their
+complete expression.
+
+The static language is closed: `Atom[K]` identifies one atom with a singleton key, while
+`Dim[Power[K, E] *: ... *: EmptyTuple]` names a canonical multi-atom dimension with nonzero singleton `Int` exponents.
+Literal strings are convenient namespaced keys, stable objects provide nominal keys, and runtime witnesses use their own
+singleton identity. A canonical tuple cannot contain duplicate keys or zero powers. Normalization preserves the first
+occurrence of each surviving key; tuple order is representational, and `SameDimension` compares permutations as the same
+mathematical dimension.
+
+The `Singleton` upper bound is not itself canonical-key evidence. After transparent aliases and annotations are exposed,
+normalization accepts literal constants, concrete stable term/module or stable-value singleton identities, and supported
+generative `this.type` identities. Broad shapes such as `Singleton`, `Nothing`, `Null`, intersections, bounds, non-term
+type references, and unresolved wrappers are rejected with a concrete-stable-singleton diagnostic.
+
+Nominal keys own their runtime atom identifier, so a caller cannot associate the same singleton type with contradictory
+runtime keys:
+
+```scala
+object SettlementKey extends DimRef.NominalAtom(AtomId("asset:SETTLEMENT"))
+type Settlement = Atom[SettlementKey.type]
+
+val settlement: DimRef[Settlement] = DimRef.atom(SettlementKey)
+```
+
+Literal construction derives the runtime `AtomId` from the literal and validates `Normalize[Atom[K]]`, so an explicitly
+widened `K = String & Singleton` cannot use caller-created `ValueOf[K]` values to attach different runtime strings to one
+static atom type. Nominal construction returns `DimRef[Atom[key.type]]`; distinct stable key values therefore retain
+distinct result types, while repeated use of the same object retains both the same static type and runtime key.
+
+`Normalize[D]` is the sole associated-output computation for products, quotients, and inverses. It does not produce,
+resolve, or guarantee a runtime witness. Concrete operations derive normalization automatically and expose the canonical
+result directly. Generic code accepts one final context, naming its output with `Normalize.Aux[Expression, Out]` when the
+result must appear in its signature. Static exponent arithmetic is performed exactly and compilation fails if a
+surviving exponent lies outside the singleton `Int` range. Runtime `DimensionKey` exponents remain arbitrary-precision
+`BigInt`; a runtime-only composite is represented statically as one opaque singleton atom, so its hidden factors are
+never guessed by the normalizer. `SameDimension[D, D]` is intentionally reflexive Scala type identity and does not
+certify a malformed manually named `Dim`.
+
+A `Rate[From, To]` has mathematical dimension `To / From`, and ordinary multiplication uses the same normalization as
+the named convenience.
 
 ```scala
 val btc = DimRef.atomic(AtomId("asset:BTC"))
@@ -63,8 +154,10 @@ val amount = Quantity(btc.dimension, Rational(1, 10))
 val usdPerBtc: Rate[btc.D, usd.D] =
   Rate(btc.dimension, usd.dimension, Rational(6_000_001, 100))
 
-val notional: Quantity[usd.D] = amount.applyRate(usdPerBtc)
+val notional: Quantity[usd.D] = amount * usdPerBtc
+val viaConvenience: Quantity[usd.D] = amount.applyRate(usdPerBtc)
 assert(notional.coefficient == Rational(6_000_001, 1_000))
+assert(viaConvenience.coefficient == notional.coefficient)
 ```
 
 Rate composition preserves orientation:
@@ -76,6 +169,18 @@ val eurPerUsd = Rate(usd.dimension, eur.dimension, Rational(9, 10))
 val eurPerBtc: Rate[btc.D, eur.D] = usdPerBtc.andThen(eurPerUsd)
 ```
 
+Rates with a common target can be divided through the endpoint-oriented `crossRate` helper while generic `divideBy`
+continues to expose its canonical `Normalize` output:
+
+```scala
+import trading.quantity.refinement.*
+
+val eth = DimRef.atomic(AtomId("asset:ETH"))
+val usdPerEth: Rate[eth.D, usd.D] = Rate(eth.dimension, usd.dimension, Rational(3_000))
+val usdPerEthDivisor = NonZero(usdPerEth).toOption.get
+val ethPerBtc: Rate[btc.D, eth.D] = usdPerBtc.crossRate(usdPerEthDivisor)
+```
+
 Quantity division uses the same generic nonzero refinement as every other supported carrier:
 
 ```scala
@@ -84,14 +189,14 @@ import trading.quantity.refinement.*
 val tenUsd = Quantity(usd.dimension, 10)
 val threeUsd = Quantity(usd.dimension, 3)
 val divisor: NonZero[Quantity[usd.D]] = NonZero(threeUsd).toOption.get
-val ratio: Ratio = tenUsd.ratioTo(divisor)
+val ratio: Ratio = tenUsd.divideBy(divisor)
 ```
 
 Scalar division has deliberately distinct meanings:
 
 - `exactDivideBy` returns `Quantity[D]`;
 - `quotRemBy` performs Euclidean division on one grid's integer coordinate;
-- `allocateEvenly` conserves a grid coordinate and distributes remainder quanta in an explicit order.
+- `allocate` conserves a grid coordinate and distributes remainder quanta in an explicit order.
 
 The quotient/remainder and allocation extensions require `import trading.quantity.grid.*` and an explicit matching
 grid witness, which retains witness-owned coordinate inspection and construction.
@@ -208,8 +313,8 @@ import trading.quantity.algebra.exactQuantityAlgebra.given
 import trading.quantity.algebra.gridQuantityAlgebra.given
 
 // ExactScalarField[Rational] and CommutativeRing[Rational]
-// VectorSpace[Quantity[D], Rational], LeftModule, and additive group
-// LeftModule[GridQuantity[D, G], BigInt] and additive group
+// VectorSpace[Quantity[D], Rational], LeftModule, and additive group (using Normalize[D])
+// LeftModule[GridQuantity[D, G], BigInt] and additive group (using Normalize[D])
 ```
 
 Additional opt-in production namespaces expose the runtime dimension group, the exact nonzero-rational group, exact

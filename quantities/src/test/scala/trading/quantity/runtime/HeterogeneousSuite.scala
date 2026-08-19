@@ -73,6 +73,26 @@ class HeterogeneousSuite extends FunSuite:
     assert:
       result.isLeft
 
+  test("normalized grid results accept checked alignment for statically opaque runtime dimensions"):
+    val registry     = new QuantityRegistry
+    val position     = registeredDimension(registry, "heterogeneous-normalized-position")
+    val settlement   = registeredDimension(registry, "heterogeneous-normalized-settlement")
+    val priceKey     = DimensionKey.multiply(settlement.dimension.key, DimensionKey.inverse(position.dimension.key))
+    val price        = registry.registerDimension(priceKey).toOption.get
+    val positionGrid = registeredGrid(registry, position, "heterogeneous-normalized-position-grid", Rational(1, 10))
+    val amount       = positionGrid.fromCoordinate(2)
+    val exactPrice   = Quantity(price.dimension.asDimensionRef, Rational(15))
+
+    val operation                        = summon[Normalize[Times[position.D, price.D]]]
+    val product: Quantity[operation.Out] =
+      amount.multiplyExact[price.D](exactPrice, positionGrid.asGridRef)(using operation)
+    val productDimension: DimRef[operation.Out] =
+      DimRef.times(position.dimension.asDimensionRef, price.dimension.asDimensionRef)(using operation)
+    val checked = SameDimension.between(productDimension, settlement.dimension.asDimensionRef).get
+    val aligned: Quantity[settlement.D] = product.asDimension[settlement.D](using checked)
+
+    assertEquals(aligned.coefficient, Rational(3))
+
   test("asset-specialized resolved quantities can join general heterogeneous handling"):
     val registry = new QuantityRegistry
     val asset    =

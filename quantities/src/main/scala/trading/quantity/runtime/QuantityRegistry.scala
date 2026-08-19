@@ -3,6 +3,7 @@ package trading.quantity.runtime
 import scala.collection.mutable
 
 import trading.quantity.AssetId
+import trading.quantity.Atom
 import trading.quantity.AtomId
 import trading.quantity.Dimension
 import trading.quantity.DimensionKey
@@ -68,7 +69,7 @@ end RegisteredGridRef
  */
 sealed trait DimensionWitness:
   /** Fresh static dimension represented by this runtime witness. */
-  type D <: Dimension
+  type D = Atom[this.type]
   def dimension: RegisteredDimensionRef[D]
 
 /** A resolved runtime asset identity paired with its registry-owned dimension witness. */
@@ -105,14 +106,14 @@ final class QuantityRegistry:
     val quantum: PositiveRational = asGridRef.quantum
 
   private final class InternedAssetRef(val id: AssetId, val dimensionAtom: AtomId) extends AssetRef:
-    val atomic = DimRef.atomic(dimensionAtom)
-    type D = atomic.D
-    val dimension: RegisteredDimensionRef[D] = new InternedRegisteredDimensionRef(atomic.dimension)
+    val dimension: RegisteredDimensionRef[D] =
+      val generated = DimRef.atomic(dimensionAtom)
+      new InternedRegisteredDimensionRef(generated.dimension.asInstanceOf[DimRef[D]])
 
   private final class InternedDimensionWitness(canonicalKey: DimensionKey) extends DimensionWitness:
-    val canonical = DimRef.fresh(canonicalKey)
-    type D = canonical.D
-    val dimension: RegisteredDimensionRef[D] = new InternedRegisteredDimensionRef(canonical.dimension)
+    val dimension: RegisteredDimensionRef[D] =
+      val generated = DimRef.fresh(canonicalKey)
+      new InternedRegisteredDimensionRef(generated.dimension.asInstanceOf[DimRef[D]])
 
   private val assets     = mutable.Map.empty[AssetId, (AtomId, AssetRef)]
   private val dimensions = mutable.Map.empty[DimensionKey, DimensionWitness]

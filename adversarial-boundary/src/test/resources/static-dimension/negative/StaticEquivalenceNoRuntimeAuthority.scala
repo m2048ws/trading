@@ -1,0 +1,18 @@
+package external.fixtures.negative
+
+import trading.quantity.*
+
+object StaticEquivalenceNoRuntimeAuthority:
+  type A = Times[Atom["equivalence:A"], Atom["equivalence:B"]]
+  type B = Times[Atom["equivalence:B"], Atom["equivalence:A"]]
+
+  val equivalence: SameDimension[A, B] = summon
+  val source: Quantity[A]              = Quantity.zero[A]
+  val retagged: Quantity[B]            = equivalence.coerceQuantity(source)
+
+  // OFFENDING-BEGIN
+  val key: DimensionKey  = equivalence.key
+  val witness: DimRef[B] = summon[DimRef[B]]
+  // OFFENDING-END
+
+end StaticEquivalenceNoRuntimeAuthority

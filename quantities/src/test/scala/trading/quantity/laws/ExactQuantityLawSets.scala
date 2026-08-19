@@ -151,7 +151,18 @@ final class GradedQuantityLaws[A <: Dimension, B <: Dimension, C <: Dimension](
   aDimension: DimRef[A],
   bDimension: DimRef[B],
   cDimension: DimRef[C]
-)(using Arbitrary[Rational])
+)(using
+  arbitrary: Arbitrary[Rational],
+  aValid: Normalize[A],
+  bValid: Normalize[B],
+  ab: Normalize[Times[A, B]],
+  ba: Normalize[Times[B, A]],
+  bc: Normalize[Times[B, C]],
+  ac: Normalize[Times[A, C]],
+  abOutValid: Normalize[ab.Out],
+  acOutValid: Normalize[ac.Out],
+  abThenC: Normalize[Times[ab.Out, C]],
+  aThenBc: Normalize[Times[A, bc.Out]])
   extends Laws:
 
   private def quantity[D <: Dimension](d: DimRef[D], c: Rational): Quantity[D] =
@@ -160,36 +171,40 @@ final class GradedQuantityLaws[A <: Dimension, B <: Dimension, C <: Dimension](
   val gradedQuantity: RuleSet = new SimpleRuleSet(
     "graded quantity",
     "associativity with canonical dimension equivalence" -> forAll: (a: Rational, b: Rational, c: Rational) =>
-      val left           = quantity(aDimension, a) * quantity(bDimension, b) * quantity(cDimension, c)
-      val right          = quantity(aDimension, a) * (quantity(bDimension, b) * quantity(cDimension, c))
-      val leftDimension  = DimRef.times(DimRef.times(aDimension, bDimension), cDimension)
-      val rightDimension = DimRef.times(aDimension, DimRef.times(bDimension, cDimension))
+      val leftPair       = quantity(aDimension, a).*[B](quantity(bDimension, b))(using ab)
+      val rightPair      = quantity(bDimension, b).*[C](quantity(cDimension, c))(using bc)
+      val left           = leftPair.*[C](quantity(cDimension, c))(using abThenC)
+      val right          = quantity(aDimension, a).*[bc.Out](rightPair)(using aThenBc)
+      val leftPairRef    = DimRef.times(aDimension, bDimension)(using ab)
+      val rightPairRef   = DimRef.times(bDimension, cDimension)(using bc)
+      val leftDimension  = DimRef.times(leftPairRef, cDimension)(using abThenC)
+      val rightDimension = DimRef.times(aDimension, rightPairRef)(using aThenBc)
       val canonical      = SameDimension.between(leftDimension, rightDimension).nonEmpty
       Prop(canonical && left.coefficient == a * b * c && right.coefficient == a * (b * c))
     ,
     "commutativity with canonical dimension equivalence" -> forAll: (a: Rational, b: Rational) =>
-      val left           = quantity(aDimension, a) * quantity(bDimension, b)
-      val right          = quantity(bDimension, b) * quantity(aDimension, a)
-      val leftDimension  = DimRef.times(aDimension, bDimension)
-      val rightDimension = DimRef.times(bDimension, aDimension)
+      val left           = quantity(aDimension, a).*[B](quantity(bDimension, b))(using ab)
+      val right          = quantity(bDimension, b).*[A](quantity(aDimension, a))(using ba)
+      val leftDimension  = DimRef.times(aDimension, bDimension)(using ab)
+      val rightDimension = DimRef.times(bDimension, aDimension)(using ba)
       val canonical      = SameDimension.between(leftDimension, rightDimension).nonEmpty
       Prop(canonical && left.coefficient == a * b && right.coefficient == b * a)
     ,
     "left distributivity" -> forAll: (a: Rational, b: Rational, c: Rational) =>
-      val left  = (quantity(aDimension, a) + quantity(aDimension, b)) * quantity(cDimension, c)
-      val right = quantity(aDimension, a) * quantity(cDimension, c) +
-        quantity(aDimension, b) * quantity(cDimension, c)
+      val left  = (quantity(aDimension, a) + quantity(aDimension, b)).*[C](quantity(cDimension, c))(using ac)
+      val right = quantity(aDimension, a).*[C](quantity(cDimension, c))(using ac) +
+        quantity(aDimension, b).*[C](quantity(cDimension, c))(using ac)
       Prop(left.coefficient == (a + b) * c && right.coefficient == a * c + b * c)
     ,
     "right distributivity" -> forAll: (a: Rational, b: Rational, c: Rational) =>
-      val left  = quantity(aDimension, a) * (quantity(bDimension, b) + quantity(bDimension, c))
-      val right = quantity(aDimension, a) * quantity(bDimension, b) +
-        quantity(aDimension, a) * quantity(bDimension, c)
+      val left  = quantity(aDimension, a).*[B](quantity(bDimension, b) + quantity(bDimension, c))(using ab)
+      val right = quantity(aDimension, a).*[B](quantity(bDimension, b))(using ab) +
+        quantity(aDimension, a).*[B](quantity(bDimension, c))(using ab)
       Prop(left.coefficient == a * (b + c) && right.coefficient == a * b + a * c)
     ,
     "scalar compatibility" -> forAll: (scalar: Rational, a: Rational, b: Rational) =>
-      val left  = quantity(aDimension, a) * scalar * quantity(bDimension, b)
-      val right = quantity(aDimension, a) * quantity(bDimension, b) * scalar
+      val left  = (quantity(aDimension, a) * scalar).*[B](quantity(bDimension, b))(using ab)
+      val right = quantity(aDimension, a).*[B](quantity(bDimension, b))(using ab) * scalar
       Prop(left.coefficient == a * scalar * b && right.coefficient == scalar * (a * b))
   )
 
@@ -205,32 +220,56 @@ final class RateLaws[A <: Dimension, B <: Dimension, C <: Dimension, D <: Dimens
   bDimension: DimRef[B],
   cDimension: DimRef[C],
   dDimension: DimRef[D]
-)(using Arbitrary[Rational])
+)(using
+  arbitrary: Arbitrary[Rational],
+  quotientAB: Normalize[Divide[B, A]],
+  quotientBC: Normalize[Divide[C, B]],
+  quotientCD: Normalize[Divide[D, C]],
+  quotientAA: Normalize[Divide[A, A]],
+  quotientBB: Normalize[Divide[B, B]],
+  composeABBC: Normalize[Times[Divide[B, A], Divide[C, B]]],
+  composeBCCD: Normalize[Times[Divide[C, B], Divide[D, C]]],
+  composeACCD: Normalize[Times[Divide[C, A], Divide[D, C]]],
+  composeABBD: Normalize[Times[Divide[B, A], Divide[D, B]]],
+  composeAAAB: Normalize[Times[Divide[A, A], Divide[B, A]]],
+  composeABBB: Normalize[Times[Divide[B, A], Divide[B, B]]])
   extends Laws:
 
-  private def rate[F <: Dimension, T <: Dimension](f: DimRef[F], t: DimRef[T], c: Rational): Rate[F, T] =
-    Rate(f, t, c)
+  private def rate[F <: Dimension, T <: Dimension](
+    f: DimRef[F],
+    t: DimRef[T],
+    c: Rational
+  )(using
+    operation: Normalize[Divide[T, F]]
+  ): Rate[F, T] =
+    Rate(f, t, c)(using operation)
 
   val categoryShape: RuleSet = new SimpleRuleSet(
     "rate category laws",
     "associativity" -> forAll: (f: Rational, g: Rational, h: Rational) =>
-      val first  = rate(aDimension, bDimension, f)
-      val second = rate(bDimension, cDimension, g)
-      val third  = rate(cDimension, dDimension, h)
-      val left   = first.andThen(second).andThen(third)
-      val right  = first.andThen(second.andThen(third))
+      val first  = rate(aDimension, bDimension, f)(using quotientAB)
+      val second = rate(bDimension, cDimension, g)(using quotientBC)
+      val third  = rate(cDimension, dDimension, h)(using quotientCD)
+      val ac     = first.andThen(second)(using composeABBC)
+      val bd     = second.andThen(third)(using composeBCCD)
+      val left   = ac.andThen(third)(using composeACCD)
+      val right  = first.andThen(bd)(using composeABBD)
       Prop(left.coefficient == right.coefficient && left.coefficient == f * g * h)
     ,
     "left identity" -> forAll: (coefficient: Rational) =>
-      val value = rate(aDimension, bDimension, coefficient)
-      Prop(Rate.identity(aDimension).andThen(value).coefficient == coefficient)
+      val value    = rate(aDimension, bDimension, coefficient)(using quotientAB)
+      val identity = Rate.identity(aDimension)(using quotientAA)
+      Prop(identity.andThen(value)(using composeAAAB).coefficient == coefficient)
     ,
     "right identity" -> forAll: (coefficient: Rational) =>
-      val value = rate(aDimension, bDimension, coefficient)
-      Prop(value.andThen(Rate.identity(bDimension)).coefficient == coefficient)
+      val value    = rate(aDimension, bDimension, coefficient)(using quotientAB)
+      val identity = Rate.identity(bDimension)(using quotientBB)
+      Prop(value.andThen(identity)(using composeABBB).coefficient == coefficient)
     ,
     "coefficient orientation" -> forAll: (f: Rational, g: Rational) =>
-      val composed = rate(aDimension, bDimension, f).andThen(rate(bDimension, cDimension, g))
+      val first    = rate(aDimension, bDimension, f)(using quotientAB)
+      val second   = rate(bDimension, cDimension, g)(using quotientBC)
+      val composed = first.andThen(second)(using composeABBC)
       Prop(composed.coefficient == f * g)
   )
 

@@ -65,16 +65,14 @@ class PublicApiSafetySuite extends FunSuite:
     assertDoesNotCompile:
       """
       import trading.quantity.*
-      sealed trait DTag
-      type D = Atom[DTag]
+      type D = Atom["safety:quantity"]
       val forged: Quantity[D] = Rational.one
     """
     assertDoesNotCompile:
       """
       import trading.quantity.*
-      sealed trait DTag
       sealed trait GTag
-      type D = Atom[DTag]
+      type D = Atom["safety:grid"]
       type G = GTag
       val forged: GridQuantity[D, G] = BigInt(1)
     """

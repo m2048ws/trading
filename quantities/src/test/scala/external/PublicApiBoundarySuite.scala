@@ -105,4 +105,43 @@ class PublicApiBoundarySuite extends FunSuite:
       )
     """
 
+  test("client code cannot instantiate the closed dimension grammar or normalization proofs"):
+    assertDoesNotCompile:
+      """
+      import trading.quantity.*
+      val forged = new Power["forged", 1] {}
+      """
+    assertDoesNotCompile:
+      """
+      import trading.quantity.*
+      type Entry = Power["forged", 1]
+      val forged = new Dim[Entry *: EmptyTuple] {}
+      """
+    assertDoesNotCompile:
+      """
+      import trading.quantity.*
+      val forged = new Normalize[One]:
+        type Out = One
+      """
+    assertDoesNotCompile:
+      """
+      import trading.quantity.*
+      val forged = new SameDimension[One, One] {}
+      """
+
+  test("client code cannot forge normalized operation results or obtain an unequal conversion"):
+    assertDoesNotCompile:
+      """
+      import trading.quantity.*
+      type Normalized = Dim[Power["normalized", 1] *: EmptyTuple]
+      val forged: Quantity[Normalized] = Rational.one
+      """
+    assertDoesNotCompile:
+      """
+      import trading.quantity.*
+      type A = Atom["conversion:A"]
+      type B = Atom["conversion:B"]
+      summon[Conversion[Quantity[A], Quantity[B]]]
+      """
+
 end PublicApiBoundarySuite

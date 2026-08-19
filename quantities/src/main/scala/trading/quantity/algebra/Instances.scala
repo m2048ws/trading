@@ -45,7 +45,7 @@ end exactScalarAlgebra
 /** Exact quantities form one coherent rational vector-space hierarchy. */
 object exactQuantityAlgebra:
 
-  given quantityVectorSpace[D <: Dimension]: VectorSpace[Quantity[D], Rational] with
+  given quantityVectorSpace[D <: Dimension](using Normalize[D]): VectorSpace[Quantity[D], Rational] with
     val scalar: ExactScalarField[Rational] = exactScalarAlgebra.rationalExactScalar
 
     def zero: Quantity[D] =
@@ -65,7 +65,7 @@ end exactQuantityAlgebra
 /** Grid quantities form one coherent BigInt-module hierarchy. */
 object gridQuantityAlgebra:
 
-  given gridModule[D <: Dimension, G]: LeftModule[GridQuantity[D, G], BigInt] with
+  given gridModule[D <: Dimension, G](using Normalize[D]): LeftModule[GridQuantity[D, G], BigInt] with
     val scalar: Ring[BigInt] = summon[Ring[BigInt]]
 
     def zero: GridQuantity[D, G] =
@@ -143,27 +143,33 @@ end nonZeroRationalMultiplicative
 /** Closed refined addition, exposed without widening to unrestricted group structure. */
 object refinedAdditive:
 
-  given nonNegativeQuantityMonoid[D <: Dimension]: AdditiveCommutativeMonoid[NonNegative[Quantity[D]]] with
+  given nonNegativeQuantityMonoid[D <: Dimension](
+    using Normalize[D]
+  ): AdditiveCommutativeMonoid[NonNegative[Quantity[D]]] with
     def zero: NonNegative[Quantity[D]] =
       NonNegative.quantityZero
 
     def plus(l: NonNegative[Quantity[D]], r: NonNegative[Quantity[D]]): NonNegative[Quantity[D]] =
       l.add(r)
 
-  given positiveQuantitySemigroup[D <: Dimension]: AdditiveCommutativeSemigroup[Positive[Quantity[D]]] with
+  given positiveQuantitySemigroup[D <: Dimension](
+    using Normalize[D]
+  ): AdditiveCommutativeSemigroup[Positive[Quantity[D]]] with
     def plus(l: Positive[Quantity[D]], r: Positive[Quantity[D]]): Positive[Quantity[D]] =
       l.add(r)
 
-  given nonNegativeGridQuantityMonoid[D <: Dimension, G]: AdditiveCommutativeMonoid[NonNegative[GridQuantity[D, G]]]
-  with
+  given nonNegativeGridQuantityMonoid[D <: Dimension, G](
+    using Normalize[D]
+  ): AdditiveCommutativeMonoid[NonNegative[GridQuantity[D, G]]] with
     def zero: NonNegative[GridQuantity[D, G]] =
       NonNegative.gridQuantityZero
 
     def plus(l: NonNegative[GridQuantity[D, G]], r: NonNegative[GridQuantity[D, G]]): NonNegative[GridQuantity[D, G]] =
       l.add(r)
 
-  given positiveGridQuantitySemigroup[D <: Dimension, G]: AdditiveCommutativeSemigroup[Positive[GridQuantity[D, G]]]
-  with
+  given positiveGridQuantitySemigroup[D <: Dimension, G](
+    using Normalize[D]
+  ): AdditiveCommutativeSemigroup[Positive[GridQuantity[D, G]]] with
     def plus(l: Positive[GridQuantity[D, G]], r: Positive[GridQuantity[D, G]]): Positive[GridQuantity[D, G]] =
       l.add(r)
 

@@ -11,7 +11,12 @@ final case class GridCoordinateEncoding(localGridKey: GridKey, coordinate: BigIn
 
 /** Encodes exact quantities only when they are representable on the requested grid without rounding. */
 object ConstrainedGridEncoding:
-  def encodeExact[D <: Dimension](g: GridRef[D])(v: Quantity[D]): Either[NotOnGrid[D], GridCoordinateEncoding] =
+  def encodeExact[D <: Dimension](
+    g: GridRef[D]
+  )(
+    v: Quantity[D]
+  )(using Normalize[D]
+  ): Either[NotOnGrid[D], GridCoordinateEncoding] =
     GridConstraint
       .validate(g)(v)
       .map(q => GridCoordinateEncoding(g.key, g.coordinate(q)))

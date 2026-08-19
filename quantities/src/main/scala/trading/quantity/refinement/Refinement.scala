@@ -55,10 +55,10 @@ object NonNegative:
       v
 
   /** Additive identity for the closed nonnegative exact-quantity structure. */
-  def quantityZero[D <: Dimension]: NonNegative[Quantity[D]] = Quantity.zero
+  def quantityZero[D <: Dimension](using Normalize[D]): NonNegative[Quantity[D]] = Quantity.zero
 
   /** Additive identity for the closed nonnegative grid-quantity structure. */
-  def gridQuantityZero[D <: Dimension, G]: NonNegative[GridQuantity[D, G]] = GridQuantity.zero
+  def gridQuantityZero[D <: Dimension, G](using Normalize[D]): NonNegative[GridQuantity[D, G]] = GridQuantity.zero
 
   extension [D <: Dimension, G](v: NonNegative[GridQuantity[D, G]])
 
@@ -66,6 +66,7 @@ object NonNegative:
     def quotRemBy(
       d: PositiveWhole,
       g: GridRef.Grid[D, G]
+    )(using Normalize[D]
     ): RefinedQuotRem[NonNegative[GridQuantity[D, G]], NonNegative[GridQuantity[D, G]]] =
       val result = trading.quantity.grid.quotRemBy(NonNegative.unrefined(v))(d, g)
       RefinedQuotRem(result.quotient, result.remainder)
@@ -114,6 +115,7 @@ object NonZero:
     def quotRemBy(
       d: PositiveWhole,
       g: GridRef.Grid[D, G]
+    )(using Normalize[D]
     ): RefinedQuotRem[GridQuantity[D, G], NonNegative[GridQuantity[D, G]]] =
       val result = trading.quantity.grid.quotRemBy(NonZero.unrefined(v))(d, g)
       RefinedQuotRem(result.quotient, result.remainder)
@@ -158,6 +160,7 @@ object Positive:
     def quotRemBy(
       d: PositiveWhole,
       g: GridRef.Grid[D, G]
+    )(using Normalize[D]
     ): RefinedQuotRem[NonNegative[GridQuantity[D, G]], NonNegative[GridQuantity[D, G]]] =
       val result = trading.quantity.grid.quotRemBy(Positive.unrefined(v))(d, g)
       RefinedQuotRem(result.quotient, result.remainder)
@@ -171,11 +174,11 @@ end Positive
 extension [D <: Dimension, G](v: NonNegative[GridQuantity[D, G]])
 
   @targetName("addNonNegativeGrid")
-  def add(r: NonNegative[GridQuantity[D, G]]): NonNegative[GridQuantity[D, G]] =
+  def add(r: NonNegative[GridQuantity[D, G]])(using Normalize[D]): NonNegative[GridQuantity[D, G]] =
     NonNegative.unrefined(v) + NonNegative.unrefined(r)
 
   @targetName("exactDivideNonNegativeGrid")
-  def exactDivideBy(d: PositiveWhole, g: GridRef.Grid[D, G]): NonNegative[Quantity[D]] =
+  def exactDivideBy(d: PositiveWhole, g: GridRef.Grid[D, G])(using Normalize[D]): NonNegative[Quantity[D]] =
     g.asQuantity(NonNegative.unrefined(v)).exactDivideBy(Positive.asNonZero(d))
 
 end extension
@@ -183,11 +186,11 @@ end extension
 extension [D <: Dimension](v: NonNegative[Quantity[D]])
 
   @targetName("addNonNegativeQuantity")
-  def add(r: NonNegative[Quantity[D]]): NonNegative[Quantity[D]] =
+  def add(r: NonNegative[Quantity[D]])(using Normalize[D]): NonNegative[Quantity[D]] =
     NonNegative.unrefined(v) + NonNegative.unrefined(r)
 
   @targetName("exactDivideNonNegativeQuantity")
-  def exactDivideBy(d: PositiveWhole): NonNegative[Quantity[D]] =
+  def exactDivideBy(d: PositiveWhole)(using Normalize[D]): NonNegative[Quantity[D]] =
     Quantity.exactDivideBy(NonNegative.unrefined(v))(Positive.asNonZero(d))
 
 end extension
@@ -195,11 +198,11 @@ end extension
 extension [D <: Dimension, G](v: Positive[GridQuantity[D, G]])
 
   @targetName("addPositiveGrid")
-  def add(r: Positive[GridQuantity[D, G]]): Positive[GridQuantity[D, G]] =
+  def add(r: Positive[GridQuantity[D, G]])(using Normalize[D]): Positive[GridQuantity[D, G]] =
     Positive.unrefined(v) + Positive.unrefined(r)
 
   @targetName("exactDividePositiveGrid")
-  def exactDivideBy(d: PositiveWhole, g: GridRef.Grid[D, G]): Positive[Quantity[D]] =
+  def exactDivideBy(d: PositiveWhole, g: GridRef.Grid[D, G])(using Normalize[D]): Positive[Quantity[D]] =
     g.asQuantity(Positive.unrefined(v)).exactDivideBy(Positive.asNonZero(d))
 
 end extension
@@ -207,11 +210,11 @@ end extension
 extension [D <: Dimension](v: Positive[Quantity[D]])
 
   @targetName("addPositiveQuantity")
-  def add(r: Positive[Quantity[D]]): Positive[Quantity[D]] =
+  def add(r: Positive[Quantity[D]])(using Normalize[D]): Positive[Quantity[D]] =
     Positive.unrefined(v) + Positive.unrefined(r)
 
   @targetName("exactDividePositiveQuantity")
-  def exactDivideBy(d: PositiveWhole): Positive[Quantity[D]] =
+  def exactDivideBy(d: PositiveWhole)(using Normalize[D]): Positive[Quantity[D]] =
     Quantity.exactDivideBy(Positive.unrefined(v))(Positive.asNonZero(d))
 
 end extension
@@ -219,11 +222,11 @@ end extension
 extension [D <: Dimension, G](v: NonZero[GridQuantity[D, G]])
 
   @targetName("addNonZeroGrid")
-  def add(r: NonZero[GridQuantity[D, G]]): GridQuantity[D, G] =
+  def add(r: NonZero[GridQuantity[D, G]])(using Normalize[D]): GridQuantity[D, G] =
     NonZero.unrefined(v) + NonZero.unrefined(r)
 
   @targetName("exactDivideNonZeroGrid")
-  def exactDivideBy(d: NonZeroWhole, g: GridRef.Grid[D, G]): NonZero[Quantity[D]] =
+  def exactDivideBy(d: NonZeroWhole, g: GridRef.Grid[D, G])(using Normalize[D]): NonZero[Quantity[D]] =
     g.asQuantity(NonZero.unrefined(v)).exactDivideBy(d)
 
 end extension
@@ -231,11 +234,11 @@ end extension
 extension [D <: Dimension](v: NonZero[Quantity[D]])
 
   @targetName("addNonZeroQuantity")
-  def add(r: NonZero[Quantity[D]]): Quantity[D] =
+  def add(r: NonZero[Quantity[D]])(using Normalize[D]): Quantity[D] =
     NonZero.unrefined(v) + NonZero.unrefined(r)
 
   @targetName("exactDivideNonZeroQuantity")
-  def exactDivideBy(d: NonZeroWhole): NonZero[Quantity[D]] =
+  def exactDivideBy(d: NonZeroWhole)(using Normalize[D]): NonZero[Quantity[D]] =
     Quantity.exactDivideBy(NonZero.unrefined(v))(d)
 
 end extension

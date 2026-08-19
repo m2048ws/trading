@@ -16,7 +16,8 @@ import trading.quantity.testkit.ExactGenerators
  * Expected predicates use public exact signs and grid coordinates; closure is observed through unrestricted values, not
  * by invoking refinement construction again.
  */
-final class RefinementLaws[D <: Dimension, G](grid: GridRef.Grid[D, G])(using Arbitrary[Rational]) extends Laws:
+final class RefinementLaws[D <: Dimension, G](grid: GridRef.Grid[D, G])(using Arbitrary[Rational], Normalize[D])
+  extends Laws:
 
   private def quantity(c: Rational): Quantity[D] =
     Quantity(grid.dimension, c)
