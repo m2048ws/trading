@@ -1,0 +1,105 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+usage() {
+  cat >&2 <<'EOF'
+Usage:
+  run-worker <role> <change-name> <context-json> [report-file]
+
+Roles:
+  apply
+  review
+  remediate
+  finalize
+
+Example:
+  .agent/bin/run-worker \
+    review \
+    freeze-static-dimension-authority \
+    /tmp/review-context.json
+EOF
+  exit 2
+}
+
+[[ $# -ge 3 && $# -le 4 ]] || usage
+
+role="$1"
+change="$2"
+context_file="$3"
+report_file="${4:-}"
+
+case "$role" in
+  apply|review|remediate|finalize)
+    ;;
+  *)
+    echo "Unknown worker role: $role" >&2
+    usage
+    ;;
+esac
+
+root="$(git rev-parse --show-toplevel)"
+
+template="$root/.agent/prompts/$role.md"
+schema="$root/.agent/schemas/$role.json"
+
+[[ -f "$template" ]] || {
+  echo "Missing template: $template" >&2
+  exit 1
+}
+
+[[ -f "$schema" ]] || {
+  echo "Missing schema: $schema" >&2
+  exit 1
+}
+
+[[ -f "$context_file" ]] || {
+  echo "Missing context file: $context_file" >&2
+  exit 1
+}
+
+if [[ -z "$report_file" ]]; then
+  timestamp="$(date -u +%Y%m%dT%H%M%SZ)"
+  report_file="$root/.agent/reports/${change}-${role}-${timestamp}.json"
+fi
+
+mkdir -p "$(dirname "$report_file")"
+
+prompt_file="$(mktemp "${TMPDIR:-/tmp}/trading-prompt.XXXXXX")"
+
+cleanup() {
+  rm -f "$prompt_file"
+}
+
+trap cleanup EXIT INT TERM
+
+"$root/.agent/bin/render-prompt" \
+  "$template" \
+  "$context_file" \
+  > "$prompt_file"
+
+echo "Launching worker" >&2
+echo "  role:   $role" >&2
+echo "  change: $change" >&2
+echo "  report: $report_file" >&2
+
+"$root/.agent/bin/codex-worker" \
+  "$role" \
+  "$report_file" \
+  "$schema" \
+  < "$prompt_file"
+
+if ! "$root/.agent/bin/validate-report" \
+  "$role" \
+  "$report_file"
+then
+  echo >&2
+  echo "Worker produced a schema-valid but workflow-invalid report:" >&2
+  echo "  $report_file" >&2
+  exit 3
+fi
+
+echo >&2
+echo "Worker report:" >&2
+echo "  $report_file" >&2
+
+cat "$report_file"

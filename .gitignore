@@ -16,6 +16,8 @@ project/local-plugins.sbt
 .sbt-scripted/
 local.sbt
 
+.agent/reports/
+
 # Bloop
 .bsp
 
