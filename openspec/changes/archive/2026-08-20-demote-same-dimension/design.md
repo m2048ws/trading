@@ -98,6 +98,13 @@ def addExact[H](
 `subtractExact` has the analogous shape. Same-grid `+` and `-`, refinement wrappers, and algebra instances already use
 one exact `D`; they require verification and regression coverage rather than a new semantic design.
 
+These signatures apply only when both values and both grid witnesses already share that exact `D`. `GridQuantity.alignTo`
+retags the value's phantom dimension but deliberately does not turn its source `GridRef[E, H]` into `GridRef[D, H]`.
+For naturally cross-spelled grids, callers therefore embed each value through its own original grid witness, align one
+resulting exact `Quantity` to the selected result dimension, and use ordinary exact-type `Quantity` addition or
+subtraction. `SameDimension` does not manufacture `DimRef` or `GridRef` authority, and value-only grid alignment is not
+presented as a way to make `addExact` or `subtractExact` accept a source-typed grid witness.
+
 `exactlyEquals` and `compareExact` deliberately retain their second dimension parameter and
 `SameDimension[D, E]`. They are explicit advanced comparisons across exact embeddings, produce no quantity, and remain
 outside arithmetic validity. Multiplication and division continue to use normalization of their complete result
@@ -121,9 +128,12 @@ documented flow because `alignTo` should remain the visible transition even with
 
 Positive compile-time coverage will demonstrate exact-type `Quantity`, grid, refinement, and algebra arithmetic with
 only `Normalize[D]`. Negative fixtures will demonstrate that equivalent but differently spelled operands cannot be
-added directly, while companion positive fixtures align first. Existing runtime recovery tests will be rewritten to
-align the recovered value explicitly. All `asDimension` examples and fixtures will migrate to `alignTo`; a boundary
-fixture will verify that `asDimension` is absent.
+added directly. Companion positive fixtures will align exact quantities first; naturally cross-spelled grid fixtures
+will embed through their respective original grid witnesses, align an exact embedding, and then use `Quantity`
+arithmetic. They will not simulate support by constructing both grid witnesses in one dimension, retagging only a value
+away from that dimension, and retagging it back. Existing runtime recovery tests will be rewritten to align the recovered
+value explicitly. All `asDimension` examples and fixtures will migrate to `alignTo`; a boundary fixture will verify that
+`asDimension` is absent.
 
 Tests for malformed dimensions will continue to separate reflexive `SameDimension[D, D]` from unavailable
 `Normalize[D]`, so the simpler signatures cannot accidentally grant arithmetic through type identity alone.

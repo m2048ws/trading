@@ -133,17 +133,18 @@ class AlgebraInstancesSuite extends FunSuite:
     val normalization             = summon[Normalize[Times[btc.D, Divide[usd.D, btc.D]]]]
     val _                         = normalization
 
-    val a         = DimRef.atomic(AtomId("algebra-evidence-a"))
-    val b         = DimRef.atomic(AtomId("algebra-evidence-b"))
-    val ab        = Quantity(DimRef.times(a.dimension, b.dimension), Rational(2))
-    val ba        = Quantity(DimRef.times(b.dimension, a.dimension), Rational(3))
-    val staticSum = ab + ba
+    val a = DimRef.atomic(AtomId("algebra-evidence-a"))
+    val b = DimRef.atomic(AtomId("algebra-evidence-b"))
+    type AB = Dim[Power[a.type, 1] *: Power[b.type, 1] *: EmptyTuple]
+    val ab: Quantity[AB] = Quantity(DimRef.times(a.dimension, b.dimension), Rational(2))
+    val ba               = Quantity(DimRef.times(b.dimension, a.dimension), Rational(3))
+    val staticSum        = ab + ba.alignTo[AB]
 
     val runtimeLeft  = DimRef.atomic(AtomId("algebra-checked-evidence"))
     val runtimeRight = DimRef.atomic(AtomId("algebra-checked-evidence"))
-    val checked      = SameDimension.between(runtimeLeft.dimension, runtimeRight.dimension).get
-    given SameDimension[runtimeLeft.D, runtimeRight.D] = checked
-    val checkedSum = Quantity(runtimeLeft.dimension, 4) + Quantity(runtimeRight.dimension, 5)
+    val checked      = SameDimension.between(runtimeRight.dimension, runtimeLeft.dimension).get
+    val alignedRight = Quantity(runtimeRight.dimension, 5).alignTo[runtimeLeft.D](using checked)
+    val checkedSum   = Quantity(runtimeLeft.dimension, 4) + alignedRight
 
     val gridModule = summon[LeftModule[GridQuantity[usd.D, cents.G], BigInt]]
 

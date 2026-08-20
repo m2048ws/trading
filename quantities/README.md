@@ -97,17 +97,59 @@ val exact: Quantity[usd.D] =
 assert(exact.coefficient == Rational(6_000_001, 1_000))
 ```
 
-Exact addition and subtraction preserve the left dimension and accept a right dimension only with trusted
-`SameDimension` evidence. Multiplication and checked division normalize static powers: products flatten, inverse powers
-are negated, duplicate atoms combine, and zero powers disappear. Surviving tuple order is representational, so
-`SameDimension` proves equivalent permutations without imposing an atom ordering. `asDimension[Target]` performs an
-explicit evidence-checked phantom retag; there is no global quantity conversion.
+Exact addition and subtraction accept only operands with the same Scala dimension type and require `Normalize[D]` to
+validate that shared dimension. `SameDimension` does not participate in homogeneous arithmetic. Multiplication and
+checked division normalize static powers: products flatten, inverse powers are negated, duplicate atoms combine, and
+zero powers disappear. Surviving tuple order is representational, so `SameDimension` proves equivalent permutations
+without imposing an atom ordering. `alignTo[Target]` is the visible evidence-checked transition between equivalent
+static spellings; it changes only the phantom dimension and has no global implicit conversion.
 
 Every dimension-preserving arithmetic operation also requires `Normalize[D]`. This validates a caller-written closed
 dimension expression independently of reflexive `SameDimension[D, D]`. Generic code forwards `Normalize[D]`; it does
 not require `Normalize.Aux[D, D]`, so valid source spellings such as the `Divide[To, From]` carried by `Rate[From, To]`
 remain usable. Dimension-changing product and quotient operations continue to require only one `Normalize` for their
 complete expression.
+
+Generic homogeneous code therefore forwards validity without mentioning equivalence:
+
+```scala
+def total[D <: Dimension](left: Quantity[D], right: Quantity[D])(using Normalize[D]): Quantity[D] =
+  left + right
+```
+
+A generic operation that deliberately accepts equivalent but differently spelled dimensions requests evidence from
+the value being aligned to the selected result type:
+
+```scala
+def totalEquivalent[A <: Dimension, B <: Dimension](left: Quantity[A], right: Quantity[B])(using
+  Normalize[A],
+  SameDimension[B, A]
+): Quantity[A] =
+  left + right.alignTo[A]
+```
+
+For naturally cross-spelled grids, each coordinate must first be embedded through its own original grid witness. Align
+the resulting exact quantity, not merely the grid value: `GridQuantity.alignTo` preserves the grid identity but does not
+manufacture a `GridRef` in the target dimension.
+
+```scala
+def totalEquivalentGrids[A <: Dimension, B <: Dimension, G, H](
+  left: GridQuantity[A, G],
+  leftGrid: GridRef.Grid[A, G],
+  right: GridQuantity[B, H],
+  rightGrid: GridRef.Grid[B, H]
+)(using Normalize[A], SameDimension[B, A]): Quantity[A] =
+  left.asQuantity(leftGrid) + right.asQuantity(rightGrid).alignTo[A]
+```
+
+Consequently, aligning only `right` still does not make `addExact` or `subtractExact` accept `rightGrid`: those methods
+remain available only when both values and both grid witnesses already share the same exact dimension type.
+
+This is a breaking source and JVM-binary API change: the former value-level `asDimension` name and heterogeneous
+addition/subtraction method descriptors are removed without compatibility aliases. Source clients must replace
+retagging calls with `alignTo`, make homogeneous operands share one exact type, and align explicitly at intentional
+cross-spelling boundaries. Existing binaries must be rebuilt against this API generation. The runtime witness accessor
+`asDimensionRef` is unrelated and remains available.
 
 The static language is closed: `Atom[K]` identifies one atom with a singleton key, while
 `Dim[Power[K, E] *: ... *: EmptyTuple]` names a canonical multi-atom dimension with nonzero singleton `Int` exponents.

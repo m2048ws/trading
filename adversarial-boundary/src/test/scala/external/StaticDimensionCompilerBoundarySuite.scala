@@ -48,6 +48,7 @@ class StaticDimensionCompilerBoundarySuite extends FunSuite:
     "CanonicalKeyMatrix.scala",
     "ClosedDimensionCaller.scala",
     "DirectCrossRate.scala",
+    "ExplicitEquivalentArithmetic.scala",
     "GenericCapabilitySeparation.scala",
     "GenericDimensionPreserving.scala",
     "NormalizeGeneric.scala",
@@ -108,7 +109,7 @@ class StaticDimensionCompilerBoundarySuite extends FunSuite:
     NegativeFixture(
       "MalformedDimensionPreservingArithmetic.scala",
       List("Cannot statically normalize the requested dimension", "bad"),
-      minimumErrors = 10
+      minimumErrors = 12
     ),
     NegativeFixture(
       "MalformedRefinementArithmetic.scala",
@@ -190,6 +191,26 @@ class StaticDimensionCompilerBoundarySuite extends FunSuite:
     NegativeFixture(
       "IncorrectStaticSameDimension.scala",
       List("The requested dimensions are not equivalent; provide checked SameDimension evidence")
+    ),
+    NegativeFixture(
+      "ImplicitEquivalentArithmetic.scala",
+      List("Found:", "Required:", "ImplicitEquivalentArithmetic.a", "ImplicitEquivalentArithmetic.b", "rightGrid"),
+      minimumErrors = 6
+    ),
+    NegativeFixture(
+      "UnequalGridComparison.scala",
+      List("The requested dimensions are not equivalent; provide checked SameDimension evidence"),
+      minimumErrors = 2
+    ),
+    NegativeFixture(
+      "RemovedAsDimension.scala",
+      List("asDimension", "is not a member"),
+      minimumErrors = 2
+    ),
+    NegativeFixture(
+      "MissingAlignmentEvidence.scala",
+      List("The requested dimensions are not equivalent; provide checked SameDimension evidence"),
+      minimumErrors = 2
     )
   )
 

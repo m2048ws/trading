@@ -19,6 +19,17 @@ operation-result validation and checked runtime witness recovery remain independ
 type annotations SHALL NOT alter runtime dimension identity: accepted annotated static inputs SHALL normalize to the
 same canonical output and `DimensionKey` as their unannotated underlying dimensions.
 
+#### Scenario: Coerce an exact quantity
+- **WHEN** two registry witnesses have checked-equal canonical dimensions and recovery supplies
+  `SameDimension[Source, Target]`
+- **THEN** `Quantity[Source].alignTo[Target]` safely changes only the phantom dimension type and preserves the exact
+  coefficient
+
+#### Scenario: Coerce a grid quantity
+- **WHEN** checked dimension equality supplies `SameDimension[Source, Target]` for a grid quantity
+- **THEN** `GridQuantity[Source, G].alignTo[Target]` preserves its grid type and integer coordinate while changing only
+  the phantom dimension type
+
 #### Scenario: Align an exact quantity after runtime recovery
 - **WHEN** two registry witnesses have checked-equal canonical dimensions
 - **THEN** the recovered `SameDimension` permits `alignTo` to change only the phantom dimension type of an exact quantity

@@ -11,7 +11,7 @@ object IncorrectStaticSameDimension:
 
   // OFFENDING-BEGIN
   val incorrect: SameDimension[A, B] = summon[SameDimension[A, B]]
-  val unrelated: Quantity[B] = quantity.asDimension[B](using incorrect)
+  val unrelated: Quantity[B] = quantity.alignTo[B](using incorrect)
   // OFFENDING-END
 
 end IncorrectStaticSameDimension

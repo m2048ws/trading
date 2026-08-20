@@ -27,6 +27,18 @@ operation result SHALL validate the complete closed representation.
 - **WHEN** two concrete products normalize to the same singleton-key powers in different tuple orders
 - **THEN** compile-time `SameDimension` evidence is derivable without assigning a total order to their keys
 
+#### Scenario: Use equivalence in addition
+- **WHEN** two quantities have equivalent canonical dimensions in different tuple orders but different Scala dimension
+  types
+- **THEN** direct addition and subtraction do not compile; the right operand must first use
+  `SameDimension[Right, Left]` to `alignTo[Left]`, after which exact-type arithmetic returns `Quantity[Left]`
+
+#### Scenario: Use evidence in addition
+- **WHEN** a generic caller selects the left dimension as the result type for equivalent `Quantity[Left]` and
+  `Quantity[Right]` operands
+- **THEN** it forwards `SameDimension[Right, Left]` to `right.alignTo[Left]` before exact-type addition or subtraction,
+  and the arithmetic operation itself does not consume `SameDimension`
+
 #### Scenario: Require explicit alignment before addition
 - **WHEN** two quantities have equivalent canonical dimensions represented by different Scala dimension types
 - **THEN** direct addition and subtraction do not compile until one operand is explicitly aligned to the other operand's

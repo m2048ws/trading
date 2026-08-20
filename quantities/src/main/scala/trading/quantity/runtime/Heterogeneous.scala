@@ -52,8 +52,8 @@ object HeterogeneousQuantity:
       .left
       .map(HeterogeneousDimensionMismatch(_))
       .map: e =>
-        val retyped: Quantity[l.dimension.D] = e.coerceQuantity(r.grid.asQuantity(r.value))
-        val result                           = l.grid.asQuantity(l.value) + retyped
+        val aligned: Quantity[l.dimension.D] = r.grid.asQuantity(r.value).alignTo[l.dimension.D](using e)
+        val result                           = l.grid.asQuantity(l.value) + aligned
         new ResolvedExactQuantity(l.dimension)(result)
 
 end HeterogeneousQuantity

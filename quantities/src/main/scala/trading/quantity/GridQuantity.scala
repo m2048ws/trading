@@ -111,29 +111,23 @@ object GridQuantity:
     def asQuantity(g: Grid[D, G]): Quantity[D] =
       g.asQuantity(v)
 
-    /** Retag only the phantom dimension while preserving the grid identity and coordinate. */
-    def asDimension[Target <: Dimension](using same: SameDimension[D, Target]): GridQuantity[Target, G] =
+    /** Explicitly align the phantom dimension while preserving the grid identity and coordinate. */
+    def alignTo[Target <: Dimension](using same: SameDimension[D, Target]): GridQuantity[Target, G] =
       same.coerceGrid(v)
 
-    def addExact[E <: Dimension, H](
-      r: GridQuantity[E, H],
+    def addExact[H](
+      r: GridQuantity[D, H],
       lg: Grid[D, G],
-      rg: Grid[E, H]
-    )(using
-      Normalize[D],
-      Normalize[E],
-      SameDimension[D, E]
+      rg: Grid[D, H]
+    )(using Normalize[D]
     ): Quantity[D] =
       lg.asQuantity(v) + rg.asQuantity(r)
 
-    def subtractExact[E <: Dimension, H](
-      r: GridQuantity[E, H],
+    def subtractExact[H](
+      r: GridQuantity[D, H],
       lg: Grid[D, G],
-      rg: Grid[E, H]
-    )(using
-      Normalize[D],
-      Normalize[E],
-      SameDimension[D, E]
+      rg: Grid[D, H]
+    )(using Normalize[D]
     ): Quantity[D] =
       lg.asQuantity(v) - rg.asQuantity(r)
 

@@ -80,9 +80,9 @@ class GridEvidenceSuite extends ScalaCheckSuite:
     val checked = SameDimension.between(leftDimension.dimension, rightDimension.dimension).get
     val source  = left.fromCoordinate(9)
     val aligned: GridQuantity[rightDimension.D, left.G] =
-      source.asDimension[rightDimension.D](using checked)
+      source.alignTo[rightDimension.D](using checked)
     val reverse  = SameDimension.between(rightDimension.dimension, leftDimension.dimension).get
-    val restored = aligned.asDimension[leftDimension.D](using reverse)
+    val restored = aligned.alignTo[leftDimension.D](using reverse)
 
     assertEquals(left.coordinate(restored), BigInt(9))
     assertEquals(SameGrid.between(left, right), Left(GridIdentityMismatch))

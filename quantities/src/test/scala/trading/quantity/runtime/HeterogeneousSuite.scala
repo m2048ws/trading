@@ -89,7 +89,7 @@ class HeterogeneousSuite extends FunSuite:
     val productDimension: DimRef[operation.Out] =
       DimRef.times(position.dimension.asDimensionRef, price.dimension.asDimensionRef)(using operation)
     val checked = SameDimension.between(productDimension, settlement.dimension.asDimensionRef).get
-    val aligned: Quantity[settlement.D] = product.asDimension[settlement.D](using checked)
+    val aligned: Quantity[settlement.D] = product.alignTo[settlement.D](using checked)
 
     assertEquals(aligned.coefficient, Rational(3))
 

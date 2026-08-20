@@ -33,7 +33,7 @@ class NormalizedArithmeticExamplesSuite extends FunSuite:
     val eurPerUsd                     = Rate(usd.dimension, eur.dimension, Rational(9, 10))
     val ordinaryComposition           = usdPerBtc * eurPerUsd
     val eurPerBtc: Rate[btc.D, eur.D] =
-      ordinaryComposition.asDimension[Divide[eur.D, btc.D]]
+      ordinaryComposition.alignTo[Divide[eur.D, btc.D]]
     val composed: Rate[btc.D, eur.D] = usdPerBtc.andThen(eurPerUsd)
 
     val usdPerEth                            = Rate(eth.dimension, usd.dimension, Rational(3000))

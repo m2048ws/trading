@@ -67,26 +67,22 @@ object Quantity:
   private def fromCoefficient[D <: Dimension](coefficient: Rational): Quantity[D] =
     coefficient
 
-  private def add[D <: Dimension, E <: Dimension](
+  private def add[D <: Dimension](
     l: Quantity[D],
-    r: Quantity[E]
+    r: Quantity[D]
   )(using
-    left: Normalize[D],
-    right: Normalize[E],
-    same: SameDimension[D, E]
+    valid: Normalize[D]
   ): Quantity[D] =
-    val _ = (left, right, same)
+    val _ = valid
     l.coefficient + r.coefficient
 
-  private def subtract[D <: Dimension, E <: Dimension](
+  private def subtract[D <: Dimension](
     l: Quantity[D],
-    r: Quantity[E]
+    r: Quantity[D]
   )(using
-    left: Normalize[D],
-    right: Normalize[E],
-    same: SameDimension[D, E]
+    valid: Normalize[D]
   ): Quantity[D] =
-    val _ = (left, right, same)
+    val _ = valid
     l.coefficient - r.coefficient
 
   private def scale[D <: Dimension](v: Quantity[D], s: Rational)(using valid: Normalize[D]): Quantity[D] =
@@ -147,26 +143,14 @@ object Quantity:
     def coefficient: Rational =
       v
 
-    /** Retag this value only when its normalized powers are proven equivalent to `Target`. */
-    def asDimension[Target <: Dimension](using same: SameDimension[D, Target]): Quantity[Target] =
+    /** Explicitly align this value to an equivalent static dimension spelling without changing its coefficient. */
+    def alignTo[Target <: Dimension](using same: SameDimension[D, Target]): Quantity[Target] =
       same.coerceQuantity(v)
 
-    def +[E <: Dimension](
-      r: Quantity[E]
-    )(using
-      Normalize[D],
-      Normalize[E],
-      SameDimension[D, E]
-    ): Quantity[D] =
+    def +(r: Quantity[D])(using Normalize[D]): Quantity[D] =
       add(v, r)
 
-    def -[E <: Dimension](
-      r: Quantity[E]
-    )(using
-      Normalize[D],
-      Normalize[E],
-      SameDimension[D, E]
-    ): Quantity[D] =
+    def -(r: Quantity[D])(using Normalize[D]): Quantity[D] =
       subtract(v, r)
 
     @targetName("scaleQuantityByRational")

@@ -12,6 +12,6 @@ object StaticEquivalenceRetagging:
   val equivalence: SameDimension[AB, BA] = summon
   val source: Quantity[AB]               = Quantity.zero[AB]
   val viaEvidence: Quantity[BA]          = equivalence.coerceQuantity(source)
-  val viaQuantity: Quantity[BA]          = source.asDimension[BA]
+  val viaQuantity: Quantity[BA]          = source.alignTo[BA]
 
 end StaticEquivalenceRetagging

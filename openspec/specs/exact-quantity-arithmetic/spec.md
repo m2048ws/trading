@@ -73,15 +73,19 @@ scale exceeds `1,000,000` or the scale is `Int.MinValue`.
 expressions `A` and `B` produces canonical `Dim` entries with the same singleton keys and `Int` exponents modulo tuple
 permutation. Static derivation SHALL require no runtime `DimRef`, `DimensionKey`, or total ordering over singleton keys.
 The evidence SHALL remain a restricted capability whose construction is unavailable to supported downstream code; it
-SHALL authorize controlled quantity- and grid-dimension coercion but SHALL NOT expose unrestricted Scala type equality or
-a global implicit conversion between arbitrary quantity types.
+SHALL authorize controlled explicit quantity- and grid-dimension alignment and equivalence-aware comparison but SHALL
+NOT expose unrestricted Scala type equality, a global implicit conversion between arbitrary quantity types, or implicit
+alignment inside homogeneous arithmetic.
 
-Concrete arithmetic whose canonical result is statically determined SHALL expose that result directly. Callers SHALL
-not need a second alignment evidence family or a routine `asDimension` repair merely to select the named atom, rate
-endpoint, ratio, or canonical composite that the operation computes. Explicit `SameDimension`-checked retagging SHALL
-remain available for checked runtime equality and for intentionally selecting between distinct but equivalent tuple
-orders. Reflexive `SameDimension[D, D]` SHALL mean Scala type identity only; every non-reflexive proof and every use as a
-canonical operation result SHALL validate the complete closed representation.
+The public value-level alignment operation SHALL be named `alignTo`. Given `SameDimension[D, E]`, it SHALL retag
+`Quantity[D]` as `Quantity[E]` and `GridQuantity[D, G]` as `GridQuantity[E, G]` without changing the exact coefficient,
+grid identity, or coordinate. The former `asDimension` operation SHALL no longer be exposed. Concrete arithmetic whose
+canonical result is statically determined SHALL expose that result directly; callers SHALL not need a second alignment
+evidence family or a routine `alignTo` repair merely to select the named atom, rate endpoint, ratio, or canonical
+composite that the operation computes. Explicit `SameDimension`-checked alignment SHALL remain available for checked
+runtime equality and for intentionally selecting between distinct but equivalent tuple orders. Reflexive
+`SameDimension[D, D]` SHALL mean Scala type identity only; every non-reflexive proof and every use as a canonical
+operation result SHALL validate the complete closed representation.
 
 #### Scenario: Align commuted canonical dimensions
 - **WHEN** two canonical `Dim` values contain the same singleton-key powers in different tuple orders
@@ -92,13 +96,29 @@ canonical operation result SHALL validate the complete closed representation.
 - **THEN** compile-time `SameDimension` evidence is derivable without assigning a total order to their keys
 
 #### Scenario: Use equivalence in addition
-- **WHEN** two quantities have equivalent canonical dimensions in different tuple orders
-- **THEN** addition and subtraction accept statically derived evidence and retain the left operand's dimension type
+- **WHEN** two quantities have equivalent canonical dimensions in different tuple orders but different Scala dimension
+  types
+- **THEN** direct addition and subtraction do not compile; the right operand must first use
+  `SameDimension[Right, Left]` to `alignTo[Left]`, after which exact-type arithmetic returns `Quantity[Left]`
 
 #### Scenario: Use evidence in addition
-- **WHEN** two quantities have equivalent normalized `Dim` entries in different tuple orders
-- **THEN** addition and subtraction accept statically derived `SameDimension` evidence and retain the left operand's
+- **WHEN** a generic caller selects the left dimension as the result type for equivalent `Quantity[Left]` and
+  `Quantity[Right]` operands
+- **THEN** it forwards `SameDimension[Right, Left]` to `right.alignTo[Left]` before exact-type addition or subtraction,
+  and the arithmetic operation itself does not consume `SameDimension`
+
+#### Scenario: Require explicit alignment before addition
+- **WHEN** two quantities have equivalent canonical dimensions represented by different Scala dimension types
+- **THEN** direct addition and subtraction do not compile until one operand is explicitly aligned to the other operand's
   dimension type
+
+#### Scenario: Align an exact quantity
+- **WHEN** `SameDimension[D, E]` is available and a caller invokes `alignTo[E]` on `Quantity[D]`
+- **THEN** the result is `Quantity[E]` with exactly the original coefficient
+
+#### Scenario: Align a grid quantity
+- **WHEN** `SameDimension[D, E]` is available and a caller invokes `alignTo[E]` on `GridQuantity[D, G]`
+- **THEN** the result is `GridQuantity[E, G]` with the original grid type and coordinate
 
 #### Scenario: Expose a concrete economic result directly
 - **WHEN** concrete quantity or rate arithmetic cancels all intermediate source dimensions and leaves a named target
@@ -108,16 +128,16 @@ canonical operation result SHALL validate the complete closed representation.
 #### Scenario: Select an economic result type explicitly
 - **WHEN** a caller intentionally selects an equivalent canonical composite whose tuple order differs from the computed
   result
-- **THEN** explicit `SameDimension`-checked retagging exposes the selected type without runtime comparison or an
-  unchecked cast
+- **THEN** `alignTo` exposes the selected type using `SameDimension` without runtime comparison or an unchecked public
+  cast
 
 #### Scenario: Reject unequal static dimensions
 - **WHEN** normalized dimensions differ by a singleton key or exponent
-- **THEN** `SameDimension` is not derivable and evidence-requiring arithmetic does not compile
+- **THEN** `SameDimension` is not derivable and `alignTo` cannot cross between the dimension types
 
 #### Scenario: Recover checked runtime equivalence
 - **WHEN** two opaque runtime witnesses have equal authoritative `DimensionKey` values but distinct singleton-key types
-- **THEN** successful runtime comparison may issue scoped `SameDimension` evidence for explicit controlled retagging
+- **THEN** successful runtime comparison may issue scoped `SameDimension` evidence for explicit `alignTo`
 
 #### Scenario: Derive evidence from downstream code
 - **WHEN** supported downstream Scala requests `SameDimension` for equivalent commuted canonical products with compiler
@@ -126,7 +146,8 @@ canonical operation result SHALL validate the complete closed representation.
 
 #### Scenario: Keep reflexivity separate from canonical certification
 - **WHEN** a malformed `Dim` representation requests `SameDimension[D, D]`
-- **THEN** reflexive identity MAY be available, but normalization and arithmetic SHALL reject the malformed representation
+- **THEN** reflexive identity and `alignTo[D]` MAY be available, but normalization and arithmetic SHALL reject the
+  malformed representation
 
 ### Requirement: Atomic and canonical static derivation
 The public static dimension language SHALL be closed over canonical `Dim[Entries]`, source expressions `Times[A, B]` and
@@ -332,12 +353,13 @@ Static or runtime arithmetic MUST NOT silently wrap, truncate, saturate, or appr
   arithmetic preserves the exact mathematical exponent
 
 ### Requirement: Dimension-safe additive and multiplicative arithmetic
-Addition and subtraction SHALL accept quantities with the same dimension type or trusted `SameDimension` evidence and
-SHALL retain the left operand's dimension type. Multiplication by `Rational` SHALL preserve the quantity's dimension.
-Multiplying `Quantity[A]` by `Quantity[B]` SHALL use the single normalization operation and return an exact quantity in a
-canonical `Dim`: nested products SHALL be flattened, inverse powers negated, equal singleton keys combined, zero powers
-removed, and every surviving key stored exactly once with a nonzero `Int` exponent. Entry order MAY follow operand order
-and SHALL NOT affect dimension equivalence.
+Addition and subtraction SHALL accept only quantities with the exact same Scala dimension type `D`, SHALL require
+`Normalize[D]`, and SHALL return `Quantity[D]`. They SHALL NOT consume `SameDimension` to align a right operand whose
+static dimension type differs from the left operand's type. Multiplication by `Rational` SHALL preserve the quantity's
+dimension. Multiplying `Quantity[A]` by `Quantity[B]` SHALL use the single normalization operation and return an exact
+quantity in a canonical `Dim`: nested products SHALL be flattened, inverse powers negated, equal singleton keys
+combined, zero powers removed, and every surviving key stored exactly once with a nonzero `Int` exponent. Entry order
+MAY follow operand order and SHALL NOT affect dimension equivalence.
 
 For fully concrete inputs, the inferred public result SHALL expose the complete canonical dimension without a
 specialized product evidence type or caller-visible alignment step. Generic code SHALL state and forward one contextual
@@ -347,18 +369,28 @@ concrete expression directly. Hidden decompositions of runtime-resolved opaque d
 static cancellation until checked runtime equivalence is supplied.
 
 Every public operation that performs arithmetic and preserves a dimension parameter `D` SHALL require `Normalize[D]`.
-For heterogeneous addition or subtraction it SHALL require normalization of both participating dimensions in addition
-to `SameDimension[D, E]`. This includes zero identities, exact scalar multiplication and division, grid closed
-arithmetic, allocation and quantization, arithmetic grid conversion/projection, refinement-preserving wrappers, and
-optional arithmetic algebra instances. The requirement SHALL be `Normalize[D]`, not `Normalize.Aux[D, D]`, because a
-valid quantity dimension may be a noncanonical source expression such as `Divide[T, F]` in `Rate[F, T]`. Operations
-already requiring `Normalize` of their complete dimension-changing expression SHALL not add redundant operand
-normalization evidence. Equality, ordering, sign inspection, and authoritative witness-owned construction SHALL remain
-separate from arithmetic validation.
+This includes zero identities, homogeneous exact addition and subtraction, exact scalar multiplication and division,
+grid closed arithmetic, allocation and quantization, arithmetic grid conversion and projection,
+refinement-preserving wrappers, and optional arithmetic algebra instances. The requirement SHALL be `Normalize[D]`,
+not `Normalize.Aux[D, D]`, because a valid quantity dimension may be a noncanonical source expression such as
+`Divide[T, F]` in `Rate[F, T]`. Operations already requiring `Normalize` of their complete dimension-changing expression
+SHALL not add redundant operand normalization evidence. Explicit alignment, equivalence-aware comparison, equality,
+ordering, sign inspection, and authoritative witness-owned construction SHALL remain separate from arithmetic
+validation.
 
 #### Scenario: Add and subtract exact quantities
 - **WHEN** two exact USD quantities are added or subtracted
-- **THEN** both results are exact `Quantity[USD]` values
+- **THEN** both results are exact `Quantity[USD]` values without requiring `SameDimension` evidence
+
+#### Scenario: Write generic homogeneous arithmetic
+- **WHEN** a generic operation accepts two `Quantity[D]` operands and forwards `Normalize[D]`
+- **THEN** it can add or subtract them without declaring dimensional-equivalence vocabulary
+
+#### Scenario: Reject implicit cross-spelling arithmetic
+- **WHEN** `Quantity[A]` and `Quantity[B]` have different static dimension types even though `SameDimension[A, B]` is
+  available
+- **THEN** direct addition and subtraction do not compile, and the caller must explicitly align one operand to the
+  chosen result type
 
 #### Scenario: Reject malformed dimension-preserving arithmetic
 - **WHEN** a zero-power or otherwise malformed `Dim` is used with quantity or grid zero, addition, subtraction, scalar

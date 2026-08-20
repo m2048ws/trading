@@ -103,7 +103,7 @@ class MultiplicativeArithmeticSuite extends FunSuite:
     val usdToEur = Rate(usd.dimension, eur.dimension, Rational(9, 10))
 
     val multiplied                         = btcToUsd * usdToEur
-    val composed: Rate[btc.D, eur.D]       = multiplied.asDimension[Divide[eur.D, btc.D]]
+    val composed: Rate[btc.D, eur.D]       = multiplied.alignTo[Divide[eur.D, btc.D]]
     val viaConvenience: Rate[btc.D, eur.D] = btcToUsd.andThen(usdToEur)
 
     assertEquals(composed.coefficient, Rational(54000))
