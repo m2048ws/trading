@@ -1,0 +1,208 @@
+#!/usr/bin/env python3
+
+import json
+import pathlib
+import subprocess
+import sys
+from typing import Any
+
+
+def run(*args: str, check: bool = True) -> subprocess.CompletedProcess[str]:
+    return subprocess.run(
+        args,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        check=check,
+    )
+
+
+def git(*args: str, check: bool = True) -> subprocess.CompletedProcess[str]:
+    return run("git", *args, check=check)
+
+
+def lines(text: str) -> list[str]:
+    return [line for line in text.splitlines() if line.strip()]
+
+
+def detect_repo_root() -> pathlib.Path:
+    result = git("rev-parse", "--show-toplevel")
+    return pathlib.Path(result.stdout.strip())
+
+
+def parse_status() -> dict[str, Any]:
+    raw = git(
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all",
+    ).stdout
+
+    staged: list[str] = []
+    unstaged: list[str] = []
+    untracked: list[str] = []
+
+    for line in raw.splitlines():
+        if not line:
+            continue
+
+        if line.startswith("?? "):
+            untracked.append(line[3:])
+            continue
+
+        index_status = line[0]
+        worktree_status = line[1]
+        path = line[3:]
+
+        if index_status != " ":
+            staged.append(path)
+
+        if worktree_status != " ":
+            unstaged.append(path)
+
+    return {
+        "raw": lines(raw),
+        "staged_paths": staged,
+        "unstaged_paths": unstaged,
+        "untracked_paths": untracked,
+        "staged_count": len(staged),
+        "unstaged_count": len(unstaged),
+        "untracked_count": len(untracked),
+        "clean_worktree": len(unstaged) == 0 and len(untracked) == 0,
+    }
+
+
+def diff_check(*args: str) -> dict[str, Any]:
+    result = git("diff", *args, "--check", check=False)
+
+    return {
+        "passed": result.returncode == 0,
+        "exit_code": result.returncode,
+        "output": result.stdout + result.stderr,
+    }
+
+
+def staged_stat() -> str:
+    result = git("diff", "--cached", "--stat")
+    return result.stdout.strip()
+
+
+def discover_changes(root: pathlib.Path) -> list[str]:
+    changes_dir = root / "openspec" / "changes"
+
+    if not changes_dir.is_dir():
+        return []
+
+    result: list[str] = []
+
+    for child in sorted(changes_dir.iterdir()):
+        if not child.is_dir():
+            continue
+
+        if child.name == "archive":
+            continue
+
+        result.append(child.name)
+
+    return result
+
+
+def openspec_status(change: str) -> dict[str, Any]:
+    result = run(
+        "openspec",
+        "status",
+        "--change",
+        change,
+        "--json",
+        check=False,
+    )
+
+    parsed: Any = None
+
+    if result.returncode == 0:
+        try:
+            parsed = json.loads(result.stdout)
+        except json.JSONDecodeError:
+            parsed = None
+
+    return {
+        "change": change,
+        "command_passed": result.returncode == 0,
+        "exit_code": result.returncode,
+        "parsed": parsed,
+        "stdout": result.stdout.strip(),
+        "stderr": result.stderr.strip(),
+    }
+
+
+def openspec_validate(change: str) -> dict[str, Any]:
+    result = run(
+        "openspec",
+        "validate",
+        change,
+        "--strict",
+        check=False,
+    )
+
+    return {
+        "passed": result.returncode == 0,
+        "exit_code": result.returncode,
+        "output": (result.stdout + result.stderr).strip(),
+    }
+
+
+def main() -> None:
+    root = detect_repo_root()
+
+    head = git("rev-parse", "HEAD").stdout.strip()
+    branch = git(
+        "symbolic-ref",
+        "--short",
+        "-q",
+        "HEAD",
+        check=False,
+    ).stdout.strip()
+
+    status = parse_status()
+
+    change_names = discover_changes(root)
+
+    changes: list[dict[str, Any]] = []
+
+    for change in change_names:
+        changes.append(
+            {
+                "name": change,
+                "status": openspec_status(change),
+                "strict_validation": openspec_validate(change),
+            }
+        )
+
+    payload = {
+        "repository": {
+            "root": str(root),
+            "head": head,
+            "branch": branch or None,
+        },
+        "git": {
+            "status": status,
+            "cached_diff_check": diff_check("--cached"),
+            "unstaged_diff_check": diff_check(),
+            "cached_stat": staged_stat(),
+        },
+        "openspec": {
+            "active_change_count": len(change_names),
+            "active_changes": changes,
+        },
+    }
+
+    json.dump(
+        payload,
+        sys.stdout,
+        indent=2,
+        sort_keys=True,
+    )
+    sys.stdout.write("\n")
+
+
+if __name__ == "__main__":
+    main()

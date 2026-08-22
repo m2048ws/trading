@@ -67,4 +67,31 @@ class CrossGridArithmeticSuite extends ScalaCheckSuite:
 
       assertEquals(centValue.compareExact(threeCentValue, cents, threeCents), expected)
 
+  test("equivalence-aware comparison retains distinct static dimension spellings"):
+    val a = DimRef.atomic(AtomId("cross-grid-comparison:a"))
+    val b = DimRef.atomic(AtomId("cross-grid-comparison:b"))
+    type AB = Times[a.D, b.D]
+    type BA = Times[b.D, a.D]
+    val ab: DimRef[AB] = DimRef.times(a.dimension, b.dimension)
+    val ba: DimRef[BA] = DimRef.times(b.dimension, a.dimension)
+    val abGrid         = UniformGrid.create(
+      GridId("cross-grid-comparison:ab"),
+      GridVersion(1),
+      ab,
+      PositiveRational.exact(1, 10).toOption.get
+    )
+    val baGrid = UniformGrid.create(
+      GridId("cross-grid-comparison:ba"),
+      GridVersion(1),
+      ba,
+      PositiveRational.exact(1, 5).toOption.get
+    )
+    val left         = abGrid.fromCoordinate(2)
+    val equalRight   = baGrid.fromCoordinate(1)
+    val greaterRight = baGrid.fromCoordinate(2)
+
+    assert(left.exactlyEquals(equalRight, abGrid, baGrid))
+    assertEquals(left.compareExact(equalRight, abGrid, baGrid), 0)
+    assertEquals(left.compareExact(greaterRight, abGrid, baGrid), -1)
+
 end CrossGridArithmeticSuite

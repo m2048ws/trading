@@ -83,7 +83,7 @@ class RefinedOperationsSuite extends FunSuite:
     assertEquals(cents.coordinate(result.value.unrefined), BigInt(0))
     assertEquals(result.residual.coefficient, Rational(1, 1000))
 
-    val nonnegative = NonNegative(Quantity.zero[usd.D]).toOption.get
+    val nonnegative = NonNegative(Quantity.zero[usd.D](using usd.dimension)).toOption.get
     val nonnegativeResult: RefinedQuantization[NonNegative[GridQuantity[usd.D, cents.G]], usd.D] =
       nonnegative.quantizeTo(cents, QuantizationPolicy.Floor)
     val positiveGrid = Positive(cents.fromCoordinate(1)).toOption.get

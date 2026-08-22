@@ -1,0 +1,124 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "status",
+    "summary",
+    "review_task_completed",
+    "archive",
+    "decision_updates",
+    "validation",
+    "git",
+    "commit"
+  ],
+  "properties": {
+    "status": {
+      "type": "string",
+      "enum": [
+        "commit_ready",
+        "committed",
+        "blocked"
+      ]
+    },
+    "summary": {
+      "type": "string"
+    },
+    "review_task_completed": {
+      "type": "boolean"
+    },
+    "archive": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "completed",
+        "archived_location",
+        "canonical_specs_updated",
+        "unexpected_effects"
+      ],
+      "properties": {
+        "completed": {
+          "type": "boolean"
+        },
+        "archived_location": {
+          "type": "string"
+        },
+        "canonical_specs_updated": {
+          "type": "boolean"
+        },
+        "unexpected_effects": {
+          "type": "string"
+        }
+      }
+    },
+    "decision_updates": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "validation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "passed",
+        "summary"
+      ],
+      "properties": {
+        "passed": {
+          "type": "boolean"
+        },
+        "summary": {
+          "type": "string"
+        }
+      }
+    },
+    "git": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "head",
+        "staged",
+        "unstaged",
+        "untracked",
+        "diff_check_passed"
+      ],
+      "properties": {
+        "head": {
+          "type": "string"
+        },
+        "staged": {
+          "type": "boolean"
+        },
+        "unstaged": {
+          "type": "boolean"
+        },
+        "untracked": {
+          "type": "boolean"
+        },
+        "diff_check_passed": {
+          "type": "boolean"
+        }
+      }
+    },
+    "commit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "authorized",
+        "created",
+        "hash"
+      ],
+      "properties": {
+        "authorized": {
+          "type": "boolean"
+        },
+        "created": {
+          "type": "boolean"
+        },
+        "hash": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

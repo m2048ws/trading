@@ -1,0 +1,352 @@
+#!/usr/bin/env python3
+
+import json
+import pathlib
+import sys
+
+
+def usage() -> None:
+    print(
+        "Usage: validate-report <role> <report-json>",
+        file=sys.stderr,
+    )
+    raise SystemExit(2)
+
+
+if len(sys.argv) != 3:
+    usage()
+
+role = sys.argv[1]
+path = pathlib.Path(sys.argv[2])
+
+if role not in {"apply", "review", "remediate", "finalize"}:
+    print(f"Unknown role: {role}", file=sys.stderr)
+    raise SystemExit(2)
+
+try:
+    report = json.loads(path.read_text())
+except Exception as exc:
+    print(f"Invalid JSON report: {exc}", file=sys.stderr)
+    raise SystemExit(1)
+
+errors: list[str] = []
+
+
+def require(condition: bool, message: str) -> None:
+    if not condition:
+        errors.append(message)
+
+
+def nonempty(value: object) -> bool:
+    return isinstance(value, str) and bool(value.strip())
+
+
+if role == "apply":
+    status = report["status"]
+    validation = report["validation"]
+    openspec = report["openspec"]
+    git = report["git"]
+    conflict = report["design_conflict"]
+
+    # No worker in this workflow may create a commit.
+    require(
+        git["commit_created"] is False,
+        "apply worker reports that it created a commit",
+    )
+
+    if status == "ready_for_independent_review":
+        require(
+            validation["passed"] is True,
+            "apply READY requires validation.passed=true",
+        )
+        require(
+            openspec["independent_review_incomplete"] is True,
+            "apply READY requires independent review to remain incomplete",
+        )
+        require(
+            openspec["archived"] is False,
+            "apply READY requires the change to remain unarchived",
+        )
+        require(
+            git["staged"] is True,
+            "apply READY requires intended changes to be staged",
+        )
+        require(
+            git["unstaged"] is False,
+            "apply READY requires no unresolved unstaged changes",
+        )
+        require(
+            git["untracked"] is False,
+            "apply READY requires no unexpected untracked files",
+        )
+        require(
+            conflict is None,
+            "apply READY cannot also report a design conflict",
+        )
+
+    elif status == "design_conflict":
+        require(
+            conflict is not None,
+            "apply DESIGN_CONFLICT requires design_conflict details",
+        )
+        if conflict is not None:
+            require(
+                nonempty(conflict["question"]),
+                "design conflict requires a question",
+            )
+            require(
+                nonempty(conflict["reason"]),
+                "design conflict requires a reason",
+            )
+
+    elif status == "blocked":
+        require(
+            conflict is None,
+            "apply BLOCKED should not carry design_conflict details; "
+            "use status=design_conflict instead",
+        )
+
+
+elif role == "review":
+    verdict = report["verdict"]
+    findings = report["findings"]
+    validation = report["validation"]
+    openspec = report["openspec"]
+
+    # Review workers must always leave their review snapshot untouched.
+    require(
+        report["repository_unchanged"] is True,
+        "review worker reports repository_unchanged=false",
+    )
+
+    if verdict == "ready":
+        require(
+            len(findings) == 0,
+            "review READY requires findings=[]",
+        )
+        require(
+            validation["passed"] is True,
+            "review READY requires validation.passed=true",
+        )
+        require(
+            openspec["semantic_match"] is True,
+            "review READY requires OpenSpec semantics to match implementation",
+        )
+        require(
+            openspec["independent_review_is_sole_gate"] is True,
+            "review READY requires independent review to be the sole gate",
+        )
+
+    elif verdict == "blocked":
+        require(
+            len(findings) > 0,
+            "review BLOCKED requires at least one concrete finding",
+        )
+
+    seen_ids: set[str] = set()
+
+    for finding in findings:
+        finding_id = finding["id"]
+
+        require(
+            nonempty(finding_id),
+            "review finding has an empty id",
+        )
+        require(
+            finding_id not in seen_ids,
+            f"duplicate review finding id: {finding_id}",
+        )
+        seen_ids.add(finding_id)
+
+        require(
+            nonempty(finding["title"]),
+            f"{finding_id}: title is empty",
+        )
+        require(
+            nonempty(finding["reproduction"]),
+            f"{finding_id}: reproduction is empty",
+        )
+        require(
+            nonempty(finding["observed"]),
+            f"{finding_id}: observed behavior is empty",
+        )
+        require(
+            nonempty(finding["expected"]),
+            f"{finding_id}: expected behavior is empty",
+        )
+        require(
+            nonempty(finding["why_it_matters"]),
+            f"{finding_id}: why_it_matters is empty",
+        )
+        require(
+            nonempty(finding["smallest_remediation"]),
+            f"{finding_id}: smallest_remediation is empty",
+        )
+
+
+elif role == "remediate":
+    status = report["status"]
+    finding_results = report["finding_results"]
+    regressions = report["regressions"]
+    validation = report["validation"]
+    openspec = report["openspec"]
+    git = report["git"]
+    conflict = report["design_conflict"]
+
+    require(
+        git["commit_created"] is False,
+        "remediation worker reports that it created a commit",
+    )
+
+    if status == "ready_for_independent_review":
+        require(
+            len(finding_results) > 0,
+            "remediation READY requires at least one finding result",
+        )
+
+        for result in finding_results:
+            require(
+                result["reproduced_before"] is True,
+                f"{result['id']}: remediation READY but finding was not "
+                "reproduced before repair",
+            )
+            require(
+                result["closed_after"] is True,
+                f"{result['id']}: remediation READY but finding remains open",
+            )
+
+        require(
+            regressions["previous_obligations_preserved"] is True,
+            "remediation READY requires previous regressions to remain closed",
+        )
+        require(
+            validation["passed"] is True,
+            "remediation READY requires validation.passed=true",
+        )
+        require(
+            openspec["independent_review_incomplete"] is True,
+            "remediation READY requires independent review to remain incomplete",
+        )
+        require(
+            openspec["archived"] is False,
+            "remediation READY requires the change to remain unarchived",
+        )
+        require(
+            git["staged"] is True,
+            "remediation READY requires intended changes to be staged",
+        )
+        require(
+            git["unstaged"] is False,
+            "remediation READY requires no unresolved unstaged changes",
+        )
+        require(
+            git["untracked"] is False,
+            "remediation READY requires no unexpected untracked files",
+        )
+        require(
+            conflict is None,
+            "remediation READY cannot also report a design conflict",
+        )
+
+    elif status == "design_conflict":
+        require(
+            conflict is not None,
+            "remediation DESIGN_CONFLICT requires design_conflict details",
+        )
+        if conflict is not None:
+            require(
+                nonempty(conflict["question"]),
+                "design conflict requires a question",
+            )
+            require(
+                nonempty(conflict["reason"]),
+                "design conflict requires a reason",
+            )
+
+    elif status == "blocked":
+        require(
+            conflict is None,
+            "remediation BLOCKED should not carry design_conflict details; "
+            "use status=design_conflict instead",
+        )
+
+
+elif role == "finalize":
+    status = report["status"]
+    archive = report["archive"]
+    validation = report["validation"]
+    git = report["git"]
+    commit = report["commit"]
+
+    if status in {"commit_ready", "committed"}:
+        require(
+            report["review_task_completed"] is True,
+            f"finalize {status} requires review task completion",
+        )
+        require(
+            archive["completed"] is True,
+            f"finalize {status} requires archive.completed=true",
+        )
+        require(
+            archive["canonical_specs_updated"] is True,
+            f"finalize {status} requires canonical specs to be updated",
+        )
+        require(
+            validation["passed"] is True,
+            f"finalize {status} requires validation.passed=true",
+        )
+        require(
+            git["diff_check_passed"] is True,
+            f"finalize {status} requires clean Git diff checks",
+        )
+        require(
+            git["staged"] is True,
+            f"finalize {status} requires intended changes staged",
+        )
+        require(
+            git["unstaged"] is False,
+            f"finalize {status} requires no unexplained unstaged files",
+        )
+        require(
+            git["untracked"] is False,
+            f"finalize {status} requires no unexpected untracked files",
+        )
+
+    if status == "commit_ready":
+        require(
+            commit["created"] is False,
+            "COMMIT_READY cannot report that a commit was created",
+        )
+
+    elif status == "committed":
+        require(
+            commit["authorized"] is True,
+            "COMMITTED requires explicit commit authorization",
+        )
+        require(
+            commit["created"] is True,
+            "COMMITTED requires commit.created=true",
+        )
+        require(
+            nonempty(commit["hash"]),
+            "COMMITTED requires a nonempty commit hash",
+        )
+
+    elif status == "blocked":
+        # No further consistency requirement: the detailed summary identifies
+        # the failed finalization gate.
+        pass
+
+
+if errors:
+    print(
+        f"INVALID {role.upper()} REPORT",
+        file=sys.stderr,
+    )
+
+    for error in errors:
+        print(f"- {error}", file=sys.stderr)
+
+    raise SystemExit(1)
+
+print(f"VALID {role.upper()} REPORT")

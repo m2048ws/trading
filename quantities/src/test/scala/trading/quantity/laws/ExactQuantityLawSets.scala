@@ -151,7 +151,8 @@ final class GradedQuantityLaws[A <: Dimension, B <: Dimension, C <: Dimension](
   aDimension: DimRef[A],
   bDimension: DimRef[B],
   cDimension: DimRef[C]
-)(using Arbitrary[Rational])
+)(using
+  arbitrary: Arbitrary[Rational])
   extends Laws:
 
   private def quantity[D <: Dimension](d: DimRef[D], c: Rational): Quantity[D] =
@@ -160,10 +161,14 @@ final class GradedQuantityLaws[A <: Dimension, B <: Dimension, C <: Dimension](
   val gradedQuantity: RuleSet = new SimpleRuleSet(
     "graded quantity",
     "associativity with canonical dimension equivalence" -> forAll: (a: Rational, b: Rational, c: Rational) =>
-      val left           = quantity(aDimension, a) * quantity(bDimension, b) * quantity(cDimension, c)
-      val right          = quantity(aDimension, a) * (quantity(bDimension, b) * quantity(cDimension, c))
-      val leftDimension  = DimRef.times(DimRef.times(aDimension, bDimension), cDimension)
-      val rightDimension = DimRef.times(aDimension, DimRef.times(bDimension, cDimension))
+      val leftPair       = quantity(aDimension, a) * quantity(bDimension, b)
+      val rightPair      = quantity(bDimension, b) * quantity(cDimension, c)
+      val left           = leftPair * quantity(cDimension, c)
+      val right          = quantity(aDimension, a) * rightPair
+      val leftPairRef    = DimRef.times(aDimension, bDimension)
+      val rightPairRef   = DimRef.times(bDimension, cDimension)
+      val leftDimension  = DimRef.times(leftPairRef, cDimension)
+      val rightDimension = DimRef.times(aDimension, rightPairRef)
       val canonical      = SameDimension.between(leftDimension, rightDimension).nonEmpty
       Prop(canonical && left.coefficient == a * b * c && right.coefficient == a * (b * c))
     ,
@@ -205,10 +210,14 @@ final class RateLaws[A <: Dimension, B <: Dimension, C <: Dimension, D <: Dimens
   bDimension: DimRef[B],
   cDimension: DimRef[C],
   dDimension: DimRef[D]
-)(using Arbitrary[Rational])
+)(using arbitrary: Arbitrary[Rational])
   extends Laws:
 
-  private def rate[F <: Dimension, T <: Dimension](f: DimRef[F], t: DimRef[T], c: Rational): Rate[F, T] =
+  private def rate[F <: Dimension, T <: Dimension](
+    f: DimRef[F],
+    t: DimRef[T],
+    c: Rational
+  ): Rate[F, T] =
     Rate(f, t, c)
 
   val categoryShape: RuleSet = new SimpleRuleSet(
@@ -217,20 +226,26 @@ final class RateLaws[A <: Dimension, B <: Dimension, C <: Dimension, D <: Dimens
       val first  = rate(aDimension, bDimension, f)
       val second = rate(bDimension, cDimension, g)
       val third  = rate(cDimension, dDimension, h)
-      val left   = first.andThen(second).andThen(third)
-      val right  = first.andThen(second.andThen(third))
+      val ac     = first.andThen(second)
+      val bd     = second.andThen(third)
+      val left   = ac.andThen(third)
+      val right  = first.andThen(bd)
       Prop(left.coefficient == right.coefficient && left.coefficient == f * g * h)
     ,
     "left identity" -> forAll: (coefficient: Rational) =>
-      val value = rate(aDimension, bDimension, coefficient)
-      Prop(Rate.identity(aDimension).andThen(value).coefficient == coefficient)
+      val value    = rate(aDimension, bDimension, coefficient)
+      val identity = Rate.identity(aDimension)
+      Prop(identity.andThen(value).coefficient == coefficient)
     ,
     "right identity" -> forAll: (coefficient: Rational) =>
-      val value = rate(aDimension, bDimension, coefficient)
-      Prop(value.andThen(Rate.identity(bDimension)).coefficient == coefficient)
+      val value    = rate(aDimension, bDimension, coefficient)
+      val identity = Rate.identity(bDimension)
+      Prop(value.andThen(identity).coefficient == coefficient)
     ,
     "coefficient orientation" -> forAll: (f: Rational, g: Rational) =>
-      val composed = rate(aDimension, bDimension, f).andThen(rate(bDimension, cDimension, g))
+      val first    = rate(aDimension, bDimension, f)
+      val second   = rate(bDimension, cDimension, g)
+      val composed = first.andThen(second)
       Prop(composed.coefficient == f * g)
   )
 

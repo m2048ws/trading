@@ -18,7 +18,12 @@ final class Quantization[D <: Dimension, G] private (val value: GridQuantity[D, 
 /** Projects exact or grid quantities onto a target grid using an explicit [[QuantizationPolicy]]. */
 object Quantization:
 
-  def toGrid[D <: Dimension](t: GridRef[D])(v: Quantity[D], p: QuantizationPolicy): Quantization[D, t.G] =
+  def toGrid[D <: Dimension](
+    t: GridRef[D]
+  )(
+    v: Quantity[D],
+    p: QuantizationPolicy
+  ): Quantization[D, t.G] =
     val exactCoordinate    = v.coefficient.divideBy(t.quantum.asNonZero)
     val selectedCoordinate = p.roundCoordinate(exactCoordinate)
 
@@ -52,5 +57,9 @@ extension [D <: Dimension](v: Quantity[D])
 
 extension [D <: Dimension, G](v: GridQuantity[D, G])
 
-  def quantizeTo(g: GridRef.Grid[D, G], t: GridRef[D], p: QuantizationPolicy): Quantization[D, t.G] =
+  def quantizeTo(
+    g: GridRef.Grid[D, G],
+    t: GridRef[D],
+    p: QuantizationPolicy
+  ): Quantization[D, t.G] =
     Quantization.gridToGrid(g, t)(v, p)

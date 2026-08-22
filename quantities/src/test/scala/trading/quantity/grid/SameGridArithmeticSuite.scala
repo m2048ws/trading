@@ -48,7 +48,7 @@ class SameGridArithmeticSuite extends ScalaCheckSuite:
       val quantityValue =
         quantity:
           value
-      val zero = GridQuantity.zero[asset.D, grid.G]
+      val zero = GridQuantity.zero[asset.D, grid.G](using asset.dimension)
 
       assertEquals(grid.coordinate(zero), BigInt(0))
       assert:

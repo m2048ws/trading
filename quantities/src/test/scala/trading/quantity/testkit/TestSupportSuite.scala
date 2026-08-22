@@ -10,10 +10,10 @@ class TestSupportSuite extends ScalaCheckSuite:
   import CompileAssertions.*
   import ExactGenerators.*
 
-  private sealed trait UsdTag
-  private sealed trait BtcTag
-  private type Usd = Atom[UsdTag]
-  private type Btc = Atom[BtcTag]
+  private object UsdTag
+  private object BtcTag
+  private type Usd = Atom[UsdTag.type]
+  private type Btc = Atom[BtcTag.type]
 
   property("exact rational generators always produce canonical values"):
     forAll(rational): value =>
@@ -37,8 +37,7 @@ class TestSupportSuite extends ScalaCheckSuite:
     assertCompiles:
       """
       import trading.quantity.*
-      sealed trait AssetTag
-      type Asset = Atom[AssetTag]
+      type Asset = Atom["test-support:asset"]
       val key: DimensionKey = DimensionKey.atom(AtomId("asset"))
     """
 
@@ -46,8 +45,7 @@ class TestSupportSuite extends ScalaCheckSuite:
     assertDoesNotCompile:
       """
       import trading.quantity.*
-      sealed trait AssetTag
-      type Asset = Atom[AssetTag]
+      type Asset = Atom["test-support:asset"]
       val value: Quantity[Asset] = Rational.one
     """
 

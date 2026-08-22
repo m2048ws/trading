@@ -23,6 +23,7 @@ class GridQuantityDisciplineSuite extends TradingDisciplineSuite:
     asset.dimension,
     PositiveRational.exact(1, 100).toOption.get
   )
+  private given DimRef[asset.D] = asset.dimension
 
   private given Arbitrary[GridQuantity[asset.D, grid.G]] =
     ExactGenerators.arbitraryGridQuantity(grid)

@@ -33,17 +33,20 @@ class RuntimeEvidenceSuite extends FunSuite:
             "evidence-usd"
         .toOption
         .get
-    val evidence                      = RuntimeEvidence.sameDimension(left, right).toOption.get
-    val leftValue                     = Quantity(left.dimension.asDimensionRef, 10)
-    val rightValue: Quantity[right.D] =
-      evidence.coerceQuantity:
-        leftValue
+    val leftToRight                    = RuntimeEvidence.sameDimension(left, right).toOption.get
+    val rightToLeft                    = RuntimeEvidence.sameDimension(right, left).toOption.get
+    val leftValue                      = Quantity(left.dimension.asDimensionRef, 10)
+    val rightValue: Quantity[right.D]  = leftValue.alignTo[right.D](using leftToRight)
+    val alignedRight: Quantity[left.D] =
+      Quantity(right.dimension.asDimensionRef, 5).alignTo[left.D](using rightToLeft)
+    val sum: Quantity[left.D] = leftValue + alignedRight
 
     assertEquals(
       rightValue.coefficient,
       Rational:
         10
     )
+    assertEquals(sum.coefficient, Rational(15))
 
   test("same-dimension evidence rejects distinct canonical assets"):
     val registry = new QuantityRegistry
@@ -237,9 +240,7 @@ class RuntimeEvidenceSuite extends FunSuite:
         .get
     val evidence                    = RuntimeEvidence.sameDimension(left, right).toOption.get
     val source                      = Quantity(left.dimension.asDimensionRef, Rational(3, 2))
-    val restored: Quantity[right.D] =
-      evidence.coerceQuantity:
-        source
+    val restored: Quantity[right.D] = source.alignTo[right.D](using evidence)
 
     assertEquals(restored.coefficient, Rational(3, 2))
 

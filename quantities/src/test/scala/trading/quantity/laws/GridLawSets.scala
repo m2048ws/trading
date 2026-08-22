@@ -88,7 +88,10 @@ end GridEmbeddingLaws
  *
  * Expected success and coordinates use independent numerator/denominator divisibility arithmetic.
  */
-final class ExactNarrowingLaws[D <: Dimension, G](grid: GridRef.Grid[D, G])(using Arbitrary[Rational]) extends Laws:
+final class ExactNarrowingLaws[D <: Dimension, G](
+  grid: GridRef.Grid[D, G]
+)(using Arbitrary[Rational])
+  extends Laws:
 
   private def independentCoordinate(c: Rational): Option[BigInt] =
     val quantum           = grid.quantum.unrefined

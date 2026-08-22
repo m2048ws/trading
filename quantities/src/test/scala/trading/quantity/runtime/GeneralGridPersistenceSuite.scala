@@ -98,6 +98,7 @@ class GeneralGridPersistenceSuite extends FunSuite:
           6_000_001
       )
     val resolved = PackedGridQuantity.decode(packed, registry).toOption.get
+    val moved    = resolved.value + resolved.value
 
     assertEquals(resolved.dimension.dimension.key, priceKey)
     assertEquals(
@@ -108,6 +109,7 @@ class GeneralGridPersistenceSuite extends FunSuite:
       BigInt:
         6_000_001
     )
+    assertEquals(resolved.grid.coordinate(moved), BigInt(12_000_002))
 
   test("general decoding scopes a repeated grid ID by canonical dimension") {
     val registry = new QuantityRegistry

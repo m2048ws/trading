@@ -176,7 +176,57 @@ class PackageSpoofBoundarySuite extends FunSuite:
     assertRejected:
       """
       import trading.quantity.*
-      val forged = new SameDimension[One, One]
+      val forged = new SameDimension[One, One] {}
+      """
+
+  test("core package spoofing cannot implement the closed grammar or removed normalization proof"):
+    assertRejected:
+      """
+      import trading.quantity.*
+      val forged = new Power["package-spoof", 1] {}
+      """
+    assertRejected:
+      """
+      import trading.quantity.*
+      type Entry = Power["package-spoof", 1]
+      val forged = new Dim[Entry *: EmptyTuple] {}
+      """
+    assertRejected:
+      """
+      import trading.quantity.*
+      val forged = new Normalize[One]:
+        type Out = One
+      """
+
+  test("core package spoofing cannot extend the closed dimension universe"):
+    assertRejected:
+      """
+      import trading.quantity.*
+      val forged = new Dimension {}
+      """
+
+  test("removed associated-output normalization cannot be named"):
+    assertRejected:
+      """
+      import trading.quantity.*
+      type A = Atom["selected-output"]
+      type Wrong = Dim[Power["selected-output", 2] *: EmptyTuple]
+      val forged: Normalize.Aux[A, Wrong] = Normalize.derived[A]
+      """
+
+  test("core package spoofing cannot forge normalized results or obtain unequal conversions"):
+    assertRejected:
+      """
+      import trading.quantity.*
+      type Normalized = Dim[Power["normalized", 1] *: EmptyTuple]
+      val forged: Quantity[Normalized] = Rational.one
+      """
+    assertRejected:
+      """
+      import trading.quantity.*
+      type A = Atom["conversion:A"]
+      type B = Atom["conversion:B"]
+      summon[Conversion[Quantity[A], Quantity[B]]]
       """
 
   test("core package spoofing cannot invoke refinement evidence constructors"):

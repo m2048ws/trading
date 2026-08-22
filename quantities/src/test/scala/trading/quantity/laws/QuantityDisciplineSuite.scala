@@ -17,7 +17,8 @@ import trading.quantity.testkit.ExactGenerators.given
 import trading.quantity.testkit.TestAsset
 
 class QuantityDisciplineSuite extends TradingDisciplineSuite:
-  private val asset = TestAsset.runtime(AssetId("quantity-discipline"))
+  private val asset             = TestAsset.runtime(AssetId("quantity-discipline"))
+  private given DimRef[asset.D] = asset.dimension
 
   private given Arbitrary[Quantity[asset.D]]              = ExactGenerators.arbitraryQuantity(asset.dimension)
   private given Cogen[Quantity[asset.D]]                  = ExactGenerators.cogenQuantity

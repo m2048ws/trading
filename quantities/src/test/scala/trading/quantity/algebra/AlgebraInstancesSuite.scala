@@ -20,6 +20,7 @@ class AlgebraInstancesSuite extends FunSuite:
     usd.dimension,
     PositiveRational.exact(1, 100).toOption.get
   )
+  private given DimRef[usd.D] = usd.dimension
 
   test("one strongest exact scalar and quantity instance supplies every supported supertype"):
     import exactQuantityAlgebra.given
@@ -108,14 +109,58 @@ class AlgebraInstancesSuite extends FunSuite:
     assertEquals(cents.coordinate(gridLeft + gridRight), directGrid)
     assertEquals(NonZero(Rational.zero), Left(ExpectedNonZero))
 
+  test("optional imports preserve expression results and explicit dimension evidence"):
+    val btc                     = trading.quantity.testkit.TestAsset.runtime(AssetId("BTC-algebra-normalization-suite"))
+    val amount                  = Quantity(btc.dimension, Rational(1, 10))
+    val usdPerBtc               = Rate(btc.dimension, usd.dimension, Rational(6000001, 100))
+    val direct: Quantity[usd.D] = amount.applyRate(usdPerBtc)
+    val gridValue               = cents.fromCoordinate(7)
+
+    import dimensionAlgebra.given
+    import exactOrders.given
+    import exactQuantityAlgebra.given
+    import exactScalarAlgebra.given
+    import gridQuantityAlgebra.given
+    import nonZeroRationalMultiplicative.given
+    import refinedAdditive.given
+
+    val _                         = summon[MultiplicativeCommutativeGroup[DimensionKey]]
+    val _                         = summon[Order[Rational]]
+    val _                         = summon[VectorSpace[Quantity[usd.D], Rational]]
+    val _                         = summon[ExactScalarField[Rational]]
+    val _                         = summon[MultiplicativeCommutativeGroup[NonZero[Rational]]]
+    val _                         = summon[AdditiveCommutativeMonoid[NonNegative[Quantity[usd.D]]]]
+    val imported: Quantity[usd.D] = amount.applyRate(usdPerBtc)
+
+    val a = DimRef.atomic(AtomId("algebra-evidence-a"))
+    val b = DimRef.atomic(AtomId("algebra-evidence-b"))
+    type AB = Times[a.D, b.D]
+    val ab: Quantity[AB] = Quantity(DimRef.times(a.dimension, b.dimension), Rational(2))
+    val ba               = Quantity(DimRef.times(b.dimension, a.dimension), Rational(3))
+    val staticSum        = ab + ba.alignTo[AB]
+
+    val runtimeLeft  = DimRef.atomic(AtomId("algebra-checked-evidence"))
+    val runtimeRight = DimRef.atomic(AtomId("algebra-checked-evidence"))
+    val checked      = SameDimension.between(runtimeRight.dimension, runtimeLeft.dimension).get
+    val alignedRight = Quantity(runtimeRight.dimension, 5).alignTo[runtimeLeft.D](using checked)
+    val checkedSum   = Quantity(runtimeLeft.dimension, 4) + alignedRight
+
+    val gridModule = summon[LeftModule[GridQuantity[usd.D, cents.G], BigInt]]
+
+    assertEquals(imported.coefficient, direct.coefficient)
+    assertEquals(imported.coefficient, Rational(6000001, 1000))
+    assertEquals(staticSum.coefficient, Rational(5))
+    assertEquals(checkedSum.coefficient, Rational(9))
+    assertEquals(cents.coordinate(gridModule.timesl(BigInt(3), gridValue)), BigInt(21))
+    assertEquals(cents.coordinate(gridValue + gridValue), BigInt(14))
+
   test("instances are absent without their documented opt-in imports"):
     assertDoesNotCompile:
       """
       import trading.quantity.*
       import algebra.ring.AdditiveCommutativeGroup
-      sealed trait DTag
       sealed trait GTag
-      type D = Atom[DTag]
+      type D = Atom["algebra:no-import"]
       type G = GTag
       summon[AdditiveCommutativeGroup[GridQuantity[D, G]]]
       """
@@ -124,6 +169,34 @@ class AlgebraInstancesSuite extends FunSuite:
       import trading.quantity.*
       import cats.kernel.Order
       summon[Order[Rational]]
+      """
+
+  test("combine-only refined semigroups are generic while identity-bearing structures remain gated"):
+    assertCompiles:
+      """
+      import _root_.algebra.ring.AdditiveCommutativeSemigroup
+      import trading.quantity.*
+      import trading.quantity.algebra.refinedAdditive.given
+      import trading.quantity.refinement.*
+
+      def quantity[D <: Dimension] = summon[AdditiveCommutativeSemigroup[Positive[Quantity[D]]]]
+      def grid[D <: Dimension, G] = summon[AdditiveCommutativeSemigroup[Positive[GridQuantity[D, G]]]]
+      """
+    assertDoesNotCompile:
+      """
+      import trading.quantity.*
+      import trading.quantity.algebra.*
+      import trading.quantity.algebra.exactQuantityAlgebra.given
+
+      def identity[D <: Dimension] = summon[VectorSpace[Quantity[D], Rational]]
+      """
+    assertDoesNotCompile:
+      """
+      import trading.quantity.*
+      import trading.quantity.algebra.*
+      import trading.quantity.algebra.gridQuantityAlgebra.given
+
+      def identity[D <: Dimension, G] = summon[LeftModule[GridQuantity[D, G], BigInt]]
       """
 
   test("unsupported rings, fields, numerics, categories, and refined groups remain absent"):
@@ -139,16 +212,14 @@ class AlgebraInstancesSuite extends FunSuite:
       import trading.quantity.*
       import trading.quantity.algebra.exactQuantityAlgebra.given
       import algebra.ring.Ring
-      sealed trait DTag
-      type D = Atom[DTag]
+      type D = Atom["algebra:ring"]
       summon[Ring[Quantity[D]]]
       """
     assertDoesNotCompile:
       """
       import trading.quantity.*
       import trading.quantity.algebra.exactQuantityAlgebra.given
-      sealed trait DTag
-      type D = Atom[DTag]
+      type D = Atom["algebra:numeric"]
       summon[Numeric[Quantity[D]]]
       """
     assertDoesNotCompile:
@@ -156,9 +227,8 @@ class AlgebraInstancesSuite extends FunSuite:
       import trading.quantity.*
       import trading.quantity.algebra.gridQuantityAlgebra.given
       import algebra.ring.Ring
-      sealed trait DTag
       sealed trait GTag
-      type D = Atom[DTag]
+      type D = Atom["algebra:grid-ring"]
       type G = GTag
       summon[Ring[GridQuantity[D, G]]]
       """
@@ -166,9 +236,8 @@ class AlgebraInstancesSuite extends FunSuite:
       """
       import trading.quantity.*
       import trading.quantity.algebra.gridQuantityAlgebra.given
-      sealed trait DTag
       sealed trait GTag
-      type D = Atom[DTag]
+      type D = Atom["algebra:grid-numeric"]
       type G = GTag
       summon[Numeric[GridQuantity[D, G]]]
       """
@@ -184,8 +253,7 @@ class AlgebraInstancesSuite extends FunSuite:
       import trading.quantity.refinement.*
       import trading.quantity.algebra.refinedAdditive.given
       import algebra.ring.AdditiveCommutativeGroup
-      sealed trait DTag
-      type D = Atom[DTag]
+      type D = Atom["algebra:refined-group"]
       summon[AdditiveCommutativeGroup[NonNegative[Quantity[D]]]]
       """
     assertDoesNotCompile:
@@ -194,8 +262,7 @@ class AlgebraInstancesSuite extends FunSuite:
       import trading.quantity.refinement.*
       import trading.quantity.algebra.refinedAdditive.given
       import algebra.ring.AdditiveCommutativeGroup
-      sealed trait DTag
-      type D = Atom[DTag]
+      type D = Atom["algebra:nonzero-group"]
       summon[AdditiveCommutativeGroup[NonZero[Quantity[D]]]]
       """
     assertDoesNotCompile:
@@ -203,8 +270,7 @@ class AlgebraInstancesSuite extends FunSuite:
       import trading.quantity.*
       import trading.quantity.refinement.*
       import trading.quantity.algebra.refinedAdditive.given
-      sealed trait DTag
-      type D = Atom[DTag]
+      type D = Atom["algebra:left-module"]
       summon[LeftModule[NonNegative[Quantity[D]], Rational]]
       """
     assertDoesNotCompile:

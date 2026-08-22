@@ -1,0 +1,74 @@
+#!/usr/bin/env python3
+
+import json
+import pathlib
+import re
+import sys
+
+
+def usage() -> None:
+    print(
+        "Usage: render-prompt <template-file> <context-json>",
+        file=sys.stderr,
+    )
+    raise SystemExit(2)
+
+
+if len(sys.argv) != 3:
+    usage()
+
+template_path = pathlib.Path(sys.argv[1])
+context_path = pathlib.Path(sys.argv[2])
+
+template = template_path.read_text()
+context = json.loads(context_path.read_text())
+
+pattern = re.compile(r"\{\{([A-Z0-9_]+)\}\}")
+
+missing: set[str] = set()
+
+
+def replacement(match: re.Match[str]) -> str:
+    key = match.group(1)
+
+    if key not in context:
+        missing.add(key)
+        return match.group(0)
+
+    value = context[key]
+
+    if value is None:
+        return "none"
+
+    if isinstance(value, str):
+        return value
+
+    if isinstance(value, list):
+        return "\n".join(str(item) for item in value)
+
+    if isinstance(value, dict):
+        return json.dumps(value, indent=2, sort_keys=True)
+
+    return str(value)
+
+
+rendered = pattern.sub(replacement, template)
+
+if missing:
+    print(
+        "Missing prompt context keys: "
+        + ", ".join(sorted(missing)),
+        file=sys.stderr,
+    )
+    raise SystemExit(1)
+
+remaining = sorted(set(pattern.findall(rendered)))
+if remaining:
+    print(
+        "Unresolved prompt placeholders: "
+        + ", ".join(remaining),
+        file=sys.stderr,
+    )
+    raise SystemExit(1)
+
+sys.stdout.write(rendered)

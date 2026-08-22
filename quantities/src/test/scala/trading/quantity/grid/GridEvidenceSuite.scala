@@ -72,6 +72,21 @@ class GridEvidenceSuite extends ScalaCheckSuite:
         123
     )
 
+  test("dimension evidence preserves grid identity and does not replace same-grid evidence"):
+    val leftDimension  = DimRef.atomic(AtomId("grid-dimension-evidence"))
+    val rightDimension = DimRef.atomic(AtomId("grid-dimension-evidence"))
+    val left    = UniformGrid.create(GridId("grid-dimension-left"), GridVersion(1), leftDimension.dimension, quantum)
+    val right   = UniformGrid.create(GridId("grid-dimension-right"), GridVersion(1), rightDimension.dimension, quantum)
+    val checked = SameDimension.between(leftDimension.dimension, rightDimension.dimension).get
+    val source  = left.fromCoordinate(9)
+    val aligned: GridQuantity[rightDimension.D, left.G] =
+      source.alignTo[rightDimension.D](using checked)
+    val reverse  = SameDimension.between(rightDimension.dimension, leftDimension.dimension).get
+    val restored = aligned.alignTo[leftDimension.D](using reverse)
+
+    assertEquals(left.coordinate(restored), BigInt(9))
+    assertEquals(SameGrid.between(left, right), Left(GridIdentityMismatch))
+
   test("equal quantum on different grids is numerical compatibility, not identity"):
     assertEquals(
       SameGrid.between(venueA, venueB),

@@ -1,8 +1,10 @@
 package trading.quantity.runtime
 
+import java.util.Objects
 import scala.collection.mutable
 
 import trading.quantity.AssetId
+import trading.quantity.Atom
 import trading.quantity.AtomId
 import trading.quantity.Dimension
 import trading.quantity.DimensionKey
@@ -68,7 +70,7 @@ end RegisteredGridRef
  */
 sealed trait DimensionWitness:
   /** Fresh static dimension represented by this runtime witness. */
-  type D <: Dimension
+  type D = Atom[this.type]
   def dimension: RegisteredDimensionRef[D]
 
 /** A resolved runtime asset identity paired with its registry-owned dimension witness. */
@@ -105,14 +107,14 @@ final class QuantityRegistry:
     val quantum: PositiveRational = asGridRef.quantum
 
   private final class InternedAssetRef(val id: AssetId, val dimensionAtom: AtomId) extends AssetRef:
-    val atomic = DimRef.atomic(dimensionAtom)
-    type D = atomic.D
-    val dimension: RegisteredDimensionRef[D] = new InternedRegisteredDimensionRef(atomic.dimension)
+    val dimension: RegisteredDimensionRef[D] =
+      val generated = DimRef.atomic(dimensionAtom)
+      new InternedRegisteredDimensionRef(generated.dimension.asInstanceOf[DimRef[D]])
 
   private final class InternedDimensionWitness(canonicalKey: DimensionKey) extends DimensionWitness:
-    val canonical = DimRef.fresh(canonicalKey)
-    type D = canonical.D
-    val dimension: RegisteredDimensionRef[D] = new InternedRegisteredDimensionRef(canonical.dimension)
+    val dimension: RegisteredDimensionRef[D] =
+      val generated = DimRef.fresh(canonicalKey)
+      new InternedRegisteredDimensionRef(generated.dimension.asInstanceOf[DimRef[D]])
 
   private val assets     = mutable.Map.empty[AssetId, (AtomId, AssetRef)]
   private val dimensions = mutable.Map.empty[DimensionKey, DimensionWitness]
@@ -126,11 +128,13 @@ final class QuantityRegistry:
 
   def registerAsset(d: AssetDefinition): Either[RegistryError, AssetRef] =
     synchronized:
-      assets.get(d.id) match
+      val assetId = Objects.requireNonNull(d.id, "asset ID")
+
+      assets.get(assetId) match
         case Some((existingAtom, witness)) if existingAtom == d.dimensionAtom =>
           Right(witness)
         case Some((existingAtom, _)) =>
-          Left(ConflictingAssetDefinition(d.id, existingAtom, d.dimensionAtom))
+          Left(ConflictingAssetDefinition(assetId, existingAtom, d.dimensionAtom))
         case None =>
           val dimensionKey = DimensionKey.atom(d.dimensionAtom)
 
@@ -138,8 +142,8 @@ final class QuantityRegistry:
             case Some(_) =>
               Left(ConflictingDimensionRegistration(dimensionKey))
             case None =>
-              val witness = new InternedAssetRef(d.id, d.dimensionAtom)
-              val _       = assets.put(d.id, d.dimensionAtom -> witness)
+              val witness = new InternedAssetRef(assetId, d.dimensionAtom)
+              val _       = assets.put(assetId, d.dimensionAtom -> witness)
               val _       = dimensions.put(witness.dimension.key, witness)
               Right(witness)
 

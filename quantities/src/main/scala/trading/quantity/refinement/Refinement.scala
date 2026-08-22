@@ -55,10 +55,10 @@ object NonNegative:
       v
 
   /** Additive identity for the closed nonnegative exact-quantity structure. */
-  def quantityZero[D <: Dimension]: NonNegative[Quantity[D]] = Quantity.zero
+  def quantityZero[D <: Dimension](using DimRef[D]): NonNegative[Quantity[D]] = Quantity.zero
 
   /** Additive identity for the closed nonnegative grid-quantity structure. */
-  def gridQuantityZero[D <: Dimension, G]: NonNegative[GridQuantity[D, G]] = GridQuantity.zero
+  def gridQuantityZero[D <: Dimension, G](using DimRef[D]): NonNegative[GridQuantity[D, G]] = GridQuantity.zero
 
   extension [D <: Dimension, G](v: NonNegative[GridQuantity[D, G]])
 

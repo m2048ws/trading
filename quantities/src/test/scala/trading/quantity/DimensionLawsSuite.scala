@@ -67,7 +67,7 @@ class DimensionLawsSuite extends ScalaCheckSuite:
 
       assert:
         evidence.nonEmpty
-      val coerced = evidence.get.coerceQuantity(original)
+      val coerced = original.alignTo[right.D](using evidence.get)
       assertEquals(coerced.coefficient, coefficient)
 
   property("same-dimension evidence is rejected for unequal canonical keys"):
@@ -82,5 +82,14 @@ class DimensionLawsSuite extends ScalaCheckSuite:
       val left  = DimRef.fresh(key)
       val right = DimRef.fresh(distinct)
       assertEquals(SameDimension.between(left.dimension, right.dimension), None)
+
+  test("checked core evidence explicitly aligns before additive arithmetic"):
+    val left                      = DimRef.atomic(AtomId("checked-local-addition"))
+    val right                     = DimRef.atomic(AtomId("checked-local-addition"))
+    val evidence                  = SameDimension.between(right.dimension, left.dimension).get
+    val aligned: Quantity[left.D] = Quantity(right.dimension, 3).alignTo[left.D](using evidence)
+
+    val sum: Quantity[left.D] = Quantity(left.dimension, 2) + aligned
+    assertEquals(sum.coefficient, Rational(5))
 
 end DimensionLawsSuite
