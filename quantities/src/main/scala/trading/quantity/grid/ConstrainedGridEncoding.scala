@@ -15,7 +15,6 @@ object ConstrainedGridEncoding:
     g: GridRef[D]
   )(
     v: Quantity[D]
-  )(using Normalize[D]
   ): Either[NotOnGrid[D], GridCoordinateEncoding] =
     GridConstraint
       .validate(g)(v)

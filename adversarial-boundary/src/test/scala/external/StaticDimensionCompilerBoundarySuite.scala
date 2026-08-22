@@ -49,11 +49,13 @@ class StaticDimensionCompilerBoundarySuite extends FunSuite:
     "ClosedDimensionCaller.scala",
     "DirectCrossRate.scala",
     "ExplicitEquivalentArithmetic.scala",
+    "ExpressionGeneric.scala",
     "GenericCapabilitySeparation.scala",
     "GenericDimensionPreserving.scala",
-    "NormalizeGeneric.scala",
-    "NormalizedUninhabitedZero.scala",
+    "HypotheticalMalformedTransformations.scala",
+    "LargeExpressionInterpretation.scala",
     "OpaqueRuntimeBigInt.scala",
+    "ResolvedDimensionMatch.scala",
     "SingletonDimensionKeys.scala",
     "StaticEquivalenceRetagging.scala"
   )
@@ -74,7 +76,7 @@ class StaticDimensionCompilerBoundarySuite extends FunSuite:
     ),
     NegativeFixture(
       "UnresolvedSingletonKeys.scala",
-      List("contextual Normalize evidence")
+      List("a Power key must be a concrete stable singleton identity")
     ),
     NegativeFixture(
       "InvalidCanonicalKeys.scala",
@@ -83,7 +85,7 @@ class StaticDimensionCompilerBoundarySuite extends FunSuite:
     ),
     NegativeFixture(
       "WidenedLiteralAtom.scala",
-      List("Cannot statically normalize the requested dimension", "WidenedLiteralAtom.K"),
+      List("a literal atom key must be a concrete string singleton identity"),
       minimumErrors = 2
     ),
     NegativeFixture(
@@ -92,14 +94,13 @@ class StaticDimensionCompilerBoundarySuite extends FunSuite:
       minimumErrors = 2
     ),
     NegativeFixture(
-      "NormalizationDoesNotInhabit.scala",
-      List("DimRef", "StaticOnlyKey"),
-      minimumErrors = 3
+      "ExplicitDimRefIsNotAmbient.scala",
+      List("No given instance", "DimRef[D]")
     ),
     NegativeFixture(
-      "DimRefDoesNotNormalize.scala",
-      List("Cannot statically normalize the requested dimension", "contextual Normalize evidence"),
-      minimumErrors = 3
+      "DirectSameDimensionRetagging.scala",
+      List("coerceQuantity", "coerceGrid", "is not a member"),
+      minimumErrors = 2
     ),
     NegativeFixture(
       "StaticEquivalenceNoRuntimeAuthority.scala",
@@ -107,33 +108,37 @@ class StaticDimensionCompilerBoundarySuite extends FunSuite:
       minimumErrors = 2
     ),
     NegativeFixture(
-      "MalformedDimensionPreservingArithmetic.scala",
-      List("Cannot statically normalize the requested dimension", "bad"),
+      "MalformedCarrierConstruction.scala",
+      List("No given instance", "construction:bad"),
       minimumErrors = 12
     ),
+    NegativeFixture("ValueDoesNotRevealAuthority.scala", List("No given instance", "key is not a member"),
+      minimumErrors = 5),
+    NegativeFixture("NullCarrierConstruction.scala", List("Found:", "Required:"), minimumErrors = 2),
     NegativeFixture(
-      "MalformedRefinementArithmetic.scala",
-      List("Cannot statically normalize the requested dimension", "refined:bad"),
-      minimumErrors = 7
-    ),
-    NegativeFixture(
-      "MalformedGridBoundaryArithmetic.scala",
-      List("Cannot statically normalize the requested dimension", "grid-boundary:bad"),
+      "PackageSpoofCarrierConstruction.scala",
+      List("fromCoefficient", "fromCoordinate", "Normalize", "sealed trait DimRef"),
       minimumErrors = 6
     ),
+    NegativeFixture("DecodedCarrierCannotSelectMalformedIndex.scala", List("Found:", "Required:")),
     NegativeFixture(
-      "MalformedDimensionAlgebra.scala",
-      List("Normalize", "algebra:bad"),
+      "RemovedExplicitNormalizationArguments.scala",
+      List("does not take more parameters"),
       minimumErrors = 4
     ),
     NegativeFixture(
-      "StaticExponentOverflow.scala",
-      List("outside the singleton Int range"),
-      minimumErrors = 2
+      "MalformedDimensionAlgebra.scala",
+      List("No given instance", "algebra:bad"),
+      minimumErrors = 3
+    ),
+    NegativeFixture(
+      "AmbiguousDimensionAuthority.scala",
+      List("ambiguous", "DimRef"),
+      minimumErrors = 5
     ),
     NegativeFixture(
       "StaticEvidenceForgery.scala",
-      List("sealed trait Normalize")
+      List("Normalize")
     ),
     NegativeFixture(
       "SameDimensionForgery.scala",
@@ -149,13 +154,8 @@ class StaticDimensionCompilerBoundarySuite extends FunSuite:
     ),
     NegativeFixture(
       "ContradictoryNominalAuthority.scala",
-      List("None of the overloaded alternatives of method atom", "match arguments"),
+      List("Found:", "Required:"),
       minimumErrors = 2
-    ),
-    NegativeFixture(
-      "MalformedEndpointArithmetic.scala",
-      List("Cannot statically normalize the requested dimension", "endpoint:bad"),
-      minimumErrors = 4
     ),
     NegativeFixture(
       "UnresolvedTupleTail.scala",
@@ -172,8 +172,8 @@ class StaticDimensionCompilerBoundarySuite extends FunSuite:
       minimumErrors = 4
     ),
     NegativeFixture(
-      "StaticExponentUnderflow.scala",
-      List("static exponent -2147483649 is outside the singleton Int range")
+      "RecursiveDimensionPath.scala",
+      List("outside the closed static grammar")
     ),
     NegativeFixture(
       "RemovedLegacyStaticApi.scala",
@@ -279,6 +279,8 @@ end StaticDimensionCompilerBoundarySuite
 private val commonForbiddenDiagnostics = List(
   "Exception occurred while executing macro expansion",
   "CyclicReference",
+  "illegal cyclic type reference",
+  "caught cyclic reference",
   "See full stack trace",
   "at dotty.tools"
 )

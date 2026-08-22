@@ -3,45 +3,20 @@ package trading.quantity
 import scala.annotation.implicitNotFound
 import scala.quoted.*
 
-/** One concrete stable singleton-key atom and its nonzero literal exponent in a canonical static dimension. */
+/** One concrete stable singleton-key atom and its nonzero literal `Int` exponent in a declared canonical dimension. */
 sealed trait Power[Key <: Singleton, Exponent <: Int]
 
 /**
- * Certifies that `D` belongs to the closed static dimension grammar and computes its canonical [[Dim]] as `Out`.
- *
- * This capability is only static-language authority. It neither constructs nor implies a [[DimRef]] or [[DimensionKey]]
- * for `D` or `Out`; some accepted stable singleton keys intentionally have no public runtime witness.
- */
-@implicitNotFound(
-  "Cannot statically normalize the requested dimension; generic code must accept and forward contextual Normalize evidence"
-)
-sealed trait Normalize[D <: Dimension] extends Serializable:
-  type Out <: Dimension
-
-object Normalize:
-  type Aux[D <: Dimension, O <: Dimension] = Normalize[D] { type Out = O }
-
-  transparent inline given derived[D <: Dimension]: Normalize[D] =
-    ${ StaticDimensionMacros.normalize[D] }
-
-end Normalize
-
-/**
- * Restricted evidence that two dimension types denote the same dimension and may be retagged through the operations on
- * this capability.
+ * Restricted evidence that two dimension types denote the same dimension and may authorize explicit `alignTo`
+ * operations on dimensional values.
  *
  * Reflexive evidence is ordinary Scala type identity and does not certify that either type belongs to the closed static
  * grammar. Non-reflexive static derivation validates both complete representations; runtime recovery issues the same
- * capability only after authoritative [[DimensionKey]] equality. Evidence alone provides neither a [[Normalize]] nor a
- * [[DimRef]] and exposes no runtime key.
+ * capability only after authoritative [[DimensionKey]] equality. Evidence alone provides no [[DimRef]] and exposes no
+ * runtime key.
  */
 @implicitNotFound("The requested dimensions are not equivalent; provide checked SameDimension evidence")
-sealed trait SameDimension[A <: Dimension, B <: Dimension]:
-  def coerceQuantity(v: Quantity[A]): Quantity[B] =
-    v.asInstanceOf[Quantity[B]]
-
-  def coerceGrid[G](v: GridQuantity[A, G]): GridQuantity[B, G] =
-    v.asInstanceOf[GridQuantity[B, G]]
+sealed trait SameDimension[A <: Dimension, B <: Dimension]
 
 object SameDimension:
   /** Scala type identity is safe without certifying a manually named canonical representation. */
@@ -61,22 +36,10 @@ end SameDimension
 /** Atomic quoted implementation for the closed static-dimension grammar. */
 private object StaticDimensionMacros:
 
-  def normalize[D <: Dimension: Type](using Quotes): Expr[Normalize[D]] =
-    val engine = new Engine
-    val out    = engine.canonicalDimension(engine.normalize(engine.typeOf[D]))
-
-    out.asType match
-      case '[dimension] =>
-        '{
-          new Normalize[D]:
-            type Out = dimension & Dimension
-        }
-      case _ => quotes.reflect.report.errorAndAbort("Internal static-dimension materialization failed")
-
   def sameDimension[A <: Dimension: Type, B <: Dimension: Type](using Quotes): Expr[SameDimension[A, B]] =
     val engine = new Engine
-    val left   = engine.validateEntries(engine.normalize(engine.typeOf[A]))
-    val right  = engine.validateEntries(engine.normalize(engine.typeOf[B]))
+    val left   = engine.interpret(engine.typeOf[A])
+    val right  = engine.interpret(engine.typeOf[B])
 
     if !engine.equivalent(left, right) then
       quotes.reflect.report.errorAndAbort("The dimensions do not have equivalent canonical powers")
@@ -99,10 +62,7 @@ private object StaticDimensionMacros:
     private val powerConstructor     = constructorOf(TypeRepr.of[Power["static-dimension-probe", 1]])
     private val tupleConsConstructor = constructorOf(TypeRepr.of[Int *: EmptyTuple])
 
-    private val minimumInt = BigInt(Int.MinValue)
-    private val maximumInt = BigInt(Int.MaxValue)
-
-    def normalize(raw: TypeRepr): List[Entry] =
+    def interpret(raw: TypeRepr): List[Entry] =
       combine(flatten(raw, BigInt(1)))
 
     private def flatten(raw: TypeRepr, sign: BigInt): List[Entry] =
@@ -134,25 +94,6 @@ private object StaticDimensionMacros:
     def equivalent(left: List[Entry], right: List[Entry]): Boolean =
       left.size == right.size && left.forall: entry =>
         right.exists(candidate => candidate.exponent == entry.exponent && candidate.key =:= entry.key)
-
-    def validateEntries(entries: List[Entry]): List[Entry] =
-      val parsed = parseTuple(tupleFrom(entries))
-      if !sameSequence(entries, parsed) then
-        invalid("final validation did not reproduce the computed canonical entries")
-      parsed
-
-    def canonicalDimension(entries: List[Entry]): TypeRepr =
-      val validated = validateEntries(entries)
-      val result    = AppliedType(dimConstructor, List(tupleFrom(validated)))
-
-      result match
-        case AppliedType(constructor, List(tuple)) if sameConstructor(constructor, dimConstructor) =>
-          val reparsed = parseTuple(tuple)
-          if !sameSequence(validated, reparsed) then
-            invalid("the emitted Dim does not match its independently validated entries")
-        case _ => invalid("the emitted result is not a canonical Dim")
-
-      result
 
     private def parseTuple(raw: TypeRepr): List[Entry] =
       def loop(value: TypeRepr, seen: List[TypeRepr]): List[Entry] =
@@ -196,23 +137,7 @@ private object StaticDimensionMacros:
         case _ => invalid(concreteKeyRequirement)
 
     private val concreteKeyRequirement =
-      "a Power key must be a concrete stable singleton identity; generic code must accept and forward contextual " +
-        "Normalize evidence"
-
-    private def tupleFrom(entries: List[Entry]): TypeRepr =
-      entries.foldRight(emptyTupleType): (entry, tail) =>
-        val power = AppliedType(powerConstructor, List(entry.key, exponentType(entry.exponent)))
-        AppliedType(tupleConsConstructor, List(power, tail))
-
-    private def exponentType(value: BigInt): TypeRepr =
-      if value == 0 then invalid("zero exponents cannot survive canonical normalization")
-      if value < minimumInt || value > maximumInt then
-        invalid(s"static exponent $value is outside the singleton Int range")
-      ConstantType(IntConstant(value.toInt))
-
-    private def sameSequence(left: List[Entry], right: List[Entry]): Boolean =
-      left.size == right.size && left.zip(right).forall: (l, r) =>
-        l.exponent == r.exponent && l.key =:= r.key
+      "a Power key must be a concrete stable singleton identity"
 
     private def constructorOf(raw: TypeRepr): TypeRepr =
       raw.dealias match

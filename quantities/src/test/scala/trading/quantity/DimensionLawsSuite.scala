@@ -67,7 +67,7 @@ class DimensionLawsSuite extends ScalaCheckSuite:
 
       assert:
         evidence.nonEmpty
-      val coerced = evidence.get.coerceQuantity(original)
+      val coerced = original.alignTo[right.D](using evidence.get)
       assertEquals(coerced.coefficient, coefficient)
 
   property("same-dimension evidence is rejected for unequal canonical keys"):

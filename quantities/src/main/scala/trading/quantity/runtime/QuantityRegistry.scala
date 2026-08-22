@@ -1,5 +1,6 @@
 package trading.quantity.runtime
 
+import java.util.Objects
 import scala.collection.mutable
 
 import trading.quantity.AssetId
@@ -127,11 +128,13 @@ final class QuantityRegistry:
 
   def registerAsset(d: AssetDefinition): Either[RegistryError, AssetRef] =
     synchronized:
-      assets.get(d.id) match
+      val assetId = Objects.requireNonNull(d.id, "asset ID")
+
+      assets.get(assetId) match
         case Some((existingAtom, witness)) if existingAtom == d.dimensionAtom =>
           Right(witness)
         case Some((existingAtom, _)) =>
-          Left(ConflictingAssetDefinition(d.id, existingAtom, d.dimensionAtom))
+          Left(ConflictingAssetDefinition(assetId, existingAtom, d.dimensionAtom))
         case None =>
           val dimensionKey = DimensionKey.atom(d.dimensionAtom)
 
@@ -139,8 +142,8 @@ final class QuantityRegistry:
             case Some(_) =>
               Left(ConflictingDimensionRegistration(dimensionKey))
             case None =>
-              val witness = new InternedAssetRef(d.id, d.dimensionAtom)
-              val _       = assets.put(d.id, d.dimensionAtom -> witness)
+              val witness = new InternedAssetRef(assetId, d.dimensionAtom)
+              val _       = assets.put(assetId, d.dimensionAtom -> witness)
               val _       = dimensions.put(witness.dimension.key, witness)
               Right(witness)
 

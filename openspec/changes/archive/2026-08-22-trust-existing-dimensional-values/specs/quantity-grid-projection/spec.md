@@ -45,23 +45,28 @@ their source and target grid witnesses; selecting the checked target dimension o
 ### Requirement: Operations that leave a grid
 Cross-grid addition and subtraction SHALL accept `GridQuantity[D, G]` and `GridQuantity[D, H]` with one exact shared
 Scala dimension type `D`, SHALL return `Quantity[D]`, and SHALL require neither `Normalize[D]` nor `SameDimension`.
-Operands whose static dimension types differ SHALL first be explicitly aligned. Exact whole-scalar division SHALL
-preserve `D` without normalization. Grid-by-grid multiplication and mixed grid/exact multiplication SHALL return
-unrestricted exact quantities whose static dimensions are the simplified algebraic products of their operand
-dimensions. Grid quantity division by `NonZero[Quantity[B]]` SHALL return the corresponding simplified exact quotient.
-Rate application SHALL return an unrestricted exact quantity with the mathematically correct simplified dimension. A
-grid divisor SHALL be canonically embedded before applying the generic nonzero check. Operations that compute a new
-dimension SHALL use the same complete-expression normalization as ordinary `Quantity` arithmetic and SHALL NOT retain a
-separate grid-specific dimension algebra.
+They SHALL NOT consume `SameDimension` to align operands whose static dimension types differ. `GridQuantity.alignTo`
+SHALL align only the value's phantom dimension and SHALL NOT manufacture an aligned `GridRef`. Therefore, when different
+grid witnesses use equivalent but distinct static dimension types, callers SHALL embed each value through its original
+grid witness, align one resulting exact `Quantity` to the selected result dimension, and use exact-type `Quantity`
+addition or subtraction instead of `addExact` or `subtractExact`. Exact whole-scalar division SHALL preserve `D` without
+normalization. Grid-by-grid multiplication and mixed grid/exact multiplication SHALL return unrestricted exact
+quantities whose static dimensions are the simplified algebraic products of their operand dimensions. Grid quantity
+division by `NonZero[Quantity[B]]` SHALL return the corresponding simplified exact quotient. Rate application SHALL
+return an unrestricted exact quantity with the mathematically correct simplified dimension. A grid divisor SHALL be
+canonically embedded before applying the generic nonzero check. Operations that compute a new dimension SHALL use the
+same complete-expression normalization as ordinary `Quantity` arithmetic and SHALL NOT retain a separate grid-specific
+dimension algebra.
 
 #### Scenario: Add distinct grids
 - **WHEN** cent and three-cent values with the exact static dimension type USD are added
 - **THEN** the result is `Quantity[USD]` with the exact coefficient and no contextual dimension evidence
 
-#### Scenario: Align before cross-grid addition
+#### Scenario: Embed before cross-spelling addition
 - **WHEN** values on different grids have equivalent dimensions represented by different Scala dimension types
-- **THEN** direct cross-grid addition and subtraction do not compile until one grid quantity is explicitly aligned to the
-  selected result dimension
+- **THEN** direct `addExact` and `subtractExact` do not compile, including after aligning only a grid quantity while its
+  original grid witness retains the source dimension, and the supported route is to embed through each original grid,
+  align one resulting exact quantity, and use exact-type quantity addition or subtraction without `Normalize`
 
 #### Scenario: Exact-divide a grid value by a whole scalar
 - **WHEN** an existing grid quantity is canonically embedded and exact-divided by a nonzero whole scalar

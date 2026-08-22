@@ -13,10 +13,10 @@ object UnsupportedDimensionShapes:
     case _   => B
 
   // OFFENDING-BEGIN
-  val refined = Normalize.derived[Refined]
-  val intersected = Normalize.derived[Intersected]
-  val unioned = Normalize.derived[Unioned]
-  def unresolvedMatch[D <: Dimension] = Normalize.derived[Selected[D]]
+  val refined = SameDimension.derived[Refined, One]
+  val intersected = SameDimension.derived[Intersected, One]
+  val unioned = SameDimension.derived[Unioned, One]
+  def unresolvedMatch[D <: Dimension] = SameDimension.derived[Selected[D], One]
   // OFFENDING-END
 
 end UnsupportedDimensionShapes

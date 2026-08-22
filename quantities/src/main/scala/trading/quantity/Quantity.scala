@@ -1,6 +1,7 @@
 package trading.quantity
 
 import java.math.BigDecimal
+import java.util.Objects
 import scala.annotation.targetName
 
 import trading.quantity.GridRef.Grid
@@ -12,8 +13,8 @@ import trading.quantity.refinement.*
  * The opaque representation prevents a raw scalar from being mistaken for a dimensional value, while `D` prevents
  * incompatible quantities from being combined. A value stores only its exact coefficient and carries no [[DimRef]] or
  * [[DimensionKey]] that callers can recover. Public constructors that attach caller-supplied coefficients require an
- * authoritative `DimRef[D]`; [[Quantity.zero]] instead requires only [[Normalize]] and therefore remains available for
- * normalized dimensions with no public runtime witness.
+ * authoritative `DimRef[D]`. Every normally returned value therefore has an authoritative construction path, while
+ * operations that transform trusted carriers require no repeated dimension capability.
  */
 opaque type Quantity[D <: Dimension] = Rational
 
@@ -23,9 +24,9 @@ object Quantity:
   /** Maximum absolute Java BigDecimal scale accepted by the eager exact constructor. */
   val MaximumFiniteDecimalScaleMagnitude: Int = 1_000_000
 
-  def zero[D <: Dimension](using valid: Normalize[D]): Quantity[D] =
-    val _ = valid
-    Rational.zero
+  def zero[D <: Dimension](using dimension: DimRef[D]): Quantity[D] =
+    val _ = dimension.key
+    fromCoefficient(Rational.zero)
 
   def apply[D <: Dimension](dimension: DimRef[D], coefficient: Rational): Quantity[D] =
     val _ = dimension.key
@@ -65,38 +66,22 @@ object Quantity:
     BigInt(10).pow(scaleMagnitude)
 
   private def fromCoefficient[D <: Dimension](coefficient: Rational): Quantity[D] =
-    coefficient
+    Objects.requireNonNull(coefficient, "quantity coefficient")
 
-  private def add[D <: Dimension](
-    l: Quantity[D],
-    r: Quantity[D]
-  )(using
-    valid: Normalize[D]
-  ): Quantity[D] =
-    val _ = valid
-    l.coefficient + r.coefficient
+  private def add[D <: Dimension](l: Quantity[D], r: Quantity[D]): Quantity[D] =
+    fromCoefficient(l.coefficient + r.coefficient)
 
-  private def subtract[D <: Dimension](
-    l: Quantity[D],
-    r: Quantity[D]
-  )(using
-    valid: Normalize[D]
-  ): Quantity[D] =
-    val _ = valid
-    l.coefficient - r.coefficient
+  private def subtract[D <: Dimension](l: Quantity[D], r: Quantity[D]): Quantity[D] =
+    fromCoefficient(l.coefficient - r.coefficient)
 
-  private def scale[D <: Dimension](v: Quantity[D], s: Rational)(using valid: Normalize[D]): Quantity[D] =
-    val _ = valid
-    v.coefficient * s
+  private def scale[D <: Dimension](v: Quantity[D], s: Rational): Quantity[D] =
+    fromCoefficient(v.coefficient * s)
 
   private def multiply[A <: Dimension, B <: Dimension](
     l: Quantity[A],
     r: Quantity[B]
-  )(using
-    operation: Normalize[Times[A, B]]
-  ): Quantity[operation.Out] =
-    val _ = operation
-    l.coefficient * r.coefficient
+  ): Quantity[Times[A, B]] =
+    fromCoefficient(l.coefficient * r.coefficient)
 
   private def convert[F <: Dimension, T <: Dimension](
     v: Quantity[F],
@@ -116,17 +101,17 @@ object Quantity:
   ): Rate[A, C] =
     fromCoefficient(quotient(numerator.coefficient, denominator.unrefined.coefficient))
 
+  private def reciprocal[A <: Dimension, B <: Dimension](rate: NonZero[Rate[A, B]]): Rate[B, A] =
+    fromCoefficient(quotient(Rational.one, rate.unrefined.coefficient))
+
   private def quotient(l: Rational, r: Rational): Rational =
     Rational(l.numerator * r.denominator, l.denominator * r.numerator)
 
   private def divide[D <: Dimension, E <: Dimension](
     v: Quantity[D],
     d: NonZero[Quantity[E]]
-  )(using
-    operation: Normalize[Divide[D, E]]
-  ): Quantity[operation.Out] =
-    val _ = operation
-    quotient(v.coefficient, d.unrefined.coefficient)
+  ): Quantity[Divide[D, E]] =
+    fromCoefficient(quotient(v.coefficient, d.unrefined.coefficient))
 
   private def ratio[D <: Dimension](
     v: Quantity[D],
@@ -134,9 +119,8 @@ object Quantity:
   ): Ratio =
     fromCoefficient(quotient(v.coefficient, d.unrefined.coefficient))
 
-  private def exactDivide[D <: Dimension](v: Quantity[D], d: NonZeroWhole)(using valid: Normalize[D]): Quantity[D] =
-    val _ = valid
-    quotient(v.coefficient, Rational(d.unrefined))
+  private def exactDivide[D <: Dimension](v: Quantity[D], d: NonZeroWhole): Quantity[D] =
+    fromCoefficient(quotient(v.coefficient, Rational(d.unrefined)))
 
   extension [D <: Dimension](v: Quantity[D])
 
@@ -145,57 +129,47 @@ object Quantity:
 
     /** Explicitly align this value to an equivalent static dimension spelling without changing its coefficient. */
     def alignTo[Target <: Dimension](using same: SameDimension[D, Target]): Quantity[Target] =
-      same.coerceQuantity(v)
+      val _ = Objects.requireNonNull(same, "same dimension evidence")
+      v.asInstanceOf[Quantity[Target]]
 
-    def +(r: Quantity[D])(using Normalize[D]): Quantity[D] =
+    def +(r: Quantity[D]): Quantity[D] =
       add(v, r)
 
-    def -(r: Quantity[D])(using Normalize[D]): Quantity[D] =
+    def -(r: Quantity[D]): Quantity[D] =
       subtract(v, r)
 
     @targetName("scaleQuantityByRational")
-    def *(s: Rational)(using Normalize[D]): Quantity[D] =
+    def *(s: Rational): Quantity[D] =
       scale(v, s)
 
     @targetName("multiplyQuantities")
     def *[E <: Dimension](
       r: Quantity[E]
-    )(using operation: Normalize[Times[D, E]]
-    ): Quantity[operation.Out] =
+    ): Quantity[Times[D, E]] =
       multiply(v, r)
 
     def multiplyExact[E <: Dimension, G](
       r: GridQuantity[E, G],
       g: Grid[E, G]
-    )(using
-      operation: Normalize[Times[D, E]]
-    ): Quantity[operation.Out] =
+    ): Quantity[Times[D, E]] =
       v * g.asQuantity(r)
 
     def applyRate[E <: Dimension](
       r: Rate[D, E]
-    )(using
-      operation: Normalize[Times[D, Divide[E, D]]]
     ): Quantity[E] =
-      val _ = operation
       convert(v, r)
 
     def divideBy[E <: Dimension](
       d: NonZero[Quantity[E]]
-    )(using
-      operation: Normalize[Divide[D, E]]
-    ): Quantity[operation.Out] =
+    ): Quantity[Divide[D, E]] =
       divide(v, d)
 
     def ratioTo(
       d: NonZero[Quantity[D]]
-    )(using
-      operation: Normalize[Divide[D, D]]
     ): Ratio =
-      val _ = operation
       ratio(v, d)
 
-    def exactDivideBy(d: NonZeroWhole)(using Normalize[D]): Quantity[D] =
+    def exactDivideBy(d: NonZeroWhole): Quantity[D] =
       exactDivide(v, d)
 
   end extension
@@ -203,19 +177,18 @@ object Quantity:
   extension [A <: Dimension, B <: Dimension](f: Rate[A, B])
     def andThen[C <: Dimension](
       s: Rate[B, C]
-    )(using
-      operation: Normalize[Times[Divide[B, A], Divide[C, B]]]
     ): Rate[A, C] =
-      val _ = operation
       compose(f, s)
 
     /** Divide rates with a common target and expose the remaining endpoint orientation directly. */
     def crossRate[C <: Dimension](
       denominator: NonZero[Rate[C, B]]
-    )(using
-      operation: Normalize[Divide[Divide[B, A], Divide[B, C]]]
     ): Rate[A, C] =
-      val _ = operation
       cross(f, denominator)
+
+  extension [A <: Dimension, B <: Dimension](rate: NonZero[Rate[A, B]])
+    /** Return the exact checked reciprocal with its endpoint orientation reversed. */
+    def reciprocalRate: Rate[B, A] =
+      reciprocal(rate)
 
 end Quantity

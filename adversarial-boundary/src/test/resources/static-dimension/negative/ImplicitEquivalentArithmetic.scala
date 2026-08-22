@@ -7,8 +7,8 @@ object ImplicitEquivalentArithmetic:
   val a = DimRef.atomic(AtomId("implicit-equivalent:a"))
   val b = DimRef.atomic(AtomId("implicit-equivalent:b"))
 
-  type AB = Dim[Power[a.type, 1] *: Power[b.type, 1] *: EmptyTuple]
-  type BA = Dim[Power[b.type, 1] *: Power[a.type, 1] *: EmptyTuple]
+  type AB = Times[a.D, b.D]
+  type BA = Times[b.D, a.D]
 
   val ab: DimRef[AB] = DimRef.times(a.dimension, b.dimension)
   val ba: DimRef[BA] = DimRef.times(b.dimension, a.dimension)

@@ -1,5 +1,7 @@
 package trading.quantity
 
+import java.util.Objects
+
 /**
  * Canonical value used to identify a dimension at runtime.
  *
@@ -7,6 +9,10 @@ package trading.quantity
  * evidence; use a [[DimRef]] or [[trading.quantity.runtime.QuantityRegistry]] to bring it into type-safe operations.
  */
 final class DimensionKey private (val powers: Vector[(AtomId, BigInt)]):
+  powers.foreach: (atom, power) =>
+    val _ = Objects.requireNonNull(atom, "dimension key atom ID")
+    val _ = Objects.requireNonNull(power, "dimension key power")
+
   require(powers.forall(_._2 != 0), "dimension key cannot contain zero powers")
   require(powers == powers.sortBy(_._1.value), "dimension key powers must be sorted")
   require(powers.map(_._1).distinct.size == powers.size, "dimension key cannot contain duplicate atoms")
@@ -32,7 +38,12 @@ object DimensionKey:
     new DimensionKey(Vector(id -> BigInt(1)))
 
   def apply(powers: Iterable[(AtomId, BigInt)]): DimensionKey =
-    val normalized = powers.groupMapReduce(_._1)(_._2)(_ + _).filter(_._2 != 0).toVector.sortBy(_._1.value)
+    val raw = powers.toVector
+    raw.foreach: (atom, power) =>
+      val _ = Objects.requireNonNull(atom, "dimension key atom ID")
+      val _ = Objects.requireNonNull(power, "dimension key power")
+
+    val normalized = raw.groupMapReduce(_._1)(_._2)(_ + _).filter(_._2 != 0).toVector.sortBy(_._1.value)
 
     new DimensionKey(normalized)
 

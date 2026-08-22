@@ -1,12 +1,13 @@
 package trading.quantity
 
+import java.util.Objects
+import scala.quoted.*
+
 /**
  * Authoritative public association between an inhabited dimension type `D` and one canonical runtime key.
  *
  * Runtime authority is a single-valued partial-domain mapping: all supported public witnesses for the same exact atom
- * type have the same [[DimensionKey]], while a statically available [[Normalize]] does not imply that a `DimRef`
- * exists. Conversely, generic code possessing a `DimRef[D]` must still accept and forward `Normalize[D]` when static
- * arithmetic requires it.
+ * type have the same [[DimensionKey]]. Private static interpretation does not imply that a `DimRef` exists.
  *
  * @tparam D the represented dimension
  */
@@ -33,9 +34,9 @@ sealed trait AtomicDimensionRef extends SomeDimensionRef:
  * operations to them.
  *
  * Root constructors bind the static type and runtime identity at one boundary; callers cannot select them
- * independently. Each algebra operation uses one complete [[Normalize]] result for its static output and the matching
- * [[DimensionKey]] operation on authoritative inputs. Algebraically equal expressions can remain different Scala types;
- * [[SameDimension]] witnesses their equality after their canonical keys agree.
+ * independently. Algebra operations preserve their public expression types and apply the matching [[DimensionKey]]
+ * operation to authoritative inputs. Algebraically equal expressions can remain different Scala types;
+ * [[SameDimension]] witnesses their equality.
  */
 object DimRef:
 
@@ -45,12 +46,13 @@ object DimRef:
    * Extend this class with an `object`, then pass that object to [[DimRef.atom]]. The final constructor-owned
    * [[AtomId]] prevents the same singleton type from being associated with contradictory runtime keys.
    */
-  abstract class NominalAtom protected (final val atomId: AtomId) extends JavaSerializationUnsupported
+  abstract class NominalAtom protected (id: AtomId) extends JavaSerializationUnsupported:
+    final val atomId: AtomId = Objects.requireNonNull(id, "nominal atom ID")
 
   private final class Canonical[D <: Dimension](val key: DimensionKey) extends DimRef[D]
 
   private def canonical[D <: Dimension](k: DimensionKey): DimRef[D] =
-    new Canonical[D](k)
+    new Canonical[D](Objects.requireNonNull(k, "dimension key"))
 
   private final class Fresh(canonicalKey: DimensionKey) extends SomeDimensionRef:
     val dimension: DimRef[D] = canonical[D](canonicalKey)
@@ -69,22 +71,34 @@ object DimRef:
   /**
    * Creates an authoritative atom whose compile-time and runtime identities are the same validated literal string.
    *
-   * `Normalize[Atom[K]]` rejects caller-selected broad singleton types even when a caller supplies `ValueOf[K]`.
+   * The inline constructor derives the runtime atom ID from the same concrete literal type and rejects caller-selected
+   * broad singleton types even when a caller supplies `ValueOf[K]`.
    */
-  def atom[K <: String & Singleton](
-    using
-    key: ValueOf[K],
-    valid: Normalize[Atom[K]]
-  ): DimRef[Atom[K]] =
-    val _ = valid
-    canonical(DimensionKey.atom(AtomId(key.value)))
+  transparent inline def atom[K <: String & Singleton](using inline key: ValueOf[K]): DimRef[Atom[K]] =
+    ${ literalAtom[K]('key) }
+
+  private def literalAtom[K <: String & Singleton: Type](
+    key: Expr[ValueOf[K]]
+  )(using
+    quotes: Quotes
+  ): Expr[DimRef[Atom[K]]] =
+    import quotes.reflect.*
+
+    TypeRepr.of[K].dealias match
+      case ConstantType(StringConstant(value)) =>
+        '{
+          val _ = $key
+          canonical[Atom[K]](DimensionKey.atom(AtomId(${ Expr(value) })))
+        }
+      case _ =>
+        report.errorAndAbort(
+          "Invalid canonical static dimension: a literal atom key must be a concrete string singleton identity"
+        )
 
   /** Creates an authoritative atom keyed by the supplied stable nominal value's exact singleton identity. */
   def atom(
     key: NominalAtom & Singleton
-  )(using valid: Normalize[Atom[key.type]]
   ): DimRef[Atom[key.type]] =
-    val _ = valid
     canonical(DimensionKey.atom(key.atomId))
 
   def one: DimRef[One] =
@@ -93,26 +107,18 @@ object DimRef:
   def times[A <: Dimension, B <: Dimension](
     l: DimRef[A],
     r: DimRef[B]
-  )(using
-    operation: Normalize[Times[A, B]]
-  ): DimRef[operation.Out] =
-    val _ = operation
-    canonical[operation.Out](DimensionKey.multiply(l.key, r.key))
+  ): DimRef[Times[A, B]] =
+    canonical[Times[A, B]](DimensionKey.multiply(l.key, r.key))
 
   def inverse[A <: Dimension](
     v: DimRef[A]
-  )(using operation: Normalize[Inverse[A]]
-  ): DimRef[operation.Out] =
-    val _ = operation
-    canonical[operation.Out](DimensionKey.inverse(v.key))
+  ): DimRef[Inverse[A]] =
+    canonical[Inverse[A]](DimensionKey.inverse(v.key))
 
   def divide[A <: Dimension, B <: Dimension](
     n: DimRef[A],
     d: DimRef[B]
-  )(using
-    operation: Normalize[Divide[A, B]]
-  ): DimRef[operation.Out] =
-    val _ = operation
-    canonical[operation.Out](DimensionKey.multiply(n.key, DimensionKey.inverse(d.key)))
+  ): DimRef[Divide[A, B]] =
+    canonical[Divide[A, B]](DimensionKey.multiply(n.key, DimensionKey.inverse(d.key)))
 
 end DimRef

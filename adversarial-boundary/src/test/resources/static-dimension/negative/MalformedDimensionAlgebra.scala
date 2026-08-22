@@ -14,7 +14,6 @@ object MalformedDimensionAlgebra:
   sealed trait G
 
   // OFFENDING-BEGIN
-  val validity = summon[Normalize[Bad]]
   val vector = summon[VectorSpace[Quantity[Bad], Rational]]
   val module = summon[LeftModule[GridQuantity[Bad, G], BigInt]]
   val monoid = summon[AdditiveCommutativeMonoid[NonNegative[Quantity[Bad]]]]

@@ -51,7 +51,7 @@ object Allocation:
 extension [D <: Dimension, G](v: GridQuantity[D, G])
 
   /** Euclidean coordinate division using the matching grid witness for safe inspection and reconstruction. */
-  def quotRemBy(d: PositiveWhole, g: GridRef.Grid[D, G])(using Normalize[D]): QuotRem[GridQuantity[D, G]] =
+  def quotRemBy(d: PositiveWhole, g: GridRef.Grid[D, G]): QuotRem[GridQuantity[D, G]] =
     val (truncatedQuotient, truncatedRemainder) = g.coordinate(v) /% d.unrefined
 
     val (quotient, remainder) =
@@ -67,7 +67,6 @@ extension [D <: Dimension, G](v: GridQuantity[D, G])
     n: PositiveInt,
     o: RemainderOrder,
     g: GridRef.Grid[D, G]
-  )(using Normalize[D]
   ): Allocation[GridQuantity[D, G]] =
     val split           = v.quotRemBy(n.toPositiveWhole, g)
     val baseCoordinate  = g.coordinate(split.quotient)

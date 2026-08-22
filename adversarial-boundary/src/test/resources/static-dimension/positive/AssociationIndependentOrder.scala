@@ -8,9 +8,6 @@ object AssociationIndependentOrder:
 
   type LeftAssociated  = Times[Times[A, Inverse[A]], Times[B, A]]
   type RightAssociated = Times[A, Times[Inverse[A], Times[B, A]]]
-  type Expected = Dim[Power["association:A", 1] *: Power["association:B", 1] *: EmptyTuple]
-
-  val left: Normalize.Aux[LeftAssociated, Expected] = Normalize.derived[LeftAssociated]
-  val right: Normalize.Aux[RightAssociated, Expected] = Normalize.derived[RightAssociated]
+  val equivalent: SameDimension[LeftAssociated, RightAssociated] = summon
 
 end AssociationIndependentOrder

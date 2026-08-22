@@ -7,8 +7,8 @@ object AbstractExponent:
   type NonLiteral = Dim[Power["exponent:nonliteral", Int] *: EmptyTuple]
 
   // OFFENDING-BEGIN
-  def abstractExponent[E <: Int] = Normalize.derived[Abstract[E]]
-  val nonLiteral = Normalize.derived[NonLiteral]
+  def abstractExponent[E <: Int] = SameDimension.derived[Abstract[E], One]
+  val nonLiteral = SameDimension.derived[NonLiteral, One]
   // OFFENDING-END
 
 end AbstractExponent

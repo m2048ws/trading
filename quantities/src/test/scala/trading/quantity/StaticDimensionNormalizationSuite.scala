@@ -4,6 +4,8 @@ import scala.annotation.StaticAnnotation
 
 import munit.FunSuite
 
+import trading.quantity.refinement.ExpectedNonZero
+import trading.quantity.refinement.NonZero
 import trading.quantity.testkit.CompileAssertions.*
 
 class StaticDimensionNormalizationSuite extends FunSuite:
@@ -22,198 +24,109 @@ class StaticDimensionNormalizationSuite extends FunSuite:
 
   final class Marker extends StaticAnnotation
 
-  test("atoms and identity are canonical Dim aliases"):
+  test("atoms and identity remain declared canonical Dim aliases"):
     assertSameType[A, Dim[Power["static:A", 1] *: EmptyTuple]]
     assertSameType[One, Dim[EmptyTuple]]
 
-    val atomNormalization = Normalize.derived[A]
-    val oneNormalization  = Normalize.derived[One]
+  test("private interpretation proves association, commutation, cancellation, and tuple permutation"):
+    type LeftAssociated  = Times[Times[A, B], C]
+    type RightAssociated = Times[A, Times[C, B]]
+    type Cancelled       = Times[Times[A, B], Inverse[Times[B, A]]]
+    type Ordered         = Dim[Power["static:A", 1] *: Power["static:B", -2] *: EmptyTuple]
+    type Permuted        = Dim[Power["static:B", -2] *: Power["static:A", 1] *: EmptyTuple]
 
-    assertSameType[atomNormalization.Out, A]
-    assertSameType[oneNormalization.Out, One]
+    assert(summon[SameDimension[LeftAssociated, RightAssociated]].ne(null))
+    assert(summon[SameDimension[Cancelled, One]].ne(null))
+    assert(summon[SameDimension[Ordered, Permuted]].ne(null))
 
-  test("product normalization preserves first occurrence order"):
-    val normalized = Normalize.derived[Times[A, Times[B, C]]]
-
-    assertSameType[
-      normalized.Out,
-      Dim[Power["static:A", 1] *: Power["static:B", 1] *: Power["static:C", 1] *: EmptyTuple]
-    ]
-
-  test("first-occurrence order is global and independent of Times association"):
-    type LeftAssociated  = Times[Times[A, Inverse[A]], Times[B, A]]
-    type RightAssociated = Times[A, Times[Inverse[A], Times[B, A]]]
-    type Expected        = Dim[Power["static:A", 1] *: Power["static:B", 1] *: EmptyTuple]
-
-    val left: Normalize.Aux[LeftAssociated, Expected]   = Normalize.derived[LeftAssociated]
-    val right: Normalize.Aux[RightAssociated, Expected] = Normalize.derived[RightAssociated]
-
-    assertSameType[left.Out, right.Out]
-
-  test("normalization merges powers and removes exact zero"):
-    type A2 = Dim[Power["static:A", 2] *: EmptyTuple]
-
-    val reduced   = Normalize.derived[Times[A2, Inverse[A]]]
-    val cancelled = Normalize.derived[Times[A2, Inverse[A2]]]
-
-    assertSameType[reduced.Out, A]
-    assertSameType[cancelled.Out, One]
-
-  test("inverse negates every literal exponent exactly"):
-    type Input    = Dim[Power["static:A", 2] *: Power["static:B", -3] *: EmptyTuple]
-    type Expected = Dim[Power["static:A", -2] *: Power["static:B", 3] *: EmptyTuple]
-
-    val normalized = Normalize.derived[Inverse[Input]]
-    assertSameType[normalized.Out, Expected]
-
-  test("transparent aliases and annotations do not define identities"):
+  test("transparent aliases and annotations have the underlying interpretation"):
     type Product   = Times[A, B]
-    type Annotated = Product @Marker
+    type Alias     = Product
+    type Annotated = Alias @Marker
 
-    val direct    = Normalize.derived[Product]
-    val annotated = Normalize.derived[Annotated]
+    assert(summon[SameDimension[Product, Annotated]].ne(null))
 
-    assertSameType[direct.Out, annotated.Out]
+  test("private interpretation compares out-of-Int accumulated powers exactly"):
+    type Maximum = Dim[Power["static:boundary", 2147483647] *: EmptyTuple]
+    type Left    = Times[Maximum, Atom["static:boundary"]]
+    type Right   = Times[Atom["static:boundary"], Maximum]
+    type Reduced = Times[Left, Inverse[Maximum]]
 
-  test("SameDimension compares canonical entries modulo permutation"):
-    val same = summon[SameDimension[Times[A, B], Times[B, A]]]
-    assert(same.ne(null))
+    assert(summon[SameDimension[Left, Right]].ne(null))
+    assert(summon[SameDimension[Reduced, Atom["static:boundary"]]].ne(null))
 
-  test("DimRef identity, product, inverse, quotient, cancellation, and association agree with runtime keys"):
-    type AB       = Dim[Power["static:A", 1] *: Power["static:B", 1] *: EmptyTuple]
-    type ABC      = Dim[Power["static:A", 1] *: Power["static:B", 1] *: Power["static:C", 1] *: EmptyTuple]
-    type AInverse = Dim[Power["static:A", -1] *: EmptyTuple]
-    type APerB    = Dim[Power["static:A", 1] *: Power["static:B", -1] *: EmptyTuple]
-
-    val identity: DimRef[One]         = DimRef.one
-    val leftIdentity: DimRef[A]       = DimRef.times(identity, a)
-    val product: DimRef[AB]           = DimRef.times(a, b)
-    val inverse: DimRef[AInverse]     = DimRef.inverse(a)
-    val quotient: DimRef[APerB]       = DimRef.divide(a, b)
-    val cancelled: DimRef[A]          = DimRef.times(product, DimRef.inverse(b))
-    val leftAssociated: DimRef[ABC]   = DimRef.times(DimRef.times(a, b), c)
-    val rightAssociated: DimRef[ABC]  = DimRef.times(a, DimRef.times(b, c))
-    val quotientIdentity: DimRef[One] = DimRef.divide(a, a)
+  test("DimRef expression algebra agrees exactly with runtime DimensionKey algebra"):
+    val identity: DimRef[One]                = DimRef.one
+    val product: DimRef[Times[A, B]]         = DimRef.times(a, b)
+    val inverse: DimRef[Inverse[A]]          = DimRef.inverse(a)
+    val quotient: DimRef[Divide[A, B]]       = DimRef.divide(a, b)
+    val left: DimRef[Times[Times[A, B], C]]  = DimRef.times(product, c)
+    val right: DimRef[Times[A, Times[B, C]]] = DimRef.times(a, DimRef.times(b, c))
 
     assertEquals(identity.key, DimensionKey.one)
-    assertEquals(leftIdentity.key, DimensionKey.multiply(DimensionKey.one, a.key))
     assertEquals(product.key, DimensionKey.multiply(a.key, b.key))
     assertEquals(inverse.key, DimensionKey.inverse(a.key))
     assertEquals(quotient.key, DimensionKey.multiply(a.key, DimensionKey.inverse(b.key)))
-    assertEquals(cancelled.key, DimensionKey.multiply(product.key, DimensionKey.inverse(b.key)))
-    assertEquals(cancelled.key, a.key)
-    assertEquals(leftAssociated.key, DimensionKey.multiply(DimensionKey.multiply(a.key, b.key), c.key))
-    assertEquals(rightAssociated.key, DimensionKey.multiply(a.key, DimensionKey.multiply(b.key, c.key)))
-    assertEquals(leftAssociated.key, rightAssociated.key)
-    assertEquals(quotientIdentity.key, DimensionKey.one)
+    assertEquals(left.key, right.key)
+    assert(summon[SameDimension[Times[Times[A, B], C], Times[A, Times[B, C]]]].ne(null))
 
-  test("generative and fresh witnesses expose concrete singleton-key atoms"):
-    val generated = DimRef.atomic(AtomId("static:generated"))
-    val fresh     = DimRef.fresh(DimensionKey.atom(AtomId("static:fresh")))
-
-    type Generated2   = Dim[Power[generated.type, 2] *: EmptyTuple]
-    type FreshInverse = Dim[Power[fresh.type, -1] *: EmptyTuple]
-
-    val squared: DimRef[Generated2]    = DimRef.times(generated.dimension, generated.dimension)
-    val inverted: DimRef[FreshInverse] = DimRef.inverse(fresh.dimension)
-
-    assertEquals(squared.key, DimensionKey(List(AtomId("static:generated") -> BigInt(2))))
-    assertEquals(inverted.key, DimensionKey(List(AtomId("static:fresh") -> BigInt(-1))))
-
-  test("nominal singleton keys own one authoritative runtime atom"):
-    val first: DimRef[Nominal]  = DimRef.atom(NominalKey)
-    val second: DimRef[Nominal] = DimRef.atom(NominalKey)
-
-    assertEquals(first.key, DimensionKey.atom(NominalKey.atomId))
-    assertEquals(second.key, first.key)
-
-  test("every supported repeated static atom key has one runtime identity"):
-    val oneFirst: DimRef[One]                = DimRef.one
-    val oneSecond: DimRef[One]               = DimRef.one
-    val literalFirst: DimRef[A]              = DimRef.atom["static:A"]
-    val literalSecond: DimRef[A]             = DimRef.atom["static:A"]
-    val nominalFirst: DimRef[Nominal]        = DimRef.atom(NominalKey)
-    val nominalSecond: DimRef[Nominal]       = DimRef.atom(NominalKey)
-    val generated                            = DimRef.atomic(AtomId("static:authority-generated"))
-    val generatedFirst: DimRef[generated.D]  = generated.dimension
-    val generatedSecond: DimRef[generated.D] = generated.dimension
-    val fresh                                = DimRef.fresh(DimensionKey.atom(AtomId("static:authority-fresh")))
-    val freshFirst: DimRef[fresh.D]          = fresh.dimension
-    val freshSecond: DimRef[fresh.D]         = fresh.dimension
-
-    assertEquals(oneFirst.key, oneSecond.key)
-    assertEquals(literalFirst.key, literalSecond.key)
-    assertEquals(nominalFirst.key, nominalSecond.key)
-    assertEquals(generatedFirst.key, generatedSecond.key)
-    assertEquals(freshFirst.key, freshSecond.key)
-    assert(SameDimension.between(oneFirst, oneSecond).nonEmpty)
-    assert(SameDimension.between(literalFirst, literalSecond).nonEmpty)
-    assert(SameDimension.between(nominalFirst, nominalSecond).nonEmpty)
-    assert(SameDimension.between(generatedFirst, generatedSecond).nonEmpty)
-    assert(SameDimension.between(freshFirst, freshSecond).nonEmpty)
-
-  test("distinct nominal identities have distinct static paths and runtime keys"):
-    val first: DimRef[Nominal]       = DimRef.atom(NominalKey)
-    val second: DimRef[OtherNominal] = DimRef.atom(OtherNominalKey)
-
-    assertNotEquals(first.key, second.key)
-    assertEquals(SameDimension.between(first, second), None)
-
-  test("opaque runtime witnesses preserve exponents outside the static Int range"):
-    val exponent = BigInt(Int.MaxValue) + 1
-    val runtime  = DimRef.fresh(DimensionKey(List(AtomId("static:runtime-bigint") -> exponent)))
-    val inverse  = DimRef.inverse(runtime.dimension)
+  test("runtime witness algebra preserves arbitrary-precision powers and cancellation"):
+    val exponent  = BigInt(Int.MaxValue) + 1
+    val runtime   = DimRef.fresh(DimensionKey(List(AtomId("static:runtime-bigint") -> exponent)))
+    val inverse   = DimRef.inverse(runtime.dimension)
+    val cancelled = DimRef.times(runtime.dimension, inverse)
 
     assertEquals(runtime.dimension.key.powers.head._2, exponent)
     assertEquals(inverse.key.powers.head._2, -exponent)
+    assertEquals(cancelled.key, DimensionKey.one)
 
-  test("generic code forwards one Normalize.Aux result"):
-    def multiply[X <: Dimension, Y <: Dimension, O <: Dimension](
-      left: Quantity[X],
-      right: Quantity[Y]
-    )(using Normalize.Aux[Times[X, Y], O]
-    ): Quantity[O] =
+  test("nominal, generative, and fresh witnesses retain exact stable identities"):
+    val first: DimRef[Nominal]      = DimRef.atom(NominalKey)
+    val second: DimRef[Nominal]     = DimRef.atom(NominalKey)
+    val other: DimRef[OtherNominal] = DimRef.atom(OtherNominalKey)
+    val generated                   = DimRef.atomic(AtomId("static:generated"))
+    val fresh                       = DimRef.fresh(DimensionKey.atom(AtomId("static:fresh")))
+
+    assertEquals(first.key, second.key)
+    assertNotEquals(first.key, other.key)
+    assertEquals(generated.dimension.key, DimensionKey.atom(generated.atomId))
+    assertEquals(fresh.dimension.key, DimensionKey.atom(AtomId("static:fresh")))
+
+  test("generic expression results need no output evidence and nominated outputs use SameDimension"):
+    def multiply[X <: Dimension, Y <: Dimension](left: Quantity[X], right: Quantity[Y]): Quantity[Times[X, Y]] =
       left * right
 
-    type AB = Dim[Power["static:A", 1] *: Power["static:B", 1] *: EmptyTuple]
-    val normalization: Normalize.Aux[Times[A, B], AB] = Normalize.derived[Times[A, B]]
-    val result: Quantity[AB] = multiply[A, B, AB](Quantity(a, 2), Quantity(b, 3))(using normalization)
-
-    assertEquals(result.coefficient, Rational(6))
-
-  test("generic quotient code forwards one Normalize.Aux result"):
-    def quotient[X <: Dimension, Y <: Dimension, O <: Dimension](
-      numerator: Quantity[X],
-      denominator: trading.quantity.refinement.NonZero[Quantity[Y]]
-    )(using Normalize.Aux[Divide[X, Y], O]
+    def nominate[X <: Dimension, Y <: Dimension, O <: Dimension](
+      left: Quantity[X],
+      right: Quantity[Y]
+    )(using SameDimension[Times[X, Y], O]
     ): Quantity[O] =
-      numerator.divideBy(denominator)
+      multiply(left, right).alignTo[O]
 
-    type APerB = Dim[Power["static:A", 1] *: Power["static:B", -1] *: EmptyTuple]
-    val normalization: Normalize.Aux[Divide[A, B], APerB] = Normalize.derived[Divide[A, B]]
-    val denominator             = trading.quantity.refinement.NonZero(Quantity(b, 2)).toOption.get
-    val result: Quantity[APerB] = quotient[A, B, APerB](Quantity(a, 6), denominator)(using normalization)
+    type AB = Dim[Power["static:A", 1] *: Power["static:B", 1] *: EmptyTuple]
+    val raw: Quantity[Times[A, B]] = multiply(Quantity(a, 2), Quantity(b, 3))
+    val named: Quantity[AB]        = nominate[A, B, AB](Quantity(a, 2), Quantity(b, 3))
 
-    assertEquals(result.coefficient, Rational(3))
+    assertEquals(raw.coefficient, Rational(6))
+    assertEquals(named.coefficient, Rational(6))
 
-  test("ordinary rate arithmetic exposes named endpoints"):
-    val amount: Quantity[A] = Quantity(a, Rational(1, 10))
-    val aToB: Rate[A, B]    = Rate(a, b, Rational(60_000))
-    val bToC: Rate[B, C]    = Rate(b, c, Rational(9, 10))
+  test("semantic rate operations retain named endpoints"):
+    val amount: Quantity[A]    = Quantity(a, Rational(1, 10))
+    val aToB: Rate[A, B]       = Rate(a, b, Rational(60_000))
+    val bToC: Rate[B, C]       = Rate(b, c, Rational(9, 10))
+    val aToC: Rate[A, C]       = aToB.andThen(bToC)
+    val reciprocal: Rate[C, A] = NonZero(aToC).toOption.get.reciprocalRate
 
-    val inB: Quantity[B] = amount * aToB
-    val aToC: Rate[A, C] = aToB.andThen(bToC)
-    val inC: Quantity[C] = amount.applyRate(aToC)
+    assertEquals(amount.applyRate(aToC).coefficient, Rational(5_400))
+    assertEquals(reciprocal.coefficient, Rational(1, 54_000))
+    assertEquals(NonZero(Rate(a, c, Rational.zero)), Left(ExpectedNonZero))
 
-    assertEquals(inB.coefficient, Rational(6_000))
-    assertEquals(inC.coefficient, Rational(5_400))
-
-  test("malformed canonical Dim claims are rejected"):
+  test("malformed declared dimensions and unequal dimensions are rejected non-reflexively"):
     assertDoesNotCompileContaining(
       """
       import trading.quantity.*
       type Bad = Dim[Power["zero", 0] *: EmptyTuple]
-      val evidence = Normalize.derived[Bad]
+      SameDimension.derived[Bad, One]
       """,
       "zero exponents"
     )
@@ -221,82 +134,48 @@ class StaticDimensionNormalizationSuite extends FunSuite:
       """
       import trading.quantity.*
       type Bad = Dim[Power["duplicate", 1] *: Power["duplicate", 2] *: EmptyTuple]
-      val evidence = Normalize.derived[Bad]
+      SameDimension.derived[Bad, One]
       """,
       "keys must be unique"
     )
     assertDoesNotCompileContaining(
       """
       import trading.quantity.*
-      type Bad = Dim[String *: EmptyTuple]
-      val evidence = Normalize.derived[Bad]
+      summon[SameDimension[Atom["left"], Atom["right"]]]
       """,
-      "must be a Power"
+      "not equivalent"
     )
 
-  test("unresolved generic key equality requires contextual Normalize"):
+  test("unresolved generic singleton keys are not interpreted as concrete identities"):
     assertDoesNotCompileContaining(
       """
       import trading.quantity.*
-      def normalize[K <: Singleton, L <: Singleton] =
-        summon[Normalize[Times[Atom[K], Atom[L]]]]
+      def compare[K <: Singleton] = SameDimension.derived[Atom[K], Atom["known"]]
       """,
-      "contextual Normalize evidence"
+      "concrete stable singleton"
     )
 
-  test("static exponent overflow fails explicitly without wrapping"):
-    assertDoesNotCompileContaining(
+  test("reflexive equivalence remains type identity rather than validity"):
+    assertCompiles(
       """
       import trading.quantity.*
-      type Maximum = Dim[Power["overflow", 2147483647] *: EmptyTuple]
-      val evidence = Normalize.derived[Times[Maximum, Atom["overflow"]]]
-      """,
-      "outside the singleton Int range"
+      type Bad = Dim[Power["zero", 0] *: EmptyTuple]
+      summon[SameDimension[Bad, Bad]]
+      """
     )
-    assertDoesNotCompileContaining(
+
+  test("the removed public normalization family and evidence constructors are unavailable"):
+    assertDoesNotCompile(
       """
       import trading.quantity.*
-      type Minimum = Dim[Power["underflow-addition", -2147483648] *: EmptyTuple]
-      val evidence = Normalize.derived[Times[Minimum, Inverse[Atom["underflow-addition"]]]]
-      """,
-      "static exponent -2147483649 is outside the singleton Int range"
-    )
-    assertDoesNotCompileContaining(
+      summon[Normalize[One]]
       """
-      import trading.quantity.*
-      type Minimum = Dim[Power["underflow", -2147483648] *: EmptyTuple]
-      val evidence = Normalize.derived[Inverse[Minimum]]
-      """,
-      "outside the singleton Int range"
     )
-
-  test("one complete normalization may return an intermediate BigInt sum to the Int range"):
-    type Maximum    = Dim[Power["boundary", 2147483647] *: EmptyTuple]
-    type Expression = Times[Times[Maximum, Atom["boundary"]], Inverse[Atom["boundary"]]]
-
-    val normalized = Normalize.derived[Expression]
-    assertSameType[normalized.Out, Maximum]
-
-  test("fractional exponent types are outside the grammar"):
     assertDoesNotCompile:
       """
       import trading.quantity.*
-      type Bad = Power["fractional", 0.5]
-      """
-
-  test("downstream code cannot forge trusted evidence"):
-    assertDoesNotCompile:
-      """
-      import trading.quantity.*
-      type A = Atom["forge:A"]
-      val forged = new Normalize[A]:
-        type Out = A
-      """
-    assertDoesNotCompile:
-      """
-      import trading.quantity.*
-      type A = Atom["forge:A"]
-      val forged = new SameDimension[A, A] {}
+      type X = Atom["forge:X"]
+      val forged = new SameDimension[X, X] {}
       """
 
 end StaticDimensionNormalizationSuite

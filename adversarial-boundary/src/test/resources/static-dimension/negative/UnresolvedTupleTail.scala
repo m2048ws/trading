@@ -6,7 +6,7 @@ object UnresolvedTupleTail:
   type Open[Tail <: Tuple] = Dim[Power["tuple:head", 1] *: Tail]
 
   // OFFENDING-BEGIN
-  def normalize[Tail <: Tuple] = Normalize.derived[Open[Tail]]
+  def compare[Tail <: Tuple] = SameDimension.derived[Open[Tail], One]
   // OFFENDING-END
 
 end UnresolvedTupleTail

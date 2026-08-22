@@ -179,7 +179,7 @@ class PackageSpoofBoundarySuite extends FunSuite:
       val forged = new SameDimension[One, One] {}
       """
 
-  test("core package spoofing cannot implement the closed grammar or normalization proof"):
+  test("core package spoofing cannot implement the closed grammar or removed normalization proof"):
     assertRejected:
       """
       import trading.quantity.*
@@ -205,7 +205,7 @@ class PackageSpoofBoundarySuite extends FunSuite:
       val forged = new Dimension {}
       """
 
-  test("automatic derivation does not accept a caller-selected associated output"):
+  test("removed associated-output normalization cannot be named"):
     assertRejected:
       """
       import trading.quantity.*

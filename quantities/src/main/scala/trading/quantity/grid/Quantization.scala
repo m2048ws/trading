@@ -23,7 +23,6 @@ object Quantization:
   )(
     v: Quantity[D],
     p: QuantizationPolicy
-  )(using Normalize[D]
   ): Quantization[D, t.G] =
     val exactCoordinate    = v.coefficient.divideBy(t.quantum.asNonZero)
     val selectedCoordinate = p.roundCoordinate(exactCoordinate)
@@ -46,7 +45,6 @@ object Quantization:
   )(
     v: GridQuantity[D, g.G],
     p: QuantizationPolicy
-  )(using Normalize[D]
   ): Quantization[D, t.G] =
     toGrid(t)(g.asQuantity(v), p)
 
@@ -54,7 +52,7 @@ end Quantization
 
 extension [D <: Dimension](v: Quantity[D])
 
-  def quantizeTo(t: GridRef[D], p: QuantizationPolicy)(using Normalize[D]): Quantization[D, t.G] =
+  def quantizeTo(t: GridRef[D], p: QuantizationPolicy): Quantization[D, t.G] =
     Quantization.toGrid(t)(v, p)
 
 extension [D <: Dimension, G](v: GridQuantity[D, G])
@@ -63,6 +61,5 @@ extension [D <: Dimension, G](v: GridQuantity[D, G])
     g: GridRef.Grid[D, G],
     t: GridRef[D],
     p: QuantizationPolicy
-  )(using Normalize[D]
   ): Quantization[D, t.G] =
     Quantization.gridToGrid(g, t)(v, p)

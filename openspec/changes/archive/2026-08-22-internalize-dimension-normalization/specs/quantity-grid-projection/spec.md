@@ -69,9 +69,13 @@ SHALL NOT be exposed.
 
 ### Requirement: Operations that leave a grid
 Cross-grid addition and subtraction SHALL accept `GridQuantity[D, G]` and `GridQuantity[D, H]` with one exact shared
-Scala dimension type `D` and SHALL return `Quantity[D]` without `SameDimension` or a validity capability. Operands with
-different static dimension spellings SHALL first be explicitly aligned. Exact whole-scalar division SHALL preserve `D`
-without additional evidence.
+Scala dimension type `D` and SHALL return `Quantity[D]` without `SameDimension` or a validity capability. They SHALL NOT
+consume `SameDimension` to align operands whose static dimension types differ. `GridQuantity.alignTo` SHALL retag only
+the value's phantom dimension and SHALL NOT retag or manufacture the `GridRef` needed to embed it. Therefore, when the
+two original grid witnesses use equivalent but distinct static dimension types, callers SHALL embed each value through
+its original grid witness, align one resulting exact `Quantity` to the selected result dimension, and then use
+homogeneous `Quantity` addition or subtraction. Exact whole-scalar division SHALL preserve `D` without additional
+evidence.
 
 Grid-by-grid and mixed grid/exact multiplication SHALL return unrestricted exact quantities with expression-preserving
 dimensions. Operands in `A` and `B` SHALL produce `Quantity[Times[A, B]]`. Grid quantity division by
@@ -88,10 +92,11 @@ of the same embedded operands SHALL retain its raw `Times` or `Divide` type unti
 - **WHEN** cent and three-cent values with the exact static dimension type USD are added
 - **THEN** the result is `Quantity[USD]` with the exact coefficient and no contextual dimension evidence
 
-#### Scenario: Align before cross-grid addition
+#### Scenario: Embed before cross-spelling addition
 - **WHEN** values on different grids have equivalent dimensions represented by different Scala dimension types
-- **THEN** direct cross-grid addition and subtraction do not compile until one grid quantity is explicitly aligned to
-  the selected result dimension
+- **THEN** direct `addExact` and `subtractExact` do not compile, including after aligning only a grid quantity while its
+  original grid witness retains the source dimension, and the supported route is to embed through each original grid,
+  align one resulting exact quantity, and use homogeneous exact-quantity addition or subtraction
 
 #### Scenario: Exact-divide a grid value by a whole scalar
 - **WHEN** an existing grid quantity is canonically embedded and exact-divided by a nonzero whole scalar
@@ -117,3 +122,51 @@ of the same embedded operands SHALL retain its raw `Times` or `Divide` type unti
 #### Scenario: Calculate a grid ratio
 - **WHEN** an embedded grid quantity in `D` is compared by `ratioTo` with checked nonzero `Quantity[D]`
 - **THEN** the endpoint operation returns exact `Ratio`
+
+#### Scenario: Cancel factors after grid multiplication
+- **WHEN** a grid quantity in dimension `Position` is multiplied exactly by a quantity in dimension
+  `Divide[Settlement, Position]`
+- **THEN** ordinary multiplication retains
+  `Quantity[Times[Position, Divide[Settlement, Position]]]`; explicit `SameDimension` alignment may select
+  `Quantity[Settlement]`
+
+### Requirement: Existing grid values and witness-owned reconstruction are trusted
+Every normally returned `GridQuantity[D, G]` SHALL carry a valid dimension index established by an authoritative
+`DimRef[D]` or matching `GridRef[D]` for zero manufacture, by the matching grid witness for nonzero coordinate
+construction, or by checked grid or registry evidence that owns the selected target type. Possessing the value SHALL
+NOT establish that `G` has a public grid witness or registered identity; exact interpretation, coordinate inspection,
+packing, and provenance-sensitive operations SHALL continue to require their matching grid or registry witness.
+
+Same-grid addition, subtraction, integer scaling, negation, quotient/remainder, and allocation SHALL transform existing
+trusted grid values without a dimension capability. Exact narrowing, grid constraint, quantization, constrained
+encoding, and refined variants SHALL likewise require their existing source values and target grid witnesses but no
+separate authority for the preserved dimension. Checked `SameGrid`, `SameQuantum`, and `Embedding` transitions SHALL
+rely on their source and target grid witnesses; selecting the checked target dimension or grid type SHALL not require a
+separate dimension capability. Explicit `GridQuantity.alignTo` SHALL preserve the coordinate and grid phantom but SHALL
+not alter the original grid witness or confer registered provenance.
+
+#### Scenario: Move on an abstract grid
+- **WHEN** generic code adds, subtracts, scales, or negates existing `GridQuantity[D, G]` values
+- **THEN** it preserves `D` and `G` without contextual dimension evidence
+
+#### Scenario: Project through a target witness
+- **WHEN** generic code narrows, constrains, quantizes, or encodes an existing `Quantity[D]` through `GridRef[D]`
+- **THEN** the target witness owns every constructed coordinate and no separate dimension capability is required
+
+#### Scenario: Divide and allocate an existing coordinate
+- **WHEN** generic code applies quotient/remainder or even allocation to an existing `GridQuantity[D, G]` with its
+  matching grid witness
+- **THEN** every result remains on the source grid without separate dimension authority
+
+#### Scenario: Convert through checked grid evidence
+- **WHEN** checked same-grid, same-quantum, or embedding evidence selects a target grid whose witness has already been
+  validated
+- **THEN** conversion to the target dimension and grid type requires no additional dimension evidence
+
+#### Scenario: Keep grid zero authoritative
+- **WHEN** generic code manufactures `GridQuantity.zero[D, G]` without an existing coordinate or matching grid witness
+- **THEN** it must provide an authoritative `DimRef[D]`
+
+#### Scenario: Do not infer grid provenance from a value
+- **WHEN** code possesses `GridQuantity[D, G]`, including a zero manufactured with dimension authority
+- **THEN** it cannot recover a `GridRef[D]`, registered witness, quantum, grid key, or packing authority from the value

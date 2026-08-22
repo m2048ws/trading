@@ -8,9 +8,9 @@ object ClosedMalformedDimension:
   type NonPower  = Dim[String *: EmptyTuple]
 
   // OFFENDING-BEGIN
-  val zero      = Normalize.derived[Zero]
-  val duplicate = Normalize.derived[Duplicate]
-  val nonPower  = Normalize.derived[NonPower]
+  val zero      = SameDimension.derived[Zero, One]
+  val duplicate = SameDimension.derived[Duplicate, One]
+  val nonPower  = SameDimension.derived[NonPower, One]
   // OFFENDING-END
 
 end ClosedMalformedDimension

@@ -83,7 +83,7 @@ final class Embedding[A <: Dimension, G, B <: Dimension, H] private (
   s: GridRef.Grid[A, G],
   t: GridRef.Grid[B, H]):
 
-  def widenTo(v: GridQuantity[A, G])(using Normalize[A], Normalize[B]): GridQuantity[B, H] =
+  def widenTo(v: GridQuantity[A, G]): GridQuantity[B, H] =
     t.fromCoordinate(s.coordinate(v) * coordinateFactor)
 
 /** Computes exact whole-coordinate embeddings between compatible grid definitions. */

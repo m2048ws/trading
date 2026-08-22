@@ -13,8 +13,9 @@ each call.
 
 The supported Scala trust boundary already excludes casts, reflection, unsafe JVM access, hand-written bytecode, and
 constructor-bypassing deserialization. Downstream compilation tests also establish that declaring the library package
-does not expose opaque construction. A direct compiler probe confirms that cast-free `null` cannot inhabit either
-opaque dimensional carrier.
+does not expose opaque construction. A direct compiler probe confirms that cast-free `null` cannot inhabit either opaque
+dimensional carrier. Reference-valued construction authority must also be dereferenced at its public root so literal
+`null` cannot produce a witness capable of attaching a coefficient or coordinate.
 
 ## Goals / Non-Goals
 
@@ -65,11 +66,12 @@ The audit obligation is:
 
 | Boundary | Why the result index is valid |
 | --- | --- |
-| `Quantity.zero[D]`, `GridQuantity.zero[D, G]`, refined zero | Requires `Normalize[D]` |
-| Coefficient-bearing `Quantity[D]` | Requires sealed authoritative `DimRef[D]` |
-| Nonzero `GridQuantity[D, G]` | Constructed and inspected only by its sealed `GridRef[D]` |
-| `DimRef` and `GridRef` algebra | Root authority plus complete-expression normalization |
-| Dimension-changing quantity arithmetic | Complete result expression is normalized |
+| `DimensionKey` and `DimRef` roots | Reject null atom/key identity before returning canonical runtime authority |
+| `Quantity.zero[D]`, `GridQuantity.zero[D, G]`, refined zero | Requires non-null `Normalize[D]` |
+| Coefficient-bearing `Quantity[D]` | Requires sealed authoritative `DimRef[D]` and a non-null exact coefficient |
+| Nonzero `GridQuantity[D, G]` | Constructed and inspected only by its sealed `GridRef[D]` from a non-null coordinate |
+| `DimRef` and `GridRef` algebra | Root authority plus non-null complete-expression normalization |
+| Dimension-changing quantity arithmetic | Complete result expression is normalized through non-null evidence |
 | `alignTo` and `SameDimension` coercion | Static derivation validates both sides, or runtime recovery compares authoritative witnesses |
 | `SameGrid`, `SameQuantum`, `Embedding` | Checked source and target grid witnesses own both selected types |
 | Refinement construction | Wraps an already trusted carrier after a closed observation |
@@ -77,9 +79,13 @@ The audit obligation is:
 | Registry adoption and logical decoding | Resolves dimension before grid and reconstructs through a registry-owned grid witness |
 | Heterogeneous arithmetic | Recovers checked evidence, aligns or retypes, then combines trusted values |
 
-No public raw coefficient or coordinate helper may escape the opaque owner. Sealed `DimRef`, `GridRef`, registered
-witness, proof, refinement, and result constructors remain part of the audit. Packed records remain untrusted data until
-checked decoding completes.
+No public raw coefficient or coordinate helper may escape the opaque owner, and those central helpers reject null
+numeric payloads before returning a carrier, including coordinates reconstructed by checked decoding. Sealed `DimRef`,
+`GridRef`, registered witness, proof, refinement, and result constructors remain part of the audit. Packed records remain
+untrusted data until checked decoding completes. A public root that accepts reference-valued authority or payload must
+inspect that value before it returns a carrier or another witness that can construct one. This includes retained
+`Normalize` contexts: literal-null evidence must be rejected before returning a zero, computed carrier, witness, rate,
+or identity-bearing algebra capability.
 
 Alternative considered: keep operation-local normalization as defense in depth. It catches hypothetical malformed
 parameter types but adds no protection for values obtainable through supported APIs; keeping it would defeat the generic

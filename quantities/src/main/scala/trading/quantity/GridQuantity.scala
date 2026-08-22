@@ -1,5 +1,7 @@
 package trading.quantity
 
+import java.util.Objects
+
 import trading.quantity.GridRef.Grid
 import trading.quantity.refinement.*
 
@@ -7,49 +9,32 @@ import trading.quantity.refinement.*
  * An integer coordinate in grid `G` and dimension `D`.
  *
  * The grid type prevents coordinates from different grids from being mixed, even when the grids share a dimension.
- * Construction and exact interpretation require the corresponding [[GridRef]].
+ * Nonzero construction and exact interpretation require the corresponding [[GridRef]], while polymorphic zero requires
+ * an authoritative [[DimRef]]. Possessing a value supplies neither a grid witness nor dimension or registry authority.
  */
 opaque type GridQuantity[D <: Dimension, G] = BigInt
 
 /** Same-grid arithmetic and controlled coordinate access for [[GridQuantity]]. */
 object GridQuantity:
 
-  def zero[D <: Dimension, G](using valid: Normalize[D]): GridQuantity[D, G] =
-    val _ = valid
-    BigInt(0)
+  def zero[D <: Dimension, G](using dimension: DimRef[D]): GridQuantity[D, G] =
+    val _ = dimension.key
+    fromCoordinate(BigInt(0))
 
   private def fromCoordinate[D <: Dimension, G](c: BigInt): GridQuantity[D, G] =
-    c
+    Objects.requireNonNull(c, "grid coordinate")
 
   private def coordinate[D <: Dimension, G](v: GridQuantity[D, G]): BigInt =
     v
 
-  private def add[D <: Dimension, G](
-    l: GridQuantity[D, G],
-    r: GridQuantity[D, G]
-  )(using
-    valid: Normalize[D]
-  ): GridQuantity[D, G] =
-    val _ = valid
-    l + r
+  private def add[D <: Dimension, G](l: GridQuantity[D, G], r: GridQuantity[D, G]): GridQuantity[D, G] =
+    fromCoordinate(l + r)
 
-  private def subtract[D <: Dimension, G](
-    l: GridQuantity[D, G],
-    r: GridQuantity[D, G]
-  )(using
-    valid: Normalize[D]
-  ): GridQuantity[D, G] =
-    val _ = valid
-    l - r
+  private def subtract[D <: Dimension, G](l: GridQuantity[D, G], r: GridQuantity[D, G]): GridQuantity[D, G] =
+    fromCoordinate(l - r)
 
-  private def scale[D <: Dimension, G](
-    v: GridQuantity[D, G],
-    s: BigInt
-  )(using
-    valid: Normalize[D]
-  ): GridQuantity[D, G] =
-    val _ = valid
-    v * s
+  private def scale[D <: Dimension, G](v: GridQuantity[D, G], s: BigInt): GridQuantity[D, G] =
+    fromCoordinate(v * s)
 
   /**
    * Type-carrying definition of a grid in dimension `D`.
@@ -87,16 +72,16 @@ object GridQuantity:
 
   extension [D <: Dimension, G](v: GridQuantity[D, G])
 
-    def +(r: GridQuantity[D, G])(using Normalize[D]): GridQuantity[D, G] =
+    def +(r: GridQuantity[D, G]): GridQuantity[D, G] =
       add(v, r)
 
-    def -(r: GridQuantity[D, G])(using Normalize[D]): GridQuantity[D, G] =
+    def -(r: GridQuantity[D, G]): GridQuantity[D, G] =
       subtract(v, r)
 
-    def *(s: BigInt)(using Normalize[D]): GridQuantity[D, G] =
+    def *(s: BigInt): GridQuantity[D, G] =
       scale(v, s)
 
-    def unary_-(using Normalize[D]): GridQuantity[D, G] =
+    def unary_- : GridQuantity[D, G] =
       scale(v, -1)
 
     def sameGridEquals(r: GridQuantity[D, G]): Boolean =
@@ -113,13 +98,13 @@ object GridQuantity:
 
     /** Explicitly align the phantom dimension while preserving the grid identity and coordinate. */
     def alignTo[Target <: Dimension](using same: SameDimension[D, Target]): GridQuantity[Target, G] =
-      same.coerceGrid(v)
+      val _ = Objects.requireNonNull(same, "same dimension evidence")
+      v.asInstanceOf[GridQuantity[Target, G]]
 
     def addExact[H](
       r: GridQuantity[D, H],
       lg: Grid[D, G],
       rg: Grid[D, H]
-    )(using Normalize[D]
     ): Quantity[D] =
       lg.asQuantity(v) + rg.asQuantity(r)
 
@@ -127,7 +112,6 @@ object GridQuantity:
       r: GridQuantity[D, H],
       lg: Grid[D, G],
       rg: Grid[D, H]
-    )(using Normalize[D]
     ): Quantity[D] =
       lg.asQuantity(v) - rg.asQuantity(r)
 
@@ -137,7 +121,7 @@ object GridQuantity:
       rg: Grid[E, H]
     )(using same: SameDimension[D, E]
     ): Boolean =
-      same.coerceQuantity(lg.asQuantity(v)).coefficient == rg.asQuantity(r).coefficient
+      lg.asQuantity(v).alignTo[E].coefficient == rg.asQuantity(r).coefficient
 
     def compareExact[E <: Dimension, H](
       r: GridQuantity[E, H],
@@ -145,50 +129,40 @@ object GridQuantity:
       rg: Grid[E, H]
     )(using same: SameDimension[D, E]
     ): Int =
-      same.coerceQuantity(lg.asQuantity(v)).coefficient.compare(rg.asQuantity(r).coefficient)
+      lg.asQuantity(v).alignTo[E].coefficient.compare(rg.asQuantity(r).coefficient)
 
     def multiplyExact[E <: Dimension, H](
       r: GridQuantity[E, H],
       lg: Grid[D, G],
       rg: Grid[E, H]
-    )(using
-      operation: Normalize[Times[D, E]]
-    ): Quantity[operation.Out] =
-      lg.asQuantity(v).*(rg.asQuantity(r))(using operation)
+    ): Quantity[Times[D, E]] =
+      lg.asQuantity(v) * rg.asQuantity(r)
 
     def multiplyExact[E <: Dimension](
       r: Quantity[E],
       g: Grid[D, G]
-    )(using
-      operation: Normalize[Times[D, E]]
-    ): Quantity[operation.Out] =
-      g.asQuantity(v).*(r)(using operation)
+    ): Quantity[Times[D, E]] =
+      g.asQuantity(v) * r
 
     def applyRate[E <: Dimension](
       r: Rate[D, E],
       g: Grid[D, G]
-    )(using
-      operation: Normalize[Times[D, Divide[E, D]]]
     ): Quantity[E] =
-      g.asQuantity(v).applyRate(r)(using operation)
+      g.asQuantity(v).applyRate(r)
 
     def divideBy[E <: Dimension](
       d: NonZero[Quantity[E]],
       g: Grid[D, G]
-    )(using
-      operation: Normalize[Divide[D, E]]
-    ): Quantity[operation.Out] =
-      g.asQuantity(v).divideBy(d)(using operation)
+    ): Quantity[Divide[D, E]] =
+      g.asQuantity(v).divideBy(d)
 
     def ratioTo(
       d: NonZero[Quantity[D]],
       g: Grid[D, G]
-    )(using
-      operation: Normalize[Divide[D, D]]
     ): Ratio =
-      g.asQuantity(v).ratioTo(d)(using operation)
+      g.asQuantity(v).ratioTo(d)
 
-    def exactDivideBy(d: NonZeroWhole, g: Grid[D, G])(using Normalize[D]): Quantity[D] =
+    def exactDivideBy(d: NonZeroWhole, g: Grid[D, G]): Quantity[D] =
       g.asQuantity(v).exactDivideBy(d)
 
   end extension
@@ -217,9 +191,12 @@ object UniformGrid:
     dimensionRef: DimRef[D],
     gridQuantum: PositiveRational
   ): GridRef[D] =
+    val checkedGridId      = Objects.requireNonNull(gridId, "grid ID")
+    val checkedGridVersion = Objects.requireNonNull(gridVersion, "grid version")
+    val _                  = dimensionRef.key
     new GridRef[D]:
       type G = this.type
-      val id: GridId                = gridId
-      val version: GridVersion      = gridVersion
+      val id: GridId                = checkedGridId
+      val version: GridVersion      = checkedGridVersion
       val dimension: DimRef[D]      = dimensionRef
       val quantum: PositiveRational = gridQuantum

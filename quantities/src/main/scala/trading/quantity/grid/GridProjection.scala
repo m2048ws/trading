@@ -14,7 +14,6 @@ object GridProjection:
     t: GridRef[D]
   )(
     v: Quantity[D]
-  )(using Normalize[D]
   ): Either[NotOnGrid[D], GridQuantity[D, t.G]] =
     val coefficient = v.coefficient
     val quantum     = t.quantum.unrefined
@@ -30,7 +29,6 @@ object GridProjection:
     t: GridRef[D]
   )(
     v: GridQuantity[D, g.G]
-  )(using Normalize[D]
   ): Either[NotOnGrid[D], GridQuantity[D, t.G]] =
     narrowExactlyTo(t)(g.asQuantity(v))
 
@@ -43,18 +41,16 @@ object GridConstraint:
     g: GridRef[D]
   )(
     v: Quantity[D]
-  )(using Normalize[D]
   ): Either[NotOnGrid[D], GridQuantity[D, g.G]] =
     GridProjection.narrowExactlyTo(g)(v)
 
 extension [D <: Dimension](v: Quantity[D])
-  def narrowExactlyTo(t: GridRef[D])(using Normalize[D]): Either[NotOnGrid[D], GridQuantity[D, t.G]] =
+  def narrowExactlyTo(t: GridRef[D]): Either[NotOnGrid[D], GridQuantity[D, t.G]] =
     GridProjection.narrowExactlyTo(t)(v)
 
 extension [D <: Dimension, G](v: GridQuantity[D, G])
   def narrowExactlyTo(
     g: GridRef.Grid[D, G],
     t: GridRef[D]
-  )(using Normalize[D]
   ): Either[NotOnGrid[D], GridQuantity[D, t.G]] =
     GridProjection.narrowGridExactlyTo(g, t)(v)

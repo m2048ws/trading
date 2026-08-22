@@ -13,12 +13,12 @@ object InvalidCanonicalKeys:
     type Key <: Singleton
 
   // OFFENDING-BEGIN
-  val broad = Normalize.derived[Broad]
-  val bottom = Normalize.derived[Bottom]
-  val nullKey = Normalize.derived[NullKey]
-  val widenedString = Normalize.derived[WidenedString]
-  val widenedNominal = Normalize.derived[WidenedNominal]
-  def abstractTypeRef(holder: AbstractKeyHolder) = Normalize.derived[Atom[holder.Key]]
+  val broad = SameDimension.derived[Broad, One]
+  val bottom = SameDimension.derived[Bottom, One]
+  val nullKey = SameDimension.derived[NullKey, One]
+  val widenedString = SameDimension.derived[WidenedString, One]
+  val widenedNominal = SameDimension.derived[WidenedNominal, One]
+  def abstractTypeRef(holder: AbstractKeyHolder) = SameDimension.derived[Atom[holder.Key], One]
   // OFFENDING-END
 
 end InvalidCanonicalKeys

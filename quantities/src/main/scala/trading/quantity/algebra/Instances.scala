@@ -45,40 +45,50 @@ end exactScalarAlgebra
 /** Exact quantities form one coherent rational vector-space hierarchy. */
 object exactQuantityAlgebra:
 
-  given quantityVectorSpace[D <: Dimension](using Normalize[D]): VectorSpace[Quantity[D], Rational] with
+  private object universalQuantityVectorSpace extends VectorSpace[Quantity[One], Rational]:
     val scalar: ExactScalarField[Rational] = exactScalarAlgebra.rationalExactScalar
 
-    def zero: Quantity[D] =
-      Quantity.zero
+    def zero: Quantity[One] =
+      Quantity.zero(using DimRef.one)
 
-    def plus(l: Quantity[D], r: Quantity[D]): Quantity[D] =
+    def plus(l: Quantity[One], r: Quantity[One]): Quantity[One] =
       l + r
 
-    def negate(v: Quantity[D]): Quantity[D] =
-      Quantity.zero - v
+    def negate(v: Quantity[One]): Quantity[One] =
+      Quantity.zero(using DimRef.one) - v
 
-    def timesl(s: Rational, v: Quantity[D]): Quantity[D] =
+    def timesl(s: Rational, v: Quantity[One]): Quantity[One] =
       v * s
+  end universalQuantityVectorSpace
+
+  given quantityVectorSpace[D <: Dimension](using dimension: DimRef[D]): VectorSpace[Quantity[D], Rational] =
+    val _ = dimension.key
+    universalQuantityVectorSpace.asInstanceOf[VectorSpace[Quantity[D], Rational]]
 
 end exactQuantityAlgebra
 
 /** Grid quantities form one coherent BigInt-module hierarchy. */
 object gridQuantityAlgebra:
 
-  given gridModule[D <: Dimension, G](using Normalize[D]): LeftModule[GridQuantity[D, G], BigInt] with
+  private object universalGridModule extends LeftModule[GridQuantity[One, Any], BigInt]:
     val scalar: Ring[BigInt] = summon[Ring[BigInt]]
 
-    def zero: GridQuantity[D, G] =
-      GridQuantity.zero
+    def zero: GridQuantity[One, Any] =
+      GridQuantity.zero[One, Any](using DimRef.one)
 
-    def plus(l: GridQuantity[D, G], r: GridQuantity[D, G]): GridQuantity[D, G] =
+    def plus(l: GridQuantity[One, Any], r: GridQuantity[One, Any]): GridQuantity[One, Any] =
       l + r
 
-    def negate(v: GridQuantity[D, G]): GridQuantity[D, G] =
+    def negate(v: GridQuantity[One, Any]): GridQuantity[One, Any] =
       -v
 
-    def timesl(s: BigInt, v: GridQuantity[D, G]): GridQuantity[D, G] =
+    def timesl(s: BigInt, v: GridQuantity[One, Any]): GridQuantity[One, Any] =
       v * s
+  end universalGridModule
+
+  given gridModule[D <: Dimension, G](using dimension: DimRef[D]): LeftModule[GridQuantity[D, G], BigInt] =
+    val _ = dimension.key
+    universalGridModule.asInstanceOf[LeftModule[GridQuantity[D, G], BigInt]]
 
 end gridQuantityAlgebra
 
@@ -143,33 +153,48 @@ end nonZeroRationalMultiplicative
 /** Closed refined addition, exposed without widening to unrestricted group structure. */
 object refinedAdditive:
 
-  given nonNegativeQuantityMonoid[D <: Dimension](
-    using Normalize[D]
-  ): AdditiveCommutativeMonoid[NonNegative[Quantity[D]]] with
-    def zero: NonNegative[Quantity[D]] =
-      NonNegative.quantityZero
+  private object universalNonNegativeQuantityMonoid extends AdditiveCommutativeMonoid[NonNegative[Quantity[One]]]:
+    def zero: NonNegative[Quantity[One]] =
+      NonNegative.quantityZero(using DimRef.one)
 
-    def plus(l: NonNegative[Quantity[D]], r: NonNegative[Quantity[D]]): NonNegative[Quantity[D]] =
+    def plus(
+      l: NonNegative[Quantity[One]],
+      r: NonNegative[Quantity[One]]
+    ): NonNegative[Quantity[One]] =
       l.add(r)
+  end universalNonNegativeQuantityMonoid
 
-  given positiveQuantitySemigroup[D <: Dimension](
-    using Normalize[D]
-  ): AdditiveCommutativeSemigroup[Positive[Quantity[D]]] with
+  given nonNegativeQuantityMonoid[D <: Dimension](
+    using dimension: DimRef[D]
+  ): AdditiveCommutativeMonoid[NonNegative[Quantity[D]]] =
+    val _ = dimension.key
+    universalNonNegativeQuantityMonoid.asInstanceOf[AdditiveCommutativeMonoid[NonNegative[Quantity[D]]]]
+
+  given positiveQuantitySemigroup[D <: Dimension]: AdditiveCommutativeSemigroup[Positive[Quantity[D]]] with
     def plus(l: Positive[Quantity[D]], r: Positive[Quantity[D]]): Positive[Quantity[D]] =
       l.add(r)
 
-  given nonNegativeGridQuantityMonoid[D <: Dimension, G](
-    using Normalize[D]
-  ): AdditiveCommutativeMonoid[NonNegative[GridQuantity[D, G]]] with
-    def zero: NonNegative[GridQuantity[D, G]] =
-      NonNegative.gridQuantityZero
+  private object universalNonNegativeGridQuantityMonoid
+    extends AdditiveCommutativeMonoid[NonNegative[GridQuantity[One, Any]]]:
+    def zero: NonNegative[GridQuantity[One, Any]] =
+      NonNegative.gridQuantityZero[One, Any](using DimRef.one)
 
-    def plus(l: NonNegative[GridQuantity[D, G]], r: NonNegative[GridQuantity[D, G]]): NonNegative[GridQuantity[D, G]] =
+    def plus(
+      l: NonNegative[GridQuantity[One, Any]],
+      r: NonNegative[GridQuantity[One, Any]]
+    ): NonNegative[GridQuantity[One, Any]] =
       l.add(r)
+  end universalNonNegativeGridQuantityMonoid
 
-  given positiveGridQuantitySemigroup[D <: Dimension, G](
-    using Normalize[D]
-  ): AdditiveCommutativeSemigroup[Positive[GridQuantity[D, G]]] with
+  given nonNegativeGridQuantityMonoid[D <: Dimension, G](
+    using dimension: DimRef[D]
+  ): AdditiveCommutativeMonoid[NonNegative[GridQuantity[D, G]]] =
+    val _ = dimension.key
+    universalNonNegativeGridQuantityMonoid
+      .asInstanceOf[AdditiveCommutativeMonoid[NonNegative[GridQuantity[D, G]]]]
+
+  given positiveGridQuantitySemigroup[D <: Dimension, G]: AdditiveCommutativeSemigroup[Positive[GridQuantity[D, G]]]
+  with
     def plus(l: Positive[GridQuantity[D, G]], r: Positive[GridQuantity[D, G]]): Positive[GridQuantity[D, G]] =
       l.add(r)
 

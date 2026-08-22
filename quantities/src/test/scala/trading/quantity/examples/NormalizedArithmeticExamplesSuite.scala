@@ -14,11 +14,11 @@ class NormalizedArithmeticExamplesSuite extends FunSuite:
 
     val amount                = Quantity(position.dimension, Rational(3, 2))
     val settlementPerPosition = Quantity(DimRef.divide(settlement.dimension, position.dimension), Rational(20))
-    val settled: Quantity[settlement.D] = amount * settlementPerPosition
+    val settled: Quantity[settlement.D] = (amount * settlementPerPosition).alignTo[settlement.D]
 
     val quoteAmount                  = Quantity(quote.dimension, Rational(12))
     val basePerQuote                 = Quantity(DimRef.divide(base.dimension, quote.dimension), Rational(1, 4))
-    val baseAmount: Quantity[base.D] = quoteAmount * basePerQuote
+    val baseAmount: Quantity[base.D] = (quoteAmount * basePerQuote).alignTo[base.D]
 
     assertEquals(settled.coefficient, Rational(30))
     assertEquals(baseAmount.coefficient, Rational(3))
@@ -46,30 +46,25 @@ class NormalizedArithmeticExamplesSuite extends FunSuite:
     assertEquals(ethPerBtc.coefficient, Rational(20))
     assertEquals(ethPerBtc.coefficient, quotient.coefficient)
 
-  test("dimensionless and rate round trips normalize to their starting endpoints"):
+  test("dimensionless ratios and endpoint rate round trips retain semantic results"):
     val btc                               = DimRef.atomic(AtomId("example-round-trip-btc"))
     val usd                               = DimRef.atomic(AtomId("example-round-trip-usd"))
     val amount                            = Quantity(btc.dimension, Rational(2))
     val divisor: NonZero[Quantity[btc.D]] = NonZero(amount).toOption.get
-    val ratio: Ratio                      = amount.divideBy(divisor)
+    val ratio: Ratio                      = amount.ratioTo(divisor)
 
     val usdPerBtc                 = Rate(btc.dimension, usd.dimension, Rational(60000))
     val btcPerUsd                 = Rate(usd.dimension, btc.dimension, Rational(1, 60000))
-    val restored: Quantity[btc.D] = amount * usdPerBtc * btcPerUsd
+    val restored: Quantity[btc.D] = amount.applyRate(usdPerBtc).applyRate(btcPerUsd)
 
     assertEquals(ratio.coefficient, Rational.one)
     assertEquals(restored.coefficient, amount.coefficient)
 
-  test("multi-atom results retain one power entry per surviving factor"):
+  test("multi-atom results retain their nested source expression"):
     val a = DimRef.atomic(AtomId("example-surviving-a"))
     val b = DimRef.atomic(AtomId("example-surviving-b"))
     val c = DimRef.atomic(AtomId("example-surviving-c"))
-    type ABC = Dim[
-      Power[a.type, 1] *:
-        Power[b.type, 1] *:
-        Power[c.type, 1] *:
-        EmptyTuple
-    ]
+    type ABC = Times[Times[a.D, b.D], c.D]
 
     val result: Quantity[ABC] =
       Quantity(a.dimension, Rational(2)) * Quantity(b.dimension, Rational(3)) *

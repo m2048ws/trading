@@ -20,6 +20,7 @@ class AlgebraInstancesSuite extends FunSuite:
     usd.dimension,
     PositiveRational.exact(1, 100).toOption.get
   )
+  private given DimRef[usd.D] = usd.dimension
 
   test("one strongest exact scalar and quantity instance supplies every supported supertype"):
     import exactQuantityAlgebra.given
@@ -108,11 +109,11 @@ class AlgebraInstancesSuite extends FunSuite:
     assertEquals(cents.coordinate(gridLeft + gridRight), directGrid)
     assertEquals(NonZero(Rational.zero), Left(ExpectedNonZero))
 
-  test("optional imports preserve normalized result types and dimension evidence"):
+  test("optional imports preserve expression results and explicit dimension evidence"):
     val btc                     = trading.quantity.testkit.TestAsset.runtime(AssetId("BTC-algebra-normalization-suite"))
     val amount                  = Quantity(btc.dimension, Rational(1, 10))
     val usdPerBtc               = Rate(btc.dimension, usd.dimension, Rational(6000001, 100))
-    val direct: Quantity[usd.D] = amount * usdPerBtc
+    val direct: Quantity[usd.D] = amount.applyRate(usdPerBtc)
     val gridValue               = cents.fromCoordinate(7)
 
     import dimensionAlgebra.given
@@ -129,13 +130,11 @@ class AlgebraInstancesSuite extends FunSuite:
     val _                         = summon[ExactScalarField[Rational]]
     val _                         = summon[MultiplicativeCommutativeGroup[NonZero[Rational]]]
     val _                         = summon[AdditiveCommutativeMonoid[NonNegative[Quantity[usd.D]]]]
-    val imported: Quantity[usd.D] = amount * usdPerBtc
-    val normalization             = summon[Normalize[Times[btc.D, Divide[usd.D, btc.D]]]]
-    val _                         = normalization
+    val imported: Quantity[usd.D] = amount.applyRate(usdPerBtc)
 
     val a = DimRef.atomic(AtomId("algebra-evidence-a"))
     val b = DimRef.atomic(AtomId("algebra-evidence-b"))
-    type AB = Dim[Power[a.type, 1] *: Power[b.type, 1] *: EmptyTuple]
+    type AB = Times[a.D, b.D]
     val ab: Quantity[AB] = Quantity(DimRef.times(a.dimension, b.dimension), Rational(2))
     val ba               = Quantity(DimRef.times(b.dimension, a.dimension), Rational(3))
     val staticSum        = ab + ba.alignTo[AB]
@@ -170,6 +169,34 @@ class AlgebraInstancesSuite extends FunSuite:
       import trading.quantity.*
       import cats.kernel.Order
       summon[Order[Rational]]
+      """
+
+  test("combine-only refined semigroups are generic while identity-bearing structures remain gated"):
+    assertCompiles:
+      """
+      import _root_.algebra.ring.AdditiveCommutativeSemigroup
+      import trading.quantity.*
+      import trading.quantity.algebra.refinedAdditive.given
+      import trading.quantity.refinement.*
+
+      def quantity[D <: Dimension] = summon[AdditiveCommutativeSemigroup[Positive[Quantity[D]]]]
+      def grid[D <: Dimension, G] = summon[AdditiveCommutativeSemigroup[Positive[GridQuantity[D, G]]]]
+      """
+    assertDoesNotCompile:
+      """
+      import trading.quantity.*
+      import trading.quantity.algebra.*
+      import trading.quantity.algebra.exactQuantityAlgebra.given
+
+      def identity[D <: Dimension] = summon[VectorSpace[Quantity[D], Rational]]
+      """
+    assertDoesNotCompile:
+      """
+      import trading.quantity.*
+      import trading.quantity.algebra.*
+      import trading.quantity.algebra.gridQuantityAlgebra.given
+
+      def identity[D <: Dimension, G] = summon[LeftModule[GridQuantity[D, G], BigInt]]
       """
 
   test("unsupported rings, fields, numerics, categories, and refined groups remain absent"):

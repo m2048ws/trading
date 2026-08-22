@@ -9,11 +9,7 @@ import trading.quantity.testkit.ExactGenerators.*
 class QuantityDivisionSuite extends ScalaCheckSuite:
   private val usd = trading.quantity.testkit.TestAsset.runtime(AssetId("USD-division-suite"))
   private val btc = trading.quantity.testkit.TestAsset.runtime(AssetId("BTC-division-suite"))
-  private type UsdPerBtc = Dim[
-    Power[usd.atomic.type, 1] *:
-      Power[btc.atomic.type, -1] *:
-      EmptyTuple
-  ]
+  private type UsdPerBtc = Divide[usd.D, btc.D]
   private val cents =
     UniformGrid.create[usd.D](
       GridId("usd-cent-division-suite"),
@@ -23,7 +19,7 @@ class QuantityDivisionSuite extends ScalaCheckSuite:
     )
 
   test("generic nonzero construction rejects zero exact and grid quantities"):
-    val exactZero = Quantity.zero[usd.D]
+    val exactZero = Quantity.zero[usd.D](using usd.dimension)
     val gridZero  = cents.fromCoordinate(0)
 
     assertEquals(NonZero(exactZero), Left(ExpectedNonZero))
@@ -38,11 +34,11 @@ class QuantityDivisionSuite extends ScalaCheckSuite:
 
     assertEquals(result.coefficient, Rational(10, 3))
 
-  test("generic checked division normalizes equal dimensions directly to Ratio"):
-    val tenUsd                            = Quantity(usd.dimension, 10)
-    val threeUsd                          = Quantity(usd.dimension, 3)
-    val divisor: NonZero[Quantity[usd.D]] = NonZero(threeUsd).toOption.get
-    val result: Ratio                     = tenUsd.divideBy(divisor)
+  test("generic checked division preserves an equal-dimension Divide expression"):
+    val tenUsd                                 = Quantity(usd.dimension, 10)
+    val threeUsd                               = Quantity(usd.dimension, 3)
+    val divisor: NonZero[Quantity[usd.D]]      = NonZero(threeUsd).toOption.get
+    val result: Quantity[Divide[usd.D, usd.D]] = tenUsd.divideBy(divisor)
 
     assertEquals(result.coefficient, Rational(10, 3))
 
@@ -64,7 +60,7 @@ class QuantityDivisionSuite extends ScalaCheckSuite:
     assertEquals(exactDivisor.coefficient, Rational(3))
     assertEquals(result.coefficient, Rational(10, 3))
 
-  test("grid quantity division uses the normalized exact quotient"):
+  test("grid quantity division uses the raw exact quotient"):
     val tenUsd                            = cents.fromCoordinate(1000)
     val twoBtc                            = Quantity(btc.dimension, 2)
     val divisor: NonZero[Quantity[btc.D]] = NonZero(twoBtc).toOption.get

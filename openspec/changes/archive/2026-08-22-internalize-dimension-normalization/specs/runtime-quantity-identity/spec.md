@@ -66,6 +66,10 @@ types SHALL retain their one-to-one static/runtime authority; private static int
 - **WHEN** runtime dimension multiplication and inversion cancel factors
 - **THEN** the resulting canonical `DimensionKey` is equal regardless of expression shape
 
+#### Scenario: Normalize a compound dimension
+- **WHEN** runtime dimension multiplication and inversion cancel factors
+- **THEN** the resulting canonical `DimensionKey` is equal regardless of the expression-preserving static shape
+
 #### Scenario: Preserve a product witness expression
 - **WHEN** `DimRef[A]` and `DimRef[B]` are multiplied
 - **THEN** the result is `DimRef[Times[A, B]]` and its key is the canonical product of the input keys
@@ -116,6 +120,17 @@ dimension identity: accepted annotated inputs SHALL have the same private mathem
 #### Scenario: Align a grid quantity after runtime recovery
 - **WHEN** checked dimension equality is available for a grid quantity
 - **THEN** `alignTo` preserves its grid type and integer coordinate while selecting the target dimension type
+
+#### Scenario: Coerce an exact quantity
+- **WHEN** two registry witnesses have checked-equal canonical dimensions and recovery supplies
+  `SameDimension[Source, Target]`
+- **THEN** `Quantity[Source].alignTo[Target]` changes only the phantom dimension type and preserves the exact coefficient;
+  no separate low-level coercion operation is exposed
+
+#### Scenario: Coerce a grid quantity
+- **WHEN** checked dimension equality supplies `SameDimension[Source, Target]` for a grid quantity
+- **THEN** `GridQuantity[Source, G].alignTo[Target]` preserves its grid type and coordinate while changing only the
+  phantom dimension type; no separate low-level coercion operation is exposed
 
 #### Scenario: Consume static and runtime evidence uniformly
 - **WHEN** a caller receives `SameDimension[A, B]` from static derivation or successful runtime recovery
@@ -178,3 +193,97 @@ interpret its path-dependent result type; it SHALL not expose public normalizati
 #### Scenario: Reject heterogeneous dimension mismatch
 - **WHEN** resolved USD and BTC grid quantities are added without a rate
 - **THEN** the operation returns a heterogeneous dimension error without attempting alignment or arithmetic
+
+### Requirement: Public DimRef atom authority is unique
+`DimRef[D]` SHALL be the authoritative public association between an inhabited static dimension type `D` and its
+runtime `DimensionKey`. For every singleton key `K` whose `Atom[K]` is inhabitable through supported public `DimRef`
+APIs, any two publicly obtained values of type `DimRef[Atom[K]]` SHALL have equal `DimensionKey` values. This uniqueness
+requirement SHALL apply only to publicly inhabitable atom types. The set of keys accepted by library-private static
+interpretation MAY be larger, and private acceptance alone SHALL NOT make an atom type runtime-inhabitable.
+
+Public atom construction SHALL bind static and runtime identity at one authority-bearing boundary. Literal construction
+SHALL derive the runtime atom identifier from the accepted literal singleton. Nominal construction SHALL bind the
+result to the supplied stable object's exact singleton type and to the runtime identifier owned by that object.
+Generative and fresh runtime witnesses SHALL bind their path-dependent atom type to the identity captured by that same
+witness. No supported public constructor SHALL accept a caller-selected static atom type independently from a
+caller-selected runtime identity.
+
+The public `DimRef` identity witness SHALL bind `One` to `DimensionKey.one`. Product, inverse, and quotient operations
+SHALL preserve the static/runtime association inductively: each SHALL return `DimRef[Times[A, B]]`,
+`DimRef[Inverse[A]]`, or `DimRef[Divide[A, B]]` and the exactly corresponding runtime key produced from its
+authoritative input keys. Witness algebra SHALL NOT expose a separately selected canonical output. Supported downstream
+code SHALL NOT directly construct or implement `DimRef` to bypass these roots and operations.
+
+#### Scenario: Repeat literal construction
+- **WHEN** supported callers construct `DimRef.atom["BTC"]` more than once
+- **THEN** every result has type `DimRef[Atom["BTC"]]` and the same runtime dimension key derived from `"BTC"`
+
+#### Scenario: Repeat nominal construction
+- **WHEN** a stable `NominalAtom` object is supplied to `DimRef.atom` more than once
+- **THEN** every result retains that object's exact singleton atom type and the same object-owned runtime identity
+
+#### Scenario: Reject caller-selected literal widening
+- **WHEN** a caller supplies different `ValueOf[String & Singleton]` values and requests the same widened
+  `DimRef[Atom[String & Singleton]]` type
+- **THEN** construction is rejected by the concrete-key authority gate before either value can inhabit that widened
+  static atom type
+
+#### Scenario: Reject caller-selected nominal widening
+- **WHEN** distinct nominal objects are widened to a shared nominal singleton supertype before construction
+- **THEN** the results cannot both inhabit one caller-selected `DimRef[Atom[K]]` type and retain their distinct runtime
+  identities
+
+#### Scenario: Preserve generative authority
+- **WHEN** a generative or fresh runtime witness exposes its dimension repeatedly
+- **THEN** that witness's exact path-dependent atom type always denotes the runtime identity captured by that witness,
+  while a different witness has a distinct path-dependent atom type
+
+#### Scenario: Do not totalize privately accepted keys
+- **WHEN** private static interpretation accepts a concrete stable `Atom[K]` key outside the supported public `DimRef`
+  authority sources
+- **THEN** no `DimRef[Atom[K]]` constructor or runtime key is inferred from private interpretation alone
+
+#### Scenario: Do not totalize normalized keys
+- **WHEN** a concrete stable `Atom[K]` key is accepted by library-private static interpretation but lies outside the
+  supported public `DimRef` authority sources
+- **THEN** no `DimRef[Atom[K]]` constructor or runtime key is inferred from that private interpretation
+
+#### Scenario: Preserve authority through witness algebra
+- **WHEN** public `DimRef` product, inverse, or quotient combines authoritative input witnesses
+- **THEN** the returned witness preserves the corresponding `Times`, `Inverse`, or `Divide` expression type and has the
+  exactly matching runtime `DimensionKey` operation result
+
+#### Scenario: Reject downstream witness forgery
+- **WHEN** supported downstream source attempts to implement `DimRef[D]` or invoke an unbound static/runtime constructor
+- **THEN** construction is unavailable and no contradictory runtime identity can inhabit the chosen static type
+
+### Requirement: Checked runtime reconstruction preserves carrier trust
+Registry adoption, checked logical decoding, and heterogeneous result construction SHALL return dimensional carriers
+only through registry-owned dimension and grid witnesses. Every normally returned `Quantity[D]` or
+`GridQuantity[D, G]` inside a resolved runtime carrier SHALL therefore have a valid dimension index and MAY undergo
+index-preserving transformations without a static-dimension capability. A dimension-changing heterogeneous result
+SHALL retain the matching expression-preserving `DimRef` produced from its authoritative inputs.
+
+Raw packed identities, coordinates, and caller-selected type arguments SHALL NOT become dimensional values without the
+existing dimension-first registry checks. Possessing a reconstructed value SHALL NOT allow callers to recover or forge
+its registered witness, registry owner, `DimRef`, runtime key, grid provenance, or private static interpretation; those
+capabilities remain available only from the resolved dependent package and registry APIs.
+
+#### Scenario: Transform a decoded grid value
+- **WHEN** a checked packed record is decoded to a resolved grid quantity and generic code performs same-index grid
+  arithmetic on its value
+- **THEN** the arithmetic requires no static dimension or equivalence capability
+
+#### Scenario: Transform a heterogeneous exact result
+- **WHEN** checked heterogeneous arithmetic returns `ResolvedExactQuantity`
+- **THEN** its dependent `Quantity[result.dimension.D]` can undergo index-preserving arithmetic without a static
+  dimension capability
+
+#### Scenario: Reject unchecked packed construction
+- **WHEN** raw packed data names an unknown, mismatched, foreign, or conflicting dimension or grid identity
+- **THEN** decoding fails before attaching its coordinate to a typed grid carrier
+
+#### Scenario: Keep runtime provenance non-extractable
+- **WHEN** code possesses only the dimensional value stored inside a resolved runtime result
+- **THEN** the value alone does not supply registry ownership, registered grid identity, `DimRef`, `DimensionKey`, or
+  private static-interpretation authority

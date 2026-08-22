@@ -45,8 +45,9 @@ class MultiplicativeArithmeticSuite extends FunSuite:
     val price  =
       usdCentsPerBtc.fromCoordinate:
         6_000_001
-    val product: Quantity[usd.D]  = amount.multiplyExact(price, btcTenths, usdCentsPerBtc)
-    val embedded: Quantity[usd.D] = btcTenths.asQuantity(amount) * usdCentsPerBtc.asQuantity(price)
+    type Product = Times[btc.D, Divide[usd.D, btc.D]]
+    val product: Quantity[Product]  = amount.multiplyExact(price, btcTenths, usdCentsPerBtc)
+    val embedded: Quantity[Product] = btcTenths.asQuantity(amount) * usdCentsPerBtc.asQuantity(price)
 
     assertEquals(product.coefficient, Rational(6000001, 1000))
     assertEquals(product.coefficient, embedded.coefficient)
@@ -55,24 +56,25 @@ class MultiplicativeArithmeticSuite extends FunSuite:
     val amount                    = btcTenths.fromCoordinate(1)
     val price                     = Rate(btc.dimension, usd.dimension, Rational(6000001, 100))
     val notional: Quantity[usd.D] = amount.applyRate(price, btcTenths)
-    val embedded: Quantity[usd.D] = btcTenths.asQuantity(amount) * price
+    val embedded                  = btcTenths.asQuantity(amount) * price
 
     assertEquals(notional.coefficient, Rational(6000001, 1000))
     assertEquals(notional.coefficient, embedded.coefficient)
 
-  test("ordinary rate multiplication exposes the same clean target endpoint"):
-    val amount                    = Quantity(btc.dimension, Rational(1, 10))
-    val price                     = Rate(btc.dimension, usd.dimension, Rational(6000001, 100))
-    val notional: Quantity[usd.D] = amount * price
+  test("ordinary rate multiplication preserves the raw expression"):
+    val amount = Quantity(btc.dimension, Rational(1, 10))
+    val price  = Rate(btc.dimension, usd.dimension, Rational(6000001, 100))
+    val notional: Quantity[Times[btc.D, Divide[usd.D, btc.D]]] = amount * price
 
     assertEquals(notional.coefficient, Rational(6000001, 1000))
 
-  test("ordinary exact multiplication cancels normalized factors"):
+  test("ordinary exact multiplication keeps cancellation explicit"):
     val amount         = Quantity(btc.dimension, Rational(1, 10))
     val priceDimension = DimRef.divide(usd.dimension, btc.dimension)
     val price          = Quantity(priceDimension, Rational(6000001, 100))
 
-    val notional: Quantity[usd.D] = amount * price
+    val raw                       = amount * price
+    val notional: Quantity[usd.D] = raw.alignTo[usd.D]
     assertEquals(notional.coefficient, Rational(6000001, 1000))
 
   test("rate composition exposes clean source and target endpoints"):
@@ -138,13 +140,15 @@ class MultiplicativeArithmeticSuite extends FunSuite:
     assertEquals(gridBtc.multiplyExact(exactUsd, btcTenths).coefficient, Rational(3, 10))
     assertEquals(exactUsd.multiplyExact(gridBtc, btcTenths).coefficient, Rational(3, 10))
 
-  test("mixed grid and exact multiplication shares normalized cancellation"):
+  test("mixed grid and exact multiplication preserves operand expression order"):
     val gridBtc        = btcTenths.fromCoordinate(1)
     val priceDimension = DimRef.divide(usd.dimension, btc.dimension)
     val exactPrice     = Quantity(priceDimension, Rational(6000001, 100))
 
-    val gridFirst: Quantity[usd.D]  = gridBtc.multiplyExact(exactPrice, btcTenths)
-    val exactFirst: Quantity[usd.D] = exactPrice.multiplyExact(gridBtc, btcTenths)
+    val gridFirst: Quantity[Times[btc.D, Divide[usd.D, btc.D]]] =
+      gridBtc.multiplyExact(exactPrice, btcTenths)
+    val exactFirst: Quantity[Times[Divide[usd.D, btc.D], btc.D]] =
+      exactPrice.multiplyExact(gridBtc, btcTenths)
 
     assertEquals(gridFirst.coefficient, Rational(6000001, 1000))
     assertEquals(exactFirst.coefficient, gridFirst.coefficient)

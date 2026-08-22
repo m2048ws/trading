@@ -37,7 +37,7 @@ class RefinementSuite extends FunSuite:
 
   test("generic constructors classify exact and grid quantities"):
     val negativeExact = Quantity(usd.dimension, -1)
-    val zeroExact     = Quantity.zero[usd.D]
+    val zeroExact     = Quantity.zero[usd.D](using usd.dimension)
     val positiveExact = Quantity(usd.dimension, Rational(1, 3))
     val negativeGrid  = cents.fromCoordinate(-1)
     val zeroGrid      = cents.fromCoordinate(0)
@@ -80,7 +80,7 @@ class RefinementSuite extends FunSuite:
       import trading.quantity.refinement.*
       val exact = Quantity(DimRef.one, 1)
       sealed trait G
-      val grid: GridQuantity[One, G] = GridQuantity.zero
+      val grid: GridQuantity[One, G] = GridQuantity.zero(using DimRef.one)
       val checkedExact = Positive(exact).toOption.get
       val checkedGrid = NonNegative(grid).toOption.get
       """
@@ -104,7 +104,7 @@ class RefinementSuite extends FunSuite:
       import trading.quantity.*
       import trading.quantity.refinement.*
       sealed trait G
-      val raw: GridQuantity[One, G] = GridQuantity.zero
+      val raw: GridQuantity[One, G] = GridQuantity.zero(using DimRef.one)
       val forged: NonZero[GridQuantity[One, G]] = raw
       """
 

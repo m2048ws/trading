@@ -21,25 +21,25 @@ object CanonicalKeyMatrix:
   type StableModule = Atom[StableModuleKey.type]
   type StableValue = Atom[stableValueKey.type]
 
-  val literalNormalization = Normalize.derived[Literal]
-  val aliasNormalization = Normalize.derived[AliasedLiteral]
-  val annotatedNormalization = Normalize.derived[AnnotatedLiteral]
-  val nominalNormalization = Normalize.derived[Nominal]
-  val stableModuleNormalization = Normalize.derived[StableModule]
-  val stableValueNormalization = Normalize.derived[StableValue]
+  val literalInterpretation: SameDimension[Times[Literal, One], Literal] = summon
+  val aliasInterpretation: SameDimension[Times[AliasedLiteral, One], AliasedLiteral] = summon
+  val annotatedInterpretation: SameDimension[Times[AnnotatedLiteral, One], AnnotatedLiteral] = summon
+  val nominalInterpretation: SameDimension[Times[Nominal, One], Nominal] = summon
+  val stableModuleInterpretation: SameDimension[Times[StableModule, One], StableModule] = summon
+  val stableValueInterpretation: SameDimension[Times[StableValue, One], StableValue] = summon
 
   val literal: DimRef[Literal] = DimRef.atom["matrix:literal"]
   val nominalFirst: DimRef[Nominal] = DimRef.atom(NominalKey)
   val nominalSecond: DimRef[Nominal] = DimRef.atom(NominalKey)
 
   val generated = DimRef.atomic(AtomId("matrix:generated"))
-  val generatedNormalization = Normalize.derived[generated.D]
+  val generatedInterpretation: SameDimension[Times[generated.D, One], generated.D] = summon
 
   val fresh = DimRef.fresh(DimensionKey.atom(AtomId("matrix:fresh")))
-  val freshNormalization = Normalize.derived[fresh.D]
+  val freshInterpretation: SameDimension[Times[fresh.D, One], fresh.D] = summon
 
   final class ThisKey:
     type D = Atom[this.type]
-    val normalization = Normalize.derived[D]
+    val interpretation: SameDimension[Times[D, One], D] = summon
 
 end CanonicalKeyMatrix
