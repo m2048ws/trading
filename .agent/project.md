@@ -95,7 +95,6 @@ One
 Times[A, B]
 Inverse[A]
 Divide[A, B]
-Normalize[D]
 SameDimension[A, B]
 ```
 
@@ -103,16 +102,22 @@ The exact public surface must always be refreshed from the repository before per
 
 Do not resurrect older static evidence families merely because they appear in historical OpenSpec material or old compiler fixtures.
 
-## Normalize
+## Private Static Interpretation
 
-`Normalize[D]` is concerned with the static dimension language:
+The compiler machinery that validates and canonically interprets closed static
+dimension expressions is library-private.
 
-- validating a closed dimension expression;
-- computing its canonical interpretation/output.
+It supports non-reflexive `SameDimension` derivation and internal coherence
+checks without exposing `Normalize`, `Normalize.Aux`, an associated canonical
+output, or caller-constructible proof tokens.
 
-It is not runtime identity authority.
+Generic dimension-changing arithmetic preserves public expression types such as
+`Times[A, B]`, `Inverse[A]`, and `Divide[A, B]`. A caller that wants another
+equivalent spelling nominates it explicitly through `SameDimension` and
+`alignTo`.
 
-Current and future changes may reduce how visible `Normalize` is to ordinary client code, but such simplification must be proposed explicitly rather than silently introduced during unrelated remediation.
+Private static interpretation is not runtime identity or value-construction
+authority.
 
 ## SameDimension
 
@@ -126,7 +131,24 @@ SameDimension[D,D]
 
 is intentionally structural/type identity and must not be interpreted as proof that `D` is a valid canonical dimension expression.
 
-Its public role may be reduced over time, especially for homogeneous arithmetic, but this must be handled as an explicit API change.
+Homogeneous arithmetic requires the exact same Scala dimension type and consumes
+no `SameDimension` evidence. Different-but-equivalent spellings require an
+explicit `alignTo` transition. Runtime recovery may issue the same restricted
+capability only after authoritative `DimensionKey` equality.
+
+## Trusted Carriers and Construction Authority
+
+Every normally returned `Quantity[D]` and `GridQuantity[D, G]` has a dimension
+index established by an authoritative construction or checked reconstruction
+boundary.
+
+Operations that preserve an existing carrier's dimension therefore require no
+repeated static-dimension or equivalence capability. Manufacturing a value
+without an existing trusted carrier requires `DimRef[D]`, `GridRef[D]`, or a
+documented stronger matching witness.
+
+Possessing a dimensional value does not reveal `DimRef`, `DimensionKey`,
+`SameDimension`, grid identity, or registry provenance.
 
 ## Runtime Dimension Identity
 
@@ -138,11 +160,13 @@ For publicly inhabitable atom types, static/runtime authority must be unique:
 
 Runtime authority is unique for publicly inhabitable `DimRef` keys.
 
-It is not required to be total over every statically normalizable key.
+It is not required to be total over every key accepted by library-private
+static interpretation.
 
 In particular:
 
-> `Normalize[Atom[K]]` does not by itself imply that a public `DimRef[Atom[K]]` must exist.
+> Private acceptance of `Atom[K]` does not imply that a public
+> `DimRef[Atom[K]]` exists.
 
 This separation keeps static grammar validation and runtime witness authority distinct.
 

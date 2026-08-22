@@ -66,11 +66,11 @@ A design question is unresolved.
 Examples:
 
 ```text
-Should SameDimension be removed from homogeneous arithmetic?
+Should a new public proof capability be introduced?
 
-Should existing Quantity[D] values be trusted without Normalize[D]?
+Should the quantities foundation add a domain-level abstraction?
 
-Should Normalize become implementation-private?
+Should a settled authority or provenance boundary change?
 ```
 
 Allowed actions:
@@ -278,11 +278,13 @@ The active OpenSpec semantics are coherent, but implementation fails to satisfy 
 Examples:
 
 ```text
-Normalize accepts Null despite the spec rejecting it.
+The private static interpreter accepts a malformed key despite the spec
+rejecting it.
 
 A public constructor permits widened atom authority.
 
-A dimension-preserving arithmetic method forgot its required validity check.
+A manufacturing operation forgot its required `DimRef` or `GridRef` authority
+check.
 
 A compiler negative fixture misses an ordinary Scala alias path.
 ```
@@ -344,7 +346,7 @@ The only sound implementation requires SameDimension to mean validity.
 
 Fixing arithmetic requires Quantity to store DimRef at runtime.
 
-A blocker can only be solved by changing normalized result typing.
+A blocker can only be solved by changing expression-result typing.
 
 The remediation would implement a PROPOSED or EXPLORING decision.
 ```

@@ -275,8 +275,8 @@ blocking.
 
 # Static / Runtime Atom Authority
 
-For changes touching `DimRef`, atom keys, singleton keys, or normalization,
-review this invariant explicitly:
+For changes touching `DimRef`, atom keys, singleton keys, or private static
+interpretation, review this invariant explicitly:
 
 > One publicly inhabitable static atom identity must not denote contradictory
 > runtime atom identities.
@@ -296,13 +296,15 @@ Can the caller vary one without varying the other?
 Runtime authority is required to be unique over publicly inhabitable `DimRef`
 keys.
 
-It is not required to be total over every key accepted by static normalization.
+It is not required to be total over every key accepted by library-private
+static interpretation.
 
 ---
 
 # Canonical Static Grammar Review
 
-For changes touching static dimensions or `Normalize`, inspect both:
+For changes touching static dimensions, private interpretation, or equivalence
+derivation, inspect both:
 
 ```text
 accepted concrete forms
@@ -332,7 +334,8 @@ The exact grammar comes from the active OpenSpec change and current source.
 
 # Generic Specialization Review
 
-For changes involving macros, dependent types, or type-level normalization,
+For changes involving macros, dependent types, or private type-level
+interpretation,
 check whether generic evidence remains sound after later specialization.
 
 Key question:
@@ -577,7 +580,7 @@ static arithmetic change unexpectedly rewrites registry provenance
 
 SameDimension ergonomics change alters grid identity model
 
-normalization fix introduces a new public evidence family
+static-interpretation fix introduces a new public evidence family
 
 API-only change rewrites build architecture
 ```

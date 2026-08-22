@@ -85,20 +85,24 @@ Canonicalization must be deterministic for supported inputs.
 
 For valid dimension expressions, static dimensional arithmetic and runtime `DimensionKey` arithmetic must denote the same dimension.
 
-## INV-S4 — Normalize is static-language authority
+## INV-S4 — Static interpretation is library-private
 
-`Normalize[D]` concerns:
+Closed-expression validation and canonical mathematical interpretation belong
+to library-private compiler machinery.
 
-- validity of the closed static dimension expression; and
-- its canonical interpretation/output.
+The machinery may support non-reflexive `SameDimension` derivation and internal
+coherence checks, but it must not expose public `Normalize`, associated-output
+evidence, recursive rules, or caller-constructible proof tokens.
 
-It is not by itself runtime `DimRef` inhabitation authority.
+It is not runtime `DimRef` inhabitation or value-construction authority.
 
-## INV-S5 — Normalize does not imply DimRef existence
+## INV-S5 — Private interpretation does not imply DimRef existence
 
-`Normalize[Atom[K]]` does not imply that a public `DimRef[Atom[K]]` must exist.
+Private acceptance of `Atom[K]` does not imply that a public
+`DimRef[Atom[K]]` must exist.
 
-Static normalization authority and runtime witness inhabitation remain distinct concepts.
+Private static interpretation and runtime witness inhabitation remain distinct
+concepts.
 
 ## INV-S6 — SameDimension is equivalence, not validity
 
@@ -116,13 +120,16 @@ Code must not use reflexive `SameDimension` as a substitute for static-dimension
 
 ## INV-S7 — Generic specialization must remain sound
 
-Static evidence or canonical results must not commit to equality, inequality, atomicity, reducibility, or opacity while those facts can still change through later generic specialization.
+Private interpretation or derived equivalence evidence must not commit to
+equality, inequality, atomicity, reducibility, or opacity while those facts can
+still change through later generic specialization.
 
 Local aliases, refinements, dependent selections, or stable local rebinding must not launder unresolved generic structure into trusted static authority.
 
 ## INV-S8 — Public proof authority is minimal
 
-Compiler/macro implementation machinery must not be exposed as composable public evidence merely to implement internal normalization.
+Compiler/macro implementation machinery must not be exposed as composable
+public evidence merely to implement private static interpretation.
 
 Callers must not be able to choose arbitrary canonical outputs or construct trusted evidence for malformed representations through public or package-private helper authority.
 
@@ -145,7 +152,8 @@ same publicly accepted static atom identity
 
 The project requires uniqueness for publicly inhabitable `DimRef` atom types.
 
-It does not require every statically normalizable atom key to have a public runtime `DimRef` constructor.
+It does not require every atom key accepted by private static interpretation to
+have a public runtime `DimRef` constructor.
 
 ## INV-I3 — Runtime equivalence is checked
 
@@ -165,9 +173,12 @@ A generic type widening must not collapse distinct runtime identities into one a
 
 A malformed static dimension claim must not acquire arithmetic capability merely because it satisfies a Scala upper bound or reflexive type equality.
 
-## INV-A2 — Dimension-changing arithmetic validates the complete expression
+## INV-A2 — Dimension-changing arithmetic preserves the complete expression
 
-When arithmetic produces a new dimension expression, validation/canonicalization should operate on the complete resulting expression rather than require redundant independent proofs for each operand unless semantically necessary.
+Generic dimension-changing arithmetic returns the complete public `Times`,
+`Inverse`, or `Divide` expression rather than selecting a public canonical
+output type. Canonical comparison occurs only at an explicit equivalence
+boundary.
 
 ## INV-A3 — Direct and algebra APIs agree
 
@@ -180,6 +191,16 @@ Likewise, direct APIs must not silently have weaker dimensional invariants than 
 Heterogeneous/runtime arithmetic must preserve required registry ownership, provenance, and checked identity semantics.
 
 Static simplification must not weaken runtime provenance rules.
+
+## INV-A5 — Existing dimensional carriers are trusted
+
+For supported callers, every normally returned dimensional carrier has already
+passed an authoritative construction or checked reconstruction boundary.
+
+Operations that preserve its existing dimension index require no repeated
+static-dimension or equivalence capability. Manufacturing a carrier without an
+existing trusted value still requires `DimRef`, `GridRef`, or a documented
+stronger matching witness.
 
 ---
 

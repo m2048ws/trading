@@ -160,8 +160,8 @@ runtime identity, and algebra mechanisms those later modules need.
 Static dimension validity/canonicalization and runtime dimension identity are
 different responsibilities.
 
-A static normalization capability does not automatically imply existence of a
-runtime dimension witness.
+Acceptance by library-private static interpretation does not imply existence of
+a runtime dimension witness.
 
 A runtime `DimRef[D]` carries authority about the runtime `DimensionKey`
 represented by `D`.
@@ -187,12 +187,12 @@ x and y must not denote contradictory runtime atom identities
 ```
 
 The project does **not** require runtime authority to be total over every key
-that may be accepted by static normalization.
+that may be accepted by library-private static interpretation.
 
 In particular:
 
 ```text
-Normalize[Atom[K]]
+private interpretation accepts Atom[K]
 ```
 
 must not be interpreted as implying:
@@ -276,8 +276,9 @@ Archival requires independent approval.
 simplify-static-dimension-model
 ```
 
-The archived change replaced the earlier richer static dimension
-evidence architecture with a smaller model centered conceptually on:
+The archived change replaced the earlier richer static dimension evidence
+architecture. Subsequent approved changes internalized its temporary public
+normalization capability. The current public model is centered conceptually on:
 
 ```scala
 Dimension
@@ -288,25 +289,26 @@ One
 Times[A, B]
 Inverse[A]
 Divide[A, B]
-Normalize[D]
 SameDimension[A, B]
 ```
 
-The exact API must be read from the archived OpenSpec change and current source.
+The exact API must be read from the current canonical OpenSpec specs and source;
+the archived changes explain how that state was reached.
 
 Do not treat this section as a substitute for those artifacts.
 
-The archived change established:
+The accepted change lineage established:
 
-- one normalization capability rather than separate product/quotient/inverse
-  evidence families;
+- library-private closed-expression interpretation rather than a public
+  normalization or associated-output capability;
 - concrete singleton atom keys;
 - static/runtime atom authority through `DimRef`;
 - `SameDimension` remaining equivalence rather than validity;
-- readable source dimension expressions such as `Divide[A,B]`;
-- canonicalization remaining hidden behind the relevant static capability.
+- expression-preserving dimension-changing results such as `Times[A, B]` and
+  `Divide[A, B]`;
+- explicit `alignTo` when a caller nominates an equivalent spelling.
 
-Independent review approved this state, and the OpenSpec change is archived.
+The relevant OpenSpec changes are independently approved and archived.
 
 ---
 
@@ -314,55 +316,53 @@ Independent review approved this state, and the OpenSpec change is archived.
 
 **Status:** SETTLED
 
-**OpenSpec change:**
+**OpenSpec changes:**
 
 ```text
 simplify-static-dimension-model
+demote-same-dimension
+trust-existing-dimensional-values
+internalize-dimension-normalization
 ```
 
-The current conservative model validates dimension-preserving arithmetic with
-the accepted static validity capability.
+The current arithmetic policy is:
 
-The important distinction is:
+- homogeneous addition and subtraction require the exact same Scala dimension
+  type and no contextual dimension evidence;
+- index-preserving operations trust existing normally returned carriers;
+- dimension-changing arithmetic returns its public `Times`, `Inverse`, or
+  `Divide` expression;
+- endpoint-oriented rate operations return their named endpoint types;
+- different-but-equivalent spellings cross only through explicit, non-null
+  `SameDimension` and `alignTo`;
+- manufacturing a carrier without an existing trusted value requires `DimRef`,
+  `GridRef`, or a documented stronger matching witness.
 
-```scala
-Normalize[D]
-```
-
-means the dimension expression is valid,
-
-while:
-
-```scala
-Normalize.Aux[D, D]
-```
-
-would additionally require the input spelling itself to already be canonical.
-
-Valid source expressions such as rate dimensions must not be forced into
-canonical spelling merely to perform preserving arithmetic.
-
-This policy may be simplified by a later explicit change, but must not be
-silently weakened during unrelated work.
+Malformed indices are rejected at supported construction and checked
+reconstruction roots. An otherwise uncallable method body over a hypothetical
+malformed carrier may type-check for index-preserving operations; that does not
+create public construction authority.
 
 ---
 
-# Proposed Future Decisions
+# Settled Follow-up Decisions
+
+The `P` and `E` identifiers below retain their historical names, but their
+directions were explicitly selected, implemented, independently reviewed, and
+archived.
 
 ## DEC-P01 — Demote SameDimension from homogeneous arithmetic
 
-**Status:** PROPOSED
+**Status:** SETTLED
 
-**Suggested future OpenSpec change:**
+**OpenSpec change:**
 
 ```text
 demote-same-dimension
 ```
 
-Proposed direction:
-
-Ordinary homogeneous arithmetic should operate on exactly the same static
-dimension type.
+Ordinary homogeneous arithmetic operates on exactly the same static dimension
+type.
 
 Conceptually, prefer:
 
@@ -378,7 +378,7 @@ def +[E <: Dimension](
 )(using SameDimension[D,E]): Quantity[D]
 ```
 
-`SameDimension` would remain for:
+`SameDimension` remains for:
 
 - explicit alignment between different-but-equivalent static expressions;
 - checked runtime equivalence recovery;
@@ -394,36 +394,35 @@ def total[D <: Dimension](
   left + right
 ```
 
-Different static spellings would require an explicit transition such as:
+Different static spellings require an explicit transition such as:
 
 ```scala
 right.alignTo[D]
 ```
 
-This is not yet settled.
-
-Do not implement it during unrelated work.
+The archived change established this behavior for exact quantities, grid
+quantities, refinements, algebra instances, and downstream compiler boundaries.
 
 ---
 
 ## DEC-P02 — Trust existing dimensional values for preserving operations
 
-**Status:** PROPOSED
+**Status:** SETTLED
 
-**Suggested future OpenSpec change:**
+**OpenSpec change:**
 
 ```text
 trust-existing-dimensional-values
 ```
 
-Proposed invariant:
+Accepted invariant:
 
 > If a `Quantity[D]` or `GridQuantity[D,G]` already exists through supported
 > public construction, its dimension validity was established at the
 > construction boundary.
 
-If this invariant can be proved across the whole public API, operations that
-preserve `D` would no longer require repeated normalization evidence.
+Operations that preserve `D` require no repeated static-dimension or
+equivalence evidence.
 
 Example target ergonomics:
 
@@ -444,46 +443,39 @@ def scale[D <: Dimension](
   value * factor
 ```
 
-without:
-
-```scala
-using Normalize[D]
-```
-
-Validity authority would remain necessary where a value is manufactured without
-an existing trusted value, for example potentially:
+Authority remains necessary where a value is manufactured without an existing
+trusted carrier, for example:
 
 ```scala
 Quantity.zero[D]
 ```
 
-and where a new dimension expression is computed.
+which requires an authoritative `DimRef[D]`. `GridQuantity.zero[D, G]`
+likewise requires `DimRef[D]` unless a matching grid witness owns the
+construction.
 
-This change requires a complete audit of all public value-construction paths.
-
-It is not yet settled.
+Possessing a carrier does not reveal its dimension witness, grid witness,
+runtime key, or registry provenance.
 
 ---
 
 ## DEC-P03 — Freeze static dimension authority after current remediation
 
-**Status:** PROPOSED
+**Status:** SETTLED
 
-**Suggested future OpenSpec change:**
+**OpenSpec change:**
 
 ```text
 freeze-static-dimension-authority
 ```
 
-After `simplify-static-dimension-model` is independently approved, consider a
-small explicit baseline/freeze change if useful to document the accepted
-authority boundaries.
-
-The goal would be to make the following responsibilities explicit and stable:
+The archived freeze established explicit authority boundaries. Later approved
+changes refined its static side by internalizing normalization; the current
+settled responsibilities are:
 
 ```text
-static expression validity/canonicalization
-    -> Normalize or its accepted successor
+closed-expression interpretation
+    -> library-private compiler machinery
 
 runtime inhabitation/identity
     -> DimRef
@@ -496,42 +488,41 @@ exact value
 
 grid coordinate
     -> GridQuantity
+
+grid construction and exact embedding
+    -> GridRef
 ```
 
-This may prove unnecessary if the active simplification change already captures
-the final authority model sufficiently.
-
-Do not create this change merely for process symmetry.
+These capabilities remain independent: private static acceptance does not
+create runtime inhabitation, equivalence does not certify reflexive validity,
+and value possession does not reveal authority or provenance.
 
 ---
 
-# Exploratory Decisions
+# Settled Exploration Outcomes
 
 ## DEC-E01 — Internalize dimension normalization
 
-**Status:** EXPLORING
+**Status:** SETTLED
 
-**Suggested exploration/change name:**
+**OpenSpec change:**
 
 ```text
 internalize-dimension-normalization
 ```
 
-Question:
-
-Can public reliance on:
+The public capabilities:
 
 ```scala
 Normalize[D]
 Normalize.Aux[D, O]
 ```
 
-be substantially reduced or removed without harming useful generic downstream
-programming?
+were removed without replacing them with another public associated-output
+capability. The private interpreter remains solely for closed-expression
+validation, non-reflexive equivalence derivation, and internal coherence.
 
-Potential direction:
-
-Dimension-changing arithmetic could preserve expression types directly:
+Generic dimension-changing arithmetic preserves expression types directly:
 
 ```scala
 Quantity[A] * Quantity[B]
@@ -543,68 +534,46 @@ could return:
 Quantity[Times[A,B]]
 ```
 
-rather than requiring public canonical-output evidence.
-
-Canonical equivalence could be requested explicitly at boundaries.
-
-However, public normalization currently provides an important advanced
-capability:
+rather than requiring public canonical-output evidence. Generic callers may
+nominate an equivalent output explicitly:
 
 ```scala
-Normalize.Aux[Expression, O]
+SameDimension[Times[A, B], O]
 ```
 
-allows downstream generic libraries to ask the compiler to compute a canonical
-output type `O` and reuse `O` in their own APIs.
-
-That extensibility cost must be evaluated before normalization is internalized.
-
-No outcome is currently selected.
-
-Do not implement this idea merely to reduce the number of public concepts.
+and use `alignTo[O]`. Endpoint-oriented rate APIs retain their named result
+types. No compatibility alias or replacement associated-output evidence is
+part of the public API.
 
 ---
 
 ## DEC-E02 — Replace type-only zero construction with witness-based construction
 
-**Status:** EXPLORING
+**Status:** SETTLED
 
-If trusted-value semantics are adopted, manufacturing a quantity from only:
+**OpenSpec change:**
+
+```text
+internalize-dimension-normalization
+```
+
+Manufacturing a quantity from only:
 
 ```scala
 D <: Dimension
 ```
 
-still requires an authority source.
-
-One possible future API is:
+requires an authority source. The accepted API is:
 
 ```scala
-Quantity.zero(dimRef)
+Quantity.zero[D](using DimRef[D])
 ```
 
-or:
-
-```scala
-dimRef.zero
-```
-
-rather than:
-
-```scala
-Quantity.zero[D](using Normalize[D])
-```
-
-This could move construction authority toward `DimRef`.
-
-Tradeoffs include:
-
-- ergonomics for generic empty folds;
-- algebra identity instances;
-- availability of runtime witnesses for composite dimensions;
-- distinction between static validity and runtime inhabitation.
-
-No decision has been made.
+`GridQuantity.zero[D, G]` likewise requires `DimRef[D]` unless a matching grid
+witness owns the construction. Coefficient-bearing quantity construction,
+runtime rate construction, refinements that manufacture values, and
+identity-bearing algebra follow the same authority rule. Existing carriers may
+still undergo index-preserving transformations without repeated authority.
 
 ---
 
@@ -661,7 +630,9 @@ DimensionAlignment
 ```
 
 The archived simplified static-dimension change replaced this architecture
-with a smaller normalization-centered model.
+with a smaller model. Its public normalization capability was subsequently
+internalized; current clients use expression-preserving results and explicit
+`SameDimension` alignment.
 
 Historical references do not justify restoring those APIs.
 

@@ -810,12 +810,12 @@ Tell the worker:
 do not implement these future ideas as incidental cleanup
 ```
 
-For example, while applying a key-authority fix:
+For example, while applying a narrowly scoped authority fix:
 
 ```text
-do not also demote SameDimension
-do not also trust existing values without Normalize
-do not internalize Normalize
+do not also weaken grid provenance
+do not add a domain model
+do not expose private static-interpretation machinery
 ```
 
 unless those are part of the active OpenSpec change.

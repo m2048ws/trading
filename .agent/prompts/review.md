@@ -365,7 +365,8 @@ Use scope judgment: do not audit unrelated subsystems merely because they exist.
 
 # Public Authority Audit
 
-For changes involving proofs, witnesses, normalization, runtime identity, or dependent outputs, inspect public/package-visible authority.
+For changes involving proofs, witnesses, private static interpretation, runtime
+identity, or dependent outputs, inspect public/package-visible authority.
 
 Ask:
 

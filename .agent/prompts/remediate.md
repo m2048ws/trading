@@ -218,8 +218,8 @@ implementing a PROPOSED or EXPLORING decision from decisions.md
 
 introducing a new authority concept
 
-moving a responsibility between Normalize / SameDimension / DimRef / Quantity
-in a way not authorized by the active change
+moving a responsibility between private static interpretation / SameDimension /
+DimRef / Quantity in a way not authorized by the active change
 
 redesigning grid or registry provenance
 
@@ -336,7 +336,7 @@ Do not add evidence to observation-only operations merely for symmetry.
 For `DimRef` or singleton-key findings, preserve:
 
 ```text
-static normalization authority
+private static-interpretation authority
 !=
 runtime witness inhabitation authority
 ```
@@ -447,12 +447,12 @@ relevant invariants
 
 Unexpected architectural changes must be removed, justified, or escalated.
 
-Do not opportunistically implement future items such as:
+Do not opportunistically implement:
 
 ```text
-demote SameDimension
-trust existing dimensional values
-internalize Normalize
+any PROPOSED or EXPLORING decision named in decisions.md
+a separate API simplification
+a broader authority or provenance change
 ```
 
 unless they are the active approved change.
