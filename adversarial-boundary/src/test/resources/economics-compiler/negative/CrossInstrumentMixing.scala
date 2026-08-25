@@ -20,16 +20,18 @@ object CrossInstrumentMixing:
     secondSchedule: second.FeeSchedule
   ): Unit =
     val _ = first.lotCount(firstLots)
-    val _ = first.priceCoordinate(firstPrice)
-    val _ = first.calculatePnl(firstRoundTrip, firstSchedule)
+    val _ = first.prices.ticks(firstPrice)
+    val _ = first.valuation.pnl(firstRoundTrip, firstSchedule)
 
     // OFFENDING-BEGIN
     val _ = first.lotCount(secondLots)
-    val _ = first.priceCoordinate(secondPrice)
-    val _ = first.orderScenario(firstScenario.order, secondScenario.slices)
-    val _ = first.calculatePnl(secondRoundTrip, firstSchedule)
-    val _ = first.calculatePnl(firstRoundTrip, secondSchedule)
-    val _ = first.sizePosition(
+    val _: first.Prices = second.prices
+    val _: first.Orders = second.orders
+    val _ = first.prices.ticks(secondPrice)
+    val _ = first.scenarios.order(firstScenario.order, secondScenario.slices)
+    val _ = first.valuation.pnl(secondRoundTrip, firstSchedule)
+    val _ = first.valuation.pnl(firstRoundTrip, secondSchedule)
+    val _ = first.sizing.maxLots(
       Quantity(first.settle.dimension.asDimensionRef, Rational.one),
       PositiveWhole(1).toOption.get,
       firstSchedule

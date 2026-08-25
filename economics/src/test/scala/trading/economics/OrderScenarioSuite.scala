@@ -8,9 +8,9 @@ class OrderScenarioSuite extends FunSuite:
 
   test("order vocabulary retains every independent instruction axis"):
     val lots      = instrument.lots(10).toOption.get
-    val displayed = instrument.icebergVisibility(instrument.lots(3).toOption.get)
+    val displayed = instrument.orders.icebergVisibility(instrument.lots(3).toOption.get)
     val order     = instrument
-      .limitOrder(
+      .orders.limit(
         Side.Sell,
         lots,
         fixture.price(instrument, 100),
@@ -33,32 +33,32 @@ class OrderScenarioSuite extends FunSuite:
   test("universal compatibility checks reject impossible market and iceberg combinations"):
     val lots = instrument.lots(10).toOption.get
 
-    val makerMarket = instrument.order(
+    val makerMarket = instrument.orders.checked(
       Side.Buy,
       lots,
-      instrument.immediateActivation,
-      instrument.marketPriceInstruction,
+      instrument.orders.immediateActivation,
+      instrument.orders.marketPriceInstruction,
       TimeInForce.ImmediateOrCancel,
       LiquidityConstraint.MakerOnly,
       PositionEffect.Unrestricted,
-      instrument.notApplicableVisibility
+      instrument.orders.notApplicableVisibility
     )
-    val restingMarket = instrument.order(
+    val restingMarket = instrument.orders.checked(
       Side.Buy,
       lots,
-      instrument.immediateActivation,
-      instrument.marketPriceInstruction,
+      instrument.orders.immediateActivation,
+      instrument.orders.marketPriceInstruction,
       TimeInForce.GoodTillCancelled,
       LiquidityConstraint.Unrestricted,
       PositionEffect.Unrestricted,
-      instrument.notApplicableVisibility
+      instrument.orders.notApplicableVisibility
     )
-    val nonRestingIceberg = instrument.limitOrder(
+    val nonRestingIceberg = instrument.orders.limit(
       Side.Buy,
       lots,
       fixture.price(instrument, 100),
       TimeInForce.ImmediateOrCancel,
-      visibility = instrument.icebergVisibility(instrument.lots(2).toOption.get)
+      visibility = instrument.orders.icebergVisibility(instrument.lots(2).toOption.get)
     )
 
     assert(makerMarket.isLeft)
@@ -67,102 +67,102 @@ class OrderScenarioSuite extends FunSuite:
 
   test("fixed trigger evidence is distinct from the matched market state"):
     val lots    = instrument.lots(10).toOption.get
-    val trigger = instrument.fixedTrigger(
+    val trigger = instrument.orders.fixedTrigger(
       PriceReference.Mark,
       TriggerComparison.AtOrBelow,
       fixture.price(instrument, 100)
     )
-    val order        = instrument.stopMarketOrder(Side.Sell, lots, trigger).toOption.get
-    val matchedState = instrument.marketStateForQuote(fixture.price(instrument, 90)).toOption.get
-    val slice        = instrument.liquiditySlice(lots, matchedState, LiquidityRole.Taker)
-    val evidence     = instrument.fixedTriggerEvidence(PriceReference.Mark, fixture.price(instrument, 99))
+    val order        = instrument.orders.stopMarket(Side.Sell, lots, trigger).toOption.get
+    val matchedState = instrument.market.quoteSettled(fixture.price(instrument, 90)).toOption.get
+    val slice        = instrument.scenarios.slice(lots, matchedState, LiquidityRole.Taker)
+    val evidence     = instrument.scenarios.fixedTriggerEvidence(PriceReference.Mark, fixture.price(instrument, 99))
 
-    assert(instrument.orderScenario(order, Vector(slice)).isLeft)
-    val scenario = instrument.orderScenario(order, Vector(slice), Some(evidence)).toOption.get
-    assertEquals(instrument.priceCoordinate(scenario.activationEvidence.get.observedPrice), BigInt(198))
-    assertEquals(instrument.priceCoordinate(scenario.slices.head.market.price), BigInt(180))
+    assert(instrument.scenarios.order(order, Vector(slice)).isLeft)
+    val scenario = instrument.scenarios.order(order, Vector(slice), Some(evidence)).toOption.get
+    assertEquals(instrument.prices.ticks(scenario.activationEvidence.get.observedPrice), BigInt(198))
+    assertEquals(instrument.prices.ticks(scenario.slices.head.market.price), BigInt(180))
 
   test("trailing triggers derive a checked tick threshold"):
     val lots    = instrument.lots(10).toOption.get
     val trigger = instrument
-      .trailingTrigger(PriceReference.Last, TriggerComparison.AtOrBelow, 4)
+      .orders.trailingTrigger(PriceReference.Last, TriggerComparison.AtOrBelow, 4)
       .toOption
       .get
-    val order    = instrument.stopMarketOrder(Side.Sell, lots, trigger).toOption.get
-    val market   = instrument.marketStateForQuote(fixture.price(instrument, 98)).toOption.get
-    val slice    = instrument.liquiditySlice(lots, market, LiquidityRole.Taker)
-    val evidence = instrument.trailingTriggerEvidence(
+    val order    = instrument.orders.stopMarket(Side.Sell, lots, trigger).toOption.get
+    val market   = instrument.market.quoteSettled(fixture.price(instrument, 98)).toOption.get
+    val slice    = instrument.scenarios.slice(lots, market, LiquidityRole.Taker)
+    val evidence = instrument.scenarios.trailingTriggerEvidence(
       PriceReference.Last,
       fixture.price(instrument, 100),
       fixture.price(instrument, 98)
     )
 
-    assert(instrument.orderScenario(order, Vector(slice), Some(evidence)).isRight)
-    assert(instrument.trailingTrigger(PriceReference.Last, TriggerComparison.AtOrBelow, 0).isLeft)
+    assert(instrument.scenarios.order(order, Vector(slice), Some(evidence)).isRight)
+    assert(instrument.orders.trailingTrigger(PriceReference.Last, TriggerComparison.AtOrBelow, 0).isLeft)
 
   test("peg resolution validates the exact signed tick difference"):
     val lots        = instrument.lots(10).toOption.get
-    val instruction = instrument.peggedPriceInstruction(PriceReference.Mark, -2)
+    val instruction = instrument.orders.peggedPriceInstruction(PriceReference.Mark, -2)
     val order       = instrument
-      .order(
+      .orders.checked(
         Side.Buy,
         lots,
-        instrument.immediateActivation,
+        instrument.orders.immediateActivation,
         instruction,
         TimeInForce.GoodTillCancelled,
         LiquidityConstraint.Unrestricted,
         PositionEffect.Unrestricted,
-        instrument.displayedVisibility
+        instrument.orders.displayedVisibility
       )
       .toOption
       .get
-    val state = instrument.marketStateForQuote(fixture.price(instrument, 99)).toOption.get
-    val slice = instrument.liquiditySlice(lots, state, LiquidityRole.Maker)
-    val valid = instrument.pegResolution(
+    val state = instrument.market.quoteSettled(fixture.price(instrument, 99)).toOption.get
+    val slice = instrument.scenarios.slice(lots, state, LiquidityRole.Maker)
+    val valid = instrument.scenarios.pegResolution(
       PriceReference.Mark,
       fixture.price(instrument, 100),
       fixture.price(instrument, 99)
     )
-    val invalid = instrument.pegResolution(
+    val invalid = instrument.scenarios.pegResolution(
       PriceReference.Mark,
       fixture.price(instrument, 100),
       fixture.price(instrument, 98)
     )
 
-    assert(instrument.orderScenario(order, Vector(slice), pegResolution = Some(valid)).isRight)
-    assert(instrument.orderScenario(order, Vector(slice), pegResolution = Some(invalid)).isLeft)
+    assert(instrument.scenarios.order(order, Vector(slice), pegResolution = Some(valid)).isRight)
+    assert(instrument.scenarios.order(order, Vector(slice), pegResolution = Some(invalid)).isLeft)
 
   test("complete scenarios enforce role, limit, and exact lot conservation"):
     val lots  = instrument.lots(10).toOption.get
-    val order = instrument.limitOrder(Side.Buy, lots, fixture.price(instrument, 100)).toOption.get
-    val first = instrument.liquiditySlice(
+    val order = instrument.orders.limit(Side.Buy, lots, fixture.price(instrument, 100)).toOption.get
+    val first = instrument.scenarios.slice(
       instrument.lots(4).toOption.get,
-      instrument.marketStateForQuote(fixture.price(instrument, 99)).toOption.get,
+      instrument.market.quoteSettled(fixture.price(instrument, 99)).toOption.get,
       LiquidityRole.Taker
     )
-    val second = instrument.liquiditySlice(
+    val second = instrument.scenarios.slice(
       instrument.lots(6).toOption.get,
-      instrument.marketStateForQuote(fixture.price(instrument, 100)).toOption.get,
+      instrument.market.quoteSettled(fixture.price(instrument, 100)).toOption.get,
       LiquidityRole.Maker
     )
-    val tooExpensive = instrument.liquiditySlice(
+    val tooExpensive = instrument.scenarios.slice(
       instrument.lots(6).toOption.get,
-      instrument.marketStateForQuote(fixture.price(instrument, 101)).toOption.get,
+      instrument.market.quoteSettled(fixture.price(instrument, 101)).toOption.get,
       LiquidityRole.Maker
     )
 
-    val complete = instrument.orderScenario(order, Vector(first, second)).toOption.get
+    val complete = instrument.scenarios.order(order, Vector(first, second)).toOption.get
     assertEquals(complete.slices.map(slice => instrument.lotCount(slice.lots)), Vector(BigInt(4), BigInt(6)))
-    assert(instrument.orderScenario(order, Vector(first)).isLeft)
-    assert(instrument.orderScenario(order, Vector(first, tooExpensive)).isLeft)
+    assert(instrument.scenarios.order(order, Vector(first)).isLeft)
+    assert(instrument.scenarios.order(order, Vector(first, tooExpensive)).isLeft)
 
-    val marketOrder = instrument.marketOrder(Side.Buy, lots).toOption.get
-    assert(instrument.orderScenario(marketOrder, Vector(first, second)).isLeft)
+    val marketOrder = instrument.orders.market(Side.Buy, lots).toOption.get
+    assert(instrument.scenarios.order(marketOrder, Vector(first, second)).isLeft)
 
   test("maker-only complete scenarios accept only maker slices"):
     val lots  = instrument.lots(10).toOption.get
     val order = instrument
-      .limitOrder(
+      .orders.limit(
         Side.Buy,
         lots,
         fixture.price(instrument, 100),
@@ -170,30 +170,30 @@ class OrderScenarioSuite extends FunSuite:
       )
       .toOption
       .get
-    val market = instrument.marketStateForQuote(fixture.price(instrument, 100)).toOption.get
-    val maker  = instrument.liquiditySlice(lots, market, LiquidityRole.Maker)
-    val taker  = instrument.liquiditySlice(lots, market, LiquidityRole.Taker)
+    val market = instrument.market.quoteSettled(fixture.price(instrument, 100)).toOption.get
+    val maker  = instrument.scenarios.slice(lots, market, LiquidityRole.Maker)
+    val taker  = instrument.scenarios.slice(lots, market, LiquidityRole.Taker)
 
-    assert(instrument.orderScenario(order, Vector(maker)).isRight)
-    assert(instrument.orderScenario(order, Vector(taker)).isLeft)
+    assert(instrument.scenarios.order(order, Vector(maker)).isRight)
+    assert(instrument.scenarios.order(order, Vector(taker)).isLeft)
 
   test("round trips preserve both legs and require exact flatness"):
     val lots      = instrument.lots(10).toOption.get
     val entry     = completeMarket(Side.Buy, lots, 100)
     val exit      = completeMarket(Side.Sell, lots, 110)
-    val roundTrip = instrument.roundTrip(entry, exit).toOption.get
+    val roundTrip = instrument.scenarios.roundTrip(entry, exit).toOption.get
 
     assertEquals(instrument.positionLotCount(roundTrip.heldPosition), BigInt(10))
     assertEquals(roundTrip.entry.slices.size, 1)
     assertEquals(roundTrip.exit.slices.size, 1)
 
     val smallerExit = completeMarket(Side.Sell, instrument.lots(9).toOption.get, 110)
-    assert(instrument.roundTrip(entry, smallerExit).isLeft)
+    assert(instrument.scenarios.roundTrip(entry, smallerExit).isLeft)
 
   private def completeMarket(side: Side, lots: instrument.Lots, dollars: BigInt): instrument.OrderScenario =
-    val order  = instrument.marketOrder(side, lots).toOption.get
-    val market = instrument.marketStateForQuote(fixture.price(instrument, dollars)).toOption.get
-    val slice  = instrument.liquiditySlice(lots, market, LiquidityRole.Taker)
-    instrument.orderScenario(order, Vector(slice)).toOption.get
+    val order  = instrument.orders.market(side, lots).toOption.get
+    val market = instrument.market.quoteSettled(fixture.price(instrument, dollars)).toOption.get
+    val slice  = instrument.scenarios.slice(lots, market, LiquidityRole.Taker)
+    instrument.scenarios.order(order, Vector(slice)).toOption.get
 
 end OrderScenarioSuite

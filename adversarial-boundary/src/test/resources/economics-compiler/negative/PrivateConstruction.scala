@@ -13,7 +13,7 @@ object PrivateConstruction:
     fee: instrument.Fee
   ): Unit =
     val _ = instrument.lotCount(lots)
-    val _ = instrument.priceCoordinate(price)
+    val _ = instrument.prices.ticks(price)
     val _ = order.side
     val _ = scenario.slices
     val _ = fee.coordinate

@@ -12,6 +12,7 @@ import trading.quantity.runtime.*
  * scenarios are conditional calculation inputs: they are not executions, fills, reports, or account state.
  */
 sealed trait Instrument extends JavaSerializationUnsupported:
+  // Stable identity, immutable contract metadata, and path-owned public values.
   val id: InstrumentId
   val underlying: UnderlyingId
   val base: AssetRef
@@ -38,14 +39,21 @@ sealed trait Instrument extends JavaSerializationUnsupported:
   def positionQuantity(value: PositionLots): Quantity[position.D]
   def flatPosition: PositionLots
 
-  def price(coordinate: BigInt): Either[EconomicsError, Price]
-  def priceExactly(value: Rate[base.D, quote.D]): Either[EconomicsError, Price]
-  def quantizePrice(
-    value: Rate[base.D, quote.D],
-    policy: QuantizationPolicy
-  ): Either[EconomicsError, (Price, Quantity[Divide[quote.D, base.D]])]
-  def priceCoordinate(value: Price): BigInt
-  def priceRate(value: Price): Rate[base.D, quote.D]
+  sealed trait Prices extends JavaSerializationUnsupported:
+    def exact(coefficient: Rational): Either[EconomicsError, Price]
+    def fromRate(value: Rate[base.D, quote.D]): Either[EconomicsError, Price]
+    def fromTicks(ticks: PositiveWhole): Price
+    def quantize(
+      coefficient: Rational,
+      policy: QuantizationPolicy
+    ): Either[EconomicsError, (Price, Quantity[Divide[quote.D, base.D]])]
+    def quantizeRate(
+      value: Rate[base.D, quote.D],
+      policy: QuantizationPolicy
+    ): Either[EconomicsError, (Price, Quantity[Divide[quote.D, base.D]])]
+    def ticks(value: Price): BigInt
+    def coefficient(value: Price): Rational
+    def rate(value: Price): Rate[base.D, quote.D]
 
   sealed trait SettlementConversions extends JavaSerializationUnsupported:
     def sources: Vector[AssetId]
@@ -54,54 +62,58 @@ sealed trait Instrument extends JavaSerializationUnsupported:
     def price: Price
     def conversions: SettlementConversions
 
-  def marketStateForQuote(
-    price: Price,
-    additional: Vector[SettlementConversion] = Vector.empty
-  ): Either[EconomicsError, MarketState]
-
-  def marketStateForBase(
-    price: Price,
-    additional: Vector[SettlementConversion] = Vector.empty
-  ): Either[EconomicsError, MarketState]
-
-  def marketStateFromQuote(
-    price: Price,
-    quoteToSettle: Rate[quote.D, settle.D],
-    additional: Vector[SettlementConversion] = Vector.empty
-  ): Either[EconomicsError, MarketState]
-
-  def marketStateFromBase(
-    price: Price,
-    baseToSettle: Rate[base.D, settle.D],
-    additional: Vector[SettlementConversion] = Vector.empty
-  ): Either[EconomicsError, MarketState]
-
-  def marketStateChecked(
-    price: Price,
-    baseToSettle: Rate[base.D, settle.D],
-    quoteToSettle: Rate[quote.D, settle.D],
-    additional: Vector[SettlementConversion] = Vector.empty
-  ): Either[EconomicsError, MarketState]
-
-  def convertToSettle(
-    conversions: SettlementConversions,
-    source: AssetRef
-  )(
-    value: Quantity[source.D]
-  ): Either[EconomicsError, Quantity[settle.D]]
-
-  def settleValuePerPosition(state: MarketState): Rate[position.D, settle.D]
-  def positionValue(value: PositionLots, state: MarketState): Quantity[settle.D]
-  def pricePnl(value: PositionLots, entry: MarketState, exit: MarketState): Quantity[settle.D]
+  sealed trait Market extends JavaSerializationUnsupported:
+    def quoteSettled(
+      price: Price,
+      additionalConversions: Vector[SettlementConversion] = Vector.empty
+    ): Either[EconomicsError, MarketState]
+    def baseSettled(
+      price: Price,
+      additionalConversions: Vector[SettlementConversion] = Vector.empty
+    ): Either[EconomicsError, MarketState]
+    def fromQuoteAnchor(
+      price: Price,
+      quoteToSettle: Rational,
+      additionalConversions: Vector[SettlementConversion] = Vector.empty
+    ): Either[EconomicsError, MarketState]
+    def fromBaseAnchor(
+      price: Price,
+      baseToSettle: Rational,
+      additionalConversions: Vector[SettlementConversion] = Vector.empty
+    ): Either[EconomicsError, MarketState]
+    def fromAnchors(
+      price: Price,
+      baseToSettle: Rational,
+      quoteToSettle: Rational,
+      additionalConversions: Vector[SettlementConversion] = Vector.empty
+    ): Either[EconomicsError, MarketState]
+    def fromQuoteRate(
+      price: Price,
+      quoteToSettle: Rate[quote.D, settle.D],
+      additionalConversions: Vector[SettlementConversion] = Vector.empty
+    ): Either[EconomicsError, MarketState]
+    def fromBaseRate(
+      price: Price,
+      baseToSettle: Rate[base.D, settle.D],
+      additionalConversions: Vector[SettlementConversion] = Vector.empty
+    ): Either[EconomicsError, MarketState]
+    def fromRates(
+      price: Price,
+      baseToSettle: Rate[base.D, settle.D],
+      quoteToSettle: Rate[quote.D, settle.D],
+      additionalConversions: Vector[SettlementConversion] = Vector.empty
+    ): Either[EconomicsError, MarketState]
+    def convertToSettle(
+      source: AssetRef,
+      conversions: SettlementConversions
+    )(
+      value: Quantity[source.D]
+    ): Either[EconomicsError, Quantity[settle.D]]
+  end Market
 
   sealed trait Visibility extends JavaSerializationUnsupported:
     def kind: VisibilityKind
     def displayedLots: Option[Lots]
-
-  def notApplicableVisibility: Visibility
-  def displayedVisibility: Visibility
-  def hiddenVisibility: Visibility
-  def icebergVisibility(displayedLots: Lots): Visibility
 
   sealed trait Activation extends JavaSerializationUnsupported:
     def kind: ActivationKind
@@ -110,27 +122,11 @@ sealed trait Instrument extends JavaSerializationUnsupported:
     def triggerPrice: Option[Price]
     def trailingOffsetTicks: Option[BigInt]
 
-  def immediateActivation: Activation
-  def fixedTrigger(
-    reference: PriceReference,
-    comparison: TriggerComparison,
-    triggerPrice: Price
-  ): Activation
-  def trailingTrigger(
-    reference: PriceReference,
-    comparison: TriggerComparison,
-    offsetTicks: BigInt
-  ): Either[EconomicsError, Activation]
-
   sealed trait PriceInstruction extends JavaSerializationUnsupported:
     def kind: PriceInstructionKind
     def limit: Option[Price]
     def reference: Option[PriceReference]
     def offsetTicks: Option[BigInt]
-
-  def marketPriceInstruction: PriceInstruction
-  def limitPriceInstruction(limit: Price): PriceInstruction
-  def peggedPriceInstruction(reference: PriceReference, offsetTicks: BigInt): PriceInstruction
 
   sealed trait Order extends JavaSerializationUnsupported:
     def side: Side
@@ -142,76 +138,77 @@ sealed trait Instrument extends JavaSerializationUnsupported:
     def positionEffect: PositionEffect
     def visibility: Visibility
 
-  def order(
-    side: Side,
-    lots: Lots,
-    activation: Activation,
-    priceInstruction: PriceInstruction,
-    timeInForce: TimeInForce,
-    liquidityConstraint: LiquidityConstraint,
-    positionEffect: PositionEffect,
-    visibility: Visibility
-  ): Either[EconomicsError, Order]
-
-  def marketOrder(
-    side: Side,
-    lots: Lots,
-    positionEffect: PositionEffect = PositionEffect.Unrestricted
-  ): Either[EconomicsError, Order]
-
-  def limitOrder(
-    side: Side,
-    lots: Lots,
-    limit: Price,
-    timeInForce: TimeInForce = TimeInForce.GoodTillCancelled,
-    liquidityConstraint: LiquidityConstraint = LiquidityConstraint.Unrestricted,
-    positionEffect: PositionEffect = PositionEffect.Unrestricted,
-    visibility: Visibility = displayedVisibility
-  ): Either[EconomicsError, Order]
-
-  def stopMarketOrder(
-    side: Side,
-    lots: Lots,
-    trigger: Activation,
-    positionEffect: PositionEffect = PositionEffect.Unrestricted
-  ): Either[EconomicsError, Order]
-
-  def stopLimitOrder(
-    side: Side,
-    lots: Lots,
-    trigger: Activation,
-    limit: Price,
-    timeInForce: TimeInForce = TimeInForce.GoodTillCancelled,
-    liquidityConstraint: LiquidityConstraint = LiquidityConstraint.Unrestricted,
-    positionEffect: PositionEffect = PositionEffect.Unrestricted,
-    visibility: Visibility = displayedVisibility
-  ): Either[EconomicsError, Order]
+  sealed trait Orders extends JavaSerializationUnsupported:
+    def notApplicableVisibility: Visibility
+    def displayedVisibility: Visibility
+    def hiddenVisibility: Visibility
+    def icebergVisibility(displayedLots: Lots): Visibility
+    def immediateActivation: Activation
+    def fixedTrigger(reference: PriceReference, comparison: TriggerComparison, triggerPrice: Price): Activation
+    def trailingTrigger(
+      reference: PriceReference,
+      comparison: TriggerComparison,
+      offsetTicks: BigInt
+    ): Either[EconomicsError, Activation]
+    def marketPriceInstruction: PriceInstruction
+    def limitPriceInstruction(limit: Price): PriceInstruction
+    def peggedPriceInstruction(reference: PriceReference, offsetTicks: BigInt): PriceInstruction
+    def checked(
+      side: Side,
+      lots: Lots,
+      activation: Activation,
+      priceInstruction: PriceInstruction,
+      timeInForce: TimeInForce,
+      liquidityConstraint: LiquidityConstraint,
+      positionEffect: PositionEffect,
+      visibility: Visibility
+    ): Either[EconomicsError, Order]
+    def market(
+      side: Side,
+      lots: Lots,
+      positionEffect: PositionEffect = PositionEffect.Unrestricted
+    ): Either[EconomicsError, Order]
+    def limit(
+      side: Side,
+      lots: Lots,
+      limit: Price,
+      timeInForce: TimeInForce = TimeInForce.GoodTillCancelled,
+      liquidityConstraint: LiquidityConstraint = LiquidityConstraint.Unrestricted,
+      positionEffect: PositionEffect = PositionEffect.Unrestricted,
+      visibility: Visibility = displayedVisibility
+    ): Either[EconomicsError, Order]
+    def stopMarket(
+      side: Side,
+      lots: Lots,
+      trigger: Activation,
+      positionEffect: PositionEffect = PositionEffect.Unrestricted
+    ): Either[EconomicsError, Order]
+    def stopLimit(
+      side: Side,
+      lots: Lots,
+      trigger: Activation,
+      limit: Price,
+      timeInForce: TimeInForce = TimeInForce.GoodTillCancelled,
+      liquidityConstraint: LiquidityConstraint = LiquidityConstraint.Unrestricted,
+      positionEffect: PositionEffect = PositionEffect.Unrestricted,
+      visibility: Visibility = displayedVisibility
+    ): Either[EconomicsError, Order]
+  end Orders
 
   sealed trait ActivationEvidence extends JavaSerializationUnsupported:
     def reference: PriceReference
     def observedPrice: Price
     def favorableExtreme: Option[Price]
 
-  def fixedTriggerEvidence(reference: PriceReference, observedPrice: Price): ActivationEvidence
-  def trailingTriggerEvidence(
-    reference: PriceReference,
-    favorableExtreme: Price,
-    activatingObservation: Price
-  ): ActivationEvidence
-
   sealed trait PegResolution extends JavaSerializationUnsupported:
     def reference: PriceReference
     def referencePrice: Price
     def resolvedLimit: Price
 
-  def pegResolution(reference: PriceReference, referencePrice: Price, resolvedLimit: Price): PegResolution
-
   sealed trait LiquiditySlice extends JavaSerializationUnsupported:
     def lots: Lots
     def market: MarketState
     def role: LiquidityRole
-
-  def liquiditySlice(lots: Lots, market: MarketState, role: LiquidityRole): LiquiditySlice
 
   sealed trait OrderScenario extends JavaSerializationUnsupported:
     def order: Order
@@ -220,19 +217,27 @@ sealed trait Instrument extends JavaSerializationUnsupported:
     def slices: Vector[LiquiditySlice]
     def positionChange: PositionLots
 
-  def orderScenario(
-    order: Order,
-    slices: Vector[LiquiditySlice],
-    activationEvidence: Option[ActivationEvidence] = None,
-    pegResolution: Option[PegResolution] = None
-  ): Either[EconomicsError, OrderScenario]
-
   sealed trait RoundTripScenario extends JavaSerializationUnsupported:
     def entry: OrderScenario
     def exit: OrderScenario
     def heldPosition: PositionLots
 
-  def roundTrip(entry: OrderScenario, exit: OrderScenario): Either[EconomicsError, RoundTripScenario]
+  sealed trait Scenarios extends JavaSerializationUnsupported:
+    def fixedTriggerEvidence(reference: PriceReference, observedPrice: Price): ActivationEvidence
+    def trailingTriggerEvidence(
+      reference: PriceReference,
+      favorableExtreme: Price,
+      activatingObservation: Price
+    ): ActivationEvidence
+    def pegResolution(reference: PriceReference, referencePrice: Price, resolvedLimit: Price): PegResolution
+    def slice(lots: Lots, market: MarketState, role: LiquidityRole): LiquiditySlice
+    def order(
+      order: Order,
+      matchedSlices: Vector[LiquiditySlice],
+      activationEvidence: Option[ActivationEvidence] = None,
+      pegResolution: Option[PegResolution] = None
+    ): Either[EconomicsError, OrderScenario]
+    def roundTrip(entry: OrderScenario, exit: OrderScenario): Either[EconomicsError, RoundTripScenario]
 
   sealed trait Fee extends JavaSerializationUnsupported:
     val asset: AssetRef
@@ -244,44 +249,42 @@ sealed trait Instrument extends JavaSerializationUnsupported:
     def residual: Quantity[asset.D]
     def unrounded: Quantity[asset.D]
 
-  def applyMinimumCharge(
-    asset: AssetRef
-  )(
-    accountContribution: Quantity[asset.D],
-    nonnegativeMinimum: Quantity[asset.D]
-  ): Either[EconomicsError, Quantity[asset.D]]
-
-  def quantizeFee(
-    asset: AssetRef
-  )(
-    grid: RegisteredGridRef[? <: Dimension],
-    kind: FeeKind,
-    unrounded: Quantity[asset.D],
-    policy: QuantizationPolicy
-  ): Either[EconomicsError, Fee]
-
-  def percentageFee(
-    asset: AssetRef
-  )(
-    grid: RegisteredGridRef[? <: Dimension],
-    kind: FeeKind,
-    nonnegativeBasis: Quantity[asset.D],
-    rate: FeeRate,
-    policy: QuantizationPolicy
-  ): Either[EconomicsError, Fee]
-
   sealed trait FeeLine extends JavaSerializationUnsupported:
     def fee: Fee
     def sourceSliceIndex: Int
     def sourceMarket: MarketState
 
-  def feeLine(scenario: OrderScenario, sourceSliceIndex: Int, fee: Fee): Either[EconomicsError, FeeLine]
-
   trait FeeSchedule extends JavaSerializationUnsupported:
     def assess(scenario: OrderScenario): Either[EconomicsError, Vector[FeeLine]]
 
-  def noFees: FeeSchedule
-  def combineFeeSchedules(schedules: Vector[FeeSchedule]): FeeSchedule
+  sealed trait Fees extends JavaSerializationUnsupported:
+    def minimumCharge(
+      asset: AssetRef
+    )(
+      accountContribution: Quantity[asset.D],
+      nonnegativeMinimum: Quantity[asset.D]
+    ): Either[EconomicsError, Quantity[asset.D]]
+    def quantize(
+      asset: AssetRef
+    )(
+      grid: RegisteredGridRef[? <: Dimension],
+      kind: FeeKind,
+      unrounded: Quantity[asset.D],
+      policy: QuantizationPolicy
+    ): Either[EconomicsError, Fee]
+    def percentage(
+      asset: AssetRef
+    )(
+      grid: RegisteredGridRef[? <: Dimension],
+      kind: FeeKind,
+      nonnegativeBasis: Quantity[asset.D],
+      rate: FeeRate,
+      policy: QuantizationPolicy
+    ): Either[EconomicsError, Fee]
+    def line(scenario: OrderScenario, sourceSliceIndex: Int, fee: Fee): Either[EconomicsError, FeeLine]
+    def none: FeeSchedule
+    def combine(componentSchedules: Vector[FeeSchedule]): FeeSchedule
+  end Fees
 
   sealed trait ConvertedFeeLine extends JavaSerializationUnsupported:
     def original: Fee
@@ -295,21 +298,35 @@ sealed trait Instrument extends JavaSerializationUnsupported:
     def feePnl: Quantity[settle.D]
     def netPnl: Quantity[settle.D]
 
-  def calculatePnl(roundTrip: RoundTripScenario, feeSchedule: FeeSchedule): Either[EconomicsError, Pnl]
-  def downsideRisk(pnl: Pnl): Quantity[settle.D]
+  sealed trait Valuation extends JavaSerializationUnsupported:
+    def settlePerPosition(state: MarketState): Rate[position.D, settle.D]
+    def positionValue(value: PositionLots, state: MarketState): Quantity[settle.D]
+    def pricePnl(value: PositionLots, entry: MarketState, exit: MarketState): Quantity[settle.D]
+    def pnl(roundTrip: RoundTripScenario, feeSchedule: FeeSchedule): Either[EconomicsError, Pnl]
 
-  def sizePosition(
-    riskBudget: Quantity[settle.D],
-    cap: PositiveWhole,
-    feeSchedule: FeeSchedule
-  )(
-    scenario: Lots => Either[EconomicsError, RoundTripScenario]
-  ): Either[EconomicsError, Option[Lots]]
+  sealed trait Sizing extends JavaSerializationUnsupported:
+    def downsideRisk(pnl: Pnl): Quantity[settle.D]
+    def maxLots(
+      riskBudget: Quantity[settle.D],
+      cap: PositiveWhole,
+      feeSchedule: FeeSchedule
+    )(
+      scenarioFor: Lots => Either[EconomicsError, RoundTripScenario]
+    ): Either[EconomicsError, Option[Lots]]
+
+  val prices: Prices
+  val market: Market
+  val orders: Orders
+  val scenarios: Scenarios
+  val fees: Fees
+  val valuation: Valuation
+  val sizing: Sizing
 
 end Instrument
 
 object Instrument {
 
+  // Trusted aggregate construction validates registry, grid, and payoff authority before the private implementation.
   def create(
     id: InstrumentId,
     underlying: UnderlyingId,
@@ -413,9 +430,252 @@ object Instrument {
 
     val flatPosition: PositionLots = positionGrid.fromCoordinate(0)
 
+    // Stable capability wiring. These values only namespace operations for this exact instrument path.
+    val prices: Prices = new Prices:
+      def exact(coefficient: Rational): Either[EconomicsError, Price] =
+        fromRate(Rate(base.dimension.asDimensionRef, quote.dimension.asDimensionRef, coefficient))
+
+      def fromRate(value: Rate[base.D, quote.D]): Either[EconomicsError, Price] = priceExactly(value)
+
+      def fromTicks(ticks: PositiveWhole): Price = priceGrid.fromCoordinate(ticks.unrefined)
+
+      def quantize(
+        coefficient: Rational,
+        policy: QuantizationPolicy
+      ): Either[EconomicsError, (Price, Quantity[Divide[quote.D, base.D]])] =
+        quantizeRate(Rate(base.dimension.asDimensionRef, quote.dimension.asDimensionRef, coefficient), policy)
+
+      def quantizeRate(
+        value: Rate[base.D, quote.D],
+        policy: QuantizationPolicy
+      ): Either[EconomicsError, (Price, Quantity[Divide[quote.D, base.D]])] = quantizePrice(value, policy)
+
+      def ticks(value: Price): BigInt = priceCoordinate(value)
+
+      def coefficient(value: Price): Rational = priceRate(value).coefficient
+
+      def rate(value: Price): Rate[base.D, quote.D] = priceRate(value)
+
+    val market: Market = new Market:
+      def quoteSettled(
+        price: Price,
+        additionalConversions: Vector[SettlementConversion]
+      ): Either[EconomicsError, MarketState] = marketStateForQuote(price, additionalConversions)
+
+      def baseSettled(
+        price: Price,
+        additionalConversions: Vector[SettlementConversion]
+      ): Either[EconomicsError, MarketState] = marketStateForBase(price, additionalConversions)
+
+      def fromQuoteAnchor(
+        price: Price,
+        quoteToSettle: Rational,
+        additionalConversions: Vector[SettlementConversion]
+      ): Either[EconomicsError, MarketState] =
+        fromQuoteRate(
+          price,
+          Rate(quote.dimension.asDimensionRef, settle.dimension.asDimensionRef, quoteToSettle),
+          additionalConversions
+        )
+
+      def fromBaseAnchor(
+        price: Price,
+        baseToSettle: Rational,
+        additionalConversions: Vector[SettlementConversion]
+      ): Either[EconomicsError, MarketState] =
+        fromBaseRate(
+          price,
+          Rate(base.dimension.asDimensionRef, settle.dimension.asDimensionRef, baseToSettle),
+          additionalConversions
+        )
+
+      def fromAnchors(
+        price: Price,
+        baseToSettle: Rational,
+        quoteToSettle: Rational,
+        additionalConversions: Vector[SettlementConversion]
+      ): Either[EconomicsError, MarketState] =
+        fromRates(
+          price,
+          Rate(base.dimension.asDimensionRef, settle.dimension.asDimensionRef, baseToSettle),
+          Rate(quote.dimension.asDimensionRef, settle.dimension.asDimensionRef, quoteToSettle),
+          additionalConversions
+        )
+
+      def fromQuoteRate(
+        price: Price,
+        quoteToSettle: Rate[quote.D, settle.D],
+        additionalConversions: Vector[SettlementConversion]
+      ): Either[EconomicsError, MarketState] =
+        marketStateFromQuote(price, quoteToSettle, additionalConversions)
+
+      def fromBaseRate(
+        price: Price,
+        baseToSettle: Rate[base.D, settle.D],
+        additionalConversions: Vector[SettlementConversion]
+      ): Either[EconomicsError, MarketState] =
+        marketStateFromBase(price, baseToSettle, additionalConversions)
+
+      def fromRates(
+        price: Price,
+        baseToSettle: Rate[base.D, settle.D],
+        quoteToSettle: Rate[quote.D, settle.D],
+        additionalConversions: Vector[SettlementConversion]
+      ): Either[EconomicsError, MarketState] =
+        marketStateChecked(price, baseToSettle, quoteToSettle, additionalConversions)
+
+      def convertToSettle(
+        source: AssetRef,
+        conversions: SettlementConversions
+      )(
+        value: Quantity[source.D]
+      ): Either[EconomicsError, Quantity[settle.D]] =
+        InstrumentImpl.this.convertToSettle(conversions, source)(value)
+
+    val orders: Orders = new Orders:
+      def notApplicableVisibility: Visibility                = InstrumentImpl.this.notApplicableVisibility
+      def displayedVisibility: Visibility                    = InstrumentImpl.this.displayedVisibility
+      def hiddenVisibility: Visibility                       = InstrumentImpl.this.hiddenVisibility
+      def icebergVisibility(displayedLots: Lots): Visibility = InstrumentImpl.this.icebergVisibility(displayedLots)
+      def immediateActivation: Activation                    = InstrumentImpl.this.immediateActivation
+      def fixedTrigger(reference: PriceReference, comparison: TriggerComparison, triggerPrice: Price): Activation =
+        InstrumentImpl.this.fixedTrigger(reference, comparison, triggerPrice)
+      def trailingTrigger(
+        reference: PriceReference,
+        comparison: TriggerComparison,
+        offsetTicks: BigInt
+      ): Either[EconomicsError, Activation] = InstrumentImpl.this.trailingTrigger(reference, comparison, offsetTicks)
+      def marketPriceInstruction: PriceInstruction              = InstrumentImpl.this.marketPriceInstruction
+      def limitPriceInstruction(limit: Price): PriceInstruction = InstrumentImpl.this.limitPriceInstruction(limit)
+      def peggedPriceInstruction(reference: PriceReference, offsetTicks: BigInt): PriceInstruction =
+        InstrumentImpl.this.peggedPriceInstruction(reference, offsetTicks)
+      def checked(
+        side: Side,
+        lots: Lots,
+        activation: Activation,
+        priceInstruction: PriceInstruction,
+        timeInForce: TimeInForce,
+        liquidityConstraint: LiquidityConstraint,
+        positionEffect: PositionEffect,
+        visibility: Visibility
+      ): Either[EconomicsError, Order] =
+        InstrumentImpl.this.order(
+          side,
+          lots,
+          activation,
+          priceInstruction,
+          timeInForce,
+          liquidityConstraint,
+          positionEffect,
+          visibility
+        )
+      def market(side: Side, lots: Lots, positionEffect: PositionEffect): Either[EconomicsError, Order] =
+        marketOrder(side, lots, positionEffect)
+      def limit(
+        side: Side,
+        lots: Lots,
+        limit: Price,
+        timeInForce: TimeInForce,
+        liquidityConstraint: LiquidityConstraint,
+        positionEffect: PositionEffect,
+        visibility: Visibility
+      ): Either[EconomicsError, Order] =
+        limitOrder(side, lots, limit, timeInForce, liquidityConstraint, positionEffect, visibility)
+      def stopMarket(
+        side: Side,
+        lots: Lots,
+        trigger: Activation,
+        positionEffect: PositionEffect
+      ): Either[EconomicsError, Order] = stopMarketOrder(side, lots, trigger, positionEffect)
+      def stopLimit(
+        side: Side,
+        lots: Lots,
+        trigger: Activation,
+        limit: Price,
+        timeInForce: TimeInForce,
+        liquidityConstraint: LiquidityConstraint,
+        positionEffect: PositionEffect,
+        visibility: Visibility
+      ): Either[EconomicsError, Order] =
+        stopLimitOrder(side, lots, trigger, limit, timeInForce, liquidityConstraint, positionEffect, visibility)
+
+    val scenarios: Scenarios = new Scenarios:
+      def fixedTriggerEvidence(reference: PriceReference, observedPrice: Price): ActivationEvidence =
+        InstrumentImpl.this.fixedTriggerEvidence(reference, observedPrice)
+      def trailingTriggerEvidence(
+        reference: PriceReference,
+        favorableExtreme: Price,
+        activatingObservation: Price
+      ): ActivationEvidence =
+        InstrumentImpl.this.trailingTriggerEvidence(reference, favorableExtreme, activatingObservation)
+      def pegResolution(reference: PriceReference, referencePrice: Price, resolvedLimit: Price): PegResolution =
+        InstrumentImpl.this.pegResolution(reference, referencePrice, resolvedLimit)
+      def slice(lots: Lots, market: MarketState, role: LiquidityRole): LiquiditySlice =
+        liquiditySlice(lots, market, role)
+      def order(
+        order: Order,
+        matchedSlices: Vector[LiquiditySlice],
+        activationEvidence: Option[ActivationEvidence],
+        pegResolution: Option[PegResolution]
+      ): Either[EconomicsError, OrderScenario] =
+        orderScenario(order, matchedSlices, activationEvidence, pegResolution)
+      def roundTrip(entry: OrderScenario, exit: OrderScenario): Either[EconomicsError, RoundTripScenario] =
+        InstrumentImpl.this.roundTrip(entry, exit)
+
+    val fees: Fees = new Fees:
+      def minimumCharge(
+        asset: AssetRef
+      )(
+        accountContribution: Quantity[asset.D],
+        nonnegativeMinimum: Quantity[asset.D]
+      ): Either[EconomicsError, Quantity[asset.D]] =
+        applyMinimumCharge(asset)(accountContribution, nonnegativeMinimum)
+      def quantize(
+        asset: AssetRef
+      )(
+        grid: RegisteredGridRef[? <: Dimension],
+        kind: FeeKind,
+        unrounded: Quantity[asset.D],
+        policy: QuantizationPolicy
+      ): Either[EconomicsError, Fee] = quantizeFee(asset)(grid, kind, unrounded, policy)
+      def percentage(
+        asset: AssetRef
+      )(
+        grid: RegisteredGridRef[? <: Dimension],
+        kind: FeeKind,
+        nonnegativeBasis: Quantity[asset.D],
+        rate: FeeRate,
+        policy: QuantizationPolicy
+      ): Either[EconomicsError, Fee] = percentageFee(asset)(grid, kind, nonnegativeBasis, rate, policy)
+      def line(scenario: OrderScenario, sourceSliceIndex: Int, fee: Fee): Either[EconomicsError, FeeLine] =
+        feeLine(scenario, sourceSliceIndex, fee)
+      def none: FeeSchedule                                             = noFees
+      def combine(componentSchedules: Vector[FeeSchedule]): FeeSchedule = combineFeeSchedules(componentSchedules)
+
+    val valuation: Valuation = new Valuation:
+      def settlePerPosition(state: MarketState): Rate[position.D, settle.D]          = settleValuePerPosition(state)
+      def positionValue(value: PositionLots, state: MarketState): Quantity[settle.D] =
+        InstrumentImpl.this.positionValue(value, state)
+      def pricePnl(value: PositionLots, entry: MarketState, exit: MarketState): Quantity[settle.D] =
+        InstrumentImpl.this.pricePnl(value, entry, exit)
+      def pnl(roundTrip: RoundTripScenario, feeSchedule: FeeSchedule): Either[EconomicsError, Pnl] =
+        calculatePnl(roundTrip, feeSchedule)
+
+    val sizing: Sizing = new Sizing:
+      def downsideRisk(pnl: Pnl): Quantity[settle.D] = InstrumentImpl.this.downsideRisk(pnl)
+      def maxLots(
+        riskBudget: Quantity[settle.D],
+        cap: PositiveWhole,
+        feeSchedule: FeeSchedule
+      )(
+        scenarioFor: Lots => Either[EconomicsError,
+          RoundTripScenario]
+      ): Either[EconomicsError, Option[Lots]] = sizePosition(riskBudget, cap, feeSchedule)(scenarioFor)
+
+    // Trusted path-owned construction and witness-backed implementation remain private to this compilation unit.
+
     def price(coordinate: BigInt): Either[EconomicsError, Price] =
-      if coordinate.signum <= 0 then Left(InvalidPriceCoordinate(coordinate))
-      else Right(priceGrid.fromCoordinate(coordinate))
+      PriceMarketRules.validatePriceCoordinate(coordinate).map(_ => priceGrid.fromCoordinate(coordinate))
 
     def priceExactly(value: Rate[base.D, quote.D]): Either[EconomicsError, Price] =
       value
@@ -423,18 +683,16 @@ object Instrument {
         .left
         .map(PriceNotOnGrid(_))
         .flatMap: selected =>
-          if priceGrid.coordinate(selected).signum <= 0 then
-            Left(InvalidPriceCoordinate(priceGrid.coordinate(selected)))
-          else Right(selected)
+          PriceMarketRules.validatePriceCoordinate(priceGrid.coordinate(selected)).map(_ => selected)
 
     def quantizePrice(
       value: Rate[base.D, quote.D],
       policy: QuantizationPolicy
     ): Either[EconomicsError, (Price, Quantity[Divide[quote.D, base.D]])] =
       val result = value.quantizeTo(priceGrid.asGridRef, policy)
-      if priceGrid.coordinate(result.value).signum <= 0 then
-        Left(InvalidPriceCoordinate(priceGrid.coordinate(result.value)))
-      else Right(result.value -> result.residual)
+      PriceMarketRules
+        .validatePriceCoordinate(priceGrid.coordinate(result.value))
+        .map(_ => result.value -> result.residual)
 
     def priceCoordinate(value: Price): BigInt = priceGrid.coordinate(value)
 
@@ -516,36 +774,17 @@ object Instrument {
       quoteToSettle: Rate[quote.D, settle.D],
       additional: Vector[SettlementConversion]
     ): Either[EconomicsError, MarketState] =
-      val expectedBase = priceRate(price).coefficient * quoteToSettle.coefficient
-
-      if baseToSettle.coefficient.signum <= 0 then
-        Left(InvalidConversion(base.id, settle.id, baseToSettle.coefficient, "conversion must be positive"))
-      else if quoteToSettle.coefficient.signum <= 0 then
-        Left(InvalidConversion(quote.id, settle.id, quoteToSettle.coefficient, "conversion must be positive"))
-      else if settle.id == base.id && baseToSettle.coefficient != Rational.one then
-        Left(
-          InvalidConversion(
-            base.id,
-            settle.id,
-            baseToSettle.coefficient,
-            "settlement identity conversion must equal one"
-          )
+      PriceMarketRules
+        .validateAnchors(
+          base.id,
+          quote.id,
+          settle.id,
+          priceRate(price).coefficient,
+          baseToSettle.coefficient,
+          quoteToSettle.coefficient
         )
-      else if settle.id == quote.id && quoteToSettle.coefficient != Rational.one then
-        Left(
-          InvalidConversion(
-            quote.id,
-            settle.id,
-            quoteToSettle.coefficient,
-            "settlement identity conversion must equal one"
-          )
-        )
-      else if expectedBase != baseToSettle.coefficient then
-        Left(IncoherentMarketState(priceRate(price).coefficient, baseToSettle.coefficient, quoteToSettle.coefficient))
-      else
-        buildConversions(baseToSettle.coefficient, quoteToSettle.coefficient, additional)
-          .map(conversions => new MarketStateImpl(price, conversions))
-      end if
+        .flatMap(_ => buildConversions(baseToSettle.coefficient, quoteToSettle.coefficient, additional))
+        .map(conversions => new MarketStateImpl(price, conversions))
     end marketStateChecked
 
     private def buildConversions(
@@ -625,14 +864,26 @@ object Instrument {
       val conversions = state.conversions.asInstanceOf[SettlementConversionsImpl]
       val baseRate    = conversions.byId(base.id).coefficient
       val quoteRate   = conversions.byId(quote.id).coefficient
-      val coefficient = basePerPosition.coefficient * baseRate + quotePerPosition.coefficient * quoteRate
+      val coefficient = FeeValuationSizingRules.settlePerPosition(
+        basePerPosition.coefficient,
+        baseRate,
+        quotePerPosition.coefficient,
+        quoteRate
+      )
       Rate(position.dimension.asDimensionRef, settle.dimension.asDimensionRef, coefficient)
 
     def positionValue(value: PositionLots, state: MarketState): Quantity[settle.D] =
       positionQuantity(value).applyRate(settleValuePerPosition(state))
 
     def pricePnl(value: PositionLots, entry: MarketState, exit: MarketState): Quantity[settle.D] =
-      positionValue(value, exit) - positionValue(value, entry)
+      Quantity(
+        settle.dimension.asDimensionRef,
+        FeeValuationSizingRules.pricePnl(
+          positionQuantity(value).coefficient,
+          settleValuePerPosition(entry).coefficient,
+          settleValuePerPosition(exit).coefficient
+        )
+      )
 
     private final class VisibilityImpl(val kind: VisibilityKind, val displayedLots: Option[Lots]) extends Visibility
 
@@ -711,35 +962,26 @@ object Instrument {
     ): Either[EconomicsError, Order] =
       val isMarket   = priceInstruction.kind == PriceInstructionKind.Market
       val nonResting = timeInForce == TimeInForce.ImmediateOrCancel || timeInForce == TimeInForce.FillOrKill
-
-      if isMarket && liquidityConstraint == LiquidityConstraint.MakerOnly then
-        Left(InvalidOrder("market orders cannot be maker-only"))
-      else if isMarket && !nonResting then
-        Left(InvalidOrder("market orders require immediate-or-cancel or fill-or-kill"))
-      else if isMarket && visibility.kind != VisibilityKind.NotApplicable then
-        Left(InvalidOrder("market orders require not-applicable visibility"))
-      else if !isMarket && visibility.kind == VisibilityKind.NotApplicable then
-        Left(InvalidOrder("priced orders require explicit visibility"))
-      else if nonResting && visibility.kind == VisibilityKind.Iceberg then
-        Left(InvalidOrder("non-resting orders cannot be iceberg"))
-      else
-        visibility.displayedLots match
-          case Some(displayed) if lotCount(displayed) > lotCount(lots) =>
-            Left(InvalidOrder("iceberg displayed lots cannot exceed order lots"))
-          case _ =>
-            Right(
-              new OrderImpl(
-                side,
-                lots,
-                activation,
-                priceInstruction,
-                timeInForce,
-                liquidityConstraint,
-                positionEffect,
-                visibility
-              )
-            )
-      end if
+      OrderScenarioRules
+        .validateOrder(
+          isMarket,
+          nonResting,
+          liquidityConstraint,
+          visibility.kind,
+          visibility.displayedLots.map(lotCount),
+          lotCount(lots)
+        )
+        .map: _ =>
+          new OrderImpl(
+            side,
+            lots,
+            activation,
+            priceInstruction,
+            timeInForce,
+            liquidityConstraint,
+            positionEffect,
+            visibility
+          )
     end order
 
     def marketOrder(
@@ -865,21 +1107,19 @@ object Instrument {
       activationEvidence: Option[ActivationEvidence],
       pegResolution: Option[PegResolution]
     ): Either[EconomicsError, OrderScenario] =
-      if slices.isEmpty then Left(InvalidScenario("complete scenario requires at least one slice"))
-      else if slices.map(slice => lotCount(slice.lots)).sum != lotCount(order.lots) then
-        Left(InvalidScenario("slice lots must sum exactly to order lots"))
-      else
-        validateActivation(order.activation, activationEvidence)
-          .flatMap(_ => validatePeg(order.priceInstruction, pegResolution))
-          .flatMap: effectiveLimit =>
-            validateSlices(order, slices, effectiveLimit).map: _ =>
-              new OrderScenarioImpl(
-                order,
-                activationEvidence,
-                pegResolution,
-                slices,
-                positionLots(order.side, order.lots)
-              )
+      OrderScenarioRules
+        .validateSliceTotals(lotCount(order.lots), slices.map(slice => lotCount(slice.lots)))
+        .flatMap(_ => validateActivation(order.activation, activationEvidence))
+        .flatMap(_ => validatePeg(order.priceInstruction, pegResolution))
+        .flatMap: effectiveLimit =>
+          validateSlices(order, slices, effectiveLimit).map: _ =>
+            new OrderScenarioImpl(
+              order,
+              activationEvidence,
+              pegResolution,
+              slices,
+              positionLots(order.side, order.lots)
+            )
 
     private def validateActivation(
       activation: Activation,
@@ -899,7 +1139,8 @@ object Instrument {
               val trigger           = priceCoordinate(activation.triggerPrice.get)
               val observed          = priceCoordinate(value.observedPrice)
               if value.reference != expectedReference then Left(InvalidScenario("trigger reference does not match"))
-              else if comparisonSatisfied(activation.comparison.get, observed, trigger) then Right(())
+              else if OrderScenarioRules.comparisonSatisfied(activation.comparison.get, observed, trigger) then
+                Right(())
               else Left(InvalidScenario("fixed trigger observation does not satisfy comparison"))
         case ActivationKind.TrailingTrigger =>
           evidence match
@@ -915,7 +1156,7 @@ object Instrument {
                     case TriggerComparison.AtOrBelow => priceCoordinate(extreme) - offset
                   if value.reference != expectedReference then Left(InvalidScenario("trigger reference does not match"))
                   else if threshold.signum <= 0 then Left(InvalidScenario("trailing threshold is not a positive price"))
-                  else if comparisonSatisfied(
+                  else if OrderScenarioRules.comparisonSatisfied(
                       activation.comparison.get,
                       priceCoordinate(value.observedPrice),
                       threshold
@@ -939,10 +1180,9 @@ object Instrument {
             case None        => Left(InvalidScenario("pegged instruction requires resolution evidence"))
             case Some(value) =>
               val difference = priceCoordinate(value.resolvedLimit) - priceCoordinate(value.referencePrice)
-              if value.reference != instruction.reference.get then Left(InvalidScenario("peg reference does not match"))
-              else if difference != instruction.offsetTicks.get then
-                Left(InvalidScenario("resolved peg tick offset disagrees"))
-              else Right(Some(value.resolvedLimit))
+              OrderScenarioRules
+                .validatePeg(value.reference == instruction.reference.get, difference, instruction.offsetTicks.get)
+                .map(_ => Some(value.resolvedLimit))
 
     private def validateSlices(
       order: Order,
@@ -967,11 +1207,6 @@ object Instrument {
         case Some(error) => Left(error)
         case None        => Right(())
 
-    private def comparisonSatisfied(comparison: TriggerComparison, observed: BigInt, threshold: BigInt): Boolean =
-      comparison match
-        case TriggerComparison.AtOrAbove => observed >= threshold
-        case TriggerComparison.AtOrBelow => observed <= threshold
-
     private final class RoundTripScenarioImpl(
       val entry: OrderScenario,
       val exit: OrderScenario,
@@ -981,8 +1216,9 @@ object Instrument {
     def roundTrip(entry: OrderScenario, exit: OrderScenario): Either[EconomicsError, RoundTripScenario] =
       val entryCount = positionLotCount(entry.positionChange)
       val exitCount  = positionLotCount(exit.positionChange)
-      if entryCount + exitCount != 0 then Left(InvalidRoundTrip(entryCount, exitCount))
-      else Right(new RoundTripScenarioImpl(entry, exit, entry.positionChange))
+      OrderScenarioRules
+        .validateRoundTrip(entryCount, exitCount)
+        .map(_ => new RoundTripScenarioImpl(entry, exit, entry.positionChange))
 
     private final class FeeImpl(
       val asset: AssetRef,
@@ -1002,14 +1238,11 @@ object Instrument {
       accountContribution: Quantity[asset.D],
       nonnegativeMinimum: Quantity[asset.D]
     ): Either[EconomicsError, Quantity[asset.D]] =
-      if nonnegativeMinimum.coefficient.signum < 0 then
-        Left(InvalidFeeBasis(asset.id, nonnegativeMinimum.coefficient))
-      else if accountContribution.coefficient.signum < 0 &&
-        accountContribution.coefficient.abs.compare(nonnegativeMinimum.coefficient) < 0
-      then
-        Right(Quantity(asset.dimension.asDimensionRef, -nonnegativeMinimum.coefficient))
-      else
-        Right(accountContribution)
+      FeeValuationSizingRules
+        .minimumCharge(accountContribution.coefficient, nonnegativeMinimum.coefficient)
+        .left
+        .map(coefficient => InvalidFeeBasis(asset.id, coefficient))
+        .map(coefficient => Quantity(asset.dimension.asDimensionRef, coefficient))
 
     def quantizeFee(
       asset: AssetRef
@@ -1051,13 +1284,13 @@ object Instrument {
       rate: FeeRate,
       policy: QuantizationPolicy
     ): Either[EconomicsError, Fee] =
-      if nonnegativeBasis.coefficient.signum < 0 then Left(InvalidFeeBasis(asset.id, nonnegativeBasis.coefficient))
-      else
-        val accountContribution = Quantity(
-          asset.dimension.asDimensionRef,
-          nonnegativeBasis.coefficient * -rate.coefficient
-        )
-        quantizeFee(asset)(grid, kind, accountContribution, policy)
+      FeeValuationSizingRules
+        .percentageContribution(nonnegativeBasis.coefficient, rate.coefficient)
+        .left
+        .map(coefficient => InvalidFeeBasis(asset.id, coefficient))
+        .flatMap: coefficient =>
+          val accountContribution = Quantity(asset.dimension.asDimensionRef, coefficient)
+          quantizeFee(asset)(grid, kind, accountContribution, policy)
 
     private final class FeeLineImpl(
       val scenario: OrderScenario,
@@ -1106,8 +1339,10 @@ object Instrument {
         convertedExit  <- convertFeeLines(ScenarioLeg.Exit, exitLines)
       yield
         val converted = convertedEntry ++ convertedExit
-        val feeTotal  = converted.foldLeft(Quantity.zero[settle.D](using settle.dimension.asDimensionRef)):
-          (total, line) => total + line.settleContribution
+        val feeTotal  = Quantity(
+          settle.dimension.asDimensionRef,
+          FeeValuationSizingRules.sum(converted.map(_.settleContribution.coefficient))
+        )
         new PnlImpl(exactPricePnl, converted, feeTotal, exactPricePnl + feeTotal)
 
     private def scenarioPricePnl(scenario: OrderScenario): Quantity[settle.D] =
@@ -1144,8 +1379,7 @@ object Instrument {
               accumulated :+ new ConvertedFeeLineImpl(line.fee, leg, line.sourceSliceIndex, contribution)
 
     def downsideRisk(pnl: Pnl): Quantity[settle.D] =
-      val coefficient = pnl.netPnl.coefficient
-      Quantity(settle.dimension.asDimensionRef, if coefficient.signum < 0 then -coefficient else Rational.zero)
+      Quantity(settle.dimension.asDimensionRef, FeeValuationSizingRules.downsideRisk(pnl.netPnl.coefficient))
 
     def sizePosition(
       riskBudget: Quantity[settle.D],
@@ -1156,28 +1390,16 @@ object Instrument {
     ): Either[EconomicsError, Option[Lots]] =
       if riskBudget.coefficient.signum < 0 then Left(InvalidRiskBudget(riskBudget.coefficient))
       else
-        var candidate = BigInt(1)
-        var selected  = Option.empty[Lots]
-
-        while candidate <= cap.unrefined do
-          val evaluated =
-            for
-              candidateLots   <- lots(candidate)
-              roundTrip       <- scenario(candidateLots)
-              heldPositionLots = positionLotCount(roundTrip.heldPosition)
-              _               <-
-                if heldPositionLots.abs == lotCount(candidateLots) then Right(())
-                else Left(SizingScenarioMismatch(lotCount(candidateLots), heldPositionLots))
-              pnl <- calculatePnl(roundTrip, feeSchedule)
-            yield candidateLots -> downsideRisk(pnl)
-
-          evaluated match
-            case Left(error)                  => return Left(error)
-            case Right((candidateLots, risk)) =>
-              if risk.coefficient.compare(riskBudget.coefficient) <= 0 then selected = Some(candidateLots)
-          candidate += 1
-
-        Right(selected)
+        FeeValuationSizingRules.selectGreatest(cap.unrefined, riskBudget.coefficient): candidate =>
+          for
+            candidateLots   <- lots(candidate)
+            roundTrip       <- scenario(candidateLots)
+            heldPositionLots = positionLotCount(roundTrip.heldPosition)
+            _               <-
+              if heldPositionLots.abs == lotCount(candidateLots) then Right(())
+              else Left(SizingScenarioMismatch(lotCount(candidateLots), heldPositionLots))
+            pnl <- calculatePnl(roundTrip, feeSchedule)
+          yield candidateLots -> downsideRisk(pnl).coefficient
 
   }
 }

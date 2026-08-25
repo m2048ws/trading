@@ -135,15 +135,28 @@ object SettlementConversion:
 
   def positive(
     source: AssetRef,
+    target: AssetRef,
+    coefficient: Rational
+  ): Either[EconomicsError, SettlementConversion] =
+    checked(source, target, coefficient)
+
+  def fromRate(
+    source: AssetRef,
     target: AssetRef
   )(
     rate: Rate[source.D, target.D]
   ): Either[EconomicsError, SettlementConversion] =
+    checked(source, target, rate.coefficient)
+
+  private def checked(
+    source: AssetRef,
+    target: AssetRef,
+    coefficient: Rational
+  ): Either[EconomicsError, SettlementConversion] =
     if !source.dimension.sharesRegistryWith(target.dimension) then
       Left(ForeignRegistry("settlement conversion", target.dimension.key, source.dimension.key))
-    else if rate.coefficient.signum <= 0 then
-      Left(InvalidConversion(source.id, target.id, rate.coefficient, "conversion must be positive"))
     else
-      Right(new SettlementConversionImpl(source, target, rate.coefficient))
+      PriceMarketRules.validateConversion(source.id, target.id, coefficient).map: _ =>
+        new SettlementConversionImpl(source, target, coefficient)
 
 end SettlementConversion

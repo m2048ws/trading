@@ -1,8 +1,5 @@
-# order-scenarios Specification
+## MODIFIED Requirements
 
-## Purpose
-Defines immutable, compositional order instructions and complete hypothetical order outcomes whose price and maker/taker assumptions can drive fees and PnL without introducing execution lifecycle state.
-## Requirements
 ### Requirement: Compositional immutable orders
 An order SHALL bind one exact instrument, a buy or sell side, positive instrument-bound lots, and independent mechanics for activation, price instruction, time in force, liquidity constraint, position effect, and visibility. The model SHALL express at least immediate and triggered activation; market, limit, and pegged price instructions; good-till-cancelled, immediate-or-cancel, fill-or-kill, and day duration; unrestricted and maker-only liquidity constraints; unrestricted and reduce-only position effects; and displayed, hidden, and iceberg visibility.
 
@@ -23,42 +20,6 @@ The instrument-owned `orders` capability SHALL construct activation, price-instr
 #### Scenario: Keep lifecycle state absent
 - **WHEN** a caller inspects an immutable order
 - **THEN** it contains no venue order ID, submission status, cumulative or remaining fill quantity, cancellation state, fill records, or reported fees
-
-### Requirement: Explicit trigger and price mechanics
-A fixed trigger SHALL identify its observed reference, exact comparison direction, and positive grid-valid trigger price. Supported references SHALL include last, mark, and index; supported comparisons SHALL include at-or-above and at-or-below. A trailing trigger SHALL retain its reference, direction, and explicit grid-aware offset. A pegged price instruction SHALL retain its reference and offset until a scenario or venue boundary resolves its effective limit price.
-
-Stop-loss and take-profit names SHALL be convenience interpretations of explicit trigger comparisons rather than distinct hidden arithmetic. Trigger observation SHALL activate the associated price instruction but SHALL NOT itself imply an execution price or liquidity role.
-
-#### Scenario: Distinguish activation from matched price
-- **WHEN** a stop-market scenario activates at its mark-price trigger and assumes a worse later market price
-- **THEN** the activation observation and matched-price market state remain distinct inputs
-
-#### Scenario: Express take profit through comparison
-- **WHEN** a sell order is intended to activate at or above a target price
-- **THEN** the order represents that condition explicitly without requiring a separate fee or PnL formula for take-profit orders
-
-#### Scenario: Resolve a pegged instruction before valuation
-- **WHEN** a pegged order is evaluated in a complete scenario
-- **THEN** the scenario supplies a grid-valid resolved price consistent with the peg rule used by that scenario
-
-### Requirement: LiquidityRole describes matched quantity
-`LiquidityRole` SHALL contain maker and taker classifications and SHALL describe the fee treatment of matched quantity, not the instruction stored by an order. An order SHALL store a liquidity constraint, while a complete order scenario SHALL store the assumed role of each positive matched slice. Core validation SHALL enforce universal implications: a market slice is taker; a maker-only order has only maker slices; and an unrestricted limit order MAY contain maker slices, taker slices, or both. Venue fee schedules MAY refine classification for mechanics such as hidden quantity.
-
-#### Scenario: Model an all-taker market outcome
-- **WHEN** a complete market-order scenario contains matched quantity
-- **THEN** every liquidity slice is classified as taker
-
-#### Scenario: Model a mixed limit outcome
-- **WHEN** an unrestricted limit order is assumed to cross for part of its lots and later rest for the remainder
-- **THEN** its scenario may contain a taker slice and a maker slice whose lots sum to the order lots
-
-#### Scenario: Enforce maker-only conditionally on a fill
-- **WHEN** a maker-only order has a complete filled scenario
-- **THEN** every slice is maker, while the order mechanics themselves make no guarantee that any fill occurs
-
-#### Scenario: Keep liquidity out of the order instruction
-- **WHEN** two scenarios evaluate the same unrestricted limit order under different maker/taker allocations
-- **THEN** the order value remains unchanged and only the scenario outcomes differ
 
 ### Requirement: Complete checked order scenarios
 A complete order scenario SHALL bind one immutable order, the activation observation required by any trigger, and one or more positive liquidity slices. Each slice SHALL carry instrument-bound lots, a coherent market state representing its assumed matched price and conversions, and a liquidity role. The slice lot counts SHALL sum exactly to the order lot count.

@@ -48,6 +48,7 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
   private val negativeFixtures = List(
     NegativeFixture("CrossInstrumentMixing.scala", List("Required:", "first"), 6),
     NegativeFixture("PrivateConstruction.scala", List("sealed trait", "Found:", "Required:"), 4),
+    NegativeFixture("RemovedFlatApi.scala", List("is not a member"), 7, Some(7)),
     NegativeFixture(
       "PackageSpoofConstruction.scala",
       List("Not found", "cannot be accessed as a member", "InstrumentImpl", "SettlementConversionImpl"),

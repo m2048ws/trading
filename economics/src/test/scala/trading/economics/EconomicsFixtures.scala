@@ -110,7 +110,7 @@ final class EconomicsFixtures:
       .get
 
   def price(instrument: Instrument, dollars: BigInt): instrument.Price =
-    instrument.price(dollars * 2).toOption.get
+    instrument.prices.exact(Rational(dollars)).toOption.get
 
   private def asset(name: String): AssetRef =
     registry

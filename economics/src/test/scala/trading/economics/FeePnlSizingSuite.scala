@@ -12,7 +12,7 @@ class FeePnlSizingSuite extends FunSuite:
 
   test("percentage fees use account signs and preserve exact quantization conservation"):
     val charge = instrument
-      .percentageFee(fixture.usd)(
+      .fees.percentage(fixture.usd)(
         fixture.usdCents,
         FeeKind("taker"),
         Quantity(fixture.usd.dimension.asDimensionRef, Rational(21, 20)),
@@ -22,7 +22,7 @@ class FeePnlSizingSuite extends FunSuite:
       .toOption
       .get
     val rebate = instrument
-      .percentageFee(fixture.usd)(
+      .fees.percentage(fixture.usd)(
         fixture.usdCents,
         FeeKind("maker"),
         Quantity(fixture.usd.dimension.asDimensionRef, Rational(21, 20)),
@@ -41,7 +41,7 @@ class FeePnlSizingSuite extends FunSuite:
 
   test("fees retain an explicit third asset and grid"):
     val fee = instrument
-      .quantizeFee(fixture.token)(
+      .fees.quantize(fixture.token)(
         fixture.tokenMillis,
         FeeKind("token-flat"),
         Quantity(fixture.token.dimension.asDimensionRef, Rational(-7, 3)),
@@ -57,11 +57,11 @@ class FeePnlSizingSuite extends FunSuite:
 
   test("contextual schedules inspect mechanics and mixed maker/taker slices"):
     val lots     = instrument.lots(10).toOption.get
-    val order    = instrument.limitOrder(Side.Buy, lots, fixture.price(instrument, 100)).toOption.get
-    val state    = instrument.marketStateForQuote(fixture.price(instrument, 100)).toOption.get
-    val maker    = instrument.liquiditySlice(instrument.lots(4).toOption.get, state, LiquidityRole.Maker)
-    val taker    = instrument.liquiditySlice(instrument.lots(6).toOption.get, state, LiquidityRole.Taker)
-    val scenario = instrument.orderScenario(order, Vector(maker, taker)).toOption.get
+    val order    = instrument.orders.limit(Side.Buy, lots, fixture.price(instrument, 100)).toOption.get
+    val state    = instrument.market.quoteSettled(fixture.price(instrument, 100)).toOption.get
+    val maker    = instrument.scenarios.slice(instrument.lots(4).toOption.get, state, LiquidityRole.Maker)
+    val taker    = instrument.scenarios.slice(instrument.lots(6).toOption.get, state, LiquidityRole.Taker)
+    val scenario = instrument.scenarios.order(order, Vector(maker, taker)).toOption.get
     val schedule = new instrument.FeeSchedule:
       def assess(scenario: instrument.OrderScenario): Either[EconomicsError, Vector[instrument.FeeLine]] =
         scenario.slices.zipWithIndex.foldLeft[Either[EconomicsError, Vector[instrument.FeeLine]]](Right(Vector.empty)):
@@ -71,14 +71,14 @@ class FeePnlSizingSuite extends FunSuite:
                 if slice.role == LiquidityRole.Maker then FeeRate(Rational(-1, 100)) else FeeRate(Rational(2, 100))
               val basis = Quantity(fixture.usd.dimension.asDimensionRef, Rational(instrument.lotCount(slice.lots)))
               for
-                fee <- instrument.percentageFee(fixture.usd)(
+                fee <- instrument.fees.percentage(fixture.usd)(
                          fixture.usdCents,
                          FeeKind(s"${scenario.order.visibility.kind}-$index"),
                          basis,
                          rate,
                          QuantizationPolicy.TowardZero
                        )
-                line <- instrument.feeLine(scenario, index, fee)
+                line <- instrument.fees.line(scenario, index, fee)
               yield accumulated :+ line
 
     val lines = schedule.assess(scenario).toOption.get
@@ -95,47 +95,49 @@ class FeePnlSizingSuite extends FunSuite:
         val rate  = if accountTier >= 2 then FeeRate(Rational(1, 1000)) else FeeRate(Rational(2, 1000))
         val basis = Quantity(fixture.usd.dimension.asDimensionRef, Rational(1))
         for
-          calculated <- instrument.percentageFee(fixture.usd)(
+          calculated <- instrument.fees.percentage(fixture.usd)(
                           fixture.usdCents,
                           FeeKind("tiered"),
                           basis,
                           rate,
                           QuantizationPolicy.TowardZero
                         )
-          minimum <- instrument.applyMinimumCharge(calculated.asset)(
+          minimum <- instrument.fees.minimumCharge(calculated.asset)(
                        calculated.unrounded,
                        Quantity(calculated.asset.dimension.asDimensionRef, Rational(1, 100))
                      )
-          fee <- instrument.quantizeFee(calculated.asset)(
+          fee <- instrument.fees.quantize(calculated.asset)(
                    fixture.usdCents,
                    FeeKind("tiered-minimum"),
                    minimum,
                    QuantizationPolicy.TowardZero
                  )
-          line <- instrument.feeLine(scenario, 0, fee)
+          line <- instrument.fees.line(scenario, 0, fee)
         yield Vector(line)
       end assess
     val flat = new instrument.FeeSchedule:
       def assess(scenario: instrument.OrderScenario): Either[EconomicsError, Vector[instrument.FeeLine]] =
         for
-          fee <- instrument.quantizeFee(fixture.usd)(
+          fee <- instrument.fees.quantize(fixture.usd)(
                    fixture.usdCents,
                    FeeKind("flat-component"),
                    Quantity(fixture.usd.dimension.asDimensionRef, Rational(-1, 50)),
                    QuantizationPolicy.TowardZero
                  )
-          line <- instrument.feeLine(scenario, 0, fee)
+          line <- instrument.fees.line(scenario, 0, fee)
         yield Vector(line)
 
-    val lines = instrument.combineFeeSchedules(Vector(tiered, flat)).assess(scenario).toOption.get
+    val lines = instrument.fees.combine(Vector(tiered, flat)).assess(scenario).toOption.get
     assertEquals(lines.map(_.fee.kind), Vector(FeeKind("tiered-minimum"), FeeKind("flat-component")))
     assertEquals(lines.map(_.fee.amount.coefficient), Vector(Rational(-1, 100), Rational(-1, 50)))
+    assertEquals(instrument.fees.none.assess(scenario), Right(Vector.empty))
+    assertEquals(instrument.fees.combine(Vector.empty).assess(scenario), Right(Vector.empty))
 
   test("fee lines reject invalid indices and PnL rejects attribution to another scenario"):
     val first  = completeMarket(Side.Buy, instrument.lots(10).toOption.get, 100)
     val second = completeMarket(Side.Buy, instrument.lots(10).toOption.get, 101)
     val fee    = instrument
-      .quantizeFee(fixture.usd)(
+      .fees.quantize(fixture.usd)(
         fixture.usdCents,
         FeeKind("flat"),
         Quantity(fixture.usd.dimension.asDimensionRef, Rational(-1)),
@@ -144,14 +146,14 @@ class FeePnlSizingSuite extends FunSuite:
       .toOption
       .get
 
-    assert(instrument.feeLine(first, 1, fee).isLeft)
-    val foreignLine = instrument.feeLine(second, 0, fee).toOption.get
+    assert(instrument.fees.line(first, 1, fee).isLeft)
+    val foreignLine = instrument.fees.line(second, 0, fee).toOption.get
     val schedule    = new instrument.FeeSchedule:
       def assess(scenario: instrument.OrderScenario): Either[EconomicsError, Vector[instrument.FeeLine]] =
         Right(Vector(foreignLine))
     val exit      = completeMarket(Side.Sell, instrument.lots(10).toOption.get, 110)
-    val roundTrip = instrument.roundTrip(first, exit).toOption.get
-    assert(instrument.calculatePnl(roundTrip, schedule).isLeft)
+    val roundTrip = instrument.scenarios.roundTrip(first, exit).toOption.get
+    assert(instrument.valuation.pnl(roundTrip, schedule).isLeft)
 
   test("multi-slice PnL retains price and fee components with per-line conversion states"):
     val lots            = instrument.lots(1000).toOption.get
@@ -159,9 +161,9 @@ class FeePnlSizingSuite extends FunSuite:
     val exitConversion  = tokenToUsd(Rational(3))
     val entry           = completeMarket(Side.Buy, lots, 100, Vector(entryConversion))
     val exit            = completeMarket(Side.Sell, lots, 110, Vector(exitConversion))
-    val roundTrip       = instrument.roundTrip(entry, exit).toOption.get
+    val roundTrip       = instrument.scenarios.roundTrip(entry, exit).toOption.get
     val schedule        = flatTokenSchedule(Rational(-1))
-    val pnl             = instrument.calculatePnl(roundTrip, schedule).toOption.get
+    val pnl             = instrument.valuation.pnl(roundTrip, schedule).toOption.get
 
     assertEquals(pnl.pricePnl.coefficient, Rational(10))
     assertEquals(pnl.convertedFeeLines.map(_.settleContribution.coefficient), Vector(Rational(-2), Rational(-3)))
@@ -172,21 +174,21 @@ class FeePnlSizingSuite extends FunSuite:
 
   test("price PnL sums every matched slice without an average-price representation"):
     val lots       = instrument.lots(1000).toOption.get
-    val entryOrder = instrument.marketOrder(Side.Buy, lots).toOption.get
-    val first      = instrument.liquiditySlice(
+    val entryOrder = instrument.orders.market(Side.Buy, lots).toOption.get
+    val first      = instrument.scenarios.slice(
       instrument.lots(500).toOption.get,
-      instrument.marketStateForQuote(fixture.price(instrument, 99)).toOption.get,
+      instrument.market.quoteSettled(fixture.price(instrument, 99)).toOption.get,
       LiquidityRole.Taker
     )
-    val second = instrument.liquiditySlice(
+    val second = instrument.scenarios.slice(
       instrument.lots(500).toOption.get,
-      instrument.marketStateForQuote(fixture.price(instrument, 101)).toOption.get,
+      instrument.market.quoteSettled(fixture.price(instrument, 101)).toOption.get,
       LiquidityRole.Taker
     )
-    val entry     = instrument.orderScenario(entryOrder, Vector(first, second)).toOption.get
+    val entry     = instrument.scenarios.order(entryOrder, Vector(first, second)).toOption.get
     val exit      = completeMarket(Side.Sell, lots, 110)
-    val roundTrip = instrument.roundTrip(entry, exit).toOption.get
-    val pnl       = instrument.calculatePnl(roundTrip, instrument.noFees).toOption.get
+    val roundTrip = instrument.scenarios.roundTrip(entry, exit).toOption.get
+    val pnl       = instrument.valuation.pnl(roundTrip, instrument.fees.none).toOption.get
 
     assertEquals(pnl.pricePnl.coefficient, Rational(10))
 
@@ -194,9 +196,9 @@ class FeePnlSizingSuite extends FunSuite:
     val lots      = instrument.lots(1000).toOption.get
     val entry     = completeMarket(Side.Buy, lots, 100)
     val exit      = completeMarket(Side.Sell, lots, 110)
-    val roundTrip = instrument.roundTrip(entry, exit).toOption.get
+    val roundTrip = instrument.scenarios.roundTrip(entry, exit).toOption.get
 
-    instrument.calculatePnl(roundTrip, flatTokenSchedule(Rational(-1))) match
+    instrument.valuation.pnl(roundTrip, flatTokenSchedule(Rational(-1))) match
       case Left(MissingConversion(asset, Some(ScenarioLeg.Entry), Some(0))) => assertEquals(asset, fixture.token.id)
       case other => fail(s"expected attributed missing conversion, obtained $other")
 
@@ -204,21 +206,21 @@ class FeePnlSizingSuite extends FunSuite:
     val lots      = instrument.lots(1000).toOption.get
     val entry     = completeMarket(Side.Buy, lots, 100)
     val exit      = completeMarket(Side.Sell, lots, 90)
-    val roundTrip = instrument.roundTrip(entry, exit).toOption.get
-    val first     = instrument.calculatePnl(roundTrip, instrument.noFees).toOption.get
-    val second    = instrument.calculatePnl(roundTrip, instrument.noFees).toOption.get
+    val roundTrip = instrument.scenarios.roundTrip(entry, exit).toOption.get
+    val first     = instrument.valuation.pnl(roundTrip, instrument.fees.none).toOption.get
+    val second    = instrument.valuation.pnl(roundTrip, instrument.fees.none).toOption.get
 
     assertEquals(first.netPnl.coefficient, second.netPnl.coefficient)
-    assertEquals(instrument.downsideRisk(first).coefficient, Rational(10))
-    val profitable = instrument.calculatePnl(
-      instrument.roundTrip(entry, completeMarket(Side.Sell, lots, 110)).toOption.get,
-      instrument.noFees
+    assertEquals(instrument.sizing.downsideRisk(first).coefficient, Rational(10))
+    val profitable = instrument.valuation.pnl(
+      instrument.scenarios.roundTrip(entry, completeMarket(Side.Sell, lots, 110)).toOption.get,
+      instrument.fees.none
     ).toOption.get
-    assertEquals(instrument.downsideRisk(profitable).coefficient, Rational.zero)
+    assertEquals(instrument.sizing.downsideRisk(profitable).coefficient, Rational.zero)
 
   test("sizing evaluates every positive candidate and selects the greatest exact affordable count"):
     val budget = settleAmount(Rational(3, 100))
-    val result = instrument.sizePosition(budget, PositiveWhole(5).toOption.get, instrument.noFees): candidate =>
+    val result = instrument.sizing.maxLots(budget, PositiveWhole(5).toOption.get, instrument.fees.none): candidate =>
       losingRoundTrip(candidate, 100, 90)
 
     assertEquals(result.map(_.map(instrument.lotCount)), Right(Some(BigInt(3))))
@@ -227,8 +229,8 @@ class FeePnlSizingSuite extends FunSuite:
     val oneLot          = instrument.lots(1).toOption.get
     val oneLotRoundTrip = losingRoundTrip(oneLot, 100, 90).toOption.get
     var evaluated       = Vector.empty[BigInt]
-    val result          = instrument.sizePosition(settleAmount(Rational(10)), PositiveWhole(3).toOption.get,
-      instrument.noFees): candidate =>
+    val result          = instrument.sizing.maxLots(settleAmount(Rational(10)), PositiveWhole(3).toOption.get,
+      instrument.fees.none): candidate =>
       val candidateCount = instrument.lotCount(candidate)
       evaluated :+= candidateCount
       if candidateCount == BigInt(1) then losingRoundTrip(candidate, 100, 90)
@@ -239,28 +241,30 @@ class FeePnlSizingSuite extends FunSuite:
 
   test("sizing supports no-result, capped, exact boundary, and profitable cases"):
     val tinyBudget = settleAmount(Rational(1, 1000))
-    val none       = instrument.sizePosition(tinyBudget, PositiveWhole(3).toOption.get, instrument.noFees): candidate =>
+    val none = instrument.sizing.maxLots(tinyBudget, PositiveWhole(3).toOption.get, instrument.fees.none): candidate =>
       losingRoundTrip(candidate, 100, 90)
     assertEquals(none, Right(None))
 
     val exactBudget = settleAmount(Rational(1, 50))
-    val exact = instrument.sizePosition(exactBudget, PositiveWhole(2).toOption.get, instrument.noFees): candidate =>
-      losingRoundTrip(candidate, 100, 90)
+    val exact       = instrument.sizing.maxLots(exactBudget, PositiveWhole(2).toOption.get, instrument.fees.none):
+      candidate =>
+        losingRoundTrip(candidate, 100, 90)
     assertEquals(exact.map(_.map(instrument.lotCount)), Right(Some(BigInt(2))))
 
     val zeroBudget = settleAmount(Rational.zero)
-    val profitable = instrument.sizePosition(zeroBudget, PositiveWhole(4).toOption.get, instrument.noFees): candidate =>
-      losingRoundTrip(candidate, 100, 110)
+    val profitable = instrument.sizing.maxLots(zeroBudget, PositiveWhole(4).toOption.get, instrument.fees.none):
+      candidate =>
+        losingRoundTrip(candidate, 100, 110)
     assertEquals(profitable.map(_.map(instrument.lotCount)), Right(Some(BigInt(4))))
 
   test("sizing does not assume monotonicity and propagates the first candidate failure"):
     val budget    = settleAmount(Rational(1, 200))
-    val nonlinear = instrument.sizePosition(budget, PositiveWhole(3).toOption.get, instrument.noFees): candidate =>
+    val nonlinear = instrument.sizing.maxLots(budget, PositiveWhole(3).toOption.get, instrument.fees.none): candidate =>
       if instrument.lotCount(candidate) == BigInt(2) then losingRoundTrip(candidate, 100, 99)
       else losingRoundTrip(candidate, 100, 90)
     assertEquals(nonlinear.map(_.map(instrument.lotCount)), Right(Some(BigInt(2))))
 
-    val failed = instrument.sizePosition(budget, PositiveWhole(4).toOption.get, instrument.noFees): candidate =>
+    val failed = instrument.sizing.maxLots(budget, PositiveWhole(4).toOption.get, instrument.fees.none): candidate =>
       if instrument.lotCount(candidate) == BigInt(2) then Left(FeeScheduleFailure("candidate-two"))
       else if instrument.lotCount(candidate) == BigInt(3) then Left(FeeScheduleFailure("candidate-three"))
       else losingRoundTrip(candidate, 100, 99)
@@ -270,10 +274,10 @@ class FeePnlSizingSuite extends FunSuite:
     val conversion = tokenToUsd(Rational.one)
     val budget     = settleAmount(Rational(3, 4))
     val schedule   = flatTokenSchedule(Rational(-1, 2))
-    val result     = instrument.sizePosition(budget, PositiveWhole(3).toOption.get, schedule): candidate =>
+    val result     = instrument.sizing.maxLots(budget, PositiveWhole(3).toOption.get, schedule): candidate =>
       val entry = completeMarket(Side.Buy, candidate, 100, Vector(conversion))
       val exit  = completeMarket(Side.Sell, candidate, 100, Vector(conversion))
-      instrument.roundTrip(entry, exit)
+      instrument.scenarios.roundTrip(entry, exit)
 
     assertEquals(result, Right(None))
 
@@ -283,34 +287,34 @@ class FeePnlSizingSuite extends FunSuite:
         val count = instrument.lotCount(scenario.order.lots)
         val exact = Quantity(fixture.usd.dimension.asDimensionRef, Rational(-3 * count, 1000))
         for
-          fee <- instrument.quantizeFee(fixture.usd)(
+          fee <- instrument.fees.quantize(fixture.usd)(
                    fixture.usdCents,
                    FeeKind("stepped"),
                    exact,
                    QuantizationPolicy.TowardZero
                  )
-          line <- instrument.feeLine(scenario, 0, fee)
+          line <- instrument.fees.line(scenario, 0, fee)
         yield Vector(line)
     val oneCent = settleAmount(Rational(1, 100))
-    val stepped = instrument.sizePosition(oneCent, PositiveWhole(5).toOption.get, steppedSchedule): candidate =>
-      instrument.roundTrip(
+    val stepped = instrument.sizing.maxLots(oneCent, PositiveWhole(5).toOption.get, steppedSchedule): candidate =>
+      instrument.scenarios.roundTrip(
         completeMarket(Side.Buy, candidate, 100),
         completeMarket(Side.Sell, candidate, 100)
       )
     assertEquals(stepped.map(_.map(instrument.lotCount)), Right(Some(BigInt(3))))
 
-    val missing = instrument.sizePosition(settleAmount(Rational(100)), PositiveWhole(2).toOption.get,
+    val missing = instrument.sizing.maxLots(settleAmount(Rational(100)), PositiveWhole(2).toOption.get,
       flatTokenSchedule(Rational(-1))): candidate =>
-      instrument.roundTrip(
+      instrument.scenarios.roundTrip(
         completeMarket(Side.Buy, candidate, 100),
         completeMarket(Side.Sell, candidate, 100)
       )
     assert(missing.left.exists(_.isInstanceOf[MissingConversion]))
 
-    val invalidExit = instrument.sizePosition(settleAmount(Rational(100)), PositiveWhole(2).toOption.get,
-      instrument.noFees): candidate =>
+    val invalidExit = instrument.sizing.maxLots(settleAmount(Rational(100)), PositiveWhole(2).toOption.get,
+      instrument.fees.none): candidate =>
       val smaller = instrument.lots(instrument.lotCount(candidate) + 1).toOption.get
-      instrument.roundTrip(
+      instrument.scenarios.roundTrip(
         completeMarket(Side.Buy, candidate, 100),
         completeMarket(Side.Sell, smaller, 100)
       )
@@ -318,7 +322,7 @@ class FeePnlSizingSuite extends FunSuite:
 
   private def tokenToUsd(coefficient: Rational): SettlementConversion =
     SettlementConversion
-      .positive(fixture.token, fixture.usd)(
+      .fromRate(fixture.token, fixture.usd)(
         Rate(fixture.token.dimension.asDimensionRef, fixture.usd.dimension.asDimensionRef, coefficient)
       )
       .toOption
@@ -333,13 +337,13 @@ class FeePnlSizingSuite extends FunSuite:
         case (result, (_, index)) =>
           result.flatMap: accumulated =>
             for
-              fee <- instrument.quantizeFee(fixture.token)(
+              fee <- instrument.fees.quantize(fixture.token)(
                        fixture.tokenMillis,
                        FeeKind("flat-token"),
                        Quantity(fixture.token.dimension.asDimensionRef, unrounded),
                        QuantizationPolicy.TowardZero
                      )
-              line <- instrument.feeLine(scenario, index, fee)
+              line <- instrument.fees.line(scenario, index, fee)
             yield accumulated :+ line
 
   private def completeMarket(
@@ -348,17 +352,17 @@ class FeePnlSizingSuite extends FunSuite:
     dollars: BigInt,
     conversions: Vector[SettlementConversion] = Vector.empty
   ): instrument.OrderScenario =
-    val order  = instrument.marketOrder(side, lots).toOption.get
-    val market = instrument.marketStateForQuote(fixture.price(instrument, dollars), conversions).toOption.get
-    val slice  = instrument.liquiditySlice(lots, market, LiquidityRole.Taker)
-    instrument.orderScenario(order, Vector(slice)).toOption.get
+    val order  = instrument.orders.market(side, lots).toOption.get
+    val market = instrument.market.quoteSettled(fixture.price(instrument, dollars), conversions).toOption.get
+    val slice  = instrument.scenarios.slice(lots, market, LiquidityRole.Taker)
+    instrument.scenarios.order(order, Vector(slice)).toOption.get
 
   private def losingRoundTrip(
     lots: instrument.Lots,
     entryDollars: BigInt,
     exitDollars: BigInt
   ): Either[EconomicsError, instrument.RoundTripScenario] =
-    instrument.roundTrip(
+    instrument.scenarios.roundTrip(
       completeMarket(Side.Buy, lots, entryDollars),
       completeMarket(Side.Sell, lots, exitDollars)
     )

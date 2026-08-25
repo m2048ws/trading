@@ -1,18 +1,4 @@
-# instrument-economics Specification
-
-## Purpose
-Defines validated trading instruments and the exact, grid-aware market inputs needed to value signed positions uniformly in an instrument's settlement asset.
-## Requirements
-### Requirement: Downstream economics boundary
-Instrument, order, fee, PnL, and risk APIs SHALL be delivered by a downstream economics artifact that depends on the public quantities artifact. The quantities artifact SHALL remain independently usable and SHALL NOT acquire these domain concepts, their construction authority, or a dependency on the economics artifact.
-
-#### Scenario: Consume economics above quantities
-- **WHEN** downstream Scala adds the economics artifact
-- **THEN** it can use the new domain API together with public `trading.quantity` values and witnesses
-
-#### Scenario: Keep quantities domain-neutral
-- **WHEN** downstream Scala depends only on the quantities artifact
-- **THEN** instrument, order, fee, PnL, and position-sizing types are absent from that artifact
+## ADDED Requirements
 
 ### Requirement: Focused instrument-owned capability surface
 A stable `Instrument` SHALL retain identity, asset roles, contract terms, lot/position operations, and its path-owned public types at the instrument root. It SHALL expose focused instrument-owned capability values named `prices`, `market`, `orders`, `scenarios`, `fees`, `valuation`, and `sizing` for the corresponding operations. Moving an operation behind a capability SHALL NOT weaken private construction authority, path-dependent ownership, exactness, registry provenance, or typed failures.
@@ -31,26 +17,7 @@ The superseded flat operation names SHALL NOT remain as permanent forwarding ali
 - **WHEN** downstream source attempts to use a removed flat operation instead of its capability-oriented replacement
 - **THEN** compilation fails rather than selecting a compatibility alias with a second public path
 
-### Requirement: Validated Instrument identity and roles
-The public validated contract/listing type SHALL be named `Instrument`. It SHALL retain a stable instrument identity, an underlying identity that is not required to be a currency, and the quantity-bearing roles `base`, `quote`, `position`, and `settle` as registered asset references. Its construction boundary SHALL require registry-coherent asset and grid witnesses, a position lot grid, a price grid dimensionally equal to quote per base, and signed base-per-position and quote-per-position contract terms. At least one contract term SHALL be nonzero.
-
-Construction SHALL reject foreign registry provenance, mismatched grid dimensions, contradictory instrument definitions, a price grid not dimensionally equal to quote per base, and an economically empty pair of contract terms. A successfully constructed value SHALL require no `ResolvedInstrument` or similarly qualified lasting wrapper.
-
-#### Scenario: Construct a coherent instrument
-- **WHEN** a definition resolves registry-coherent base, quote, position, and settle assets; matching lot and quote-per-base price grids; and at least one nonzero signed contract term
-- **THEN** construction returns an `Instrument` retaining those exact identities and terms
-
-#### Scenario: Represent a non-currency underlying
-- **WHEN** an instrument references an index or basket as its underlying
-- **THEN** its underlying identity is retained without manufacturing a fifth currency role
-
-#### Scenario: Reject a foreign grid
-- **WHEN** the supplied lot or price grid is owned by another registry or has the wrong dimension
-- **THEN** instrument construction fails without retagging the grid or weakening its provenance
-
-#### Scenario: Reject an empty payoff
-- **WHEN** both signed contract terms are zero
-- **THEN** instrument construction fails because the position has no economic value
+## MODIFIED Requirements
 
 ### Requirement: Instrument-bound lots, positions, and prices
 Each stable `Instrument` value SHALL own its `Lots`, `PositionLots`, and `Price` types so values from different instrument paths cannot be mixed implicitly. `Lots` SHALL be a strictly positive arbitrary-precision coordinate count on that instrument's position lot grid. `PositionLots` SHALL be a signed coordinate on the same grid, including flat zero. `Price` SHALL be strictly positive and grid-constrained on that instrument's quote-per-base price grid.
@@ -151,18 +118,3 @@ It SHALL calculate position value by applying that rate to the exact signed posi
 #### Scenario: Preserve off-grid inverse PnL
 - **WHEN** inverse-style valuation produces a rational settle amount not on the settlement asset's storage grid
 - **THEN** price PnL remains that exact rational quantity without rounding
-
-### Requirement: Product-family normalization without core flags
-Spot, linear, inverse, and quanto-style definitions SHALL normalize into the same signed base/quote contract terms and market-state conversions. Core valuation SHALL NOT branch on public `isSpot`, `isLinear`, `isInverse`, `isQuanto`, contract-family enums, or venue-specific multiplier fields. Venue adapters MAY interpret source metadata to produce the validated generic terms.
-
-#### Scenario: Normalize a linear payoff
-- **WHEN** an adapter supplies a signed base-per-position term and zero quote-per-position term
-- **THEN** universal valuation produces the linear price-dependent settle value through base-to-settle conversion
-
-#### Scenario: Normalize an inverse payoff
-- **WHEN** an adapter supplies zero base-per-position and a signed quote-per-position term with settle equal to base
-- **THEN** universal valuation uses the reciprocal-price quote-to-settle conversion and produces inverse PnL without an inverse branch
-
-#### Scenario: Normalize a quanto-style payoff
-- **WHEN** price and an explicit third-asset settlement anchor produce coherent base-to-settle and quote-to-settle rates
-- **THEN** universal valuation produces the quanto-style result without a quanto branch
