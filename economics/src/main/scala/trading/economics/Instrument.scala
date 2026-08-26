@@ -675,98 +675,81 @@ object Instrument {
     // Trusted path-owned construction and witness-backed implementation remain private to this compilation unit.
 
     def price(coordinate: BigInt): Either[EconomicsError, Price] =
-      PriceMarketRules.validatePriceCoordinate(coordinate).map(_ => priceGrid.fromCoordinate(coordinate))
+      InstrumentPrices.fromCoordinate(coordinate)(priceGrid.fromCoordinate)
 
     def priceExactly(value: Rate[base.D, quote.D]): Either[EconomicsError, Price] =
-      value
-        .narrowExactlyTo(priceGrid.asGridRef)
-        .left
-        .map(PriceNotOnGrid(_))
-        .flatMap: selected =>
-          PriceMarketRules.validatePriceCoordinate(priceGrid.coordinate(selected)).map(_ => selected)
+      InstrumentPrices.exact(() => value.narrowExactlyTo(priceGrid.asGridRef))(priceGrid.coordinate)
 
     def quantizePrice(
       value: Rate[base.D, quote.D],
       policy: QuantizationPolicy
     ): Either[EconomicsError, (Price, Quantity[Divide[quote.D, base.D]])] =
-      val result = value.quantizeTo(priceGrid.asGridRef, policy)
-      PriceMarketRules
-        .validatePriceCoordinate(priceGrid.coordinate(result.value))
-        .map(_ => result.value -> result.residual)
+      InstrumentPrices.quantized(policy)(selectedPolicy =>
+        val result = value.quantizeTo(priceGrid.asGridRef, selectedPolicy)
+        result.value -> result.residual
+      )(priceGrid.coordinate)
 
-    def priceCoordinate(value: Price): BigInt = priceGrid.coordinate(value)
+    def priceObservation(value: Price): InstrumentPrices.Observation =
+      InstrumentPrices.observe(value)(priceGrid.coordinate)(selected => priceGrid.asQuantity(selected).coefficient)
 
-    def priceRate(value: Price): Rate[base.D, quote.D] = priceGrid.asQuantity(value)
+    def priceCoordinate(value: Price): BigInt = priceObservation(value).coordinate
 
-    private final case class ConversionData(source: AssetRef, coefficient: Rational)
+    def priceRate(value: Price): Rate[base.D, quote.D] =
+      Rate(base.dimension.asDimensionRef, quote.dimension.asDimensionRef, priceObservation(value).coefficient)
 
-    private final class SettlementConversionsImpl(private val values: Vector[ConversionData])
+    private final class SettlementConversionsImpl(private val values: Vector[InstrumentMarket.ConversionPlan])
       extends SettlementConversions:
-      val sources: Vector[AssetId]           = values.map(_.source.id)
-      val byId: Map[AssetId, ConversionData] = values.map(value => value.source.id -> value).toMap
+      val sources: Vector[AssetId]                            = values.map(_.source.id)
+      val byId: Map[AssetId, InstrumentMarket.ConversionPlan] = values.map(value => value.source.id -> value).toMap
 
     private final class MarketStateImpl(val price: Price, val conversions: SettlementConversions) extends MarketState
+
+    private def marketState(price: Price, plan: InstrumentMarket.StatePlan): MarketState =
+      new MarketStateImpl(price, new SettlementConversionsImpl(plan.conversions))
 
     def marketStateForQuote(
       price: Price,
       additional: Vector[SettlementConversion]
     ): Either[EconomicsError, MarketState] =
-      if settle.id != quote.id then
-        Left(InvalidConversion(quote.id, settle.id, Rational.one, "settle asset is not quote"))
-      else
-        marketStateChecked(
-          price,
-          Rate(base.dimension.asDimensionRef, settle.dimension.asDimensionRef, priceRate(price).coefficient),
-          Rate(quote.dimension.asDimensionRef, settle.dimension.asDimensionRef, Rational.one),
-          additional
-        )
+      InstrumentMarket
+        .quoteSettled(base, quote, settle, priceObservation(price).coefficient, additional)
+        .map(marketState(price, _))
 
     def marketStateForBase(
       price: Price,
       additional: Vector[SettlementConversion]
     ): Either[EconomicsError, MarketState] =
-      if settle.id != base.id then
-        Left(InvalidConversion(base.id, settle.id, Rational.one, "settle asset is not base"))
-      else
-        val reciprocal = Rational.one / priceRate(price).coefficient
-        reciprocal match
-          case Left(_)            => Left(InvalidPriceCoordinate(priceCoordinate(price)))
-          case Right(coefficient) =>
-            marketStateChecked(
-              price,
-              Rate(base.dimension.asDimensionRef, settle.dimension.asDimensionRef, Rational.one),
-              Rate(quote.dimension.asDimensionRef, settle.dimension.asDimensionRef, coefficient),
-              additional
-            )
+      val observation = priceObservation(price)
+      InstrumentMarket
+        .baseSettled(base, quote, settle, observation.coefficient, observation.coordinate, additional)
+        .map(marketState(price, _))
 
     def marketStateFromQuote(
       price: Price,
       quoteToSettle: Rate[quote.D, settle.D],
       additional: Vector[SettlementConversion]
     ): Either[EconomicsError, MarketState] =
-      val baseCoefficient = priceRate(price).coefficient * quoteToSettle.coefficient
-      marketStateChecked(
-        price,
-        Rate(base.dimension.asDimensionRef, settle.dimension.asDimensionRef, baseCoefficient),
-        quoteToSettle,
-        additional
-      )
+      InstrumentMarket
+        .fromQuote(base, quote, settle, priceObservation(price).coefficient, quoteToSettle.coefficient, additional)
+        .map(marketState(price, _))
 
     def marketStateFromBase(
       price: Price,
       baseToSettle: Rate[base.D, settle.D],
       additional: Vector[SettlementConversion]
     ): Either[EconomicsError, MarketState] =
-      val quoteCoefficient = baseToSettle.coefficient / priceRate(price).coefficient
-      quoteCoefficient match
-        case Left(_)            => Left(InvalidPriceCoordinate(priceCoordinate(price)))
-        case Right(coefficient) =>
-          marketStateChecked(
-            price,
-            baseToSettle,
-            Rate(quote.dimension.asDimensionRef, settle.dimension.asDimensionRef, coefficient),
-            additional
-          )
+      val observation = priceObservation(price)
+      InstrumentMarket
+        .fromBase(
+          base,
+          quote,
+          settle,
+          observation.coefficient,
+          observation.coordinate,
+          baseToSettle.coefficient,
+          additional
+        )
+        .map(marketState(price, _))
 
     def marketStateChecked(
       price: Price,
@@ -774,75 +757,18 @@ object Instrument {
       quoteToSettle: Rate[quote.D, settle.D],
       additional: Vector[SettlementConversion]
     ): Either[EconomicsError, MarketState] =
-      PriceMarketRules
-        .validateAnchors(
-          base.id,
-          quote.id,
-          settle.id,
-          priceRate(price).coefficient,
+      InstrumentMarket
+        .checked(
+          base,
+          quote,
+          settle,
+          priceObservation(price).coefficient,
           baseToSettle.coefficient,
-          quoteToSettle.coefficient
+          quoteToSettle.coefficient,
+          additional
         )
-        .flatMap(_ => buildConversions(baseToSettle.coefficient, quoteToSettle.coefficient, additional))
-        .map(conversions => new MarketStateImpl(price, conversions))
+        .map(marketState(price, _))
     end marketStateChecked
-
-    private def buildConversions(
-      baseToSettle: Rational,
-      quoteToSettle: Rational,
-      additional: Vector[SettlementConversion]
-    ): Either[EconomicsError, SettlementConversions] =
-      val generated = Vector(
-        ConversionData(base, baseToSettle),
-        ConversionData(quote, quoteToSettle),
-        ConversionData(settle, Rational.one)
-      )
-      val generatedResult = generated.foldLeft[Either[EconomicsError, Vector[ConversionData]]](Right(Vector.empty)):
-        (result, candidate) =>
-          result.flatMap: accumulated =>
-            accumulated.indexWhere(_.source.id == candidate.source.id) match
-              case -1                                                               => Right(accumulated :+ candidate)
-              case index if accumulated(index).coefficient == candidate.coefficient => Right(accumulated)
-              case index                                                            =>
-                Left(
-                  InvalidConversion(
-                    accumulated(index).source.id,
-                    settle.id,
-                    accumulated(index).coefficient,
-                    "settlement identity conversion must equal one"
-                  )
-                )
-
-      generatedResult
-        .flatMap: initial =>
-          additional.foldLeft[Either[EconomicsError, Vector[ConversionData]]](Right(initial)): (result, candidate) =>
-            result.flatMap: accumulated =>
-              if candidate.target.id != settle.id || candidate.target.dimension.key != settle.dimension.key then
-                Left(
-                  InvalidConversion(
-                    candidate.source.id,
-                    candidate.target.id,
-                    candidate.coefficient,
-                    "conversion target is not settle"
-                  )
-                )
-              else if !candidate.source.dimension.sharesRegistryWith(settle.dimension) then
-                Left(ForeignRegistry("additional conversion", settle.dimension.key, candidate.source.dimension.key))
-              else if candidate.coefficient.signum <= 0 then
-                Left(
-                  InvalidConversion(
-                    candidate.source.id,
-                    candidate.target.id,
-                    candidate.coefficient,
-                    "conversion must be positive"
-                  )
-                )
-              else if accumulated.exists(_.source.id == candidate.source.id) then
-                Left(DuplicateConversion(candidate.source.id))
-              else
-                Right(accumulated :+ ConversionData(candidate.source, candidate.coefficient))
-        .map(values => new SettlementConversionsImpl(values))
-    end buildConversions
 
     def convertToSettle(
       conversions: SettlementConversions,
@@ -850,21 +776,16 @@ object Instrument {
     )(
       value: Quantity[source.D]
     ): Either[EconomicsError, Quantity[settle.D]] =
-      val stored = conversions.asInstanceOf[SettlementConversionsImpl].byId.get(source.id)
-      stored match
-        case None => Left(MissingConversion(source.id, None, None))
-        case Some(conversion)
-          if conversion.source.dimension.key != source.dimension.key ||
-            !conversion.source.dimension.sharesRegistryWith(source.dimension) =>
-          Left(ForeignRegistry("conversion lookup", conversion.source.dimension.key, source.dimension.key))
-        case Some(conversion) =>
-          Right(Quantity(settle.dimension.asDimensionRef, value.coefficient * conversion.coefficient))
+      val stored = conversions.asInstanceOf[SettlementConversionsImpl].byId
+      InstrumentMarket
+        .lookup(source, stored)
+        .map(coefficient => Quantity(settle.dimension.asDimensionRef, value.coefficient * coefficient))
 
     def settleValuePerPosition(state: MarketState): Rate[position.D, settle.D] =
       val conversions = state.conversions.asInstanceOf[SettlementConversionsImpl]
       val baseRate    = conversions.byId(base.id).coefficient
       val quoteRate   = conversions.byId(quote.id).coefficient
-      val coefficient = FeeValuationSizingRules.settlePerPosition(
+      val coefficient = InstrumentValuation.settlePerPosition(
         basePerPosition.coefficient,
         baseRate,
         quotePerPosition.coefficient,
@@ -873,12 +794,18 @@ object Instrument {
       Rate(position.dimension.asDimensionRef, settle.dimension.asDimensionRef, coefficient)
 
     def positionValue(value: PositionLots, state: MarketState): Quantity[settle.D] =
-      positionQuantity(value).applyRate(settleValuePerPosition(state))
+      Quantity(
+        settle.dimension.asDimensionRef,
+        InstrumentValuation.positionValue(
+          positionQuantity(value).coefficient,
+          settleValuePerPosition(state).coefficient
+        )
+      )
 
     def pricePnl(value: PositionLots, entry: MarketState, exit: MarketState): Quantity[settle.D] =
       Quantity(
         settle.dimension.asDimensionRef,
-        FeeValuationSizingRules.pricePnl(
+        InstrumentValuation.pricePnl(
           positionQuantity(value).coefficient,
           settleValuePerPosition(entry).coefficient,
           settleValuePerPosition(exit).coefficient
@@ -887,12 +814,15 @@ object Instrument {
 
     private final class VisibilityImpl(val kind: VisibilityKind, val displayedLots: Option[Lots]) extends Visibility
 
-    val notApplicableVisibility: Visibility = new VisibilityImpl(VisibilityKind.NotApplicable, None)
-    val displayedVisibility: Visibility     = new VisibilityImpl(VisibilityKind.Displayed, None)
-    val hiddenVisibility: Visibility        = new VisibilityImpl(VisibilityKind.Hidden, None)
+    private def visibility(plan: InstrumentOrders.VisibilityPlan[Lots]): Visibility =
+      new VisibilityImpl(plan.kind, plan.displayedLots)
+
+    val notApplicableVisibility: Visibility = visibility(InstrumentOrders.visibility(VisibilityKind.NotApplicable))
+    val displayedVisibility: Visibility     = visibility(InstrumentOrders.visibility(VisibilityKind.Displayed))
+    val hiddenVisibility: Visibility        = visibility(InstrumentOrders.visibility(VisibilityKind.Hidden))
 
     def icebergVisibility(displayedLots: Lots): Visibility =
-      new VisibilityImpl(VisibilityKind.Iceberg, Some(displayedLots))
+      visibility(InstrumentOrders.visibility(VisibilityKind.Iceberg, Some(displayedLots)))
 
     private final class ActivationImpl(
       val kind: ActivationKind,
@@ -903,25 +833,24 @@ object Instrument {
       extends Activation
 
     val immediateActivation: Activation =
-      new ActivationImpl(ActivationKind.Immediate, None, None, None, None)
+      val plan = InstrumentOrders.immediate[Price]
+      new ActivationImpl(plan.kind, plan.reference, plan.comparison, plan.triggerPrice, plan.trailingOffsetTicks)
 
     def fixedTrigger(
       reference: PriceReference,
       comparison: TriggerComparison,
       triggerPrice: Price
     ): Activation =
-      new ActivationImpl(ActivationKind.FixedTrigger, Some(reference), Some(comparison), Some(triggerPrice), None)
+      val plan = InstrumentOrders.fixedTrigger(reference, comparison, triggerPrice)
+      new ActivationImpl(plan.kind, plan.reference, plan.comparison, plan.triggerPrice, plan.trailingOffsetTicks)
 
     def trailingTrigger(
       reference: PriceReference,
       comparison: TriggerComparison,
       offsetTicks: BigInt
     ): Either[EconomicsError, Activation] =
-      if offsetTicks.signum <= 0 then Left(InvalidTrailingOffset(offsetTicks))
-      else
-        Right(
-          new ActivationImpl(ActivationKind.TrailingTrigger, Some(reference), Some(comparison), None, Some(offsetTicks))
-        )
+      InstrumentOrders.trailingTrigger[Price](reference, comparison, offsetTicks).map: plan =>
+        new ActivationImpl(plan.kind, plan.reference, plan.comparison, plan.triggerPrice, plan.trailingOffsetTicks)
 
     private final class PriceInstructionImpl(
       val kind: PriceInstructionKind,
@@ -931,13 +860,16 @@ object Instrument {
       extends PriceInstruction
 
     val marketPriceInstruction: PriceInstruction =
-      new PriceInstructionImpl(PriceInstructionKind.Market, None, None, None)
+      val plan = InstrumentOrders.marketInstruction[Price]
+      new PriceInstructionImpl(plan.kind, plan.limit, plan.reference, plan.offsetTicks)
 
     def limitPriceInstruction(limit: Price): PriceInstruction =
-      new PriceInstructionImpl(PriceInstructionKind.Limit, Some(limit), None, None)
+      val plan = InstrumentOrders.limitInstruction(limit)
+      new PriceInstructionImpl(plan.kind, plan.limit, plan.reference, plan.offsetTicks)
 
     def peggedPriceInstruction(reference: PriceReference, offsetTicks: BigInt): PriceInstruction =
-      new PriceInstructionImpl(PriceInstructionKind.Pegged, None, Some(reference), Some(offsetTicks))
+      val plan = InstrumentOrders.peggedInstruction[Price](reference, offsetTicks)
+      new PriceInstructionImpl(plan.kind, plan.limit, plan.reference, plan.offsetTicks)
 
     private final class OrderImpl(
       val side: Side,
@@ -950,6 +882,20 @@ object Instrument {
       val visibility: Visibility)
       extends Order
 
+    private def constructOrder(
+      plan: InstrumentOrders.OrderPlan[Lots, Activation, PriceInstruction, Visibility]
+    ): Order =
+      new OrderImpl(
+        plan.side,
+        plan.lots,
+        plan.activation,
+        plan.priceInstruction,
+        plan.timeInForce,
+        plan.liquidityConstraint,
+        plan.positionEffect,
+        plan.visibility
+      )
+
     def order(
       side: Side,
       lots: Lots,
@@ -960,28 +906,22 @@ object Instrument {
       positionEffect: PositionEffect,
       visibility: Visibility
     ): Either[EconomicsError, Order] =
-      val isMarket   = priceInstruction.kind == PriceInstructionKind.Market
-      val nonResting = timeInForce == TimeInForce.ImmediateOrCancel || timeInForce == TimeInForce.FillOrKill
-      OrderScenarioRules
-        .validateOrder(
-          isMarket,
-          nonResting,
+      InstrumentOrders
+        .checked(
+          side,
+          lots,
+          activation,
+          priceInstruction,
+          priceInstruction.kind == PriceInstructionKind.Market,
+          timeInForce,
           liquidityConstraint,
+          positionEffect,
+          visibility,
           visibility.kind,
           visibility.displayedLots.map(lotCount),
           lotCount(lots)
         )
-        .map: _ =>
-          new OrderImpl(
-            side,
-            lots,
-            activation,
-            priceInstruction,
-            timeInForce,
-            liquidityConstraint,
-            positionEffect,
-            visibility
-          )
+        .map(constructOrder)
     end order
 
     def marketOrder(
@@ -989,16 +929,17 @@ object Instrument {
       lots: Lots,
       positionEffect: PositionEffect
     ): Either[EconomicsError, Order] =
-      order(
-        side,
-        lots,
-        immediateActivation,
-        marketPriceInstruction,
-        TimeInForce.ImmediateOrCancel,
-        LiquidityConstraint.Unrestricted,
-        positionEffect,
-        notApplicableVisibility
-      )
+      InstrumentOrders
+        .market(
+          side,
+          lots,
+          positionEffect,
+          immediateActivation,
+          marketPriceInstruction,
+          notApplicableVisibility,
+          lotCount(lots)
+        )
+        .map(constructOrder)
 
     def limitOrder(
       side: Side,
@@ -1009,16 +950,21 @@ object Instrument {
       positionEffect: PositionEffect,
       visibility: Visibility
     ): Either[EconomicsError, Order] =
-      order(
-        side,
-        lots,
-        immediateActivation,
-        limitPriceInstruction(limit),
-        timeInForce,
-        liquidityConstraint,
-        positionEffect,
-        visibility
-      )
+      InstrumentOrders
+        .limit(
+          side,
+          lots,
+          limitPriceInstruction(limit),
+          timeInForce,
+          liquidityConstraint,
+          positionEffect,
+          visibility,
+          visibility.kind,
+          visibility.displayedLots.map(lotCount),
+          lotCount(lots),
+          immediateActivation
+        )
+        .map(constructOrder)
 
     def stopMarketOrder(
       side: Side,
@@ -1026,18 +972,18 @@ object Instrument {
       trigger: Activation,
       positionEffect: PositionEffect
     ): Either[EconomicsError, Order] =
-      if trigger.kind == ActivationKind.Immediate then Left(InvalidOrder("stop-market requires a trigger"))
-      else
-        order(
+      InstrumentOrders
+        .stopMarket(
           side,
           lots,
           trigger,
-          marketPriceInstruction,
-          TimeInForce.ImmediateOrCancel,
-          LiquidityConstraint.Unrestricted,
+          trigger.kind,
           positionEffect,
-          notApplicableVisibility
+          marketPriceInstruction,
+          notApplicableVisibility,
+          lotCount(lots)
         )
+        .map(constructOrder)
 
     def stopLimitOrder(
       side: Side,
@@ -1049,18 +995,22 @@ object Instrument {
       positionEffect: PositionEffect,
       visibility: Visibility
     ): Either[EconomicsError, Order] =
-      if trigger.kind == ActivationKind.Immediate then Left(InvalidOrder("stop-limit requires a trigger"))
-      else
-        order(
+      InstrumentOrders
+        .stopLimit(
           side,
           lots,
           trigger,
+          trigger.kind,
           limitPriceInstruction(limit),
           timeInForce,
           liquidityConstraint,
           positionEffect,
-          visibility
+          visibility,
+          visibility.kind,
+          visibility.displayedLots.map(lotCount),
+          lotCount(lots)
         )
+        .map(constructOrder)
 
     private final class ActivationEvidenceImpl(
       val reference: PriceReference,
@@ -1069,14 +1019,16 @@ object Instrument {
       extends ActivationEvidence
 
     def fixedTriggerEvidence(reference: PriceReference, observedPrice: Price): ActivationEvidence =
-      new ActivationEvidenceImpl(reference, observedPrice, None)
+      val plan = InstrumentScenarios.fixedEvidence(reference, observedPrice)
+      new ActivationEvidenceImpl(plan.reference, plan.observedPrice, plan.favorableExtreme)
 
     def trailingTriggerEvidence(
       reference: PriceReference,
       favorableExtreme: Price,
       activatingObservation: Price
     ): ActivationEvidence =
-      new ActivationEvidenceImpl(reference, activatingObservation, Some(favorableExtreme))
+      val plan = InstrumentScenarios.trailingEvidence(reference, favorableExtreme, activatingObservation)
+      new ActivationEvidenceImpl(plan.reference, plan.observedPrice, plan.favorableExtreme)
 
     private final class PegResolutionImpl(
       val reference: PriceReference,
@@ -1085,13 +1037,15 @@ object Instrument {
       extends PegResolution
 
     def pegResolution(reference: PriceReference, referencePrice: Price, resolvedLimit: Price): PegResolution =
-      new PegResolutionImpl(reference, referencePrice, resolvedLimit)
+      val plan = InstrumentScenarios.pegResolution(reference, referencePrice, resolvedLimit)
+      new PegResolutionImpl(plan.reference, plan.referencePrice, plan.resolvedLimit)
 
     private final class LiquiditySliceImpl(val lots: Lots, val market: MarketState, val role: LiquidityRole)
       extends LiquiditySlice
 
     def liquiditySlice(lots: Lots, market: MarketState, role: LiquidityRole): LiquiditySlice =
-      new LiquiditySliceImpl(lots, market, role)
+      val plan = InstrumentScenarios.slice(lots, market, role)
+      new LiquiditySliceImpl(plan.lots, plan.market, plan.role)
 
     private final class OrderScenarioImpl(
       val order: Order,
@@ -1107,105 +1061,50 @@ object Instrument {
       activationEvidence: Option[ActivationEvidence],
       pegResolution: Option[PegResolution]
     ): Either[EconomicsError, OrderScenario] =
-      OrderScenarioRules
-        .validateSliceTotals(lotCount(order.lots), slices.map(slice => lotCount(slice.lots)))
-        .flatMap(_ => validateActivation(order.activation, activationEvidence))
-        .flatMap(_ => validatePeg(order.priceInstruction, pegResolution))
-        .flatMap: effectiveLimit =>
-          validateSlices(order, slices, effectiveLimit).map: _ =>
-            new OrderScenarioImpl(
-              order,
-              activationEvidence,
-              pegResolution,
-              slices,
-              positionLots(order.side, order.lots)
-            )
+      val activation  = order.activation
+      val instruction = order.priceInstruction
+      val orderView   = InstrumentScenarios.OrderView(
+        order.side,
+        lotCount(order.lots),
+        InstrumentScenarios.ActivationView(
+          activation.kind,
+          activation.reference,
+          activation.comparison,
+          activation.triggerPrice.map(priceCoordinate),
+          activation.trailingOffsetTicks
+        ),
+        InstrumentScenarios.InstructionView(
+          instruction.kind,
+          instruction.limit.map(priceCoordinate),
+          instruction.reference,
+          instruction.offsetTicks
+        ),
+        order.liquidityConstraint
+      )
+      val sliceViews = slices.map: slice =>
+        InstrumentScenarios.SliceView(lotCount(slice.lots), priceCoordinate(slice.market.price), slice.role)
+      val evidenceView = activationEvidence.map: evidence =>
+        InstrumentScenarios.EvidenceView(
+          evidence.reference,
+          priceCoordinate(evidence.observedPrice),
+          evidence.favorableExtreme.map(priceCoordinate)
+        )
+      val pegView = pegResolution.map: peg =>
+        InstrumentScenarios.PegView(
+          peg.reference,
+          priceCoordinate(peg.referencePrice),
+          priceCoordinate(peg.resolvedLimit)
+        )
 
-    private def validateActivation(
-      activation: Activation,
-      evidence: Option[ActivationEvidence]
-    ): Either[EconomicsError, Unit] =
-      activation.kind match
-        case ActivationKind.Immediate =>
-          if evidence.isEmpty then Right(())
-          else Left(InvalidScenario("immediate activation must not carry trigger evidence"))
-        case ActivationKind.FixedTrigger =>
-          evidence match
-            case None => Left(InvalidScenario("fixed trigger requires activation evidence"))
-            case Some(value) if value.favorableExtreme.nonEmpty =>
-              Left(InvalidScenario("fixed trigger evidence cannot contain a favorable extremum"))
-            case Some(value) =>
-              val expectedReference = activation.reference.get
-              val trigger           = priceCoordinate(activation.triggerPrice.get)
-              val observed          = priceCoordinate(value.observedPrice)
-              if value.reference != expectedReference then Left(InvalidScenario("trigger reference does not match"))
-              else if OrderScenarioRules.comparisonSatisfied(activation.comparison.get, observed, trigger) then
-                Right(())
-              else Left(InvalidScenario("fixed trigger observation does not satisfy comparison"))
-        case ActivationKind.TrailingTrigger =>
-          evidence match
-            case None        => Left(InvalidScenario("trailing trigger requires activation evidence"))
-            case Some(value) =>
-              value.favorableExtreme match
-                case None          => Left(InvalidScenario("trailing trigger requires a favorable extremum"))
-                case Some(extreme) =>
-                  val expectedReference = activation.reference.get
-                  val offset            = activation.trailingOffsetTicks.get
-                  val threshold         = activation.comparison.get match
-                    case TriggerComparison.AtOrAbove => priceCoordinate(extreme) + offset
-                    case TriggerComparison.AtOrBelow => priceCoordinate(extreme) - offset
-                  if value.reference != expectedReference then Left(InvalidScenario("trigger reference does not match"))
-                  else if threshold.signum <= 0 then Left(InvalidScenario("trailing threshold is not a positive price"))
-                  else if OrderScenarioRules.comparisonSatisfied(
-                      activation.comparison.get,
-                      priceCoordinate(value.observedPrice),
-                      threshold
-                    )
-                  then Right(())
-                  else Left(InvalidScenario("trailing observation does not satisfy derived threshold"))
-
-    private def validatePeg(
-      instruction: PriceInstruction,
-      evidence: Option[PegResolution]
-    ): Either[EconomicsError, Option[Price]] =
-      instruction.kind match
-        case PriceInstructionKind.Market =>
-          if evidence.isEmpty then Right(None)
-          else Left(InvalidScenario("market instruction must not carry peg evidence"))
-        case PriceInstructionKind.Limit =>
-          if evidence.isEmpty then Right(instruction.limit)
-          else Left(InvalidScenario("fixed limit must not carry peg evidence"))
-        case PriceInstructionKind.Pegged =>
-          evidence match
-            case None        => Left(InvalidScenario("pegged instruction requires resolution evidence"))
-            case Some(value) =>
-              val difference = priceCoordinate(value.resolvedLimit) - priceCoordinate(value.referencePrice)
-              OrderScenarioRules
-                .validatePeg(value.reference == instruction.reference.get, difference, instruction.offsetTicks.get)
-                .map(_ => Some(value.resolvedLimit))
-
-    private def validateSlices(
-      order: Order,
-      slices: Vector[LiquiditySlice],
-      effectiveLimit: Option[Price]
-    ): Either[EconomicsError, Unit] =
-      slices.zipWithIndex.collectFirst:
-        case (slice, index)
-          if order.priceInstruction.kind == PriceInstructionKind.Market && slice.role != LiquidityRole.Taker =>
-          InvalidScenario("market slices must be taker", Some(index))
-        case (slice, index)
-          if order.liquidityConstraint == LiquidityConstraint.MakerOnly && slice.role != LiquidityRole.Maker =>
-          InvalidScenario("maker-only slices must be maker", Some(index))
-        case (slice, index)
-          if effectiveLimit.exists: limit =>
-            order.side match
-              case Side.Buy  => priceCoordinate(slice.market.price) > priceCoordinate(limit)
-              case Side.Sell => priceCoordinate(slice.market.price) < priceCoordinate(limit)
-          =>
-          InvalidScenario("slice price is worse than the effective limit", Some(index))
-      match
-        case Some(error) => Left(error)
-        case None        => Right(())
+      InstrumentScenarios.order(orderView, sliceViews, evidenceView, pegView).map: positionCoordinate =>
+        new OrderScenarioImpl(
+          order,
+          activationEvidence,
+          pegResolution,
+          slices,
+          positionGrid.fromCoordinate(positionCoordinate)
+        )
+    end orderScenario
 
     private final class RoundTripScenarioImpl(
       val entry: OrderScenario,
@@ -1216,8 +1115,8 @@ object Instrument {
     def roundTrip(entry: OrderScenario, exit: OrderScenario): Either[EconomicsError, RoundTripScenario] =
       val entryCount = positionLotCount(entry.positionChange)
       val exitCount  = positionLotCount(exit.positionChange)
-      OrderScenarioRules
-        .validateRoundTrip(entryCount, exitCount)
+      InstrumentScenarios
+        .roundTrip(entryCount, exitCount)
         .map(_ => new RoundTripScenarioImpl(entry, exit, entry.positionChange))
 
     private final class FeeImpl(
@@ -1238,7 +1137,7 @@ object Instrument {
       accountContribution: Quantity[asset.D],
       nonnegativeMinimum: Quantity[asset.D]
     ): Either[EconomicsError, Quantity[asset.D]] =
-      FeeValuationSizingRules
+      InstrumentFees
         .minimumCharge(accountContribution.coefficient, nonnegativeMinimum.coefficient)
         .left
         .map(coefficient => InvalidFeeBasis(asset.id, coefficient))
@@ -1252,16 +1151,19 @@ object Instrument {
       unrounded: Quantity[asset.D],
       policy: QuantizationPolicy
     ): Either[EconomicsError, Fee] =
-      if !asset.dimension.sharesRegistryWith(settle.dimension) then
-        Left(ForeignRegistry("fee asset", settle.dimension.key, asset.dimension.key))
-      else if !grid.dimension.sharesRegistryWith(asset.dimension) then
-        Left(ForeignRegistry("fee grid", asset.dimension.key, grid.dimension.key))
-      else if grid.dimension.key != asset.dimension.key then
-        Left(InvalidFeeGrid(asset.id, grid.key, asset.dimension.key, grid.dimension.key))
-      else
-        val typedGrid = grid.asInstanceOf[RegisteredGridRef[asset.D]]
-        val result    = unrounded.quantizeTo(typedGrid.asGridRef, policy)
-        Right(
+      InstrumentFees
+        .validateQuantization(
+          asset.id,
+          settle.dimension.key,
+          asset.dimension.key,
+          asset.dimension.sharesRegistryWith(settle.dimension),
+          grid.key,
+          grid.dimension.key,
+          grid.dimension.sharesRegistryWith(asset.dimension)
+        )
+        .map: _ =>
+          val typedGrid = grid.asInstanceOf[RegisteredGridRef[asset.D]]
+          val result    = unrounded.quantizeTo(typedGrid.asGridRef, policy)
           new FeeImpl(
             asset,
             kind,
@@ -1273,7 +1175,6 @@ object Instrument {
             result.residual,
             unrounded
           )
-        )
 
     def percentageFee(
       asset: AssetRef
@@ -1284,7 +1185,7 @@ object Instrument {
       rate: FeeRate,
       policy: QuantizationPolicy
     ): Either[EconomicsError, Fee] =
-      FeeValuationSizingRules
+      InstrumentFees
         .percentageContribution(nonnegativeBasis.coefficient, rate.coefficient)
         .left
         .map(coefficient => InvalidFeeBasis(asset.id, coefficient))
@@ -1300,20 +1201,15 @@ object Instrument {
       extends FeeLine
 
     def feeLine(scenario: OrderScenario, sourceSliceIndex: Int, fee: Fee): Either[EconomicsError, FeeLine] =
-      scenario.slices.lift(sourceSliceIndex) match
-        case None         => Left(InvalidFeeAttribution(sourceSliceIndex, scenario.slices.size))
-        case Some(source) => Right(new FeeLineImpl(scenario, fee, sourceSliceIndex, source.market))
+      InstrumentFees.validateAttribution(sourceSliceIndex, scenario.slices.size).map: index =>
+        new FeeLineImpl(scenario, fee, index, scenario.slices(index).market)
 
     val noFees: FeeSchedule = new FeeSchedule:
       def assess(scenario: OrderScenario): Either[EconomicsError, Vector[FeeLine]] = Right(Vector.empty)
 
     def combineFeeSchedules(schedules: Vector[FeeSchedule]): FeeSchedule = new FeeSchedule:
       def assess(scenario: OrderScenario): Either[EconomicsError, Vector[FeeLine]] =
-        schedules.foldLeft[Either[EconomicsError, Vector[FeeLine]]](Right(Vector.empty)): (result, schedule) =>
-          for
-            accumulated <- result
-            next        <- schedule.assess(scenario)
-          yield accumulated ++ next
+        InstrumentFees.combine(schedules, scenario)((schedule, value) => schedule.assess(value))
 
     private final class ConvertedFeeLineImpl(
       val original: Fee,
@@ -1332,23 +1228,23 @@ object Instrument {
     def calculatePnl(roundTrip: RoundTripScenario, feeSchedule: FeeSchedule): Either[EconomicsError, Pnl] =
       val exactPricePnl = scenarioPricePnl(roundTrip.entry) + scenarioPricePnl(roundTrip.exit)
 
-      for
-        entryLines     <- assessAndValidate(feeSchedule, roundTrip.entry)
-        exitLines      <- assessAndValidate(feeSchedule, roundTrip.exit)
-        convertedEntry <- convertFeeLines(ScenarioLeg.Entry, entryLines)
-        convertedExit  <- convertFeeLines(ScenarioLeg.Exit, exitLines)
-      yield
-        val converted = convertedEntry ++ convertedExit
-        val feeTotal  = Quantity(
-          settle.dimension.asDimensionRef,
-          FeeValuationSizingRules.sum(converted.map(_.settleContribution.coefficient))
+      InstrumentValuation
+        .calculatePnl(roundTrip.entry, roundTrip.exit, exactPricePnl.coefficient)(
+          assessAndValidate(feeSchedule, _),
+          convertFeeLine,
+          _.settleContribution.coefficient
         )
-        new PnlImpl(exactPricePnl, converted, feeTotal, exactPricePnl + feeTotal)
+        .map: plan =>
+          val pricePnl = Quantity(settle.dimension.asDimensionRef, plan.pricePnl)
+          val feePnl   = Quantity(settle.dimension.asDimensionRef, plan.feePnl)
+          val netPnl   = Quantity(settle.dimension.asDimensionRef, plan.netPnl)
+          new PnlImpl(pricePnl, plan.convertedFeeLines, feePnl, netPnl)
 
     private def scenarioPricePnl(scenario: OrderScenario): Quantity[settle.D] =
-      scenario.slices.foldLeft(Quantity.zero[settle.D](using settle.dimension.asDimensionRef)): (total, slice) =>
+      val slices = scenario.slices.map: slice =>
         val change = positionLots(scenario.order.side, slice.lots)
-        total - positionValue(change, slice.market)
+        positionQuantity(change).coefficient -> settleValuePerPosition(slice.market).coefficient
+      Quantity(settle.dimension.asDimensionRef, InstrumentValuation.scenarioPricePnl(slices))
 
     private def assessAndValidate(
       schedule: FeeSchedule,
@@ -1363,23 +1259,20 @@ object Instrument {
           case Some(error) => Left(error)
           case None        => Right(lines)
 
-    private def convertFeeLines(
+    private def convertFeeLine(
       leg: ScenarioLeg,
-      lines: Vector[FeeLine]
-    ): Either[EconomicsError, Vector[ConvertedFeeLine]] =
-      lines.foldLeft[Either[EconomicsError, Vector[ConvertedFeeLine]]](Right(Vector.empty)): (result, line) =>
-        result.flatMap: accumulated =>
-          val fee = line.fee
-          convertToSettle(line.sourceMarket.conversions, fee.asset)(fee.amount)
-            .left
-            .map:
-              case MissingConversion(source, _, _) => MissingConversion(source, Some(leg), Some(line.sourceSliceIndex))
-              case other                           => other
-            .map: contribution =>
-              accumulated :+ new ConvertedFeeLineImpl(line.fee, leg, line.sourceSliceIndex, contribution)
+      line: FeeLine
+    ): Either[EconomicsError, ConvertedFeeLine] =
+      val fee = line.fee
+      convertToSettle(line.sourceMarket.conversions, fee.asset)(fee.amount)
+        .left
+        .map:
+          case MissingConversion(source, _, _) => MissingConversion(source, Some(leg), Some(line.sourceSliceIndex))
+          case other                           => other
+        .map(contribution => new ConvertedFeeLineImpl(line.fee, leg, line.sourceSliceIndex, contribution))
 
     def downsideRisk(pnl: Pnl): Quantity[settle.D] =
-      Quantity(settle.dimension.asDimensionRef, FeeValuationSizingRules.downsideRisk(pnl.netPnl.coefficient))
+      Quantity(settle.dimension.asDimensionRef, InstrumentSizing.downsideRisk(pnl.netPnl.coefficient))
 
     def sizePosition(
       riskBudget: Quantity[settle.D],
@@ -1388,18 +1281,12 @@ object Instrument {
     )(
       scenario: Lots => Either[EconomicsError, RoundTripScenario]
     ): Either[EconomicsError, Option[Lots]] =
-      if riskBudget.coefficient.signum < 0 then Left(InvalidRiskBudget(riskBudget.coefficient))
-      else
-        FeeValuationSizingRules.selectGreatest(cap.unrefined, riskBudget.coefficient): candidate =>
-          for
-            candidateLots   <- lots(candidate)
-            roundTrip       <- scenario(candidateLots)
-            heldPositionLots = positionLotCount(roundTrip.heldPosition)
-            _               <-
-              if heldPositionLots.abs == lotCount(candidateLots) then Right(())
-              else Left(SizingScenarioMismatch(lotCount(candidateLots), heldPositionLots))
-            pnl <- calculatePnl(roundTrip, feeSchedule)
-          yield candidateLots -> downsideRisk(pnl).coefficient
+      InstrumentSizing.maxLots(riskBudget.coefficient, cap.unrefined)(
+        lots,
+        scenario,
+        roundTrip => positionLotCount(roundTrip.heldPosition),
+        roundTrip => calculatePnl(roundTrip, feeSchedule).map(pnl => downsideRisk(pnl).coefficient)
+      )
 
   }
 }

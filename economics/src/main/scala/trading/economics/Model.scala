@@ -156,7 +156,7 @@ object SettlementConversion:
     if !source.dimension.sharesRegistryWith(target.dimension) then
       Left(ForeignRegistry("settlement conversion", target.dimension.key, source.dimension.key))
     else
-      PriceMarketRules.validateConversion(source.id, target.id, coefficient).map: _ =>
+      InstrumentMarket.validateConversion(source.id, target.id, coefficient).map: _ =>
         new SettlementConversionImpl(source, target, coefficient)
 
 end SettlementConversion

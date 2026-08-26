@@ -1,6 +1,7 @@
 package external
 
 import java.io.File
+import java.net.URLClassLoader
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.Path
@@ -13,7 +14,7 @@ import dotty.tools.dotc.reporting.StoreReporter
 import munit.FunSuite
 
 class EconomicsCompilerBoundarySuite extends FunSuite:
-  private final case class Compilation(errors: List[String], warnings: List[String]):
+  private final case class Compilation(output: Path, errors: List[String], warnings: List[String]):
     def succeeded: Boolean = errors.isEmpty && warnings.isEmpty
     def rendered: String   = (errors ++ warnings).mkString("\n")
 
@@ -41,9 +42,32 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
       assert(!jar.entries().asScala.exists(_.getName.startsWith("trading/economics/")))
     finally jar.close()
 
-  test("positive downstream economics fixture compiles without warnings"):
+  test("economics artifact contains the public instrument and all capability engines"):
+    val economicsJar = compilationClasspath
+      .split(File.pathSeparator)
+      .map(Paths.get(_))
+      .find(_.getFileName.toString.startsWith("trading-economics_3-"))
+      .getOrElse(fail("missing packaged economics artifact"))
+    val jar = new JarFile(economicsJar.toFile)
+    try
+      val entries  = jar.entries().asScala.map(_.getName).toSet
+      val expected = List(
+        "Instrument.class",
+        "InstrumentPrices.class",
+        "InstrumentMarket.class",
+        "InstrumentOrders.class",
+        "InstrumentScenarios.class",
+        "InstrumentFees.class",
+        "InstrumentValuation.class",
+        "InstrumentSizing.class"
+      ).map(name => s"trading/economics/$name")
+      expected.foreach(entry => assert(entries.contains(entry), s"missing $entry from $economicsJar"))
+    finally jar.close()
+
+  test("positive downstream economics fixture compiles without warnings and runs"):
     val result = compile(fixturesRoot.resolve("positive/CompleteEconomicsClient.scala"))
     assert(result.succeeded, result.rendered)
+    initializeModule(result.output, "external.economics.positive.CompleteEconomicsClient$")
 
   private val negativeFixtures = List(
     NegativeFixture("CrossInstrumentMixing.scala", List("Required:", "first"), 6),
@@ -100,7 +124,22 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
       source.toString
     )
     val _ = Main.process(arguments, reporter)
-    Compilation(reporter.allErrors.map(_.message), reporter.allWarnings.map(_.message))
+    Compilation(output, reporter.allErrors.map(_.message), reporter.allWarnings.map(_.message))
+
+  private def initializeModule(output: Path, moduleClassName: String): Unit =
+    val loader = new URLClassLoader(Array(output.toUri.toURL), getClass.getClassLoader)
+    try
+      val moduleClass = Class.forName(moduleClassName, true, loader)
+      assert(moduleClass.getField("MODULE$").get(null) != null, s"$moduleClassName was not initialized")
+    catch
+      case error: ExceptionInInitializerError =>
+        val cause = Option(error.getCause).fold(error.toString)(_.toString)
+        fail(s"compiled positive economics client failed during module initialization: $cause")
+      case error: ReflectiveOperationException =>
+        fail(s"compiled positive economics client module could not be loaded: $error")
+      case error: LinkageError =>
+        fail(s"compiled positive economics client module could not be linked: $error")
+    finally loader.close()
 
 end EconomicsCompilerBoundarySuite
 

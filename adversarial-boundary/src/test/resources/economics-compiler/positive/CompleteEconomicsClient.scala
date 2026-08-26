@@ -88,7 +88,7 @@ object CompleteEconomicsClient:
   val entryOrder = instrument.orders.market(Side.Buy, lots).toOption.get
   val exitOrder  = instrument.orders.market(Side.Sell, lots).toOption.get
   val entrySlice = instrument.scenarios.slice(lots, entryState, LiquidityRole.Taker)
-  val exitSlice  = instrument.scenarios.slice(lots, exitState, LiquidityRole.Maker)
+  val exitSlice  = instrument.scenarios.slice(lots, exitState, LiquidityRole.Taker)
   val entry      = instrument.scenarios.order(entryOrder, Vector(entrySlice)).toOption.get
   val exit       = instrument.scenarios.order(exitOrder, Vector(exitSlice)).toOption.get
   val roundTrip  = instrument.scenarios.roundTrip(entry, exit).toOption.get

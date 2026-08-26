@@ -43,11 +43,9 @@ lazy val quantities =
       name       := "trading-quantities",
       moduleName := "trading-quantities",
 
-      // Tests consume the completed main JAR so the Scala compiler never observes mutable Compile/classes TASTy.
-      // External dependencies and downstream project classpaths retain their ordinary wiring.
-      quantitiesExternalArtifact         := (Compile / packageBin).value,
-      Test / internalDependencyClasspath :=
-        Seq(Attributed.blank((Compile / packageBin).value)),
+      // Same-project tests retain SBT's normal Compile/classes dependency. External consumers synchronize on one
+      // completed immutable artifact without changing Compile/exportedProducts or Test/internalDependencyClasspath.
+      quantitiesExternalArtifact := (Compile / packageBin).value,
 
       Test / classLoaderLayeringStrategy := ClassLoaderLayeringStrategy.Flat,
 
@@ -71,6 +69,8 @@ lazy val economics =
       name       := "trading-economics",
       moduleName := "trading-economics",
 
+      Compile / packageBin :=
+        (Compile / packageBin).dependsOn(Compile / compile).value,
       economicsExternalArtifact := (Compile / packageBin).value,
 
       Test / classLoaderLayeringStrategy := ClassLoaderLayeringStrategy.Flat,
