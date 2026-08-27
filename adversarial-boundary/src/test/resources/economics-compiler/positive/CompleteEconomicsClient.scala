@@ -83,8 +83,8 @@ object CompleteEconomicsClient:
   val exitState = stable.market.quoteSettled(exitPrice).toOption.get
   val entryOrder = stable.orders.market(Side.Buy, lots).toOption.get
   val exitOrder = stable.orders.market(Side.Sell, lots).toOption.get
-  val entrySlice = stable.scenarios.slice(lots, entryState, LiquidityRole.Taker)
-  val exitSlice = stable.scenarios.slice(lots, exitState, LiquidityRole.Taker)
+  val entrySlice = stable.scenarios.slice(lots, entryState, LiquidityRole.Taker).toOption.get
+  val exitSlice = stable.scenarios.slice(lots, exitState, LiquidityRole.Taker).toOption.get
   val entryAssumptions = stable.scenarios.assumptions(
     stable.scenarios.immediate,
     stable.scenarios.directPricing,
@@ -104,6 +104,7 @@ object CompleteEconomicsClient:
     .get
 
   val schedule = new stable.FeeSchedule:
+    val instrumentId: InstrumentId = stable.identity.id
     def assess(scenario: stable.OrderScenario): Either[EconomicsError, Vector[stable.FeeLine]] =
       val basis = Quantity(quote.dimension.asDimensionRef, Rational(scenario.order.intent.lots.count.unrefined))
       for
@@ -116,6 +117,18 @@ object CompleteEconomicsClient:
   val genericCount = genericLotCount(stable)(lots)
   val genericOrderCount = genericOrderLots(stable)(entryOrder)
   val genericEntryPrice = genericPrice(stable)(Rational(100))
+  val directActivation = stable.orders.fixedTrigger(PriceReference.Mark, TriggerComparison.AtOrAbove, entryPrice)
+  val matchedTriggerTicks = directActivation match
+    case FixedActivation(PriceReference.Mark, TriggerComparison.AtOrAbove, triggerPrice) =>
+      triggerPrice.ticks.unrefined
+    case _ => BigInt(-1)
+  val foreignIntent = OrderIntent(InstrumentId("foreign-instrument"), Side.Buy, lots, PositionEffect.Unrestricted)
+  val runtimeMismatch = stable.orders.create(
+    foreignIntent,
+    stable.orders.immediate,
+    stable.orders.marketExecution(NonRestingTimeInForce.ImmediateOrCancel)
+  )
+  assert(runtimeMismatch == Left(InstrumentMismatch("order.intent", stable.identity.id, foreignIntent.instrumentId)))
   val sized = stable.sizing.maxLots(
     Quantity(stable.roles.settle.dimension.asDimensionRef, Rational(1000)),
     PositiveWhole(3).toOption.get,
@@ -123,8 +136,8 @@ object CompleteEconomicsClient:
   ): candidate =>
     val candidateEntryOrder = stable.orders.market(Side.Buy, candidate).toOption.get
     val candidateExitOrder = stable.orders.market(Side.Sell, candidate).toOption.get
-    val candidateEntrySlice = stable.scenarios.slice(candidate, entryState, LiquidityRole.Taker)
-    val candidateExitSlice = stable.scenarios.slice(candidate, exitState, LiquidityRole.Taker)
+    val candidateEntrySlice = stable.scenarios.slice(candidate, entryState, LiquidityRole.Taker).toOption.get
+    val candidateExitSlice = stable.scenarios.slice(candidate, exitState, LiquidityRole.Taker).toOption.get
     val candidateEntry = stable.scenarios.order(
       candidateEntryOrder,
       stable.scenarios.assumptions(stable.scenarios.immediate, stable.scenarios.directPricing, Vector(candidateEntrySlice))

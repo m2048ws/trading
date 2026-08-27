@@ -48,6 +48,7 @@ class FeePnlSizingSuite extends FunSuite:
       .get
 
     val schedule = new instrument.FeeSchedule:
+      val instrumentId: InstrumentId = instrument.identity.id
       def assess(scenario: instrument.OrderScenario): Either[EconomicsError, Vector[instrument.FeeLine]] =
         val fee = tokenDenomination.quantize(
           FeeKind("token-flat"),
@@ -70,6 +71,7 @@ class FeePnlSizingSuite extends FunSuite:
       .toOption
       .get
     val schedule = new instrument.FeeSchedule:
+      val instrumentId: InstrumentId = instrument.identity.id
       def assess(scenario: instrument.OrderScenario): Either[EconomicsError, Vector[instrument.FeeLine]] =
         val fee = tokenDenomination.quantize(
           FeeKind("missing-token"),
@@ -87,12 +89,16 @@ class FeePnlSizingSuite extends FunSuite:
     assertEquals(instrument.fees.none.assess(scenario), Right(Vector.empty))
 
     def component(kind: String, amount: Rational): instrument.FeeSchedule = new instrument.FeeSchedule:
+      val instrumentId: InstrumentId = instrument.identity.id
       def assess(value: instrument.OrderScenario): Either[EconomicsError, Vector[instrument.FeeLine]] =
         val fee = usdDenomination.quantize(FeeKind(kind), Quantity(fixture.usd.dimension.asDimensionRef, amount))
         instrument.fees.line(value, 0, fee).map(Vector(_))
 
     val combined =
-      instrument.fees.combine(Vector(component("one", Rational(-1, 100)), component("two", Rational(-1, 50))))
+      instrument.fees
+        .combine(Vector(component("one", Rational(-1, 100)), component("two", Rational(-1, 50))))
+        .toOption
+        .get
     assertEquals(
       combined.assess(scenario).map(_.map(_.fee.amount.coefficient)),
       Right(Vector(Rational(-1, 100), Rational(-1, 50)))
@@ -101,6 +107,7 @@ class FeePnlSizingSuite extends FunSuite:
     val otherScenario = fixture.scenario(instrument)(Side.Buy, lots, fixture.state(instrument, 100))
     val foreignLine   = component("foreign", Rational(-1, 100)).assess(otherScenario).toOption.get
     val invalid       = new instrument.FeeSchedule:
+      val instrumentId: InstrumentId = instrument.identity.id
       def assess(
         value: instrument.OrderScenario
       ): Either[EconomicsError, Vector[instrument.FeeLine]] = Right(foreignLine)
@@ -128,6 +135,7 @@ class FeePnlSizingSuite extends FunSuite:
     val lots     = instrument.lots(1000).toOption.get
     val scenario = fixture.scenario(instrument)(Side.Buy, lots, fixture.state(instrument, 100))
     val tiered   = new instrument.FeeSchedule:
+      val instrumentId: InstrumentId = instrument.identity.id
       def assess(value: instrument.OrderScenario): Either[EconomicsError, Vector[instrument.FeeLine]] =
         val rate =
           if value.order.intent.lots.count.unrefined >= 1000 then FeeRate(Rational(1, 500))
@@ -164,6 +172,7 @@ class FeePnlSizingSuite extends FunSuite:
     assertEquals(failed, Left(failure))
 
     val flatFee = new instrument.FeeSchedule:
+      val instrumentId: InstrumentId = instrument.identity.id
       def assess(scenario: instrument.OrderScenario): Either[EconomicsError, Vector[instrument.FeeLine]] =
         val fee = usdDenomination.quantize(
           FeeKind("flat"),

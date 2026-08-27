@@ -9,12 +9,12 @@ class InstrumentCapabilityEngineSuite extends FunSuite:
   private val fixture    = new EconomicsFixtures
   private val instrument = fixture.linear
 
-  test("focused capabilities share the stable owner and operate on real values"):
+  test("focused capabilities share the stable runtime identity and operate on real values"):
     val lots        = instrument.lots(2).toOption.get
     val price       = fixture.price(instrument, 100)
     val market      = instrument.market.quoteSettled(price).toOption.get
     val order       = instrument.orders.market(Side.Buy, lots).toOption.get
-    val slice       = instrument.scenarios.slice(lots, market, LiquidityRole.Taker)
+    val slice       = instrument.scenarios.slice(lots, market, LiquidityRole.Taker).toOption.get
     val assumptions = instrument.scenarios.assumptions(
       instrument.scenarios.immediate,
       instrument.scenarios.directPricing,

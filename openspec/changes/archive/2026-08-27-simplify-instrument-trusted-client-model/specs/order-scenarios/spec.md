@@ -1,8 +1,5 @@
-# order-scenarios Specification
+## MODIFIED Requirements
 
-## Purpose
-Defines immutable, compositional order instructions and complete hypothetical order outcomes whose price and maker/taker assumptions can drive fees and PnL without introducing execution lifecycle state.
-## Requirements
 ### Requirement: Compositional immutable orders
 An order SHALL retain one stable runtime `InstrumentId`, an `OrderIntent` containing side, positive lots, and position effect, an explicit activation alternative, and an explicit execution-instruction alternative. The order and its components SHALL use ordinary non-owner-parameterized domain types. Activation SHALL distinguish immediate, fixed-trigger, and trailing-trigger forms by construction. Execution instructions SHALL distinguish market execution from priced execution by construction.
 
@@ -62,25 +59,6 @@ Market, limit, and pegged pricing SHALL likewise be explicit alternatives. A lim
 #### Scenario: Resolve a pegged instruction before valuation
 - **WHEN** a pegged order is evaluated in a complete scenario
 - **THEN** the scenario supplies a grid-valid peg resolution consistent with the instruction's reference and offset
-
-### Requirement: LiquidityRole describes matched quantity
-`LiquidityRole` SHALL contain maker and taker classifications and SHALL describe the fee treatment of matched quantity, not the instruction stored by an order. An order SHALL store a liquidity constraint, while a complete order scenario SHALL store the assumed role of each positive matched slice. Core validation SHALL enforce universal implications: a market slice is taker; a maker-only order has only maker slices; and an unrestricted limit order MAY contain maker slices, taker slices, or both. Venue fee schedules MAY refine classification for mechanics such as hidden quantity.
-
-#### Scenario: Model an all-taker market outcome
-- **WHEN** a complete market-order scenario contains matched quantity
-- **THEN** every liquidity slice is classified as taker
-
-#### Scenario: Model a mixed limit outcome
-- **WHEN** an unrestricted limit order is assumed to cross for part of its lots and later rest for the remainder
-- **THEN** its scenario may contain a taker slice and a maker slice whose lots sum to the order lots
-
-#### Scenario: Enforce maker-only conditionally on a fill
-- **WHEN** a maker-only order has a complete filled scenario
-- **THEN** every slice is maker, while the order mechanics themselves make no guarantee that any fill occurs
-
-#### Scenario: Keep liquidity out of the order instruction
-- **WHEN** two scenarios evaluate the same unrestricted limit order under different maker/taker allocations
-- **THEN** the order value remains unchanged and only the scenario outcomes differ
 
 ### Requirement: Complete checked order scenarios
 A complete order scenario SHALL bind one immutable order and one cohesive `ScenarioAssumptions` value containing activation status, pricing resolution, and one or more positive liquidity slices. These types SHALL be ordinary non-owner-parameterized domain types that retain their runtime `InstrumentId` where needed for aggregate coherence. Scenario assumptions SHALL represent activation status and pricing resolution through explicit alternatives: immediate activation versus supplied trigger evidence, and direct pricing versus supplied peg resolution. Trigger evidence SHALL itself distinguish fixed and trailing forms so a favorable extremum is present exactly for trailing evidence. Missing, extraneous, or mismatched evidence SHALL remain constructible only as an unvalidated request and SHALL be rejected by complete-scenario construction.

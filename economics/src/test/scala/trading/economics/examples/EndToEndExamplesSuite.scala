@@ -24,6 +24,7 @@ class EndToEndExamplesSuite extends FunSuite:
       .toOption
       .get
     val schedule = new instrument.FeeSchedule:
+      val instrumentId: InstrumentId = instrument.identity.id
       def assess(scenario: instrument.OrderScenario): Either[EconomicsError, Vector[instrument.FeeLine]] =
         val exactBasis = Quantity(
           fixture.usd.dimension.asDimensionRef,
@@ -63,7 +64,7 @@ class EndToEndExamplesSuite extends FunSuite:
     val price       = instrument.prices.exact(coefficient).toOption.get
     val order       = instrument.orders.market(side, lots).toOption.get
     val state       = instrument.market.quoteSettled(price).toOption.get
-    val slice       = instrument.scenarios.slice(lots, state, LiquidityRole.Taker)
+    val slice       = instrument.scenarios.slice(lots, state, LiquidityRole.Taker).toOption.get
     val assumptions = instrument.scenarios.assumptions(
       instrument.scenarios.immediate,
       instrument.scenarios.directPricing,

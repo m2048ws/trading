@@ -12,8 +12,8 @@ class InstrumentEconomicsSuite extends FunSuite:
 
   test("owned lots and signed positions retain refined value-local observations"):
     val lots  = instrument.lots(1000).toOption.get
-    val long  = instrument.positionLots(Side.Buy, lots)
-    val short = instrument.positionLots(Side.Sell, lots)
+    val long  = instrument.positionLots(Side.Buy, lots).toOption.get
+    val short = instrument.positionLots(Side.Sell, lots).toOption.get
 
     assertEquals(lots.count.unrefined, BigInt(1000))
     assertEquals(lots.quantity.coefficient, Rational.one)
@@ -123,21 +123,21 @@ class InstrumentEconomicsSuite extends FunSuite:
 
   test("linear, inverse, quanto, and spot-like valuation retain exact formulas"):
     val linearLots     = fixture.linear.lots(1000).toOption.get
-    val linearPosition = fixture.linear.positionLots(Side.Buy, linearLots)
+    val linearPosition = fixture.linear.positionLots(Side.Buy, linearLots).toOption.get
     val linearEntry    = fixture.state(fixture.linear, 100)
     val linearExit     = fixture.state(fixture.linear, 110)
     assertEquals(
-      fixture.linear.valuation.pricePnl(linearPosition, linearEntry, linearExit).coefficient,
-      Rational(10)
+      fixture.linear.valuation.pricePnl(linearPosition, linearEntry, linearExit).map(_.coefficient),
+      Right(Rational(10))
     )
 
     val inverseLots     = fixture.inverse.lots(1000).toOption.get
-    val inversePosition = fixture.inverse.positionLots(Side.Buy, inverseLots)
+    val inversePosition = fixture.inverse.positionLots(Side.Buy, inverseLots).toOption.get
     val inverseEntry    = fixture.inverse.market.baseSettled(fixture.price(fixture.inverse, 100)).toOption.get
     val inverseExit     = fixture.inverse.market.baseSettled(fixture.price(fixture.inverse, 110)).toOption.get
     assertEquals(
-      fixture.inverse.valuation.pricePnl(inversePosition, inverseEntry, inverseExit).coefficient,
-      Rational(1, 11)
+      fixture.inverse.valuation.pricePnl(inversePosition, inverseEntry, inverseExit).map(_.coefficient),
+      Right(Rational(1, 11))
     )
 
     val quantoPrice = fixture.price(fixture.quanto, 100)
@@ -147,7 +147,7 @@ class InstrumentEconomicsSuite extends FunSuite:
       Rational(9, 10)
     )
     val quantoState = fixture.quanto.market.fromQuoteRate(quantoPrice, quoteToEur).toOption.get
-    assertEquals(fixture.quanto.valuation.settlePerPosition(quantoState).coefficient, Rational(90))
+    assertEquals(fixture.quanto.valuation.settlePerPosition(quantoState).map(_.coefficient), Right(Rational(90)))
 
     val spotLots = fixture.spotLike.lots(100_000_000).toOption.get
     assertEquals(spotLots.quantity.coefficient, Rational.one)

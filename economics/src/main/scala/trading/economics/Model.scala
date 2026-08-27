@@ -5,19 +5,19 @@ import trading.quantity.grid.*
 import trading.quantity.runtime.*
 
 /** Stable external identity of a validated listing or contract. */
-final case class InstrumentId(value: String) extends JavaSerializationUnsupported:
+final case class InstrumentId(value: String):
   require(value.trim.nonEmpty, "instrument ID cannot be empty")
 
 /** Stable identity of an instrument's possibly non-currency underlying. */
-final case class UnderlyingId(value: String) extends JavaSerializationUnsupported:
+final case class UnderlyingId(value: String):
   require(value.trim.nonEmpty, "underlying ID cannot be empty")
 
 /** Semantic identity of a trading-fee component. */
-final case class FeeKind(value: String) extends JavaSerializationUnsupported:
+final case class FeeKind(value: String):
   require(value.trim.nonEmpty, "fee kind cannot be empty")
 
 /** Cohesive semantic identity of one instrument. */
-final case class InstrumentIdentity(id: InstrumentId, underlying: UnderlyingId) extends JavaSerializationUnsupported
+final case class InstrumentIdentity(id: InstrumentId, underlying: UnderlyingId)
 
 /** The registered asset roles shared by listing rules and payoff terms. */
 final class InstrumentRoles(
@@ -25,7 +25,6 @@ final class InstrumentRoles(
   val quote: AssetRef,
   val position: AssetRef,
   val settle: AssetRef)
-  extends JavaSerializationUnsupported
 
 /** Contextual grids for the exact role value supplied at construction. */
 final class ListingRules(
@@ -33,7 +32,6 @@ final class ListingRules(
 )(
   val positionLotGrid: RegisteredGridRef[? <: Dimension],
   val priceGrid: RegisteredGridRef[? <: Dimension])
-  extends JavaSerializationUnsupported
 
 /** Product-family-neutral two-leg payoff for the exact role value supplied at construction. */
 final class ContractPayoff(
@@ -41,7 +39,6 @@ final class ContractPayoff(
 )(
   val basePerPosition: Rate[roles.position.D, roles.base.D],
   val quotePerPosition: Rate[roles.position.D, roles.quote.D])
-  extends JavaSerializationUnsupported
 
 /** One cohesive input to the final validated instrument boundary. */
 final case class InstrumentDefinition(
@@ -49,10 +46,9 @@ final case class InstrumentDefinition(
   roles: InstrumentRoles,
   listingRules: ListingRules,
   contractPayoff: ContractPayoff)
-  extends JavaSerializationUnsupported
 
 /** Order direction and the corresponding account-position sign. */
-enum Side extends JavaSerializationUnsupported:
+enum Side:
   case Buy, Sell
 
   def sign: BigInt =
@@ -61,11 +57,11 @@ enum Side extends JavaSerializationUnsupported:
       case Sell => BigInt(-1)
 
 /** Duration instruction retained by a priced immutable order. */
-enum TimeInForce extends JavaSerializationUnsupported:
+enum TimeInForce:
   case GoodTillCancelled, ImmediateOrCancel, FillOrKill, Day
 
 /** The only durations structurally accepted by market execution. */
-enum NonRestingTimeInForce extends JavaSerializationUnsupported:
+enum NonRestingTimeInForce:
   case ImmediateOrCancel, FillOrKill
 
 object NonRestingTimeInForce:
@@ -76,52 +72,52 @@ object NonRestingTimeInForce:
       case supplied                      => Left(InvalidOrder(OrderFailureReason.RestingMarketDuration(supplied)))
 
 /** Whether a priced order may take liquidity or must remain passive. */
-enum LiquidityConstraint extends JavaSerializationUnsupported:
+enum LiquidityConstraint:
   case Unrestricted, MakerOnly
 
 /** Whether an order may open exposure or may only reduce it. */
-enum PositionEffect extends JavaSerializationUnsupported:
+enum PositionEffect:
   case Unrestricted, ReduceOnly
 
 /** Price source named by a trigger or peg. */
-enum PriceReference extends JavaSerializationUnsupported:
+enum PriceReference:
   case Last, Mark, Index
 
 /** Exact comparison used by fixed and trailing activation. */
-enum TriggerComparison extends JavaSerializationUnsupported:
+enum TriggerComparison:
   case AtOrAbove, AtOrBelow
 
 /** Fee classification of one complete scenario slice. */
-enum LiquidityRole extends JavaSerializationUnsupported:
+enum LiquidityRole:
   case Maker, Taker
 
 /** Entry or exit attribution retained on converted fee contributions. */
-enum ScenarioLeg extends JavaSerializationUnsupported:
+enum ScenarioLeg:
   case Entry, Exit
 
 /** Quoted fee-policy sign: positive is a charge and negative is a rebate. */
-final case class FeeRate(coefficient: Rational) extends JavaSerializationUnsupported:
+final case class FeeRate(coefficient: Rational):
   require(coefficient != null, "fee rate coefficient")
 
-enum InstrumentContradiction extends JavaSerializationUnsupported:
+enum InstrumentContradiction:
   case BaseEqualsQuote
   case ListingRolesDiffer
   case PayoffRolesDiffer
 
-enum ConversionFailureReason extends JavaSerializationUnsupported:
+enum ConversionFailureReason:
   case NonPositive
   case IdentityNotOne
   case SettleIsNotQuote
   case SettleIsNotBase
   case TargetIsNotSettle
 
-enum OrderFailureReason extends JavaSerializationUnsupported:
+enum OrderFailureReason:
   case RestingMarketDuration(value: TimeInForce)
   case NonRestingIceberg
   case IcebergExceedsOrder(displayed: BigInt, ordered: BigInt)
   case StopRequiresTrigger
 
-enum ScenarioFailureReason extends JavaSerializationUnsupported:
+enum ScenarioFailureReason:
   case NoSlices
   case SliceLotsMismatch(expected: BigInt, supplied: BigInt)
   case UnexpectedTriggerEvidence
@@ -141,11 +137,28 @@ enum ScenarioFailureReason extends JavaSerializationUnsupported:
   case MakerOnlySliceNotMaker
   case SliceWorseThanLimit
 
-enum FeeScheduleFailureReason extends JavaSerializationUnsupported:
+enum FeeScheduleFailureReason:
   case ForeignScenarioLine
 
 /** Closed hierarchy of expected economics failures. */
-sealed abstract class EconomicsError extends JavaSerializationUnsupported with Product with Serializable
+sealed abstract class EconomicsError extends Product with Serializable
+
+/** One ordinary runtime-coherence diagnostic shared by all economics aggregate boundaries. */
+final case class InstrumentMismatch(context: String, expected: InstrumentId, supplied: InstrumentId)
+  extends EconomicsError
+
+private[economics] object InstrumentIdentityChecks:
+  /** Compare named ordinary identities. This helper issues no token and performs no cast. */
+  def check(
+    context: String,
+    expected: InstrumentId,
+    supplied: (String, InstrumentId)*
+  ): Either[EconomicsError, Unit] =
+    supplied.collectFirst:
+      case (name, id) if id != expected => InstrumentMismatch(s"$context.$name", expected, id)
+    match
+      case Some(error) => Left(error)
+      case None        => Right(())
 
 final case class ForeignRegistry(role: String, expected: DimensionKey, supplied: DimensionKey) extends EconomicsError
 

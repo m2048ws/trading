@@ -84,7 +84,7 @@ final class EconomicsFixtures:
     role: LiquidityRole = LiquidityRole.Taker
   ): instrument.OrderScenario =
     val order       = instrument.orders.market(side, lots).toOption.get
-    val slice       = instrument.scenarios.slice(lots, market, role)
+    val slice       = instrument.scenarios.slice(lots, market, role).toOption.get
     val assumptions = instrument.scenarios.assumptions(
       instrument.scenarios.immediate,
       instrument.scenarios.directPricing,

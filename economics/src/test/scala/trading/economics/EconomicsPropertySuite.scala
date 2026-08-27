@@ -17,8 +17,14 @@ class EconomicsPropertySuite extends ScalaCheckSuite:
       val lots  = instrument.lots(BigInt(count)).toOption.get
       val entry = instrument.market.quoteSettled(fixture.price(instrument, 100)).toOption.get
       val exit  = instrument.market.quoteSettled(fixture.price(instrument, 110)).toOption.get
-      val long  = instrument.valuation.pricePnl(instrument.positionLots(Side.Buy, lots), entry, exit)
-      val short = instrument.valuation.pricePnl(instrument.positionLots(Side.Sell, lots), entry, exit)
+      val long  = instrument.valuation
+        .pricePnl(instrument.positionLots(Side.Buy, lots).toOption.get, entry, exit)
+        .toOption
+        .get
+      val short = instrument.valuation
+        .pricePnl(instrument.positionLots(Side.Sell, lots).toOption.get, entry, exit)
+        .toOption
+        .get
 
       assertEquals(long.coefficient, -short.coefficient)
 
@@ -31,8 +37,8 @@ class EconomicsPropertySuite extends ScalaCheckSuite:
       val secondLots  = instrument.lots(BigInt(secondCount)).toOption.get
       val order       = instrument.orders.limit(Side.Buy, totalLots, fixture.price(instrument, 100)).toOption.get
       val state       = instrument.market.quoteSettled(fixture.price(instrument, 100)).toOption.get
-      val first       = instrument.scenarios.slice(firstLots, state, LiquidityRole.Maker)
-      val second      = instrument.scenarios.slice(secondLots, state, LiquidityRole.Taker)
+      val first       = instrument.scenarios.slice(firstLots, state, LiquidityRole.Maker).toOption.get
+      val second      = instrument.scenarios.slice(secondLots, state, LiquidityRole.Taker).toOption.get
       val assumptions = instrument.scenarios.assumptions(
         instrument.scenarios.immediate,
         instrument.scenarios.directPricing,

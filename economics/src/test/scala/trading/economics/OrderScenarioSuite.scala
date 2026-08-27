@@ -25,8 +25,8 @@ class OrderScenarioSuite extends FunSuite:
     )
 
     val market = instrument.orders.market(Side.Buy, lots).toOption.get
-    assert(market.activation.isInstanceOf[ImmediateActivation[?, ?]])
-    assert(market.execution.isInstanceOf[MarketExecution[?, ?, ?]])
+    assertEquals(market.activation, ImmediateActivation)
+    assert(market.execution.isInstanceOf[MarketExecution])
 
     val iceberg = instrument.orders.iceberg(instrument.lots(3).toOption.get)
     val priced  = instrument.orders.pricedExecution(
@@ -39,7 +39,7 @@ class OrderScenarioSuite extends FunSuite:
       .create(instrument.orders.intent(Side.Sell, lots), fixed, priced)
       .toOption
       .get
-    assert(order.execution.isInstanceOf[PricedExecution[?, ?, ?]])
+    assert(order.execution.isInstanceOf[PricedExecution[?, ?]])
 
     val hidden = instrument.orders.limit(
       Side.Buy,
@@ -81,7 +81,7 @@ class OrderScenarioSuite extends FunSuite:
 
   test("complete scenarios validate immediate/fixed/trailing evidence and direct/pegged pricing"):
     val marketOrder = instrument.orders.market(Side.Buy, lots).toOption.get
-    val taker       = instrument.scenarios.slice(lots, state100, LiquidityRole.Taker)
+    val taker       = instrument.scenarios.slice(lots, state100, LiquidityRole.Taker).toOption.get
     val direct      = instrument.scenarios.assumptions(
       instrument.scenarios.immediate,
       instrument.scenarios.directPricing,
@@ -164,7 +164,7 @@ class OrderScenarioSuite extends FunSuite:
   test("scenario validates exact lot conservation, liquidity roles, limit quality, and round-trip closure"):
     val buyLimit       = instrument.orders.limit(Side.Buy, lots, limit).toOption.get
     val tooExpensive   = fixture.state(instrument, 101)
-    val badSlice       = instrument.scenarios.slice(lots, tooExpensive, LiquidityRole.Taker)
+    val badSlice       = instrument.scenarios.slice(lots, tooExpensive, LiquidityRole.Taker).toOption.get
     val badAssumptions = instrument.scenarios.assumptions(
       instrument.scenarios.immediate,
       instrument.scenarios.directPricing,
@@ -175,7 +175,10 @@ class OrderScenarioSuite extends FunSuite:
       Left(InvalidScenario(ScenarioFailureReason.SliceWorseThanLimit, Some(0)))
     )
 
-    val partial            = instrument.scenarios.slice(instrument.lots(9).toOption.get, state100, LiquidityRole.Taker)
+    val partial = instrument.scenarios
+      .slice(instrument.lots(9).toOption.get, state100, LiquidityRole.Taker)
+      .toOption
+      .get
     val partialAssumptions = instrument.scenarios.assumptions(
       instrument.scenarios.immediate,
       instrument.scenarios.directPricing,
@@ -195,7 +198,7 @@ class OrderScenarioSuite extends FunSuite:
       )
       .toOption
       .get
-    val taker          = instrument.scenarios.slice(lots, state100, LiquidityRole.Taker)
+    val taker          = instrument.scenarios.slice(lots, state100, LiquidityRole.Taker).toOption.get
     val makerViolation = instrument.scenarios.assumptions(
       instrument.scenarios.immediate,
       instrument.scenarios.directPricing,

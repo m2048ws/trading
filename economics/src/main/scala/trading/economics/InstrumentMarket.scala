@@ -3,47 +3,66 @@ package trading.economics
 import trading.quantity.*
 import trading.quantity.runtime.AssetRef
 
-private[economics] final class InstrumentMarketImpl[
-  O,
-  B <: Dimension,
-  Q <: Dimension,
-  S <: Dimension
-](
-  authority: Instrument.OwnerAuthority[O],
+final case class InstrumentSettlementConversion[S <: Dimension] private[economics] (
+  instrumentId: InstrumentId,
+  source: AssetRef,
+  target: AssetRef { type D = S },
+  coefficient: Rational)
+
+final class InstrumentMarketState[B <: Dimension, Q <: Dimension, S <: Dimension] private[economics] (
+  val instrumentId: InstrumentId,
+  val price: InstrumentPrice[B, Q],
+  val baseToSettle: Rate[B, S],
+  val quoteToSettle: Rate[Q, S],
+  settleRef: DimRef[S],
+  conversions: Vector[(AssetRef, Rational)]):
+
+  private val byId                       = conversions.map(value => value._1.id -> value).toMap
+  val conversionSources: Vector[AssetId] = conversions.map(_._1.id)
+
+  def convertToSettle(source: AssetRef)(value: Quantity[source.D]): Either[EconomicsError, Quantity[S]] =
+    byId.get(source.id) match
+      case None => Left(MissingConversion(source.id, None, None))
+      case Some((registered, _))
+        if registered.dimension.key != source.dimension.key ||
+          !registered.dimension.sharesRegistryWith(source.dimension) =>
+        Left(ForeignRegistry("conversion lookup", registered.dimension.key, source.dimension.key))
+      case Some((_, coefficient)) => Right(Quantity(settleRef, value.coefficient * coefficient))
+
+end InstrumentMarketState
+
+final class InstrumentMarket[B <: Dimension, Q <: Dimension, S <: Dimension] private[economics] (
+  instrumentId: InstrumentId,
   base: AssetRef { type D = B },
   quote: AssetRef { type D = Q },
-  settle: AssetRef { type D = S })
-  extends MarketCapability[O, B, Q, S]:
+  settle: AssetRef { type D = S }):
 
-  def conversion(
-    source: AssetRef,
-    coefficient: Rational
-  ): Either[EconomicsError, InstrumentSettlementConversion[O, S]] =
+  def conversion(source: AssetRef, coefficient: Rational): Either[EconomicsError, InstrumentSettlementConversion[S]] =
     if !source.dimension.sharesRegistryWith(settle.dimension) then
       Left(ForeignRegistry("settlement conversion", settle.dimension.key, source.dimension.key))
     else
       validateConversion(source.id, coefficient)
-        .map(_ => authority.conversion(source, settle, coefficient))
+        .map(_ => InstrumentSettlementConversion(instrumentId, source, settle, coefficient))
 
   def conversionFromRate(
     source: AssetRef
   )(
     rate: Rate[source.D, S]
-  ): Either[EconomicsError, InstrumentSettlementConversion[O, S]] =
+  ): Either[EconomicsError, InstrumentSettlementConversion[S]] =
     conversion(source, rate.coefficient)
 
   def quoteSettled(
-    price: InstrumentPrice[O, B, Q],
-    additionalConversions: Vector[InstrumentSettlementConversion[O, S]]
-  ): Either[EconomicsError, InstrumentMarketState[O, B, Q, S]] =
+    price: InstrumentPrice[B, Q],
+    additionalConversions: Vector[InstrumentSettlementConversion[S]] = Vector.empty
+  ): Either[EconomicsError, InstrumentMarketState[B, Q, S]] =
     if settle.id != quote.id then
       Left(InvalidConversion(quote.id, settle.id, Rational.one, ConversionFailureReason.SettleIsNotQuote))
     else checked(price, price.coefficient, Rational.one, additionalConversions)
 
   def baseSettled(
-    price: InstrumentPrice[O, B, Q],
-    additionalConversions: Vector[InstrumentSettlementConversion[O, S]]
-  ): Either[EconomicsError, InstrumentMarketState[O, B, Q, S]] =
+    price: InstrumentPrice[B, Q],
+    additionalConversions: Vector[InstrumentSettlementConversion[S]] = Vector.empty
+  ): Either[EconomicsError, InstrumentMarketState[B, Q, S]] =
     if settle.id != base.id then
       Left(InvalidConversion(base.id, settle.id, Rational.one, ConversionFailureReason.SettleIsNotBase))
     else
@@ -52,10 +71,10 @@ private[economics] final class InstrumentMarketImpl[
         case Right(quoteCoefficient) => checked(price, Rational.one, quoteCoefficient, additionalConversions)
 
   def fromQuoteAnchor(
-    price: InstrumentPrice[O, B, Q],
+    price: InstrumentPrice[B, Q],
     quoteToSettle: Rational,
-    additionalConversions: Vector[InstrumentSettlementConversion[O, S]]
-  ): Either[EconomicsError, InstrumentMarketState[O, B, Q, S]] =
+    additionalConversions: Vector[InstrumentSettlementConversion[S]] = Vector.empty
+  ): Either[EconomicsError, InstrumentMarketState[B, Q, S]] =
     fromQuoteRate(
       price,
       Rate(quote.dimension.asDimensionRef, settle.dimension.asDimensionRef, quoteToSettle),
@@ -63,10 +82,10 @@ private[economics] final class InstrumentMarketImpl[
     )
 
   def fromBaseAnchor(
-    price: InstrumentPrice[O, B, Q],
+    price: InstrumentPrice[B, Q],
     baseToSettle: Rational,
-    additionalConversions: Vector[InstrumentSettlementConversion[O, S]]
-  ): Either[EconomicsError, InstrumentMarketState[O, B, Q, S]] =
+    additionalConversions: Vector[InstrumentSettlementConversion[S]] = Vector.empty
+  ): Either[EconomicsError, InstrumentMarketState[B, Q, S]] =
     fromBaseRate(
       price,
       Rate(base.dimension.asDimensionRef, settle.dimension.asDimensionRef, baseToSettle),
@@ -74,11 +93,11 @@ private[economics] final class InstrumentMarketImpl[
     )
 
   def fromAnchors(
-    price: InstrumentPrice[O, B, Q],
+    price: InstrumentPrice[B, Q],
     baseToSettle: Rational,
     quoteToSettle: Rational,
-    additionalConversions: Vector[InstrumentSettlementConversion[O, S]]
-  ): Either[EconomicsError, InstrumentMarketState[O, B, Q, S]] =
+    additionalConversions: Vector[InstrumentSettlementConversion[S]] = Vector.empty
+  ): Either[EconomicsError, InstrumentMarketState[B, Q, S]] =
     fromRates(
       price,
       Rate(base.dimension.asDimensionRef, settle.dimension.asDimensionRef, baseToSettle),
@@ -87,45 +106,54 @@ private[economics] final class InstrumentMarketImpl[
     )
 
   def fromQuoteRate(
-    price: InstrumentPrice[O, B, Q],
+    price: InstrumentPrice[B, Q],
     quoteToSettle: Rate[Q, S],
-    additionalConversions: Vector[InstrumentSettlementConversion[O, S]]
-  ): Either[EconomicsError, InstrumentMarketState[O, B, Q, S]] =
+    additionalConversions: Vector[InstrumentSettlementConversion[S]] = Vector.empty
+  ): Either[EconomicsError, InstrumentMarketState[B, Q, S]] =
     checked(price, price.coefficient * quoteToSettle.coefficient, quoteToSettle.coefficient, additionalConversions)
 
   def fromBaseRate(
-    price: InstrumentPrice[O, B, Q],
+    price: InstrumentPrice[B, Q],
     baseToSettle: Rate[B, S],
-    additionalConversions: Vector[InstrumentSettlementConversion[O, S]]
-  ): Either[EconomicsError, InstrumentMarketState[O, B, Q, S]] =
+    additionalConversions: Vector[InstrumentSettlementConversion[S]] = Vector.empty
+  ): Either[EconomicsError, InstrumentMarketState[B, Q, S]] =
     baseToSettle.coefficient / price.coefficient match
       case Left(_)                 => Left(InvalidPriceCoordinate(price.ticks.unrefined))
       case Right(quoteCoefficient) =>
         checked(price, baseToSettle.coefficient, quoteCoefficient, additionalConversions)
 
   def fromRates(
-    price: InstrumentPrice[O, B, Q],
+    price: InstrumentPrice[B, Q],
     baseToSettle: Rate[B, S],
     quoteToSettle: Rate[Q, S],
-    additionalConversions: Vector[InstrumentSettlementConversion[O, S]]
-  ): Either[EconomicsError, InstrumentMarketState[O, B, Q, S]] =
+    additionalConversions: Vector[InstrumentSettlementConversion[S]] = Vector.empty
+  ): Either[EconomicsError, InstrumentMarketState[B, Q, S]] =
     checked(price, baseToSettle.coefficient, quoteToSettle.coefficient, additionalConversions)
 
   private def checked(
-    price: InstrumentPrice[O, B, Q],
+    price: InstrumentPrice[B, Q],
     baseCoefficient: Rational,
     quoteCoefficient: Rational,
-    additional: Vector[InstrumentSettlementConversion[O, S]]
-  ): Either[EconomicsError, InstrumentMarketState[O, B, Q, S]] =
-    validateAnchors(price.coefficient, baseCoefficient, quoteCoefficient).flatMap: _ =>
-      buildConversions(baseCoefficient, quoteCoefficient, additional).map: conversions =>
-        authority.marketState(
-          price,
-          Rate(base.dimension.asDimensionRef, settle.dimension.asDimensionRef, baseCoefficient),
-          Rate(quote.dimension.asDimensionRef, settle.dimension.asDimensionRef, quoteCoefficient),
-          settle.dimension.asDimensionRef,
-          conversions
-        )
+    additional: Vector[InstrumentSettlementConversion[S]]
+  ): Either[EconomicsError, InstrumentMarketState[B, Q, S]] =
+    for
+      _ <- InstrumentIdentityChecks.check(
+             "market",
+             instrumentId,
+             (Vector("price" -> price.instrumentId) ++ additional.zipWithIndex.map((value, index) =>
+               s"additional[$index]" -> value.instrumentId
+             ))*
+           )
+      _           <- validateAnchors(price.coefficient, baseCoefficient, quoteCoefficient)
+      conversions <- buildConversions(baseCoefficient, quoteCoefficient, additional)
+    yield new InstrumentMarketState(
+      instrumentId,
+      price,
+      Rate(base.dimension.asDimensionRef, settle.dimension.asDimensionRef, baseCoefficient),
+      Rate(quote.dimension.asDimensionRef, settle.dimension.asDimensionRef, quoteCoefficient),
+      settle.dimension.asDimensionRef,
+      conversions
+    )
 
   private def validateConversion(source: AssetId, coefficient: Rational): Either[EconomicsError, Unit] =
     if coefficient.signum <= 0 then
@@ -154,7 +182,7 @@ private[economics] final class InstrumentMarketImpl[
   private def buildConversions(
     baseCoefficient: Rational,
     quoteCoefficient: Rational,
-    additional: Vector[InstrumentSettlementConversion[O, S]]
+    additional: Vector[InstrumentSettlementConversion[S]]
   ): Either[EconomicsError, Vector[(AssetRef, Rational)]] =
     val generated = Vector(base -> baseCoefficient, quote -> quoteCoefficient, settle -> Rational.one)
     val initial   = generated.foldLeft[Either[EconomicsError, Vector[(AssetRef, Rational)]]](Right(Vector.empty)):
@@ -191,4 +219,4 @@ private[economics] final class InstrumentMarketImpl[
           else Right(accumulated :+ candidate.source -> candidate.coefficient)
   end buildConversions
 
-end InstrumentMarketImpl
+end InstrumentMarket
