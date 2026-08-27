@@ -1,5 +1,8 @@
 package trading.economics.instrument
 
+import cats.data.Chain
+import cats.syntax.all.*
+
 import trading.quantity.*
 import trading.quantity.grid.*
 import trading.quantity.runtime.*
@@ -117,7 +120,7 @@ final class Fees[D <: Dim, B <: Dim, Q <: Dim, S <: Dim] private[instrument] (
     sourceSliceIndex: Int,
     fee: Fee[FD]
   ): Either[EconomicsError, FeeLine[FD, Market]] =
-    val slices = scenario.assumptions.matchedSlices
+    val slices = scenario.assumptions.matchedSlices.toVector
     if sourceSliceIndex < 0 || sourceSliceIndex >= slices.size then
       Left(InvalidFeeAttribution(sourceSliceIndex, slices.size))
     else
@@ -154,26 +157,22 @@ final class Fees[D <: Dim, B <: Dim, Q <: Dim, S <: Dim] private[instrument] (
             scenario: Scenario
           ): Either[EconomicsError, Vector[FeeLine[? <: Dim, Market]]] =
             for
-              _     <- IdentityChecks.check("fee.assess", instrumentId, "scenario" -> scenario.instrumentId)
-              lines <- componentSchedules.foldLeft[
-                         Either[EconomicsError,
-                           Vector[FeeLine[? <: Dim, Market]]]
-                       ](Right(Vector.empty)): (result, schedule) =>
-                         for
-                           accumulated <- result
-                           next        <- schedule.assess(scenario)
-                           _           <- IdentityChecks.check(
-                                  "fee.assess",
-                                  instrumentId,
-                                  next.zipWithIndex.flatMap((line, index) =>
-                                    Vector(
-                                      s"lines[$index]"        -> line.instrumentId,
-                                      s"lines[$index].fee"    -> line.fee.instrumentId,
-                                      s"lines[$index].market" -> line.sourceMarket.instrumentId
-                                    )
-                                  )*
-                                )
-                         yield accumulated ++ next
-            yield lines
+              _          <- IdentityChecks.check("fee.assess", instrumentId, "scenario" -> scenario.instrumentId)
+              components <- componentSchedules.traverse: schedule =>
+                              schedule.assess(scenario).flatMap: next =>
+                                IdentityChecks
+                                  .check(
+                                    "fee.assess",
+                                    instrumentId,
+                                    next.zipWithIndex.flatMap((line, index) =>
+                                      Vector(
+                                        s"lines[$index]"        -> line.instrumentId,
+                                        s"lines[$index].fee"    -> line.fee.instrumentId,
+                                        s"lines[$index].market" -> line.sourceMarket.instrumentId
+                                      )
+                                    )*
+                                  )
+                                  .map(_ => Chain.fromSeq(next))
+            yield components.foldLeft(Chain.empty[FeeLine[? <: Dim, Market]])(_ ++ _).toVector
 
 end Fees

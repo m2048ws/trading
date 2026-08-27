@@ -105,7 +105,7 @@ class HeterogeneousSuite extends FunSuite:
       amount.multiplyExact[price.D](exactPrice, positionGrid.asGridRef)
     val productDimension: DimRef[Times[position.D, price.D]] =
       DimRef.times(position.dimension.ref, price.dimension.ref)
-    val checked = SameDimension.between(productDimension, settlement.dimension.ref).get
+    val checked                         = SameDimension.between(productDimension, settlement.dimension.ref).get
     val aligned: Quantity[settlement.D] = product.alignTo[settlement.D](using checked)
 
     assertEquals(aligned.coefficient, Rational(3))

@@ -15,10 +15,10 @@ class InstrumentCapabilityEngineSuite extends FunSuite:
     val market      = instrument.market.quoteSettled(price).toOption.get
     val order       = instrument.orders.market(Side.Buy, lots).toOption.get
     val slice       = instrument.scenarios.slice(lots, market, LiquidityRole.Taker).toOption.get
-    val assumptions = instrument.scenarios.assumptions(
-      instrument.scenarios.immediate,
-      instrument.scenarios.directPricing,
-      Vector(slice)
+    val assumptions = instrument.scenarios.assumptionsOne(order)(
+      order.activation.evidence,
+      order.execution.resolution,
+      slice
     )
     val scenario = instrument.scenarios.order(order, assumptions).toOption.get
 
@@ -49,16 +49,14 @@ class InstrumentCapabilityEngineSuite extends FunSuite:
   test("scenario validation reports deterministic first structured failure"):
     val lots        = instrument.lots(2).toOption.get
     val order       = instrument.orders.market(Side.Buy, lots).toOption.get
-    val assumptions = instrument.scenarios.assumptions(
-      instrument.scenarios.triggered(
-        instrument.scenarios.fixedEvidence(PriceReference.Last, fixture.price(instrument, 100))
-      ),
-      instrument.scenarios.directPricing,
+    val assumptions = instrument.scenarios.assumptionsFromVector(order)(
+      order.activation.evidence,
+      order.execution.resolution,
       Vector.empty
     )
     assertEquals(
-      instrument.scenarios.order(order, assumptions),
-      Left(InvalidScenario(ScenarioFailureReason.NoSlices))
+      assumptions,
+      Left(InvalidScenarioDiagnostics(ScenarioViolation.EmptySlices, Vector.empty))
     )
 
 end InstrumentCapabilityEngineSuite

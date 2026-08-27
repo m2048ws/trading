@@ -21,7 +21,13 @@ final case class PackedAssetGridQuantity(
 /** Packing and registry-backed decoding for [[PackedAssetGridQuantity]]. */
 object PackedAssetGridQuantity:
 
-  def pack(a: trading.quantity.runtime.AssetRef)(g: RegisteredGridRef[a.D])(v: GridQuantity[a.D, g.G]): PackedAssetGridQuantity =
+  def pack(
+    a: trading.quantity.runtime.AssetRef
+  )(
+    g: RegisteredGridRef[a.D]
+  )(
+    v: GridQuantity[a.D, g.G]
+  ): PackedAssetGridQuantity =
     PackedAssetGridQuantity(
       a.id,
       a.dimension.key,

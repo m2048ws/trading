@@ -1,39 +1,4 @@
-# order-scenarios Specification
-## Requirements
-### Requirement: Compositional immutable orders
-An order SHALL retain one stable runtime `InstrumentId`, an `OrderIntent` containing side, positive lots, and position effect, an explicit activation alternative, and an explicit execution-instruction alternative. The order and its components SHALL use ordinary non-owner-parameterized domain types. Activation SHALL distinguish immediate, fixed-trigger, and trailing-trigger forms by construction. Execution instructions SHALL distinguish market execution from priced execution by construction.
-
-A market execution instruction SHALL retain only mechanics meaningful to a market order, including a valid non-resting duration, and SHALL not contain maker-only or visibility state. A priced execution instruction SHALL contain a limit or pegged price instruction together with duration, liquidity constraint, and displayed, hidden, or iceberg visibility. Shapes that were previously represented by `kind` values plus optional fields or by sentinel values such as not-applicable visibility SHALL not be representable as valid domain values.
-
-The instrument's `orders` capability SHALL construct components that need numeric refinement, validate cross-component conditions and runtime instrument identity that cannot be expressed locally, and construct an immutable `Order` from cohesive intent, activation, and execution inputs. Familiar market, limit, stop-market, and stop-limit entry points SHALL remain available. Venue adapters MAY impose additional venue-specific restrictions without weakening core construction.
-
-#### Scenario: Construct an immediate market order
-- **WHEN** a caller supplies buy or sell intent with positive lots to the market-order constructor
-- **THEN** it receives an immutable order with that runtime instrument identity, immediate activation, and a market execution instruction containing no priced-only state
-
-#### Scenario: Construct a stop-limit order compositionally
-- **WHEN** a caller combines a fixed or trailing activation with a limit-priced execution instruction for the same runtime instrument identity
-- **THEN** the resulting order retains both explicit alternatives without unrelated lifecycle state
-
-#### Scenario: Reject market maker-only mechanics
-- **WHEN** a caller attempts to combine a market execution instruction with maker-only liquidity or priced-order visibility
-- **THEN** no valid market instruction can represent that combination because maker-only and visibility state are structurally absent
-
-#### Scenario: Reject an invalid market duration
-- **WHEN** an adapter attempts to construct market execution with a resting duration
-- **THEN** the market-instruction smart constructor returns a typed failure
-
-#### Scenario: Reject oversized iceberg display
-- **WHEN** a priced iceberg instruction displays more lots than its order intent contains
-- **THEN** final order construction fails with a typed order diagnostic
-
-#### Scenario: Reject an accidentally foreign component
-- **WHEN** final order construction receives lots, a trigger price, a limit price, or iceberg display lots carrying a different runtime `InstrumentId`
-- **THEN** construction returns a typed instrument-mismatch failure
-
-#### Scenario: Keep lifecycle state absent
-- **WHEN** a caller inspects an immutable order
-- **THEN** it contains no venue order ID, submission status, fill quantity, cancellation state, fill record, or reported fee
+## MODIFIED Requirements
 
 ### Requirement: Explicit trigger and price mechanics
 Immediate, fixed-trigger, and trailing-trigger activation SHALL be direct closed alternatives rather than one record containing a kind and optional fields. The alternatives SHALL NOT carry a generative owner type or require owner authority to construct. A fixed trigger SHALL contain its observed reference, comparison direction, and positive instrument price. A trailing trigger SHALL contain its reference, comparison direction, and a strictly positive tick offset. It SHALL be impossible to obtain a valid fixed trigger without its price or a valid trailing trigger without its offset through the supported smart-construction API.
@@ -77,25 +42,6 @@ Market, limit, and pegged pricing SHALL likewise be explicit alternatives with a
 #### Scenario: Represent market pricing explicitly
 - **WHEN** a market execution is prepared for slice validation
 - **THEN** its effective pricing is the explicit market alternative rather than an empty optional tick value
-
-### Requirement: LiquidityRole describes matched quantity
-`LiquidityRole` SHALL contain maker and taker classifications and SHALL describe the fee treatment of matched quantity, not the instruction stored by an order. An order SHALL store a liquidity constraint, while a complete order scenario SHALL store the assumed role of each positive matched slice. Core validation SHALL enforce universal implications: a market slice is taker; a maker-only order has only maker slices; and an unrestricted limit order MAY contain maker slices, taker slices, or both. Venue fee schedules MAY refine classification for mechanics such as hidden quantity.
-
-#### Scenario: Model an all-taker market outcome
-- **WHEN** a complete market-order scenario contains matched quantity
-- **THEN** every liquidity slice is classified as taker
-
-#### Scenario: Model a mixed limit outcome
-- **WHEN** an unrestricted limit order is assumed to cross for part of its lots and later rest for the remainder
-- **THEN** its scenario may contain a taker slice and a maker slice whose lots sum to the order lots
-
-#### Scenario: Enforce maker-only conditionally on a fill
-- **WHEN** a maker-only order has a complete filled scenario
-- **THEN** every slice is maker, while the order mechanics themselves make no guarantee that any fill occurs
-
-#### Scenario: Keep liquidity out of the order instruction
-- **WHEN** two scenarios evaluate the same unrestricted limit order under different maker/taker allocations
-- **THEN** the order value remains unchanged and only the scenario outcomes differ
 
 ### Requirement: Complete checked order scenarios
 A complete order scenario SHALL bind one immutable order and one cohesive `ScenarioAssumptions` value containing activation status, pricing resolution, and a non-empty immutable vector of positive liquidity slices. These types SHALL be ordinary non-owner-parameterized domain types that retain their runtime `InstrumentId` where needed for aggregate coherence. Supported assumption construction SHALL consume activation evidence and pricing resolution associated with the corresponding order shapes, so missing, extraneous, fixed-versus-trailing, and direct-versus-pegged combinations are not representable through that construction path. An adapter starting from untyped or serialized input SHALL establish those associated values through the same typed validation boundaries before constructing assumptions.
@@ -159,25 +105,3 @@ The capability SHALL offer an accumulating diagnostic boundary that returns ever
 #### Scenario: Avoid a parallel validation model
 - **WHEN** scenario construction validates activation, pricing, lots, liquidity, and runtime instrument coherence
 - **THEN** the domain alternatives and their associated evidence provide the data and cases being validated, with no duplicate kind-plus-option projection or owner-authority implementation layer
-
-### Requirement: Checked round-trip scenarios
-A round-trip trade scenario SHALL contain complete entry and exit order scenarios carrying the same stable runtime `InstrumentId` and SHALL require their signed position changes to sum exactly to flat. The instrument's `scenarios` capability SHALL perform this checked construction and preserve each leg's activation and liquidity slices. It SHALL NOT infer a closing side, silently resize a leg, or combine values carrying different runtime instrument identities.
-
-#### Scenario: Construct a long round trip
-- **WHEN** a buy entry and equal-lot sell exit carry the target instrument's identity
-- **THEN** `scenarios` constructs a round trip whose held position is the entry's positive signed position change
-
-#### Scenario: Construct a short round trip
-- **WHEN** a sell entry and equal-lot buy exit carry the target instrument's identity
-- **THEN** `scenarios` constructs a round trip whose held position is the entry's negative signed position change
-
-#### Scenario: Reject unequal closing lots
-- **WHEN** entry and exit position changes do not sum exactly to flat
-- **THEN** round-trip construction fails
-
-#### Scenario: Reject cross-instrument legs
-- **WHEN** entry and exit scenarios carry different runtime `InstrumentId` values
-- **THEN** round-trip construction returns a typed instrument-mismatch failure
-
-## Purpose
-Defines immutable, compositional order instructions and complete hypothetical order outcomes whose price and maker/taker assumptions can drive fees and PnL without introducing execution lifecycle state.

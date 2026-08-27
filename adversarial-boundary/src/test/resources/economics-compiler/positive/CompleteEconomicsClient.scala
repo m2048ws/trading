@@ -17,6 +17,16 @@ object CompleteEconomicsClient:
   def genericOrderLots(instrument: Instrument)(order: instrument.Order): BigInt =
     order.intent.lots.count.unrefined
 
+  def genericActivation[P](activation: OrderActivation[P])(
+    evidence: activation.Evidence
+  ): Either[ActivationViolation, CheckedActivation[P]] =
+    activation.validate(evidence)
+
+  def genericPricing[L, P](execution: OrderExecution[L, P])(
+    resolution: execution.Resolution
+  ): Either[PricingViolation, EffectivePricing[P]] =
+    execution.resolve(resolution)
+
   def genericPnl(
     instrument: Instrument
   )(
@@ -73,7 +83,9 @@ object CompleteEconomicsClient:
     Rate(roles.position.dimension.ref, roles.base.dimension.ref, Rational.one),
     Rate(roles.position.dimension.ref, roles.quote.dimension.ref, Rational.zero)
   )
-  val instrument = Instrument.create(Definition(identity, roles, listing, payoff)).toOption.get
+  val definition = Definition(identity, roles, listing, payoff)
+  val validated = Instrument.validate(definition).toOption.get
+  val instrument = Instrument.fromValidated(validated)
   val stable = instrument
 
   val lots = stable.lots(2).toOption.get
@@ -85,15 +97,15 @@ object CompleteEconomicsClient:
   val exitOrder = stable.orders.market(Side.Sell, lots).toOption.get
   val entrySlice = stable.scenarios.slice(lots, entryState, LiquidityRole.Taker).toOption.get
   val exitSlice = stable.scenarios.slice(lots, exitState, LiquidityRole.Taker).toOption.get
-  val entryAssumptions = stable.scenarios.assumptions(
-    stable.scenarios.immediate,
-    stable.scenarios.directPricing,
-    Vector(entrySlice)
+  val entryAssumptions = stable.scenarios.assumptionsOne(entryOrder)(
+    entryOrder.activation.evidence,
+    entryOrder.execution.resolution,
+    entrySlice
   )
-  val exitAssumptions = stable.scenarios.assumptions(
-    stable.scenarios.immediate,
-    stable.scenarios.directPricing,
-    Vector(exitSlice)
+  val exitAssumptions = stable.scenarios.assumptionsOne(exitOrder)(
+    exitOrder.activation.evidence,
+    exitOrder.execution.resolution,
+    exitSlice
   )
   val entry = stable.scenarios.order(entryOrder, entryAssumptions).toOption.get
   val exit = stable.scenarios.order(exitOrder, exitAssumptions).toOption.get
@@ -118,6 +130,9 @@ object CompleteEconomicsClient:
   val genericOrderCount = genericOrderLots(stable)(entryOrder)
   val genericEntryPrice = genericPrice(stable)(Rational(100))
   val directActivation = stable.orders.fixedTrigger(PriceReference.Mark, TriggerComparison.AtOrAbove, entryPrice)
+  val directEvidence = stable.orders.fixedEvidence(directActivation)(entryPrice).toOption.get
+  val genericActivationResult = genericActivation(directActivation)(directEvidence)
+  val genericPricingResult = genericPricing(entryOrder.execution)(entryOrder.execution.resolution)
   val matchedTriggerTicks = directActivation match
     case FixedActivation(PriceReference.Mark, TriggerComparison.AtOrAbove, triggerPrice) =>
       triggerPrice.ticks.unrefined
@@ -129,6 +144,31 @@ object CompleteEconomicsClient:
     stable.orders.marketExecution(NonRestingTimeInForce.ImmediateOrCancel)
   )
   assert(runtimeMismatch == Left(Mismatch("order.intent", stable.identity.id, foreignIntent.instrumentId)))
+  val typedBaseConversion = stable.market.conversionFromRate(base)(
+    Rate(base.dimension.ref, stable.roles.settle.dimension.ref, Rational(100))
+  ).toOption.get
+  assert(typedBaseConversion.rate.coefficient == Rational(100))
+  val checkedBaseValue = entryState
+    .convertToSettle(base)(Quantity(base.dimension.ref, Rational(1, 3)))
+    .toOption
+    .get
+  assert(checkedBaseValue.coefficient == Rational(100, 3))
+  val foreignRegistry = new QuantityRegistry
+  val foreignBase = foreignRegistry
+    .registerAsset(AssetDefinition(base.id, AtomId("client:base")))
+    .toOption
+    .get
+  val foreignLookup = entryState.convertToSettle(foreignBase)(
+    Quantity(foreignBase.dimension.ref, Rational.one)
+  )
+  assert(foreignLookup.swap.exists(_.isInstanceOf[ForeignRegistry]))
+  val stop = stable.orders.stopMarket(Side.Buy, lots, directActivation).toOption.get
+  val stopAssumptions = stable.scenarios.assumptionsOne(stop)(
+    directEvidence,
+    stop.execution.resolution,
+    entrySlice
+  )
+  assert(stable.scenarios.order(stop, stopAssumptions).isRight)
   val sized = stable.sizing.maxLots(
     Quantity(stable.roles.settle.dimension.ref, Rational(1000)),
     PositiveWhole(3).toOption.get,
@@ -140,11 +180,19 @@ object CompleteEconomicsClient:
     val candidateExitSlice = stable.scenarios.slice(candidate, exitState, LiquidityRole.Taker).toOption.get
     val candidateEntry = stable.scenarios.order(
       candidateEntryOrder,
-      stable.scenarios.assumptions(stable.scenarios.immediate, stable.scenarios.directPricing, Vector(candidateEntrySlice))
+      stable.scenarios.assumptionsOne(candidateEntryOrder)(
+        candidateEntryOrder.activation.evidence,
+        candidateEntryOrder.execution.resolution,
+        candidateEntrySlice
+      )
     ).toOption.get
     val candidateExit = stable.scenarios.order(
       candidateExitOrder,
-      stable.scenarios.assumptions(stable.scenarios.immediate, stable.scenarios.directPricing, Vector(candidateExitSlice))
+      stable.scenarios.assumptionsOne(candidateExitOrder)(
+        candidateExitOrder.activation.evidence,
+        candidateExitOrder.execution.resolution,
+        candidateExitSlice
+      )
     ).toOption.get
     stable.scenarios.roundTrip(candidateEntry, candidateExit)
 

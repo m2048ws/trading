@@ -65,10 +65,10 @@ class EndToEndExamplesSuite extends FunSuite:
     val order       = instrument.orders.market(side, lots).toOption.get
     val state       = instrument.market.quoteSettled(price).toOption.get
     val slice       = instrument.scenarios.slice(lots, state, LiquidityRole.Taker).toOption.get
-    val assumptions = instrument.scenarios.assumptions(
-      instrument.scenarios.immediate,
-      instrument.scenarios.directPricing,
-      Vector(slice)
+    val assumptions = instrument.scenarios.assumptionsOne(order)(
+      order.activation.evidence,
+      order.execution.resolution,
+      slice
     )
     instrument.scenarios.order(order, assumptions).toOption.get
 

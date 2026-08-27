@@ -20,24 +20,18 @@ enum OrderFailureReason:
   case RestingMarketDuration(value: TimeInForce)
   case NonRestingIceberg
   case IcebergExceedsOrder(displayed: BigInt, ordered: BigInt)
-  case StopRequiresTrigger
 
 enum ScenarioFailureReason:
   case NoSlices
+  case AssumptionOrderMismatch
   case SliceLotsMismatch(expected: BigInt, supplied: BigInt)
-  case UnexpectedTriggerEvidence
-  case MissingFixedTriggerEvidence
-  case FixedEvidenceExpected
-  case MissingTrailingTriggerEvidence
-  case TrailingEvidenceExpected
-  case TriggerReferenceMismatch
   case FixedTriggerUnsatisfied
+  case FixedEvidenceMismatch
   case TrailingThresholdNonPositive
   case TrailingTriggerUnsatisfied
-  case UnexpectedPegResolution
-  case MissingPegResolution
-  case PegReferenceMismatch
+  case TrailingEvidenceMismatch
   case PegOffsetMismatch
+  case PegResolutionMismatch
   case MarketSliceNotTaker
   case MakerOnlySliceNotMaker
   case SliceWorseThanLimit
@@ -47,6 +41,84 @@ enum FeeScheduleFailureReason:
 
 /** Closed hierarchy of expected economics failures. */
 sealed abstract class EconomicsError extends Product with Serializable
+
+/** Closed, domain-owned diagnostics emitted by raw instrument-definition validation. */
+enum DefinitionViolation:
+  case Registry(role: String, expected: DimKey, supplied: DimKey)
+  case ComponentRoles(instrumentId: InstrumentId, reason: Contradiction)
+  case GridDimension(role: String, grid: GridKey, expected: DimKey, supplied: DimKey)
+  case EmptyPayoff(instrumentId: InstrumentId)
+
+/** A non-empty, deterministically ordered set of definition violations. */
+final case class InvalidDefinition(head: DefinitionViolation, tail: Vector[DefinitionViolation]):
+  def violations: Vector[DefinitionViolation] = head +: tail
+
+/** Semantic failures from correctly shaped activation evidence. */
+enum ActivationViolation:
+  case FixedTriggerUnsatisfied
+  case FixedEvidenceMismatch
+  case TrailingThresholdNonPositive
+  case TrailingTriggerUnsatisfied
+  case TrailingEvidenceMismatch
+
+/** Semantic failures from correctly shaped pricing resolution. */
+enum PricingViolation:
+  case PegOffsetMismatch(expectedOffset: BigInt, suppliedOffset: BigInt)
+  case PegResolutionMismatch
+
+/** Closed, domain-owned diagnostics emitted by complete-scenario validation. */
+enum ScenarioViolation:
+  case EmptySlices
+  case OrderTargetMismatch
+  case Identity(context: String, expected: InstrumentId, supplied: InstrumentId)
+  case LotTotal(expected: BigInt, supplied: BigInt)
+  case Activation(cause: ActivationViolation)
+  case Pricing(cause: PricingViolation)
+  case Slice(index: Int, reason: ScenarioFailureReason)
+
+/** A non-empty, deterministically ordered set of scenario violations. */
+final case class InvalidScenarioDiagnostics(head: ScenarioViolation, tail: Vector[ScenarioViolation]):
+  def violations: Vector[ScenarioViolation] = head +: tail
+
+private[instrument] object ViolationMapping:
+  def definition(violation: DefinitionViolation): EconomicsError =
+    violation match
+      case DefinitionViolation.Registry(role, expected, supplied)   => ForeignRegistry(role, expected, supplied)
+      case DefinitionViolation.ComponentRoles(instrumentId, reason) => ContradictoryInstrument(instrumentId, reason)
+      case DefinitionViolation.GridDimension(role, grid, expected, supplied) =>
+        GridDimensionFailure(role, grid, expected, supplied)
+      case DefinitionViolation.EmptyPayoff(instrumentId) => EmptyContractPayoff(instrumentId)
+
+  def activation(violation: ActivationViolation): EconomicsError =
+    violation match
+      case ActivationViolation.FixedTriggerUnsatisfied =>
+        InvalidScenario(ScenarioFailureReason.FixedTriggerUnsatisfied)
+      case ActivationViolation.FixedEvidenceMismatch =>
+        InvalidScenario(ScenarioFailureReason.FixedEvidenceMismatch)
+      case ActivationViolation.TrailingThresholdNonPositive =>
+        InvalidScenario(ScenarioFailureReason.TrailingThresholdNonPositive)
+      case ActivationViolation.TrailingTriggerUnsatisfied =>
+        InvalidScenario(ScenarioFailureReason.TrailingTriggerUnsatisfied)
+      case ActivationViolation.TrailingEvidenceMismatch =>
+        InvalidScenario(ScenarioFailureReason.TrailingEvidenceMismatch)
+
+  def pricing(violation: PricingViolation): EconomicsError =
+    violation match
+      case PricingViolation.PegOffsetMismatch(_, _) => InvalidScenario(ScenarioFailureReason.PegOffsetMismatch)
+      case PricingViolation.PegResolutionMismatch   => InvalidScenario(ScenarioFailureReason.PegResolutionMismatch)
+
+  def scenario(violation: ScenarioViolation): EconomicsError =
+    violation match
+      case ScenarioViolation.EmptySlices         => InvalidScenario(ScenarioFailureReason.NoSlices)
+      case ScenarioViolation.OrderTargetMismatch => InvalidScenario(ScenarioFailureReason.AssumptionOrderMismatch)
+      case ScenarioViolation.Identity(context, expected, supplied) => Mismatch(context, expected, supplied)
+      case ScenarioViolation.LotTotal(expected, supplied)          =>
+        InvalidScenario(ScenarioFailureReason.SliceLotsMismatch(expected, supplied))
+      case ScenarioViolation.Activation(cause)    => activation(cause)
+      case ScenarioViolation.Pricing(cause)       => pricing(cause)
+      case ScenarioViolation.Slice(index, reason) => InvalidScenario(reason, Some(index))
+
+end ViolationMapping
 
 /** One ordinary runtime-coherence diagnostic shared by all economics aggregate boundaries. */
 final case class Mismatch(context: String, expected: InstrumentId, supplied: InstrumentId) extends EconomicsError

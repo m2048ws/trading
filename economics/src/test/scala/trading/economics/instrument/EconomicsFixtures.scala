@@ -85,10 +85,10 @@ final class EconomicsFixtures:
   ): instrument.OrderScenario =
     val order       = instrument.orders.market(side, lots).toOption.get
     val slice       = instrument.scenarios.slice(lots, market, role).toOption.get
-    val assumptions = instrument.scenarios.assumptions(
-      instrument.scenarios.immediate,
-      instrument.scenarios.directPricing,
-      Vector(slice)
+    val assumptions = instrument.scenarios.assumptionsOne(order)(
+      order.activation.evidence,
+      order.execution.resolution,
+      slice
     )
     instrument.scenarios.order(order, assumptions).toOption.get
 

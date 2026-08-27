@@ -39,13 +39,14 @@ class EconomicsPropertySuite extends ScalaCheckSuite:
       val state       = instrument.market.quoteSettled(fixture.price(instrument, 100)).toOption.get
       val first       = instrument.scenarios.slice(firstLots, state, LiquidityRole.Maker).toOption.get
       val second      = instrument.scenarios.slice(secondLots, state, LiquidityRole.Taker).toOption.get
-      val assumptions = instrument.scenarios.assumptions(
-        instrument.scenarios.immediate,
-        instrument.scenarios.directPricing,
-        Vector(first, second)
+      val assumptions = instrument.scenarios.assumptionsMany(order)(
+        order.activation.evidence,
+        order.execution.pricing.resolution,
+        first,
+        second
       )
       val scenario = instrument.scenarios.order(order, assumptions).toOption.get
-      assertEquals(scenario.assumptions.matchedSlices.map(_.lots.count.unrefined).sum, BigInt(total))
+      assertEquals(scenario.assumptions.matchedSlices.toVector.map(_.lots.count.unrefined).sum, BigInt(total))
 
   property("fee quantization exactly conserves arbitrary rational account contributions"):
     forAll(Gen.choose(-100_000, 100_000), Gen.choose(1, 997)): (numerator, denominator) =>

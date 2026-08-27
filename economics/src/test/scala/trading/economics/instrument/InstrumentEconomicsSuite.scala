@@ -1,5 +1,10 @@
 package trading.economics.instrument
 
+import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
+import java.io.ObjectInputStream
+import java.io.ObjectOutputStream
+
 import munit.FunSuite
 
 import trading.quantity.*
@@ -87,6 +92,94 @@ class InstrumentEconomicsSuite extends FunSuite:
       Left(ContradictoryInstrument(identity.id, Contradiction.ListingRolesDiffer))
     )
 
+  test("validated definitions accumulate ordered independent violations and suppress dependent grid failures"):
+    val coherentRaw = Definition(
+      instrument.identity,
+      instrument.roles,
+      instrument.listingRules,
+      instrument.contractPayoff
+    )
+    val validated = Instrument.validate(coherentRaw).toOption.get
+    val rebuilt   = Instrument.fromValidated(validated)
+    assert(rebuilt.roles.eq(coherentRaw.roles))
+    assert(rebuilt.listingRules.eq(coherentRaw.listingRules))
+    assert(rebuilt.contractPayoff.eq(coherentRaw.contractPayoff))
+
+    val id         = Identity(InstrumentId("accumulated-invalid"), UnderlyingId("index"))
+    val roles      = new Roles(fixture.btc, fixture.btc, fixture.contract, fixture.usd)
+    val otherRoles = new Roles(fixture.btc, fixture.usd, fixture.contract, fixture.usd)
+    val listing    = new ListingRules(otherRoles)(fixture.contractLots, fixture.usdPerBtcTicks)
+    val payoff     = new ContractPayoff(otherRoles)(
+      Rate(otherRoles.position.dimension.ref, otherRoles.base.dimension.ref, Rational.zero),
+      Rate(otherRoles.position.dimension.ref, otherRoles.quote.dimension.ref, Rational.zero)
+    )
+    val raw      = Definition(id, roles, listing, payoff)
+    val expected = Vector(
+      DefinitionViolation.ComponentRoles(id.id, Contradiction.ListingRolesDiffer),
+      DefinitionViolation.ComponentRoles(id.id, Contradiction.PayoffRolesDiffer),
+      DefinitionViolation.ComponentRoles(id.id, Contradiction.BaseEqualsQuote),
+      DefinitionViolation.GridDimension(
+        "price grid",
+        fixture.usdPerBtcTicks.key,
+        DimRef.divide(roles.quote.dimension.ref, roles.base.dimension.ref).key,
+        fixture.usdPerBtcTicks.dimension.key
+      ),
+      DefinitionViolation.EmptyPayoff(id.id)
+    )
+    assertEquals(Instrument.validate(raw).left.map(_.violations), Left(expected))
+    assertEquals(
+      Instrument.create(raw),
+      Left(ContradictoryInstrument(id.id, Contradiction.ListingRolesDiffer))
+    )
+
+    val validRoles     = new Roles(fixture.btc, fixture.usd, fixture.contract, fixture.usd)
+    val foreign        = new EconomicsFixtures
+    val foreignListing = new ListingRules(validRoles)(foreign.contractLots, foreign.usdPerBtcTicks)
+    val nonEmpty       = new ContractPayoff(validRoles)(
+      Rate(validRoles.position.dimension.ref, validRoles.base.dimension.ref, Rational.one),
+      Rate(validRoles.position.dimension.ref, validRoles.quote.dimension.ref, Rational.zero)
+    )
+    val foreignViolations = Instrument
+      .validate(Definition(id, validRoles, foreignListing, nonEmpty))
+      .swap
+      .toOption
+      .get
+      .violations
+    assertEquals(
+      foreignViolations,
+      Vector(
+        DefinitionViolation.Registry(
+          "position grid",
+          validRoles.position.dimension.key,
+          foreign.contractLots.dimension.key
+        ),
+        DefinitionViolation.Registry(
+          "price grid",
+          DimRef.divide(validRoles.quote.dimension.ref, validRoles.base.dimension.ref).key,
+          foreign.usdPerBtcTicks.dimension.key
+        )
+      )
+    )
+    assert(!foreignViolations.exists(_.isInstanceOf[DefinitionViolation.GridDimension]))
+
+  test("public aggregate errors retain product and Java serialization behavior without Cats error containers"):
+    val aggregate = InvalidDefinition(
+      DefinitionViolation.ComponentRoles(instrument.identity.id, Contradiction.BaseEqualsQuote),
+      Vector(DefinitionViolation.EmptyPayoff(instrument.identity.id))
+    )
+    val bytes = new ByteArrayOutputStream
+    val out   = new ObjectOutputStream(bytes)
+    out.writeObject(aggregate)
+    out.close()
+    val in      = new ObjectInputStream(new ByteArrayInputStream(bytes.toByteArray))
+    val decoded = in.readObject()
+    in.close()
+    assertEquals(decoded, aggregate)
+    assertEquals(aggregate.productElementName(0), "head")
+    val signatures = Instrument.getClass.getMethods.toVector.map(_.toGenericString).mkString("\n")
+    assert(!signatures.contains("ValidatedNec"))
+    assert(!signatures.contains("NonEmptyChain"))
+
   test("market states preserve exact anchor equations and own settle conversion"):
     val price        = fixture.price(instrument, 100)
     val quoteSettled = instrument.market.quoteSettled(price).toOption.get
@@ -99,13 +192,27 @@ class InstrumentEconomicsSuite extends FunSuite:
       Right(Rational(7))
     )
 
-    val token     = instrument.market.conversion(fixture.token, Rational(2)).toOption.get
+    val token = instrument.market.conversion(fixture.token, Rational(2)).toOption.get
+    assertEquals(token.rate.coefficient, Rational(2))
     val withToken = instrument.market.quoteSettled(price, Vector(token)).toOption.get
     assertEquals(
       withToken
         .convertToSettle(fixture.token)(Quantity(fixture.token.dimension.ref, Rational(3)))
         .map(_.coefficient),
       Right(Rational(6))
+    )
+    assertEquals(
+      withToken
+        .convertToSettle(fixture.token)(Quantity(fixture.token.dimension.ref, Rational(1, 3)))
+        .map(_.coefficient),
+      Right(Rational(2, 3))
+    )
+    val foreign = new EconomicsFixtures
+    assert(
+      withToken
+        .convertToSettle(foreign.token)(Quantity(foreign.token.dimension.ref, Rational.one))
+        .swap
+        .exists(_.isInstanceOf[ForeignRegistry])
     )
     assertEquals(
       instrument.market.fromAnchors(price, Rational(99), Rational.one),

@@ -46,10 +46,10 @@ class RuntimeInstrumentMismatchSuite extends FunSuite:
       market,
       LiquidityRole.Taker
     )
-    val assumptions = instrument.scenarios.assumptions(
-      instrument.scenarios.immediate,
-      instrument.scenarios.directPricing,
-      Vector(foreignSlice)
+    val assumptions = instrument.scenarios.assumptionsOne(order)(
+      order.activation.evidence,
+      order.execution.resolution,
+      foreignSlice
     )
     assertEquals(
       instrument.scenarios.order(order, assumptions),

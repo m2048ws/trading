@@ -1,44 +1,50 @@
 package trading.economics.instrument
 
+import scala.annotation.tailrec
+
 import trading.quantity.*
 import trading.quantity.refinement.PositiveWhole
 
 private[instrument] object Sizing:
-  def downsideRisk(netPnl: Rational): Rational =
-    if netPnl.signum < 0 then -netPnl else Rational.zero
+  def downsideRisk[D <: Dim](netPnl: Quantity[D])(using dimension: DimRef[D]): Quantity[D] =
+    if netPnl.coefficient.signum < 0 then netPnl * Rational(-1) else Quantity.zero[D]
 
-  def maxLots[L, Scenario](
-    riskBudget: Rational,
+  def maxLots[L, Scenario, R <: Dim](
+    riskBudget: Quantity[R],
     cap: BigInt
   )(
     lotsFor: BigInt => Either[EconomicsError, L],
     scenarioFor: L => Either[EconomicsError, Scenario],
     validateScenario: Scenario => Either[EconomicsError, Unit],
     heldPositionLots: Scenario => BigInt,
-    riskFor: Scenario => Either[EconomicsError, Rational]
+    riskFor: Scenario => Either[EconomicsError, Quantity[R]]
   ): Either[EconomicsError, Option[L]] =
-    if riskBudget.signum < 0 then Left(InvalidRiskBudget(riskBudget))
+    if riskBudget.coefficient.signum < 0 then Left(InvalidRiskBudget(riskBudget.coefficient))
     else
-      var candidate = BigInt(1)
-      var selected  = Option.empty[L]
-      while candidate <= cap do
-        val evaluated =
-          for
-            candidateLots <- lotsFor(candidate)
-            scenario      <- scenarioFor(candidateLots)
-            _             <- validateScenario(scenario)
-            held           = heldPositionLots(scenario)
-            _             <-
-              if held.abs == candidate then Right(())
-              else Left(SizingScenarioMismatch(candidate, held))
-            risk <- riskFor(scenario)
-          yield candidateLots -> risk
+      @tailrec
+      def loop(candidate: BigInt, selected: Option[L]): Either[EconomicsError, Option[L]] =
+        if candidate > cap then Right(selected)
+        else
+          val evaluated =
+            for
+              candidateLots <- lotsFor(candidate)
+              scenario      <- scenarioFor(candidateLots)
+              _             <- validateScenario(scenario)
+              held           = heldPositionLots(scenario)
+              _             <-
+                if held.abs == candidate then Right(())
+                else Left(SizingScenarioMismatch(candidate, held))
+              risk <- riskFor(scenario)
+            yield candidateLots -> risk
 
-        evaluated match
-          case Left(error)          => return Left(error)
-          case Right((value, risk)) => if risk.compare(riskBudget) <= 0 then selected = Some(value)
-        candidate += 1
-      Right(selected)
+          evaluated match
+            case Left(error)          => Left(error)
+            case Right((value, risk)) =>
+              val nextSelected =
+                if risk.coefficient.compare(riskBudget.coefficient) <= 0 then Some(value) else selected
+              loop(candidate + 1, nextSelected)
+
+      loop(BigInt(1), None)
 
 end Sizing
 
@@ -58,7 +64,7 @@ final class Sizing[D <: Dim, B <: Dim, Q <: Dim, S <: Dim] private[instrument] (
   def downsideRisk(pnl: Pnl[S]): Either[EconomicsError, Quantity[S]] =
     IdentityChecks
       .check("sizing.downsideRisk", instrumentId, "pnl" -> pnl.instrumentId)
-      .map(_ => Quantity(settleRef, Sizing.downsideRisk(pnl.netPnl.coefficient)))
+      .map(_ => Sizing.downsideRisk(pnl.netPnl)(using settleRef))
 
   def maxLots(
     riskBudget: Quantity[S],
@@ -70,7 +76,7 @@ final class Sizing[D <: Dim, B <: Dim, Q <: Dim, S <: Dim] private[instrument] (
     IdentityChecks
       .check("sizing.maxLots", instrumentId, "feeSchedule" -> feeSchedule.instrumentId)
       .flatMap: _ =>
-        Sizing.maxLots(riskBudget.coefficient, cap.unrefined)(
+        Sizing.maxLots(riskBudget, cap.unrefined)(
           lotsFor,
           scenarioFor,
           scenario =>
@@ -83,8 +89,7 @@ final class Sizing[D <: Dim, B <: Dim, Q <: Dim, S <: Dim] private[instrument] (
               "exit"         -> scenario.exit.instrumentId
             ),
           _.heldPosition.count,
-          scenario =>
-            valuation.pnl(scenario, feeSchedule).flatMap(pnl => downsideRisk(pnl).map(_.coefficient))
+          scenario => valuation.pnl(scenario, feeSchedule).flatMap(downsideRisk)
         )
 
 end Sizing

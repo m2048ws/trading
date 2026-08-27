@@ -25,6 +25,7 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
     exactErrors: Option[Int] = None)
 
   private val fixturesRoot         = Paths.get(getClass.getResource("/economics-compiler").toURI)
+  private val sharedFixture        = fixturesRoot.resolve("SharedEconomicsSetup.scala")
   private val compilationClasspath =
     val resource = Option(getClass.getResourceAsStream("/static-dimension-compiler.classpath")).getOrElse:
       throw new IllegalStateException("missing generated external compiler classpath")
@@ -85,11 +86,20 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
     assert(result.succeeded, result.rendered)
     initializeModule(result.output, "external.economics.positive.CompleteEconomicsClient$")
 
+  test("same-shape replay fixture compiles against immutable JARs and enforces captured semantics"):
+    val result = compile(fixturesRoot.resolve("positive/SameShapeReplayClient.scala"))
+    assert(result.succeeded, result.rendered)
+    initializeModule(result.output, "external.economics.positive.SameShapeReplayClient$")
+
   private val negativeFixtures = List(
     NegativeFixture("RemovedFlatApi.scala", List("is not a member"), 10, Some(10)),
     NegativeFixture("RemovedOwnerApi.scala", List("is not a member", "Owner"), 5, Some(5)),
     NegativeFixture("RefinementLoss.scala", List("Found:", "Required:"), 5, Some(5)),
-    NegativeFixture("DeferredLifecycle.scala", List("is not a member"), 9, Some(9))
+    NegativeFixture("DeferredLifecycle.scala", List("is not a member"), 9, Some(9)),
+    NegativeFixture("AssociatedEvidenceShapes.scala", List("Found:", "Required:"), 6),
+    NegativeFixture("ValidatedDefinitionAuthority.scala", List("cannot be accessed"), 5),
+    NegativeFixture("ReversedSettlementRate.scala", List("Found:", "Required:"), 1, Some(1)),
+    NegativeFixture("ConversionDoesNotGrantGrid.scala", List("Found:", "Required:"), 1, Some(1))
   )
 
   negativeFixtures.foreach: fixture =>
@@ -131,6 +141,7 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
       output.toString,
       "-Werror",
       "-source:future",
+      sharedFixture.toString,
       source.toString
     )
     val _ = Main.process(arguments, reporter)

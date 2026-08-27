@@ -76,6 +76,7 @@ lazy val economics =
       Test / classLoaderLayeringStrategy := ClassLoaderLayeringStrategy.Flat,
 
       libraryDependencies ++= Seq(
+        "org.typelevel"  %% "cats-core"        % typelevelVersion,
         "org.scalameta"  %% "munit"            % "1.3.4"  % Test,
         "org.scalacheck" %% "scalacheck"       % "1.19.0" % Test,
         "org.scalameta"  %% "munit-scalacheck" % "1.0.0"  % Test
@@ -108,8 +109,9 @@ lazy val adversarialBoundary =
           (economics / economicsExternalArtifact).value
         )
         val quantitiesDependencies = (quantities / Compile / externalDependencyClasspath).value.files
+        val economicsDependencies  = (economics / Compile / externalDependencyClasspath).value.files
         val compilerDependencies   = (Test / externalDependencyClasspath).value.files
-        (moduleProducts ++ quantitiesDependencies ++ compilerDependencies).distinct
+        (moduleProducts ++ quantitiesDependencies ++ economicsDependencies ++ compilerDependencies).distinct
       },
       Test / resourceGenerators += Def.task {
         val output    = (Test / resourceManaged).value / "static-dimension-compiler.classpath"

@@ -1,5 +1,8 @@
 package trading.economics.instrument
 
+import cats.data.Chain
+import cats.syntax.all.*
+
 import trading.quantity.*
 import trading.quantity.runtime.AssetRef
 
@@ -17,25 +20,8 @@ final case class Pnl[S <: Dim] private[instrument] (
   feePnl: Quantity[S],
   netPnl: Quantity[S])
 
-private[instrument] object Valuation:
-  def settlePerPosition(
-    basePerPosition: Rational,
-    baseToSettle: Rational,
-    quotePerPosition: Rational,
-    quoteToSettle: Rational
-  ): Rational =
-    basePerPosition * baseToSettle + quotePerPosition * quoteToSettle
-
-  def positionValue(position: Rational, settlePerPosition: Rational): Rational = position * settlePerPosition
-
-  def pricePnl(position: Rational, entrySettlePerPosition: Rational, exitSettlePerPosition: Rational): Rational =
-    position * exitSettlePerPosition - position * entrySettlePerPosition
-
-end Valuation
-
 final class Valuation[PosD <: Dim, B <: Dim, Q <: Dim, S <: Dim] private[instrument] (
   instrumentId: InstrumentId,
-  position: AssetRef { type D = PosD },
   settle: AssetRef { type D = S },
   basePerPosition: Rate[PosD, B],
   quotePerPosition: Rate[PosD, Q]):
@@ -52,13 +38,8 @@ final class Valuation[PosD <: Dim, B <: Dim, Q <: Dim, S <: Dim] private[instrum
     IdentityChecks
       .check("valuation.settlePerPosition", instrumentId, "market" -> state.instrumentId)
       .map: _ =>
-        val coefficient = Valuation.settlePerPosition(
-          basePerPosition.coefficient,
-          state.baseToSettle.coefficient,
-          quotePerPosition.coefficient,
-          state.quoteToSettle.coefficient
-        )
-        Rate(position.dimension.ref, settle.dimension.ref, coefficient)
+        basePerPosition.andThen(state.baseToSettle) +
+          quotePerPosition.andThen(state.quoteToSettle)
 
   def positionValue(value: Position, state: Market): Either[EconomicsError, Quantity[S]] =
     for
@@ -69,10 +50,7 @@ final class Valuation[PosD <: Dim, B <: Dim, Q <: Dim, S <: Dim] private[instrum
              "market"   -> state.instrumentId
            )
       perPosition <- settlePerPosition(state)
-    yield Quantity(
-      settle.dimension.ref,
-      Valuation.positionValue(value.quantity.coefficient, perPosition.coefficient)
-    )
+    yield value.quantity.applyRate(perPosition)
 
   def pricePnl(value: Position, entry: Market, exit: Market): Either[EconomicsError, Quantity[S]] =
     for
@@ -83,16 +61,9 @@ final class Valuation[PosD <: Dim, B <: Dim, Q <: Dim, S <: Dim] private[instrum
              "entry"    -> entry.instrumentId,
              "exit"     -> exit.instrumentId
            )
-      entryPerPosition <- settlePerPosition(entry)
-      exitPerPosition  <- settlePerPosition(exit)
-    yield Quantity(
-      settle.dimension.ref,
-      Valuation.pricePnl(
-        value.quantity.coefficient,
-        entryPerPosition.coefficient,
-        exitPerPosition.coefficient
-      )
-    )
+      entryValue <- positionValue(value, entry)
+      exitValue  <- positionValue(value, exit)
+    yield exitValue - entryValue
 
   def pnl(roundTrip: RoundTrip, feeSchedule: Schedule): Either[EconomicsError, Pnl[S]] =
     for
@@ -104,43 +75,41 @@ final class Valuation[PosD <: Dim, B <: Dim, Q <: Dim, S <: Dim] private[instrum
              "exit"        -> roundTrip.exit.instrumentId,
              "feeSchedule" -> feeSchedule.instrumentId
            )
-      exactPricePnl <- scenarioPricePnl(roundTrip.entry).flatMap: entryPnl =>
-                         scenarioPricePnl(roundTrip.exit).map(exitPnl => entryPnl + exitPnl)
+      entryPricePnl  <- scenarioPricePnl(roundTrip.entry)
+      exitPricePnl   <- scenarioPricePnl(roundTrip.exit)
       entryLines     <- assessAndValidate(feeSchedule, roundTrip.entry)
       exitLines      <- assessAndValidate(feeSchedule, roundTrip.exit)
       convertedEntry <- convertLines(ScenarioLeg.Entry, entryLines)
       convertedExit  <- convertLines(ScenarioLeg.Exit, exitLines)
     yield
-      val converted = convertedEntry ++ convertedExit
-      val feeTotal  = converted.foldLeft(Rational.zero)((total, line) => total + line.settleContribution.coefficient)
-      val feePnl    = Quantity(settle.dimension.ref, feeTotal)
-      val netPnl    = Quantity(settle.dimension.ref, exactPricePnl.coefficient + feeTotal)
-      Pnl(instrumentId, exactPricePnl, converted, feePnl, netPnl)
+      val exactPricePnl = entryPricePnl + exitPricePnl
+      val converted     = convertedEntry ++ convertedExit
+      val feeTotal      = converted.foldLeft(Quantity.zero[S](using settle.dimension.ref)): (total, line) =>
+        total + line.settleContribution
+      Pnl(instrumentId, exactPricePnl, converted.toVector, feeTotal, exactPricePnl + feeTotal)
 
   private def scenarioPricePnl(scenario: Scenario): Either[EconomicsError, Quantity[S]] =
+    val slices = scenario.assumptions.matchedSlices.toVector
     IdentityChecks
       .check(
         "valuation.scenario",
         instrumentId,
-        (Vector("scenario" -> scenario.instrumentId) ++ scenario.assumptions.matchedSlices.zipWithIndex.flatMap:
-          (slice, index) =>
-            Vector(
-              s"slices[$index]"        -> slice.instrumentId,
-              s"slices[$index].lots"   -> slice.lots.instrumentId,
-              s"slices[$index].market" -> slice.market.instrumentId
-            )
-        )*
+        (Vector("scenario" -> scenario.instrumentId) ++ slices.zipWithIndex.flatMap: (slice, index) =>
+          Vector(
+            s"slices[$index]"        -> slice.instrumentId,
+            s"slices[$index].lots"   -> slice.lots.instrumentId,
+            s"slices[$index].market" -> slice.market.instrumentId
+          ))*
       )
       .flatMap: _ =>
-        scenario.assumptions.matchedSlices.foldLeft[Either[EconomicsError, Rational]](Right(Rational.zero)):
-          (result, slice) =>
-            for
-              total       <- result
-              perPosition <- settlePerPosition(slice.market)
-            yield
-              val signedPosition = slice.lots.quantity.coefficient * Rational(scenario.order.intent.side.sign)
-              total - Valuation.positionValue(signedPosition, perPosition.coefficient)
-      .map(coefficient => Quantity(settle.dimension.ref, coefficient))
+        slices
+          .traverse: slice =>
+            settlePerPosition(slice.market).map: perPosition =>
+              val signedPosition = slice.lots.quantity * Rational(scenario.order.intent.side.sign)
+              signedPosition.applyRate(perPosition)
+          .map: values =>
+            values.foldLeft(Quantity.zero[S](using settle.dimension.ref))((total, value) => total - value)
+  end scenarioPricePnl
 
   private def assessAndValidate(
     schedule: Schedule,
@@ -161,12 +130,11 @@ final class Valuation[PosD <: Dim, B <: Dim, Q <: Dim, S <: Dim] private[instrum
           )*
         )
         .flatMap: _ =>
+          val slices = scenario.assumptions.matchedSlices.toVector
           lines.collectFirst:
-            case line
-              if line.sourceSliceIndex < 0 || line.sourceSliceIndex >= scenario.assumptions.matchedSlices.size =>
-              InvalidFeeAttribution(line.sourceSliceIndex, scenario.assumptions.matchedSlices.size)
-            case line
-              if !line.sourceMarket.eq(scenario.assumptions.matchedSlices(line.sourceSliceIndex).market) =>
+            case line if line.sourceSliceIndex < 0 || line.sourceSliceIndex >= slices.size =>
+              InvalidFeeAttribution(line.sourceSliceIndex, slices.size)
+            case line if !line.sourceMarket.eq(slices(line.sourceSliceIndex).market) =>
               FeeScheduleFailure(FeeScheduleFailureReason.ForeignScenarioLine)
           match
             case Some(error) => Left(error)
@@ -175,9 +143,8 @@ final class Valuation[PosD <: Dim, B <: Dim, Q <: Dim, S <: Dim] private[instrum
   private def convertLines(
     leg: ScenarioLeg,
     lines: Vector[FeeLine[? <: Dim, Market]]
-  ): Either[EconomicsError, Vector[ConvertedFeeLine[S]]] =
-    lines.foldLeft[Either[EconomicsError, Vector[ConvertedFeeLine[S]]]](Right(Vector.empty)): (result, line) =>
-      result.flatMap(accumulated => convertLine(leg, line).map(accumulated :+ _))
+  ): Either[EconomicsError, Chain[ConvertedFeeLine[S]]] =
+    lines.traverse(convertLine(leg, _)).map(Chain.fromSeq)
 
   private def convertLine(
     leg: ScenarioLeg,

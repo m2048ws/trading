@@ -94,7 +94,7 @@ final class QuantityRegistry:
     def sharesRegistryWith(r: RegisteredDimensionRef[? <: Dim]): Boolean =
       r match
         case candidate: InternedRegisteredDimRef[?] => registry.eq(candidate.registry)
-        case _                                            => false
+        case _                                      => false
 
   private final class InternedRegisteredGridRef[D <: Dim, G0](
     val dimension: RegisteredDimensionRef[D],

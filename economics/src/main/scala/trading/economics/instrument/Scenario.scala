@@ -1,5 +1,8 @@
 package trading.economics.instrument
 
+import cats.data.NonEmptyVector
+import cats.syntax.all.*
+
 import trading.quantity.*
 import trading.quantity.runtime.RegisteredGridRef
 
@@ -11,40 +14,26 @@ enum LiquidityRole:
 enum ScenarioLeg:
   case Entry, Exit
 
-sealed trait TriggerEvidence[+P]:
-  def reference: PriceReference
-  def observedPrice: P
-
-final case class FixedTriggerEvidence[P](reference: PriceReference, observedPrice: P) extends TriggerEvidence[P]
-final case class TrailingTriggerEvidence[P](reference: PriceReference, favorableExtreme: P, observedPrice: P)
-  extends TriggerEvidence[P]
-
-sealed trait ActivationAssumption[+P]
-case object ImmediateAssumption                                       extends ActivationAssumption[Nothing]
-final case class TriggeredAssumption[P](evidence: TriggerEvidence[P]) extends ActivationAssumption[P]
-
-final case class PegResolution[P](reference: PriceReference, referencePrice: P, resolvedLimit: P)
-
-sealed trait PricingAssumption[+P]
-case object DirectPricingAssumption                                     extends PricingAssumption[Nothing]
-final case class ResolvedPegAssumption[P](resolution: PegResolution[P]) extends PricingAssumption[P]
-
 final case class LiquiditySlice[L, M] private[instrument] (
   instrumentId: InstrumentId,
   lots: L,
   market: M,
   role: LiquidityRole)
 
-final case class ScenarioAssumptions[L, P, M](
-  instrumentId: InstrumentId,
-  activation: ActivationAssumption[P],
-  pricing: PricingAssumption[P],
-  matchedSlices: Vector[LiquiditySlice[L, M]])
+/** Cohesive evidence and non-empty matched liquidity for one stable order value. */
+final class ScenarioAssumptions[L, P, M] private[instrument] (
+  val instrumentId: InstrumentId,
+  val target: Order[L, P]
+)(
+  val activationEvidence: target.activation.Evidence,
+  val pricingResolution: target.execution.Resolution,
+  val matchedSlices: NonEmptyVector[LiquiditySlice[L, M]])
 
 final case class OrderScenario[L, P, M, Pos] private[instrument] (
   instrumentId: InstrumentId,
   order: Order[L, P],
   assumptions: ScenarioAssumptions[L, P, M],
+  effectivePricing: EffectivePricing[P],
   positionChange: Pos)
 
 final case class RoundTripScenario[L, P, M, Pos] private[instrument] (
@@ -62,32 +51,6 @@ final class Scenarios[D <: Dim, B <: Dim, Q <: Dim, S <: Dim] private[instrument
   private type Market   = _root_.trading.economics.instrument.MarketState[B, Q, S]
   private type Position = _root_.trading.economics.instrument.Position[D]
 
-  val immediate: ActivationAssumption[Price]  = ImmediateAssumption
-  val directPricing: PricingAssumption[Price] = DirectPricingAssumption
-
-  def fixedEvidence(reference: PriceReference, observedPrice: Price): FixedTriggerEvidence[Price] =
-    FixedTriggerEvidence(reference, observedPrice)
-
-  def trailingEvidence(
-    reference: PriceReference,
-    favorableExtreme: Price,
-    observedPrice: Price
-  ): TrailingTriggerEvidence[Price] =
-    TrailingTriggerEvidence(reference, favorableExtreme, observedPrice)
-
-  def triggered(evidence: TriggerEvidence[Price]): TriggeredAssumption[Price] =
-    TriggeredAssumption(evidence)
-
-  def pegResolution(
-    reference: PriceReference,
-    referencePrice: Price,
-    resolvedLimit: Price
-  ): PegResolution[Price] =
-    PegResolution(reference, referencePrice, resolvedLimit)
-
-  def resolvedPeg(resolution: PegResolution[Price]): ResolvedPegAssumption[Price] =
-    ResolvedPegAssumption(resolution)
-
   def slice(
     lots: Lots,
     market: Market,
@@ -97,31 +60,79 @@ final class Scenarios[D <: Dim, B <: Dim, Q <: Dim, S <: Dim] private[instrument
       .check("scenario.slice", instrumentId, "lots" -> lots.instrumentId, "market" -> market.instrumentId)
       .map(_ => LiquiditySlice(instrumentId, lots, market, role))
 
-  def assumptions(
-    activation: ActivationAssumption[Price],
-    pricing: PricingAssumption[Price],
-    matchedSlices: Vector[LiquiditySlice[Lots, Market]]
+  def assumptions[O <: Order[Lots, Price]](
+    order: O
+  )(
+    activationEvidence: order.activation.Evidence,
+    pricingResolution: order.execution.Resolution,
+    matchedSlices: NonEmptyVector[LiquiditySlice[Lots, Market]]
   ): ScenarioAssumptions[Lots, Price, Market] =
-    ScenarioAssumptions(instrumentId, activation, pricing, matchedSlices)
+    new ScenarioAssumptions(instrumentId, order)(activationEvidence, pricingResolution, matchedSlices)
 
+  def assumptionsOne[O <: Order[Lots, Price]](
+    order: O
+  )(
+    activationEvidence: order.activation.Evidence,
+    pricingResolution: order.execution.Resolution,
+    matchedSlice: LiquiditySlice[Lots, Market]
+  ): ScenarioAssumptions[Lots, Price, Market] =
+    assumptions(order)(activationEvidence, pricingResolution, NonEmptyVector.one(matchedSlice))
+
+  def assumptionsMany[O <: Order[Lots, Price]](
+    order: O
+  )(
+    activationEvidence: order.activation.Evidence,
+    pricingResolution: order.execution.Resolution,
+    head: LiquiditySlice[Lots, Market],
+    tail: LiquiditySlice[Lots, Market]*
+  ): ScenarioAssumptions[Lots, Price, Market] =
+    assumptions(order)(activationEvidence, pricingResolution, NonEmptyVector(head, tail.toVector))
+
+  def assumptionsFromVector[O <: Order[Lots, Price]](
+    order: O
+  )(
+    activationEvidence: order.activation.Evidence,
+    pricingResolution: order.execution.Resolution,
+    matchedSlices: Vector[LiquiditySlice[Lots, Market]]
+  ): Either[InvalidScenarioDiagnostics, ScenarioAssumptions[Lots, Price, Market]] =
+    NonEmptyVector
+      .fromVector(matchedSlices)
+      .toRight(InvalidScenarioDiagnostics(ScenarioViolation.EmptySlices, Vector.empty))
+      .map(assumptions(order)(activationEvidence, pricingResolution, _))
+
+  /** Existing deterministic fail-fast complete-scenario boundary. */
   def order(
     order: Order[Lots, Price],
     assumptions: ScenarioAssumptions[Lots, Price, Market]
   ): Either[EconomicsError, OrderScenario[Lots, Price, Market, Position]] =
-    for
-      _              <- validateIdentities(order, assumptions)
-      _              <- validateSliceTotals(order.intent.lots, assumptions.matchedSlices)
-      _              <- validateActivation(order.activation, assumptions.activation)
-      effectiveLimit <- validatePricing(order.execution, assumptions.pricing)
-      _              <- validateSlices(order, assumptions.matchedSlices, effectiveLimit)
-    yield
-      val coordinate = order.intent.side.sign * order.intent.lots.count.unrefined
-      val change     = Position(
-        instrumentId,
-        coordinate,
-        positionGrid.asQuantity(positionGrid.fromCoordinate(coordinate))
-      )
-      OrderScenario(instrumentId, order, assumptions, change)
+    diagnose(order, assumptions)
+      .left
+      .map(error => ViolationMapping.scenario(error.head))
+
+  /** Accumulating diagnostic boundary derived from the same ordered validation stages. */
+  def diagnose(
+    order: Order[Lots, Price],
+    assumptions: ScenarioAssumptions[Lots, Price, Market]
+  ): Either[InvalidScenarioDiagnostics, OrderScenario[Lots, Price, Market, Position]] =
+    val evaluated =
+      for
+        _                <- validateIdentities(order, assumptions)
+        _                <- validateSliceTotals(order.intent.lots, assumptions.matchedSlices)
+        _                <- validateTarget(order, assumptions)
+        _                <- validateActivation(assumptions)
+        effectivePricing <- validatePricing(assumptions)
+        _                <- validateSlices(order, assumptions.matchedSlices, effectivePricing)
+      yield
+        val coordinate = order.intent.side.sign * order.intent.lots.count.unrefined
+        val change     = Position(
+          instrumentId,
+          coordinate,
+          positionGrid.asQuantity(positionGrid.fromCoordinate(coordinate))
+        )
+        OrderScenario(instrumentId, order, assumptions, effectivePricing, change)
+
+    evaluated.left.map(violations => InvalidScenarioDiagnostics(violations.head, violations.tail))
+  end diagnose
 
   def roundTrip(
     entry: OrderScenario[Lots, Price, Market, Position],
@@ -146,139 +157,98 @@ final class Scenarios[D <: Dim, B <: Dim, Q <: Dim, S <: Dim] private[instrument
   private def validateIdentities(
     order: Order[Lots, Price],
     assumptions: ScenarioAssumptions[Lots, Price, Market]
-  ): Either[EconomicsError, Unit] =
-    val supplied = Vector.newBuilder[(String, InstrumentId)]
-    supplied += "order"       -> order.instrumentId
-    supplied += "assumptions" -> assumptions.instrumentId
-    assumptions.activation match
-      case TriggeredAssumption(FixedTriggerEvidence(_, observed)) =>
-        supplied += "activation.observed" -> observed.instrumentId
-      case TriggeredAssumption(TrailingTriggerEvidence(_, extreme, observed)) =>
-        supplied += "activation.extreme"  -> extreme.instrumentId
-        supplied += "activation.observed" -> observed.instrumentId
-      case ImmediateAssumption => ()
-    assumptions.pricing match
-      case ResolvedPegAssumption(PegResolution(_, reference, resolved)) =>
-        supplied += "pricing.reference" -> reference.instrumentId
-        supplied += "pricing.resolved"  -> resolved.instrumentId
-      case DirectPricingAssumption => ()
-    assumptions.matchedSlices.zipWithIndex.foreach: (slice, index) =>
-      supplied += s"slices[$index]"        -> slice.instrumentId
-      supplied += s"slices[$index].lots"   -> slice.lots.instrumentId
-      supplied += s"slices[$index].market" -> slice.market.instrumentId
-      supplied += s"slices[$index].price"  -> slice.market.price.instrumentId
-    IdentityChecks.check("scenario", instrumentId, supplied.result()*)
+  ): Either[Vector[ScenarioViolation], Unit] =
+    val supplied =
+      Vector(
+        "order"              -> order.instrumentId,
+        "order.intent"       -> order.intent.instrumentId,
+        "order.intent.lots"  -> order.intent.lots.instrumentId,
+        "assumptions"        -> assumptions.instrumentId,
+        "assumptions.target" -> assumptions.target.instrumentId
+      ) ++
+        assumptions.target.activation
+          .observations(assumptions.activationEvidence)
+          .map((name, value) => name -> value.instrumentId) ++
+        assumptions.target.execution
+          .observations(assumptions.pricingResolution)
+          .map((name, value) => name -> value.instrumentId) ++
+        assumptions.matchedSlices.toVector.zipWithIndex.flatMap: (slice, index) =>
+          Vector(
+            s"slices[$index]"        -> slice.instrumentId,
+            s"slices[$index].lots"   -> slice.lots.instrumentId,
+            s"slices[$index].market" -> slice.market.instrumentId,
+            s"slices[$index].price"  -> slice.market.price.instrumentId
+          )
+
+    val accumulated = Validation.indexed(supplied): (candidate, ordinal) =>
+      val (name, id) = candidate
+      Validation.ensure(ordinal, id == instrumentId)(
+        ScenarioViolation.Identity(s"scenario.$name", instrumentId, id)
+      )
+    Validation.ordered(accumulated)
   end validateIdentities
 
   private def validateSliceTotals(
     expected: Lots,
-    slices: Vector[LiquiditySlice[Lots, Market]]
-  ): Either[EconomicsError, Unit] =
-    val supplied = slices.foldLeft(BigInt(0))((total, slice) => total + slice.lots.count.unrefined)
-    if slices.isEmpty then Left(InvalidScenario(ScenarioFailureReason.NoSlices))
-    else if supplied != expected.count.unrefined then
-      Left(InvalidScenario(ScenarioFailureReason.SliceLotsMismatch(expected.count.unrefined, supplied)))
-    else Right(())
+    slices: NonEmptyVector[LiquiditySlice[Lots, Market]]
+  ): Either[Vector[ScenarioViolation], Unit] =
+    val supplied = slices.toVector.foldLeft(BigInt(0))((total, slice) => total + slice.lots.count.unrefined)
+    Validation.ordered(
+      Validation.ensure(0, supplied == expected.count.unrefined)(
+        ScenarioViolation.LotTotal(expected.count.unrefined, supplied)
+      )
+    )
+
+  private def validateTarget(
+    order: Order[Lots, Price],
+    assumptions: ScenarioAssumptions[Lots, Price, Market]
+  ): Either[Vector[ScenarioViolation], Unit] =
+    Validation.ordered(
+      Validation.ensure(0, assumptions.target.eq(order))(ScenarioViolation.OrderTargetMismatch)
+    )
 
   private def validateActivation(
-    activation: OrderActivation[Price],
-    assumption: ActivationAssumption[Price]
-  ): Either[EconomicsError, Unit] =
-    (activation, assumption) match
-      case (ImmediateActivation, ImmediateAssumption) => Right(())
-      case (ImmediateActivation, _)                   =>
-        Left(InvalidScenario(ScenarioFailureReason.UnexpectedTriggerEvidence))
-      case (_: FixedActivation[Price], ImmediateAssumption) =>
-        Left(InvalidScenario(ScenarioFailureReason.MissingFixedTriggerEvidence))
-      case (fixed: FixedActivation[Price], TriggeredAssumption(evidence: FixedTriggerEvidence[Price])) =>
-        if evidence.reference != fixed.reference then
-          Left(InvalidScenario(ScenarioFailureReason.TriggerReferenceMismatch))
-        else if comparisonSatisfied(
-            fixed.comparison,
-            evidence.observedPrice.ticks.unrefined,
-            fixed.triggerPrice.ticks.unrefined
-          )
-        then Right(())
-        else Left(InvalidScenario(ScenarioFailureReason.FixedTriggerUnsatisfied))
-      case (_: FixedActivation[Price], TriggeredAssumption(_: TrailingTriggerEvidence[Price])) =>
-        Left(InvalidScenario(ScenarioFailureReason.FixedEvidenceExpected))
-      case (_: TrailingActivation[Price], ImmediateAssumption) =>
-        Left(InvalidScenario(ScenarioFailureReason.MissingTrailingTriggerEvidence))
-      case (_: TrailingActivation[Price], TriggeredAssumption(_: FixedTriggerEvidence[Price])) =>
-        Left(InvalidScenario(ScenarioFailureReason.TrailingEvidenceExpected))
-      case (trailing: TrailingActivation[Price], TriggeredAssumption(evidence: TrailingTriggerEvidence[Price])) =>
-        val extreme   = evidence.favorableExtreme.ticks.unrefined
-        val threshold = trailing.comparison match
-          case TriggerComparison.AtOrAbove => extreme + trailing.offsetTicks.unrefined
-          case TriggerComparison.AtOrBelow => extreme - trailing.offsetTicks.unrefined
-        if evidence.reference != trailing.reference then
-          Left(InvalidScenario(ScenarioFailureReason.TriggerReferenceMismatch))
-        else if threshold.signum <= 0 then
-          Left(InvalidScenario(ScenarioFailureReason.TrailingThresholdNonPositive))
-        else if comparisonSatisfied(trailing.comparison, evidence.observedPrice.ticks.unrefined, threshold) then
-          Right(())
-        else Left(InvalidScenario(ScenarioFailureReason.TrailingTriggerUnsatisfied))
+    assumptions: ScenarioAssumptions[Lots, Price, Market]
+  ): Either[Vector[ScenarioViolation], CheckedActivation[Price]] =
+    assumptions.target.activation
+      .validate(assumptions.activationEvidence)
+      .left
+      .map(cause => Vector(ScenarioViolation.Activation(cause)))
 
   private def validatePricing(
-    execution: OrderExecution[Lots, Price],
-    assumption: PricingAssumption[Price]
-  ): Either[EconomicsError, Option[BigInt]] =
-    execution match
-      case _: MarketExecution =>
-        assumption match
-          case DirectPricingAssumption         => Right(None)
-          case _: ResolvedPegAssumption[Price] =>
-            Left(InvalidScenario(ScenarioFailureReason.UnexpectedPegResolution))
-      case priced: PricedExecution[Lots, Price] =>
-        priced.pricing match
-          case limit: LimitPricing[Price] =>
-            assumption match
-              case DirectPricingAssumption         => Right(Some(limit.limit.ticks.unrefined))
-              case _: ResolvedPegAssumption[Price] =>
-                Left(InvalidScenario(ScenarioFailureReason.UnexpectedPegResolution))
-          case pegged: PeggedPricing =>
-            assumption match
-              case DirectPricingAssumption =>
-                Left(InvalidScenario(ScenarioFailureReason.MissingPegResolution))
-              case ResolvedPegAssumption(evidence) =>
-                if evidence.reference != pegged.reference then
-                  Left(InvalidScenario(ScenarioFailureReason.PegReferenceMismatch))
-                else if evidence.resolvedLimit.ticks.unrefined - evidence.referencePrice.ticks.unrefined !=
-                    pegged.offsetTicks
-                then
-                  Left(InvalidScenario(ScenarioFailureReason.PegOffsetMismatch))
-                else Right(Some(evidence.resolvedLimit.ticks.unrefined))
+    assumptions: ScenarioAssumptions[Lots, Price, Market]
+  ): Either[Vector[ScenarioViolation], EffectivePricing[Price]] =
+    assumptions.target.execution
+      .resolve(assumptions.pricingResolution)
+      .left
+      .map(cause => Vector(ScenarioViolation.Pricing(cause)))
 
   private def validateSlices(
     order: Order[Lots, Price],
-    slices: Vector[LiquiditySlice[Lots, Market]],
-    effectiveLimit: Option[BigInt]
-  ): Either[EconomicsError, Unit] =
-    slices.zipWithIndex.collectFirst:
-      case (slice, index) if order.execution.isInstanceOf[MarketExecution] && slice.role != LiquidityRole.Taker =>
-        InvalidScenario(ScenarioFailureReason.MarketSliceNotTaker, Some(index))
-      case (slice, index)
-        if order.execution match
-          case priced: PricedExecution[Lots, Price] =>
-            priced.liquidityConstraint == LiquidityConstraint.MakerOnly && slice.role != LiquidityRole.Maker
-          case _ =>
-            false
-        =>
-        InvalidScenario(ScenarioFailureReason.MakerOnlySliceNotMaker, Some(index))
-      case (slice, index)
-        if effectiveLimit.exists(limit =>
-          order.intent.side match
-            case Side.Buy  => slice.market.price.ticks.unrefined > limit
-            case Side.Sell => slice.market.price.ticks.unrefined < limit
-        ) =>
-        InvalidScenario(ScenarioFailureReason.SliceWorseThanLimit, Some(index))
-    match
-      case Some(error) => Left(error)
-      case None        => Right(())
+    slices: NonEmptyVector[LiquiditySlice[Lots, Market]],
+    effectivePricing: EffectivePricing[Price]
+  ): Either[Vector[ScenarioViolation], Unit] =
+    val accumulated = Validation.indexed(slices.toVector): (slice, index) =>
+      val marketRole = Validation.ensure(
+        index * 3,
+        effectivePricing != EffectivePricing.Market || slice.role == LiquidityRole.Taker
+      )(ScenarioViolation.Slice(index, ScenarioFailureReason.MarketSliceNotTaker))
+      val makerRole = Validation.ensure(
+        index * 3 + 1,
+        !order.execution.requiresMaker || slice.role == LiquidityRole.Maker
+      )(ScenarioViolation.Slice(index, ScenarioFailureReason.MakerOnlySliceNotMaker))
+      val priceQuality = Validation.ensure(
+        index * 3 + 2,
+        effectivePricing match
+          case EffectivePricing.Market         => true
+          case EffectivePricing.Limited(limit) =>
+            order.intent.side match
+              case Side.Buy  => slice.market.price.ticks.unrefined <= limit.ticks.unrefined
+              case Side.Sell => slice.market.price.ticks.unrefined >= limit.ticks.unrefined
+      )(ScenarioViolation.Slice(index, ScenarioFailureReason.SliceWorseThanLimit))
+      (marketRole, makerRole, priceQuality).mapN((_, _, _) => ())
 
-  private def comparisonSatisfied(comparison: TriggerComparison, observed: BigInt, threshold: BigInt): Boolean =
-    comparison match
-      case TriggerComparison.AtOrAbove => observed >= threshold
-      case TriggerComparison.AtOrBelow => observed <= threshold
+    Validation.ordered(accumulated)
+  end validateSlices
 
 end Scenarios
