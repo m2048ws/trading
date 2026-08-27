@@ -69,6 +69,8 @@ lazy val economics =
       name       := "trading-economics",
       moduleName := "trading-economics",
 
+      Compile / javacOptions ++= Seq("--release", "17"),
+
       Compile / packageBin :=
         (Compile / packageBin).dependsOn(Compile / compile).value,
       economicsExternalArtifact := (Compile / packageBin).value,

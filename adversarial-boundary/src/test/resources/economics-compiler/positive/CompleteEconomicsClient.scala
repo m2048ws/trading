@@ -7,13 +7,15 @@ import trading.quantity.refinement.*
 import trading.quantity.runtime.*
 
 object CompleteEconomicsClient:
-  def genericLotCount(instrument: Instrument)(lots: instrument.Lots): BigInt =
-    instrument.lotCount(lots)
+  def genericLotCount(instrument: Instrument)(lots: instrument.Lots): BigInt = lots.count.unrefined
 
   def genericPrice(
     instrument: Instrument
   )(coefficient: Rational): Either[EconomicsError, instrument.Price] =
     instrument.prices.exact(coefficient)
+
+  def genericOrderLots(instrument: Instrument)(order: instrument.Order): BigInt =
+    order.intent.lots.count.unrefined
 
   def genericPnl(
     instrument: Instrument
@@ -63,69 +65,74 @@ object CompleteEconomicsClient:
     )
     .toOption
     .get
-  val instrument = Instrument
-    .create(
-      InstrumentId("client-instrument"),
-      UnderlyingId("client-underlying"),
-      base,
-      quote,
-      position,
-      quote
-    )(
-      lotsGrid,
-      priceGrid,
-      Rate(position.dimension.asDimensionRef, base.dimension.asDimensionRef, Rational.one),
-      Rate(position.dimension.asDimensionRef, quote.dimension.asDimensionRef, Rational.zero)
-    )
+
+  val roles = new InstrumentRoles(base, quote, position, quote)
+  val identity = InstrumentIdentity(InstrumentId("client-instrument"), UnderlyingId("client-underlying"))
+  val listing = new ListingRules(roles)(lotsGrid, priceGrid)
+  val payoff = new ContractPayoff(roles)(
+    Rate(roles.position.dimension.asDimensionRef, roles.base.dimension.asDimensionRef, Rational.one),
+    Rate(roles.position.dimension.asDimensionRef, roles.quote.dimension.asDimensionRef, Rational.zero)
+  )
+  val instrument = Instrument.create(InstrumentDefinition(identity, roles, listing, payoff)).toOption.get
+  val stable = instrument
+
+  val lots = stable.lots(2).toOption.get
+  val entryPrice = stable.prices.exact(Rational(100)).toOption.get
+  val exitPrice = stable.prices.exact(Rational(110)).toOption.get
+  val entryState = stable.market.quoteSettled(entryPrice).toOption.get
+  val exitState = stable.market.quoteSettled(exitPrice).toOption.get
+  val entryOrder = stable.orders.market(Side.Buy, lots).toOption.get
+  val exitOrder = stable.orders.market(Side.Sell, lots).toOption.get
+  val entrySlice = stable.scenarios.slice(lots, entryState, LiquidityRole.Taker)
+  val exitSlice = stable.scenarios.slice(lots, exitState, LiquidityRole.Taker)
+  val entryAssumptions = stable.scenarios.assumptions(
+    stable.scenarios.immediate,
+    stable.scenarios.directPricing,
+    Vector(entrySlice)
+  )
+  val exitAssumptions = stable.scenarios.assumptions(
+    stable.scenarios.immediate,
+    stable.scenarios.directPricing,
+    Vector(exitSlice)
+  )
+  val entry = stable.scenarios.order(entryOrder, entryAssumptions).toOption.get
+  val exit = stable.scenarios.order(exitOrder, exitAssumptions).toOption.get
+  val roundTrip = stable.scenarios.roundTrip(entry, exit).toOption.get
+  val denomination = stable.fees
+    .denomination(quote)(quoteGrid, QuantizationPolicy.TowardZero)
     .toOption
     .get
 
-  val lots       = instrument.lots(2).toOption.get
-  val entryPrice = Rational.parse("100").flatMap(instrument.prices.exact).toOption.get
-  val exitPrice  = Rational.parse("110").flatMap(instrument.prices.exact).toOption.get
-  val entryState = instrument.market.quoteSettled(entryPrice).toOption.get
-  val exitState  = instrument.market.quoteSettled(exitPrice).toOption.get
-  val entryOrder = instrument.orders.market(Side.Buy, lots).toOption.get
-  val exitOrder  = instrument.orders.market(Side.Sell, lots).toOption.get
-  val entrySlice = instrument.scenarios.slice(lots, entryState, LiquidityRole.Taker)
-  val exitSlice  = instrument.scenarios.slice(lots, exitState, LiquidityRole.Taker)
-  val entry      = instrument.scenarios.order(entryOrder, Vector(entrySlice)).toOption.get
-  val exit       = instrument.scenarios.order(exitOrder, Vector(exitSlice)).toOption.get
-  val roundTrip  = instrument.scenarios.roundTrip(entry, exit).toOption.get
-
-  val schedule = new instrument.FeeSchedule:
-    def assess(scenario: instrument.OrderScenario): Either[EconomicsError, Vector[instrument.FeeLine]] =
-      val basis = Quantity(quote.dimension.asDimensionRef, Rational(instrument.lotCount(scenario.order.lots)))
+  val schedule = new stable.FeeSchedule:
+    def assess(scenario: stable.OrderScenario): Either[EconomicsError, Vector[stable.FeeLine]] =
+      val basis = Quantity(quote.dimension.asDimensionRef, Rational(scenario.order.intent.lots.count.unrefined))
       for
-        fee <- instrument.fees.percentage(quote)(
-          quoteGrid,
-          FeeKind("client-fee"),
-          basis,
-          FeeRate(Rational(1, 1000)),
-          QuantizationPolicy.TowardZero
-        )
-        line <- instrument.fees.line(scenario, 0, fee)
+        fee <- denomination.percentage(FeeKind("client-fee"), basis, FeeRate(Rational(1, 1000)))
+        line <- stable.fees.line(scenario, 0, fee)
       yield Vector(line)
 
-  val pnl = instrument.valuation.pnl(roundTrip, schedule).toOption.get
-  val genericResult = genericPnl(instrument)(roundTrip, schedule)
-  val genericCount  = genericLotCount(instrument)(lots)
-  val genericEntryPrice = genericPrice(instrument)(Rational(100))
-  val sized = instrument.sizing.maxLots(
-    Quantity(instrument.settle.dimension.asDimensionRef, Rational(1000)),
+  val pnl = stable.valuation.pnl(roundTrip, schedule).toOption.get
+  val genericResult = genericPnl(stable)(roundTrip, schedule)
+  val genericCount = genericLotCount(stable)(lots)
+  val genericOrderCount = genericOrderLots(stable)(entryOrder)
+  val genericEntryPrice = genericPrice(stable)(Rational(100))
+  val sized = stable.sizing.maxLots(
+    Quantity(stable.roles.settle.dimension.asDimensionRef, Rational(1000)),
     PositiveWhole(3).toOption.get,
     schedule
   ): candidate =>
-    val candidateEntryOrder = instrument.orders.market(Side.Buy, candidate).toOption.get
-    val candidateExitOrder  = instrument.orders.market(Side.Sell, candidate).toOption.get
-    val candidateEntry = instrument.scenarios.order(
+    val candidateEntryOrder = stable.orders.market(Side.Buy, candidate).toOption.get
+    val candidateExitOrder = stable.orders.market(Side.Sell, candidate).toOption.get
+    val candidateEntrySlice = stable.scenarios.slice(candidate, entryState, LiquidityRole.Taker)
+    val candidateExitSlice = stable.scenarios.slice(candidate, exitState, LiquidityRole.Taker)
+    val candidateEntry = stable.scenarios.order(
       candidateEntryOrder,
-      Vector(instrument.scenarios.slice(candidate, entryState, LiquidityRole.Taker))
+      stable.scenarios.assumptions(stable.scenarios.immediate, stable.scenarios.directPricing, Vector(candidateEntrySlice))
     ).toOption.get
-    val candidateExit = instrument.scenarios.order(
+    val candidateExit = stable.scenarios.order(
       candidateExitOrder,
-      Vector(instrument.scenarios.slice(candidate, exitState, LiquidityRole.Taker))
+      stable.scenarios.assumptions(stable.scenarios.immediate, stable.scenarios.directPricing, Vector(candidateExitSlice))
     ).toOption.get
-    instrument.scenarios.roundTrip(candidateEntry, candidateExit)
+    stable.scenarios.roundTrip(candidateEntry, candidateExit)
 
 end CompleteEconomicsClient

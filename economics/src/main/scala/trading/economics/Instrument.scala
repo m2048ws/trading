@@ -5,314 +5,488 @@ import trading.quantity.grid.*
 import trading.quantity.refinement.*
 import trading.quantity.runtime.*
 
+/** Strictly positive lots owned by one generative instrument. */
+sealed abstract class InstrumentLots[O, D <: Dimension] private[economics] (authority: JvmOwnerAuthority)
+  extends JavaSerializationUnsupported:
+  authority.assertIssued()
+  def count: PositiveWhole
+  def quantity: Quantity[D]
+
+/** Signed position lots owned by one generative instrument. */
+sealed abstract class InstrumentPosition[O, D <: Dimension] private[economics] (authority: JvmOwnerAuthority)
+  extends JavaSerializationUnsupported:
+  authority.assertIssued()
+  def count: BigInt
+  def quantity: Quantity[D]
+
+/** Strictly positive grid price owned by one generative instrument. */
+sealed abstract class InstrumentPrice[O, B <: Dimension, Q <: Dimension] private[economics] (
+  authority: JvmOwnerAuthority)
+  extends JavaSerializationUnsupported:
+  authority.assertIssued()
+  def ticks: PositiveWhole
+  def coefficient: Rational
+  def rate: Rate[B, Q]
+
+sealed abstract class InstrumentSettlementConversion[O, S <: Dimension] private[economics] (
+  authority: JvmOwnerAuthority)
+  extends JavaSerializationUnsupported:
+  authority.assertIssued()
+  val source: AssetRef
+  val target: AssetRef { type D = S }
+  def coefficient: Rational
+
+sealed abstract class InstrumentMarketState[O, B <: Dimension, Q <: Dimension, S <: Dimension] private[economics] (
+  authority: JvmOwnerAuthority)
+  extends JavaSerializationUnsupported:
+  authority.assertIssued()
+  def price: InstrumentPrice[O, B, Q]
+  def conversionSources: Vector[AssetId]
+  def baseToSettle: Rate[B, S]
+  def quoteToSettle: Rate[Q, S]
+  def convertToSettle(source: AssetRef)(value: Quantity[source.D]): Either[EconomicsError, Quantity[S]]
+
+sealed abstract class OrderActivation[O, P] private[economics] (authority: JvmOwnerAuthority)
+  extends JavaSerializationUnsupported:
+  authority.assertIssued()
+sealed abstract class ImmediateActivation[O, P] private[economics] (authority: JvmOwnerAuthority)
+  extends OrderActivation[O, P](authority)
+sealed abstract class FixedActivation[O, P] private[economics] (authority: JvmOwnerAuthority)
+  extends OrderActivation[O, P](authority):
+  def reference: PriceReference
+  def comparison: TriggerComparison
+  def triggerPrice: P
+sealed abstract class TrailingActivation[O, P] private[economics] (authority: JvmOwnerAuthority)
+  extends OrderActivation[O, P](authority):
+  def reference: PriceReference
+  def comparison: TriggerComparison
+  def offsetTicks: PositiveWhole
+
+sealed abstract class OrderPricing[O, P] private[economics] (authority: JvmOwnerAuthority)
+  extends JavaSerializationUnsupported:
+  authority.assertIssued()
+sealed abstract class LimitPricing[O, P] private[economics] (authority: JvmOwnerAuthority)
+  extends OrderPricing[O, P](authority):
+  def limit: P
+sealed abstract class PeggedPricing[O, P] private[economics] (authority: JvmOwnerAuthority)
+  extends OrderPricing[O, P](authority):
+  def reference: PriceReference
+  def offsetTicks: BigInt
+
+sealed abstract class PricedVisibility[O, L] private[economics] (authority: JvmOwnerAuthority)
+  extends JavaSerializationUnsupported:
+  authority.assertIssued()
+sealed abstract class DisplayedVisibility[O, L] private[economics] (authority: JvmOwnerAuthority)
+  extends PricedVisibility[O, L](authority)
+sealed abstract class HiddenVisibility[O, L] private[economics] (authority: JvmOwnerAuthority)
+  extends PricedVisibility[O, L](authority)
+sealed abstract class IcebergVisibility[O, L] private[economics] (authority: JvmOwnerAuthority)
+  extends PricedVisibility[O, L](authority):
+  def displayedLots: L
+
+sealed abstract class OrderExecution[O, L, P] private[economics] (authority: JvmOwnerAuthority)
+  extends JavaSerializationUnsupported:
+  authority.assertIssued()
+sealed abstract class MarketExecution[O, L, P] private[economics] (authority: JvmOwnerAuthority)
+  extends OrderExecution[O, L, P](authority):
+  def timeInForce: NonRestingTimeInForce
+sealed abstract class PricedExecution[O, L, P] private[economics] (authority: JvmOwnerAuthority)
+  extends OrderExecution[O, L, P](authority):
+  def pricing: OrderPricing[O, P]
+  def timeInForce: TimeInForce
+  def liquidityConstraint: LiquidityConstraint
+  def visibility: PricedVisibility[O, L]
+
+sealed abstract class OrderIntent[O, L] private[economics] (authority: JvmOwnerAuthority)
+  extends JavaSerializationUnsupported:
+  authority.assertIssued()
+  def side: Side
+  def lots: L
+  def positionEffect: PositionEffect
+
+sealed abstract class InstrumentOrder[O, L, P] private[economics] (authority: JvmOwnerAuthority)
+  extends JavaSerializationUnsupported:
+  authority.assertIssued()
+  def intent: OrderIntent[O, L]
+  def activation: OrderActivation[O, P]
+  def execution: OrderExecution[O, L, P]
+
+sealed abstract class TriggerEvidence[O, P] private[economics] (authority: JvmOwnerAuthority)
+  extends JavaSerializationUnsupported:
+  authority.assertIssued()
+  def reference: PriceReference
+  def observedPrice: P
+sealed abstract class FixedTriggerEvidence[O, P] private[economics] (authority: JvmOwnerAuthority)
+  extends TriggerEvidence[O, P](authority)
+sealed abstract class TrailingTriggerEvidence[O, P] private[economics] (authority: JvmOwnerAuthority)
+  extends TriggerEvidence[O, P](authority):
+  def favorableExtreme: P
+
+sealed abstract class ActivationAssumption[O, P] private[economics] (authority: JvmOwnerAuthority)
+  extends JavaSerializationUnsupported:
+  authority.assertIssued()
+sealed abstract class ImmediateAssumption[O, P] private[economics] (authority: JvmOwnerAuthority)
+  extends ActivationAssumption[O, P](authority)
+sealed abstract class TriggeredAssumption[O, P] private[economics] (authority: JvmOwnerAuthority)
+  extends ActivationAssumption[O, P](authority):
+  def evidence: TriggerEvidence[O, P]
+
+sealed abstract class PegResolution[O, P] private[economics] (authority: JvmOwnerAuthority)
+  extends JavaSerializationUnsupported:
+  authority.assertIssued()
+  def reference: PriceReference
+  def referencePrice: P
+  def resolvedLimit: P
+
+sealed abstract class PricingAssumption[O, P] private[economics] (authority: JvmOwnerAuthority)
+  extends JavaSerializationUnsupported:
+  authority.assertIssued()
+sealed abstract class DirectPricingAssumption[O, P] private[economics] (authority: JvmOwnerAuthority)
+  extends PricingAssumption[O, P](authority)
+sealed abstract class ResolvedPegAssumption[O, P] private[economics] (authority: JvmOwnerAuthority)
+  extends PricingAssumption[O, P](authority):
+  def resolution: PegResolution[O, P]
+
+sealed abstract class InstrumentLiquiditySlice[O, L, M] private[economics] (authority: JvmOwnerAuthority)
+  extends JavaSerializationUnsupported:
+  authority.assertIssued()
+  def lots: L
+  def market: M
+  def role: LiquidityRole
+
+sealed abstract class ScenarioAssumptions[O, L, P, M] private[economics] (authority: JvmOwnerAuthority)
+  extends JavaSerializationUnsupported:
+  authority.assertIssued()
+  def activation: ActivationAssumption[O, P]
+  def pricing: PricingAssumption[O, P]
+  def matchedSlices: Vector[InstrumentLiquiditySlice[O, L, M]]
+
+sealed abstract class InstrumentOrderScenario[O, L, P, M, Pos] private[economics] (authority: JvmOwnerAuthority)
+  extends JavaSerializationUnsupported:
+  authority.assertIssued()
+  def order: InstrumentOrder[O, L, P]
+  def assumptions: ScenarioAssumptions[O, L, P, M]
+  def positionChange: Pos
+
+sealed abstract class InstrumentRoundTripScenario[O, L, P, M, Pos] private[economics] (
+  authority: JvmOwnerAuthority)
+  extends JavaSerializationUnsupported:
+  authority.assertIssued()
+  def entry: InstrumentOrderScenario[O, L, P, M, Pos]
+  def exit: InstrumentOrderScenario[O, L, P, M, Pos]
+  def heldPosition: Pos
+
+sealed abstract class InstrumentFeeDenomination[O] private[economics] (authority: JvmOwnerAuthority)
+  extends JavaSerializationUnsupported:
+  authority.assertIssued()
+  type D <: Dimension
+  val asset: AssetRef { type D = InstrumentFeeDenomination.this.D }
+  def gridKey: GridKey
+  def gridQuantum: Rational
+  def policy: QuantizationPolicy
+  def minimumCharge(
+    accountContribution: Quantity[D],
+    nonnegativeMinimum: Quantity[D]
+  ): Either[EconomicsError, Quantity[D]]
+  def quantize(kind: FeeKind, unrounded: Quantity[D]): InstrumentFee[O]
+  def percentage(
+    kind: FeeKind,
+    nonnegativeBasis: Quantity[D],
+    rate: FeeRate
+  ): Either[EconomicsError, InstrumentFee[O]]
+
+sealed abstract class InstrumentFee[O] private[economics] (authority: JvmOwnerAuthority)
+  extends JavaSerializationUnsupported:
+  authority.assertIssued()
+  val denomination: InstrumentFeeDenomination[O]
+  val asset: AssetRef
+  def kind: FeeKind
+  def coordinate: BigInt
+  def amount: Quantity[asset.D]
+  def residual: Quantity[asset.D]
+  def unrounded: Quantity[asset.D]
+
+sealed abstract class InstrumentFeeLine[O, M] private[economics] (authority: JvmOwnerAuthority)
+  extends JavaSerializationUnsupported:
+  authority.assertIssued()
+  def fee: InstrumentFee[O]
+  def sourceSliceIndex: Int
+  def sourceMarket: M
+
+trait InstrumentFeeSchedule[O, L, P, M, Pos] extends JavaSerializationUnsupported:
+  def assess(
+    scenario: InstrumentOrderScenario[O, L, P, M, Pos]
+  ): Either[EconomicsError, Vector[InstrumentFeeLine[O, M]]]
+
+sealed abstract class InstrumentConvertedFeeLine[O, S <: Dimension] private[economics] (
+  authority: JvmOwnerAuthority)
+  extends JavaSerializationUnsupported:
+  authority.assertIssued()
+  def original: InstrumentFee[O]
+  def leg: ScenarioLeg
+  def sourceSliceIndex: Int
+  def settleContribution: Quantity[S]
+
+sealed abstract class InstrumentPnl[O, S <: Dimension] private[economics] (authority: JvmOwnerAuthority)
+  extends JavaSerializationUnsupported:
+  authority.assertIssued()
+  def pricePnl: Quantity[S]
+  def convertedFeeLines: Vector[InstrumentConvertedFeeLine[O, S]]
+  def feePnl: Quantity[S]
+  def netPnl: Quantity[S]
+
+trait PriceCapability[O, B <: Dimension, Q <: Dimension]:
+  def exact(coefficient: Rational): Either[EconomicsError, InstrumentPrice[O, B, Q]]
+  def fromRate(value: Rate[B, Q]): Either[EconomicsError, InstrumentPrice[O, B, Q]]
+  def fromTicks(ticks: PositiveWhole): InstrumentPrice[O, B, Q]
+  def quantize(
+    coefficient: Rational,
+    policy: QuantizationPolicy
+  ): Either[EconomicsError, (InstrumentPrice[O, B, Q], Quantity[Divide[Q, B]])]
+  def quantizeRate(
+    value: Rate[B, Q],
+    policy: QuantizationPolicy
+  ): Either[EconomicsError, (InstrumentPrice[O, B, Q], Quantity[Divide[Q, B]])]
+
+trait MarketCapability[O, B <: Dimension, Q <: Dimension, S <: Dimension]:
+  def conversion(source: AssetRef, coefficient: Rational): Either[EconomicsError, InstrumentSettlementConversion[O, S]]
+  def conversionFromRate(
+    source: AssetRef
+  )(
+    rate: Rate[source.D, S]
+  ): Either[EconomicsError, InstrumentSettlementConversion[O, S]]
+  def quoteSettled(
+    price: InstrumentPrice[O, B, Q],
+    additionalConversions: Vector[InstrumentSettlementConversion[O, S]] = Vector.empty
+  ): Either[EconomicsError, InstrumentMarketState[O, B, Q, S]]
+  def baseSettled(
+    price: InstrumentPrice[O, B, Q],
+    additionalConversions: Vector[InstrumentSettlementConversion[O, S]] = Vector.empty
+  ): Either[EconomicsError, InstrumentMarketState[O, B, Q, S]]
+  def fromQuoteAnchor(
+    price: InstrumentPrice[O, B, Q],
+    quoteToSettle: Rational,
+    additionalConversions: Vector[InstrumentSettlementConversion[O, S]] = Vector.empty
+  ): Either[EconomicsError, InstrumentMarketState[O, B, Q, S]]
+  def fromBaseAnchor(
+    price: InstrumentPrice[O, B, Q],
+    baseToSettle: Rational,
+    additionalConversions: Vector[InstrumentSettlementConversion[O, S]] = Vector.empty
+  ): Either[EconomicsError, InstrumentMarketState[O, B, Q, S]]
+  def fromAnchors(
+    price: InstrumentPrice[O, B, Q],
+    baseToSettle: Rational,
+    quoteToSettle: Rational,
+    additionalConversions: Vector[InstrumentSettlementConversion[O, S]] = Vector.empty
+  ): Either[EconomicsError, InstrumentMarketState[O, B, Q, S]]
+  def fromQuoteRate(
+    price: InstrumentPrice[O, B, Q],
+    quoteToSettle: Rate[Q, S],
+    additionalConversions: Vector[InstrumentSettlementConversion[O, S]] = Vector.empty
+  ): Either[EconomicsError, InstrumentMarketState[O, B, Q, S]]
+  def fromBaseRate(
+    price: InstrumentPrice[O, B, Q],
+    baseToSettle: Rate[B, S],
+    additionalConversions: Vector[InstrumentSettlementConversion[O, S]] = Vector.empty
+  ): Either[EconomicsError, InstrumentMarketState[O, B, Q, S]]
+  def fromRates(
+    price: InstrumentPrice[O, B, Q],
+    baseToSettle: Rate[B, S],
+    quoteToSettle: Rate[Q, S],
+    additionalConversions: Vector[InstrumentSettlementConversion[O, S]] = Vector.empty
+  ): Either[EconomicsError, InstrumentMarketState[O, B, Q, S]]
+end MarketCapability
+
+trait OrderCapability[O, L, P]:
+  def immediate: ImmediateActivation[O, P]
+  def fixedTrigger(
+    reference: PriceReference,
+    comparison: TriggerComparison,
+    triggerPrice: P
+  ): FixedActivation[O, P]
+  def trailingTrigger(
+    reference: PriceReference,
+    comparison: TriggerComparison,
+    offsetTicks: BigInt
+  ): Either[EconomicsError, TrailingActivation[O, P]]
+  def limitPricing(limit: P): LimitPricing[O, P]
+  def peggedPricing(reference: PriceReference, offsetTicks: BigInt): PeggedPricing[O, P]
+  def displayed: DisplayedVisibility[O, L]
+  def hidden: HiddenVisibility[O, L]
+  def iceberg(displayedLots: L): IcebergVisibility[O, L]
+  def marketExecution(timeInForce: NonRestingTimeInForce): MarketExecution[O, L, P]
+  def pricedExecution(
+    pricing: OrderPricing[O, P],
+    timeInForce: TimeInForce,
+    liquidityConstraint: LiquidityConstraint,
+    visibility: PricedVisibility[O, L]
+  ): PricedExecution[O, L, P]
+  def intent(side: Side, lots: L, positionEffect: PositionEffect = PositionEffect.Unrestricted): OrderIntent[O, L]
+  def create(
+    intent: OrderIntent[O, L],
+    activation: OrderActivation[O, P],
+    execution: OrderExecution[O, L, P]
+  ): Either[EconomicsError, InstrumentOrder[O, L, P]]
+  def market(
+    side: Side,
+    lots: L,
+    positionEffect: PositionEffect = PositionEffect.Unrestricted
+  ): Either[EconomicsError, InstrumentOrder[O, L, P]]
+  def limit(
+    side: Side,
+    lots: L,
+    limit: P,
+    timeInForce: TimeInForce = TimeInForce.GoodTillCancelled,
+    liquidityConstraint: LiquidityConstraint = LiquidityConstraint.Unrestricted,
+    positionEffect: PositionEffect = PositionEffect.Unrestricted,
+    visibility: PricedVisibility[O, L] = displayed
+  ): Either[EconomicsError, InstrumentOrder[O, L, P]]
+  def stopMarket(
+    side: Side,
+    lots: L,
+    trigger: OrderActivation[O, P],
+    positionEffect: PositionEffect = PositionEffect.Unrestricted
+  ): Either[EconomicsError, InstrumentOrder[O, L, P]]
+  def stopLimit(
+    side: Side,
+    lots: L,
+    trigger: OrderActivation[O, P],
+    limit: P,
+    timeInForce: TimeInForce = TimeInForce.GoodTillCancelled,
+    liquidityConstraint: LiquidityConstraint = LiquidityConstraint.Unrestricted,
+    positionEffect: PositionEffect = PositionEffect.Unrestricted,
+    visibility: PricedVisibility[O, L] = displayed
+  ): Either[EconomicsError, InstrumentOrder[O, L, P]]
+end OrderCapability
+
+trait ScenarioCapability[O, L, P, M, Pos]:
+  def immediate: ImmediateAssumption[O, P]
+  def fixedEvidence(reference: PriceReference, observedPrice: P): FixedTriggerEvidence[O, P]
+  def trailingEvidence(reference: PriceReference, favorableExtreme: P, observedPrice: P): TrailingTriggerEvidence[O, P]
+  def triggered(evidence: TriggerEvidence[O, P]): TriggeredAssumption[O, P]
+  def directPricing: DirectPricingAssumption[O, P]
+  def pegResolution(reference: PriceReference, referencePrice: P, resolvedLimit: P): PegResolution[O, P]
+  def resolvedPeg(resolution: PegResolution[O, P]): ResolvedPegAssumption[O, P]
+  def slice(lots: L, market: M, role: LiquidityRole): InstrumentLiquiditySlice[O, L, M]
+  def assumptions(
+    activation: ActivationAssumption[O, P],
+    pricing: PricingAssumption[O, P],
+    matchedSlices: Vector[InstrumentLiquiditySlice[O, L, M]]
+  ): ScenarioAssumptions[O, L, P, M]
+  def order(
+    order: InstrumentOrder[O, L, P],
+    assumptions: ScenarioAssumptions[O, L, P, M]
+  ): Either[EconomicsError, InstrumentOrderScenario[O, L, P, M, Pos]]
+  def roundTrip(
+    entry: InstrumentOrderScenario[O, L, P, M, Pos],
+    exit: InstrumentOrderScenario[O, L, P, M, Pos]
+  ): Either[EconomicsError, InstrumentRoundTripScenario[O, L, P, M, Pos]]
+end ScenarioCapability
+
+trait FeeCapability[O, L, P, M, Pos]:
+  def denomination(
+    feeAsset: AssetRef
+  )(
+    grid: RegisteredGridRef[? <: Dimension],
+    policy: QuantizationPolicy
+  ): Either[EconomicsError, InstrumentFeeDenomination[O] { type D = feeAsset.D }]
+  def line(
+    scenario: InstrumentOrderScenario[O, L, P, M, Pos],
+    sourceSliceIndex: Int,
+    fee: InstrumentFee[O]
+  ): Either[EconomicsError, InstrumentFeeLine[O, M]]
+  def none: InstrumentFeeSchedule[O, L, P, M, Pos]
+  def combine(
+    componentSchedules: Vector[InstrumentFeeSchedule[O, L, P, M, Pos]]
+  ): InstrumentFeeSchedule[O, L, P, M, Pos]
+
+trait ValuationCapability[
+  O,
+  D <: Dimension,
+  B <: Dimension,
+  Q <: Dimension,
+  S <: Dimension,
+  L,
+  P,
+  M,
+  Pos]:
+  def settlePerPosition(state: M): Rate[D, S]
+  def positionValue(value: Pos, state: M): Quantity[S]
+  def pricePnl(value: Pos, entry: M, exit: M): Quantity[S]
+  def pnl(
+    roundTrip: InstrumentRoundTripScenario[O, L, P, M, Pos],
+    feeSchedule: InstrumentFeeSchedule[O, L, P, M, Pos]
+  ): Either[EconomicsError, InstrumentPnl[O, S]]
+
+trait SizingCapability[O, S <: Dimension, L, P, M, Pos]:
+  def downsideRisk(pnl: InstrumentPnl[O, S]): Quantity[S]
+  def maxLots(
+    riskBudget: Quantity[S],
+    cap: PositiveWhole,
+    feeSchedule: InstrumentFeeSchedule[O, L, P, M, Pos]
+  )(
+    scenarioFor: L => Either[EconomicsError, InstrumentRoundTripScenario[O, L, P, M, Pos]]
+  ): Either[EconomicsError, Option[L]]
+
 /**
- * A validated, generative instrument aggregate.
- *
- * Each stable value owns its lots, positions, prices, orders, scenarios, fees, PnL, and sizing types. Complete
- * scenarios are conditional calculation inputs: they are not executions, fills, reports, or account state.
+ * A validated, generative instrument aggregate. Each successful construction owns one fresh type identity shared by all
+ * primitive values, alternatives, aggregates, and capabilities.
  */
-sealed trait Instrument extends JavaSerializationUnsupported:
-  // Stable identity, immutable contract metadata, and path-owned public values.
-  val id: InstrumentId
-  val underlying: UnderlyingId
-  val base: AssetRef
-  val quote: AssetRef
-  val position: AssetRef
-  val settle: AssetRef
+sealed abstract class Instrument private[economics] (authority: JvmOwnerAuthority) extends JavaSerializationUnsupported:
+  authority.assertIssued()
+  type Owner
 
-  def positionGridKey: GridKey
-  def priceGridKey: GridKey
-  def positionLotQuantum: Rational
-  def priceQuantum: Rational
-  def basePerPosition: Rate[position.D, base.D]
-  def quotePerPosition: Rate[position.D, quote.D]
+  val identity: InstrumentIdentity
+  val roles: InstrumentRoles
+  val listingRules: ListingRules
+  val contractPayoff: ContractPayoff
 
-  type Lots
-  type PositionLots
-  type Price
+  type Lots                 = InstrumentLots[Owner, roles.position.D]
+  type PositionLots         = InstrumentPosition[Owner, roles.position.D]
+  type Price                = InstrumentPrice[Owner, roles.base.D, roles.quote.D]
+  type SettleConversion     = InstrumentSettlementConversion[Owner, roles.settle.D]
+  type MarketState          = InstrumentMarketState[Owner, roles.base.D, roles.quote.D, roles.settle.D]
+  type Activation           = OrderActivation[Owner, Price]
+  type Pricing              = OrderPricing[Owner, Price]
+  type Visibility           = PricedVisibility[Owner, Lots]
+  type Execution            = OrderExecution[Owner, Lots, Price]
+  type Intent               = OrderIntent[Owner, Lots]
+  type Order                = InstrumentOrder[Owner, Lots, Price]
+  type ActivationEvidence   = TriggerEvidence[Owner, Price]
+  type ActivationAssumption = trading.economics.ActivationAssumption[Owner, Price]
+  type PricingAssumption    = trading.economics.PricingAssumption[Owner, Price]
+  type PegResolution        = trading.economics.PegResolution[Owner, Price]
+  type LiquiditySlice       = InstrumentLiquiditySlice[Owner, Lots, MarketState]
+  type ScenarioAssumptions  = trading.economics.ScenarioAssumptions[Owner, Lots, Price, MarketState]
+  type OrderScenario        = InstrumentOrderScenario[Owner, Lots, Price, MarketState, PositionLots]
+  type RoundTripScenario    = InstrumentRoundTripScenario[Owner, Lots, Price, MarketState, PositionLots]
+  type FeeDenomination      = InstrumentFeeDenomination[Owner]
+  type Fee                  = InstrumentFee[Owner]
+  type FeeLine              = InstrumentFeeLine[Owner, MarketState]
+  type FeeSchedule          = InstrumentFeeSchedule[Owner, Lots, Price, MarketState, PositionLots]
+  type ConvertedFeeLine     = InstrumentConvertedFeeLine[Owner, roles.settle.D]
+  type Pnl                  = InstrumentPnl[Owner, roles.settle.D]
+  type Prices               = PriceCapability[Owner, roles.base.D, roles.quote.D]
+  type Market               = MarketCapability[Owner, roles.base.D, roles.quote.D, roles.settle.D]
+  type Orders               = OrderCapability[Owner, Lots, Price]
+  type Scenarios            = ScenarioCapability[Owner, Lots, Price, MarketState, PositionLots]
+  type Fees                 = FeeCapability[Owner, Lots, Price, MarketState, PositionLots]
+  type Valuation            = ValuationCapability[
+    Owner,
+    roles.position.D,
+    roles.base.D,
+    roles.quote.D,
+    roles.settle.D,
+    Lots,
+    Price,
+    MarketState,
+    PositionLots
+  ]
+  type Sizing = SizingCapability[Owner, roles.settle.D, Lots, Price, MarketState, PositionLots]
 
   def lots(count: BigInt): Either[EconomicsError, Lots]
-  def lotCount(value: Lots): BigInt
-  def lotsQuantity(value: Lots): Quantity[position.D]
-  def positionLots(side: Side, value: Lots): PositionLots
-  def positionLotCount(value: PositionLots): BigInt
-  def positionQuantity(value: PositionLots): Quantity[position.D]
+  def positionLots(side: Side, lots: Lots): PositionLots
   def flatPosition: PositionLots
-
-  sealed trait Prices extends JavaSerializationUnsupported:
-    def exact(coefficient: Rational): Either[EconomicsError, Price]
-    def fromRate(value: Rate[base.D, quote.D]): Either[EconomicsError, Price]
-    def fromTicks(ticks: PositiveWhole): Price
-    def quantize(
-      coefficient: Rational,
-      policy: QuantizationPolicy
-    ): Either[EconomicsError, (Price, Quantity[Divide[quote.D, base.D]])]
-    def quantizeRate(
-      value: Rate[base.D, quote.D],
-      policy: QuantizationPolicy
-    ): Either[EconomicsError, (Price, Quantity[Divide[quote.D, base.D]])]
-    def ticks(value: Price): BigInt
-    def coefficient(value: Price): Rational
-    def rate(value: Price): Rate[base.D, quote.D]
-
-  sealed trait SettlementConversions extends JavaSerializationUnsupported:
-    def sources: Vector[AssetId]
-
-  sealed trait MarketState extends JavaSerializationUnsupported:
-    def price: Price
-    def conversions: SettlementConversions
-
-  sealed trait Market extends JavaSerializationUnsupported:
-    def quoteSettled(
-      price: Price,
-      additionalConversions: Vector[SettlementConversion] = Vector.empty
-    ): Either[EconomicsError, MarketState]
-    def baseSettled(
-      price: Price,
-      additionalConversions: Vector[SettlementConversion] = Vector.empty
-    ): Either[EconomicsError, MarketState]
-    def fromQuoteAnchor(
-      price: Price,
-      quoteToSettle: Rational,
-      additionalConversions: Vector[SettlementConversion] = Vector.empty
-    ): Either[EconomicsError, MarketState]
-    def fromBaseAnchor(
-      price: Price,
-      baseToSettle: Rational,
-      additionalConversions: Vector[SettlementConversion] = Vector.empty
-    ): Either[EconomicsError, MarketState]
-    def fromAnchors(
-      price: Price,
-      baseToSettle: Rational,
-      quoteToSettle: Rational,
-      additionalConversions: Vector[SettlementConversion] = Vector.empty
-    ): Either[EconomicsError, MarketState]
-    def fromQuoteRate(
-      price: Price,
-      quoteToSettle: Rate[quote.D, settle.D],
-      additionalConversions: Vector[SettlementConversion] = Vector.empty
-    ): Either[EconomicsError, MarketState]
-    def fromBaseRate(
-      price: Price,
-      baseToSettle: Rate[base.D, settle.D],
-      additionalConversions: Vector[SettlementConversion] = Vector.empty
-    ): Either[EconomicsError, MarketState]
-    def fromRates(
-      price: Price,
-      baseToSettle: Rate[base.D, settle.D],
-      quoteToSettle: Rate[quote.D, settle.D],
-      additionalConversions: Vector[SettlementConversion] = Vector.empty
-    ): Either[EconomicsError, MarketState]
-    def convertToSettle(
-      source: AssetRef,
-      conversions: SettlementConversions
-    )(
-      value: Quantity[source.D]
-    ): Either[EconomicsError, Quantity[settle.D]]
-  end Market
-
-  sealed trait Visibility extends JavaSerializationUnsupported:
-    def kind: VisibilityKind
-    def displayedLots: Option[Lots]
-
-  sealed trait Activation extends JavaSerializationUnsupported:
-    def kind: ActivationKind
-    def reference: Option[PriceReference]
-    def comparison: Option[TriggerComparison]
-    def triggerPrice: Option[Price]
-    def trailingOffsetTicks: Option[BigInt]
-
-  sealed trait PriceInstruction extends JavaSerializationUnsupported:
-    def kind: PriceInstructionKind
-    def limit: Option[Price]
-    def reference: Option[PriceReference]
-    def offsetTicks: Option[BigInt]
-
-  sealed trait Order extends JavaSerializationUnsupported:
-    def side: Side
-    def lots: Lots
-    def activation: Activation
-    def priceInstruction: PriceInstruction
-    def timeInForce: TimeInForce
-    def liquidityConstraint: LiquidityConstraint
-    def positionEffect: PositionEffect
-    def visibility: Visibility
-
-  sealed trait Orders extends JavaSerializationUnsupported:
-    def notApplicableVisibility: Visibility
-    def displayedVisibility: Visibility
-    def hiddenVisibility: Visibility
-    def icebergVisibility(displayedLots: Lots): Visibility
-    def immediateActivation: Activation
-    def fixedTrigger(reference: PriceReference, comparison: TriggerComparison, triggerPrice: Price): Activation
-    def trailingTrigger(
-      reference: PriceReference,
-      comparison: TriggerComparison,
-      offsetTicks: BigInt
-    ): Either[EconomicsError, Activation]
-    def marketPriceInstruction: PriceInstruction
-    def limitPriceInstruction(limit: Price): PriceInstruction
-    def peggedPriceInstruction(reference: PriceReference, offsetTicks: BigInt): PriceInstruction
-    def checked(
-      side: Side,
-      lots: Lots,
-      activation: Activation,
-      priceInstruction: PriceInstruction,
-      timeInForce: TimeInForce,
-      liquidityConstraint: LiquidityConstraint,
-      positionEffect: PositionEffect,
-      visibility: Visibility
-    ): Either[EconomicsError, Order]
-    def market(
-      side: Side,
-      lots: Lots,
-      positionEffect: PositionEffect = PositionEffect.Unrestricted
-    ): Either[EconomicsError, Order]
-    def limit(
-      side: Side,
-      lots: Lots,
-      limit: Price,
-      timeInForce: TimeInForce = TimeInForce.GoodTillCancelled,
-      liquidityConstraint: LiquidityConstraint = LiquidityConstraint.Unrestricted,
-      positionEffect: PositionEffect = PositionEffect.Unrestricted,
-      visibility: Visibility = displayedVisibility
-    ): Either[EconomicsError, Order]
-    def stopMarket(
-      side: Side,
-      lots: Lots,
-      trigger: Activation,
-      positionEffect: PositionEffect = PositionEffect.Unrestricted
-    ): Either[EconomicsError, Order]
-    def stopLimit(
-      side: Side,
-      lots: Lots,
-      trigger: Activation,
-      limit: Price,
-      timeInForce: TimeInForce = TimeInForce.GoodTillCancelled,
-      liquidityConstraint: LiquidityConstraint = LiquidityConstraint.Unrestricted,
-      positionEffect: PositionEffect = PositionEffect.Unrestricted,
-      visibility: Visibility = displayedVisibility
-    ): Either[EconomicsError, Order]
-  end Orders
-
-  sealed trait ActivationEvidence extends JavaSerializationUnsupported:
-    def reference: PriceReference
-    def observedPrice: Price
-    def favorableExtreme: Option[Price]
-
-  sealed trait PegResolution extends JavaSerializationUnsupported:
-    def reference: PriceReference
-    def referencePrice: Price
-    def resolvedLimit: Price
-
-  sealed trait LiquiditySlice extends JavaSerializationUnsupported:
-    def lots: Lots
-    def market: MarketState
-    def role: LiquidityRole
-
-  sealed trait OrderScenario extends JavaSerializationUnsupported:
-    def order: Order
-    def activationEvidence: Option[ActivationEvidence]
-    def pegResolution: Option[PegResolution]
-    def slices: Vector[LiquiditySlice]
-    def positionChange: PositionLots
-
-  sealed trait RoundTripScenario extends JavaSerializationUnsupported:
-    def entry: OrderScenario
-    def exit: OrderScenario
-    def heldPosition: PositionLots
-
-  sealed trait Scenarios extends JavaSerializationUnsupported:
-    def fixedTriggerEvidence(reference: PriceReference, observedPrice: Price): ActivationEvidence
-    def trailingTriggerEvidence(
-      reference: PriceReference,
-      favorableExtreme: Price,
-      activatingObservation: Price
-    ): ActivationEvidence
-    def pegResolution(reference: PriceReference, referencePrice: Price, resolvedLimit: Price): PegResolution
-    def slice(lots: Lots, market: MarketState, role: LiquidityRole): LiquiditySlice
-    def order(
-      order: Order,
-      matchedSlices: Vector[LiquiditySlice],
-      activationEvidence: Option[ActivationEvidence] = None,
-      pegResolution: Option[PegResolution] = None
-    ): Either[EconomicsError, OrderScenario]
-    def roundTrip(entry: OrderScenario, exit: OrderScenario): Either[EconomicsError, RoundTripScenario]
-
-  sealed trait Fee extends JavaSerializationUnsupported:
-    val asset: AssetRef
-    def kind: FeeKind
-    def gridKey: GridKey
-    def gridQuantum: Rational
-    def coordinate: BigInt
-    def amount: Quantity[asset.D]
-    def residual: Quantity[asset.D]
-    def unrounded: Quantity[asset.D]
-
-  sealed trait FeeLine extends JavaSerializationUnsupported:
-    def fee: Fee
-    def sourceSliceIndex: Int
-    def sourceMarket: MarketState
-
-  trait FeeSchedule extends JavaSerializationUnsupported:
-    def assess(scenario: OrderScenario): Either[EconomicsError, Vector[FeeLine]]
-
-  sealed trait Fees extends JavaSerializationUnsupported:
-    def minimumCharge(
-      asset: AssetRef
-    )(
-      accountContribution: Quantity[asset.D],
-      nonnegativeMinimum: Quantity[asset.D]
-    ): Either[EconomicsError, Quantity[asset.D]]
-    def quantize(
-      asset: AssetRef
-    )(
-      grid: RegisteredGridRef[? <: Dimension],
-      kind: FeeKind,
-      unrounded: Quantity[asset.D],
-      policy: QuantizationPolicy
-    ): Either[EconomicsError, Fee]
-    def percentage(
-      asset: AssetRef
-    )(
-      grid: RegisteredGridRef[? <: Dimension],
-      kind: FeeKind,
-      nonnegativeBasis: Quantity[asset.D],
-      rate: FeeRate,
-      policy: QuantizationPolicy
-    ): Either[EconomicsError, Fee]
-    def line(scenario: OrderScenario, sourceSliceIndex: Int, fee: Fee): Either[EconomicsError, FeeLine]
-    def none: FeeSchedule
-    def combine(componentSchedules: Vector[FeeSchedule]): FeeSchedule
-  end Fees
-
-  sealed trait ConvertedFeeLine extends JavaSerializationUnsupported:
-    def original: Fee
-    def leg: ScenarioLeg
-    def sourceSliceIndex: Int
-    def settleContribution: Quantity[settle.D]
-
-  sealed trait Pnl extends JavaSerializationUnsupported:
-    def pricePnl: Quantity[settle.D]
-    def convertedFeeLines: Vector[ConvertedFeeLine]
-    def feePnl: Quantity[settle.D]
-    def netPnl: Quantity[settle.D]
-
-  sealed trait Valuation extends JavaSerializationUnsupported:
-    def settlePerPosition(state: MarketState): Rate[position.D, settle.D]
-    def positionValue(value: PositionLots, state: MarketState): Quantity[settle.D]
-    def pricePnl(value: PositionLots, entry: MarketState, exit: MarketState): Quantity[settle.D]
-    def pnl(roundTrip: RoundTripScenario, feeSchedule: FeeSchedule): Either[EconomicsError, Pnl]
-
-  sealed trait Sizing extends JavaSerializationUnsupported:
-    def downsideRisk(pnl: Pnl): Quantity[settle.D]
-    def maxLots(
-      riskBudget: Quantity[settle.D],
-      cap: PositiveWhole,
-      feeSchedule: FeeSchedule
-    )(
-      scenarioFor: Lots => Either[EconomicsError, RoundTripScenario]
-    ): Either[EconomicsError, Option[Lots]]
 
   val prices: Prices
   val market: Market
@@ -324,969 +498,777 @@ sealed trait Instrument extends JavaSerializationUnsupported:
 
 end Instrument
 
-object Instrument {
+object Instrument:
 
-  // Trusted aggregate construction validates registry, grid, and payoff authority before the private implementation.
-  def create(
-    id: InstrumentId,
-    underlying: UnderlyingId,
-    base: AssetRef,
-    quote: AssetRef,
-    position: AssetRef,
-    settle: AssetRef
-  )(
-    positionGrid: RegisteredGridRef[? <: Dimension],
-    priceGrid: RegisteredGridRef[? <: Dimension],
-    basePerPosition: Rate[position.D, base.D],
-    quotePerPosition: Rate[position.D, quote.D]
-  ): Either[EconomicsError, Instrument] =
-    val roles = Vector("quote" -> quote, "position" -> position, "settle" -> settle)
+  /** Closed construction authority. It is never returned by the public aggregate. */
+  private[economics] final class OwnerAuthority[O] private[Instrument] (private val authority: JvmOwnerAuthority):
+    authority.assertIssued()
 
-    roles
-      .collectFirst:
-        case (role, candidate) if !base.dimension.sharesRegistryWith(candidate.dimension) =>
-          ForeignRegistry(role, base.dimension.key, candidate.dimension.key)
-      .map(Left(_))
-      .getOrElse:
-        if base.id == quote.id then
-          Left(ContradictoryInstrument(id, "base and quote assets must be distinct"))
-        else if !positionGrid.dimension.sharesRegistryWith(position.dimension) then
-          Left(ForeignRegistry("position grid", position.dimension.key, positionGrid.dimension.key))
-        else if positionGrid.dimension.key != position.dimension.key then
-          Left(
-            GridDimensionFailure(
-              "position grid",
-              positionGrid.key,
-              position.dimension.key,
-              positionGrid.dimension.key
-            )
-          )
-        else
-          val expectedPrice = DimRef.divide(quote.dimension.asDimensionRef, base.dimension.asDimensionRef).key
+    private[economics] def jvmGate: JvmOwnerAuthority = authority
+    private[economics] def assertIssued(): Unit       = authority.assertIssued()
 
-          if !priceGrid.dimension.sharesRegistryWith(base.dimension) then
-            Left(ForeignRegistry("price grid", expectedPrice, priceGrid.dimension.key))
-          else if priceGrid.dimension.key != expectedPrice then
-            Left(GridDimensionFailure("price grid", priceGrid.key, expectedPrice, priceGrid.dimension.key))
-          else if basePerPosition.coefficient.isZero && quotePerPosition.coefficient.isZero then
-            Left(EmptyContractPayoff(id))
-          else
-            Right(
-              new InstrumentImpl(
-                id,
-                underlying,
-                base,
-                quote,
-                position,
-                settle
-              )(
-                positionGrid,
-                priceGrid,
-                basePerPosition,
-                quotePerPosition
-              )
-            )
-          end if
-  end create
+    final def lots[D <: Dimension](
+      grid: RegisteredGridRef[D]
+    )(
+      payload: Positive[GridQuantity[D, grid.G]]
+    ): InstrumentLots[O, D] =
+      Instrument.makeLots(this, grid)(payload)
 
-  private final class InstrumentImpl(
-    val id: InstrumentId,
-    val underlying: UnderlyingId,
-    val base: AssetRef,
-    val quote: AssetRef,
-    val position: AssetRef,
-    val settle: AssetRef
-  )(
-    positionGridInput: RegisteredGridRef[? <: Dimension],
-    priceGridInput: RegisteredGridRef[? <: Dimension],
-    val basePerPosition: Rate[position.D, base.D],
-    val quotePerPosition: Rate[position.D, quote.D])
-    extends Instrument {
+    final def position[D <: Dimension](
+      grid: RegisteredGridRef[D]
+    )(
+      payload: GridQuantity[D, grid.G]
+    ): InstrumentPosition[O, D] =
+      Instrument.makePosition(this, grid)(payload)
 
-    val positionGrid = positionGridInput.asInstanceOf[RegisteredGridRef[position.D]]
-    val priceGrid    = priceGridInput.asInstanceOf[RegisteredGridRef[Divide[quote.D, base.D]]]
+    final def price[B <: Dimension, Q <: Dimension](
+      grid: RegisteredGridRef[Divide[Q, B]],
+      base: DimRef[B],
+      quote: DimRef[Q]
+    )(
+      payload: Positive[GridQuantity[Divide[Q, B], grid.G]]
+    ): InstrumentPrice[O, B, Q] =
+      Instrument.makePrice(this, grid, base, quote)(payload)
 
-    val positionGridKey: GridKey     = positionGrid.key
-    val priceGridKey: GridKey        = priceGrid.key
-    val positionLotQuantum: Rational = positionGrid.quantum.unrefined
-    val priceQuantum: Rational       = priceGrid.quantum.unrefined
+    final def conversion[S <: Dimension](
+      source: AssetRef,
+      target: AssetRef { type D = S },
+      coefficient: Rational
+    ): InstrumentSettlementConversion[O, S] =
+      Instrument.ownedConversion(this)(source, target, coefficient)
 
-    type Lots         = GridQuantity[position.D, positionGrid.G]
-    type PositionLots = GridQuantity[position.D, positionGrid.G]
-    type Price        = GridQuantity[Divide[quote.D, base.D], priceGrid.G]
+    final def marketState[B <: Dimension, Q <: Dimension, S <: Dimension](
+      price: InstrumentPrice[O, B, Q],
+      baseToSettle: Rate[B, S],
+      quoteToSettle: Rate[Q, S],
+      settleRef: DimRef[S],
+      conversions: Vector[(AssetRef, Rational)]
+    ): InstrumentMarketState[O, B, Q, S] =
+      Instrument.ownedMarketState(this, price, baseToSettle, quoteToSettle, settleRef, conversions)
 
-    def lots(count: BigInt): Either[EconomicsError, Lots] =
-      if count.signum <= 0 then Left(InvalidLots(count)) else Right(positionGrid.fromCoordinate(count))
+    final def immediate[P]: ImmediateActivation[O, P] = Instrument.immediate(this)
+    final def fixed[P](reference: PriceReference, comparison: TriggerComparison, price: P): FixedActivation[O, P] =
+      Instrument.fixed(this)(reference, comparison, price)
+    final def trailing[P](
+      reference: PriceReference,
+      comparison: TriggerComparison,
+      ticks: PositiveWhole
+    ): TrailingActivation[O, P] =
+      Instrument.trailing(this)(reference, comparison, ticks)
+    final def limitPricing[P](price: P): LimitPricing[O, P] = Instrument.limitPricing(this)(price)
+    final def peggedPricing[P](reference: PriceReference, offset: BigInt): PeggedPricing[O, P] =
+      Instrument.peggedPricing(this)(reference, offset)
+    final def displayed[L]: DisplayedVisibility[O, L]      = Instrument.displayed(this)
+    final def hidden[L]: HiddenVisibility[O, L]            = Instrument.hidden(this)
+    final def iceberg[L](lots: L): IcebergVisibility[O, L] = Instrument.iceberg(this)(lots)
+    final def marketExecution[L, P](tif: NonRestingTimeInForce): MarketExecution[O, L, P] =
+      Instrument.marketExecution(this)(tif)
+    final def pricedExecution[L, P](
+      pricing: OrderPricing[O, P],
+      tif: TimeInForce,
+      liquidity: LiquidityConstraint,
+      visibility: PricedVisibility[O, L]
+    ): PricedExecution[O, L, P] =
+      Instrument.pricedExecution(this)(pricing, tif, liquidity, visibility)
+    final def orderIntent[L](side: Side, lots: L, effect: PositionEffect): OrderIntent[O, L] =
+      Instrument.orderIntent(this)(side, lots, effect)
+    final def order[L, P](
+      intent: OrderIntent[O, L],
+      activation: OrderActivation[O, P],
+      execution: OrderExecution[O, L, P]
+    ): InstrumentOrder[O, L, P] =
+      Instrument.order(this)(intent, activation, execution)
 
-    def lotCount(value: Lots): BigInt = positionGrid.coordinate(value)
+    final def fixedEvidence[P](reference: PriceReference, observed: P): FixedTriggerEvidence[O, P] =
+      Instrument.fixedEvidence(this)(reference, observed)
+    final def trailingEvidence[P](
+      reference: PriceReference,
+      extreme: P,
+      observed: P
+    ): TrailingTriggerEvidence[O, P] =
+      Instrument.trailingEvidence(this)(reference, extreme, observed)
+    final def immediateAssumption[P]: ImmediateAssumption[O, P] = Instrument.immediateAssumption(this)
+    final def triggeredAssumption[P](evidence: TriggerEvidence[O, P]): TriggeredAssumption[O, P] =
+      Instrument.triggeredAssumption(this)(evidence)
+    final def pegResolution[P](reference: PriceReference, referencePrice: P, resolvedLimit: P): PegResolution[O, P] =
+      Instrument.pegResolution(this)(reference, referencePrice, resolvedLimit)
+    final def directPricing[P]: DirectPricingAssumption[O, P] = Instrument.directPricing(this)
+    final def resolvedPeg[P](resolution: PegResolution[O, P]): ResolvedPegAssumption[O, P] =
+      Instrument.resolvedPeg(this)(resolution)
+    final def liquiditySlice[L, M](lots: L, market: M, role: LiquidityRole): InstrumentLiquiditySlice[O, L, M] =
+      Instrument.liquiditySlice(this)(lots, market, role)
+    final def scenarioAssumptions[L, P, M](
+      activation: ActivationAssumption[O, P],
+      pricing: PricingAssumption[O, P],
+      slices: Vector[InstrumentLiquiditySlice[O, L, M]]
+    ): ScenarioAssumptions[O, L, P, M] =
+      Instrument.scenarioAssumptions(this)(activation, pricing, slices)
+    final def orderScenario[L, P, M, Pos](
+      order: InstrumentOrder[O, L, P],
+      assumptions: ScenarioAssumptions[O, L, P, M],
+      change: Pos
+    ): InstrumentOrderScenario[O, L, P, M, Pos] =
+      Instrument.orderScenario(this)(order, assumptions, change)
+    final def roundTrip[L, P, M, Pos](
+      entry: InstrumentOrderScenario[O, L, P, M, Pos],
+      exit: InstrumentOrderScenario[O, L, P, M, Pos],
+      held: Pos
+    ): InstrumentRoundTripScenario[O, L, P, M, Pos] =
+      Instrument.roundTrip(this)(entry, exit, held)
 
-    def lotsQuantity(value: Lots): Quantity[position.D] = positionGrid.asQuantity(value)
-
-    def positionLots(side: Side, value: Lots): PositionLots = positionGrid.fromCoordinate(side.sign * lotCount(value))
-
-    def positionLotCount(value: PositionLots): BigInt = positionGrid.coordinate(value)
-
-    def positionQuantity(value: PositionLots): Quantity[position.D] = positionGrid.asQuantity(value)
-
-    val flatPosition: PositionLots = positionGrid.fromCoordinate(0)
-
-    // Stable capability wiring. These values only namespace operations for this exact instrument path.
-    val prices: Prices = new Prices:
-      def exact(coefficient: Rational): Either[EconomicsError, Price] =
-        fromRate(Rate(base.dimension.asDimensionRef, quote.dimension.asDimensionRef, coefficient))
-
-      def fromRate(value: Rate[base.D, quote.D]): Either[EconomicsError, Price] = priceExactly(value)
-
-      def fromTicks(ticks: PositiveWhole): Price = priceGrid.fromCoordinate(ticks.unrefined)
-
-      def quantize(
-        coefficient: Rational,
-        policy: QuantizationPolicy
-      ): Either[EconomicsError, (Price, Quantity[Divide[quote.D, base.D]])] =
-        quantizeRate(Rate(base.dimension.asDimensionRef, quote.dimension.asDimensionRef, coefficient), policy)
-
-      def quantizeRate(
-        value: Rate[base.D, quote.D],
-        policy: QuantizationPolicy
-      ): Either[EconomicsError, (Price, Quantity[Divide[quote.D, base.D]])] = quantizePrice(value, policy)
-
-      def ticks(value: Price): BigInt = priceCoordinate(value)
-
-      def coefficient(value: Price): Rational = priceRate(value).coefficient
-
-      def rate(value: Price): Rate[base.D, quote.D] = priceRate(value)
-
-    val market: Market = new Market:
-      def quoteSettled(
-        price: Price,
-        additionalConversions: Vector[SettlementConversion]
-      ): Either[EconomicsError, MarketState] = marketStateForQuote(price, additionalConversions)
-
-      def baseSettled(
-        price: Price,
-        additionalConversions: Vector[SettlementConversion]
-      ): Either[EconomicsError, MarketState] = marketStateForBase(price, additionalConversions)
-
-      def fromQuoteAnchor(
-        price: Price,
-        quoteToSettle: Rational,
-        additionalConversions: Vector[SettlementConversion]
-      ): Either[EconomicsError, MarketState] =
-        fromQuoteRate(
-          price,
-          Rate(quote.dimension.asDimensionRef, settle.dimension.asDimensionRef, quoteToSettle),
-          additionalConversions
-        )
-
-      def fromBaseAnchor(
-        price: Price,
-        baseToSettle: Rational,
-        additionalConversions: Vector[SettlementConversion]
-      ): Either[EconomicsError, MarketState] =
-        fromBaseRate(
-          price,
-          Rate(base.dimension.asDimensionRef, settle.dimension.asDimensionRef, baseToSettle),
-          additionalConversions
-        )
-
-      def fromAnchors(
-        price: Price,
-        baseToSettle: Rational,
-        quoteToSettle: Rational,
-        additionalConversions: Vector[SettlementConversion]
-      ): Either[EconomicsError, MarketState] =
-        fromRates(
-          price,
-          Rate(base.dimension.asDimensionRef, settle.dimension.asDimensionRef, baseToSettle),
-          Rate(quote.dimension.asDimensionRef, settle.dimension.asDimensionRef, quoteToSettle),
-          additionalConversions
-        )
-
-      def fromQuoteRate(
-        price: Price,
-        quoteToSettle: Rate[quote.D, settle.D],
-        additionalConversions: Vector[SettlementConversion]
-      ): Either[EconomicsError, MarketState] =
-        marketStateFromQuote(price, quoteToSettle, additionalConversions)
-
-      def fromBaseRate(
-        price: Price,
-        baseToSettle: Rate[base.D, settle.D],
-        additionalConversions: Vector[SettlementConversion]
-      ): Either[EconomicsError, MarketState] =
-        marketStateFromBase(price, baseToSettle, additionalConversions)
-
-      def fromRates(
-        price: Price,
-        baseToSettle: Rate[base.D, settle.D],
-        quoteToSettle: Rate[quote.D, settle.D],
-        additionalConversions: Vector[SettlementConversion]
-      ): Either[EconomicsError, MarketState] =
-        marketStateChecked(price, baseToSettle, quoteToSettle, additionalConversions)
-
-      def convertToSettle(
-        source: AssetRef,
-        conversions: SettlementConversions
-      )(
-        value: Quantity[source.D]
-      ): Either[EconomicsError, Quantity[settle.D]] =
-        InstrumentImpl.this.convertToSettle(conversions, source)(value)
-
-    val orders: Orders = new Orders:
-      def notApplicableVisibility: Visibility                = InstrumentImpl.this.notApplicableVisibility
-      def displayedVisibility: Visibility                    = InstrumentImpl.this.displayedVisibility
-      def hiddenVisibility: Visibility                       = InstrumentImpl.this.hiddenVisibility
-      def icebergVisibility(displayedLots: Lots): Visibility = InstrumentImpl.this.icebergVisibility(displayedLots)
-      def immediateActivation: Activation                    = InstrumentImpl.this.immediateActivation
-      def fixedTrigger(reference: PriceReference, comparison: TriggerComparison, triggerPrice: Price): Activation =
-        InstrumentImpl.this.fixedTrigger(reference, comparison, triggerPrice)
-      def trailingTrigger(
-        reference: PriceReference,
-        comparison: TriggerComparison,
-        offsetTicks: BigInt
-      ): Either[EconomicsError, Activation] = InstrumentImpl.this.trailingTrigger(reference, comparison, offsetTicks)
-      def marketPriceInstruction: PriceInstruction              = InstrumentImpl.this.marketPriceInstruction
-      def limitPriceInstruction(limit: Price): PriceInstruction = InstrumentImpl.this.limitPriceInstruction(limit)
-      def peggedPriceInstruction(reference: PriceReference, offsetTicks: BigInt): PriceInstruction =
-        InstrumentImpl.this.peggedPriceInstruction(reference, offsetTicks)
-      def checked(
-        side: Side,
-        lots: Lots,
-        activation: Activation,
-        priceInstruction: PriceInstruction,
-        timeInForce: TimeInForce,
-        liquidityConstraint: LiquidityConstraint,
-        positionEffect: PositionEffect,
-        visibility: Visibility
-      ): Either[EconomicsError, Order] =
-        InstrumentImpl.this.order(
-          side,
-          lots,
-          activation,
-          priceInstruction,
-          timeInForce,
-          liquidityConstraint,
-          positionEffect,
-          visibility
-        )
-      def market(side: Side, lots: Lots, positionEffect: PositionEffect): Either[EconomicsError, Order] =
-        marketOrder(side, lots, positionEffect)
-      def limit(
-        side: Side,
-        lots: Lots,
-        limit: Price,
-        timeInForce: TimeInForce,
-        liquidityConstraint: LiquidityConstraint,
-        positionEffect: PositionEffect,
-        visibility: Visibility
-      ): Either[EconomicsError, Order] =
-        limitOrder(side, lots, limit, timeInForce, liquidityConstraint, positionEffect, visibility)
-      def stopMarket(
-        side: Side,
-        lots: Lots,
-        trigger: Activation,
-        positionEffect: PositionEffect
-      ): Either[EconomicsError, Order] = stopMarketOrder(side, lots, trigger, positionEffect)
-      def stopLimit(
-        side: Side,
-        lots: Lots,
-        trigger: Activation,
-        limit: Price,
-        timeInForce: TimeInForce,
-        liquidityConstraint: LiquidityConstraint,
-        positionEffect: PositionEffect,
-        visibility: Visibility
-      ): Either[EconomicsError, Order] =
-        stopLimitOrder(side, lots, trigger, limit, timeInForce, liquidityConstraint, positionEffect, visibility)
-
-    val scenarios: Scenarios = new Scenarios:
-      def fixedTriggerEvidence(reference: PriceReference, observedPrice: Price): ActivationEvidence =
-        InstrumentImpl.this.fixedTriggerEvidence(reference, observedPrice)
-      def trailingTriggerEvidence(
-        reference: PriceReference,
-        favorableExtreme: Price,
-        activatingObservation: Price
-      ): ActivationEvidence =
-        InstrumentImpl.this.trailingTriggerEvidence(reference, favorableExtreme, activatingObservation)
-      def pegResolution(reference: PriceReference, referencePrice: Price, resolvedLimit: Price): PegResolution =
-        InstrumentImpl.this.pegResolution(reference, referencePrice, resolvedLimit)
-      def slice(lots: Lots, market: MarketState, role: LiquidityRole): LiquiditySlice =
-        liquiditySlice(lots, market, role)
-      def order(
-        order: Order,
-        matchedSlices: Vector[LiquiditySlice],
-        activationEvidence: Option[ActivationEvidence],
-        pegResolution: Option[PegResolution]
-      ): Either[EconomicsError, OrderScenario] =
-        orderScenario(order, matchedSlices, activationEvidence, pegResolution)
-      def roundTrip(entry: OrderScenario, exit: OrderScenario): Either[EconomicsError, RoundTripScenario] =
-        InstrumentImpl.this.roundTrip(entry, exit)
-
-    val fees: Fees = new Fees:
-      def minimumCharge(
-        asset: AssetRef
-      )(
-        accountContribution: Quantity[asset.D],
-        nonnegativeMinimum: Quantity[asset.D]
-      ): Either[EconomicsError, Quantity[asset.D]] =
-        applyMinimumCharge(asset)(accountContribution, nonnegativeMinimum)
-      def quantize(
-        asset: AssetRef
-      )(
-        grid: RegisteredGridRef[? <: Dimension],
-        kind: FeeKind,
-        unrounded: Quantity[asset.D],
-        policy: QuantizationPolicy
-      ): Either[EconomicsError, Fee] = quantizeFee(asset)(grid, kind, unrounded, policy)
-      def percentage(
-        asset: AssetRef
-      )(
-        grid: RegisteredGridRef[? <: Dimension],
-        kind: FeeKind,
-        nonnegativeBasis: Quantity[asset.D],
-        rate: FeeRate,
-        policy: QuantizationPolicy
-      ): Either[EconomicsError, Fee] = percentageFee(asset)(grid, kind, nonnegativeBasis, rate, policy)
-      def line(scenario: OrderScenario, sourceSliceIndex: Int, fee: Fee): Either[EconomicsError, FeeLine] =
-        feeLine(scenario, sourceSliceIndex, fee)
-      def none: FeeSchedule                                             = noFees
-      def combine(componentSchedules: Vector[FeeSchedule]): FeeSchedule = combineFeeSchedules(componentSchedules)
-
-    val valuation: Valuation = new Valuation:
-      def settlePerPosition(state: MarketState): Rate[position.D, settle.D]          = settleValuePerPosition(state)
-      def positionValue(value: PositionLots, state: MarketState): Quantity[settle.D] =
-        InstrumentImpl.this.positionValue(value, state)
-      def pricePnl(value: PositionLots, entry: MarketState, exit: MarketState): Quantity[settle.D] =
-        InstrumentImpl.this.pricePnl(value, entry, exit)
-      def pnl(roundTrip: RoundTripScenario, feeSchedule: FeeSchedule): Either[EconomicsError, Pnl] =
-        calculatePnl(roundTrip, feeSchedule)
-
-    val sizing: Sizing = new Sizing:
-      def downsideRisk(pnl: Pnl): Quantity[settle.D] = InstrumentImpl.this.downsideRisk(pnl)
-      def maxLots(
-        riskBudget: Quantity[settle.D],
-        cap: PositiveWhole,
-        feeSchedule: FeeSchedule
-      )(
-        scenarioFor: Lots => Either[EconomicsError,
-          RoundTripScenario]
-      ): Either[EconomicsError, Option[Lots]] = sizePosition(riskBudget, cap, feeSchedule)(scenarioFor)
-
-    // Trusted path-owned construction and witness-backed implementation remain private to this compilation unit.
-
-    def price(coordinate: BigInt): Either[EconomicsError, Price] =
-      InstrumentPrices.fromCoordinate(coordinate)(priceGrid.fromCoordinate)
-
-    def priceExactly(value: Rate[base.D, quote.D]): Either[EconomicsError, Price] =
-      InstrumentPrices.exact(() => value.narrowExactlyTo(priceGrid.asGridRef))(priceGrid.coordinate)
-
-    def quantizePrice(
-      value: Rate[base.D, quote.D],
+    final def feeDenomination[DD <: Dimension](
+      asset: AssetRef { type D = DD },
+      grid: RegisteredGridRef[DD],
       policy: QuantizationPolicy
-    ): Either[EconomicsError, (Price, Quantity[Divide[quote.D, base.D]])] =
-      InstrumentPrices.quantized(policy)(selectedPolicy =>
-        val result = value.quantizeTo(priceGrid.asGridRef, selectedPolicy)
-        result.value -> result.residual
-      )(priceGrid.coordinate)
+    ): InstrumentFeeDenomination[O] { type D = DD } =
+      Instrument.feeDenomination(this)(asset, grid, policy)
+    final def fee[DD <: Dimension](
+      denomination: InstrumentFeeDenomination[O],
+      asset: AssetRef { type D = DD },
+      kind: FeeKind,
+      coordinate: BigInt,
+      amount: Quantity[DD],
+      residual: Quantity[DD],
+      unrounded: Quantity[DD]
+    ): InstrumentFee[O] =
+      Instrument.makeFee(this, denomination, asset, kind, coordinate, amount, residual, unrounded)
+    final def feeLine[M](
+      scenario: AnyRef,
+      fee: InstrumentFee[O],
+      index: Int,
+      market: M
+    ): InstrumentFeeLine[O, M] =
+      Instrument.feeLine(this)(scenario, fee, index, market)
+    final def feeLineScenario(line: InstrumentFeeLine[?, ?]): AnyRef = Instrument.feeLineScenario(line)
+    final def convertedFeeLine[S <: Dimension](
+      fee: InstrumentFee[O],
+      leg: ScenarioLeg,
+      index: Int,
+      contribution: Quantity[S]
+    ): InstrumentConvertedFeeLine[O, S] =
+      Instrument.convertedFeeLine(this)(fee, leg, index, contribution)
+    final def pnl[S <: Dimension](
+      price: Quantity[S],
+      lines: Vector[InstrumentConvertedFeeLine[O, S]],
+      fees: Quantity[S],
+      net: Quantity[S]
+    ): InstrumentPnl[O, S] =
+      Instrument.pnl(this)(price, lines, fees, net)
+  end OwnerAuthority
+  private final class LotsImpl[O, DD <: Dimension, GG](
+    authority: OwnerAuthority[O],
+    private val payload: Positive[GridQuantity[DD, GG]],
+    grid: RegisteredGridRef[DD] { type G = GG })
+    extends InstrumentLots[O, DD](authority.jvmGate):
+    val count: PositiveWhole   = PositiveWhole(grid.coordinate(payload.unrefined)).toOption.get
+    val quantity: Quantity[DD] = grid.asQuantity(payload.unrefined)
 
-    def priceObservation(value: Price): InstrumentPrices.Observation =
-      InstrumentPrices.observe(value)(priceGrid.coordinate)(selected => priceGrid.asQuantity(selected).coefficient)
+  private final class PositionImpl[O, DD <: Dimension, GG](
+    authority: OwnerAuthority[O],
+    private val payload: GridQuantity[DD, GG],
+    grid: RegisteredGridRef[DD] { type G = GG })
+    extends InstrumentPosition[O, DD](authority.jvmGate):
+    val count: BigInt          = grid.coordinate(payload)
+    val quantity: Quantity[DD] = grid.asQuantity(payload)
 
-    def priceCoordinate(value: Price): BigInt = priceObservation(value).coordinate
+  private final class PriceImpl[O, B <: Dimension, Q <: Dimension, GG](
+    authority: OwnerAuthority[O],
+    private val payload: Positive[GridQuantity[Divide[Q, B], GG]],
+    grid: RegisteredGridRef[Divide[Q, B]] { type G = GG },
+    base: DimRef[B],
+    quote: DimRef[Q])
+    extends InstrumentPrice[O, B, Q](authority.jvmGate):
+    val ticks: PositiveWhole  = PositiveWhole(grid.coordinate(payload.unrefined)).toOption.get
+    val coefficient: Rational = grid.asQuantity(payload.unrefined).coefficient
+    val rate: Rate[B, Q]      = Rate(base, quote, coefficient)
 
-    def priceRate(value: Price): Rate[base.D, quote.D] =
-      Rate(base.dimension.asDimensionRef, quote.dimension.asDimensionRef, priceObservation(value).coefficient)
+  private final class ConversionImpl[O, S <: Dimension](
+    authority: OwnerAuthority[O],
+    val source: AssetRef,
+    val target: AssetRef { type D = S },
+    val coefficient: Rational)
+    extends InstrumentSettlementConversion[O, S](authority.jvmGate)
 
-    private final class SettlementConversionsImpl(private val values: Vector[InstrumentMarket.ConversionPlan])
-      extends SettlementConversions:
-      val sources: Vector[AssetId]                            = values.map(_.source.id)
-      val byId: Map[AssetId, InstrumentMarket.ConversionPlan] = values.map(value => value.source.id -> value).toMap
+  private final class MarketStateImpl[O, B <: Dimension, Q <: Dimension, S <: Dimension](
+    authority: OwnerAuthority[O],
+    val price: InstrumentPrice[O, B, Q],
+    val baseToSettle: Rate[B, S],
+    val quoteToSettle: Rate[Q, S],
+    settleRef: DimRef[S],
+    conversions: Vector[(AssetRef, Rational)])
+    extends InstrumentMarketState[O, B, Q, S](authority.jvmGate):
+    private val byId                       = conversions.map(value => value._1.id -> value).toMap
+    val conversionSources: Vector[AssetId] = conversions.map(_._1.id)
+    def convertToSettle(source: AssetRef)(value: Quantity[source.D]): Either[EconomicsError, Quantity[S]] =
+      byId.get(source.id) match
+        case None => Left(MissingConversion(source.id, None, None))
+        case Some((registered, _))
+          if registered.dimension.key != source.dimension.key ||
+            !registered.dimension.sharesRegistryWith(source.dimension) =>
+          Left(ForeignRegistry("conversion lookup", registered.dimension.key, source.dimension.key))
+        case Some((_, coefficient)) => Right(Quantity(settleRef, value.coefficient * coefficient))
 
-    private final class MarketStateImpl(val price: Price, val conversions: SettlementConversions) extends MarketState
+  private final class ImmediateActivationImpl[O, P](authority: OwnerAuthority[O])
+    extends ImmediateActivation[O, P](authority.jvmGate)
+  private final class FixedActivationImpl[O, P](
+    authority: OwnerAuthority[O],
+    val reference: PriceReference,
+    val comparison: TriggerComparison,
+    val triggerPrice: P)
+    extends FixedActivation[O, P](authority.jvmGate)
+  private final class TrailingActivationImpl[O, P](
+    authority: OwnerAuthority[O],
+    val reference: PriceReference,
+    val comparison: TriggerComparison,
+    val offsetTicks: PositiveWhole)
+    extends TrailingActivation[O, P](authority.jvmGate)
+  private final class LimitPricingImpl[O, P](authority: OwnerAuthority[O], val limit: P)
+    extends LimitPricing[O, P](authority.jvmGate)
+  private final class PeggedPricingImpl[O, P](
+    authority: OwnerAuthority[O],
+    val reference: PriceReference,
+    val offsetTicks: BigInt)
+    extends PeggedPricing[O, P](authority.jvmGate)
+  private final class DisplayedVisibilityImpl[O, L](authority: OwnerAuthority[O])
+    extends DisplayedVisibility[O, L](authority.jvmGate)
+  private final class HiddenVisibilityImpl[O, L](authority: OwnerAuthority[O])
+    extends HiddenVisibility[O, L](authority.jvmGate)
+  private final class IcebergVisibilityImpl[O, L](authority: OwnerAuthority[O], val displayedLots: L)
+    extends IcebergVisibility[O, L](authority.jvmGate)
+  private final class MarketExecutionImpl[O, L, P](authority: OwnerAuthority[O], val timeInForce: NonRestingTimeInForce)
+    extends MarketExecution[O, L, P](authority.jvmGate)
+  private final class PricedExecutionImpl[O, L, P](
+    authority: OwnerAuthority[O],
+    val pricing: OrderPricing[O, P],
+    val timeInForce: TimeInForce,
+    val liquidityConstraint: LiquidityConstraint,
+    val visibility: PricedVisibility[O, L])
+    extends PricedExecution[O, L, P](authority.jvmGate)
+  private final class OrderIntentImpl[O, L](
+    authority: OwnerAuthority[O],
+    val side: Side,
+    val lots: L,
+    val positionEffect: PositionEffect)
+    extends OrderIntent[O, L](authority.jvmGate)
+  private final class OrderImpl[O, L, P](
+    authority: OwnerAuthority[O],
+    val intent: OrderIntent[O, L],
+    val activation: OrderActivation[O, P],
+    val execution: OrderExecution[O, L, P])
+    extends InstrumentOrder[O, L, P](authority.jvmGate)
 
-    private def marketState(price: Price, plan: InstrumentMarket.StatePlan): MarketState =
-      new MarketStateImpl(price, new SettlementConversionsImpl(plan.conversions))
+  private final class FixedEvidenceImpl[O, P](
+    authority: OwnerAuthority[O],
+    val reference: PriceReference,
+    val observedPrice: P)
+    extends FixedTriggerEvidence[O, P](authority.jvmGate)
+  private final class TrailingEvidenceImpl[O, P](
+    authority: OwnerAuthority[O],
+    val reference: PriceReference,
+    val favorableExtreme: P,
+    val observedPrice: P)
+    extends TrailingTriggerEvidence[O, P](authority.jvmGate)
+  private final class ImmediateAssumptionImpl[O, P](authority: OwnerAuthority[O])
+    extends ImmediateAssumption[O, P](authority.jvmGate)
+  private final class TriggeredAssumptionImpl[O, P](authority: OwnerAuthority[O], val evidence: TriggerEvidence[O, P])
+    extends TriggeredAssumption[O, P](authority.jvmGate)
+  private final class PegResolutionImpl[O, P](
+    authority: OwnerAuthority[O],
+    val reference: PriceReference,
+    val referencePrice: P,
+    val resolvedLimit: P)
+    extends PegResolution[O, P](authority.jvmGate)
+  private final class DirectPricingImpl[O, P](authority: OwnerAuthority[O])
+    extends DirectPricingAssumption[O, P](authority.jvmGate)
+  private final class ResolvedPegImpl[O, P](authority: OwnerAuthority[O], val resolution: PegResolution[O, P])
+    extends ResolvedPegAssumption[O, P](authority.jvmGate)
+  private final class LiquiditySliceImpl[O, L, M](
+    authority: OwnerAuthority[O],
+    val lots: L,
+    val market: M,
+    val role: LiquidityRole)
+    extends InstrumentLiquiditySlice[O, L, M](authority.jvmGate)
+  private final class ScenarioAssumptionsImpl[O, L, P, M](
+    authority: OwnerAuthority[O],
+    val activation: ActivationAssumption[O, P],
+    val pricing: PricingAssumption[O, P],
+    val matchedSlices: Vector[InstrumentLiquiditySlice[O, L, M]])
+    extends ScenarioAssumptions[O, L, P, M](authority.jvmGate)
+  private final class OrderScenarioImpl[O, L, P, M, Pos](
+    authority: OwnerAuthority[O],
+    val order: InstrumentOrder[O, L, P],
+    val assumptions: ScenarioAssumptions[O, L, P, M],
+    val positionChange: Pos)
+    extends InstrumentOrderScenario[O, L, P, M, Pos](authority.jvmGate)
+  private final class RoundTripImpl[O, L, P, M, Pos](
+    authority: OwnerAuthority[O],
+    val entry: InstrumentOrderScenario[O, L, P, M, Pos],
+    val exit: InstrumentOrderScenario[O, L, P, M, Pos],
+    val heldPosition: Pos)
+    extends InstrumentRoundTripScenario[O, L, P, M, Pos](authority.jvmGate)
 
-    def marketStateForQuote(
-      price: Price,
-      additional: Vector[SettlementConversion]
-    ): Either[EconomicsError, MarketState] =
-      InstrumentMarket
-        .quoteSettled(base, quote, settle, priceObservation(price).coefficient, additional)
-        .map(marketState(price, _))
-
-    def marketStateForBase(
-      price: Price,
-      additional: Vector[SettlementConversion]
-    ): Either[EconomicsError, MarketState] =
-      val observation = priceObservation(price)
-      InstrumentMarket
-        .baseSettled(base, quote, settle, observation.coefficient, observation.coordinate, additional)
-        .map(marketState(price, _))
-
-    def marketStateFromQuote(
-      price: Price,
-      quoteToSettle: Rate[quote.D, settle.D],
-      additional: Vector[SettlementConversion]
-    ): Either[EconomicsError, MarketState] =
-      InstrumentMarket
-        .fromQuote(base, quote, settle, priceObservation(price).coefficient, quoteToSettle.coefficient, additional)
-        .map(marketState(price, _))
-
-    def marketStateFromBase(
-      price: Price,
-      baseToSettle: Rate[base.D, settle.D],
-      additional: Vector[SettlementConversion]
-    ): Either[EconomicsError, MarketState] =
-      val observation = priceObservation(price)
-      InstrumentMarket
-        .fromBase(
-          base,
-          quote,
-          settle,
-          observation.coefficient,
-          observation.coordinate,
-          baseToSettle.coefficient,
-          additional
-        )
-        .map(marketState(price, _))
-
-    def marketStateChecked(
-      price: Price,
-      baseToSettle: Rate[base.D, settle.D],
-      quoteToSettle: Rate[quote.D, settle.D],
-      additional: Vector[SettlementConversion]
-    ): Either[EconomicsError, MarketState] =
-      InstrumentMarket
-        .checked(
-          base,
-          quote,
-          settle,
-          priceObservation(price).coefficient,
-          baseToSettle.coefficient,
-          quoteToSettle.coefficient,
-          additional
-        )
-        .map(marketState(price, _))
-    end marketStateChecked
-
-    def convertToSettle(
-      conversions: SettlementConversions,
-      source: AssetRef
-    )(
-      value: Quantity[source.D]
-    ): Either[EconomicsError, Quantity[settle.D]] =
-      val stored = conversions.asInstanceOf[SettlementConversionsImpl].byId
-      InstrumentMarket
-        .lookup(source, stored)
-        .map(coefficient => Quantity(settle.dimension.asDimensionRef, value.coefficient * coefficient))
-
-    def settleValuePerPosition(state: MarketState): Rate[position.D, settle.D] =
-      val conversions = state.conversions.asInstanceOf[SettlementConversionsImpl]
-      val baseRate    = conversions.byId(base.id).coefficient
-      val quoteRate   = conversions.byId(quote.id).coefficient
-      val coefficient = InstrumentValuation.settlePerPosition(
-        basePerPosition.coefficient,
-        baseRate,
-        quotePerPosition.coefficient,
-        quoteRate
-      )
-      Rate(position.dimension.asDimensionRef, settle.dimension.asDimensionRef, coefficient)
-
-    def positionValue(value: PositionLots, state: MarketState): Quantity[settle.D] =
-      Quantity(
-        settle.dimension.asDimensionRef,
-        InstrumentValuation.positionValue(
-          positionQuantity(value).coefficient,
-          settleValuePerPosition(state).coefficient
-        )
-      )
-
-    def pricePnl(value: PositionLots, entry: MarketState, exit: MarketState): Quantity[settle.D] =
-      Quantity(
-        settle.dimension.asDimensionRef,
-        InstrumentValuation.pricePnl(
-          positionQuantity(value).coefficient,
-          settleValuePerPosition(entry).coefficient,
-          settleValuePerPosition(exit).coefficient
-        )
-      )
-
-    private final class VisibilityImpl(val kind: VisibilityKind, val displayedLots: Option[Lots]) extends Visibility
-
-    private def visibility(plan: InstrumentOrders.VisibilityPlan[Lots]): Visibility =
-      new VisibilityImpl(plan.kind, plan.displayedLots)
-
-    val notApplicableVisibility: Visibility = visibility(InstrumentOrders.visibility(VisibilityKind.NotApplicable))
-    val displayedVisibility: Visibility     = visibility(InstrumentOrders.visibility(VisibilityKind.Displayed))
-    val hiddenVisibility: Visibility        = visibility(InstrumentOrders.visibility(VisibilityKind.Hidden))
-
-    def icebergVisibility(displayedLots: Lots): Visibility =
-      visibility(InstrumentOrders.visibility(VisibilityKind.Iceberg, Some(displayedLots)))
-
-    private final class ActivationImpl(
-      val kind: ActivationKind,
-      val reference: Option[PriceReference],
-      val comparison: Option[TriggerComparison],
-      val triggerPrice: Option[Price],
-      val trailingOffsetTicks: Option[BigInt])
-      extends Activation
-
-    val immediateActivation: Activation =
-      val plan = InstrumentOrders.immediate[Price]
-      new ActivationImpl(plan.kind, plan.reference, plan.comparison, plan.triggerPrice, plan.trailingOffsetTicks)
-
-    def fixedTrigger(
-      reference: PriceReference,
-      comparison: TriggerComparison,
-      triggerPrice: Price
-    ): Activation =
-      val plan = InstrumentOrders.fixedTrigger(reference, comparison, triggerPrice)
-      new ActivationImpl(plan.kind, plan.reference, plan.comparison, plan.triggerPrice, plan.trailingOffsetTicks)
-
-    def trailingTrigger(
-      reference: PriceReference,
-      comparison: TriggerComparison,
-      offsetTicks: BigInt
-    ): Either[EconomicsError, Activation] =
-      InstrumentOrders.trailingTrigger[Price](reference, comparison, offsetTicks).map: plan =>
-        new ActivationImpl(plan.kind, plan.reference, plan.comparison, plan.triggerPrice, plan.trailingOffsetTicks)
-
-    private final class PriceInstructionImpl(
-      val kind: PriceInstructionKind,
-      val limit: Option[Price],
-      val reference: Option[PriceReference],
-      val offsetTicks: Option[BigInt])
-      extends PriceInstruction
-
-    val marketPriceInstruction: PriceInstruction =
-      val plan = InstrumentOrders.marketInstruction[Price]
-      new PriceInstructionImpl(plan.kind, plan.limit, plan.reference, plan.offsetTicks)
-
-    def limitPriceInstruction(limit: Price): PriceInstruction =
-      val plan = InstrumentOrders.limitInstruction(limit)
-      new PriceInstructionImpl(plan.kind, plan.limit, plan.reference, plan.offsetTicks)
-
-    def peggedPriceInstruction(reference: PriceReference, offsetTicks: BigInt): PriceInstruction =
-      val plan = InstrumentOrders.peggedInstruction[Price](reference, offsetTicks)
-      new PriceInstructionImpl(plan.kind, plan.limit, plan.reference, plan.offsetTicks)
-
-    private final class OrderImpl(
-      val side: Side,
-      val lots: Lots,
-      val activation: Activation,
-      val priceInstruction: PriceInstruction,
-      val timeInForce: TimeInForce,
-      val liquidityConstraint: LiquidityConstraint,
-      val positionEffect: PositionEffect,
-      val visibility: Visibility)
-      extends Order
-
-    private def constructOrder(
-      plan: InstrumentOrders.OrderPlan[Lots, Activation, PriceInstruction, Visibility]
-    ): Order =
-      new OrderImpl(
-        plan.side,
-        plan.lots,
-        plan.activation,
-        plan.priceInstruction,
-        plan.timeInForce,
-        plan.liquidityConstraint,
-        plan.positionEffect,
-        plan.visibility
-      )
-
-    def order(
-      side: Side,
-      lots: Lots,
-      activation: Activation,
-      priceInstruction: PriceInstruction,
-      timeInForce: TimeInForce,
-      liquidityConstraint: LiquidityConstraint,
-      positionEffect: PositionEffect,
-      visibility: Visibility
-    ): Either[EconomicsError, Order] =
-      InstrumentOrders
-        .checked(
-          side,
-          lots,
-          activation,
-          priceInstruction,
-          priceInstruction.kind == PriceInstructionKind.Market,
-          timeInForce,
-          liquidityConstraint,
-          positionEffect,
-          visibility,
-          visibility.kind,
-          visibility.displayedLots.map(lotCount),
-          lotCount(lots)
-        )
-        .map(constructOrder)
-    end order
-
-    def marketOrder(
-      side: Side,
-      lots: Lots,
-      positionEffect: PositionEffect
-    ): Either[EconomicsError, Order] =
-      InstrumentOrders
-        .market(
-          side,
-          lots,
-          positionEffect,
-          immediateActivation,
-          marketPriceInstruction,
-          notApplicableVisibility,
-          lotCount(lots)
-        )
-        .map(constructOrder)
-
-    def limitOrder(
-      side: Side,
-      lots: Lots,
-      limit: Price,
-      timeInForce: TimeInForce,
-      liquidityConstraint: LiquidityConstraint,
-      positionEffect: PositionEffect,
-      visibility: Visibility
-    ): Either[EconomicsError, Order] =
-      InstrumentOrders
-        .limit(
-          side,
-          lots,
-          limitPriceInstruction(limit),
-          timeInForce,
-          liquidityConstraint,
-          positionEffect,
-          visibility,
-          visibility.kind,
-          visibility.displayedLots.map(lotCount),
-          lotCount(lots),
-          immediateActivation
-        )
-        .map(constructOrder)
-
-    def stopMarketOrder(
-      side: Side,
-      lots: Lots,
-      trigger: Activation,
-      positionEffect: PositionEffect
-    ): Either[EconomicsError, Order] =
-      InstrumentOrders
-        .stopMarket(
-          side,
-          lots,
-          trigger,
-          trigger.kind,
-          positionEffect,
-          marketPriceInstruction,
-          notApplicableVisibility,
-          lotCount(lots)
-        )
-        .map(constructOrder)
-
-    def stopLimitOrder(
-      side: Side,
-      lots: Lots,
-      trigger: Activation,
-      limit: Price,
-      timeInForce: TimeInForce,
-      liquidityConstraint: LiquidityConstraint,
-      positionEffect: PositionEffect,
-      visibility: Visibility
-    ): Either[EconomicsError, Order] =
-      InstrumentOrders
-        .stopLimit(
-          side,
-          lots,
-          trigger,
-          trigger.kind,
-          limitPriceInstruction(limit),
-          timeInForce,
-          liquidityConstraint,
-          positionEffect,
-          visibility,
-          visibility.kind,
-          visibility.displayedLots.map(lotCount),
-          lotCount(lots)
-        )
-        .map(constructOrder)
-
-    private final class ActivationEvidenceImpl(
-      val reference: PriceReference,
-      val observedPrice: Price,
-      val favorableExtreme: Option[Price])
-      extends ActivationEvidence
-
-    def fixedTriggerEvidence(reference: PriceReference, observedPrice: Price): ActivationEvidence =
-      val plan = InstrumentScenarios.fixedEvidence(reference, observedPrice)
-      new ActivationEvidenceImpl(plan.reference, plan.observedPrice, plan.favorableExtreme)
-
-    def trailingTriggerEvidence(
-      reference: PriceReference,
-      favorableExtreme: Price,
-      activatingObservation: Price
-    ): ActivationEvidence =
-      val plan = InstrumentScenarios.trailingEvidence(reference, favorableExtreme, activatingObservation)
-      new ActivationEvidenceImpl(plan.reference, plan.observedPrice, plan.favorableExtreme)
-
-    private final class PegResolutionImpl(
-      val reference: PriceReference,
-      val referencePrice: Price,
-      val resolvedLimit: Price)
-      extends PegResolution
-
-    def pegResolution(reference: PriceReference, referencePrice: Price, resolvedLimit: Price): PegResolution =
-      val plan = InstrumentScenarios.pegResolution(reference, referencePrice, resolvedLimit)
-      new PegResolutionImpl(plan.reference, plan.referencePrice, plan.resolvedLimit)
-
-    private final class LiquiditySliceImpl(val lots: Lots, val market: MarketState, val role: LiquidityRole)
-      extends LiquiditySlice
-
-    def liquiditySlice(lots: Lots, market: MarketState, role: LiquidityRole): LiquiditySlice =
-      val plan = InstrumentScenarios.slice(lots, market, role)
-      new LiquiditySliceImpl(plan.lots, plan.market, plan.role)
-
-    private final class OrderScenarioImpl(
-      val order: Order,
-      val activationEvidence: Option[ActivationEvidence],
-      val pegResolution: Option[PegResolution],
-      val slices: Vector[LiquiditySlice],
-      val positionChange: PositionLots)
-      extends OrderScenario
-
-    def orderScenario(
-      order: Order,
-      slices: Vector[LiquiditySlice],
-      activationEvidence: Option[ActivationEvidence],
-      pegResolution: Option[PegResolution]
-    ): Either[EconomicsError, OrderScenario] =
-      val activation  = order.activation
-      val instruction = order.priceInstruction
-      val orderView   = InstrumentScenarios.OrderView(
-        order.side,
-        lotCount(order.lots),
-        InstrumentScenarios.ActivationView(
-          activation.kind,
-          activation.reference,
-          activation.comparison,
-          activation.triggerPrice.map(priceCoordinate),
-          activation.trailingOffsetTicks
-        ),
-        InstrumentScenarios.InstructionView(
-          instruction.kind,
-          instruction.limit.map(priceCoordinate),
-          instruction.reference,
-          instruction.offsetTicks
-        ),
-        order.liquidityConstraint
-      )
-      val sliceViews = slices.map: slice =>
-        InstrumentScenarios.SliceView(lotCount(slice.lots), priceCoordinate(slice.market.price), slice.role)
-      val evidenceView = activationEvidence.map: evidence =>
-        InstrumentScenarios.EvidenceView(
-          evidence.reference,
-          priceCoordinate(evidence.observedPrice),
-          evidence.favorableExtreme.map(priceCoordinate)
-        )
-      val pegView = pegResolution.map: peg =>
-        InstrumentScenarios.PegView(
-          peg.reference,
-          priceCoordinate(peg.referencePrice),
-          priceCoordinate(peg.resolvedLimit)
-        )
-
-      InstrumentScenarios.order(orderView, sliceViews, evidenceView, pegView).map: positionCoordinate =>
-        new OrderScenarioImpl(
-          order,
-          activationEvidence,
-          pegResolution,
-          slices,
-          positionGrid.fromCoordinate(positionCoordinate)
-        )
-    end orderScenario
-
-    private final class RoundTripScenarioImpl(
-      val entry: OrderScenario,
-      val exit: OrderScenario,
-      val heldPosition: PositionLots)
-      extends RoundTripScenario
-
-    def roundTrip(entry: OrderScenario, exit: OrderScenario): Either[EconomicsError, RoundTripScenario] =
-      val entryCount = positionLotCount(entry.positionChange)
-      val exitCount  = positionLotCount(exit.positionChange)
-      InstrumentScenarios
-        .roundTrip(entryCount, exitCount)
-        .map(_ => new RoundTripScenarioImpl(entry, exit, entry.positionChange))
-
-    private final class FeeImpl(
-      val asset: AssetRef,
-      val kind: FeeKind,
-      val gridKey: GridKey,
-      val gridQuantum: Rational,
-      val coordinate: BigInt
-    )(
-      val amount: Quantity[asset.D],
-      val residual: Quantity[asset.D],
-      val unrounded: Quantity[asset.D])
-      extends Fee
-
-    def applyMinimumCharge(
-      asset: AssetRef
-    )(
-      accountContribution: Quantity[asset.D],
-      nonnegativeMinimum: Quantity[asset.D]
-    ): Either[EconomicsError, Quantity[asset.D]] =
+  private final class FeeDenominationImpl[O, DD <: Dimension, GG](
+    val asset: AssetRef { type D = DD },
+    grid: RegisteredGridRef[DD] { type G = GG },
+    val policy: QuantizationPolicy,
+    authority: OwnerAuthority[O])
+    extends InstrumentFeeDenomination[O](authority.jvmGate):
+    type D = DD
+    val gridKey: GridKey      = grid.key
+    val gridQuantum: Rational = grid.quantum.unrefined
+    def minimumCharge(
+      accountContribution: Quantity[DD],
+      nonnegativeMinimum: Quantity[DD]
+    ): Either[EconomicsError, Quantity[DD]] =
       InstrumentFees
         .minimumCharge(accountContribution.coefficient, nonnegativeMinimum.coefficient)
         .left
         .map(coefficient => InvalidFeeBasis(asset.id, coefficient))
         .map(coefficient => Quantity(asset.dimension.asDimensionRef, coefficient))
-
-    def quantizeFee(
-      asset: AssetRef
-    )(
-      grid: RegisteredGridRef[? <: Dimension],
+    def quantize(kind: FeeKind, unrounded: Quantity[DD]): InstrumentFee[O] =
+      val result = unrounded.quantizeTo(grid.asGridRef, policy)
+      authority.fee(
+        this,
+        asset,
+        kind,
+        grid.coordinate(result.value),
+        grid.asQuantity(result.value),
+        result.residual,
+        unrounded
+      )
+    def percentage(
       kind: FeeKind,
-      unrounded: Quantity[asset.D],
-      policy: QuantizationPolicy
-    ): Either[EconomicsError, Fee] =
-      InstrumentFees
-        .validateQuantization(
-          asset.id,
-          settle.dimension.key,
-          asset.dimension.key,
-          asset.dimension.sharesRegistryWith(settle.dimension),
-          grid.key,
-          grid.dimension.key,
-          grid.dimension.sharesRegistryWith(asset.dimension)
-        )
-        .map: _ =>
-          val typedGrid = grid.asInstanceOf[RegisteredGridRef[asset.D]]
-          val result    = unrounded.quantizeTo(typedGrid.asGridRef, policy)
-          new FeeImpl(
-            asset,
-            kind,
-            typedGrid.key,
-            typedGrid.quantum.unrefined,
-            typedGrid.coordinate(result.value)
-          )(
-            typedGrid.asQuantity(result.value),
-            result.residual,
-            unrounded
-          )
-
-    def percentageFee(
-      asset: AssetRef
-    )(
-      grid: RegisteredGridRef[? <: Dimension],
-      kind: FeeKind,
-      nonnegativeBasis: Quantity[asset.D],
-      rate: FeeRate,
-      policy: QuantizationPolicy
-    ): Either[EconomicsError, Fee] =
+      nonnegativeBasis: Quantity[DD],
+      rate: FeeRate
+    ): Either[EconomicsError, InstrumentFee[O]] =
       InstrumentFees
         .percentageContribution(nonnegativeBasis.coefficient, rate.coefficient)
         .left
         .map(coefficient => InvalidFeeBasis(asset.id, coefficient))
-        .flatMap: coefficient =>
-          val accountContribution = Quantity(asset.dimension.asDimensionRef, coefficient)
-          quantizeFee(asset)(grid, kind, accountContribution, policy)
+        .map(coefficient => quantize(kind, Quantity(asset.dimension.asDimensionRef, coefficient)))
+  end FeeDenominationImpl
 
-    private final class FeeLineImpl(
-      val scenario: OrderScenario,
-      val fee: Fee,
-      val sourceSliceIndex: Int,
-      val sourceMarket: MarketState)
-      extends FeeLine
+  private final class FeeImpl[O](
+    authority: OwnerAuthority[O],
+    val denomination: InstrumentFeeDenomination[O],
+    val kind: FeeKind,
+    val coordinate: BigInt
+  )(
+    val asset: AssetRef
+  )(
+    val amount: Quantity[asset.D],
+    val residual: Quantity[asset.D],
+    val unrounded: Quantity[asset.D])
+    extends InstrumentFee[O](authority.jvmGate)
 
-    def feeLine(scenario: OrderScenario, sourceSliceIndex: Int, fee: Fee): Either[EconomicsError, FeeLine] =
-      InstrumentFees.validateAttribution(sourceSliceIndex, scenario.slices.size).map: index =>
-        new FeeLineImpl(scenario, fee, index, scenario.slices(index).market)
+  private final class FeeLineImpl[O, M](
+    authority: OwnerAuthority[O],
+    private[economics] val scenarioIdentity: AnyRef,
+    val fee: InstrumentFee[O],
+    val sourceSliceIndex: Int,
+    val sourceMarket: M)
+    extends InstrumentFeeLine[O, M](authority.jvmGate)
+  private final class ConvertedFeeLineImpl[O, S <: Dimension](
+    authority: OwnerAuthority[O],
+    val original: InstrumentFee[O],
+    val leg: ScenarioLeg,
+    val sourceSliceIndex: Int,
+    val settleContribution: Quantity[S])
+    extends InstrumentConvertedFeeLine[O, S](authority.jvmGate)
+  private final class PnlImpl[O, S <: Dimension](
+    authority: OwnerAuthority[O],
+    val pricePnl: Quantity[S],
+    val convertedFeeLines: Vector[InstrumentConvertedFeeLine[O, S]],
+    val feePnl: Quantity[S],
+    val netPnl: Quantity[S])
+    extends InstrumentPnl[O, S](authority.jvmGate)
 
-    val noFees: FeeSchedule = new FeeSchedule:
-      def assess(scenario: OrderScenario): Either[EconomicsError, Vector[FeeLine]] = Right(Vector.empty)
+  private def makeLots[O, D <: Dimension](
+    authority: OwnerAuthority[O],
+    grid: RegisteredGridRef[D]
+  )(
+    payload: Positive[GridQuantity[D, grid.G]]
+  ): InstrumentLots[O, D] =
+    val _ = authority
+    new LotsImpl[O, D, grid.G](authority, payload, grid)
 
-    def combineFeeSchedules(schedules: Vector[FeeSchedule]): FeeSchedule = new FeeSchedule:
-      def assess(scenario: OrderScenario): Either[EconomicsError, Vector[FeeLine]] =
-        InstrumentFees.combine(schedules, scenario)((schedule, value) => schedule.assess(value))
+  private def makePosition[O, D <: Dimension](
+    authority: OwnerAuthority[O],
+    grid: RegisteredGridRef[D]
+  )(
+    payload: GridQuantity[D, grid.G]
+  ): InstrumentPosition[O, D] =
+    val _ = authority
+    new PositionImpl[O, D, grid.G](authority, payload, grid)
 
-    private final class ConvertedFeeLineImpl(
-      val original: Fee,
-      val leg: ScenarioLeg,
-      val sourceSliceIndex: Int,
-      val settleContribution: Quantity[settle.D])
-      extends ConvertedFeeLine
+  private def makePrice[O, B <: Dimension, Q <: Dimension](
+    authority: OwnerAuthority[O],
+    grid: RegisteredGridRef[Divide[Q, B]],
+    base: DimRef[B],
+    quote: DimRef[Q]
+  )(
+    payload: Positive[GridQuantity[Divide[Q, B], grid.G]]
+  ): InstrumentPrice[O, B, Q] =
+    val _ = authority
+    new PriceImpl[O, B, Q, grid.G](authority, payload, grid, base, quote)
 
-    private final class PnlImpl(
-      val pricePnl: Quantity[settle.D],
-      val convertedFeeLines: Vector[ConvertedFeeLine],
-      val feePnl: Quantity[settle.D],
-      val netPnl: Quantity[settle.D])
-      extends Pnl
+  private def ownedConversion[O, S <: Dimension](
+    authority: OwnerAuthority[O]
+  )(
+    source: AssetRef,
+    target: AssetRef { type D = S },
+    coefficient: Rational
+  ): InstrumentSettlementConversion[O, S] =
+    val _ = authority
+    new ConversionImpl(authority, source, target, coefficient)
 
-    def calculatePnl(roundTrip: RoundTripScenario, feeSchedule: FeeSchedule): Either[EconomicsError, Pnl] =
-      val exactPricePnl = scenarioPricePnl(roundTrip.entry) + scenarioPricePnl(roundTrip.exit)
+  private def ownedMarketState[O, B <: Dimension, Q <: Dimension, S <: Dimension](
+    authority: OwnerAuthority[O],
+    price: InstrumentPrice[O, B, Q],
+    baseToSettle: Rate[B, S],
+    quoteToSettle: Rate[Q, S],
+    settleRef: DimRef[S],
+    conversions: Vector[(AssetRef, Rational)]
+  ): InstrumentMarketState[O, B, Q, S] =
+    val _ = authority
+    new MarketStateImpl(authority, price, baseToSettle, quoteToSettle, settleRef, conversions)
 
-      InstrumentValuation
-        .calculatePnl(roundTrip.entry, roundTrip.exit, exactPricePnl.coefficient)(
-          assessAndValidate(feeSchedule, _),
-          convertFeeLine,
-          _.settleContribution.coefficient
-        )
-        .map: plan =>
-          val pricePnl = Quantity(settle.dimension.asDimensionRef, plan.pricePnl)
-          val feePnl   = Quantity(settle.dimension.asDimensionRef, plan.feePnl)
-          val netPnl   = Quantity(settle.dimension.asDimensionRef, plan.netPnl)
-          new PnlImpl(pricePnl, plan.convertedFeeLines, feePnl, netPnl)
+  private def immediate[O, P](authority: OwnerAuthority[O]): ImmediateActivation[O, P] =
+    val _ = authority
+    new ImmediateActivationImpl(authority)
+  private def fixed[O, P](
+    authority: OwnerAuthority[O]
+  )(
+    reference: PriceReference,
+    comparison: TriggerComparison,
+    price: P
+  ): FixedActivation[O, P] =
+    val _ = authority
+    new FixedActivationImpl(authority, reference, comparison, price)
+  private def trailing[O, P](
+    authority: OwnerAuthority[O]
+  )(
+    reference: PriceReference,
+    comparison: TriggerComparison,
+    ticks: PositiveWhole
+  ): TrailingActivation[O, P] =
+    val _ = authority
+    new TrailingActivationImpl(authority, reference, comparison, ticks)
+  private def limitPricing[O, P](authority: OwnerAuthority[O])(price: P): LimitPricing[O, P] =
+    val _ = authority
+    new LimitPricingImpl(authority, price)
+  private def peggedPricing[O, P](
+    authority: OwnerAuthority[O]
+  )(
+    reference: PriceReference,
+    offset: BigInt
+  ): PeggedPricing[O, P] =
+    val _ = authority
+    new PeggedPricingImpl(authority, reference, offset)
+  private def displayed[O, L](authority: OwnerAuthority[O]): DisplayedVisibility[O, L] =
+    val _ = authority
+    new DisplayedVisibilityImpl(authority)
+  private def hidden[O, L](authority: OwnerAuthority[O]): HiddenVisibility[O, L] =
+    val _ = authority
+    new HiddenVisibilityImpl(authority)
+  private def iceberg[O, L](authority: OwnerAuthority[O])(lots: L): IcebergVisibility[O, L] =
+    val _ = authority
+    new IcebergVisibilityImpl(authority, lots)
+  private def marketExecution[O, L, P](
+    authority: OwnerAuthority[O]
+  )(
+    tif: NonRestingTimeInForce
+  ): MarketExecution[O, L, P] =
+    val _ = authority
+    new MarketExecutionImpl(authority, tif)
+  private def pricedExecution[O, L, P](
+    authority: OwnerAuthority[O]
+  )(
+    pricing: OrderPricing[O, P],
+    tif: TimeInForce,
+    liquidity: LiquidityConstraint,
+    visibility: PricedVisibility[O, L]
+  ): PricedExecution[O, L, P] =
+    val _ = authority
+    new PricedExecutionImpl(authority, pricing, tif, liquidity, visibility)
+  private def orderIntent[O, L](
+    authority: OwnerAuthority[O]
+  )(
+    side: Side,
+    lots: L,
+    effect: PositionEffect
+  ): OrderIntent[O, L] =
+    val _ = authority
+    new OrderIntentImpl(authority, side, lots, effect)
+  private def order[O, L, P](
+    authority: OwnerAuthority[O]
+  )(
+    intent: OrderIntent[O, L],
+    activation: OrderActivation[O, P],
+    execution: OrderExecution[O, L, P]
+  ): InstrumentOrder[O, L, P] =
+    val _ = authority
+    new OrderImpl(authority, intent, activation, execution)
 
-    private def scenarioPricePnl(scenario: OrderScenario): Quantity[settle.D] =
-      val slices = scenario.slices.map: slice =>
-        val change = positionLots(scenario.order.side, slice.lots)
-        positionQuantity(change).coefficient -> settleValuePerPosition(slice.market).coefficient
-      Quantity(settle.dimension.asDimensionRef, InstrumentValuation.scenarioPricePnl(slices))
+  private def fixedEvidence[O, P](
+    authority: OwnerAuthority[O]
+  )(
+    reference: PriceReference,
+    observed: P
+  ): FixedTriggerEvidence[O, P] =
+    val _ = authority
+    new FixedEvidenceImpl(authority, reference, observed)
+  private def trailingEvidence[O, P](
+    authority: OwnerAuthority[O]
+  )(
+    reference: PriceReference,
+    extreme: P,
+    observed: P
+  ): TrailingTriggerEvidence[O, P] =
+    val _ = authority
+    new TrailingEvidenceImpl(authority, reference, extreme, observed)
+  private def immediateAssumption[O, P](authority: OwnerAuthority[O]): ImmediateAssumption[O, P] =
+    val _ = authority
+    new ImmediateAssumptionImpl(authority)
+  private def triggeredAssumption[O, P](
+    authority: OwnerAuthority[O]
+  )(
+    evidence: TriggerEvidence[O, P]
+  ): TriggeredAssumption[O, P] =
+    val _ = authority
+    new TriggeredAssumptionImpl(authority, evidence)
+  private def pegResolution[O, P](
+    authority: OwnerAuthority[O]
+  )(
+    reference: PriceReference,
+    referencePrice: P,
+    resolvedLimit: P
+  ): PegResolution[O, P] =
+    val _ = authority
+    new PegResolutionImpl(authority, reference, referencePrice, resolvedLimit)
+  private def directPricing[O, P](authority: OwnerAuthority[O]): DirectPricingAssumption[O, P] =
+    val _ = authority
+    new DirectPricingImpl(authority)
+  private def resolvedPeg[O, P](
+    authority: OwnerAuthority[O]
+  )(
+    resolution: PegResolution[O, P]
+  ): ResolvedPegAssumption[O, P] =
+    val _ = authority
+    new ResolvedPegImpl(authority, resolution)
+  private def liquiditySlice[O, L, M](
+    authority: OwnerAuthority[O]
+  )(
+    lots: L,
+    market: M,
+    role: LiquidityRole
+  ): InstrumentLiquiditySlice[O, L, M] =
+    val _ = authority
+    new LiquiditySliceImpl(authority, lots, market, role)
+  private def scenarioAssumptions[O, L, P, M](
+    authority: OwnerAuthority[O]
+  )(
+    activation: ActivationAssumption[O, P],
+    pricing: PricingAssumption[O, P],
+    slices: Vector[InstrumentLiquiditySlice[O, L, M]]
+  ): ScenarioAssumptions[O, L, P, M] =
+    val _ = authority
+    new ScenarioAssumptionsImpl(authority, activation, pricing, slices)
+  private def orderScenario[O, L, P, M, Pos](
+    authority: OwnerAuthority[O]
+  )(
+    order: InstrumentOrder[O, L, P],
+    assumptions: ScenarioAssumptions[O, L, P, M],
+    change: Pos
+  ): InstrumentOrderScenario[O, L, P, M, Pos] =
+    val _ = authority
+    new OrderScenarioImpl(authority, order, assumptions, change)
+  private def roundTrip[O, L, P, M, Pos](
+    authority: OwnerAuthority[O]
+  )(
+    entry: InstrumentOrderScenario[O, L, P, M, Pos],
+    exit: InstrumentOrderScenario[O, L, P, M, Pos],
+    held: Pos
+  ): InstrumentRoundTripScenario[O, L, P, M, Pos] =
+    val _ = authority
+    new RoundTripImpl(authority, entry, exit, held)
 
-    private def assessAndValidate(
-      schedule: FeeSchedule,
-      scenario: OrderScenario
-    ): Either[EconomicsError, Vector[FeeLine]] =
-      schedule.assess(scenario).flatMap: lines =>
-        lines.collectFirst:
-          case line
-            if !line.asInstanceOf[FeeLineImpl].scenario.asInstanceOf[AnyRef].eq(scenario.asInstanceOf[AnyRef]) =>
-            FeeScheduleFailure("fee line belongs to a different order scenario")
-        match
-          case Some(error) => Left(error)
-          case None        => Right(lines)
+  private def feeDenomination[O, DD <: Dimension](
+    authority: OwnerAuthority[O]
+  )(
+    asset: AssetRef { type D = DD },
+    grid: RegisteredGridRef[DD],
+    policy: QuantizationPolicy
+  ): InstrumentFeeDenomination[O] { type D = DD } =
+    new FeeDenominationImpl[O, DD, grid.G](asset, grid, policy, authority)
 
-    private def convertFeeLine(
-      leg: ScenarioLeg,
-      line: FeeLine
-    ): Either[EconomicsError, ConvertedFeeLine] =
-      val fee = line.fee
-      convertToSettle(line.sourceMarket.conversions, fee.asset)(fee.amount)
-        .left
-        .map:
-          case MissingConversion(source, _, _) => MissingConversion(source, Some(leg), Some(line.sourceSliceIndex))
-          case other                           => other
-        .map(contribution => new ConvertedFeeLineImpl(line.fee, leg, line.sourceSliceIndex, contribution))
-
-    def downsideRisk(pnl: Pnl): Quantity[settle.D] =
-      Quantity(settle.dimension.asDimensionRef, InstrumentSizing.downsideRisk(pnl.netPnl.coefficient))
-
-    def sizePosition(
-      riskBudget: Quantity[settle.D],
-      cap: PositiveWhole,
-      feeSchedule: FeeSchedule
+  private def makeFee[O, DD <: Dimension](
+    authority: OwnerAuthority[O],
+    denomination: InstrumentFeeDenomination[O],
+    asset: AssetRef { type D = DD },
+    kind: FeeKind,
+    coordinate: BigInt,
+    amount: Quantity[DD],
+    residual: Quantity[DD],
+    unrounded: Quantity[DD]
+  ): InstrumentFee[O] =
+    val _                       = authority
+    val stableAsset: asset.type = asset
+    new FeeImpl(
+      authority,
+      denomination,
+      kind,
+      coordinate
     )(
-      scenario: Lots => Either[EconomicsError, RoundTripScenario]
-    ): Either[EconomicsError, Option[Lots]] =
-      InstrumentSizing.maxLots(riskBudget.coefficient, cap.unrefined)(
-        lots,
-        scenario,
-        roundTrip => positionLotCount(roundTrip.heldPosition),
-        roundTrip => calculatePnl(roundTrip, feeSchedule).map(pnl => downsideRisk(pnl).coefficient)
-      )
+      stableAsset
+    )(
+      amount,
+      residual,
+      unrounded
+    )
+  end makeFee
 
-  }
-}
+  private def feeLine[O, M](
+    authority: OwnerAuthority[O]
+  )(
+    scenario: AnyRef,
+    fee: InstrumentFee[O],
+    index: Int,
+    market: M
+  ): InstrumentFeeLine[O, M] =
+    val _ = authority
+    new FeeLineImpl(authority, scenario, fee, index, market)
+  private def feeLineScenario(line: InstrumentFeeLine[?, ?]): AnyRef =
+    line match
+      case value: FeeLineImpl[?, ?] => value.scenarioIdentity
+  private def convertedFeeLine[O, S <: Dimension](
+    authority: OwnerAuthority[O]
+  )(
+    fee: InstrumentFee[O],
+    leg: ScenarioLeg,
+    index: Int,
+    contribution: Quantity[S]
+  ): InstrumentConvertedFeeLine[O, S] =
+    val _ = authority
+    new ConvertedFeeLineImpl(authority, fee, leg, index, contribution)
+  private def pnl[O, S <: Dimension](
+    authority: OwnerAuthority[O]
+  )(
+    price: Quantity[S],
+    lines: Vector[InstrumentConvertedFeeLine[O, S]],
+    fees: Quantity[S],
+    net: Quantity[S]
+  ): InstrumentPnl[O, S] =
+    val _ = authority
+    new PnlImpl(authority, price, lines, fees, net)
+
+  /** Final validated definition boundary and sole owner-authority issuer. */
+  def create(definition: InstrumentDefinition): Either[EconomicsError, Instrument] =
+    JvmOwnerAuthority.createInstrument(definition)
+
+  /** JVM entry used only by [[JvmOwnerAuthority.createInstrument]], whose private constructor supplies the gate. */
+  private[economics] def createWithAuthority(
+    definition: InstrumentDefinition,
+    issuedAuthority: JvmOwnerAuthority
+  ): Either[EconomicsError, Instrument] =
+    issuedAuthority.assertIssued()
+    val identity   = definition.identity
+    val roles      = definition.roles
+    val listing    = definition.listingRules
+    val payoff     = definition.contractPayoff
+    val roleAssets = Vector("quote" -> roles.quote, "position" -> roles.position, "settle" -> roles.settle)
+
+    roleAssets
+      .collectFirst:
+        case (role, candidate) if !roles.base.dimension.sharesRegistryWith(candidate.dimension) =>
+          ForeignRegistry(role, roles.base.dimension.key, candidate.dimension.key)
+      .map(Left(_))
+      .getOrElse:
+        if !listing.roles.eq(roles) then
+          Left(ContradictoryInstrument(identity.id, InstrumentContradiction.ListingRolesDiffer))
+        else if !payoff.roles.eq(roles) then
+          Left(ContradictoryInstrument(identity.id, InstrumentContradiction.PayoffRolesDiffer))
+        else if roles.base.id == roles.quote.id then
+          Left(ContradictoryInstrument(identity.id, InstrumentContradiction.BaseEqualsQuote))
+        else if !listing.positionLotGrid.dimension.sharesRegistryWith(roles.position.dimension) then
+          Left(ForeignRegistry("position grid", roles.position.dimension.key, listing.positionLotGrid.dimension.key))
+        else if listing.positionLotGrid.dimension.key != roles.position.dimension.key then
+          Left(
+            GridDimensionFailure(
+              "position grid",
+              listing.positionLotGrid.key,
+              roles.position.dimension.key,
+              listing.positionLotGrid.dimension.key
+            )
+          )
+        else
+          val expectedPrice =
+            DimRef.divide(roles.quote.dimension.asDimensionRef, roles.base.dimension.asDimensionRef).key
+          if !listing.priceGrid.dimension.sharesRegistryWith(roles.base.dimension) then
+            Left(ForeignRegistry("price grid", expectedPrice, listing.priceGrid.dimension.key))
+          else if listing.priceGrid.dimension.key != expectedPrice then
+            Left(
+              GridDimensionFailure("price grid", listing.priceGrid.key, expectedPrice, listing.priceGrid.dimension.key)
+            )
+          else if payoff.basePerPosition.coefficient.isZero && payoff.quotePerPosition.coefficient.isZero then
+            Left(EmptyContractPayoff(identity.id))
+          else
+            val positionGrid = listing.positionLotGrid.asInstanceOf[RegisteredGridRef[roles.position.D]]
+            val priceGrid    = listing.priceGrid.asInstanceOf[RegisteredGridRef[Divide[roles.quote.D, roles.base.D]]]
+            Right(new InstrumentImpl(issuedAuthority, identity, roles, listing, payoff)(positionGrid, priceGrid))
+  end createWithAuthority
+
+  private final class InstrumentImpl(
+    issuedAuthority: JvmOwnerAuthority,
+    val identity: InstrumentIdentity,
+    val roles: InstrumentRoles,
+    val listingRules: ListingRules,
+    val contractPayoff: ContractPayoff
+  )(
+    positionGrid: RegisteredGridRef[roles.position.D],
+    priceGrid: RegisteredGridRef[Divide[roles.quote.D, roles.base.D]])
+    extends Instrument(issuedAuthority):
+
+    type Owner = this.type
+    private val authority: OwnerAuthority[Owner] = new OwnerAuthority[Owner](issuedAuthority)
+
+    private val typedBasePerPosition = contractPayoff.basePerPosition
+      .asInstanceOf[Rate[roles.position.D, roles.base.D]]
+    private val typedQuotePerPosition = contractPayoff.quotePerPosition
+      .asInstanceOf[Rate[roles.position.D, roles.quote.D]]
+
+    def lots(count: BigInt): Either[EconomicsError, Lots] =
+      val coordinate = positionGrid.fromCoordinate(count)
+      Positive(coordinate)
+        .left
+        .map(_ => InvalidLots(count))
+        .map(value => authority.lots(positionGrid)(value))
+
+    def positionLots(side: Side, lots: Lots): PositionLots =
+      authority.position(positionGrid)(positionGrid.fromCoordinate(side.sign * lots.count.unrefined))
+
+    val flatPosition: PositionLots = authority.position(positionGrid)(positionGrid.fromCoordinate(0))
+
+    val prices: Prices =
+      new InstrumentPricesImpl(authority, roles.base, roles.quote, priceGrid)
+    val market: Market =
+      new InstrumentMarketImpl(authority, roles.base, roles.quote, roles.settle)
+    val orders: Orders =
+      new InstrumentOrdersImpl(authority)
+    val scenarios: Scenarios =
+      new InstrumentScenariosImpl(authority, positionGrid)
+    val fees: Fees =
+      new InstrumentFeesImpl(authority, roles.settle)
+    val valuation: Valuation =
+      new InstrumentValuationImpl(
+        authority,
+        roles.position,
+        roles.settle,
+        typedBasePerPosition,
+        typedQuotePerPosition
+      )
+    val sizing: Sizing =
+      new InstrumentSizingImpl(authority, roles.settle.dimension.asDimensionRef, lots, valuation)
+  end InstrumentImpl
+
+end Instrument

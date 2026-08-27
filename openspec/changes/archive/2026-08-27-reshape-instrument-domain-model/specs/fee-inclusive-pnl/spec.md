@@ -1,8 +1,5 @@
-# fee-inclusive-pnl Specification
+## MODIFIED Requirements
 
-## Purpose
-Defines contextual, grid-aware trading fees and exact settlement-denominated PnL that combines universal price PnL with the signed fee contribution of complete order scenarios.
-## Requirements
 ### Requirement: Contextual instrument-bound fee schedules
 A fee schedule SHALL remain bound to one stable instrument owner and SHALL remain a separate contextual value rather than immutable instrument metadata. A schedule MAY capture venue, account, tier, effective version, and other policy inputs. It SHALL calculate zero or more fees from a complete order scenario and SHALL be able to inspect the order's explicit activation and execution alternatives and every liquidity slice.
 
@@ -58,54 +55,3 @@ Every exact fee basis calculation SHALL remain rational until the selected valid
 #### Scenario: Keep denomination ownership coherent
 - **WHEN** a fee denomination belongs to one instrument owner
 - **THEN** it cannot construct fees or schedules typed as belonging to another instrument owner
-
-### Requirement: Exact fee-inclusive PnL breakdown
-The instrument-owned `valuation` capability SHALL calculate PnL for a complete round-trip scenario. The result SHALL contain exact price PnL in the instrument settlement dimension, the original calculated fees, each fee's exact contribution converted to settle using the market state of its corresponding liquidity slice or leg, the exact total fee PnL, and exact net PnL. It SHALL calculate:
-
-```text
-netPnl = pricePnl + sum(feeContributionInSettle)
-```
-
-Charges therefore reduce net PnL and rebates increase it. Fee conversion SHALL use the fee's original asset and an explicit settle-targeted conversion from the associated market state. Missing or contradictory conversion information SHALL fail PnL calculation rather than defaulting to identity, parity, or another market state.
-
-#### Scenario: Subtract entry and exit charges
-- **WHEN** both round-trip legs produce negative fees
-- **THEN** `valuation` returns fee PnL as their exact settlement-denominated sum and net PnL below price PnL by that amount
-
-#### Scenario: Include a maker rebate
-- **WHEN** one leg produces a positive maker rebate
-- **THEN** the rebate increases fee PnL and net PnL exactly
-
-#### Scenario: Convert fees at their corresponding states
-- **WHEN** entry and exit fees share an asset but their market states supply different settle conversions
-- **THEN** each fee is converted with its own leg or slice state before summation
-
-#### Scenario: Reject a missing fee conversion
-- **WHEN** a fee's original asset has no settle-targeted conversion in its associated market state
-- **THEN** PnL calculation fails and preserves the missing asset identity for diagnosis
-
-### Requirement: Scenario context carries epistemic status
-Fee and PnL values SHALL be deterministic exact results for the order, market, liquidity, fee-policy, conversion, and rounding inputs supplied to them. They SHALL be named `Fee` and `Pnl` rather than asymmetrically labeling the fee as estimated while leaving PnL unqualified. Hypothetical status SHALL be conveyed by the enclosing order or trade scenario. Future execution provenance SHALL NOT be pre-modeled through `ReportedFee`, fill, or execution types in this capability.
-
-#### Scenario: Re-evaluate identical inputs
-- **WHEN** the same complete trade scenario and immutable fee schedule are evaluated twice
-- **THEN** every fee, residual, price PnL, fee PnL, and net PnL value is exactly equal
-
-#### Scenario: Change a scenario assumption
-- **WHEN** the assumed matched price or liquidity allocation changes
-- **THEN** the calculated Fee or PnL may change while the immutable Order remains unchanged
-
-#### Scenario: Avoid execution provenance in planning
-- **WHEN** a caller calculates scenario PnL before any order is submitted
-- **THEN** no execution ID, fill record, venue-reported fee, or ledger entry is required
-
-### Requirement: PnL scope is explicit
-The PnL introduced by this capability SHALL cover price PnL and trading fees represented by its supplied complete order scenarios. It SHALL NOT silently include funding, interest, liquidation penalties, margin effects, settlement events, tax, deposits, withdrawals, or unrelated account cashflows. Future signed adjustments MAY compose with the exact result through separately specified capabilities.
-
-#### Scenario: Exclude funding from trading-fee PnL
-- **WHEN** a perpetual-position scenario has no separately modeled funding input
-- **THEN** its PnL contains price and trading-fee components only
-
-#### Scenario: Preserve component visibility
-- **WHEN** a caller inspects a PnL result
-- **THEN** price PnL, fee lines, fee PnL, and net PnL remain separately observable

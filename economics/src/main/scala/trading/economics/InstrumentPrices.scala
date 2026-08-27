@@ -1,38 +1,52 @@
 package trading.economics
 
-import trading.quantity.Dimension
-import trading.quantity.Rational
-import trading.quantity.grid.NotOnGrid
-import trading.quantity.grid.QuantizationPolicy
+import trading.quantity.*
+import trading.quantity.grid.*
+import trading.quantity.refinement.*
+import trading.quantity.runtime.*
 
-private[economics] object InstrumentPrices:
-  final case class Observation(coordinate: BigInt, coefficient: Rational)
+private[economics] final class InstrumentPricesImpl[O, B <: Dimension, Q <: Dimension](
+  authority: Instrument.OwnerAuthority[O],
+  base: AssetRef { type D = B },
+  quote: AssetRef { type D = Q },
+  grid: RegisteredGridRef[Divide[Q, B]])
+  extends PriceCapability[O, B, Q]:
 
-  def validateCoordinate(coordinate: BigInt): Either[EconomicsError, Unit] =
-    if coordinate.signum <= 0 then Left(InvalidPriceCoordinate(coordinate)) else Right(())
+  def exact(coefficient: Rational): Either[EconomicsError, InstrumentPrice[O, B, Q]] =
+    fromRate(Rate(base.dimension.asDimensionRef, quote.dimension.asDimensionRef, coefficient))
 
-  def fromCoordinate[A](coordinate: BigInt)(build: BigInt => A): Either[EconomicsError, A] =
-    validateCoordinate(coordinate).map(_ => build(coordinate))
+  def fromRate(value: Rate[B, Q]): Either[EconomicsError, InstrumentPrice[O, B, Q]] =
+    value
+      .narrowExactlyTo(grid.asGridRef)
+      .left
+      .map(PriceNotOnGrid(_))
+      .flatMap(refine)
 
-  def exact[D <: Dimension, A](
-    narrow: () => Either[NotOnGrid[D], A]
-  )(
-    coordinate: A => BigInt
-  ): Either[EconomicsError, A] =
-    narrow().left.map(PriceNotOnGrid(_)).flatMap: value =>
-      validateCoordinate(coordinate(value)).map(_ => value)
+  def fromTicks(ticks: PositiveWhole): InstrumentPrice[O, B, Q] =
+    val payload = Positive(grid.fromCoordinate(ticks.unrefined)).toOption.get
+    authority.price(grid, base.dimension.asDimensionRef, quote.dimension.asDimensionRef)(payload)
 
-  def quantized[A, R](
+  def quantize(
+    coefficient: Rational,
     policy: QuantizationPolicy
-  )(
-    quantize: QuantizationPolicy => (A, R)
-  )(
-    coordinate: A => BigInt
-  ): Either[EconomicsError, (A, R)] =
-    val selected = quantize(policy)
-    validateCoordinate(coordinate(selected._1)).map(_ => selected)
+  ): Either[EconomicsError, (InstrumentPrice[O, B, Q], Quantity[Divide[Q, B]])] =
+    quantizeRate(Rate(base.dimension.asDimensionRef, quote.dimension.asDimensionRef, coefficient), policy)
 
-  def observe[A](value: A)(coordinate: A => BigInt)(coefficient: A => Rational): Observation =
-    Observation(coordinate(value), coefficient(value))
+  def quantizeRate(
+    value: Rate[B, Q],
+    policy: QuantizationPolicy
+  ): Either[EconomicsError, (InstrumentPrice[O, B, Q], Quantity[Divide[Q, B]])] =
+    val result = value.quantizeTo(grid.asGridRef, policy)
+    refine(result.value).map(_ -> result.residual)
 
-end InstrumentPrices
+  private def refine(
+    value: GridQuantity[Divide[Q, B], grid.G]
+  ): Either[EconomicsError, InstrumentPrice[O, B, Q]] =
+    Positive(value)
+      .left
+      .map(_ => InvalidPriceCoordinate(grid.coordinate(value)))
+      .map(positive =>
+        authority.price(grid, base.dimension.asDimensionRef, quote.dimension.asDimensionRef)(positive)
+      )
+
+end InstrumentPricesImpl

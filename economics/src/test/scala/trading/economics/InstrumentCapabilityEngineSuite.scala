@@ -2,159 +2,63 @@ package trading.economics
 
 import munit.FunSuite
 
-import trading.quantity.GridId
-import trading.quantity.GridKey
-import trading.quantity.GridVersion
-import trading.quantity.One
-import trading.quantity.Rational
-import trading.quantity.grid.NotOnGrid
+import trading.quantity.*
 import trading.quantity.grid.QuantizationPolicy
 
 class InstrumentCapabilityEngineSuite extends FunSuite:
-  private val fixture = new EconomicsFixtures
+  private val fixture    = new EconomicsFixtures
+  private val instrument = fixture.linear
 
-  test("price and market plans preserve validation precedence"):
-    assertEquals(InstrumentPrices.validateCoordinate(0), Left(InvalidPriceCoordinate(0)))
+  test("focused capabilities share the stable owner and operate on real values"):
+    val lots        = instrument.lots(2).toOption.get
+    val price       = fixture.price(instrument, 100)
+    val market      = instrument.market.quoteSettled(price).toOption.get
+    val order       = instrument.orders.market(Side.Buy, lots).toOption.get
+    val slice       = instrument.scenarios.slice(lots, market, LiquidityRole.Taker)
+    val assumptions = instrument.scenarios.assumptions(
+      instrument.scenarios.immediate,
+      instrument.scenarios.directPricing,
+      Vector(slice)
+    )
+    val scenario = instrument.scenarios.order(order, assumptions).toOption.get
 
-    val result = InstrumentMarket.checked(
-      fixture.btc,
-      fixture.usd,
-      fixture.eur,
-      Rational(100),
-      Rational.zero,
-      Rational.zero,
+    assertEquals(lots.count.unrefined, BigInt(2))
+    assertEquals(price.coefficient, Rational(100))
+    assertEquals(scenario.order, order)
+    assertEquals(scenario.assumptions, assumptions)
+
+  test("fee denomination validates once and owns subsequent quantization policy"):
+    val denomination = instrument.fees
+      .denomination(fixture.usd)(fixture.usdCents, QuantizationPolicy.Ceiling)
+      .toOption
+      .get
+    val fee = denomination.quantize(
+      FeeKind("ceiling"),
+      Quantity(fixture.usd.dimension.asDimensionRef, Rational(-1, 200))
+    )
+    assertEquals(denomination.policy, QuantizationPolicy.Ceiling)
+    assertEquals(fee.coordinate, BigInt(0))
+    assertEquals(fee.residual.coefficient, Rational(-1, 200))
+
+  test("market state rejects duplicate additional conversions and owns its checked set"):
+    val first  = instrument.market.conversion(fixture.token, Rational(2)).toOption.get
+    val second = instrument.market.conversion(fixture.token, Rational(3)).toOption.get
+    val result = instrument.market.quoteSettled(fixture.price(instrument, 100), Vector(first, second))
+    assertEquals(result, Left(DuplicateConversion(fixture.token.id)))
+
+  test("scenario validation reports deterministic first structured failure"):
+    val lots        = instrument.lots(2).toOption.get
+    val order       = instrument.orders.market(Side.Buy, lots).toOption.get
+    val assumptions = instrument.scenarios.assumptions(
+      instrument.scenarios.triggered(
+        instrument.scenarios.fixedEvidence(PriceReference.Last, fixture.price(instrument, 100))
+      ),
+      instrument.scenarios.directPricing,
       Vector.empty
     )
     assertEquals(
-      result,
-      Left(InvalidConversion(fixture.btc.id, fixture.eur.id, Rational.zero, "conversion must be positive"))
+      instrument.scenarios.order(order, assumptions),
+      Left(InvalidScenario(ScenarioFailureReason.NoSlices))
     )
-
-  test("price engine invokes exact selection and preserves selector failure precedence"):
-    val notOnGrid =
-      NotOnGrid[One](Rational(5, 4), GridKey(GridId("price-grid"), GridVersion(1)), Rational(1, 2))
-    var events = Vector.empty[String]
-
-    val selectionFailure = InstrumentPrices.exact[One, String](() =>
-      events :+= "select"
-      Left(notOnGrid)
-    )(_ =>
-      events :+= "coordinate"
-      BigInt(0)
-    )
-
-    assertEquals(selectionFailure, Left(PriceNotOnGrid(notOnGrid)))
-    assertEquals(events, Vector("select"))
-
-    events = Vector.empty
-    val coordinateFailure = InstrumentPrices.exact[One, String](() =>
-      events :+= "select"
-      Right("selected")
-    )(_ =>
-      events :+= "coordinate"
-      BigInt(0)
-    )
-
-    assertEquals(coordinateFailure, Left(InvalidPriceCoordinate(0)))
-    assertEquals(events, Vector("select", "coordinate"))
-
-  test("price engine invokes policy-driven quantization and observation callbacks"):
-    var events    = Vector.empty[String]
-    val quantized = InstrumentPrices.quantized(QuantizationPolicy.Floor)(policy =>
-      events :+= s"quantize:$policy"
-      "selected" -> Rational(1, 4)
-    )(_ =>
-      events :+= "coordinate"
-      BigInt(2)
-    )
-
-    assertEquals(quantized, Right("selected" -> Rational(1, 4)))
-    assertEquals(events, Vector(s"quantize:${QuantizationPolicy.Floor}", "coordinate"))
-
-    events = Vector.empty
-    val observation = InstrumentPrices.observe("selected")(_ =>
-      events :+= "coordinate"
-      BigInt(2)
-    )(_ =>
-      events :+= "coefficient"
-      Rational(3, 2)
-    )
-
-    assertEquals(observation, InstrumentPrices.Observation(BigInt(2), Rational(3, 2)))
-    assertEquals(events, Vector("coordinate", "coefficient"))
-
-  test("order planning retains the first universal compatibility failure"):
-    val result = InstrumentOrders.checked(
-      Side.Buy,
-      (),
-      (),
-      (),
-      isMarket = true,
-      TimeInForce.GoodTillCancelled,
-      LiquidityConstraint.MakerOnly,
-      PositionEffect.Unrestricted,
-      (),
-      VisibilityKind.Displayed,
-      None,
-      BigInt(1)
-    )
-    assertEquals(result, Left(InvalidOrder("market orders cannot be maker-only")))
-
-  test("scenario planning checks totals before activation and activation before peg evidence"):
-    val activation  = InstrumentScenarios.ActivationView(ActivationKind.Immediate, None, None, None, None)
-    val instruction =
-      InstrumentScenarios.InstructionView(PriceInstructionKind.Market, None, None, None)
-    val order = InstrumentScenarios.OrderView(
-      Side.Buy,
-      BigInt(1),
-      activation,
-      instruction,
-      LiquidityConstraint.Unrestricted
-    )
-    val evidence = Some(InstrumentScenarios.EvidenceView(PriceReference.Last, BigInt(1), None))
-    val peg      = Some(InstrumentScenarios.PegView(PriceReference.Last, BigInt(1), BigInt(1)))
-
-    assertEquals(
-      InstrumentScenarios.order(order, Vector.empty, evidence, peg),
-      Left(InvalidScenario("complete scenario requires at least one slice"))
-    )
-    assertEquals(
-      InstrumentScenarios.order(
-        order,
-        Vector(InstrumentScenarios.SliceView(BigInt(1), BigInt(1), LiquidityRole.Taker)),
-        evidence,
-        peg
-      ),
-      Left(InvalidScenario("immediate activation must not carry trigger evidence"))
-    )
-
-  test("fee planning checks asset registry before grid registry"):
-    val result = InstrumentFees.validateQuantization(
-      fixture.btc.id,
-      fixture.usd.dimension.key,
-      fixture.btc.dimension.key,
-      assetSharesSettleRegistry = false,
-      fixture.contractLots.key,
-      fixture.contract.dimension.key,
-      gridSharesAssetRegistry = false
-    )
-    assertEquals(
-      result,
-      Left(ForeignRegistry("fee asset", fixture.usd.dimension.key, fixture.btc.dimension.key))
-    )
-
-  test("valuation planning assesses entry before exit and stops at the first failure"):
-    var assessed = Vector.empty[String]
-    val result   = InstrumentValuation.calculatePnl("entry", "exit", Rational.zero)(
-      scenario =>
-        assessed :+= scenario
-        Left(FeeScheduleFailure(scenario))
-      ,
-      (_, _) => Right(Rational.zero),
-      identity
-    )
-
-    assertEquals(result, Left(FeeScheduleFailure("entry")))
-    assertEquals(assessed, Vector("entry"))
 
 end InstrumentCapabilityEngineSuite

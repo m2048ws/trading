@@ -10,8 +10,8 @@ object DeferredLifecycle:
     fee: instrument.Fee,
     pnl: instrument.Pnl
   ): Unit =
-    val _ = order.side
-    val _ = scenario.slices
+    val _ = order.intent.side
+    val _ = scenario.assumptions.matchedSlices
     val _ = fee.amount
     val _ = pnl.netPnl
 

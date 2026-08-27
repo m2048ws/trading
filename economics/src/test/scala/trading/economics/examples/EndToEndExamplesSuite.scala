@@ -19,20 +19,18 @@ class EndToEndExamplesSuite extends FunSuite:
 
     // FeeRate uses policy sign (positive charge); Fee uses the account sign (negative charge). Quantization is
     // explicit.
+    val denomination = instrument.fees
+      .denomination(fixture.usd)(fixture.usdCents, QuantizationPolicy.TowardZero)
+      .toOption
+      .get
     val schedule = new instrument.FeeSchedule:
       def assess(scenario: instrument.OrderScenario): Either[EconomicsError, Vector[instrument.FeeLine]] =
         val exactBasis = Quantity(
           fixture.usd.dimension.asDimensionRef,
-          Rational(instrument.lotCount(scenario.order.lots), 10)
+          Rational(scenario.order.intent.lots.count.unrefined, 10)
         )
         for
-          fee <- instrument.fees.percentage(fixture.usd)(
-                   fixture.usdCents,
-                   FeeKind("example-taker"),
-                   exactBasis,
-                   FeeRate(Rational(1, 1000)),
-                   QuantizationPolicy.TowardZero
-                 )
+          fee  <- denomination.percentage(FeeKind("example-taker"), exactBasis, FeeRate(Rational(1, 1000)))
           line <- instrument.fees.line(scenario, 0, fee)
         yield Vector(line)
 
@@ -43,7 +41,7 @@ class EndToEndExamplesSuite extends FunSuite:
 
     // Sizing exhaustively reuses complete scenarios, both fee legs, explicit conversions, and the instrument lot grid.
     val sized = instrument.sizing.maxLots(
-      Quantity(instrument.settle.dimension.asDimensionRef, Rational(11)),
+      Quantity(instrument.roles.settle.dimension.asDimensionRef, Rational(11)),
       PositiveWhole(4).toOption.get,
       schedule
     ): candidate =>
@@ -52,7 +50,7 @@ class EndToEndExamplesSuite extends FunSuite:
         completeScenario(instrument)(Side.Sell, candidate, "90")
       )
 
-    assertEquals(sized.map(_.map(instrument.lotCount)), Right(Some(BigInt(4))))
+    assertEquals(sized.map(_.map(_.count.unrefined)), Right(Some(BigInt(4))))
 
   private def completeScenario(
     instrument: Instrument
@@ -66,6 +64,11 @@ class EndToEndExamplesSuite extends FunSuite:
     val order       = instrument.orders.market(side, lots).toOption.get
     val state       = instrument.market.quoteSettled(price).toOption.get
     val slice       = instrument.scenarios.slice(lots, state, LiquidityRole.Taker)
-    instrument.scenarios.order(order, Vector(slice)).toOption.get
+    val assumptions = instrument.scenarios.assumptions(
+      instrument.scenarios.immediate,
+      instrument.scenarios.directPricing,
+      Vector(slice)
+    )
+    instrument.scenarios.order(order, assumptions).toOption.get
 
 end EndToEndExamplesSuite

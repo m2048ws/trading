@@ -1,194 +1,148 @@
 package trading.economics
 
-private[economics] object InstrumentOrders:
-  final case class VisibilityPlan[L](kind: VisibilityKind, displayedLots: Option[L])
-  final case class ActivationPlan[P](
-    kind: ActivationKind,
-    reference: Option[PriceReference],
-    comparison: Option[TriggerComparison],
-    triggerPrice: Option[P],
-    trailingOffsetTicks: Option[BigInt])
-  final case class PriceInstructionPlan[P](
-    kind: PriceInstructionKind,
-    limit: Option[P],
-    reference: Option[PriceReference],
-    offsetTicks: Option[BigInt])
-  final case class OrderPlan[L, A, P, V](
-    side: Side,
-    lots: L,
-    activation: A,
-    priceInstruction: P,
-    timeInForce: TimeInForce,
-    liquidityConstraint: LiquidityConstraint,
-    positionEffect: PositionEffect,
-    visibility: V)
+import trading.quantity.Dimension
+import trading.quantity.refinement.PositiveWhole
 
-  def visibility[L](kind: VisibilityKind, displayedLots: Option[L] = None): VisibilityPlan[L] =
-    VisibilityPlan(kind, displayedLots)
+private[economics] final class InstrumentOrdersImpl[
+  O,
+  D <: Dimension,
+  B <: Dimension,
+  Q <: Dimension
+](
+  authority: Instrument.OwnerAuthority[O])
+  extends OrderCapability[O, InstrumentLots[O, D], InstrumentPrice[O, B, Q]]:
 
-  def immediate[P]: ActivationPlan[P] = ActivationPlan(ActivationKind.Immediate, None, None, None, None)
+  private type Lots  = InstrumentLots[O, D]
+  private type Price = InstrumentPrice[O, B, Q]
 
-  def fixedTrigger[P](
+  val immediate: ImmediateActivation[O, Price] = authority.immediate
+  val displayed: DisplayedVisibility[O, Lots]  = authority.displayed
+  val hidden: HiddenVisibility[O, Lots]        = authority.hidden
+
+  def fixedTrigger(
     reference: PriceReference,
     comparison: TriggerComparison,
-    triggerPrice: P
-  ): ActivationPlan[P] =
-    ActivationPlan(ActivationKind.FixedTrigger, Some(reference), Some(comparison), Some(triggerPrice), None)
+    triggerPrice: Price
+  ): FixedActivation[O, Price] =
+    authority.fixed(reference, comparison, triggerPrice)
 
-  def trailingTrigger[P](
+  def trailingTrigger(
     reference: PriceReference,
     comparison: TriggerComparison,
     offsetTicks: BigInt
-  ): Either[EconomicsError, ActivationPlan[P]] =
-    if offsetTicks.signum <= 0 then Left(InvalidTrailingOffset(offsetTicks))
-    else
-      Right(ActivationPlan(ActivationKind.TrailingTrigger, Some(reference), Some(comparison), None, Some(offsetTicks)))
+  ): Either[EconomicsError, TrailingActivation[O, Price]] =
+    PositiveWhole(offsetTicks)
+      .left
+      .map(_ => InvalidTrailingOffset(offsetTicks))
+      .map(ticks => authority.trailing(reference, comparison, ticks))
 
-  def marketInstruction[P]: PriceInstructionPlan[P] =
-    PriceInstructionPlan(PriceInstructionKind.Market, None, None, None)
+  def limitPricing(limit: Price): LimitPricing[O, Price] = authority.limitPricing(limit)
 
-  def limitInstruction[P](limit: P): PriceInstructionPlan[P] =
-    PriceInstructionPlan(PriceInstructionKind.Limit, Some(limit), None, None)
+  def peggedPricing(reference: PriceReference, offsetTicks: BigInt): PeggedPricing[O, Price] =
+    authority.peggedPricing(reference, offsetTicks)
 
-  def peggedInstruction[P](reference: PriceReference, offsetTicks: BigInt): PriceInstructionPlan[P] =
-    PriceInstructionPlan(PriceInstructionKind.Pegged, None, Some(reference), Some(offsetTicks))
+  def iceberg(displayedLots: Lots): IcebergVisibility[O, Lots] = authority.iceberg(displayedLots)
 
-  def checked[L, A, P, V](
-    side: Side,
-    lots: L,
-    activation: A,
-    priceInstruction: P,
-    isMarket: Boolean,
+  def marketExecution(timeInForce: NonRestingTimeInForce): MarketExecution[O, Lots, Price] =
+    authority.marketExecution(timeInForce)
+
+  def pricedExecution(
+    pricing: OrderPricing[O, Price],
     timeInForce: TimeInForce,
     liquidityConstraint: LiquidityConstraint,
-    positionEffect: PositionEffect,
-    visibility: V,
-    visibilityKind: VisibilityKind,
-    displayedLots: Option[BigInt],
-    orderLots: BigInt
-  ): Either[EconomicsError, OrderPlan[L, A, P, V]] =
-    val nonResting = timeInForce == TimeInForce.ImmediateOrCancel || timeInForce == TimeInForce.FillOrKill
-    validateOrder(isMarket, nonResting, liquidityConstraint, visibilityKind, displayedLots, orderLots).map: _ =>
-      OrderPlan(side, lots, activation, priceInstruction, timeInForce, liquidityConstraint, positionEffect, visibility)
+    visibility: PricedVisibility[O, Lots]
+  ): PricedExecution[O, Lots, Price] =
+    authority.pricedExecution(pricing, timeInForce, liquidityConstraint, visibility)
 
-  def market[L, A, P, V](
+  def intent(
     side: Side,
-    lots: L,
-    positionEffect: PositionEffect,
-    immediate: A,
-    marketInstruction: P,
-    notApplicableVisibility: V,
-    orderLots: BigInt
-  ): Either[EconomicsError, OrderPlan[L, A, P, V]] =
-    checked(
-      side,
-      lots,
+    lots: Lots,
+    positionEffect: PositionEffect
+  ): OrderIntent[O, Lots] =
+    authority.orderIntent(side, lots, positionEffect)
+
+  def create(
+    intent: OrderIntent[O, Lots],
+    activation: OrderActivation[O, Price],
+    execution: OrderExecution[O, Lots, Price]
+  ): Either[EconomicsError, InstrumentOrder[O, Lots, Price]] =
+    execution match
+      case priced: PricedExecution[O, Lots, Price] =>
+        priced.visibility match
+          case iceberg: IcebergVisibility[O, Lots]
+            if iceberg.displayedLots.count.unrefined > intent.lots.count.unrefined =>
+            Left(
+              InvalidOrder(
+                OrderFailureReason.IcebergExceedsOrder(
+                  iceberg.displayedLots.count.unrefined,
+                  intent.lots.count.unrefined
+                )
+              )
+            )
+          case _: IcebergVisibility[O, Lots]
+            if priced.timeInForce == TimeInForce.ImmediateOrCancel || priced.timeInForce == TimeInForce.FillOrKill =>
+            Left(InvalidOrder(OrderFailureReason.NonRestingIceberg))
+          case _ => Right(authority.order(intent, activation, execution))
+      case _: MarketExecution[O, Lots, Price] => Right(authority.order(intent, activation, execution))
+
+  def market(
+    side: Side,
+    lots: Lots,
+    positionEffect: PositionEffect
+  ): Either[EconomicsError, InstrumentOrder[O, Lots, Price]] =
+    create(
+      intent(side, lots, positionEffect),
       immediate,
-      marketInstruction,
-      isMarket = true,
-      TimeInForce.ImmediateOrCancel,
-      LiquidityConstraint.Unrestricted,
-      positionEffect,
-      notApplicableVisibility,
-      VisibilityKind.NotApplicable,
-      None,
-      orderLots
+      marketExecution(NonRestingTimeInForce.ImmediateOrCancel)
     )
 
-  def limit[L, A, P, V](
+  def limit(
     side: Side,
-    lots: L,
-    limitInstruction: P,
+    lots: Lots,
+    limit: Price,
     timeInForce: TimeInForce,
     liquidityConstraint: LiquidityConstraint,
     positionEffect: PositionEffect,
-    visibility: V,
-    visibilityKind: VisibilityKind,
-    displayedLots: Option[BigInt],
-    orderLots: BigInt,
-    immediate: A
-  ): Either[EconomicsError, OrderPlan[L, A, P, V]] =
-    checked(
-      side,
-      lots,
+    visibility: PricedVisibility[O, Lots]
+  ): Either[EconomicsError, InstrumentOrder[O, Lots, Price]] =
+    create(
+      intent(side, lots, positionEffect),
       immediate,
-      limitInstruction,
-      isMarket = false,
-      timeInForce,
-      liquidityConstraint,
-      positionEffect,
-      visibility,
-      visibilityKind,
-      displayedLots,
-      orderLots
+      pricedExecution(limitPricing(limit), timeInForce, liquidityConstraint, visibility)
     )
 
-  def stopMarket[L, A, P, V](
+  def stopMarket(
     side: Side,
-    lots: L,
-    trigger: A,
-    triggerKind: ActivationKind,
-    positionEffect: PositionEffect,
-    marketInstruction: P,
-    notApplicableVisibility: V,
-    orderLots: BigInt
-  ): Either[EconomicsError, OrderPlan[L, A, P, V]] =
-    requireTrigger(triggerKind, "stop-market").flatMap: _ =>
-      market(side, lots, positionEffect, trigger, marketInstruction, notApplicableVisibility, orderLots)
+    lots: Lots,
+    trigger: OrderActivation[O, Price],
+    positionEffect: PositionEffect
+  ): Either[EconomicsError, InstrumentOrder[O, Lots, Price]] =
+    trigger match
+      case _: ImmediateActivation[O, Price] => Left(InvalidOrder(OrderFailureReason.StopRequiresTrigger))
+      case _                                =>
+        create(
+          intent(side, lots, positionEffect),
+          trigger,
+          marketExecution(NonRestingTimeInForce.ImmediateOrCancel)
+        )
 
-  def stopLimit[L, A, P, V](
+  def stopLimit(
     side: Side,
-    lots: L,
-    trigger: A,
-    triggerKind: ActivationKind,
-    limitInstruction: P,
+    lots: Lots,
+    trigger: OrderActivation[O, Price],
+    limit: Price,
     timeInForce: TimeInForce,
     liquidityConstraint: LiquidityConstraint,
     positionEffect: PositionEffect,
-    visibility: V,
-    visibilityKind: VisibilityKind,
-    displayedLots: Option[BigInt],
-    orderLots: BigInt
-  ): Either[EconomicsError, OrderPlan[L, A, P, V]] =
-    requireTrigger(triggerKind, "stop-limit").flatMap: _ =>
-      checked(
-        side,
-        lots,
-        trigger,
-        limitInstruction,
-        isMarket = false,
-        timeInForce,
-        liquidityConstraint,
-        positionEffect,
-        visibility,
-        visibilityKind,
-        displayedLots,
-        orderLots
-      )
+    visibility: PricedVisibility[O, Lots]
+  ): Either[EconomicsError, InstrumentOrder[O, Lots, Price]] =
+    trigger match
+      case _: ImmediateActivation[O, Price] => Left(InvalidOrder(OrderFailureReason.StopRequiresTrigger))
+      case _                                =>
+        create(
+          intent(side, lots, positionEffect),
+          trigger,
+          pricedExecution(limitPricing(limit), timeInForce, liquidityConstraint, visibility)
+        )
 
-  def requireTrigger(kind: ActivationKind, orderKind: String): Either[EconomicsError, Unit] =
-    if kind == ActivationKind.Immediate then Left(InvalidOrder(s"$orderKind requires a trigger")) else Right(())
-
-  private def validateOrder(
-    isMarket: Boolean,
-    nonResting: Boolean,
-    liquidityConstraint: LiquidityConstraint,
-    visibility: VisibilityKind,
-    displayedLots: Option[BigInt],
-    orderLots: BigInt
-  ): Either[EconomicsError, Unit] =
-    if isMarket && liquidityConstraint == LiquidityConstraint.MakerOnly then
-      Left(InvalidOrder("market orders cannot be maker-only"))
-    else if isMarket && !nonResting then
-      Left(InvalidOrder("market orders require immediate-or-cancel or fill-or-kill"))
-    else if isMarket && visibility != VisibilityKind.NotApplicable then
-      Left(InvalidOrder("market orders require not-applicable visibility"))
-    else if !isMarket && visibility == VisibilityKind.NotApplicable then
-      Left(InvalidOrder("priced orders require explicit visibility"))
-    else if nonResting && visibility == VisibilityKind.Iceberg then
-      Left(InvalidOrder("non-resting orders cannot be iceberg"))
-    else if displayedLots.exists(_ > orderLots) then
-      Left(InvalidOrder("iceberg displayed lots cannot exceed order lots"))
-    else Right(())
-
-end InstrumentOrders
+end InstrumentOrdersImpl

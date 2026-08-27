@@ -1,6 +1,7 @@
 package trading.economics
 
-import trading.quantity.Rational
+import trading.quantity.*
+import trading.quantity.refinement.PositiveWhole
 
 private[economics] object InstrumentSizing:
   def downsideRisk(netPnl: Rational): Rational =
@@ -38,3 +39,60 @@ private[economics] object InstrumentSizing:
       Right(selected)
 
 end InstrumentSizing
+
+private[economics] final class InstrumentSizingImpl[
+  O,
+  D <: Dimension,
+  B <: Dimension,
+  Q <: Dimension,
+  S <: Dimension
+](
+  authority: Instrument.OwnerAuthority[O],
+  settleRef: DimRef[S],
+  lotsFor: BigInt => Either[EconomicsError, InstrumentLots[O, D]],
+  valuation: ValuationCapability[
+    O,
+    D,
+    B,
+    Q,
+    S,
+    InstrumentLots[O, D],
+    InstrumentPrice[O, B, Q],
+    InstrumentMarketState[O, B, Q, S],
+    InstrumentPosition[O, D]
+  ])
+  extends SizingCapability[
+    O,
+    S,
+    InstrumentLots[O, D],
+    InstrumentPrice[O, B, Q],
+    InstrumentMarketState[O, B, Q, S],
+    InstrumentPosition[O, D]
+  ]:
+
+  private type Lots      = InstrumentLots[O, D]
+  private type Price     = InstrumentPrice[O, B, Q]
+  private type Market    = InstrumentMarketState[O, B, Q, S]
+  private type Position  = InstrumentPosition[O, D]
+  private type RoundTrip = InstrumentRoundTripScenario[O, Lots, Price, Market, Position]
+  private type Schedule  = InstrumentFeeSchedule[O, Lots, Price, Market, Position]
+
+  def downsideRisk(pnl: InstrumentPnl[O, S]): Quantity[S] =
+    authority.assertIssued()
+    Quantity(settleRef, InstrumentSizing.downsideRisk(pnl.netPnl.coefficient))
+
+  def maxLots(
+    riskBudget: Quantity[S],
+    cap: PositiveWhole,
+    feeSchedule: Schedule
+  )(
+    scenarioFor: Lots => Either[EconomicsError, RoundTrip]
+  ): Either[EconomicsError, Option[Lots]] =
+    InstrumentSizing.maxLots(riskBudget.coefficient, cap.unrefined)(
+      lotsFor,
+      scenarioFor,
+      _.heldPosition.count,
+      scenario => valuation.pnl(scenario, feeSchedule).map(pnl => downsideRisk(pnl).coefficient)
+    )
+
+end InstrumentSizingImpl

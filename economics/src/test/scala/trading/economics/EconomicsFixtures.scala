@@ -38,79 +38,93 @@ final class EconomicsFixtures:
       .get
 
   val linear: Instrument =
-    Instrument
-      .create(
-        InstrumentId("linear-btcusd"),
-        UnderlyingId("bitcoin-index"),
-        btc,
-        usd,
-        contract,
-        usd
-      )(
-        contractLots,
-        usdPerBtcTicks,
-        Rate(contract.dimension.asDimensionRef, btc.dimension.asDimensionRef, Rational.one),
-        Rate(contract.dimension.asDimensionRef, usd.dimension.asDimensionRef, Rational.zero)
-      )
-      .toOption
-      .get
+    instrument("linear-btcusd", "bitcoin-index", btc, usd, contract, usd)(
+      contractLots,
+      usdPerBtcTicks,
+      Rational.one,
+      Rational.zero
+    )
 
   val inverse: Instrument =
-    Instrument
-      .create(
-        InstrumentId("inverse-btcusd"),
-        UnderlyingId("bitcoin-index"),
-        btc,
-        usd,
-        contract,
-        btc
-      )(
-        contractLots,
-        usdPerBtcTicks,
-        Rate(contract.dimension.asDimensionRef, btc.dimension.asDimensionRef, Rational.zero),
-        Rate(contract.dimension.asDimensionRef, usd.dimension.asDimensionRef, Rational(-100))
-      )
-      .toOption
-      .get
+    instrument("inverse-btcusd", "bitcoin-index", btc, usd, contract, btc)(
+      contractLots,
+      usdPerBtcTicks,
+      Rational.zero,
+      Rational(-100)
+    )
 
   val quanto: Instrument =
-    Instrument
-      .create(
-        InstrumentId("quanto-btcusd-eur"),
-        UnderlyingId("bitcoin-index"),
-        btc,
-        usd,
-        contract,
-        eur
-      )(
-        contractLots,
-        usdPerBtcTicks,
-        Rate(contract.dimension.asDimensionRef, btc.dimension.asDimensionRef, Rational.one),
-        Rate(contract.dimension.asDimensionRef, usd.dimension.asDimensionRef, Rational.zero)
-      )
-      .toOption
-      .get
+    instrument("quanto-btcusd-eur", "bitcoin-index", btc, usd, contract, eur)(
+      contractLots,
+      usdPerBtcTicks,
+      Rational.one,
+      Rational.zero
+    )
 
   val spotLike: Instrument =
-    Instrument
-      .create(
-        InstrumentId("spot-like-btcusd"),
-        UnderlyingId("bitcoin"),
-        btc,
-        usd,
-        btc,
-        usd
-      )(
-        btcSatoshis,
-        usdPerBtcTicks,
-        Rate(btc.dimension.asDimensionRef, btc.dimension.asDimensionRef, Rational.one),
-        Rate(btc.dimension.asDimensionRef, usd.dimension.asDimensionRef, Rational.zero)
-      )
-      .toOption
-      .get
+    instrument("spot-like-btcusd", "bitcoin", btc, usd, btc, usd)(
+      btcSatoshis,
+      usdPerBtcTicks,
+      Rational.one,
+      Rational.zero
+    )
 
   def price(instrument: Instrument, dollars: BigInt): instrument.Price =
     instrument.prices.exact(Rational(dollars)).toOption.get
+
+  def state(instrument: Instrument, dollars: BigInt): instrument.MarketState =
+    instrument.market.quoteSettled(price(instrument, dollars)).toOption.get
+
+  def scenario(
+    instrument: Instrument
+  )(
+    side: Side,
+    lots: instrument.Lots,
+    market: instrument.MarketState,
+    role: LiquidityRole = LiquidityRole.Taker
+  ): instrument.OrderScenario =
+    val order       = instrument.orders.market(side, lots).toOption.get
+    val slice       = instrument.scenarios.slice(lots, market, role)
+    val assumptions = instrument.scenarios.assumptions(
+      instrument.scenarios.immediate,
+      instrument.scenarios.directPricing,
+      Vector(slice)
+    )
+    instrument.scenarios.order(order, assumptions).toOption.get
+
+  def roundTrip(
+    instrument: Instrument
+  )(
+    lots: instrument.Lots,
+    entryDollars: BigInt,
+    exitDollars: BigInt
+  ): instrument.RoundTripScenario =
+    val entry = scenario(instrument)(Side.Buy, lots, state(instrument, entryDollars))
+    val exit  = scenario(instrument)(Side.Sell, lots, state(instrument, exitDollars))
+    instrument.scenarios.roundTrip(entry, exit).toOption.get
+
+  private def instrument(
+    id: String,
+    underlying: String,
+    base: AssetRef,
+    quote: AssetRef,
+    position: AssetRef,
+    settle: AssetRef
+  )(
+    positionGrid: RegisteredGridRef[? <: Dimension],
+    priceGrid: RegisteredGridRef[? <: Dimension],
+    baseCoefficient: Rational,
+    quoteCoefficient: Rational
+  ): Instrument =
+    val roles    = new InstrumentRoles(base, quote, position, settle)
+    val identity = InstrumentIdentity(InstrumentId(id), UnderlyingId(underlying))
+    val listing  = new ListingRules(roles)(positionGrid, priceGrid)
+    val payoff   = new ContractPayoff(roles)(
+      Rate(roles.position.dimension.asDimensionRef, roles.base.dimension.asDimensionRef, baseCoefficient),
+      Rate(roles.position.dimension.asDimensionRef, roles.quote.dimension.asDimensionRef, quoteCoefficient)
+    )
+    Instrument.create(InstrumentDefinition(identity, roles, listing, payoff)).toOption.get
+  end instrument
 
   private def asset(name: String): AssetRef =
     registry

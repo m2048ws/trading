@@ -1,18 +1,4 @@
-# instrument-economics Specification
-
-## Purpose
-Defines validated trading instruments and the exact, grid-aware market inputs needed to value signed positions uniformly in an instrument's settlement asset.
-## Requirements
-### Requirement: Downstream economics boundary
-Instrument, order, fee, PnL, and risk APIs SHALL be delivered by a downstream economics artifact that depends on the public quantities artifact. The quantities artifact SHALL remain independently usable and SHALL NOT acquire these domain concepts, their construction authority, or a dependency on the economics artifact.
-
-#### Scenario: Consume economics above quantities
-- **WHEN** downstream Scala adds the economics artifact
-- **THEN** it can use the new domain API together with public `trading.quantity` values and witnesses
-
-#### Scenario: Keep quantities domain-neutral
-- **WHEN** downstream Scala depends only on the quantities artifact
-- **THEN** instrument, order, fee, PnL, and position-sizing types are absent from that artifact
+## MODIFIED Requirements
 
 ### Requirement: Focused instrument-owned capability surface
 A stable `Instrument` SHALL retain its generative ownership identity, external identity, semantic definition components, and convenient aliases for its owner-indexed public value types. Intrinsic observations of one owned value, including lot count, exact lot quantity, position count, exact position quantity, price ticks, price coefficient, and price rate, SHALL be operations of that value rather than functions that require passing the value back to its instrument.
@@ -144,42 +130,7 @@ The instrument's `market` capability SHALL retain relationship-oriented construc
 - **WHEN** a caller asks a market state to convert an exact quantity from a registered source asset
 - **THEN** that state uses its own checked settle-targeted conversion or returns a typed missing-conversion failure
 
-### Requirement: Universal exact contract valuation
-An instrument's `valuation` capability SHALL calculate exact settle value per unit of position as:
-
-```text
-basePerPosition.andThen(baseToSettle)
-  + quotePerPosition.andThen(quoteToSettle)
-```
-
-It SHALL calculate position value by applying that rate to the exact signed position quantity, including the instrument lot quantum and lot coordinate. It SHALL calculate price PnL as exit position value minus entry position value for the same signed position. These calculations SHALL remain exact `Quantity[settle.D]` values and SHALL NOT quantize to a settlement, wallet, or storage grid.
-
-#### Scenario: Include lot count and quantum in valuation
-- **WHEN** a position contains `n` lot coordinates and each lot represents exact position quantum `q`
-- **THEN** `valuation` applies settle-per-position to exact signed quantity `n × q`, rather than omitting or separately approximating lots
-
-#### Scenario: Calculate long and short PnL symmetrically
-- **WHEN** equal-magnitude long and short positions are valued at the same entry and exit market states
-- **THEN** their price PnL values are exact negations
-
-#### Scenario: Preserve off-grid inverse PnL
-- **WHEN** inverse-style valuation produces a rational settle amount not on the settlement asset's storage grid
-- **THEN** price PnL remains that exact rational quantity without rounding
-
-### Requirement: Product-family normalization without core flags
-Spot, linear, inverse, and quanto-style definitions SHALL normalize into the same signed base/quote contract terms and market-state conversions. Core valuation SHALL NOT branch on public `isSpot`, `isLinear`, `isInverse`, `isQuanto`, contract-family enums, or venue-specific multiplier fields. Venue adapters MAY interpret source metadata to produce the validated generic terms.
-
-#### Scenario: Normalize a linear payoff
-- **WHEN** an adapter supplies a signed base-per-position term and zero quote-per-position term
-- **THEN** universal valuation produces the linear price-dependent settle value through base-to-settle conversion
-
-#### Scenario: Normalize an inverse payoff
-- **WHEN** an adapter supplies zero base-per-position and a signed quote-per-position term with settle equal to base
-- **THEN** universal valuation uses the reciprocal-price quote-to-settle conversion and produces inverse PnL without an inverse branch
-
-#### Scenario: Normalize a quanto-style payoff
-- **WHEN** price and an explicit third-asset settlement anchor produce coherent base-to-settle and quote-to-settle rates
-- **THEN** universal valuation produces the quanto-style result without a quanto branch
+## ADDED Requirements
 
 ### Requirement: Non-forgeable instrument ownership authority
 All public values whose meaning depends on one exact instrument SHALL carry one generative owner identity issued during successful instrument construction. Any internal authority used to construct, inspect, or reconstitute those values SHALL be sealed against caller implementation, unavailable from the public `Instrument` surface, and unusable without the issuing instrument's owner identity. The packaged JVM API SHALL enforce the same boundary for ordinary Java source: Scala-only sealing or package-private metadata is insufficient, the raw JVM gate SHALL have no caller-accessible issuer or constructor, and every trusted carrier and aggregate constructor SHALL require that gate. Separating implementations into concern-named files SHALL NOT make constructors, retagging operations, witness casts, or owner tokens available to ordinary or same-package-spoof downstream source.

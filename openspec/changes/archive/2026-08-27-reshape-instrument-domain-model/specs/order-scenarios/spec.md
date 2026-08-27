@@ -1,8 +1,5 @@
-# order-scenarios Specification
+## MODIFIED Requirements
 
-## Purpose
-Defines immutable, compositional order instructions and complete hypothetical order outcomes whose price and maker/taker assumptions can drive fees and PnL without introducing execution lifecycle state.
-## Requirements
 ### Requirement: Compositional immutable orders
 An order SHALL bind one exact instrument owner, an `OrderIntent` containing side, positive instrument-owned lots, and position effect, an explicit activation alternative, and an explicit execution-instruction alternative. Activation SHALL distinguish immediate, fixed-trigger, and trailing-trigger forms by construction. Execution instructions SHALL distinguish market execution from priced execution by construction.
 
@@ -59,25 +56,6 @@ Market, limit, and pegged pricing SHALL likewise be explicit alternatives. A lim
 - **WHEN** a pegged order is evaluated in a complete scenario
 - **THEN** the scenario supplies a grid-valid peg resolution consistent with the instruction's reference and offset
 
-### Requirement: LiquidityRole describes matched quantity
-`LiquidityRole` SHALL contain maker and taker classifications and SHALL describe the fee treatment of matched quantity, not the instruction stored by an order. An order SHALL store a liquidity constraint, while a complete order scenario SHALL store the assumed role of each positive matched slice. Core validation SHALL enforce universal implications: a market slice is taker; a maker-only order has only maker slices; and an unrestricted limit order MAY contain maker slices, taker slices, or both. Venue fee schedules MAY refine classification for mechanics such as hidden quantity.
-
-#### Scenario: Model an all-taker market outcome
-- **WHEN** a complete market-order scenario contains matched quantity
-- **THEN** every liquidity slice is classified as taker
-
-#### Scenario: Model a mixed limit outcome
-- **WHEN** an unrestricted limit order is assumed to cross for part of its lots and later rest for the remainder
-- **THEN** its scenario may contain a taker slice and a maker slice whose lots sum to the order lots
-
-#### Scenario: Enforce maker-only conditionally on a fill
-- **WHEN** a maker-only order has a complete filled scenario
-- **THEN** every slice is maker, while the order mechanics themselves make no guarantee that any fill occurs
-
-#### Scenario: Keep liquidity out of the order instruction
-- **WHEN** two scenarios evaluate the same unrestricted limit order under different maker/taker allocations
-- **THEN** the order value remains unchanged and only the scenario outcomes differ
-
 ### Requirement: Complete checked order scenarios
 A complete order scenario SHALL bind one immutable order and one cohesive `ScenarioAssumptions` value containing activation status, pricing resolution, and one or more positive liquidity slices. Scenario assumptions SHALL represent activation status and pricing resolution through explicit alternatives: immediate activation versus supplied trigger evidence, and direct pricing versus supplied peg resolution. Trigger evidence SHALL itself distinguish fixed and trailing forms so a favorable extremum is present exactly for trailing evidence. Missing, extraneous, or mismatched evidence SHALL remain constructible only as an unvalidated request and SHALL be rejected by complete-scenario construction.
 
@@ -114,22 +92,3 @@ Each liquidity slice SHALL carry positive instrument-owned lots, a coherent mark
 #### Scenario: Avoid a parallel validation model
 - **WHEN** scenario construction validates activation, pricing, lots, and liquidity
 - **THEN** the checked domain alternatives themselves provide the data and cases being validated, with no duplicate kind-plus-option projection required
-
-### Requirement: Checked round-trip scenarios
-A round-trip trade scenario SHALL contain complete entry and exit order scenarios for the same stable instrument and SHALL require their signed position changes to sum exactly to flat. The instrument-owned `scenarios` capability SHALL perform this checked construction and preserve each leg's activation and liquidity slices. It SHALL NOT infer a closing side, silently resize a leg, or combine values belonging to different instrument paths.
-
-#### Scenario: Construct a long round trip
-- **WHEN** a buy entry and equal-lot sell exit belong to the same instrument
-- **THEN** `scenarios` constructs a round trip whose held position is the entry's positive signed position change
-
-#### Scenario: Construct a short round trip
-- **WHEN** a sell entry and equal-lot buy exit belong to the same instrument
-- **THEN** `scenarios` constructs a round trip whose held position is the entry's negative signed position change
-
-#### Scenario: Reject unequal closing lots
-- **WHEN** entry and exit position changes do not sum exactly to flat
-- **THEN** round-trip construction fails
-
-#### Scenario: Reject cross-instrument legs
-- **WHEN** entry and exit scenarios are bound to distinct instrument paths
-- **THEN** they cannot form one round trip without an explicit future checked rebinding boundary
