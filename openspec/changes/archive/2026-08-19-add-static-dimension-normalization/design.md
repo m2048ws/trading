@@ -3,7 +3,7 @@
 See `proposal.md` for motivation and the delta specs for behavioral requirements.
 
 The static algebra currently represents multiplication and inversion as unreduced `Times` and `Inverse` syntax, while
-`DimensionKey` already implements the corresponding free abelian group at runtime as an arbitrary-precision atom-to-power
+`DimKey` already implements the corresponding free abelian group at runtime as an arbitrary-precision atom-to-power
 map. `Quantity` and `GridQuantity` arithmetic therefore expose expression history, and `applyRate`, `andThen`, `ratioTo`,
 and runtime `SameDimension` recovery manually bridge selected algebraic equalities.
 
@@ -58,7 +58,7 @@ fixed point and records active and completed traversal states separately.
 - Keep automatic derivation usable from real downstream compilation units with the supported warning policy.
 - Use one restricted `SameDimension` capability at arithmetic call sites regardless of whether its premise was proven
   statically or checked at runtime.
-- Keep static normalization and runtime `DimensionKey` operations consistent without weakening runtime provenance.
+- Keep static normalization and runtime `DimKey` operations consistent without weakening runtime provenance.
 
 **Non-Goals:**
 
@@ -99,7 +99,7 @@ Alternatives considered:
 Static exponents will use a project-owned signed-natural representation with canonical zero, positive, and negative
 states. Zero may exist during computation but will never be stored in a normalized power tuple. The representation will
 have unbounded mathematical semantics; compiler resource exhaustion must stop compilation rather than wrap an exponent.
-The runtime counterpart remains `BigInt` in `DimensionKey`.
+The runtime counterpart remains `BigInt` in `DimKey`.
 
 The initial magnitude encoding may be chosen for simple and predictable reduction because trading dimensions normally
 have small powers. If that encoding remains visible in supported result annotations, it is part of the source-level static
@@ -186,7 +186,7 @@ embed through their witnesses and reuse the same exact arithmetic rather than im
 
 `SameDimension[A, B]` will remain privately constructible and will expose only controlled quantity/grid retagging plus
 contextual use by approved arithmetic. Static derivation will issue it after proving normalized powers equal modulo
-permutation. Runtime factories will issue it only after authoritative `DimensionKey` equality and existing registry-owner
+permutation. Runtime factories will issue it only after authoritative `DimKey` equality and existing registry-owner
 checks. It will not be promoted to unrestricted Scala type equality.
 
 Reflexive `SameDimension[D, D]` records Scala structural type identity and is intentionally available even when `D` is a
@@ -201,7 +201,7 @@ derivation and keeps the runtime success path explicit.
 ### 6. Keep static witnesses and runtime keys in lockstep
 
 `DimRef` product, inverse, and quotient construction will compute the new static output type through the same algebraic
-operation represented at runtime by `DimensionKey`. Source-visible factors can normalize statically; a fresh witness for
+operation represented at runtime by `DimKey`. Source-visible factors can normalize statically; a fresh witness for
 an arbitrary runtime key may remain a statically opaque factor. Algebra that depends on the hidden decomposition of such a
 factor will require checked runtime `SameDimension` evidence, preserving the existing runtime/compile-time boundary.
 
@@ -217,7 +217,7 @@ invalid.
 
 Stored factors must be concrete and structurally irreducible under the supported algebra. Transparent annotations are
 removed before this decision and never become stored factors. Their exposed underlying atom is accepted exactly when the
-unannotated atom is accepted; exposed `One`, `Times`, `Inverse`, `Powers`, the base `Dimension` bound, and reducible or
+unannotated atom is accepted; exposed `One`, `Times`, `Inverse`, `Powers`, the base `Dim` bound, and reducible or
 unresolved structures remain rejected. Intersections, refinements, match types, bounds, and other unknown wrappers remain
 conservative rather than gaining annotation-like transparency. Every automatic evidence macro re-parses its computed
 tuple, re-exposes annotations, transparent aliases, and every exact concrete associated endpoint to a guarded fixed point,

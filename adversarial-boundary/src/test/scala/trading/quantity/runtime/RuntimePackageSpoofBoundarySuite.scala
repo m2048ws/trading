@@ -50,7 +50,7 @@ class RuntimePackageSpoofBoundarySuite extends FunSuite:
       import trading.quantity.refinement.*
       import trading.quantity.runtime.*
       val registry = new QuantityRegistry
-      val dimension = registry.registerDimension(DimensionKey.one).toOption.get
+      val dimension = registry.registerDimension(DimKey.one).toOption.get
       val plain = UniformGrid.create(GridId("private-grid"), GridVersion(1), dimension.dimension.asDimensionRef,
         PositiveRational.exact(1, 100).toOption.get)
       val forged = new registry.InternedRegisteredGridRef(dimension.dimension, plain)
@@ -67,7 +67,7 @@ class RuntimePackageSpoofBoundarySuite extends FunSuite:
       import trading.quantity.*
       import trading.quantity.runtime.*
       val registry = new QuantityRegistry
-      val forged = new registry.InternedDimensionWitness(DimensionKey.one)
+      val forged = new registry.InternedDimensionWitness(DimKey.one)
       """
 
   test("same-package source cannot claim registry ownership or promote plain witnesses"):
@@ -76,9 +76,9 @@ class RuntimePackageSpoofBoundarySuite extends FunSuite:
       import trading.quantity.*
       import trading.quantity.runtime.*
       val forged = new RegisteredDimensionRef[One]:
-        val key = DimensionKey.one
+        val key = DimKey.one
         val asDimensionRef = DimRef.one
-        def sharesRegistryWith(r: RegisteredDimensionRef[? <: Dimension]): Boolean = true
+        def sharesRegistryWith(r: RegisteredDimensionRef[? <: Dim]): Boolean = true
       """
     assertRejected:
       """

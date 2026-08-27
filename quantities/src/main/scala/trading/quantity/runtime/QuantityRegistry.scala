@@ -6,8 +6,8 @@ import scala.collection.mutable
 import trading.quantity.AssetId
 import trading.quantity.Atom
 import trading.quantity.AtomId
-import trading.quantity.Dimension
-import trading.quantity.DimensionKey
+import trading.quantity.Dim
+import trading.quantity.DimKey
 import trading.quantity.DimRef
 import trading.quantity.GridId
 import trading.quantity.GridKey
@@ -27,10 +27,10 @@ import trading.quantity.refinement.*
  *
  * @tparam D the registered dimension
  */
-sealed trait RegisteredDimensionRef[D <: Dimension]:
-  def key: DimensionKey
-  def asDimensionRef: DimRef[D]
-  def sharesRegistryWith(r: RegisteredDimensionRef[? <: Dimension]): Boolean
+sealed trait RegisteredDimensionRef[D <: Dim]:
+  def key: DimKey
+  def ref: DimRef[D]
+  def sharesRegistryWith(r: RegisteredDimensionRef[? <: Dim]): Boolean
 
 /**
  * Registry-owned evidence for a grid resolved from its runtime identity.
@@ -40,7 +40,7 @@ sealed trait RegisteredDimensionRef[D <: Dimension]:
  *
  * @tparam D the dimension inhabited by quantities on this grid
  */
-sealed trait RegisteredGridRef[D <: Dimension]:
+sealed trait RegisteredGridRef[D <: Dim]:
   /** Static identity of coordinates created by this registered grid. */
   type G
 
@@ -87,17 +87,16 @@ sealed trait AssetRef extends DimensionWitness:
  * registry that created it.
  */
 final class QuantityRegistry:
-  private final class InternedRegisteredDimensionRef[D <: Dimension](val asDimensionRef: DimRef[D])
-    extends RegisteredDimensionRef[D]:
-    private val registry  = QuantityRegistry.this
-    val key: DimensionKey = asDimensionRef.key
+  private final class InternedRegisteredDimRef[D <: Dim](val ref: DimRef[D]) extends RegisteredDimensionRef[D]:
+    private val registry = QuantityRegistry.this
+    val key: DimKey      = ref.key
 
-    def sharesRegistryWith(r: RegisteredDimensionRef[? <: Dimension]): Boolean =
+    def sharesRegistryWith(r: RegisteredDimensionRef[? <: Dim]): Boolean =
       r match
-        case candidate: InternedRegisteredDimensionRef[?] => registry.eq(candidate.registry)
+        case candidate: InternedRegisteredDimRef[?] => registry.eq(candidate.registry)
         case _                                            => false
 
-  private final class InternedRegisteredGridRef[D <: Dimension, G0](
+  private final class InternedRegisteredGridRef[D <: Dim, G0](
     val dimension: RegisteredDimensionRef[D],
     val asGridRef: GridRef.Grid[D, G0])
     extends RegisteredGridRef[D]:
@@ -109,17 +108,17 @@ final class QuantityRegistry:
   private final class InternedAssetRef(val id: AssetId, val dimensionAtom: AtomId) extends AssetRef:
     val dimension: RegisteredDimensionRef[D] =
       val generated = DimRef.atomic(dimensionAtom)
-      new InternedRegisteredDimensionRef(generated.dimension.asInstanceOf[DimRef[D]])
+      new InternedRegisteredDimRef(generated.dimension.asInstanceOf[DimRef[D]])
 
-  private final class InternedDimensionWitness(canonicalKey: DimensionKey) extends DimensionWitness:
+  private final class InternedDimensionWitness(canonicalKey: DimKey) extends DimensionWitness:
     val dimension: RegisteredDimensionRef[D] =
       val generated = DimRef.fresh(canonicalKey)
-      new InternedRegisteredDimensionRef(generated.dimension.asInstanceOf[DimRef[D]])
+      new InternedRegisteredDimRef(generated.dimension.asInstanceOf[DimRef[D]])
 
   private val assets     = mutable.Map.empty[AssetId, (AtomId, AssetRef)]
-  private val dimensions = mutable.Map.empty[DimensionKey, DimensionWitness]
+  private val dimensions = mutable.Map.empty[DimKey, DimensionWitness]
   private val grids      =
-    mutable.Map.empty[DimensionKey, mutable.Map[GridKey, (Rational, RegisteredGridRef[? <: Dimension])]]
+    mutable.Map.empty[DimKey, mutable.Map[GridKey, (Rational, RegisteredGridRef[? <: Dim])]]
 
   private def isCanonical(w: DimensionWitness): Boolean =
     dimensions
@@ -136,11 +135,11 @@ final class QuantityRegistry:
         case Some((existingAtom, _)) =>
           Left(ConflictingAssetDefinition(assetId, existingAtom, d.dimensionAtom))
         case None =>
-          val dimensionKey = DimensionKey.atom(d.dimensionAtom)
+          val dimKey = DimKey.atom(d.dimensionAtom)
 
-          dimensions.get(dimensionKey) match
+          dimensions.get(dimKey) match
             case Some(_) =>
-              Left(ConflictingDimensionRegistration(dimensionKey))
+              Left(ConflictingDimensionRegistration(dimKey))
             case None =>
               val witness = new InternedAssetRef(assetId, d.dimensionAtom)
               val _       = assets.put(assetId, d.dimensionAtom -> witness)
@@ -154,7 +153,7 @@ final class QuantityRegistry:
         .map(_._2)
         .toRight(UnknownAsset(id))
 
-  def registerDimension(key: DimensionKey): Either[RegistryError, DimensionWitness] =
+  def registerDimension(key: DimKey): Either[RegistryError, DimensionWitness] =
     synchronized:
       dimensions.get(key) match
         case Some(witness) =>
@@ -164,7 +163,7 @@ final class QuantityRegistry:
           val _       = dimensions.put(key, witness)
           Right(witness)
 
-  def resolveDimension(key: DimensionKey): Either[RegistryError, DimensionWitness] =
+  def resolveDimension(key: DimKey): Either[RegistryError, DimensionWitness] =
     synchronized:
       dimensions
         .get(key)
@@ -192,7 +191,7 @@ final class QuantityRegistry:
               )
             )
           case None =>
-            val grid    = UniformGrid.create(d.id, d.version, w.dimension.asDimensionRef, d.quantum)
+            val grid    = UniformGrid.create(d.id, d.version, w.dimension.ref, d.quantum)
             val witness = new InternedRegisteredGridRef(w.dimension, grid)
             val _       = dimensionGrids.put(d.key, d.quantum.unrefined -> witness)
             Right(witness)

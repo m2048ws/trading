@@ -28,7 +28,7 @@ Three public capabilities remain deliberately independent:
 
 | Capability | Establishes | Does not establish |
 | --- | --- | --- |
-| `DimRef[D]` | This inhabited `D` has one authoritative `DimensionKey` | A value, grid, or registry provenance |
+| `DimRef[D]` | This inhabited `D` has one authoritative `DimKey` | A value, grid, or registry provenance |
 | `SameDimension[A, B]` | Controlled retagging between equivalent dimension indices | Runtime identity or construction authority |
 | `Quantity[D]` / `GridQuantity[D, G]` | A trusted carrier created by an authoritative or checked path | A `DimRef`, grid witness, or registry ownership |
 
@@ -41,7 +41,7 @@ The closed static language is:
 
 ```scala
 Atom[K]
-Dim[Power[K, E] *: ... *: EmptyTuple]
+Canonical[Power[K, E] *: ... *: EmptyTuple]
 Times[A, B]
 Inverse[A]
 Divide[A, B]
@@ -51,7 +51,7 @@ One
 Declared `Power` entries require concrete stable singleton keys and nonzero singleton `Int` exponents. Complete
 expressions may accumulate exponents outside the `Int` range before later cancellation because the private interpreter
 uses `BigInt`. Duplicate or zero declared powers, unresolved keys, malformed tuple tails, and shapes outside the grammar
-are rejected. Runtime `DimensionKey` powers are also arbitrary precision.
+are rejected. Runtime `DimKey` powers are also arbitrary precision.
 
 Literal construction derives authority from the literal type itself:
 
@@ -93,13 +93,13 @@ Addition, subtraction, scaling, comparison, refinement, and other dimension-pres
 Dimension-changing primitive operations preserve the expression spelling uniformly:
 
 ```scala
-def multiply[A <: Dimension, B <: Dimension](
+def multiply[A <: Dim, B <: Dim](
   left: Quantity[A],
   right: Quantity[B]
 ): Quantity[Times[A, B]] =
   left * right
 
-def divide[A <: Dimension, B <: Dimension](
+def divide[A <: Dim, B <: Dim](
   left: Quantity[A],
   right: NonZero[Quantity[B]]
 ): Quantity[Divide[A, B]] =
@@ -113,7 +113,7 @@ expression witness.
 When an API wants a nominated equivalent spelling, select it explicitly with `SameDimension`:
 
 ```scala
-def notional[A <: Dimension, B <: Dimension, Out <: Dimension](
+def notional[A <: Dim, B <: Dim, Out <: Dim](
   amount: Quantity[A],
   price: Quantity[B]
 )(using SameDimension[Times[A, B], Out]): Quantity[Out] =
@@ -123,14 +123,14 @@ def notional[A <: Dimension, B <: Dimension, Out <: Dimension](
 There is no implicit global retagging. Homogeneous generic code simply preserves its input type:
 
 ```scala
-def total[D <: Dimension](left: Quantity[D], right: Quantity[D]): Quantity[D] =
+def total[D <: Dim](left: Quantity[D], right: Quantity[D]): Quantity[D] =
   left + right
 ```
 
 Empty construction is authority-bearing. A local `DimRef[D]` is therefore required:
 
 ```scala
-def empty[D <: Dimension](using dimension: DimRef[D]): Quantity[D] =
+def empty[D <: Dim](using dimension: DimRef[D]): Quantity[D] =
   Quantity.zero[D]
 ```
 
@@ -210,10 +210,10 @@ import trading.quantity.algebra.exactQuantityAlgebra.given
 import trading.quantity.algebra.gridQuantityAlgebra.given
 import trading.quantity.algebra.refinedAdditive.given
 
-def exactSpace[D <: Dimension](using DimRef[D]) =
+def exactSpace[D <: Dim](using DimRef[D]) =
   summon[VectorSpace[Quantity[D], Rational]]
 
-def gridModule[D <: Dimension, G](using DimRef[D]) =
+def gridModule[D <: Dim, G](using DimRef[D]) =
   summon[LeftModule[GridQuantity[D, G], BigInt]]
 ```
 

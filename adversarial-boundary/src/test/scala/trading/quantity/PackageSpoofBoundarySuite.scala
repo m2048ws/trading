@@ -160,7 +160,7 @@ class PackageSpoofBoundarySuite extends FunSuite:
       """
       import trading.quantity.*
       val forged = new DimRef[One]:
-        val key = DimensionKey.one
+        val key = DimKey.one
       """
     assertRejected:
       """
@@ -189,7 +189,7 @@ class PackageSpoofBoundarySuite extends FunSuite:
       """
       import trading.quantity.*
       type Entry = Power["package-spoof", 1]
-      val forged = new Dim[Entry *: EmptyTuple] {}
+      val forged = new Canonical[Entry *: EmptyTuple] {}
       """
     assertRejected:
       """
@@ -202,7 +202,7 @@ class PackageSpoofBoundarySuite extends FunSuite:
     assertRejected:
       """
       import trading.quantity.*
-      val forged = new Dimension {}
+      val forged = new Dim {}
       """
 
   test("removed associated-output normalization cannot be named"):
@@ -210,7 +210,7 @@ class PackageSpoofBoundarySuite extends FunSuite:
       """
       import trading.quantity.*
       type A = Atom["selected-output"]
-      type Wrong = Dim[Power["selected-output", 2] *: EmptyTuple]
+      type Wrong = Canonical[Power["selected-output", 2] *: EmptyTuple]
       val forged: Normalize.Aux[A, Wrong] = Normalize.derived[A]
       """
 
@@ -218,7 +218,7 @@ class PackageSpoofBoundarySuite extends FunSuite:
     assertRejected:
       """
       import trading.quantity.*
-      type Normalized = Dim[Power["normalized", 1] *: EmptyTuple]
+      type Normalized = Canonical[Power["normalized", 1] *: EmptyTuple]
       val forged: Quantity[Normalized] = Rational.one
       """
     assertRejected:

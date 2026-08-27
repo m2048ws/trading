@@ -12,7 +12,7 @@ import trading.quantity.*
  */
 final case class PackedAssetGridQuantity(
   assetId: AssetId,
-  expectedDimension: DimensionKey,
+  expectedDimension: DimKey,
   gridId: GridId,
   gridVersion: GridVersion,
   coordinate: BigInt)
@@ -21,13 +21,7 @@ final case class PackedAssetGridQuantity(
 /** Packing and registry-backed decoding for [[PackedAssetGridQuantity]]. */
 object PackedAssetGridQuantity:
 
-  def pack(
-    a: trading.quantity.runtime.AssetRef
-  )(
-    g: RegisteredGridRef[a.D]
-  )(
-    v: GridQuantity[a.D, g.G]
-  ): PackedAssetGridQuantity =
+  def pack(a: trading.quantity.runtime.AssetRef)(g: RegisteredGridRef[a.D])(v: GridQuantity[a.D, g.G]): PackedAssetGridQuantity =
     PackedAssetGridQuantity(
       a.id,
       a.dimension.key,
@@ -36,17 +30,15 @@ object PackedAssetGridQuantity:
       g.coordinate(v)
     )
 
-  def decode(p: PackedAssetGridQuantity, r: QuantityRegistry): Either[RegistryError, ResolvedAssetGridQuantity] =
-    r
+  def decode(p: PackedAssetGridQuantity, registry: QuantityRegistry): Either[RegistryError, ResolvedAssetGridQuantity] =
+    registry
       .resolveAsset(p.assetId)
       .flatMap: asset =>
         if asset.dimension.key != p.expectedDimension then
           Left(PackedAssetDimensionMismatch(p.assetId, p.expectedDimension, asset.dimension.key))
         else
-          val key = GridKey(p.gridId, p.gridVersion)
-
-          r
-            .resolveGridForDecode(asset)(key)
+          registry
+            .resolveGridForDecode(asset)(GridKey(p.gridId, p.gridVersion))
             .map(grid => new ResolvedAssetGridQuantity(asset)(grid)(grid.fromCoordinate(p.coordinate)))
 
 end PackedAssetGridQuantity
@@ -60,7 +52,7 @@ end PackedAssetGridQuantity
  * This is not a stable production wire schema; a separate schema version is required before production persistence.
  */
 final case class PackedGridQuantity(
-  dimension: DimensionKey,
+  dimension: DimKey,
   gridId: GridId,
   gridVersion: GridVersion,
   coordinate: BigInt)
@@ -69,7 +61,7 @@ final case class PackedGridQuantity(
 /** Packing and registry-backed decoding for [[PackedGridQuantity]]. */
 object PackedGridQuantity:
 
-  def pack[D <: Dimension](g: RegisteredGridRef[D])(v: GridQuantity[D, g.G]): PackedGridQuantity =
+  def pack[D <: Dim](g: RegisteredGridRef[D])(v: GridQuantity[D, g.G]): PackedGridQuantity =
     PackedGridQuantity(
       g.dimension.key,
       g.id,
@@ -77,14 +69,12 @@ object PackedGridQuantity:
       g.coordinate(v)
     )
 
-  def decode(p: PackedGridQuantity, r: QuantityRegistry): Either[RegistryError, ResolvedGridQuantity] =
-    r
+  def decode(p: PackedGridQuantity, registry: QuantityRegistry): Either[RegistryError, ResolvedGridQuantity] =
+    registry
       .resolveDimension(p.dimension)
       .flatMap: dimension =>
-        val key = GridKey(p.gridId, p.gridVersion)
-
-        r
-          .resolveGridForDecode(dimension)(key)
+        registry
+          .resolveGridForDecode(dimension)(GridKey(p.gridId, p.gridVersion))
           .map(grid => new ResolvedGridQuantity(dimension)(grid)(grid.fromCoordinate(p.coordinate)))
 
 end PackedGridQuantity

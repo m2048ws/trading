@@ -1,4 +1,4 @@
-package trading.economics
+package trading.economics.instrument
 
 import munit.FunSuite
 

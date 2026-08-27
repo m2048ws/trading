@@ -2,7 +2,7 @@ package trading.quantity.runtime
 
 import trading.quantity.AssetId
 import trading.quantity.AtomId
-import trading.quantity.DimensionKey
+import trading.quantity.DimKey
 import trading.quantity.GridKey
 import trading.quantity.JavaSerializationUnsupported
 import trading.quantity.Rational
@@ -21,31 +21,30 @@ final case class ConflictingAssetDefinition(id: AssetId, existingAtom: AtomId, s
 final case class ForeignAssetWitness(id: AssetId) extends RegistryError
 
 /** Packed asset data declared a dimension different from the resolved asset dimension. */
-final case class PackedAssetDimensionMismatch(assetId: AssetId, expected: DimensionKey, resolved: DimensionKey)
+final case class PackedAssetDimensionMismatch(assetId: AssetId, expected: DimKey, resolved: DimKey)
   extends RegistryError
 
 /** No dimension has been registered for the requested canonical key. */
-final case class UnknownDimension(key: DimensionKey) extends RegistryError
+final case class UnknownDimension(key: DimKey) extends RegistryError
 
 /** A dimension witness does not belong to the registry performing the operation. */
-final case class ForeignDimensionWitness(key: DimensionKey) extends RegistryError
+final case class ForeignDimensionWitness(key: DimKey) extends RegistryError
 
 /** A canonical dimension key is already owned by an incompatible registration. */
-final case class ConflictingDimensionRegistration(key: DimensionKey) extends RegistryError
+final case class ConflictingDimensionRegistration(key: DimKey) extends RegistryError
 
 /** A grid definition names a dimension different from the supplied dimension witness. */
-final case class GridDimensionMismatch(expected: DimensionKey, supplied: DimensionKey) extends RegistryError
+final case class GridDimensionMismatch(expected: DimKey, supplied: DimKey) extends RegistryError
 
 /** Packed grid identity was found under a canonical dimension other than the requested one. */
-final case class PackedGridDimensionMismatch(requested: DimensionKey, registered: DimensionKey, key: GridKey)
-  extends RegistryError
+final case class PackedGridDimensionMismatch(requested: DimKey, registered: DimKey, key: GridKey) extends RegistryError
 
 /** No grid with the requested dimension-local key has been registered. */
-final case class UnknownGrid(dimension: DimensionKey, key: GridKey) extends RegistryError
+final case class UnknownGrid(dimension: DimKey, key: GridKey) extends RegistryError
 
 /** A grid identity was registered again with a different exact quantum. */
 final case class ConflictingGridDefinition(
-  dimension: DimensionKey,
+  dimension: DimKey,
   key: GridKey,
   existingQuantum: Rational,
   suppliedQuantum: Rational)

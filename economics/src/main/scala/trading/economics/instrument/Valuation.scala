@@ -1,23 +1,23 @@
-package trading.economics
+package trading.economics.instrument
 
 import trading.quantity.*
 import trading.quantity.runtime.AssetRef
 
-final case class InstrumentConvertedFeeLine[S <: Dimension] private[economics] (
+final case class ConvertedFeeLine[S <: Dim] private[instrument] (
   instrumentId: InstrumentId,
-  original: InstrumentFee[? <: Dimension],
+  original: Fee[? <: Dim],
   leg: ScenarioLeg,
   sourceSliceIndex: Int,
   settleContribution: Quantity[S])
 
-final case class InstrumentPnl[S <: Dimension] private[economics] (
+final case class Pnl[S <: Dim] private[instrument] (
   instrumentId: InstrumentId,
   pricePnl: Quantity[S],
-  convertedFeeLines: Vector[InstrumentConvertedFeeLine[S]],
+  convertedFeeLines: Vector[ConvertedFeeLine[S]],
   feePnl: Quantity[S],
   netPnl: Quantity[S])
 
-private[economics] object InstrumentValuation:
+private[instrument] object Valuation:
   def settlePerPosition(
     basePerPosition: Rational,
     baseToSettle: Rational,
@@ -31,38 +31,38 @@ private[economics] object InstrumentValuation:
   def pricePnl(position: Rational, entrySettlePerPosition: Rational, exitSettlePerPosition: Rational): Rational =
     position * exitSettlePerPosition - position * entrySettlePerPosition
 
-end InstrumentValuation
+end Valuation
 
-final class InstrumentValuation[PosD <: Dimension, B <: Dimension, Q <: Dimension, S <: Dimension] private[economics] (
+final class Valuation[PosD <: Dim, B <: Dim, Q <: Dim, S <: Dim] private[instrument] (
   instrumentId: InstrumentId,
   position: AssetRef { type D = PosD },
   settle: AssetRef { type D = S },
   basePerPosition: Rate[PosD, B],
   quotePerPosition: Rate[PosD, Q]):
 
-  private type Lots      = InstrumentLots[PosD]
-  private type Price     = InstrumentPrice[B, Q]
-  private type Market    = InstrumentMarketState[B, Q, S]
-  private type Position  = InstrumentPosition[PosD]
-  private type Scenario  = InstrumentOrderScenario[Lots, Price, Market, Position]
-  private type RoundTrip = InstrumentRoundTripScenario[Lots, Price, Market, Position]
-  private type Schedule  = InstrumentFeeSchedule[Lots, Price, Market, Position]
+  private type Lots      = _root_.trading.economics.instrument.Lots[PosD]
+  private type Price     = _root_.trading.economics.instrument.Price[B, Q]
+  private type Market    = _root_.trading.economics.instrument.MarketState[B, Q, S]
+  private type Position  = _root_.trading.economics.instrument.Position[PosD]
+  private type Scenario  = _root_.trading.economics.instrument.OrderScenario[Lots, Price, Market, Position]
+  private type RoundTrip = _root_.trading.economics.instrument.RoundTripScenario[Lots, Price, Market, Position]
+  private type Schedule  = _root_.trading.economics.instrument.FeeSchedule[Lots, Price, Market, Position]
 
   def settlePerPosition(state: Market): Either[EconomicsError, Rate[PosD, S]] =
-    InstrumentIdentityChecks
+    IdentityChecks
       .check("valuation.settlePerPosition", instrumentId, "market" -> state.instrumentId)
       .map: _ =>
-        val coefficient = InstrumentValuation.settlePerPosition(
+        val coefficient = Valuation.settlePerPosition(
           basePerPosition.coefficient,
           state.baseToSettle.coefficient,
           quotePerPosition.coefficient,
           state.quoteToSettle.coefficient
         )
-        Rate(position.dimension.asDimensionRef, settle.dimension.asDimensionRef, coefficient)
+        Rate(position.dimension.ref, settle.dimension.ref, coefficient)
 
   def positionValue(value: Position, state: Market): Either[EconomicsError, Quantity[S]] =
     for
-      _ <- InstrumentIdentityChecks.check(
+      _ <- IdentityChecks.check(
              "valuation.positionValue",
              instrumentId,
              "position" -> value.instrumentId,
@@ -70,13 +70,13 @@ final class InstrumentValuation[PosD <: Dimension, B <: Dimension, Q <: Dimensio
            )
       perPosition <- settlePerPosition(state)
     yield Quantity(
-      settle.dimension.asDimensionRef,
-      InstrumentValuation.positionValue(value.quantity.coefficient, perPosition.coefficient)
+      settle.dimension.ref,
+      Valuation.positionValue(value.quantity.coefficient, perPosition.coefficient)
     )
 
   def pricePnl(value: Position, entry: Market, exit: Market): Either[EconomicsError, Quantity[S]] =
     for
-      _ <- InstrumentIdentityChecks.check(
+      _ <- IdentityChecks.check(
              "valuation.pricePnl",
              instrumentId,
              "position" -> value.instrumentId,
@@ -86,17 +86,17 @@ final class InstrumentValuation[PosD <: Dimension, B <: Dimension, Q <: Dimensio
       entryPerPosition <- settlePerPosition(entry)
       exitPerPosition  <- settlePerPosition(exit)
     yield Quantity(
-      settle.dimension.asDimensionRef,
-      InstrumentValuation.pricePnl(
+      settle.dimension.ref,
+      Valuation.pricePnl(
         value.quantity.coefficient,
         entryPerPosition.coefficient,
         exitPerPosition.coefficient
       )
     )
 
-  def pnl(roundTrip: RoundTrip, feeSchedule: Schedule): Either[EconomicsError, InstrumentPnl[S]] =
+  def pnl(roundTrip: RoundTrip, feeSchedule: Schedule): Either[EconomicsError, Pnl[S]] =
     for
-      _ <- InstrumentIdentityChecks.check(
+      _ <- IdentityChecks.check(
              "valuation.pnl",
              instrumentId,
              "roundTrip"   -> roundTrip.instrumentId,
@@ -113,12 +113,12 @@ final class InstrumentValuation[PosD <: Dimension, B <: Dimension, Q <: Dimensio
     yield
       val converted = convertedEntry ++ convertedExit
       val feeTotal  = converted.foldLeft(Rational.zero)((total, line) => total + line.settleContribution.coefficient)
-      val feePnl    = Quantity(settle.dimension.asDimensionRef, feeTotal)
-      val netPnl    = Quantity(settle.dimension.asDimensionRef, exactPricePnl.coefficient + feeTotal)
-      InstrumentPnl(instrumentId, exactPricePnl, converted, feePnl, netPnl)
+      val feePnl    = Quantity(settle.dimension.ref, feeTotal)
+      val netPnl    = Quantity(settle.dimension.ref, exactPricePnl.coefficient + feeTotal)
+      Pnl(instrumentId, exactPricePnl, converted, feePnl, netPnl)
 
   private def scenarioPricePnl(scenario: Scenario): Either[EconomicsError, Quantity[S]] =
-    InstrumentIdentityChecks
+    IdentityChecks
       .check(
         "valuation.scenario",
         instrumentId,
@@ -139,15 +139,15 @@ final class InstrumentValuation[PosD <: Dimension, B <: Dimension, Q <: Dimensio
               perPosition <- settlePerPosition(slice.market)
             yield
               val signedPosition = slice.lots.quantity.coefficient * Rational(scenario.order.intent.side.sign)
-              total - InstrumentValuation.positionValue(signedPosition, perPosition.coefficient)
-      .map(coefficient => Quantity(settle.dimension.asDimensionRef, coefficient))
+              total - Valuation.positionValue(signedPosition, perPosition.coefficient)
+      .map(coefficient => Quantity(settle.dimension.ref, coefficient))
 
   private def assessAndValidate(
     schedule: Schedule,
     scenario: Scenario
-  ): Either[EconomicsError, Vector[InstrumentFeeLine[? <: Dimension, Market]]] =
+  ): Either[EconomicsError, Vector[FeeLine[? <: Dim, Market]]] =
     schedule.assess(scenario).flatMap: lines =>
-      InstrumentIdentityChecks
+      IdentityChecks
         .check(
           "valuation.feeLines",
           instrumentId,
@@ -174,15 +174,15 @@ final class InstrumentValuation[PosD <: Dimension, B <: Dimension, Q <: Dimensio
 
   private def convertLines(
     leg: ScenarioLeg,
-    lines: Vector[InstrumentFeeLine[? <: Dimension, Market]]
-  ): Either[EconomicsError, Vector[InstrumentConvertedFeeLine[S]]] =
-    lines.foldLeft[Either[EconomicsError, Vector[InstrumentConvertedFeeLine[S]]]](Right(Vector.empty)):
-      (result, line) => result.flatMap(accumulated => convertLine(leg, line).map(accumulated :+ _))
+    lines: Vector[FeeLine[? <: Dim, Market]]
+  ): Either[EconomicsError, Vector[ConvertedFeeLine[S]]] =
+    lines.foldLeft[Either[EconomicsError, Vector[ConvertedFeeLine[S]]]](Right(Vector.empty)): (result, line) =>
+      result.flatMap(accumulated => convertLine(leg, line).map(accumulated :+ _))
 
   private def convertLine(
     leg: ScenarioLeg,
-    line: InstrumentFeeLine[? <: Dimension, Market]
-  ): Either[EconomicsError, InstrumentConvertedFeeLine[S]] =
+    line: FeeLine[? <: Dim, Market]
+  ): Either[EconomicsError, ConvertedFeeLine[S]] =
     val fee = line.fee
     line.sourceMarket
       .convertToSettle(fee.asset)(fee.amount)
@@ -190,6 +190,6 @@ final class InstrumentValuation[PosD <: Dimension, B <: Dimension, Q <: Dimensio
       .map:
         case MissingConversion(source, _, _) => MissingConversion(source, Some(leg), Some(line.sourceSliceIndex))
         case other                           => other
-      .map(contribution => InstrumentConvertedFeeLine(instrumentId, fee, leg, line.sourceSliceIndex, contribution))
+      .map(contribution => ConvertedFeeLine(instrumentId, fee, leg, line.sourceSliceIndex, contribution))
 
-end InstrumentValuation
+end Valuation

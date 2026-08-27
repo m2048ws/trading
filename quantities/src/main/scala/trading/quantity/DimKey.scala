@@ -8,7 +8,7 @@ import java.util.Objects
  * Atom powers are normalized, so algebraically equal dimensions have equal keys. A key is runtime data rather than type
  * evidence; use a [[DimRef]] or [[trading.quantity.runtime.QuantityRegistry]] to bring it into type-safe operations.
  */
-final class DimensionKey private (val powers: Vector[(AtomId, BigInt)]):
+final class DimKey private (val powers: Vector[(AtomId, BigInt)]):
   powers.foreach: (atom, power) =>
     val _ = Objects.requireNonNull(atom, "dimension key atom ID")
     val _ = Objects.requireNonNull(power, "dimension key power")
@@ -19,25 +19,25 @@ final class DimensionKey private (val powers: Vector[(AtomId, BigInt)]):
 
   override def equals(o: Any): Boolean =
     o match
-      case k: DimensionKey => powers == k.powers
-      case _               => false
+      case k: DimKey => powers == k.powers
+      case _         => false
 
   override def hashCode: Int =
     powers.hashCode
 
   override def toString: String =
-    s"DimensionKey($powers)"
+    s"DimKey($powers)"
 
-end DimensionKey
+end DimKey
 
-/** Normalizing constructors and free-abelian-group operations for [[DimensionKey]]. */
-object DimensionKey:
-  val one: DimensionKey = new DimensionKey(Vector.empty)
+/** Normalizing constructors and free-abelian-group operations for [[DimKey]]. */
+object DimKey:
+  val one: DimKey = new DimKey(Vector.empty)
 
-  def atom(id: AtomId): DimensionKey =
-    new DimensionKey(Vector(id -> BigInt(1)))
+  def atom(id: AtomId): DimKey =
+    new DimKey(Vector(id -> BigInt(1)))
 
-  def apply(powers: Iterable[(AtomId, BigInt)]): DimensionKey =
+  def apply(powers: Iterable[(AtomId, BigInt)]): DimKey =
     val raw = powers.toVector
     raw.foreach: (atom, power) =>
       val _ = Objects.requireNonNull(atom, "dimension key atom ID")
@@ -45,12 +45,12 @@ object DimensionKey:
 
     val normalized = raw.groupMapReduce(_._1)(_._2)(_ + _).filter(_._2 != 0).toVector.sortBy(_._1.value)
 
-    new DimensionKey(normalized)
+    new DimKey(normalized)
 
-  def multiply(l: DimensionKey, r: DimensionKey): DimensionKey =
+  def multiply(l: DimKey, r: DimKey): DimKey =
     apply(l.powers ++ r.powers)
 
-  def inverse(v: DimensionKey): DimensionKey =
+  def inverse(v: DimKey): DimKey =
     apply(v.powers.map((id, power) => id -> -power))
 
-end DimensionKey
+end DimKey

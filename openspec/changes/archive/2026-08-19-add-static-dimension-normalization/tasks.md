@@ -8,7 +8,7 @@
 - [x] 1.3 Implement left-biased normalized power-sequence operations for identity, visible atoms, statically opaque factors,
   multiplication, inversion, quotient, duplicate-factor combination, and zero-power removal.
 - [x] 1.4 Add laws and examples showing that every statically computed power result agrees with the corresponding
-  `DimensionKey` multiplication and inversion whenever both representations are visible.
+  `DimKey` multiplication and inversion whenever both representations are visible.
 
 ## 2. Add Static and Runtime Dimension Evidence
 
@@ -72,7 +72,7 @@
   specialization matches direct inversion.
 - [x] 7.3 Compile real positive and negative downstream fixtures with warnings as errors and future-source mode, including
   multiplication, quotient, inversion, `DimRef`, contextual generic operations, and commuted `SameDimension` derivation.
-- [x] 7.4 Cover duplicate, zero, non-`Power`, malformed signed-natural, base-`Dimension`, reducible, refined, intersected,
+- [x] 7.4 Cover duplicate, zero, non-`Power`, malformed signed-natural, base-`Dim`, reducible, refined, intersected,
   and annotated `Powers` claims across the relevant final evidence boundaries.
 
 ## 8. Harden Static Derivation
@@ -99,7 +99,7 @@
 ## 10. Remediate Independent Static-Derivation Review
 
 - [x] 10.1 Reproduce the late-alias, refinable inversion, recursive carrier specialization, malformed natural, disguised
-  factor, base `Dimension`, and generic-diagnostic failures in real downstream source before remediation.
+  factor, base `Dim`, and generic-diagnostic failures in real downstream source before remediation.
 - [x] 10.2 Prove guards and recursive proof carriers cannot be transported or specialized into caller-selected final
   outputs, and prove final `derived` entry points recompute and validate their own canonical output.
 - [x] 10.3 Adopt and document reflexive `SameDimension[D, D]` as structural identity without canonical-form certification;

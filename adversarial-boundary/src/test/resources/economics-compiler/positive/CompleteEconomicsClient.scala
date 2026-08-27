@@ -1,6 +1,6 @@
 package external.economics.positive
 
-import trading.economics.*
+import trading.economics.instrument.*
 import trading.quantity.*
 import trading.quantity.grid.QuantizationPolicy
 import trading.quantity.refinement.*
@@ -53,7 +53,7 @@ object CompleteEconomicsClient:
     .toOption
     .get
   val priceDimension =
-    registry.registerDimension(DimRef.divide(quote.dimension.asDimensionRef, base.dimension.asDimensionRef).key).toOption.get
+    registry.registerDimension(DimRef.divide(quote.dimension.ref, base.dimension.ref).key).toOption.get
   val priceGrid = registry
     .registerGrid(priceDimension)(
       GridDefinition(
@@ -66,14 +66,14 @@ object CompleteEconomicsClient:
     .toOption
     .get
 
-  val roles = new InstrumentRoles(base, quote, position, quote)
-  val identity = InstrumentIdentity(InstrumentId("client-instrument"), UnderlyingId("client-underlying"))
+  val roles = new Roles(base, quote, position, quote)
+  val identity = Identity(InstrumentId("client-instrument"), UnderlyingId("client-underlying"))
   val listing = new ListingRules(roles)(lotsGrid, priceGrid)
   val payoff = new ContractPayoff(roles)(
-    Rate(roles.position.dimension.asDimensionRef, roles.base.dimension.asDimensionRef, Rational.one),
-    Rate(roles.position.dimension.asDimensionRef, roles.quote.dimension.asDimensionRef, Rational.zero)
+    Rate(roles.position.dimension.ref, roles.base.dimension.ref, Rational.one),
+    Rate(roles.position.dimension.ref, roles.quote.dimension.ref, Rational.zero)
   )
-  val instrument = Instrument.create(InstrumentDefinition(identity, roles, listing, payoff)).toOption.get
+  val instrument = Instrument.create(Definition(identity, roles, listing, payoff)).toOption.get
   val stable = instrument
 
   val lots = stable.lots(2).toOption.get
@@ -106,7 +106,7 @@ object CompleteEconomicsClient:
   val schedule = new stable.FeeSchedule:
     val instrumentId: InstrumentId = stable.identity.id
     def assess(scenario: stable.OrderScenario): Either[EconomicsError, Vector[stable.FeeLine]] =
-      val basis = Quantity(quote.dimension.asDimensionRef, Rational(scenario.order.intent.lots.count.unrefined))
+      val basis = Quantity(quote.dimension.ref, Rational(scenario.order.intent.lots.count.unrefined))
       for
         fee <- denomination.percentage(FeeKind("client-fee"), basis, FeeRate(Rational(1, 1000)))
         line <- stable.fees.line(scenario, 0, fee)
@@ -128,9 +128,9 @@ object CompleteEconomicsClient:
     stable.orders.immediate,
     stable.orders.marketExecution(NonRestingTimeInForce.ImmediateOrCancel)
   )
-  assert(runtimeMismatch == Left(InstrumentMismatch("order.intent", stable.identity.id, foreignIntent.instrumentId)))
+  assert(runtimeMismatch == Left(Mismatch("order.intent", stable.identity.id, foreignIntent.instrumentId)))
   val sized = stable.sizing.maxLots(
-    Quantity(stable.roles.settle.dimension.asDimensionRef, Rational(1000)),
+    Quantity(stable.roles.settle.dimension.ref, Rational(1000)),
     PositiveWhole(3).toOption.get,
     schedule
   ): candidate =>

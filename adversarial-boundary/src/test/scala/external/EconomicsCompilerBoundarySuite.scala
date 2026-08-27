@@ -41,29 +41,42 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
     try assert(!jar.entries().asScala.exists(_.getName.startsWith("trading/economics/")))
     finally jar.close()
 
-  test("economics artifact exposes direct concern classes without owner or implementation machinery"):
+  test("economics artifact exposes concise instrument concern classes without stale flat API names"):
     val economicsJar = packagedEconomicsJar
     val jar          = new JarFile(economicsJar.toFile)
     try
       val entries  = jar.entries().asScala.map(_.getName).toSet
       val expected = List(
         "Instrument.class",
-        "InstrumentPrices.class",
-        "InstrumentMarket.class",
-        "InstrumentOrders.class",
-        "InstrumentScenarios.class",
-        "InstrumentFees.class",
-        "InstrumentValuation.class",
-        "InstrumentSizing.class",
-        "InstrumentMismatch.class"
-      ).map(name => s"trading/economics/$name")
+        "Prices.class",
+        "Market.class",
+        "Orders.class",
+        "Scenarios.class",
+        "Fees.class",
+        "Valuation.class",
+        "Sizing.class",
+        "Mismatch.class"
+      ).map(name => s"trading/economics/instrument/$name")
       expected.foreach(entry => assert(entries.contains(entry), s"missing $entry from $economicsJar"))
 
       val forbidden = entries.filter(entry =>
-        entry.startsWith("trading/economics/") &&
+        entry.startsWith("trading/economics/instrument/") &&
           (entry.contains("OwnerAuthority") || entry.contains("JvmOwnerAuthority") || entry.endsWith("Impl.class"))
       )
       assertEquals(forbidden, Set.empty[String])
+
+      val stale = List(
+        "trading/economics/Instrument.class",
+        "trading/economics/instrument/InstrumentPrices.class",
+        "trading/economics/instrument/InstrumentMarket.class",
+        "trading/economics/instrument/InstrumentOrders.class",
+        "trading/economics/instrument/InstrumentScenarios.class",
+        "trading/economics/instrument/InstrumentFees.class",
+        "trading/economics/instrument/InstrumentValuation.class",
+        "trading/economics/instrument/InstrumentSizing.class",
+        "trading/economics/instrument/InstrumentMismatch.class"
+      )
+      stale.foreach(entry => assert(!entries.contains(entry), s"stale $entry remains in $economicsJar"))
     finally jar.close()
     end try
 

@@ -92,7 +92,7 @@ class FoundationExamplesSuite extends FunSuite:
     val dollars  = fixture.cents.fromCoordinate(12_345)
     val bitcoin  = fixture.satoshis.fromCoordinate(10_000_000)
     val sixCents = fixture.threeCents.fromCoordinate(2)
-    val oneCent  = Quantity(fixture.usd.dimension.asDimensionRef, Rational(1, 100))
+    val oneCent  = Quantity(fixture.usd.dimension.ref, Rational(1, 100))
 
     assertEquals(fixture.cents.asQuantity(dollars).coefficient, Rational(2469, 20))
     assertEquals(fixture.satoshis.asQuantity(bitcoin).coefficient, Rational(1, 10))
@@ -104,8 +104,8 @@ class FoundationExamplesSuite extends FunSuite:
     val amount    = fixture.satoshis.fromCoordinate(10_000_000)
     val usdPerBtc =
       Rate(
-        fixture.btc.dimension.asDimensionRef,
-        fixture.usd.dimension.asDimensionRef,
+        fixture.btc.dimension.ref,
+        fixture.usd.dimension.ref,
         Rational(6_000_001, 100)
       )
     val notional: Quantity[fixture.usd.D] = amount.applyRate(usdPerBtc, fixture.satoshis.asGridRef)
@@ -130,7 +130,7 @@ class FoundationExamplesSuite extends FunSuite:
     val fixture                          = new Fixture
     val inverseCoefficient               = Rational.one./(Rational(100_001, 2)).toOption.get
     val inverse: Quantity[fixture.xbt.D] =
-      Quantity(fixture.xbt.dimension.asDimensionRef, inverseCoefficient)
+      Quantity(fixture.xbt.dimension.ref, inverseCoefficient)
 
     assertEquals(inverse.coefficient, Rational(2, 100_001))
     assert(inverse.narrowExactlyTo(fixture.xbtSatoshis.asGridRef).isLeft)

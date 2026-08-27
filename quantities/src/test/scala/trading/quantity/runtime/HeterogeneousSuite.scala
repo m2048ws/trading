@@ -9,7 +9,7 @@ class HeterogeneousSuite extends FunSuite:
 
   private def registeredDimension(r: QuantityRegistry, atom: String): DimensionWitness =
     r
-      .registerDimension(DimensionKey.atom(AtomId(atom)))
+      .registerDimension(DimKey.atom(AtomId(atom)))
       .toOption
       .get
 
@@ -89,23 +89,23 @@ class HeterogeneousSuite extends FunSuite:
     val result = HeterogeneousQuantity.multiplyExact(left, right)
 
     assertEquals(result.value.coefficient, Rational(3, 5))
-    assertEquals(result.dimension.key, DimensionKey.multiply(leftDimension.dimension.key, rightDimension.dimension.key))
+    assertEquals(result.dimension.key, DimKey.multiply(leftDimension.dimension.key, rightDimension.dimension.key))
 
   test("raw grid products retain expression witnesses and accept checked runtime alignment"):
     val registry     = new QuantityRegistry
     val position     = registeredDimension(registry, "heterogeneous-normalized-position")
     val settlement   = registeredDimension(registry, "heterogeneous-normalized-settlement")
-    val priceKey     = DimensionKey.multiply(settlement.dimension.key, DimensionKey.inverse(position.dimension.key))
+    val priceKey     = DimKey.multiply(settlement.dimension.key, DimKey.inverse(position.dimension.key))
     val price        = registry.registerDimension(priceKey).toOption.get
     val positionGrid = registeredGrid(registry, position, "heterogeneous-normalized-position-grid", Rational(1, 10))
     val amount       = positionGrid.fromCoordinate(2)
-    val exactPrice   = Quantity(price.dimension.asDimensionRef, Rational(15))
+    val exactPrice   = Quantity(price.dimension.ref, Rational(15))
 
     val product: Quantity[Times[position.D, price.D]] =
       amount.multiplyExact[price.D](exactPrice, positionGrid.asGridRef)
     val productDimension: DimRef[Times[position.D, price.D]] =
-      DimRef.times(position.dimension.asDimensionRef, price.dimension.asDimensionRef)
-    val checked = SameDimension.between(productDimension, settlement.dimension.asDimensionRef).get
+      DimRef.times(position.dimension.ref, price.dimension.ref)
+    val checked = SameDimension.between(productDimension, settlement.dimension.ref).get
     val aligned: Quantity[settlement.D] = product.alignTo[settlement.D](using checked)
 
     assertEquals(aligned.coefficient, Rational(3))
@@ -126,11 +126,11 @@ class HeterogeneousSuite extends FunSuite:
     val quote                              = registeredDimension(registry, "runtime-rate-quote")
     val settlement                         = registeredDimension(registry, "runtime-rate-settlement")
     val baseToQuote: Rate[base.D, quote.D] =
-      Rate(base.dimension.asDimensionRef, quote.dimension.asDimensionRef, Rational(60_000))
+      Rate(base.dimension.ref, quote.dimension.ref, Rational(60_000))
     val quoteToSettlement: Rate[quote.D, settlement.D] =
-      Rate(quote.dimension.asDimensionRef, settlement.dimension.asDimensionRef, Rational(9, 10))
+      Rate(quote.dimension.ref, settlement.dimension.ref, Rational(9, 10))
     val baseToSettlement: Rate[base.D, settlement.D] = baseToQuote.andThen(quoteToSettlement)
-    val amount                                       = Quantity(base.dimension.asDimensionRef, Rational(1, 10))
+    val amount                                       = Quantity(base.dimension.ref, Rational(1, 10))
     val reciprocal: Rate[settlement.D, base.D]       = NonZero(baseToSettlement).toOption.get.reciprocalRate
     val sharedTarget: Rate[quote.D, settlement.D]    = quoteToSettlement
     val crossDivisor                                 = NonZero(sharedTarget).toOption.get
@@ -147,12 +147,12 @@ class HeterogeneousSuite extends FunSuite:
     val position   = registeredDimension(registry, "adapter:contracts")
     val settlement = registeredDimension(registry, "adapter:XBT")
 
-    val quotePerBase       = Rate(base.dimension.asDimensionRef, quote.dimension.asDimensionRef, Rational(3_000))
-    val basePerPosition    = Rate(position.dimension.asDimensionRef, base.dimension.asDimensionRef, Rational(1, 100))
+    val quotePerBase       = Rate(base.dimension.ref, quote.dimension.ref, Rational(3_000))
+    val basePerPosition    = Rate(position.dimension.ref, base.dimension.ref, Rational(1, 100))
     val settlementPerQuote =
-      Rate(quote.dimension.asDimensionRef, settlement.dimension.asDimensionRef, Rational(1, 60_000))
+      Rate(quote.dimension.ref, settlement.dimension.ref, Rational(1, 60_000))
     val settlementPerPosition = basePerPosition.andThen(quotePerBase).andThen(settlementPerQuote)
-    val contracts             = Quantity(position.dimension.asDimensionRef, 10)
+    val contracts             = Quantity(position.dimension.ref, 10)
 
     assertEquals(contracts.applyRate(settlementPerPosition).coefficient, Rational(1, 200))
 

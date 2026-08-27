@@ -8,14 +8,14 @@ stable boundary that prevents static validity from being mistaken for runtime in
 
 - Define `Normalize[D]` solely as evidence that `D` is a valid closed static expression with a canonical output; deriving
   it does not imply that any `DimRef[D]` exists.
-- Define `DimRef[D]` as the authority for runtime inhabitation and `DimensionKey` identity. For every atom type inhabitable
+- Define `DimRef[D]` as the authority for runtime inhabitation and `DimKey` identity. For every atom type inhabitable
   through supported public `DimRef` APIs, all publicly obtained witnesses for that atom type must carry the same runtime
   identity.
 - Preserve the separation of `SameDimension[A, B]` as controlled equivalence evidence: reflexive equality does not
   certify validity, and equivalence alone does not establish runtime inhabitation.
 - Define `Quantity[D]` as an exact coefficient indexed by `D`, not as an identity witness. Preserve dimension-polymorphic
   zero for any normalized `D`, while caller-supplied coefficients continue to require `DimRef[D]`.
-- Freeze the public static grammar and proof surface around `Dimension`, `Dim`, `Power`, `Atom`, `Times`, `Inverse`,
+- Freeze the public static grammar and proof surface around `Dim`, `Canonical`, `Power`, `Atom`, `Times`, `Inverse`,
   `Divide`, `Normalize`, `SameDimension`, and `DimRef`; add focused contract coverage and documentation for the separated
   authority model.
 - Do not add a new proof family, require runtime inhabitability for every key accepted by `Normalize`, or redesign
@@ -37,5 +37,5 @@ None.
 ## Impact
 
 The affected surface is the `trading.quantity` static-dimension and witness APIs, their Scaladoc and README guidance, and
-downstream compiler-boundary fixtures. No runtime data, `DimensionKey` encoding, registry provenance, grid identity,
+downstream compiler-boundary fixtures. No runtime data, `DimKey` encoding, registry provenance, grid identity,
 quantity representation, dependency, or wire-format migration is intended.

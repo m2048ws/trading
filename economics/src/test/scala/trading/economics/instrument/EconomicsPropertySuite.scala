@@ -1,4 +1,4 @@
-package trading.economics
+package trading.economics.instrument
 
 import munit.ScalaCheckSuite
 import org.scalacheck.Gen
@@ -49,7 +49,7 @@ class EconomicsPropertySuite extends ScalaCheckSuite:
 
   property("fee quantization exactly conserves arbitrary rational account contributions"):
     forAll(Gen.choose(-100_000, 100_000), Gen.choose(1, 997)): (numerator, denominator) =>
-      val unrounded    = Quantity(fixture.usd.dimension.asDimensionRef, Rational(numerator, denominator))
+      val unrounded    = Quantity(fixture.usd.dimension.ref, Rational(numerator, denominator))
       val denomination = instrument.fees
         .denomination(fixture.usd)(fixture.usdCents, QuantizationPolicy.HalfEven)
         .toOption
@@ -61,7 +61,7 @@ class EconomicsPropertySuite extends ScalaCheckSuite:
   property("exhaustive sizing equals an independently enumerated bounded maximum"):
     forAll(Gen.choose(1, 12), Gen.choose(0, 20)): (capValue, budgetCents) =>
       val cap    = PositiveWhole(capValue).toOption.get
-      val budget = Quantity(instrument.roles.settle.dimension.asDimensionRef, Rational(budgetCents, 100))
+      val budget = Quantity(instrument.roles.settle.dimension.ref, Rational(budgetCents, 100))
       val sized  = instrument.sizing.maxLots(budget, cap, instrument.fees.none): candidate =>
         val entry = completeMarket(Side.Buy, candidate, 100)
         val exit  = completeMarket(Side.Sell, candidate, 90)

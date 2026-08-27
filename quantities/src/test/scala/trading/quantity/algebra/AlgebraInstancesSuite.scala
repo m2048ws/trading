@@ -56,7 +56,7 @@ class AlgebraInstancesSuite extends FunSuite:
     import nonZeroRationalMultiplicative.given
     import refinedAdditive.given
 
-    val dimensionGroup      = summon[MultiplicativeCommutativeGroup[DimensionKey]]
+    val dimensionGroup      = summon[MultiplicativeCommutativeGroup[DimKey]]
     val rationalGroup       = summon[MultiplicativeCommutativeGroup[NonZero[Rational]]]
     val rationalOrder       = summon[Order[Rational]]
     val quantityOrder       = summon[Order[Quantity[usd.D]]]
@@ -70,7 +70,7 @@ class AlgebraInstancesSuite extends FunSuite:
     val positiveGrid =
       summon[AdditiveCommutativeSemigroup[Positive[GridQuantity[usd.D, cents.G]]]]
 
-    assertEquals(dimensionGroup.times(DimensionKey.one, usd.dimension.key), usd.dimension.key)
+    assertEquals(dimensionGroup.times(DimKey.one, usd.dimension.key), usd.dimension.key)
     assertEquals(rationalGroup.reciprocal(NonZero(Rational(2)).toOption.get).unrefined, Rational(1, 2))
     assertEquals(rationalOrder.compare(Rational(1, 3), Rational(1, 2)), -1)
     assertEquals(
@@ -102,7 +102,7 @@ class AlgebraInstancesSuite extends FunSuite:
     val _ = summon[AdditiveCommutativeGroup[Quantity[usd.D]]]
     val _ = summon[AdditiveCommutativeGroup[GridQuantity[usd.D, cents.G]]]
     val _ = summon[Order[Rational]]
-    val _ = summon[MultiplicativeCommutativeGroup[DimensionKey]]
+    val _ = summon[MultiplicativeCommutativeGroup[DimKey]]
     val _ = summon[MultiplicativeCommutativeGroup[NonZero[Rational]]]
 
     assertEquals((left + right).coefficient, directSum)
@@ -124,7 +124,7 @@ class AlgebraInstancesSuite extends FunSuite:
     import nonZeroRationalMultiplicative.given
     import refinedAdditive.given
 
-    val _                         = summon[MultiplicativeCommutativeGroup[DimensionKey]]
+    val _                         = summon[MultiplicativeCommutativeGroup[DimKey]]
     val _                         = summon[Order[Rational]]
     val _                         = summon[VectorSpace[Quantity[usd.D], Rational]]
     val _                         = summon[ExactScalarField[Rational]]
@@ -179,8 +179,8 @@ class AlgebraInstancesSuite extends FunSuite:
       import trading.quantity.algebra.refinedAdditive.given
       import trading.quantity.refinement.*
 
-      def quantity[D <: Dimension] = summon[AdditiveCommutativeSemigroup[Positive[Quantity[D]]]]
-      def grid[D <: Dimension, G] = summon[AdditiveCommutativeSemigroup[Positive[GridQuantity[D, G]]]]
+      def quantity[D <: Dim] = summon[AdditiveCommutativeSemigroup[Positive[Quantity[D]]]]
+      def grid[D <: Dim, G] = summon[AdditiveCommutativeSemigroup[Positive[GridQuantity[D, G]]]]
       """
     assertDoesNotCompile:
       """
@@ -188,7 +188,7 @@ class AlgebraInstancesSuite extends FunSuite:
       import trading.quantity.algebra.*
       import trading.quantity.algebra.exactQuantityAlgebra.given
 
-      def identity[D <: Dimension] = summon[VectorSpace[Quantity[D], Rational]]
+      def identity[D <: Dim] = summon[VectorSpace[Quantity[D], Rational]]
       """
     assertDoesNotCompile:
       """
@@ -196,7 +196,7 @@ class AlgebraInstancesSuite extends FunSuite:
       import trading.quantity.algebra.*
       import trading.quantity.algebra.gridQuantityAlgebra.given
 
-      def identity[D <: Dimension, G] = summon[LeftModule[GridQuantity[D, G], BigInt]]
+      def identity[D <: Dim, G] = summon[LeftModule[GridQuantity[D, G], BigInt]]
       """
 
   test("unsupported rings, fields, numerics, categories, and refined groups remain absent"):
@@ -278,7 +278,7 @@ class AlgebraInstancesSuite extends FunSuite:
       import trading.quantity.*
       import trading.quantity.algebra.dimensionAlgebra.given
       import cats.kernel.Order
-      summon[Order[DimensionKey]]
+      summon[Order[DimKey]]
       """
 
 end AlgebraInstancesSuite

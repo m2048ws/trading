@@ -8,38 +8,38 @@ package trading.quantity
  *
  * Declared tuple order and public expression spelling preserve useful operand structure but are not mathematical
  * identity. [[SameDimension]] derives static equivalence modulo permutation or recovers it from checked runtime
- * witnesses; [[DimensionKey]] remains the authoritative arbitrary-precision runtime representation.
+ * witnesses; [[DimKey]] remains the authoritative arbitrary-precision runtime representation.
  */
-sealed trait Dimension
+sealed trait Dim
 
 /** A declared canonical sequence of unique singleton-key powers. */
-sealed trait Dim[Entries <: Tuple] extends Dimension
+sealed trait Canonical[Entries <: Tuple] extends Dim
 
 /** An atomic type-level dimension identified by one stable singleton key. */
-type Atom[K <: Singleton] = Dim[Power[K, 1] *: EmptyTuple]
+type Atom[K <: Singleton] = Canonical[Power[K, 1] *: EmptyTuple]
 
 /** The dimensionless multiplicative identity. */
-type One = Dim[EmptyTuple]
+type One = Canonical[EmptyTuple]
 
 /** A public product expression preserved by dimension-changing arithmetic. */
-sealed trait Times[A <: Dimension, B <: Dimension] extends Dimension
+sealed trait Times[A <: Dim, B <: Dim] extends Dim
 
 /** A public inverse expression preserved by witness algebra and reciprocal operations. */
-sealed trait Inverse[A <: Dimension] extends Dimension
+sealed trait Inverse[A <: Dim] extends Dim
 
 /** The public quotient expression `A / B`. */
-type Divide[A <: Dimension, B <: Dimension] = Times[A, Inverse[B]]
+type Divide[A <: Dim, B <: Dim] = Times[A, Inverse[B]]
 
 /** A dimensionless exact quantity. */
 type Ratio = Quantity[One]
 
 /** An exact conversion factor oriented from `From` to `To`, represented by the public `To / From` expression. */
-type Rate[From <: Dimension, To <: Dimension] = Quantity[Divide[To, From]]
+type Rate[From <: Dim, To <: Dim] = Quantity[Divide[To, From]]
 
 /** Constructs exact conversion rates from authoritative source and target dimension witnesses. */
 object Rate:
 
-  def apply[F <: Dimension, T <: Dimension](
+  def apply[F <: Dim, T <: Dim](
     f: DimRef[F],
     t: DimRef[T],
     c: Rational
@@ -47,7 +47,7 @@ object Rate:
     Quantity(DimRef.divide(t, f), c)
 
   /** The identity rate, constructed only from an authoritative dimension witness. */
-  def identity[D <: Dimension](
+  def identity[D <: Dim](
     d: DimRef[D]
   ): Rate[D, D] =
     apply(d, d, Rational.one)

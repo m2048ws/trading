@@ -27,10 +27,10 @@ object Sign:
   given bigIntSign: Sign[BigInt]     = new Sign(_.signum)
   given rationalSign: Sign[Rational] = new Sign(_.signum)
 
-  given quantitySign[D <: Dimension]: Sign[Quantity[D]] =
+  given quantitySign[D <: Dim]: Sign[Quantity[D]] =
     rationalSign.asInstanceOf[Sign[Quantity[D]]]
 
-  given gridQuantitySign[D <: Dimension, G]: Sign[GridQuantity[D, G]] =
+  given gridQuantitySign[D <: Dim, G]: Sign[GridQuantity[D, G]] =
     bigIntSign.asInstanceOf[Sign[GridQuantity[D, G]]]
 
 end Sign
@@ -55,12 +55,12 @@ object NonNegative:
       v
 
   /** Additive identity for the closed nonnegative exact-quantity structure. */
-  def quantityZero[D <: Dimension](using DimRef[D]): NonNegative[Quantity[D]] = Quantity.zero
+  def quantityZero[D <: Dim](using DimRef[D]): NonNegative[Quantity[D]] = Quantity.zero
 
   /** Additive identity for the closed nonnegative grid-quantity structure. */
-  def gridQuantityZero[D <: Dimension, G](using DimRef[D]): NonNegative[GridQuantity[D, G]] = GridQuantity.zero
+  def gridQuantityZero[D <: Dim, G](using DimRef[D]): NonNegative[GridQuantity[D, G]] = GridQuantity.zero
 
-  extension [D <: Dimension, G](v: NonNegative[GridQuantity[D, G]])
+  extension [D <: Dim, G](v: NonNegative[GridQuantity[D, G]])
 
     @targetName("quotRemNonNegativeGrid")
     def quotRemBy(
@@ -108,7 +108,7 @@ object NonZero:
 
   end extension
 
-  extension [D <: Dimension, G](v: NonZero[GridQuantity[D, G]])
+  extension [D <: Dim, G](v: NonZero[GridQuantity[D, G]])
 
     @targetName("quotRemNonZeroGrid")
     def quotRemBy(
@@ -152,7 +152,7 @@ object Positive:
     def toPositiveWhole: Positive[BigInt] =
       BigInt(v)
 
-  extension [D <: Dimension, G](v: Positive[GridQuantity[D, G]])
+  extension [D <: Dim, G](v: Positive[GridQuantity[D, G]])
 
     @targetName("quotRemPositiveGrid")
     def quotRemBy(
@@ -168,7 +168,7 @@ end Positive
 
 /* Closed-operation implementations stay in this lexical source scope so their result refinements are attached directly.
  * The public constructors above remain the only checked entry points for caller-supplied values. */
-extension [D <: Dimension, G](v: NonNegative[GridQuantity[D, G]])
+extension [D <: Dim, G](v: NonNegative[GridQuantity[D, G]])
 
   @targetName("addNonNegativeGrid")
   def add(r: NonNegative[GridQuantity[D, G]]): NonNegative[GridQuantity[D, G]] =
@@ -180,7 +180,7 @@ extension [D <: Dimension, G](v: NonNegative[GridQuantity[D, G]])
 
 end extension
 
-extension [D <: Dimension](v: NonNegative[Quantity[D]])
+extension [D <: Dim](v: NonNegative[Quantity[D]])
 
   @targetName("addNonNegativeQuantity")
   def add(r: NonNegative[Quantity[D]]): NonNegative[Quantity[D]] =
@@ -192,7 +192,7 @@ extension [D <: Dimension](v: NonNegative[Quantity[D]])
 
 end extension
 
-extension [D <: Dimension, G](v: Positive[GridQuantity[D, G]])
+extension [D <: Dim, G](v: Positive[GridQuantity[D, G]])
 
   @targetName("addPositiveGrid")
   def add(r: Positive[GridQuantity[D, G]]): Positive[GridQuantity[D, G]] =
@@ -204,7 +204,7 @@ extension [D <: Dimension, G](v: Positive[GridQuantity[D, G]])
 
 end extension
 
-extension [D <: Dimension](v: Positive[Quantity[D]])
+extension [D <: Dim](v: Positive[Quantity[D]])
 
   @targetName("addPositiveQuantity")
   def add(r: Positive[Quantity[D]]): Positive[Quantity[D]] =
@@ -216,7 +216,7 @@ extension [D <: Dimension](v: Positive[Quantity[D]])
 
 end extension
 
-extension [D <: Dimension, G](v: NonZero[GridQuantity[D, G]])
+extension [D <: Dim, G](v: NonZero[GridQuantity[D, G]])
 
   @targetName("addNonZeroGrid")
   def add(r: NonZero[GridQuantity[D, G]]): GridQuantity[D, G] =
@@ -228,7 +228,7 @@ extension [D <: Dimension, G](v: NonZero[GridQuantity[D, G]])
 
 end extension
 
-extension [D <: Dimension](v: NonZero[Quantity[D]])
+extension [D <: Dim](v: NonZero[Quantity[D]])
 
   @targetName("addNonZeroQuantity")
   def add(r: NonZero[Quantity[D]]): Quantity[D] =

@@ -2,8 +2,8 @@
 
 ### Requirement: Public DimRef atom authority is unique
 `DimRef[D]` SHALL be the authoritative public association between an inhabited static dimension type `D` and its runtime
-`DimensionKey`. For every singleton key `K` whose `Atom[K]` is inhabitable through supported public `DimRef` APIs, any two
-publicly obtained values of type `DimRef[Atom[K]]` SHALL have equal `DimensionKey` values. This uniqueness requirement
+`DimKey`. For every singleton key `K` whose `Atom[K]` is inhabitable through supported public `DimRef` APIs, any two
+publicly obtained values of type `DimRef[Atom[K]]` SHALL have equal `DimKey` values. This uniqueness requirement
 SHALL apply only to publicly inhabitable atom types; the set of keys accepted by `Normalize[Atom[K]]` MAY be larger, and
 normalization alone SHALL NOT make an atom type runtime-inhabitable.
 
@@ -14,7 +14,7 @@ fresh runtime witnesses SHALL bind their path-dependent atom type to the identit
 supported public constructor SHALL accept a caller-selected static atom type independently from a caller-selected runtime
 identity.
 
-The public `DimRef` identity witness SHALL bind `One` to `DimensionKey.one`. Product, inverse, and quotient operations
+The public `DimRef` identity witness SHALL bind `One` to `DimKey.one`. Product, inverse, and quotient operations
 SHALL preserve the static/runtime association inductively: each SHALL return the canonical static output established by
 the complete `Normalize` operation and the corresponding runtime key produced from its authoritative input keys.
 Supported downstream code SHALL NOT directly construct or implement `DimRef` to bypass these roots and operations.
@@ -49,7 +49,7 @@ Supported downstream code SHALL NOT directly construct or implement `DimRef` to 
 #### Scenario: Preserve authority through witness algebra
 - **WHEN** public `DimRef` product, inverse, or quotient combines authoritative input witnesses
 - **THEN** the returned `DimRef` has the canonical normalized output type and the exactly corresponding runtime
-  `DimensionKey` operation result
+  `DimKey` operation result
 
 #### Scenario: Reject downstream witness forgery
 - **WHEN** supported downstream source attempts to implement `DimRef[D]` or invoke an unbound static/runtime constructor

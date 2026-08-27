@@ -4,8 +4,8 @@ See [proposal.md](proposal.md) for the motivation and the three capability delta
 
 The current static engine has two coupled responsibilities:
 
-1. validate and mathematically interpret the closed `Dimension` grammar; and
-2. emit a canonical `Dim[...]` as the associated output of public `Normalize` evidence.
+1. validate and mathematically interpret the closed `Dim` grammar; and
+2. emit a canonical `Canonical[...]` as the associated output of public `Normalize` evidence.
 
 `Quantity`, `GridQuantity`, `DimRef`, rate helpers, zero construction, refinements, and algebra instances consequently
 forward `Normalize` even when they need only one of those responsibilities. The three preceding changes separate
@@ -14,7 +14,7 @@ runtime authority, explicit equivalence, and trust in existing carriers, but the
 
 The implementation is Scala 3 macro code plus opaque carriers. It must remain sound for separately compiled downstream
 code, not only for sources compiled in the library package. Runtime dimensions use stable path-dependent atom types and
-arbitrary-precision `DimensionKey` powers. No runtime proof is stored in each `Quantity` or `GridQuantity`, and this
+arbitrary-precision `DimKey` powers. No runtime proof is stored in each `Quantity` or `GridQuantity`, and this
 change must preserve that representation and all packed-record formats.
 
 The runtime-instrument exploration exercises two requirements without moving instruments into this module: a venue
@@ -28,7 +28,7 @@ time-varying data, not static evidence.
 
 - Separate private dimension interpretation from public result typing so that the former remains available to
   `SameDimension` and authority constructors after `Normalize` disappears.
-- Make ordinary generic arithmetic signatures closed under `Dimension` expressions and independent of macros at their
+- Make ordinary generic arithmetic signatures closed under `Dim` expressions and independent of macros at their
   definition sites.
 - Keep named rate and ratio operations ergonomic for both static and runtime-resolved endpoints.
 - Preserve the carrier-construction invariant by replacing type-only validation with `DimRef` authority wherever an
@@ -43,7 +43,7 @@ time-varying data, not static evidence.
 - Do not add proof fields to quantities, grid quantities, refinements, or rates.
 - Do not infer currency roles, contract payoff formulas, conversion paths, or grids from venue metadata.
 - Do not add instruments, positions, PnL models, orders, or a conversion-graph service.
-- Do not change `DimensionKey`, rational, coordinate, registry, packed-record, or serialization representations.
+- Do not change `DimKey`, rational, coordinate, registry, packed-record, or serialization representations.
 
 ## Decisions
 
@@ -54,11 +54,11 @@ with an internal representation equivalent to `List[(TypeRepr, BigInt)]`. The en
 entry points needed by public operations:
 
 - interpret a closed dimension expression and combine its powers;
-- validate a declared canonical `Dim` and its singleton keys;
+- validate a declared canonical `Canonical` and its singleton keys;
 - compare two interpretations for non-reflexive `SameDimension` derivation; and
 - validate the concrete literal key selected by the public literal `DimRef.atom` constructor.
 
-The engine will no longer materialize `Dim[Entries]`, publish an associated `Out`, or issue reusable validity evidence.
+The engine will no longer materialize `Canonical[Entries]`, publish an associated `Out`, or issue reusable validity evidence.
 Its key whitelist, alias/annotation exposure, cycle guards, and diagnostics remain centralized so that atom construction
 and static equivalence cannot drift to different definitions of an accepted key.
 
@@ -79,7 +79,7 @@ output computation but also preserves its authority-like appearance, macro-conte
 surface, and malformed-representation attack surface. The explored client cases below all have a simpler expression,
 endpoint, or `SameDimension` formulation, so the advanced capability is not retained.
 
-Alternative considered: erase the macro engine entirely and compare only runtime `DimensionKey` values. That would make
+Alternative considered: erase the macro engine entirely and compare only runtime `DimKey` values. That would make
 ordinary static `SameDimension` alignment require runtime witnesses and would regress compile-time equivalence for named
 dimensions, so private interpretation remains.
 
@@ -88,13 +88,13 @@ dimensions, so private interpretation remains.
 Primitive signatures will state their result directly:
 
 ```scala
-def *[B <: Dimension](that: Quantity[B]): Quantity[Times[A, B]]
+def *[B <: Dim](that: Quantity[B]): Quantity[Times[A, B]]
 
-def divideBy[B <: Dimension](
+def divideBy[B <: Dim](
   that: NonZero[Quantity[B]]
 ): Quantity[Divide[A, B]]
 
-def times[A <: Dimension, B <: Dimension](
+def times[A <: Dim, B <: Dim](
   left: DimRef[A],
   right: DimRef[B]
 ): DimRef[Times[A, B]]
@@ -122,7 +122,7 @@ precision. It no longer converts a final accumulated power back to an `Int` mere
 
 As a result, a raw expression can have a mathematically valid interpretation whose surviving power is outside the
 singleton-`Int` range. `SameDimension` may compare that interpretation with another expression, and `DimRef` algebra
-produces the matching arbitrary-precision runtime key. There need not be a canonical `Dim[Power[K, N]]` spelling for
+produces the matching arbitrary-precision runtime key. There need not be a canonical `Canonical[Power[K, N]]` spelling for
 that power.
 
 Alternative considered: reject any primitive arithmetic whose private interpretation exceeds `Int`. That requires a
@@ -230,8 +230,8 @@ Tests will be organized around public compiler boundaries rather than macro impl
 - positive compile fixtures for expression-preserving generic methods, nominated-output `SameDimension`, endpoint rate
   APIs, proof-free homogeneous/refined/grid operations, and identity-bearing instances with `DimRef`;
 - negative compile fixtures proving `Normalize` and `Normalize.Aux` are unavailable, atom widening remains rejected,
-  malformed `Dim` cannot acquire a witness or zero, and cross-spelling addition remains explicit;
-- runtime laws showing every `DimRef` expression operation's `DimensionKey` matches primitive key arithmetic, including
+  malformed `Canonical` cannot acquire a witness or zero, and cross-spelling addition remains explicit;
+- runtime laws showing every `DimRef` expression operation's `DimKey` matches primitive key arithmetic, including
   large accumulated powers and cancellation;
 - registry/path-dependent fixtures showing runtime rate construction, application, composition, checked alignment, and
   retained result witnesses; and
@@ -257,7 +257,7 @@ creates runtime authority.
 - [Risk] Direct endpoint helpers could become unchecked general-purpose retagging. → Keep their constructors and
   coefficient helpers lexically private, constrain source/target equality in method types, and expose arbitrary
   cross-spelling only through `SameDimension.alignTo`.
-- [Risk] Private interpretation and runtime `DimensionKey` arithmetic diverge for aliases, annotations, cancellation,
+- [Risk] Private interpretation and runtime `DimKey` arithmetic diverge for aliases, annotations, cancellation,
   or large powers. → Run paired static-equivalence/runtime-key law fixtures over the same expression corpus.
 - [Risk] Expression-preserving associativity is mathematical rather than Scala-definitional. → State this in scaladoc,
   test `SameDimension` across association and commutation, and keep semantic composition directly endpoint-typed.

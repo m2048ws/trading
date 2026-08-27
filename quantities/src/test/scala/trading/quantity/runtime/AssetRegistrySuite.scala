@@ -32,7 +32,7 @@ class AssetRegistrySuite extends FunSuite:
         .asInstanceOf[AnyRef]
         .eq:
           resolved.asInstanceOf[AnyRef]
-    val value: Quantity[resolved.D] = Quantity(resolved.dimension.asDimensionRef, 10)
+    val value: Quantity[resolved.D] = Quantity(resolved.dimension.ref, 10)
     assertEquals(
       value.coefficient,
       Rational:

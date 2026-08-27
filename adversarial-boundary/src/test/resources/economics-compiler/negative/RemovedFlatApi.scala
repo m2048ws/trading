@@ -1,6 +1,6 @@
 package external.economics.negative
 
-import trading.economics.*
+import trading.economics.instrument.*
 import trading.quantity.*
 import trading.quantity.refinement.PositiveWhole
 
@@ -30,7 +30,7 @@ object RemovedFlatApi:
     val _ = order.kind
     val _ = scenario.activationEvidence
     val _ = instrument.sizePosition(
-      Quantity(instrument.roles.settle.dimension.asDimensionRef, Rational.one),
+      Quantity(instrument.roles.settle.dimension.ref, Rational.one),
       PositiveWhole(1).toOption.get,
       schedule
     )(_ => Right(roundTrip))

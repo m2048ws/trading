@@ -2,7 +2,7 @@ package trading.quantity.runtime
 
 import trading.quantity.AssetId
 import trading.quantity.AtomId
-import trading.quantity.DimensionKey
+import trading.quantity.DimKey
 import trading.quantity.GridId
 import trading.quantity.GridKey
 import trading.quantity.GridVersion
@@ -18,6 +18,6 @@ final case class AssetDefinition(id: AssetId, dimensionAtom: AtomId) extends Jav
  * The grid's local identity is its identifier and version; its positive quantum determines the exact value represented
  * by one coordinate unit.
  */
-final case class GridDefinition(dimension: DimensionKey, id: GridId, version: GridVersion, quantum: PositiveRational)
+final case class GridDefinition(dimension: DimKey, id: GridId, version: GridVersion, quantum: PositiveRational)
   extends JavaSerializationUnsupported:
   val key: GridKey = GridKey(id, version)

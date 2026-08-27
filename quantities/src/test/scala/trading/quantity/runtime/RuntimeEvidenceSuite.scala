@@ -35,10 +35,10 @@ class RuntimeEvidenceSuite extends FunSuite:
         .get
     val leftToRight                    = RuntimeEvidence.sameDimension(left, right).toOption.get
     val rightToLeft                    = RuntimeEvidence.sameDimension(right, left).toOption.get
-    val leftValue                      = Quantity(left.dimension.asDimensionRef, 10)
+    val leftValue                      = Quantity(left.dimension.ref, 10)
     val rightValue: Quantity[right.D]  = leftValue.alignTo[right.D](using leftToRight)
     val alignedRight: Quantity[left.D] =
-      Quantity(right.dimension.asDimensionRef, 5).alignTo[left.D](using rightToLeft)
+      Quantity(right.dimension.ref, 5).alignTo[left.D](using rightToLeft)
     val sum: Quantity[left.D] = leftValue + alignedRight
 
     assertEquals(
@@ -204,7 +204,7 @@ class RuntimeEvidenceSuite extends FunSuite:
   test("normalized compound dimensions recover checked evidence"):
     val registry = new QuantityRegistry
     val expanded =
-      DimensionKey:
+      DimKey:
         List(
           AtomId:
             "compound-usd"
@@ -217,7 +217,7 @@ class RuntimeEvidenceSuite extends FunSuite:
           -> BigInt(-1)
         )
     val reduced =
-      DimensionKey:
+      DimKey:
         List(
           AtomId:
             "compound-usd"
@@ -239,7 +239,7 @@ class RuntimeEvidenceSuite extends FunSuite:
         .toOption
         .get
     val evidence                    = RuntimeEvidence.sameDimension(left, right).toOption.get
-    val source                      = Quantity(left.dimension.asDimensionRef, Rational(3, 2))
+    val source                      = Quantity(left.dimension.ref, Rational(3, 2))
     val restored: Quantity[right.D] = source.alignTo[right.D](using evidence)
 
     assertEquals(restored.coefficient, Rational(3, 2))

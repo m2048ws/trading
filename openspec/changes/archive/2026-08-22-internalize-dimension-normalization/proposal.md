@@ -25,7 +25,7 @@ validation and equivalence machinery rather than ordinary client vocabulary.
   with runtime-inhabitation authority.
 - Keep public atom-key restrictions and malformed-representation rejection inside authority-bearing constructors.
   Removing the public proof type must not widen `DimRef` atom construction, make reflexive `SameDimension` certify
-  validity, or allow malformed `Dim` representations to acquire values or arithmetic through supported APIs.
+  validity, or allow malformed `Canonical` representations to acquire values or arithmetic through supported APIs.
 - Do not add instrument-domain types. Runtime-discovered instrument and conversion use cases remain motivating boundary
   fixtures for the quantities and runtime APIs; instruments, orders, positions, and venue adapters remain deferred.
 
@@ -50,7 +50,7 @@ The affected surface includes the static-dimension macros, `DimRef`, `Quantity`,
 optional algebra instances, runtime heterogeneous flows, documentation, and downstream compiler-boundary fixtures.
 Removing a public typeclass and changing dimension-changing result types is source- and JVM-binary-incompatible; client
 signatures that forward `Normalize` or expose `Normalize.Aux` outputs must migrate to expression types, explicit
-`SameDimension` alignment, or authoritative endpoint APIs. Runtime `DimensionKey` encoding, exact coefficients, grid
+`SameDimension` alignment, or authoritative endpoint APIs. Runtime `DimKey` encoding, exact coefficients, grid
 coordinates and identity, registry ownership, packed records, and wire formats remain unchanged. This change follows
 `freeze-static-dimension-authority`, `demote-same-dimension`, and `trust-existing-dimensional-values`, and supersedes
 their remaining public-normalization requirements while preserving their authority and carrier-trust invariants.

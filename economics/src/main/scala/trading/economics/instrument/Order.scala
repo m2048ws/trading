@@ -1,7 +1,47 @@
-package trading.economics
+package trading.economics.instrument
 
-import trading.quantity.Dimension
+import trading.quantity.Dim
 import trading.quantity.refinement.PositiveWhole
+
+/** Order direction and the corresponding account-position sign. */
+enum Side:
+  case Buy, Sell
+
+  def sign: BigInt =
+    this match
+      case Buy  => BigInt(1)
+      case Sell => BigInt(-1)
+
+/** Duration instruction retained by a priced immutable order. */
+enum TimeInForce:
+  case GoodTillCancelled, ImmediateOrCancel, FillOrKill, Day
+
+/** The only durations structurally accepted by market execution. */
+enum NonRestingTimeInForce:
+  case ImmediateOrCancel, FillOrKill
+
+object NonRestingTimeInForce:
+  def from(value: TimeInForce): Either[EconomicsError, NonRestingTimeInForce] =
+    value match
+      case TimeInForce.ImmediateOrCancel => Right(NonRestingTimeInForce.ImmediateOrCancel)
+      case TimeInForce.FillOrKill        => Right(NonRestingTimeInForce.FillOrKill)
+      case supplied                      => Left(InvalidOrder(OrderFailureReason.RestingMarketDuration(supplied)))
+
+/** Whether a priced order may take liquidity or must remain passive. */
+enum LiquidityConstraint:
+  case Unrestricted, MakerOnly
+
+/** Whether an order may open exposure or may only reduce it. */
+enum PositionEffect:
+  case Unrestricted, ReduceOnly
+
+/** Price source named by a trigger or peg. */
+enum PriceReference:
+  case Last, Mark, Index
+
+/** Exact comparison used by fixed and trailing activation. */
+enum TriggerComparison:
+  case AtOrAbove, AtOrBelow
 
 sealed trait OrderActivation[+P]
 case object ImmediateActivation extends OrderActivation[Nothing]
@@ -40,17 +80,17 @@ final case class OrderIntent[L](
   lots: L,
   positionEffect: PositionEffect)
 
-final case class InstrumentOrder[L, P] private[economics] (
+final case class Order[L, P] private[instrument] (
   instrumentId: InstrumentId,
   intent: OrderIntent[L],
   activation: OrderActivation[P],
   execution: OrderExecution[L, P])
 
-final class InstrumentOrders[D <: Dimension, B <: Dimension, Q <: Dimension] private[economics] (
+final class Orders[D <: Dim, B <: Dim, Q <: Dim] private[instrument] (
   instrumentId: InstrumentId):
 
-  private type Lots  = InstrumentLots[D]
-  private type Price = InstrumentPrice[B, Q]
+  private type Lots  = _root_.trading.economics.instrument.Lots[D]
+  private type Price = _root_.trading.economics.instrument.Price[B, Q]
 
   val immediate: OrderActivation[Price] = ImmediateActivation
   val displayed: PricedVisibility[Lots] = DisplayedVisibility
@@ -102,17 +142,17 @@ final class InstrumentOrders[D <: Dimension, B <: Dimension, Q <: Dimension] pri
     intent: OrderIntent[Lots],
     activation: OrderActivation[Price],
     execution: OrderExecution[Lots, Price]
-  ): Either[EconomicsError, InstrumentOrder[Lots, Price]] =
+  ): Either[EconomicsError, Order[Lots, Price]] =
     for
       _ <- validateIdentities(intent, activation, execution)
       _ <- validateExecution(intent, execution)
-    yield InstrumentOrder(instrumentId, intent, activation, execution)
+    yield Order(instrumentId, intent, activation, execution)
 
   def market(
     side: Side,
     lots: Lots,
     positionEffect: PositionEffect = PositionEffect.Unrestricted
-  ): Either[EconomicsError, InstrumentOrder[Lots, Price]] =
+  ): Either[EconomicsError, Order[Lots, Price]] =
     create(intent(side, lots, positionEffect), immediate, marketExecution(NonRestingTimeInForce.ImmediateOrCancel))
 
   def limit(
@@ -123,7 +163,7 @@ final class InstrumentOrders[D <: Dimension, B <: Dimension, Q <: Dimension] pri
     liquidityConstraint: LiquidityConstraint = LiquidityConstraint.Unrestricted,
     positionEffect: PositionEffect = PositionEffect.Unrestricted,
     visibility: PricedVisibility[Lots] = DisplayedVisibility
-  ): Either[EconomicsError, InstrumentOrder[Lots, Price]] =
+  ): Either[EconomicsError, Order[Lots, Price]] =
     create(
       intent(side, lots, positionEffect),
       immediate,
@@ -135,7 +175,7 @@ final class InstrumentOrders[D <: Dimension, B <: Dimension, Q <: Dimension] pri
     lots: Lots,
     trigger: OrderActivation[Price],
     positionEffect: PositionEffect = PositionEffect.Unrestricted
-  ): Either[EconomicsError, InstrumentOrder[Lots, Price]] =
+  ): Either[EconomicsError, Order[Lots, Price]] =
     trigger match
       case ImmediateActivation => Left(InvalidOrder(OrderFailureReason.StopRequiresTrigger))
       case _                   =>
@@ -154,7 +194,7 @@ final class InstrumentOrders[D <: Dimension, B <: Dimension, Q <: Dimension] pri
     liquidityConstraint: LiquidityConstraint = LiquidityConstraint.Unrestricted,
     positionEffect: PositionEffect = PositionEffect.Unrestricted,
     visibility: PricedVisibility[Lots] = DisplayedVisibility
-  ): Either[EconomicsError, InstrumentOrder[Lots, Price]] =
+  ): Either[EconomicsError, Order[Lots, Price]] =
     trigger match
       case ImmediateActivation => Left(InvalidOrder(OrderFailureReason.StopRequiresTrigger))
       case _                   =>
@@ -184,7 +224,7 @@ final class InstrumentOrders[D <: Dimension, B <: Dimension, Q <: Dimension] pri
           case IcebergVisibility(lots) => supplied += "execution.iceberg" -> lots.instrumentId
           case _                       => ()
       case _: MarketExecution => ()
-    InstrumentIdentityChecks.check("order", instrumentId, supplied.result()*)
+    IdentityChecks.check("order", instrumentId, supplied.result()*)
   end validateIdentities
 
   private def validateExecution(
@@ -204,4 +244,4 @@ final class InstrumentOrders[D <: Dimension, B <: Dimension, Q <: Dimension] pri
         Left(InvalidOrder(OrderFailureReason.NonRestingIceberg))
       case _ => Right(())
 
-end InstrumentOrders
+end Orders

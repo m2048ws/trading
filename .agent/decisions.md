@@ -163,7 +163,7 @@ different responsibilities.
 Acceptance by library-private static interpretation does not imply existence of
 a runtime dimension witness.
 
-A runtime `DimRef[D]` carries authority about the runtime `DimensionKey`
+A runtime `DimRef[D]` carries authority about the runtime `DimKey`
 represented by `D`.
 
 ---
@@ -229,7 +229,7 @@ Validity and equivalence remain separate concepts.
 
 When equivalence is not already statically known and must be recovered from
 runtime witnesses, it must be backed by checked authoritative runtime identity,
-such as `DimensionKey` equality.
+such as `DimKey` equality.
 
 Runtime evidence recovery must not assume equivalence solely from generic type
 shape.
@@ -281,8 +281,8 @@ architecture. Subsequent approved changes internalized its temporary public
 normalization capability. The current public model is centered conceptually on:
 
 ```scala
-Dimension
-Dim[...]
+Dim
+Canonical[...]
 Power[K, Int]
 Atom[K]
 One
@@ -373,7 +373,7 @@ def +(that: Quantity[D]): Quantity[D]
 over:
 
 ```scala
-def +[E <: Dimension](
+def +[E <: Dim](
   that: Quantity[E]
 )(using SameDimension[D,E]): Quantity[D]
 ```
@@ -387,7 +387,7 @@ def +[E <: Dimension](
 Illustrative client code:
 
 ```scala
-def total[D <: Dimension](
+def total[D <: Dim](
   left: Quantity[D],
   right: Quantity[D]
 ): Quantity[D] =
@@ -427,7 +427,7 @@ equivalence evidence.
 Example target ergonomics:
 
 ```scala
-def twice[D <: Dimension](
+def twice[D <: Dim](
   value: Quantity[D]
 ): Quantity[D] =
   value + value
@@ -436,7 +436,7 @@ def twice[D <: Dimension](
 and:
 
 ```scala
-def scale[D <: Dimension](
+def scale[D <: Dim](
   value: Quantity[D],
   factor: Rational
 ): Quantity[D] =
@@ -560,7 +560,7 @@ internalize-dimension-normalization
 Manufacturing a quantity from only:
 
 ```scala
-D <: Dimension
+D <: Dim
 ```
 
 requires an authority source. The accepted API is:

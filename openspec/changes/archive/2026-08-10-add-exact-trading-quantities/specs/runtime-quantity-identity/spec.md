@@ -2,8 +2,8 @@
 
 ### Requirement: Runtime dimensions and assets
 The runtime layer SHALL create opaque dimension witnesses for runtime identifiers and SHALL normalize compound
-dimensions through canonical `DimensionKey` values. `AssetRef` SHALL bind an asset identity to its canonical dimension
-without imposing a grid. `DimensionKey` SHALL be the runtime free abelian group of dimensions and SHALL expose
+dimensions through canonical `DimKey` values. `AssetRef` SHALL bind an asset identity to its canonical dimension
+without imposing a grid. `DimKey` SHALL be the runtime free abelian group of dimensions and SHALL expose
 multiplicative identity, multiplication, inverse, and canonical equality through an opt-in production algebra
 instance. Those operations SHALL delegate to primitive normalization. Algebraic equality SHALL NOT replace registry
 identity, registry ownership, registered provenance, or full grid identity.
@@ -41,7 +41,7 @@ SHALL produce them. Package-qualified or top-level privacy SHALL NOT be the prov
 - **THEN** lexical registry ownership prevents the construction
 
 ### Requirement: Full grid identity is dimension-scoped
-Full registered grid identity SHALL be `(canonical DimensionKey, GridId, GridVersion)`. A `GridKey` containing only ID
+Full registered grid identity SHALL be `(canonical DimKey, GridId, GridVersion)`. A `GridKey` containing only ID
 and version SHALL remain dimension-local. Definitions SHALL be immutable per full identity, and equal quanta SHALL NOT
 erase distinct IDs or versions. The exact positive rational quantum associated with a registered full identity SHALL
 remain immutable and SHALL be obtainable only through the registry-produced witness for that identity.

@@ -473,7 +473,7 @@ The steward may provide specific targets:
 
 For compiler-boundary changes, run the real public compiler fixture suite.
 
-For static/runtime changes, compare `DimensionKey` behavior where relevant.
+For static/runtime changes, compare `DimKey` behavior where relevant.
 
 For configured checks, run repository formatting and diff validation.
 

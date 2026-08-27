@@ -25,7 +25,7 @@ class ConstructionAndProvenanceBoundarySuite extends FunSuite:
     val _ = nullFailureAtRoot(body)
 
   test("UniformGrid rejects null dimension authority before returning a grid reference"):
-    type Bad = Dim[Power["construction-boundary", 0] *: EmptyTuple]
+    type Bad = Canonical[Power["construction-boundary", 0] *: EmptyTuple]
 
     val witness: DimRef[Bad] = null
     var returned             = false
@@ -58,7 +58,7 @@ class ConstructionAndProvenanceBoundarySuite extends FunSuite:
     assertEquals(grid.asQuantity(value), Quantity(dimension.dimension, Rational(7, 100)))
 
   test("nearby DimRef-taking roots already reject null authority"):
-    type Bad = Dim[Power["quantity-construction-boundary", 0] *: EmptyTuple]
+    type Bad = Canonical[Power["quantity-construction-boundary", 0] *: EmptyTuple]
 
     val malformed: DimRef[Bad] = null
     val valid: DimRef[One]     = DimRef.one
@@ -73,7 +73,7 @@ class ConstructionAndProvenanceBoundarySuite extends FunSuite:
   test("alignment and exact comparison reject null SameDimension before returning"):
     type A   = Atom["null-alignment:a"]
     type B   = Atom["null-alignment:b"]
-    type Bad = Dim[Power["null-alignment:bad", 0] *: EmptyTuple]
+    type Bad = Canonical[Power["null-alignment:bad", 0] *: EmptyTuple]
 
     val a: DimRef[A]                     = DimRef.atom["null-alignment:a"]
     val b: DimRef[B]                     = DimRef.atom["null-alignment:b"]
@@ -123,7 +123,7 @@ class ConstructionAndProvenanceBoundarySuite extends FunSuite:
     val nullCoefficient: Rational = null
     val nullCoordinate: BigInt    = null
     val registry                  = new QuantityRegistry
-    val dimension                 = registry.registerDimension(DimensionKey.one).toOption.get
+    val dimension                 = registry.registerDimension(DimKey.one).toOption.get
     val grid                      = registry
       .registerGrid(dimension):
         GridDefinition(
@@ -151,7 +151,7 @@ class ConstructionAndProvenanceBoundarySuite extends FunSuite:
   test("valid numeric payloads retain exact construction and checked decoding"):
     val quantity  = Quantity(DimRef.one, Rational(7, 3))
     val registry  = new QuantityRegistry
-    val dimension = registry.registerDimension(DimensionKey.one).toOption.get
+    val dimension = registry.registerDimension(DimKey.one).toOption.get
     val grid      = registry
       .registerGrid(dimension):
         GridDefinition(
@@ -182,7 +182,7 @@ class ConstructionAndProvenanceBoundarySuite extends FunSuite:
     assertEquals(decoded.grid.coordinate(decoded.value), BigInt(11))
 
   test("DimRef authority rejects null before manufacturing dimensional identities"):
-    type Bad = Dim[Power["null-dimension-authority", 0] *: EmptyTuple]
+    type Bad = Canonical[Power["null-dimension-authority", 0] *: EmptyTuple]
     type G   = "null-dimension-grid"
 
     val malformed: DimRef[Bad] = null
@@ -213,7 +213,7 @@ class ConstructionAndProvenanceBoundarySuite extends FunSuite:
     assertEquals(quantityZero.coefficient, Rational.zero)
     assert(gridZero.sameGridEquals(GridQuantity.zero[One, G](using DimRef.one)))
     assertEquals(product.coefficient, Rational(4))
-    assertEquals(witness.key, DimensionKey.one)
+    assertEquals(witness.key, DimKey.one)
     assertEquals(rate.coefficient, Rational.one)
     assertEquals(vectorSpace.zero.coefficient, Rational.zero)
     assert(gridModule.zero.sameGridEquals(GridQuantity.zero[One, G](using DimRef.one)))
@@ -223,21 +223,21 @@ class ConstructionAndProvenanceBoundarySuite extends FunSuite:
   test("runtime identity roots reject null before returning authority"):
     val registry = new QuantityRegistry
 
-    rejectsNullAtRoot(DimensionKey.atom(null))
-    rejectsNullAtRoot(DimensionKey(Vector((null: AtomId) -> BigInt(1))))
-    rejectsNullAtRoot(DimensionKey(Vector((null: AtomId) -> BigInt(0))))
+    rejectsNullAtRoot(DimKey.atom(null))
+    rejectsNullAtRoot(DimKey(Vector((null: AtomId) -> BigInt(1))))
+    rejectsNullAtRoot(DimKey(Vector((null: AtomId) -> BigInt(0))))
     rejectsNullAtRoot:
-      DimensionKey(Vector((null: AtomId) -> BigInt(1), (null: AtomId) -> BigInt(-1)))
+      DimKey(Vector((null: AtomId) -> BigInt(1), (null: AtomId) -> BigInt(-1)))
 
     val nullPower: BigInt = null
-    rejectsNullAtRoot(DimensionKey(Vector(AtomId("null-dimension-power") -> nullPower)))
+    rejectsNullAtRoot(DimKey(Vector(AtomId("null-dimension-power") -> nullPower)))
 
     rejectsNullAtRoot(DimRef.fresh(null))
     rejectsNullAtRoot(DimRef.atomic(null))
     rejectsNullAtRoot(new DimRef.NominalAtom(null) {})
-    rejectsNullAtRoot(DimensionKey.multiply(null, DimensionKey.one))
-    rejectsNullAtRoot(DimensionKey.multiply(DimensionKey.one, null))
-    rejectsNullAtRoot(DimensionKey.inverse(null))
+    rejectsNullAtRoot(DimKey.multiply(null, DimKey.one))
+    rejectsNullAtRoot(DimKey.multiply(DimKey.one, null))
+    rejectsNullAtRoot(DimKey.inverse(null))
     rejectsNullAtRoot(GridKey(null, GridVersion(1)))
     rejectsNullAtRoot(GridKey(GridId("null-grid-version"), null))
     rejectsNullAtRoot(UniformGrid.create(null, GridVersion(1), DimRef.one, quantum))
@@ -248,14 +248,14 @@ class ConstructionAndProvenanceBoundarySuite extends FunSuite:
     rejectsNullAtRoot:
       registry.registerAsset(AssetDefinition(AssetId("null-asset-atom"), null))
 
-    val dimension = registry.registerDimension(DimensionKey.one).toOption.get
+    val dimension = registry.registerDimension(DimKey.one).toOption.get
     rejectsNullAtRoot:
       GridDefinition(dimension.dimension.key, null, GridVersion(1), quantum)
 
   test("valid key, witness, registry, quantity, and grid roots remain exact"):
     val atom        = AtomId("valid-authority-root")
-    val key         = DimensionKey(Vector(atom -> BigInt(2), atom -> BigInt(-1)))
-    val cancelled   = DimensionKey(Vector(atom -> BigInt(1), atom -> BigInt(-1)))
+    val key         = DimKey(Vector(atom -> BigInt(2), atom -> BigInt(-1)))
+    val cancelled   = DimKey(Vector(atom -> BigInt(1), atom -> BigInt(-1)))
     val firstFresh  = DimRef.fresh(key)
     val secondFresh = DimRef.fresh(key)
     val atomic      = DimRef.atomic(AtomId("valid-atomic-root"))
@@ -280,12 +280,12 @@ class ConstructionAndProvenanceBoundarySuite extends FunSuite:
       .get
     val coordinate = registeredGrid.fromCoordinate(7)
 
-    assertEquals(key, DimensionKey.atom(atom))
-    assertEquals(cancelled, DimensionKey.one)
+    assertEquals(key, DimKey.atom(atom))
+    assertEquals(cancelled, DimKey.one)
     assertEquals(quantity.coefficient, Rational.one)
     assertEquals(registeredGrid.coordinate(coordinate), BigInt(7))
     assertEquals(registeredGrid.asQuantity(coordinate),
-      Quantity(registeredDimension.dimension.asDimensionRef, Rational(7, 100)))
+      Quantity(registeredDimension.dimension.ref, Rational(7, 100)))
     assert(SameDimension.between(firstFresh.dimension, secondFresh.dimension).nonEmpty)
     assert(atomic.atomId != null)
     assert(nominal.key != null)

@@ -1,6 +1,6 @@
 package external.economics.negative
 
-import trading.economics.Instrument
+import trading.economics.instrument.Instrument
 
 object DeferredLifecycle:
   def rejectDeferredState(

@@ -14,13 +14,13 @@ adversarial project. The `quantities/` project publishes artifact `trading-quant
 ## 1. Public type model
 
 ```scala
-opaque type Quantity[D <: Dimension] = Rational
+opaque type Quantity[D <: Dim] = Rational
 
-opaque type GridQuantity[D <: Dimension, G] = BigInt
+opaque type GridQuantity[D <: Dim, G] = BigInt
 
 type Ratio = Quantity[One]
 
-type Rate[From <: Dimension, To <: Dimension] =
+type Rate[From <: Dim, To <: Dim] =
   Quantity[Divide[To, From]]
 ```
 
@@ -222,7 +222,7 @@ its left module and additive commutative group. `LeftModule[GridQuantity[D, G], 
 instance and uses Algebra's standard `Ring[BigInt]`; no parallel grid group implementation exists. The instances
 delegate to primitive arithmetic, and the primitive operations never summon the instances that delegate to them.
 
-`DimensionKey` exposes its runtime free-abelian-group structure as a multiplicative commutative group with canonical
+`DimKey` exposes its runtime free-abelian-group structure as a multiplicative commutative group with canonical
 equality. `NonZero[Rational]` exposes exact multiplicative identity, multiplication, and reciprocal through lexical
 closure without revalidation. Cats Kernel exact orders for `Rational`, `Quantity[D]`, and `GridQuantity[D, G]` delegate
 to primitive comparisons and never act as refinement authority. Nonnegative exact and grid quantities expose additive
@@ -230,7 +230,7 @@ commutative monoids, while positive exact and grid quantities expose additive co
 have no additive structure.
 
 Rates have category-shaped composition laws, but no production Cats `Category[Rate]` is defined: Cats requires an
-unconstrained `id[A]`, whereas a legitimate rate identity requires `A <: Dimension` and an authoritative `DimRef[A]`.
+unconstrained `id[A]`, whereas a legitimate rate identity requires `A <: Dim` and an authoritative `DimRef[A]`.
 `Rate.identity(dimension)` preserves that construction boundary. There is no public Algebra `Field[Rational]`,
 `Numeric[Quantity[D]]`, `Ring[Quantity[D]]`, or `Ring[GridQuantity[D, G]]`, and no algebra instance reconstructs grid
 coordinates or changes direct operator semantics.
@@ -240,7 +240,7 @@ coordinates or changes direct operator semantics.
 `QuantityRegistry` owns `RegisteredDimensionRef` and `RegisteredGridRef`. Full registered grid identity is:
 
 ```text
-(canonical DimensionKey, GridId, GridVersion)
+(canonical DimKey, GridId, GridVersion)
 ```
 
 Definitions are immutable per full identity. A dimension-local `GridKey` is not full identity, equal quantum does not

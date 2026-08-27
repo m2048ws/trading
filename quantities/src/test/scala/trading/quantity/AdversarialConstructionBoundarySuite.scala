@@ -102,7 +102,7 @@ class AdversarialConstructionBoundarySuite extends FunSuite:
     assertDoesNotCompile:
       """
       import trading.quantity.*
-      val serialized: java.io.Serializable = DimensionKey.one
+      val serialized: java.io.Serializable = DimKey.one
     """
 
 end AdversarialConstructionBoundarySuite

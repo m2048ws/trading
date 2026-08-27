@@ -3,7 +3,7 @@ package external.fixtures.positive
 import trading.quantity.*
 
 object ResolvedDimensionMatch:
-  type Select[D <: Dimension] <: Dimension = D match
+  type Select[D <: Dim] <: Dim = D match
     case One => Atom["resolved:match"]
 
   type Selected = Select[One]

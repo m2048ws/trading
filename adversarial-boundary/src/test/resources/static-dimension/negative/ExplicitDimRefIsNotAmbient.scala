@@ -3,11 +3,11 @@ package external.fixtures.negative
 import trading.quantity.*
 
 object ExplicitDimRefIsNotAmbient:
-  def runtimeIdentity[D <: Dimension](dimension: DimRef[D]): DimensionKey =
+  def runtimeIdentity[D <: Dim](dimension: DimRef[D]): DimKey =
     dimension.key
 
   // OFFENDING-BEGIN
-  def zero[D <: Dimension](dimension: DimRef[D]): Quantity[D] =
+  def zero[D <: Dim](dimension: DimRef[D]): Quantity[D] =
     Quantity.zero[D]
   // OFFENDING-END
 

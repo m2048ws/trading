@@ -14,7 +14,7 @@ object SingletonDimensionKeys:
   val generative = DimRef.atomic(AtomId("generative:key"))
   val generated: Quantity[generative.D] = Quantity(generative.dimension, 1)
 
-  val runtime = DimRef.fresh(DimensionKey.atom(AtomId("runtime:key")))
+  val runtime = DimRef.fresh(DimKey.atom(AtomId("runtime:key")))
   val loaded: Quantity[runtime.D] = Quantity(runtime.dimension, 1)
 
 end SingletonDimensionKeys

@@ -1,4 +1,4 @@
-package trading.economics
+package trading.economics.instrument
 
 import munit.FunSuite
 
@@ -15,7 +15,7 @@ class FeePnlSizingSuite extends FunSuite:
     .get
 
   test("validated denominations are reusable and preserve charge, rebate, and residual signs"):
-    val basis  = Quantity(fixture.usd.dimension.asDimensionRef, Rational(10))
+    val basis  = Quantity(fixture.usd.dimension.ref, Rational(10))
     val charge = usdDenomination.percentage(FeeKind("taker"), basis, FeeRate(Rational(1, 1000))).toOption.get
     val rebate = usdDenomination.percentage(FeeKind("maker"), basis, FeeRate(Rational(-1, 1000))).toOption.get
     assertEquals(charge.amount.coefficient, Rational(-1, 100))
@@ -52,7 +52,7 @@ class FeePnlSizingSuite extends FunSuite:
       def assess(scenario: instrument.OrderScenario): Either[EconomicsError, Vector[instrument.FeeLine]] =
         val fee = tokenDenomination.quantize(
           FeeKind("token-flat"),
-          Quantity(fixture.token.dimension.asDimensionRef, Rational(-1, 1000))
+          Quantity(fixture.token.dimension.ref, Rational(-1, 1000))
         )
         instrument.fees.line(scenario, 0, fee).map(Vector(_))
 
@@ -75,7 +75,7 @@ class FeePnlSizingSuite extends FunSuite:
       def assess(scenario: instrument.OrderScenario): Either[EconomicsError, Vector[instrument.FeeLine]] =
         val fee = tokenDenomination.quantize(
           FeeKind("missing-token"),
-          Quantity(fixture.token.dimension.asDimensionRef, Rational(-1, 1000))
+          Quantity(fixture.token.dimension.ref, Rational(-1, 1000))
         )
         instrument.fees.line(scenario, 0, fee).map(Vector(_))
     assertEquals(
@@ -91,7 +91,7 @@ class FeePnlSizingSuite extends FunSuite:
     def component(kind: String, amount: Rational): instrument.FeeSchedule = new instrument.FeeSchedule:
       val instrumentId: InstrumentId = instrument.identity.id
       def assess(value: instrument.OrderScenario): Either[EconomicsError, Vector[instrument.FeeLine]] =
-        val fee = usdDenomination.quantize(FeeKind(kind), Quantity(fixture.usd.dimension.asDimensionRef, amount))
+        val fee = usdDenomination.quantize(FeeKind(kind), Quantity(fixture.usd.dimension.ref, amount))
         instrument.fees.line(value, 0, fee).map(Vector(_))
 
     val combined =
@@ -119,15 +119,15 @@ class FeePnlSizingSuite extends FunSuite:
     )
 
   test("minimum charges preserve account-perspective sign"):
-    val contribution = Quantity(fixture.usd.dimension.asDimensionRef, Rational(-1, 1000))
-    val minimum      = Quantity(fixture.usd.dimension.asDimensionRef, Rational(1, 100))
+    val contribution = Quantity(fixture.usd.dimension.ref, Rational(-1, 1000))
+    val minimum      = Quantity(fixture.usd.dimension.ref, Rational(1, 100))
     assertEquals(
       usdDenomination.minimumCharge(contribution, minimum).map(_.coefficient),
       Right(Rational(-1, 100))
     )
     assert(
       usdDenomination
-        .minimumCharge(contribution, Quantity(fixture.usd.dimension.asDimensionRef, Rational(-1)))
+        .minimumCharge(contribution, Quantity(fixture.usd.dimension.ref, Rational(-1)))
         .isLeft
     )
 
@@ -140,7 +140,7 @@ class FeePnlSizingSuite extends FunSuite:
         val rate =
           if value.order.intent.lots.count.unrefined >= 1000 then FeeRate(Rational(1, 500))
           else FeeRate(Rational(1, 1000))
-        val basis = Quantity(fixture.usd.dimension.asDimensionRef, Rational(10))
+        val basis = Quantity(fixture.usd.dimension.ref, Rational(10))
         for
           fee  <- usdDenomination.percentage(FeeKind("tiered"), basis, rate)
           line <- instrument.fees.line(value, 0, fee)
@@ -152,7 +152,7 @@ class FeePnlSizingSuite extends FunSuite:
 
   test("sizing exhaustively preserves candidate order, non-monotone selection, failure propagation, and fees"):
     val cap     = PositiveWhole(4).toOption.get
-    val budget  = Quantity(instrument.roles.settle.dimension.asDimensionRef, Rational(3, 100))
+    val budget  = Quantity(instrument.roles.settle.dimension.ref, Rational(3, 100))
     val visited = scala.collection.mutable.ArrayBuffer.empty[BigInt]
     val sized   = instrument.sizing.maxLots(budget, cap, instrument.fees.none): candidate =>
       visited += candidate.count.unrefined
@@ -176,7 +176,7 @@ class FeePnlSizingSuite extends FunSuite:
       def assess(scenario: instrument.OrderScenario): Either[EconomicsError, Vector[instrument.FeeLine]] =
         val fee = usdDenomination.quantize(
           FeeKind("flat"),
-          Quantity(fixture.usd.dimension.asDimensionRef, Rational(-1, 100))
+          Quantity(fixture.usd.dimension.ref, Rational(-1, 100))
         )
         instrument.fees.line(scenario, 0, fee).map(Vector(_))
     val withFees = instrument.sizing.maxLots(budget, cap, flatFee): candidate =>

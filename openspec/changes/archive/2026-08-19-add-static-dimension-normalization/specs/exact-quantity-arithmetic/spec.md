@@ -3,7 +3,7 @@
 ### Requirement: Compile-time dimension equivalence
 `SameDimension[A, B]` SHALL be derivable at compile time when the statically visible power representations of `A` and
 `B` contain the same atom/exponent entries modulo permutation. Static derivation SHALL require no runtime `DimRef`,
-`DimensionKey`, or atom ordering. The evidence SHALL be a restricted capability whose construction remains unavailable to
+`DimKey`, or atom ordering. The evidence SHALL be a restricted capability whose construction remains unavailable to
 supported downstream code; it SHALL authorize quantity- and grid-dimension coercion and MAY be supplied contextually to
 dimension-safe operations, but SHALL NOT expose unrestricted Scala type equality. An explicit evidence-checked alignment
 operation SHALL allow callers to select an equivalent target dimension. The library SHALL NOT provide a global implicit
@@ -87,7 +87,7 @@ A canonical stored power SHALL be `Power[Factor, PositiveExponent[M]]` or
 `NaturalSuccessor[...]` nodes ending in `NaturalZero`. Stored zero exponents, bare `Natural`, abstract/refined magnitudes,
 duplicate factors, non-`Power` entries, empty or nonminimal `Powers`, and unresolved tuples SHALL be rejected. Stored
 factors SHALL be concrete and irreducible: after transparent annotation and alias exposure, `One`, `Times`, `Inverse`,
-`Powers`, base `Dimension`, and reducible structures hidden by intersections, refinements, bounds, match types, or unknown
+`Powers`, base `Dim`, and reducible structures hidden by intersections, refinements, bounds, match types, or unknown
 wrappers SHALL NOT be treated as opaque atoms. Final validation SHALL expose annotations and aliases again, reject
 unresolved or reducible factor endpoints, and require each surviving factor to be a stable irreducible dimension identity
 independently of the preceding canonicalizer.
@@ -102,7 +102,7 @@ independently of the preceding canonicalizer.
 - **THEN** normalization and every final operation evidence boundary reject the structure
 
 #### Scenario: Reject disguised reducible factors
-- **WHEN** a stored factor is base `Dimension`, `Times[A, B] & Tag`, or an annotated/refined reducible constructor
+- **WHEN** a stored factor is base `Dim`, `Times[A, B] & Tag`, or an annotated/refined reducible constructor
 - **THEN** automatic derivation rejects it rather than treating it as one opaque atom
 
 #### Scenario: Diagnose unresolved generic derivation cleanly
@@ -174,7 +174,7 @@ independently of the preceding canonicalizer.
 - **THEN** the exponent parses to and is emitted as the ordinary unannotated canonical natural encoding
 
 #### Scenario: Reject invalid annotated underlying structure
-- **WHEN** an annotation wraps bare or abstract `Natural`, base `Dimension`, nonminimal or malformed `Powers`, duplicate
+- **WHEN** an annotation wraps bare or abstract `Natural`, base `Dim`, nonminimal or malformed `Powers`, duplicate
   factors, zero exponents, or a parameter-rooted selection
 - **THEN** derivation rejects the exposed underlying structure by the same rule as the unannotated form
 
@@ -183,7 +183,7 @@ independently of the preceding canonicalizer.
 ### Requirement: Arbitrary-precision exactness
 Quantity coefficients, grid coordinates, rational numerators and denominators, and normalized dimension exponents SHALL
 use arbitrary-precision semantics. Static dimension exponents SHALL have exact signed-integer semantics consistent with
-runtime `DimensionKey` exponents. Arithmetic MUST NOT silently overflow, wrap, truncate, saturate, or approximate; an
+runtime `DimKey` exponents. Arithmetic MUST NOT silently overflow, wrap, truncate, saturate, or approximate; an
 exact unary magnitude SHALL be validated recursively and SHALL NOT be replaced by this remediation. An implementation
 resource limit encountered during static normalization MUST fail compilation rather than produce an incorrect dimension.
 
@@ -274,18 +274,18 @@ term paths SHALL remain unresolved, while reuse of fully completed noncyclic ter
 #### Scenario: Preserve endpoint-depth coherence
 - **WHEN** a concrete operation output is rebound and reused as the exact endpoint of one or more further concrete
   operation refinements
-- **THEN** every final operation derives the same static powers and runtime `DimensionKey` as direct use of the concrete
+- **THEN** every final operation derives the same static powers and runtime `DimKey` as direct use of the concrete
   endpoint, and no nested `Powers` factor survives
 
 #### Scenario: Canonicalize definitionally equal aliases coherently
 - **WHEN** `holder.D` is a transparent alias for `Times[A, B]`
 - **THEN** every valid static operation derives the same canonical output for `holder.D` and `Times[A, B]`, including
-  duplicate merging, cancellation, inverse flattening, and runtime `DimensionKey` agreement
+  duplicate merging, cancellation, inverse flattening, and runtime `DimKey` agreement
 
 #### Scenario: Canonicalize definitionally equal annotated inputs coherently
 - **WHEN** a stable atom, reducible product, or transparent product alias differs from another input only by annotations
 - **THEN** every valid static operation produces the same unannotated canonical output and agrees with runtime
-  `DimensionKey` multiplication and inversion
+  `DimKey` multiplication and inversion
 
 ### Requirement: Exact rates and ratios
 `Rate[From, To]` SHALL denote an exact quantity in the simplified dimension `To / From`, and `Ratio` SHALL denote

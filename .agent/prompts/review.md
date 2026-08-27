@@ -308,7 +308,7 @@ Where the active change affects static dimension semantics or `DimRef` authority
 Ask:
 
 ```text
-Does the trusted static result denote the same dimension as DimensionKey?
+Does the trusted static result denote the same dimension as DimKey?
 
 Can one accepted static atom type denote contradictory runtime keys?
 

@@ -263,7 +263,7 @@ Examples include:
 - inversion;
 - rate composition;
 - grid-to-exact embedding;
-- runtime `DimensionKey` normalization;
+- runtime `DimKey` normalization;
 - `DimRef` static/runtime identity.
 
 A successful static result with a contradictory runtime key is blocking.
@@ -477,7 +477,7 @@ change affects both.
 
 For runtime registries and heterogeneous values, check:
 
-- authoritative `DimensionKey` equality;
+- authoritative `DimKey` equality;
 - registry ownership;
 - provenance;
 - checked recovery of static evidence;

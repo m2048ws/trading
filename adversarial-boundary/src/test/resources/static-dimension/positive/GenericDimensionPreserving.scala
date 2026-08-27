@@ -11,20 +11,20 @@ import trading.quantity.grid.*
 import trading.quantity.refinement.*
 
 object GenericDimensionPreserving:
-  def total[D <: Dimension](left: Quantity[D], right: Quantity[D]): Quantity[D] =
+  def total[D <: Dim](left: Quantity[D], right: Quantity[D]): Quantity[D] =
     left + right
 
-  def totalEquivalent[A <: Dimension, B <: Dimension](
+  def totalEquivalent[A <: Dim, B <: Dim](
     left: Quantity[A],
     right: Quantity[B]
   )(using SameDimension[B, A]
   ): Quantity[A] =
     left + right.alignTo[A]
 
-  def reduce[D <: Dimension](head: Quantity[D], tail: List[Quantity[D]]): Quantity[D] =
+  def reduce[D <: Dim](head: Quantity[D], tail: List[Quantity[D]]): Quantity[D] =
     tail.foldLeft(head)(_ + _)
 
-  def exact[D <: Dimension](
+  def exact[D <: Dim](
     left: Quantity[D],
     right: Quantity[D],
     divisor: NonZeroWhole
@@ -36,7 +36,7 @@ object GenericDimensionPreserving:
       left.exactDivideBy(divisor)
     )
 
-  def grid[D <: Dimension, G](
+  def grid[D <: Dim, G](
     left: GridQuantity[D, G],
     right: GridQuantity[D, G]
   ): (GridQuantity[D, G], GridQuantity[D, G], GridQuantity[D, G], GridQuantity[D, G]) =
@@ -47,7 +47,7 @@ object GenericDimensionPreserving:
       -left
     )
 
-  def crossGrid[D <: Dimension, G, H](
+  def crossGrid[D <: Dim, G, H](
     left: GridQuantity[D, G],
     right: GridQuantity[D, H],
     leftGrid: GridRef.Grid[D, G],
@@ -58,19 +58,19 @@ object GenericDimensionPreserving:
       left.subtractExact(right, leftGrid, rightGrid)
     )
 
-  def refined[D <: Dimension](
+  def refined[D <: Dim](
     left: NonNegative[Quantity[D]],
     right: NonNegative[Quantity[D]]
   ): (NonNegative[Quantity[D]], Quantity[D]) =
     (left.add(right), left.subtract(right))
 
-  def project[D <: Dimension](value: Quantity[D], target: GridRef[D]) =
+  def project[D <: Dim](value: Quantity[D], target: GridRef[D]) =
     value.narrowExactlyTo(target)
 
-  def quantize[D <: Dimension](value: Quantity[D], target: GridRef[D], policy: QuantizationPolicy) =
+  def quantize[D <: Dim](value: Quantity[D], target: GridRef[D], policy: QuantizationPolicy) =
     value.quantizeTo(target, policy)
 
-  def allocate[D <: Dimension, G](
+  def allocate[D <: Dim, G](
     value: GridQuantity[D, G],
     count: PositiveInt,
     grid: GridRef.Grid[D, G]
@@ -78,7 +78,7 @@ object GenericDimensionPreserving:
     value.allocateEvenly(count, RemainderOrder.FirstToLast, grid)
 
   def positiveSemigroups[
-    D <: Dimension,
+    D <: Dim,
     G
   ]: (
     AdditiveCommutativeSemigroup[Positive[Quantity[D]]],
@@ -86,10 +86,10 @@ object GenericDimensionPreserving:
   ) =
     (summon, summon)
 
-  def zeros[D <: Dimension, G](using DimRef[D]): (Quantity[D], GridQuantity[D, G]) =
+  def zeros[D <: Dim, G](using DimRef[D]): (Quantity[D], GridQuantity[D, G]) =
     (Quantity.zero[D], GridQuantity.zero[D, G])
 
-  def algebra[D <: Dimension, G](
+  def algebra[D <: Dim, G](
     using DimRef[D]
   ): (
     AdditiveCommutativeGroup[Quantity[D]],

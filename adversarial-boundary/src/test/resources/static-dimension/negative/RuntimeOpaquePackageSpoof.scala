@@ -1,7 +1,7 @@
 package trading.quantity
 
 object RuntimeOpaquePackageSpoof:
-  val key: DimensionKey = DimensionKey.atom(AtomId("spoof:opaque"))
+  val key: DimKey = DimKey.atom(AtomId("spoof:opaque"))
 
   // OFFENDING-BEGIN
   val forged = DimRef.runtimeOpaque(this, key)

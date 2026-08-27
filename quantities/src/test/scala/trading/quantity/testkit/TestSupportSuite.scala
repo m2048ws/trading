@@ -38,7 +38,7 @@ class TestSupportSuite extends ScalaCheckSuite:
       """
       import trading.quantity.*
       type Asset = Atom["test-support:asset"]
-      val key: DimensionKey = DimensionKey.atom(AtomId("asset"))
+      val key: DimKey = DimKey.atom(AtomId("asset"))
     """
 
   test("compile helpers detect hidden opaque constructors"):

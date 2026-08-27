@@ -1,12 +1,12 @@
 ## Context
 
-See [proposal.md](proposal.md) for motivation. The present implementation models atoms as open `Dimension` subtypes,
+See [proposal.md](proposal.md) for motivation. The present implementation models atoms as open `Dim` subtypes,
 stores exponents in a recursive signed-natural encoding, and exposes separate evidence types for normalization, product,
 inverse, quotient, and alignment. Because an arbitrary dimension subtype or associated type might later reveal reducible
 structure, the macro performs extensive alias, refinement, selected-member, and term-path stability analysis before it
 can decide whether a type is an atom.
 
-The runtime model has a different and useful property: `DimensionKey` is already a canonical free-abelian-group value
+The runtime model has a different and useful property: `DimKey` is already a canonical free-abelian-group value
 using `BigInt` exponents. Runtime registries also need generative/path-dependent types because an identifier may be known
 only after lookup. The redesign must simplify the static language without weakening that runtime authority or changing
 persisted keys.
@@ -27,7 +27,7 @@ persisted keys.
 - Fractional or rational dimension exponents, dimension-valued roots, or non-integer powers.
 - A total order over all atom keys or definitional equality for permuted canonical tuples.
 - Static inspection of the hidden decomposition of a runtime-resolved opaque key.
-- Changes to rational coefficients, grids, registry ownership, persistence records, or `DimensionKey` serialization.
+- Changes to rational coefficients, grids, registry ownership, persistence records, or `DimKey` serialization.
 - Source or binary compatibility with the current static dimension API.
 
 ## Decisions
@@ -37,43 +37,43 @@ persisted keys.
 The source-visible grammar will have this shape:
 
 ```scala
-sealed trait Dimension
-sealed trait Dim[Entries <: Tuple] extends Dimension
+sealed trait Dim
+sealed trait Canonical[Entries <: Tuple] extends Dim
 sealed trait Power[Key <: Singleton, Exponent <: Int]
 
 type Atom[Key <: Singleton] =
-  Dim[Power[Key, 1] *: EmptyTuple]
+  Canonical[Power[Key, 1] *: EmptyTuple]
 
-type One = Dim[EmptyTuple]
+type One = Canonical[EmptyTuple]
 
-sealed trait Times[A <: Dimension, B <: Dimension] extends Dimension
-sealed trait Inverse[A <: Dimension] extends Dimension
-type Divide[A <: Dimension, B <: Dimension] = Times[A, Inverse[B]]
+sealed trait Times[A <: Dim, B <: Dim] extends Dim
+sealed trait Inverse[A <: Dim] extends Dim
+type Divide[A <: Dim, B <: Dim] = Times[A, Inverse[B]]
 ```
 
-`Dimension` and its constructors are sealed in the quantities module. Downstream code creates identity by choosing a
-singleton key, not by extending `Dimension`. A literal key such as `"asset:USD"` gives concise stable domain aliases;
+`Dim` and its constructors are sealed in the quantities module. Downstream code creates identity by choosing a
+singleton key, not by extending `Dim`. A literal key such as `"asset:USD"` gives concise stable domain aliases;
 a stable object singleton can give nominal source identity; and a runtime witness can use its own `this.type` as a fresh
 key. In all three cases the normalizer sees the same kind of leaf and never needs to ask whether an apparent atom is
 secretly `Times`, `Inverse`, or an associated dimension output.
 
-`Dim[Entries]` is the only canonical result constructor. `Times` and `Inverse` remain expression syntax so callers can
+`Canonical[Entries]` is the only canonical result constructor. `Times` and `Inverse` remain expression syntax so callers can
 write algebraic aliases without manually constructing tuples. `One` and `Atom` are aliases, ensuring that identities and
 ordinary atoms are canonical by construction rather than separate cases that the macro must translate.
 
 Alternatives considered:
 
-- Keeping arbitrary `Dimension` subtypes preserves the current open atom universe, but also preserves the hardest
+- Keeping arbitrary `Dim` subtypes preserves the current open atom universe, but also preserves the hardest
   classification and substitution-stability problems.
 - Restricting keys to literal strings would permit sorting known atoms, but cannot represent identities discovered at
   runtime without a second static model. `Singleton` supports both named and generative identities.
-- Using only expression trees and never exposing a canonical `Dim` would simplify validation but would retain expression
+- Using only expression trees and never exposing a canonical `Canonical` would simplify validation but would retain expression
   history in result types and make equivalence harder to inspect.
 
 ### 2. Represent stored exponents with singleton `Int` literals
 
 A stored entry is `Power[K, E]`, where `E` must expose to an `IntConstant`. Zero is permitted only in macro-local
-arithmetic and is never emitted. A canonical `Dim` rejects duplicate keys, zero powers, unresolved exponent types,
+arithmetic and is never emitted. A canonical `Canonical` rejects duplicate keys, zero powers, unresolved exponent types,
 non-`Power` entries, and unresolved tuple tails.
 
 The quoted implementation converts every decoded `Int` immediately to `BigInt`. Negation, addition, cancellation, and
@@ -83,7 +83,7 @@ normalized and zeros are removed, each surviving value is range-checked and emit
 wrapping. Cancellation inside one complete normalization may bring a macro-local value back into range before emission;
 an earlier separately typed operation that itself needs an out-of-range result still fails.
 
-Runtime `DimensionKey` continues to store `BigInt`. Static-to-runtime operations widen literal `Int` powers exactly.
+Runtime `DimKey` continues to store `BigInt`. Static-to-runtime operations widen literal `Int` powers exactly.
 Runtime-only keys may exceed the static range, but no static macro may claim a corresponding `Power` unless its exponent
 fits. Diagnostics distinguish malformed/nonliteral exponents from mathematically valid but out-of-range results.
 
@@ -101,12 +101,12 @@ Alternatives considered:
 The only associated-output computation exposed by the static algebra will be:
 
 ```scala
-sealed trait Normalize[D <: Dimension]:
-  type Out <: Dimension
+sealed trait Normalize[D <: Dim]:
+  type Out <: Dim
 
 object Normalize:
-  type Aux[D <: Dimension, O <: Dimension] = Normalize[D] { type Out = O }
-  transparent inline given derived[D <: Dimension]: Normalize[D] =
+  type Aux[D <: Dim, O <: Dim] = Normalize[D] { type Out = O }
+  transparent inline given derived[D <: Dim]: Normalize[D] =
     ${ StaticDimension.normalize[D] }
 ```
 
@@ -140,11 +140,11 @@ Alternatives considered:
 ### 4. Use one small quoted normalizer over the closed grammar
 
 The macro flattens the complete dimension into one ordered sequence of signed `(TypeRepr key, BigInt exponent)` entries.
-It recursively handles only `Dim`, `Times`, and `Inverse`; `Atom`, `One`, and `Divide` arrive through transparent alias
+It recursively handles only `Canonical`, `Times`, and `Inverse`; `Atom`, `One`, and `Divide` arrive through transparent alias
 exposure. Only after the complete expression has been flattened are equal keys combined once in global first-occurrence
 order and zero totals removed. Consequently, intermediate cancellation cannot erase a key's original position and
 reintroduce it later in an association-dependent position. The final sequence is independently revalidated and emitted
-as `Dim[Tuple]`.
+as `Canonical[Tuple]`.
 
 Semantic exposure is deliberately narrow:
 
@@ -155,16 +155,16 @@ Semantic exposure is deliberately narrow:
   `TypeLambda`, ordinary non-term `TypeRef`, abstract/deferred/parameter keys, and unknown wrappers;
 - reject abstract keys whose equality could change after generic instantiation, without relying on `key <: Singleton`
   or broad subtype-lattice tests as proof of concreteness;
-- reject refinements, intersections, unions, unresolved match types, arbitrary `Dimension` bounds, and unknown wrappers
+- reject refinements, intersections, unions, unresolved match types, arbitrary `Dim` bounds, and unknown wrappers
   rather than interpreting them as atoms.
 
 The implementation does not traverse typed local initializer graphs, search arbitrary holder refinements for associated
 dimension endpoints, or retain active/completed term-analysis caches. Those mechanisms existed to determine whether an
-open `Dimension` subtype or an operation-associated output might later expose structure. Singleton keys are leaves by
+open `Dim` subtype or an operation-associated output might later expose structure. Singleton keys are leaves by
 definition, and the single `Normalize` output is either concretely refined by derivation or explicitly forwarded by
 generic code.
 
-Macro construction remains lexically private. Downstream code can name `Dim` and `Power`, but naming a tuple is not proof
+Macro construction remains lexically private. Downstream code can name `Canonical` and `Power`, but naming a tuple is not proof
 that it is canonical; all trusted operation and non-reflexive equality boundaries parse and validate the complete claim.
 
 ### 5. Make concrete caller results direct and generic results explicit
@@ -177,7 +177,7 @@ val price: Rate[BTC, USD] = Rate(btc, usd, Rational(60000))
 val notional: Quantity[USD] = amount * price
 ```
 
-Quantity multiplication and division return the canonical `Dim` produced by normalization. Single surviving
+Quantity multiplication and division return the canonical `Canonical` produced by normalization. Single surviving
 one-powers and the empty tuple are definitionally `Atom[K]` and `One`, so common cancellation exposes named atoms and
 ratios directly. Addition keeps the left type and uses `SameDimension` only when its right type differs.
 
@@ -190,7 +190,7 @@ when a caller intentionally chooses an equivalent composite alias or tuple order
 Generic operations use one output parameter:
 
 ```scala
-def multiply[A <: Dimension, B <: Dimension, O <: Dimension](
+def multiply[A <: Dim, B <: Dim, O <: Dim](
   left: Quantity[A],
   right: Quantity[B]
 )(using Normalize.Aux[Times[A, B], O]): Quantity[O] =
@@ -213,17 +213,17 @@ constructor accepts only that key object and returns `DimRef[Atom[key.type]]`, w
 automatically for concrete stable arguments. It therefore cannot pair an independently selected static supertype with
 the runtime identifier, and two widened nominal values retain distinct stable-value result types. Generative atomic and
 arbitrary-key witnesses expose a concrete alias equivalent to `Atom[this.type]` rather than declaring a fresh hidden
-subtype of `Dimension`. Their `DimRef` still carries the actual `DimensionKey` used at runtime.
+subtype of `Dim`. Their `DimRef` still carries the actual `DimKey` used at runtime.
 
 `DimRef.times`, `inverse`, and `divide` calculate their output type through `Normalize` and their value through existing
-`DimensionKey` operations. Tests compare both paths for every supported concrete shape. If an arbitrary runtime key
+`DimKey` operations. Tests compare both paths for every supported concrete shape. If an arbitrary runtime key
 contains structure that is opaque statically, its singleton atom behaves as one indivisible generator. A later runtime
 comparison may recover `SameDimension` against a statically decomposed dimension; the macro never guesses that equality.
 
 Registry-only opaque witnesses are built inside the registry's private implementation by adopting a public generative
 `DimRef.fresh` witness into the registry witness's own fresh `this.type`. No package-visible opaque constructor remains,
 so declaring `package trading.quantity` downstream grants no construction authority. This keeps registry provenance and
-persisted identities unchanged while removing the need for project-issued arbitrary `Dimension` subtypes as a special
+persisted identities unchanged while removing the need for project-issued arbitrary `Dim` subtypes as a special
 macro exception.
 
 ### 7. Preserve tuple permutation semantics instead of imposing key ordering
@@ -239,7 +239,7 @@ or `One`. Selecting a differently ordered composite alias remains an explicit `S
 
 ### 8. Validate every dimension-preserving arithmetic boundary
 
-`SameDimension[D, D]` deliberately remains Scala type identity, so it cannot also certify that a caller-written `Dim`
+`SameDimension[D, D]` deliberately remains Scala type identity, so it cannot also certify that a caller-written `Canonical`
 is canonical. Every arithmetic operation that returns its input dimension therefore requests `Normalize[D]`; addition
 and subtraction across `D` and `E` request both normalizations plus `SameDimension[D, E]`. The evidence is not refined to
 `Normalize.Aux[D, D]`: `D` may intentionally be a valid source expression such as the `Divide[T, F]` spelling carried by
@@ -292,11 +292,11 @@ serialization without adding construction authority, arithmetic state, or a seco
 2. Introduce the sealed grammar and single normalization evidence, then implement the closed quoted parser/emitter beside
    the old machinery long enough to compare canonical outputs and runtime keys in tests.
 3. Move `DimRef`, exact quantity multiplication/division, rates, grids, refinements, and optional algebra to `Normalize`.
-4. Migrate all static atoms, annotations, examples, and test fixtures to singleton keys, `Dim`, and literal `Int` powers.
+4. Migrate all static atoms, annotations, examples, and test fixtures to singleton keys, `Canonical`, and literal `Int` powers.
 5. Remove signed naturals, `Powers`, specialized operation/alignment evidence, associated-output exposure machinery, and
    obsolete adversarial fixtures; retain boundary tests that still express real trust and generic-substitution risks.
 6. Run formatting, focused compiler fixtures, the full multi-module test suite, downstream JAR compilation, and strict
    OpenSpec validation.
 
 There is no runtime data migration. Source rollback must revert the static grammar, macro, and migrated callers as one
-unit; runtime `DimensionKey`, registry, and packed data remain readable by either implementation.
+unit; runtime `DimKey`, registry, and packed data remain readable by either implementation.

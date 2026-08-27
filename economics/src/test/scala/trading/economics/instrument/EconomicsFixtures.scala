@@ -1,4 +1,4 @@
-package trading.economics
+package trading.economics.instrument
 
 import trading.quantity.*
 import trading.quantity.refinement.*
@@ -21,7 +21,7 @@ final class EconomicsFixtures:
 
   val usdPerBtcDimension =
     registry
-      .registerDimension(DimRef.divide(usd.dimension.asDimensionRef, btc.dimension.asDimensionRef).key)
+      .registerDimension(DimRef.divide(usd.dimension.ref, btc.dimension.ref).key)
       .toOption
       .get
   val usdPerBtcTicks =
@@ -111,19 +111,19 @@ final class EconomicsFixtures:
     position: AssetRef,
     settle: AssetRef
   )(
-    positionGrid: RegisteredGridRef[? <: Dimension],
-    priceGrid: RegisteredGridRef[? <: Dimension],
+    positionGrid: RegisteredGridRef[? <: Dim],
+    priceGrid: RegisteredGridRef[? <: Dim],
     baseCoefficient: Rational,
     quoteCoefficient: Rational
   ): Instrument =
-    val roles    = new InstrumentRoles(base, quote, position, settle)
-    val identity = InstrumentIdentity(InstrumentId(id), UnderlyingId(underlying))
+    val roles    = new Roles(base, quote, position, settle)
+    val identity = Identity(InstrumentId(id), UnderlyingId(underlying))
     val listing  = new ListingRules(roles)(positionGrid, priceGrid)
     val payoff   = new ContractPayoff(roles)(
-      Rate(roles.position.dimension.asDimensionRef, roles.base.dimension.asDimensionRef, baseCoefficient),
-      Rate(roles.position.dimension.asDimensionRef, roles.quote.dimension.asDimensionRef, quoteCoefficient)
+      Rate(roles.position.dimension.ref, roles.base.dimension.ref, baseCoefficient),
+      Rate(roles.position.dimension.ref, roles.quote.dimension.ref, quoteCoefficient)
     )
-    Instrument.create(InstrumentDefinition(identity, roles, listing, payoff)).toOption.get
+    Instrument.create(Definition(identity, roles, listing, payoff)).toOption.get
   end instrument
 
   private def asset(name: String): AssetRef =

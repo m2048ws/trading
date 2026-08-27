@@ -1,4 +1,4 @@
-package trading.economics
+package trading.economics.instrument
 
 import munit.FunSuite
 
@@ -34,7 +34,7 @@ class InstrumentCapabilityEngineSuite extends FunSuite:
       .get
     val fee = denomination.quantize(
       FeeKind("ceiling"),
-      Quantity(fixture.usd.dimension.asDimensionRef, Rational(-1, 200))
+      Quantity(fixture.usd.dimension.ref, Rational(-1, 200))
     )
     assertEquals(denomination.policy, QuantizationPolicy.Ceiling)
     assertEquals(fee.coordinate, BigInt(0))

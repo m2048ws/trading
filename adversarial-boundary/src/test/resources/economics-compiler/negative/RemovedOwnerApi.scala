@@ -1,6 +1,6 @@
 package external.economics.negative
 
-import trading.economics.*
+import trading.economics.instrument.*
 
 object RemovedOwnerApi:
   def reject(instrument: Instrument, lots: instrument.Lots): Unit =

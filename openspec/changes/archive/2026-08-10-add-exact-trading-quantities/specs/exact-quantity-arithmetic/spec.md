@@ -1,7 +1,7 @@
 ## ADDED Requirements
 
 ### Requirement: Public exact quantity model
-The public unrestricted quantity type SHALL be `Quantity[D]`, where `D <: Dimension`. It SHALL have canonical
+The public unrestricted quantity type SHALL be `Quantity[D]`, where `D <: Dim`. It SHALL have canonical
 `trading.quantity.Rational` coefficient semantics and SHALL NOT expose a representation type parameter, public generic
 carrier, or alternate public exact-quantity kind. `GridQuantity[D, G]` SHALL be the separate grid-proven carrier.
 

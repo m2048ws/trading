@@ -1,8 +1,8 @@
-package trading.economics.examples
+package trading.economics.instrument.examples
 
 import munit.FunSuite
 
-import trading.economics.*
+import trading.economics.instrument.*
 import trading.quantity.*
 import trading.quantity.grid.QuantizationPolicy
 import trading.quantity.refinement.PositiveWhole
@@ -27,7 +27,7 @@ class EndToEndExamplesSuite extends FunSuite:
       val instrumentId: InstrumentId = instrument.identity.id
       def assess(scenario: instrument.OrderScenario): Either[EconomicsError, Vector[instrument.FeeLine]] =
         val exactBasis = Quantity(
-          fixture.usd.dimension.asDimensionRef,
+          fixture.usd.dimension.ref,
           Rational(scenario.order.intent.lots.count.unrefined, 10)
         )
         for
@@ -42,7 +42,7 @@ class EndToEndExamplesSuite extends FunSuite:
 
     // Sizing exhaustively reuses complete scenarios, both fee legs, explicit conversions, and the instrument lot grid.
     val sized = instrument.sizing.maxLots(
-      Quantity(instrument.roles.settle.dimension.asDimensionRef, Rational(11)),
+      Quantity(instrument.roles.settle.dimension.ref, Rational(11)),
       PositiveWhole(4).toOption.get,
       schedule
     ): candidate =>

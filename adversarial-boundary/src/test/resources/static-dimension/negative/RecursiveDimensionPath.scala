@@ -2,7 +2,7 @@ package external.fixtures.negative
 
 import trading.quantity.*
 
-type RecursiveDimensionPath[D <: Dimension] <: Dimension = D match
+type RecursiveDimensionPath[D <: Dim] <: Dim = D match
   case One => RecursiveDimensionPath[D]
 
 object RecursiveDimensionPath:

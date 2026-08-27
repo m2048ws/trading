@@ -1,6 +1,6 @@
 package external.economics.negative
 
-import trading.economics.*
+import trading.economics.instrument.*
 
 object RefinementLoss:
   def reject(

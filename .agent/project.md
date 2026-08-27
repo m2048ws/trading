@@ -43,7 +43,7 @@ Avoid speculative package subdivision unless an actual body of code requires it.
 The central exact quantity type is conceptually:
 
 ```scala
-opaque type Quantity[D <: Dimension] = Rational
+opaque type Quantity[D <: Dim] = Rational
 ```
 
 A `Quantity[D]` is an arbitrary exact rational quantity in dimension `D`.
@@ -57,7 +57,7 @@ Exact rational arithmetic is the mathematical interior of the system.
 Discrete values are represented separately, conceptually:
 
 ```scala
-opaque type GridQuantity[D <: Dimension, G] = BigInt
+opaque type GridQuantity[D <: Dim, G] = BigInt
 ```
 
 A `GridQuantity[D,G]` is an integer coordinate in explicit grid `G`.
@@ -87,8 +87,8 @@ Exact-to-grid conversion requires either:
 The current simplified static model uses a small dimension expression language centered on concepts such as:
 
 ```scala
-Dimension
-Dim[...]
+Dim
+Canonical[...]
 Power[K, Int]
 Atom[K]
 One
@@ -134,7 +134,7 @@ is intentionally structural/type identity and must not be interpreted as proof t
 Homogeneous arithmetic requires the exact same Scala dimension type and consumes
 no `SameDimension` evidence. Different-but-equivalent spellings require an
 explicit `alignTo` transition. Runtime recovery may issue the same restricted
-capability only after authoritative `DimensionKey` equality.
+capability only after authoritative `DimKey` equality.
 
 ## Trusted Carriers and Construction Authority
 
@@ -147,12 +147,12 @@ repeated static-dimension or equivalence capability. Manufacturing a value
 without an existing trusted carrier requires `DimRef[D]`, `GridRef[D]`, or a
 documented stronger matching witness.
 
-Possessing a dimensional value does not reveal `DimRef`, `DimensionKey`,
+Possessing a dimensional value does not reveal `DimRef`, `DimKey`,
 `SameDimension`, grid identity, or registry provenance.
 
 ## Runtime Dimension Identity
 
-`DimRef[D]` bridges static dimension identity to runtime `DimensionKey`.
+`DimRef[D]` bridges static dimension identity to runtime `DimKey`.
 
 For publicly inhabitable atom types, static/runtime authority must be unique:
 
@@ -177,17 +177,17 @@ Rates are exact quantities with dimensional meaning derived from source/target d
 Conceptually:
 
 ```scala
-type Rate[From <: Dimension, To <: Dimension] =
+type Rate[From <: Dim, To <: Dim] =
   Quantity[Divide[To, From]]
 ```
 
 A ratio is a dimensionless exact quantity.
 
-Source dimension expressions may remain readable source expressions rather than forcing users to expose canonical internal `Dim[...]` forms.
+Source dimension expressions may remain readable source expressions rather than forcing users to expose canonical internal `Canonical[...]` forms.
 
 ## Runtime Identity and Evidence
 
-Runtime `DimensionKey` arithmetic must agree with valid static dimension semantics.
+Runtime `DimKey` arithmetic must agree with valid static dimension semantics.
 
 Runtime recovery of equivalence must be based on checked authoritative runtime identity.
 
@@ -280,7 +280,7 @@ Important recurring review areas include:
 - canonical static representations;
 - public construction/proof authority;
 - real downstream compiler behavior;
-- runtime `DimensionKey` agreement;
+- runtime `DimKey` agreement;
 - generic client ergonomics;
 - OpenSpec semantic conformance;
 - formatting and Git/index cleanliness;

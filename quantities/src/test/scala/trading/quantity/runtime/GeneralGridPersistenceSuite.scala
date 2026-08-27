@@ -40,7 +40,7 @@ class GeneralGridPersistenceSuite extends FunSuite:
 
     assertEquals(
       packed.dimension,
-      DimensionKey:
+      DimKey:
         List(
           AtomId:
             "packed-price-usd"
@@ -59,7 +59,7 @@ class GeneralGridPersistenceSuite extends FunSuite:
   test("general decoding resolves normalized compound dimension before its grid"):
     val registry = new QuantityRegistry
     val priceKey =
-      DimensionKey:
+      DimKey:
         List(
           AtomId:
             "decoded-usd"
@@ -206,7 +206,7 @@ class GeneralGridPersistenceSuite extends FunSuite:
     val usd      =
       registry
         .registerDimension:
-          DimensionKey.atom:
+          DimKey.atom:
             AtomId:
               "mismatch-usd"
         .toOption
@@ -214,7 +214,7 @@ class GeneralGridPersistenceSuite extends FunSuite:
     val btc =
       registry
         .registerDimension:
-          DimensionKey.atom:
+          DimKey.atom:
             AtomId:
               "mismatch-btc"
         .toOption
@@ -247,7 +247,7 @@ class GeneralGridPersistenceSuite extends FunSuite:
     val known    =
       registry
         .registerDimension:
-          DimensionKey.atom:
+          DimKey.atom:
             AtomId:
               "known-dimension"
         .toOption
@@ -268,7 +268,7 @@ class GeneralGridPersistenceSuite extends FunSuite:
         .toOption
         .get
     val unknown =
-      DimensionKey.atom:
+      DimKey.atom:
         AtomId:
           "unknown-dimension"
     val packed = PackedGridQuantity(unknown, definition.id, definition.version, BigInt(1))

@@ -1,42 +1,42 @@
-package trading.economics
+package trading.economics.instrument
 
 import trading.quantity.*
 import trading.quantity.refinement.*
 import trading.quantity.runtime.*
 
 /** Strictly positive lots for one ordinary runtime instrument identity. */
-final case class InstrumentLots[D <: Dimension] private[economics] (
+final case class Lots[D <: Dim] private[instrument] (
   instrumentId: InstrumentId,
   count: PositiveWhole,
   quantity: Quantity[D])
 
 /** Signed position lots for one ordinary runtime instrument identity, including flat zero. */
-final case class InstrumentPosition[D <: Dimension] private[economics] (
+final case class Position[D <: Dim] private[instrument] (
   instrumentId: InstrumentId,
   count: BigInt,
   quantity: Quantity[D])
 
 /** One validated instrument aggregate. Runtime identity is ordinary domain data, not issuance authority. */
 final class Instrument private (
-  val identity: InstrumentIdentity,
-  val roles: InstrumentRoles,
+  val identity: Identity,
+  val roles: Roles,
   val listingRules: ListingRules,
   val contractPayoff: ContractPayoff
 )(
   private val positionGrid: RegisteredGridRef[roles.position.D],
   private val priceGrid: RegisteredGridRef[Divide[roles.quote.D, roles.base.D]]):
 
-  type Lots              = InstrumentLots[roles.position.D]
-  type PositionLots      = InstrumentPosition[roles.position.D]
-  type Price             = InstrumentPrice[roles.base.D, roles.quote.D]
-  type MarketState       = InstrumentMarketState[roles.base.D, roles.quote.D, roles.settle.D]
-  type Order             = InstrumentOrder[Lots, Price]
-  type OrderScenario     = InstrumentOrderScenario[Lots, Price, MarketState, PositionLots]
-  type RoundTripScenario = InstrumentRoundTripScenario[Lots, Price, MarketState, PositionLots]
-  type Fee               = InstrumentFee[? <: Dimension]
-  type FeeLine           = InstrumentFeeLine[? <: Dimension, MarketState]
-  type FeeSchedule       = InstrumentFeeSchedule[Lots, Price, MarketState, PositionLots]
-  type Pnl               = InstrumentPnl[roles.settle.D]
+  type Lots              = _root_.trading.economics.instrument.Lots[roles.position.D]
+  type PositionLots      = _root_.trading.economics.instrument.Position[roles.position.D]
+  type Price             = _root_.trading.economics.instrument.Price[roles.base.D, roles.quote.D]
+  type MarketState       = _root_.trading.economics.instrument.MarketState[roles.base.D, roles.quote.D, roles.settle.D]
+  type Order             = _root_.trading.economics.instrument.Order[Lots, Price]
+  type OrderScenario     = _root_.trading.economics.instrument.OrderScenario[Lots, Price, MarketState, PositionLots]
+  type RoundTripScenario = _root_.trading.economics.instrument.RoundTripScenario[Lots, Price, MarketState, PositionLots]
+  type Fee               = _root_.trading.economics.instrument.Fee[? <: Dim]
+  type FeeLine           = _root_.trading.economics.instrument.FeeLine[? <: Dim, MarketState]
+  type FeeSchedule       = _root_.trading.economics.instrument.FeeSchedule[Lots, Price, MarketState, PositionLots]
+  type Pnl               = _root_.trading.economics.instrument.Pnl[roles.settle.D]
 
   def lots(count: BigInt): Either[EconomicsError, Lots] =
     val coordinate = positionGrid.fromCoordinate(count)
@@ -44,54 +44,59 @@ final class Instrument private (
       .left
       .map(_ => InvalidLots(count))
       .map: positive =>
-        InstrumentLots(
+        Lots(
           identity.id,
           PositiveWhole(positionGrid.coordinate(positive.unrefined)).toOption.get,
           positionGrid.asQuantity(positive.unrefined)
         )
 
   def positionLots(side: Side, lots: Lots): Either[EconomicsError, PositionLots] =
-    InstrumentIdentityChecks
+    IdentityChecks
       .check("positionLots", identity.id, "lots" -> lots.instrumentId)
       .map: _ =>
         val count = side.sign * lots.count.unrefined
-        InstrumentPosition(identity.id, count, positionGrid.asQuantity(positionGrid.fromCoordinate(count)))
+        Position(identity.id, count, positionGrid.asQuantity(positionGrid.fromCoordinate(count)))
 
   val flatPosition: PositionLots =
-    InstrumentPosition(identity.id, BigInt(0), positionGrid.asQuantity(positionGrid.fromCoordinate(0)))
+    Position(identity.id, BigInt(0), positionGrid.asQuantity(positionGrid.fromCoordinate(0)))
 
-  val prices: InstrumentPrices[roles.base.D, roles.quote.D] =
-    new InstrumentPrices(identity.id, roles.base, roles.quote, priceGrid)
-  val market: InstrumentMarket[roles.base.D, roles.quote.D, roles.settle.D] =
-    new InstrumentMarket(identity.id, roles.base, roles.quote, roles.settle)
-  val orders: InstrumentOrders[roles.position.D, roles.base.D, roles.quote.D] =
-    new InstrumentOrders(identity.id)
-  val scenarios: InstrumentScenarios[roles.position.D, roles.base.D, roles.quote.D, roles.settle.D] =
-    new InstrumentScenarios(identity.id, positionGrid)
-  val fees: InstrumentFees[roles.position.D, roles.base.D, roles.quote.D, roles.settle.D] =
-    new InstrumentFees(identity.id, roles.settle)
+  val prices: Prices[roles.base.D, roles.quote.D] =
+    new Prices(identity.id, roles.base, roles.quote, priceGrid)
+
+  val market: Market[roles.base.D, roles.quote.D, roles.settle.D] =
+    new Market(identity.id, roles.base, roles.quote, roles.settle)
+
+  val orders: Orders[roles.position.D, roles.base.D, roles.quote.D] =
+    new Orders(identity.id)
+
+  val scenarios: Scenarios[roles.position.D, roles.base.D, roles.quote.D, roles.settle.D] =
+    new Scenarios(identity.id, positionGrid)
+
+  val fees: Fees[roles.position.D, roles.base.D, roles.quote.D, roles.settle.D] =
+    new Fees(identity.id, roles.settle)
 
   private val typedBasePerPosition =
     contractPayoff.basePerPosition.asInstanceOf[Rate[roles.position.D, roles.base.D]]
+
   private val typedQuotePerPosition =
     contractPayoff.quotePerPosition.asInstanceOf[Rate[roles.position.D, roles.quote.D]]
 
-  val valuation: InstrumentValuation[roles.position.D, roles.base.D, roles.quote.D, roles.settle.D] =
-    new InstrumentValuation(
+  val valuation: Valuation[roles.position.D, roles.base.D, roles.quote.D, roles.settle.D] =
+    new Valuation(
       identity.id,
       roles.position,
       roles.settle,
       typedBasePerPosition,
       typedQuotePerPosition
     )
-  val sizing: InstrumentSizing[roles.position.D, roles.base.D, roles.quote.D, roles.settle.D] =
-    new InstrumentSizing(identity.id, roles.settle.dimension.asDimensionRef, lots, valuation)
+  val sizing: Sizing[roles.position.D, roles.base.D, roles.quote.D, roles.settle.D] =
+    new Sizing(identity.id, roles.settle.dimension.ref, lots, valuation)
 
 end Instrument
 
 object Instrument:
   /** Final validated definition boundary. */
-  def create(definition: InstrumentDefinition): Either[EconomicsError, Instrument] =
+  def create(definition: Definition): Either[EconomicsError, Instrument] =
     val identity   = definition.identity
     val roles      = definition.roles
     val listing    = definition.listingRules
@@ -105,11 +110,11 @@ object Instrument:
       .map(Left(_))
       .getOrElse:
         if !listing.roles.eq(roles) then
-          Left(ContradictoryInstrument(identity.id, InstrumentContradiction.ListingRolesDiffer))
+          Left(ContradictoryInstrument(identity.id, Contradiction.ListingRolesDiffer))
         else if !payoff.roles.eq(roles) then
-          Left(ContradictoryInstrument(identity.id, InstrumentContradiction.PayoffRolesDiffer))
+          Left(ContradictoryInstrument(identity.id, Contradiction.PayoffRolesDiffer))
         else if roles.base.id == roles.quote.id then
-          Left(ContradictoryInstrument(identity.id, InstrumentContradiction.BaseEqualsQuote))
+          Left(ContradictoryInstrument(identity.id, Contradiction.BaseEqualsQuote))
         else if !listing.positionLotGrid.dimension.sharesRegistryWith(roles.position.dimension) then
           Left(ForeignRegistry("position grid", roles.position.dimension.key, listing.positionLotGrid.dimension.key))
         else if listing.positionLotGrid.dimension.key != roles.position.dimension.key then
@@ -123,7 +128,7 @@ object Instrument:
           )
         else
           val expectedPrice =
-            DimRef.divide(roles.quote.dimension.asDimensionRef, roles.base.dimension.asDimensionRef).key
+            DimRef.divide(roles.quote.dimension.ref, roles.base.dimension.ref).key
           if !listing.priceGrid.dimension.sharesRegistryWith(roles.base.dimension) then
             Left(ForeignRegistry("price grid", expectedPrice, listing.priceGrid.dimension.key))
           else if listing.priceGrid.dimension.key != expectedPrice then

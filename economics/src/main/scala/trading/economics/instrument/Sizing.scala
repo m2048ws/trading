@@ -1,9 +1,9 @@
-package trading.economics
+package trading.economics.instrument
 
 import trading.quantity.*
 import trading.quantity.refinement.PositiveWhole
 
-private[economics] object InstrumentSizing:
+private[instrument] object Sizing:
   def downsideRisk(netPnl: Rational): Rational =
     if netPnl.signum < 0 then -netPnl else Rational.zero
 
@@ -40,25 +40,25 @@ private[economics] object InstrumentSizing:
         candidate += 1
       Right(selected)
 
-end InstrumentSizing
+end Sizing
 
-final class InstrumentSizing[D <: Dimension, B <: Dimension, Q <: Dimension, S <: Dimension] private[economics] (
+final class Sizing[D <: Dim, B <: Dim, Q <: Dim, S <: Dim] private[instrument] (
   instrumentId: InstrumentId,
   settleRef: DimRef[S],
-  lotsFor: BigInt => Either[EconomicsError, InstrumentLots[D]],
-  valuation: InstrumentValuation[D, B, Q, S]):
+  lotsFor: BigInt => Either[EconomicsError, Lots[D]],
+  valuation: Valuation[D, B, Q, S]):
 
-  private type Lots      = InstrumentLots[D]
-  private type Price     = InstrumentPrice[B, Q]
-  private type Market    = InstrumentMarketState[B, Q, S]
-  private type Position  = InstrumentPosition[D]
-  private type RoundTrip = InstrumentRoundTripScenario[Lots, Price, Market, Position]
-  private type Schedule  = InstrumentFeeSchedule[Lots, Price, Market, Position]
+  private type Lots      = _root_.trading.economics.instrument.Lots[D]
+  private type Price     = _root_.trading.economics.instrument.Price[B, Q]
+  private type Market    = _root_.trading.economics.instrument.MarketState[B, Q, S]
+  private type Position  = _root_.trading.economics.instrument.Position[D]
+  private type RoundTrip = _root_.trading.economics.instrument.RoundTripScenario[Lots, Price, Market, Position]
+  private type Schedule  = _root_.trading.economics.instrument.FeeSchedule[Lots, Price, Market, Position]
 
-  def downsideRisk(pnl: InstrumentPnl[S]): Either[EconomicsError, Quantity[S]] =
-    InstrumentIdentityChecks
+  def downsideRisk(pnl: Pnl[S]): Either[EconomicsError, Quantity[S]] =
+    IdentityChecks
       .check("sizing.downsideRisk", instrumentId, "pnl" -> pnl.instrumentId)
-      .map(_ => Quantity(settleRef, InstrumentSizing.downsideRisk(pnl.netPnl.coefficient)))
+      .map(_ => Quantity(settleRef, Sizing.downsideRisk(pnl.netPnl.coefficient)))
 
   def maxLots(
     riskBudget: Quantity[S],
@@ -67,14 +67,14 @@ final class InstrumentSizing[D <: Dimension, B <: Dimension, Q <: Dimension, S <
   )(
     scenarioFor: Lots => Either[EconomicsError, RoundTrip]
   ): Either[EconomicsError, Option[Lots]] =
-    InstrumentIdentityChecks
+    IdentityChecks
       .check("sizing.maxLots", instrumentId, "feeSchedule" -> feeSchedule.instrumentId)
       .flatMap: _ =>
-        InstrumentSizing.maxLots(riskBudget.coefficient, cap.unrefined)(
+        Sizing.maxLots(riskBudget.coefficient, cap.unrefined)(
           lotsFor,
           scenarioFor,
           scenario =>
-            InstrumentIdentityChecks.check(
+            IdentityChecks.check(
               "sizing.maxLots",
               instrumentId,
               "scenario"     -> scenario.instrumentId,
@@ -87,4 +87,4 @@ final class InstrumentSizing[D <: Dimension, B <: Dimension, Q <: Dimension, S <
             valuation.pnl(scenario, feeSchedule).flatMap(pnl => downsideRisk(pnl).map(_.coefficient))
         )
 
-end InstrumentSizing
+end Sizing

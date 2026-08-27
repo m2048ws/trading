@@ -1,7 +1,7 @@
 ## Context
 
 See `proposal.md` for motivation. The current Scala 3 model already has a closed static grammar and a single quoted
-`Normalize` operation, sealed `SameDimension` evidence, sealed `DimRef` witnesses, and runtime `DimensionKey` algebra.
+`Normalize` operation, sealed `SameDimension` evidence, sealed `DimRef` witnesses, and runtime `DimKey` algebra.
 The relevant guarantees are nevertheless described as if they formed one linear trust chain in some places, even though
 the APIs deliberately support statically valid keys for which no public runtime witness exists.
 
@@ -25,7 +25,7 @@ coefficients. That is intentional: `Quantity[D]` is a phantom-indexed exact valu
 - Add an `AtomAuthority`, implicit conversion, proof token, registry lookup, or other evidence family connecting
   normalization to runtime inhabitation.
 - Make `DimRef[D]` automatically provide `Normalize[D]`, or make `Quantity[D]` retain a witness or runtime key.
-- Change result typing, tuple-order equivalence, `DimensionKey` representation, registry provenance, grids, or persistence.
+- Change result typing, tuple-order equivalence, `DimKey` representation, registry provenance, grids, or persistence.
 
 ## Decisions
 
@@ -38,12 +38,12 @@ The public contracts are:
 | `Normalize[D]` | `D` is in the closed static grammar and has canonical `Out` | A runtime witness or key |
 | `DimRef[D]` | `D` is inhabited by this authoritative runtime key | Contextual static normalization evidence in generic code |
 | `SameDimension[A, B]` | Controlled equivalence of two dimension indices | Validity or runtime inhabitation by itself |
-| `Quantity[D]` | An exact coefficient indexed by `D` | A `DimRef[D]` or `DimensionKey` |
+| `Quantity[D]` | An exact coefficient indexed by `D` | A `DimRef[D]` or `DimKey` |
 
 No new automatic implication will be introduced between these capabilities. In particular,
 `Normalize[Atom[K]]` will never be a constructor, resolver, or existence proof for `DimRef[Atom[K]]`.
 
-Alternative considered: describe the model as `Normalize -> DimRef -> DimensionKey`. This is rejected because
+Alternative considered: describe the model as `Normalize -> DimRef -> DimKey`. This is rejected because
 normalization has no runtime atom mapping and intentionally accepts concrete stable singleton identities that are not
 publicly inhabitable.
 
@@ -54,7 +54,7 @@ public `DimRef` APIs. The intended relationship is:
 
 ```text
 I ⊆ N
-authority: I -> DimensionKey
+authority: I -> DimKey
 ```
 
 `authority` is total and single-valued on `I`; it is not defined for every member of `N`. Therefore, for publicly
@@ -74,14 +74,14 @@ The supported roots each prevent the static type and runtime key from being sele
   constructor-owned final value.
 - Atomic and fresh witnesses use their own path-dependent singleton type and retain the identifier or complete key
   captured by that witness.
-- The identity witness always denotes `DimensionKey.one`.
+- The identity witness always denotes `DimKey.one`.
 
 `DimRef` construction remains sealed behind these roots. Product, inverse, and quotient take authoritative input
-witnesses, use one complete `Normalize` computation for the static output, and apply the matching `DimensionKey` operation
+witnesses, use one complete `Normalize` computation for the static output, and apply the matching `DimKey` operation
 to the input keys. Atom uniqueness therefore extends to constructed dimensions by induction without a second proof
 system.
 
-Alternative considered: expose a constructor accepting both `K` and `DimensionKey` plus validation evidence. No static
+Alternative considered: expose a constructor accepting both `K` and `DimKey` plus validation evidence. No static
 validation can prove that an arbitrary caller-selected key is the unique runtime interpretation of `K`, so that shape
 would recreate the authority hole.
 
@@ -114,7 +114,7 @@ The existing immutable-JAR compiler fixture remains the primary adversarial boun
 - separate `DimRef[D]` and `Normalize[D]` requirements in generic code;
 - repeated literal, nominal, atomic, and fresh witness authority;
 - rejection of widened literal and nominal keys and downstream `DimRef` construction;
-- reflexive `SameDimension` on a malformed `Dim` followed by rejected arithmetic; and
+- reflexive `SameDimension` on a malformed `Canonical` followed by rejected arithmetic; and
 - agreement between normalized static outputs and runtime keys for witness algebra.
 
 Scaladoc and the quantities README will use the same four-capability vocabulary and avoid describing normalization as
@@ -143,4 +143,4 @@ producing or guaranteeing a runtime witness.
    OpenSpec validation.
 
 There is no runtime or persisted-data migration. Rollback consists of reverting the source, tests, and documentation from
-this change together; `DimensionKey`, registry, grid, and packed-record formats are unchanged.
+this change together; `DimKey`, registry, grid, and packed-record formats are unchanged.

@@ -45,8 +45,8 @@ quantity library.
 
 ### Requirement: Runtime dimensions and assets
 The runtime layer SHALL create opaque dimension witnesses for runtime identifiers and SHALL interpret compound
-dimensions through canonical `DimensionKey` values. `AssetRef` SHALL bind an asset identity to its canonical dimension
-without imposing a grid. `DimensionKey` SHALL remain the runtime free abelian group of dimensions and SHALL expose
+dimensions through canonical `DimKey` values. `AssetRef` SHALL bind an asset identity to its canonical dimension
+without imposing a grid. `DimKey` SHALL remain the runtime free abelian group of dimensions and SHALL expose
 multiplicative identity, multiplication, inverse, and canonical equality through an opt-in production algebra
 instance. Those operations SHALL delegate to primitive arbitrary-precision key arithmetic. Algebraic equality SHALL NOT
 replace registry identity, registry ownership, registered provenance, or full grid identity.
@@ -64,11 +64,11 @@ types SHALL retain their one-to-one static/runtime authority; private static int
 
 #### Scenario: Canonicalize a compound runtime key
 - **WHEN** runtime dimension multiplication and inversion cancel factors
-- **THEN** the resulting canonical `DimensionKey` is equal regardless of expression shape
+- **THEN** the resulting canonical `DimKey` is equal regardless of expression shape
 
 #### Scenario: Normalize a compound dimension
 - **WHEN** runtime dimension multiplication and inversion cancel factors
-- **THEN** the resulting canonical `DimensionKey` is equal regardless of the expression-preserving static shape
+- **THEN** the resulting canonical `DimKey` is equal regardless of the expression-preserving static shape
 
 #### Scenario: Preserve a product witness expression
 - **WHEN** `DimRef[A]` and `DimRef[B]` are multiplied
@@ -95,7 +95,7 @@ types SHALL retain their one-to-one static/runtime authority; private static int
 ### Requirement: Checked runtime evidence
 `SameDimension[A, B]` SHALL remain one restricted capability for explicit alignment and equivalence-aware comparison,
 whether it was derived by private interpretation of statically visible expressions or recovered from authoritative
-runtime witnesses. Runtime recovery SHALL issue `SameDimension` only after canonical `DimensionKey` equality and, for
+runtime witnesses. Runtime recovery SHALL issue `SameDimension` only after canonical `DimKey` equality and, for
 registered witnesses, shared registry ownership. It SHALL expose controlled quantity and grid alignment through
 `alignTo`; it SHALL NOT expose unrestricted Scala type equality, synthesize `DimRef`, install a global implicit
 conversion, or align different static types inside homogeneous arithmetic.
@@ -111,7 +111,7 @@ Reflexive `SameDimension[D, D]` SHALL remain structural Scala type identity and 
 runtime inhabitation. Non-reflexive static derivation, authority-bearing construction, and checked runtime recovery
 SHALL remain independent trust boundaries. Transparent Scala type annotations SHALL NOT alter static or runtime
 dimension identity: accepted annotated inputs SHALL have the same private mathematical interpretation and
-`DimensionKey` as their unannotated underlying dimensions.
+`DimKey` as their unannotated underlying dimensions.
 
 #### Scenario: Align an exact quantity after runtime recovery
 - **WHEN** two registry witnesses have checked-equal canonical dimensions
@@ -146,7 +146,7 @@ dimension identity: accepted annotated inputs SHALL have the same private mathem
 - **THEN** runtime recovery returns an explicit mismatch and issues no `SameDimension`
 
 #### Scenario: Keep reflexivity separate from authority
-- **WHEN** a malformed `Dim` obtains reflexive `SameDimension[D, D]`
+- **WHEN** a malformed `Canonical` obtains reflexive `SameDimension[D, D]`
 - **THEN** that evidence creates neither a `DimRef[D]` nor a quantity or grid value at `D`
 
 #### Scenario: Recover generic evidence for generative grids
@@ -196,8 +196,8 @@ interpret its path-dependent result type; it SHALL not expose public normalizati
 
 ### Requirement: Public DimRef atom authority is unique
 `DimRef[D]` SHALL be the authoritative public association between an inhabited static dimension type `D` and its
-runtime `DimensionKey`. For every singleton key `K` whose `Atom[K]` is inhabitable through supported public `DimRef`
-APIs, any two publicly obtained values of type `DimRef[Atom[K]]` SHALL have equal `DimensionKey` values. This uniqueness
+runtime `DimKey`. For every singleton key `K` whose `Atom[K]` is inhabitable through supported public `DimRef`
+APIs, any two publicly obtained values of type `DimRef[Atom[K]]` SHALL have equal `DimKey` values. This uniqueness
 requirement SHALL apply only to publicly inhabitable atom types. The set of keys accepted by library-private static
 interpretation MAY be larger, and private acceptance alone SHALL NOT make an atom type runtime-inhabitable.
 
@@ -208,7 +208,7 @@ Generative and fresh runtime witnesses SHALL bind their path-dependent atom type
 witness. No supported public constructor SHALL accept a caller-selected static atom type independently from a
 caller-selected runtime identity.
 
-The public `DimRef` identity witness SHALL bind `One` to `DimensionKey.one`. Product, inverse, and quotient operations
+The public `DimRef` identity witness SHALL bind `One` to `DimKey.one`. Product, inverse, and quotient operations
 SHALL preserve the static/runtime association inductively: each SHALL return `DimRef[Times[A, B]]`,
 `DimRef[Inverse[A]]`, or `DimRef[Divide[A, B]]` and the exactly corresponding runtime key produced from its
 authoritative input keys. Witness algebra SHALL NOT expose a separately selected canonical output. Supported downstream
@@ -251,7 +251,7 @@ code SHALL NOT directly construct or implement `DimRef` to bypass these roots an
 #### Scenario: Preserve authority through witness algebra
 - **WHEN** public `DimRef` product, inverse, or quotient combines authoritative input witnesses
 - **THEN** the returned witness preserves the corresponding `Times`, `Inverse`, or `Divide` expression type and has the
-  exactly matching runtime `DimensionKey` operation result
+  exactly matching runtime `DimKey` operation result
 
 #### Scenario: Reject downstream witness forgery
 - **WHEN** supported downstream source attempts to implement `DimRef[D]` or invoke an unbound static/runtime constructor
@@ -285,5 +285,5 @@ capabilities remain available only from the resolved dependent package and regis
 
 #### Scenario: Keep runtime provenance non-extractable
 - **WHEN** code possesses only the dimensional value stored inside a resolved runtime result
-- **THEN** the value alone does not supply registry ownership, registered grid identity, `DimRef`, `DimensionKey`, or
+- **THEN** the value alone does not supply registry ownership, registered grid identity, `DimRef`, `DimKey`, or
   private static-interpretation authority

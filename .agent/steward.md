@@ -380,7 +380,7 @@ homogeneous addition no longer requires SameDimension
 
 generic preserving arithmetic remains ergonomic
 
-runtime DimensionKey remains coherent
+runtime DimKey remains coherent
 ```
 
 Avoid giant mechanical checklists when `.agent/review-policy.md` already covers

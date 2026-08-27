@@ -9,7 +9,7 @@
 - [x] 1.4 Extend malformed-dimension coverage so reflexive `SameDimension[Bad, Bad]` is available in the fixture prelude
   while zero, addition, scaling, and other arithmetic still fail for lack of `Normalize[Bad]`.
 - [x] 1.5 Add static-equivalence coverage showing that `SameDimension[A, B]` permits only controlled retagging and exposes
-  no `DimRef` or `DimensionKey` authority for either side.
+  no `DimRef` or `DimKey` authority for either side.
 
 ## 2. DimRef Authority Boundary
 
@@ -20,7 +20,7 @@
 - [x] 2.3 Retain and strengthen downstream rejection fixtures for widened literal keys, widened nominal keys, direct
   `DimRef` implementation, and any constructor shape that accepts an independently chosen static type and runtime key.
 - [x] 2.4 Extend witness-algebra tests across identity, product, inverse, quotient, cancellation, and association to compare
-  each normalized static output with the corresponding exact `DimensionKey` operation result.
+  each normalized static output with the corresponding exact `DimKey` operation result.
 - [x] 2.5 Close any authority bypass found by the audit at the narrow constructor boundary, without reducing unrelated
   `Normalize` key support or introducing another public evidence family.
 

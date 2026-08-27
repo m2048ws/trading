@@ -22,9 +22,9 @@ class RegistryProvenanceSuite extends FunSuite:
       import trading.quantity.*
       import trading.quantity.runtime.*
       val forged = new RegisteredDimensionRef[One]:
-        val key = DimensionKey.one
+        val key = DimKey.one
         val asDimensionRef = DimRef.one
-        def sharesRegistryWith(r: RegisteredDimensionRef[? <: Dimension]): Boolean = true
+        def sharesRegistryWith(r: RegisteredDimensionRef[? <: Dim]): Boolean = true
     """
 
   test("a registry rejects dimension witnesses owned by another registry"):

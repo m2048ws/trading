@@ -61,7 +61,7 @@ class CompileTimeArithmeticSuite extends FunSuite:
 
       object AlgebraImports:
         trait AdditiveMarker[A]
-        given [D <: Dimension, G]: AdditiveMarker[GridQuantity[D, G]] =
+        given [D <: Dim, G]: AdditiveMarker[GridQuantity[D, G]] =
           new AdditiveMarker[GridQuantity[D, G]] {}
 
       import RoundingImports.given

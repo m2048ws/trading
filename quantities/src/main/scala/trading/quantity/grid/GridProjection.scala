@@ -4,13 +4,13 @@ import trading.quantity.*
 import trading.quantity.refinement.*
 
 /** Describes an exact quantity that cannot be represented by the requested target grid. */
-final case class NotOnGrid[D <: Dimension](source: Rational, target: GridKey, targetQuantum: Rational)
+final case class NotOnGrid[D <: Dim](source: Rational, target: GridKey, targetQuantum: Rational)
   extends JavaSerializationUnsupported
 
 /** Exact narrowing operations that reject nonrepresentable values instead of rounding them. */
 object GridProjection:
 
-  def narrowExactlyTo[D <: Dimension](
+  def narrowExactlyTo[D <: Dim](
     t: GridRef[D]
   )(
     v: Quantity[D]
@@ -24,7 +24,7 @@ object GridProjection:
     else
       Left(NotOnGrid(coefficient, t.key, quantum))
 
-  def narrowGridExactlyTo[D <: Dimension](
+  def narrowGridExactlyTo[D <: Dim](
     g: GridRef[D],
     t: GridRef[D]
   )(
@@ -37,18 +37,18 @@ end GridProjection
 /** Validation façade for requiring that an exact quantity inhabits a particular grid. */
 object GridConstraint:
 
-  def validate[D <: Dimension](
+  def validate[D <: Dim](
     g: GridRef[D]
   )(
     v: Quantity[D]
   ): Either[NotOnGrid[D], GridQuantity[D, g.G]] =
     GridProjection.narrowExactlyTo(g)(v)
 
-extension [D <: Dimension](v: Quantity[D])
+extension [D <: Dim](v: Quantity[D])
   def narrowExactlyTo(t: GridRef[D]): Either[NotOnGrid[D], GridQuantity[D, t.G]] =
     GridProjection.narrowExactlyTo(t)(v)
 
-extension [D <: Dimension, G](v: GridQuantity[D, G])
+extension [D <: Dim, G](v: GridQuantity[D, G])
   def narrowExactlyTo(
     g: GridRef.Grid[D, G],
     t: GridRef[D]

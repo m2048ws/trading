@@ -239,7 +239,7 @@ Do not solve soundness by unnecessarily rejecting useful concrete or generic pro
 
 # Static / Runtime Agreement
 
-For dimension operations with runtime meaning, verify the static result agrees with runtime `DimensionKey` behavior.
+For dimension operations with runtime meaning, verify the static result agrees with runtime `DimKey` behavior.
 
 A mathematically correct coefficient does not excuse a malformed trusted static result.
 

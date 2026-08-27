@@ -1,10 +1,18 @@
-package trading.economics
+package trading.economics.instrument
 
 import trading.quantity.*
 import trading.quantity.grid.*
 import trading.quantity.runtime.*
 
-final class InstrumentFeeDenomination[DD <: Dimension] private[economics] (
+/** Semantic identity of a trading-fee component. */
+final case class FeeKind(value: String):
+  require(value.trim.nonEmpty, "fee kind cannot be empty")
+
+/** Quoted fee-policy sign: positive is a charge and negative is a rebate. */
+final case class FeeRate(coefficient: Rational):
+  require(coefficient != null, "fee rate coefficient")
+
+final class FeeDenomination[DD <: Dim] private[instrument] (
   val instrumentId: InstrumentId,
   val asset: AssetRef { type D = DD },
   private val grid: RegisteredGridRef[DD],
@@ -13,19 +21,16 @@ final class InstrumentFeeDenomination[DD <: Dimension] private[economics] (
   val gridKey: GridKey      = grid.key
   val gridQuantum: Rational = grid.quantum.unrefined
 
-  def minimumCharge(
-    accountContribution: Quantity[DD],
-    nonnegativeMinimum: Quantity[DD]
-  ): Either[EconomicsError, Quantity[DD]] =
-    InstrumentFees
-      .minimumCharge(accountContribution.coefficient, nonnegativeMinimum.coefficient)
+  def minimumCharge(contrib: Quantity[DD], nonnegativeMinimum: Quantity[DD]): Either[EconomicsError, Quantity[DD]] =
+    Fees
+      .minimumCharge(contrib.coefficient, nonnegativeMinimum.coefficient)
       .left
       .map(coefficient => InvalidFeeBasis(asset.id, coefficient))
-      .map(coefficient => Quantity(asset.dimension.asDimensionRef, coefficient))
+      .map(coefficient => Quantity(asset.dimension.ref, coefficient))
 
-  def quantize(kind: FeeKind, unrounded: Quantity[DD]): InstrumentFee[DD] =
+  def quantize(kind: FeeKind, unrounded: Quantity[DD]): Fee[DD] =
     val result = unrounded.quantizeTo(grid.asGridRef, policy)
-    InstrumentFee(
+    Fee(
       instrumentId,
       this,
       kind,
@@ -36,22 +41,18 @@ final class InstrumentFeeDenomination[DD <: Dimension] private[economics] (
       unrounded
     )
 
-  def percentage(
-    kind: FeeKind,
-    nonnegativeBasis: Quantity[DD],
-    rate: FeeRate
-  ): Either[EconomicsError, InstrumentFee[DD]] =
-    InstrumentFees
+  def percentage(kind: FeeKind, nonnegativeBasis: Quantity[DD], rate: FeeRate): Either[EconomicsError, Fee[DD]] =
+    Fees
       .percentageContribution(nonnegativeBasis.coefficient, rate.coefficient)
       .left
       .map(coefficient => InvalidFeeBasis(asset.id, coefficient))
-      .map(coefficient => quantize(kind, Quantity(asset.dimension.asDimensionRef, coefficient)))
+      .map(coefficient => quantize(kind, Quantity(asset.dimension.ref, coefficient)))
 
-end InstrumentFeeDenomination
+end FeeDenomination
 
-final case class InstrumentFee[DD <: Dimension] private[economics] (
+final case class Fee[DD <: Dim] private[instrument] (
   instrumentId: InstrumentId,
-  denomination: InstrumentFeeDenomination[DD],
+  denomination: FeeDenomination[DD],
   kind: FeeKind,
   coordinate: BigInt,
   asset: AssetRef { type D = DD },
@@ -59,19 +60,19 @@ final case class InstrumentFee[DD <: Dimension] private[economics] (
   residual: Quantity[DD],
   unrounded: Quantity[DD])
 
-final case class InstrumentFeeLine[DD <: Dimension, M] private[economics] (
+final case class FeeLine[DD <: Dim, M] private[instrument] (
   instrumentId: InstrumentId,
-  fee: InstrumentFee[DD],
+  fee: Fee[DD],
   sourceSliceIndex: Int,
   sourceMarket: M)
 
-trait InstrumentFeeSchedule[L, P, M, Pos]:
+trait FeeSchedule[L, P, M, Pos]:
   def instrumentId: InstrumentId
   def assess(
-    scenario: InstrumentOrderScenario[L, P, M, Pos]
-  ): Either[EconomicsError, Vector[InstrumentFeeLine[? <: Dimension, M]]]
+    scenario: OrderScenario[L, P, M, Pos]
+  ): Either[EconomicsError, Vector[FeeLine[? <: Dim, M]]]
 
-private[economics] object InstrumentFees:
+private[instrument] object Fees:
   def minimumCharge(accountContribution: Rational, nonnegativeMinimum: Rational): Either[Rational, Rational] =
     if nonnegativeMinimum.signum < 0 then Left(nonnegativeMinimum)
     else if accountContribution.signum < 0 && accountContribution.abs.compare(nonnegativeMinimum) < 0 then
@@ -82,25 +83,25 @@ private[economics] object InstrumentFees:
     if nonnegativeBasis.signum < 0 then Left(nonnegativeBasis)
     else Right(nonnegativeBasis * -rate)
 
-end InstrumentFees
+end Fees
 
-final class InstrumentFees[D <: Dimension, B <: Dimension, Q <: Dimension, S <: Dimension] private[economics] (
+final class Fees[D <: Dim, B <: Dim, Q <: Dim, S <: Dim] private[instrument] (
   val instrumentId: InstrumentId,
   settle: AssetRef { type D = S }):
 
-  private type Lots     = InstrumentLots[D]
-  private type Price    = InstrumentPrice[B, Q]
-  private type Market   = InstrumentMarketState[B, Q, S]
-  private type Position = InstrumentPosition[D]
-  private type Scenario = InstrumentOrderScenario[Lots, Price, Market, Position]
-  private type Schedule = InstrumentFeeSchedule[Lots, Price, Market, Position]
+  private type Lots     = _root_.trading.economics.instrument.Lots[D]
+  private type Price    = _root_.trading.economics.instrument.Price[B, Q]
+  private type Market   = _root_.trading.economics.instrument.MarketState[B, Q, S]
+  private type Position = _root_.trading.economics.instrument.Position[D]
+  private type Scenario = _root_.trading.economics.instrument.OrderScenario[Lots, Price, Market, Position]
+  private type Schedule = _root_.trading.economics.instrument.FeeSchedule[Lots, Price, Market, Position]
 
   def denomination(
     feeAsset: AssetRef
   )(
-    grid: RegisteredGridRef[? <: Dimension],
+    grid: RegisteredGridRef[? <: Dim],
     policy: QuantizationPolicy
-  ): Either[EconomicsError, InstrumentFeeDenomination[feeAsset.D]] =
+  ): Either[EconomicsError, FeeDenomination[feeAsset.D]] =
     if !feeAsset.dimension.sharesRegistryWith(settle.dimension) then
       Left(ForeignRegistry("fee asset", settle.dimension.key, feeAsset.dimension.key))
     else if !grid.dimension.sharesRegistryWith(feeAsset.dimension) then
@@ -109,19 +110,19 @@ final class InstrumentFees[D <: Dimension, B <: Dimension, Q <: Dimension, S <: 
       Left(InvalidFeeGrid(feeAsset.id, grid.key, feeAsset.dimension.key, grid.dimension.key))
     else
       val typedGrid = grid.asInstanceOf[RegisteredGridRef[feeAsset.D]]
-      Right(new InstrumentFeeDenomination(instrumentId, feeAsset, typedGrid, policy))
+      Right(new FeeDenomination(instrumentId, feeAsset, typedGrid, policy))
 
-  def line[FD <: Dimension](
+  def line[FD <: Dim](
     scenario: Scenario,
     sourceSliceIndex: Int,
-    fee: InstrumentFee[FD]
-  ): Either[EconomicsError, InstrumentFeeLine[FD, Market]] =
+    fee: Fee[FD]
+  ): Either[EconomicsError, FeeLine[FD, Market]] =
     val slices = scenario.assumptions.matchedSlices
     if sourceSliceIndex < 0 || sourceSliceIndex >= slices.size then
       Left(InvalidFeeAttribution(sourceSliceIndex, slices.size))
     else
       val market = slices(sourceSliceIndex).market
-      InstrumentIdentityChecks
+      IdentityChecks
         .check(
           "fee.line",
           instrumentId,
@@ -130,17 +131,17 @@ final class InstrumentFees[D <: Dimension, B <: Dimension, Q <: Dimension, S <: 
           "denomination" -> fee.denomination.instrumentId,
           "market"       -> market.instrumentId
         )
-        .map(_ => InstrumentFeeLine(instrumentId, fee, sourceSliceIndex, market))
+        .map(_ => FeeLine(instrumentId, fee, sourceSliceIndex, market))
 
   val none: Schedule = new Schedule:
-    val instrumentId: InstrumentId = InstrumentFees.this.instrumentId
-    def assess(scenario: Scenario): Either[EconomicsError, Vector[InstrumentFeeLine[? <: Dimension, Market]]] =
-      InstrumentIdentityChecks.check("fee.none", instrumentId, "scenario" -> scenario.instrumentId).map(_ =>
+    val instrumentId: InstrumentId                                                            = Fees.this.instrumentId
+    def assess(scenario: Scenario): Either[EconomicsError, Vector[FeeLine[? <: Dim, Market]]] =
+      IdentityChecks.check("fee.none", instrumentId, "scenario" -> scenario.instrumentId).map(_ =>
         Vector.empty
       )
 
   def combine(componentSchedules: Vector[Schedule]): Either[EconomicsError, Schedule] =
-    InstrumentIdentityChecks
+    IdentityChecks
       .check(
         "fee.combine",
         instrumentId,
@@ -148,20 +149,20 @@ final class InstrumentFees[D <: Dimension, B <: Dimension, Q <: Dimension, S <: 
       )
       .map: _ =>
         new Schedule:
-          val instrumentId: InstrumentId = InstrumentFees.this.instrumentId
+          val instrumentId: InstrumentId = Fees.this.instrumentId
           def assess(
             scenario: Scenario
-          ): Either[EconomicsError, Vector[InstrumentFeeLine[? <: Dimension, Market]]] =
+          ): Either[EconomicsError, Vector[FeeLine[? <: Dim, Market]]] =
             for
-              _     <- InstrumentIdentityChecks.check("fee.assess", instrumentId, "scenario" -> scenario.instrumentId)
+              _     <- IdentityChecks.check("fee.assess", instrumentId, "scenario" -> scenario.instrumentId)
               lines <- componentSchedules.foldLeft[
                          Either[EconomicsError,
-                           Vector[InstrumentFeeLine[? <: Dimension, Market]]]
+                           Vector[FeeLine[? <: Dim, Market]]]
                        ](Right(Vector.empty)): (result, schedule) =>
                          for
                            accumulated <- result
                            next        <- schedule.assess(scenario)
-                           _           <- InstrumentIdentityChecks.check(
+                           _           <- IdentityChecks.check(
                                   "fee.assess",
                                   instrumentId,
                                   next.zipWithIndex.flatMap((line, index) =>
@@ -175,4 +176,4 @@ final class InstrumentFees[D <: Dimension, B <: Dimension, Q <: Dimension, S <: 
                          yield accumulated ++ next
             yield lines
 
-end InstrumentFees
+end Fees

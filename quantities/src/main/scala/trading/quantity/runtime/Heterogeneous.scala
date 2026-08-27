@@ -18,18 +18,18 @@ final case class HeterogeneousGridMismatch(cause: RuntimeEvidenceError) extends 
  * heterogeneous operation.
  */
 sealed trait ResolvedExactQuantity extends JavaSerializationUnsupported:
-  type D <: Dimension
+  type D <: Dim
   def dimension: DimRef[D]
   def value: Quantity[D]
 
-private final class ResolvedExactQuantityImpl[D0 <: Dimension](
+private final class ResolvedExactQuantityImpl[D0 <: Dim](
   val dimension: DimRef[D0],
   val value: Quantity[D0])
   extends ResolvedExactQuantity:
   type D = D0
 
 private object ResolvedExactQuantity:
-  def apply[D <: Dimension](dimension: DimRef[D], value: Quantity[D]): ResolvedExactQuantity =
+  def apply[D <: Dim](dimension: DimRef[D], value: Quantity[D]): ResolvedExactQuantity =
     new ResolvedExactQuantityImpl(dimension, value)
 
 /**
@@ -66,13 +66,13 @@ object HeterogeneousQuantity:
       .map: e =>
         val aligned: Quantity[l.dimension.D] = r.grid.asQuantity(r.value).alignTo[l.dimension.D](using e)
         val result                           = l.grid.asQuantity(l.value) + aligned
-        ResolvedExactQuantity(l.dimension.dimension.asDimensionRef, result)
+        ResolvedExactQuantity(l.dimension.dimension.ref, result)
 
   /** Multiply heterogeneous trusted values while retaining the raw expression witness and exact coefficient. */
   def multiplyExact(l: ResolvedGridQuantity, r: ResolvedGridQuantity): ResolvedExactQuantity =
     val left      = l.grid.asQuantity(l.value)
     val right     = r.grid.asQuantity(r.value)
-    val dimension = DimRef.times(l.dimension.dimension.asDimensionRef, r.dimension.dimension.asDimensionRef)
+    val dimension = DimRef.times(l.dimension.dimension.ref, r.dimension.dimension.ref)
     ResolvedExactQuantity(dimension, left * right)
 
 end HeterogeneousQuantity

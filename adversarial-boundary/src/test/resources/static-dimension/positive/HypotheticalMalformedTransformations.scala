@@ -9,7 +9,7 @@ import trading.quantity.refinement.*
 
 /** Malformed indices remain uninhabitable, but transformations over hypothetical parameters are proof-free. */
 object HypotheticalMalformedTransformations:
-  type Bad = Dim[Power["hypothetical:bad", 0] *: EmptyTuple]
+  type Bad = Canonical[Power["hypothetical:bad", 0] *: EmptyTuple]
   sealed trait G
   sealed trait H
 

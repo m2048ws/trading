@@ -1,7 +1,7 @@
 ## Why
 
 Static quantity arithmetic currently preserves the syntax of dimension expressions even when the corresponding runtime
-`DimensionKey` is already normalized. This prevents ordinary multiplication and division from expressing reusable P&L,
+`DimKey` is already normalized. This prevents ordinary multiplication and division from expressing reusable P&L,
 rate, ratio, and other multi-atom calculations with compact result types, and forces special endpoint methods or checked
 runtime coercion to recover algebraic equality that is knowable at compile time.
 
@@ -13,7 +13,7 @@ runtime coercion to recover algebraic equality that is knowable at compile time.
   for algebraically equal static dimensions without requiring a global atom ordering.
 - Allow exact addition, subtraction, and explicit result alignment to consume trusted dimension-equality
   evidence while avoiding global implicit conversions between quantity types.
-- Preserve checked runtime `DimensionKey` comparison as a second trusted source of the same scoped `SameDimension`
+- Preserve checked runtime `DimKey` comparison as a second trusted source of the same scoped `SameDimension`
   capability for independently resolved witnesses.
 - Apply the generalized result typing to exact values produced from grid multiplication, division, and rate application
   while leaving coordinate-level grid identity and closure unchanged.
@@ -38,7 +38,7 @@ runtime coercion to recover algebraic equality that is knowable at compile time.
   alignment, guard, and token machinery is not caller-composable authority, and every final result is independently
   re-exposed, reclassified, and checked as a canonical power structure.
 - Validate signed exponent magnitudes recursively down to `NaturalZero`, conservatively reject reducible/refined factor
-  wrappers and the base `Dimension` universe, and issue clean contextual-evidence diagnostics for unresolved generics.
+  wrappers and the base `Dim` universe, and issue clean contextual-evidence diagnostics for unresolved generics.
 - Define reflexive `SameDimension[D, D]` as structural identity rather than canonical-form certification; distinct static
   equivalence and every canonical operation result remain subject to complete structural validation.
 
@@ -61,10 +61,10 @@ None.
 The change affects the public static dimension algebra, exact multiplication and division result types, evidence-aware
 additive operations, rate conveniences, exact grid-operation result types, `DimRef` construction, and compile-time and
 adversarial boundary tests in the `quantities` module. Explicit annotations that depend on raw `Times`/`Inverse` expression
-shape will require migration. Runtime coefficients, `DimensionKey` semantics, grid coordinates and provenance, persistence
+shape will require migration. Runtime coefficients, `DimKey` semantics, grid coordinates and provenance, persistence
 records, and deferred trading-domain modules remain unchanged. No new external library dependency is required by the
 capability contract.
-The remediation does not alter runtime coefficients, `DimensionKey`, registry provenance, grid identity, persistence,
+The remediation does not alter runtime coefficients, `DimKey`, registry provenance, grid identity, persistence,
 refinement, or optional algebra semantics. The active change remains open for independent rereview.
 The quantities project's own tests use SBT's ordinary same-project `Compile/classes` relationship. Build-only compiler
 fixtures and the adversarial inter-project consumer instead depend on one explicitly keyed, completed

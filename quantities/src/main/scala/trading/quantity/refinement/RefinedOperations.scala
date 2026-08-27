@@ -10,13 +10,12 @@ import trading.quantity.grid.QuantizationPolicy
 final case class RefinedQuotRem[Q, R](quotient: Q, remainder: R) extends JavaSerializationUnsupported
 
 /** Quantized grid value that retains refinement evidence together with its unrestricted exact residual. */
-final case class RefinedQuantization[Q, D <: Dimension](value: Q, residual: Quantity[D])
-  extends JavaSerializationUnsupported
+final case class RefinedQuantization[Q, D <: Dim](value: Q, residual: Quantity[D]) extends JavaSerializationUnsupported
 
 private def checkedNonNegativeResult[A](v: A)(using Sign[A]): NonNegative[A] =
   NonNegative(v).fold(_ => throw new IllegalStateException("refined operation violated nonnegative closure"), identity)
 
-extension [D <: Dimension, G](v: NonNegative[GridQuantity[D, G]])
+extension [D <: Dim, G](v: NonNegative[GridQuantity[D, G]])
 
   @targetName("subtractNonNegativeGrid")
   def subtract(r: NonNegative[GridQuantity[D, G]]): GridQuantity[D, G] =
@@ -39,7 +38,7 @@ extension [D <: Dimension, G](v: NonNegative[GridQuantity[D, G]])
 
 end extension
 
-extension [D <: Dimension](v: NonNegative[Quantity[D]])
+extension [D <: Dim](v: NonNegative[Quantity[D]])
 
   @targetName("subtractNonNegativeQuantity")
   def subtract(r: NonNegative[Quantity[D]]): Quantity[D] =
@@ -61,7 +60,7 @@ extension [D <: Dimension](v: NonNegative[Quantity[D]])
 
 end extension
 
-extension [D <: Dimension, G](v: Positive[GridQuantity[D, G]])
+extension [D <: Dim, G](v: Positive[GridQuantity[D, G]])
 
   @targetName("subtractPositiveGrid")
   def subtract(r: Positive[GridQuantity[D, G]]): GridQuantity[D, G] =
@@ -78,7 +77,7 @@ extension [D <: Dimension, G](v: Positive[GridQuantity[D, G]])
 
 end extension
 
-extension [D <: Dimension](v: Positive[Quantity[D]])
+extension [D <: Dim](v: Positive[Quantity[D]])
 
   @targetName("subtractPositiveQuantity")
   def subtract(r: Positive[Quantity[D]]): Quantity[D] =
@@ -94,7 +93,7 @@ extension [D <: Dimension](v: Positive[Quantity[D]])
 
 end extension
 
-extension [D <: Dimension, G](v: NonZero[GridQuantity[D, G]])
+extension [D <: Dim, G](v: NonZero[GridQuantity[D, G]])
 
   @targetName("quantizeNonZeroGrid")
   def quantizeTo(
@@ -106,7 +105,7 @@ extension [D <: Dimension, G](v: NonZero[GridQuantity[D, G]])
 
 end extension
 
-extension [D <: Dimension](v: NonZero[Quantity[D]])
+extension [D <: Dim](v: NonZero[Quantity[D]])
 
   @targetName("quantizeNonZeroQuantity")
   def quantizeTo(t: GridRef[D], p: QuantizationPolicy): Quantization[D, t.G] =

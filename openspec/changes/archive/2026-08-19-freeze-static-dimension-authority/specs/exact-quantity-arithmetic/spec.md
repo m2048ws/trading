@@ -14,7 +14,7 @@ Reflexive evidence MAY exist from Scala type identity alone; every arithmetic bo
 SHALL independently require the applicable `Normalize` evidence.
 
 `Quantity[D]` SHALL remain an exact coefficient indexed by `D`, not a runtime identity witness. Possessing a
-`Quantity[D]` SHALL NOT provide a `DimRef[D]` or `DimensionKey`. Dimension-polymorphic zero SHALL remain available for any
+`Quantity[D]` SHALL NOT provide a `DimRef[D]` or `DimKey`. Dimension-polymorphic zero SHALL remain available for any
 normalized `D`; attaching a caller-supplied coefficient SHALL continue to require an authoritative `DimRef[D]`.
 Similarly, possession of `DimRef[D]` SHALL NOT implicitly materialize contextual `Normalize[D]` evidence for generic
 code that performs static arithmetic.
@@ -35,10 +35,10 @@ code that performs static arithmetic.
   search
 
 #### Scenario: Keep reflexivity separate from validity
-- **WHEN** a malformed `Dim` representation obtains reflexive `SameDimension[D, D]` through Scala type identity
+- **WHEN** a malformed `Canonical` representation obtains reflexive `SameDimension[D, D]` through Scala type identity
 - **THEN** normalization and arithmetic over `D` remain unavailable because the required `Normalize[D]` cannot be derived
 
 #### Scenario: Keep equivalence separate from runtime identity
 - **WHEN** `SameDimension[A, B]` is derived from statically equivalent closed expressions without runtime witnesses
-- **THEN** it permits only the documented controlled coercions and does not furnish a `DimRef` or `DimensionKey` for
+- **THEN** it permits only the documented controlled coercions and does not furnish a `DimRef` or `DimKey` for
   either expression

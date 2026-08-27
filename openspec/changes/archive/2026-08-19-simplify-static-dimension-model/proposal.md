@@ -9,15 +9,15 @@ common API direct while retaining exact, dimension-safe arithmetic and checked r
 
 - **BREAKING** Replace source-visible natural-number exponent types with `Int` singleton literals in canonical
   `Power[Key, Exponent]` entries.
-- **BREAKING** Define atomic dimensions and the multiplicative identity as aliases of one canonical `Dim[Entries]`
-  representation, with atom identity carried by a stable singleton key rather than by an arbitrary `Dimension` subtype.
+- **BREAKING** Define atomic dimensions and the multiplicative identity as aliases of one canonical `Canonical[Entries]`
+  representation, with atom identity carried by a stable singleton key rather than by an arbitrary `Dim` subtype.
 - **BREAKING** Replace `NormalizedPowers`, `DimensionProduct`, `DimensionInverse`, `DimensionQuotient`, and
   `DimensionAlignment` with one closed `Normalize[Expression]` operation and retain `SameDimension` only as the
   restricted equivalence capability.
 - Make concrete quantity, dimension-reference, rate, and grid arithmetic expose canonical result dimensions directly,
   without caller-visible `operation.Out`, alignment evidence, or routine `asDimension` repair.
 - Perform exponent arithmetic as macro-local `BigInt`, then either emit a checked `Int` singleton exponent or fail
-  compilation explicitly when the canonical result is outside the static range. Runtime `DimensionKey` exponents remain
+  compilation explicitly when the canonical result is outside the static range. Runtime `DimKey` exponents remain
   arbitrary-precision `BigInt` values.
 - Keep runtime-resolved dimensions type-safe by assigning each opaque runtime witness a concrete singleton-key atom type;
   hidden runtime decompositions continue to require checked runtime equivalence before retagging.
@@ -47,10 +47,10 @@ None.
 ## Impact
 
 - Replaces the public static dimension model in `trading.quantity` and substantially rewrites
-  `StaticDimension.scala`, `Dimension.scala`, and `DimensionRef.scala`.
+  `StaticDimension.scala`, `Dim.scala`, and `DimRef.scala`.
 - Updates quantity, rate, grid, optional algebra, and runtime-identity integrations to use the single normalization
   boundary.
 - Requires repository callers, examples, compile fixtures, and tests to migrate from signed naturals, `Powers`, and the
-  specialized operation evidence types to singleton keys, `Dim`, literal `Int` powers, and `Normalize`.
-- Does not change rational coefficient semantics, persisted `DimensionKey` data, asset/grid identifiers, or wire formats.
+  specialized operation evidence types to singleton keys, `Canonical`, literal `Int` powers, and `Normalize`.
+- Does not change rational coefficient semantics, persisted `DimKey` data, asset/grid identifiers, or wire formats.
 - Introduces no new runtime dependency.

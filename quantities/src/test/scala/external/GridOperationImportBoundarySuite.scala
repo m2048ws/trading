@@ -25,7 +25,7 @@ class GridOperationImportBoundarySuite extends FunSuite:
       """
       import trading.quantity.*
 
-      def divide[D <: Dimension, G](
+      def divide[D <: Dim, G](
         value: GridQuantity[D, G],
         divisor: trading.quantity.refinement.PositiveWhole,
         grid: GridRef.Grid[D, G]
@@ -39,7 +39,7 @@ class GridOperationImportBoundarySuite extends FunSuite:
       """
       import trading.quantity.*
 
-      def allocate[D <: Dimension, G](
+      def allocate[D <: Dim, G](
         value: GridQuantity[D, G],
         count: trading.quantity.refinement.PositiveInt,
         order: trading.quantity.grid.RemainderOrder,

@@ -5,10 +5,10 @@ import trading.quantity.refinement.*
 import trading.quantity.runtime.*
 
 object DecodedCarrierCannotSelectMalformedIndex:
-  type Bad = Dim[Power["decoded:bad", 0] *: EmptyTuple]
+  type Bad = Canonical[Power["decoded:bad", 0] *: EmptyTuple]
 
   val registry   = new QuantityRegistry
-  val dimension  = registry.registerDimension(DimensionKey.one).toOption.get
+  val dimension  = registry.registerDimension(DimKey.one).toOption.get
   val definition = GridDefinition(
     dimension.dimension.key,
     GridId("decoded-valid"),

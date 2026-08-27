@@ -60,7 +60,7 @@ class JavaSerializationPolicySuite extends FunSuite:
 
   test("invariant-bearing public nominal carriers reject Java object serialization"):
     val atom        = AtomId("serialization-atom")
-    val dimension   = DimensionKey.atom(atom)
+    val dimension   = DimKey.atom(atom)
     val gridId      = GridId("serialization-grid")
     val gridVersion = GridVersion(1)
     val quantum     = PositiveRational.exact(1, 100).toOption.get
@@ -96,7 +96,7 @@ class JavaSerializationPolicySuite extends FunSuite:
         .toOption
         .get
 
-    val offGrid      = Quantity(asset.dimension.asDimensionRef, Rational(1, 3))
+    val offGrid      = Quantity(asset.dimension.ref, Rational(1, 3))
     val quantization = offGrid.quantizeTo(grid.asGridRef, QuantizationPolicy.HalfEven)
     val allocation   =
       gridValue.allocateEvenly(PositiveInt(3).toOption.get, RemainderOrder.FirstToLast, grid.asGridRef)
@@ -124,7 +124,7 @@ class JavaSerializationPolicySuite extends FunSuite:
       UniformGrid.create(
         GridId("serialization-comparison-grid"),
         gridVersion,
-        asset.dimension.asDimensionRef,
+        asset.dimension.ref,
         quantum
       )
     val gridRelationshipError: GridError =
@@ -133,7 +133,7 @@ class JavaSerializationPolicySuite extends FunSuite:
     val registryError: RegistryError =
       PackedAssetGridQuantity
         .decode(
-          PackedAssetGridQuantity(asset.id, DimensionKey.one, grid.id, grid.version, BigInt(123)),
+          PackedAssetGridQuantity(asset.id, DimKey.one, grid.id, grid.version, BigInt(123)),
           registry
         )
         .swap
@@ -224,8 +224,8 @@ class JavaSerializationPolicySuite extends FunSuite:
   test("mathematical values without Java serialization support remain rejected"):
     val naturallyUnsupported: List[(String, AnyRef)] =
       List(
-        "Rational"     -> Rational.one,
-        "DimensionKey" -> DimensionKey.one
+        "Rational" -> Rational.one,
+        "DimKey"   -> DimKey.one
       )
 
     naturallyUnsupported.foreach:

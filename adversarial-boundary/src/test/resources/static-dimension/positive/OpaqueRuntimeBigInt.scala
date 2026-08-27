@@ -4,7 +4,7 @@ import trading.quantity.*
 
 object OpaqueRuntimeBigInt:
   val exponent: BigInt = BigInt(Int.MaxValue) + 1
-  val key: DimensionKey = DimensionKey(List(AtomId("runtime:bigint") -> exponent))
+  val key: DimKey = DimKey(List(AtomId("runtime:bigint") -> exponent))
   val runtime = DimRef.fresh(key)
 
   val value: Quantity[runtime.D] = Quantity(runtime.dimension, 1)

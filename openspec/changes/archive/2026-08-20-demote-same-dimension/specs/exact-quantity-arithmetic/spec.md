@@ -2,8 +2,8 @@
 
 ### Requirement: Compile-time dimension equivalence
 `SameDimension[A, B]` SHALL be derivable at compile time when normalization of the statically visible closed dimension
-expressions `A` and `B` produces canonical `Dim` entries with the same singleton keys and `Int` exponents modulo tuple
-permutation. Static derivation SHALL require no runtime `DimRef`, `DimensionKey`, or total ordering over singleton keys.
+expressions `A` and `B` produces canonical `Canonical` entries with the same singleton keys and `Int` exponents modulo tuple
+permutation. Static derivation SHALL require no runtime `DimRef`, `DimKey`, or total ordering over singleton keys.
 The evidence SHALL remain a restricted capability whose construction is unavailable to supported downstream code; it
 SHALL authorize controlled explicit quantity- and grid-dimension alignment and equivalence-aware comparison but SHALL
 NOT expose unrestricted Scala type equality, a global implicit conversion between arbitrary quantity types, or implicit
@@ -20,7 +20,7 @@ runtime equality and for intentionally selecting between distinct but equivalent
 operation result SHALL validate the complete closed representation.
 
 #### Scenario: Align commuted canonical dimensions
-- **WHEN** two canonical `Dim` values contain the same singleton-key powers in different tuple orders
+- **WHEN** two canonical `Canonical` values contain the same singleton-key powers in different tuple orders
 - **THEN** compile-time `SameDimension` evidence is derivable without assigning a total order to their keys
 
 #### Scenario: Align commuted products
@@ -68,7 +68,7 @@ operation result SHALL validate the complete closed representation.
 - **THEN** `SameDimension` is not derivable and `alignTo` cannot cross between the dimension types
 
 #### Scenario: Recover checked runtime equivalence
-- **WHEN** two opaque runtime witnesses have equal authoritative `DimensionKey` values but distinct singleton-key types
+- **WHEN** two opaque runtime witnesses have equal authoritative `DimKey` values but distinct singleton-key types
 - **THEN** successful runtime comparison may issue scoped `SameDimension` evidence for explicit `alignTo`
 
 #### Scenario: Derive evidence from downstream code
@@ -77,7 +77,7 @@ operation result SHALL validate the complete closed representation.
 - **THEN** the evidence compiles without inaccessible-member diagnostics or access to implementation-only proof rules
 
 #### Scenario: Keep reflexivity separate from canonical certification
-- **WHEN** a malformed `Dim` representation requests `SameDimension[D, D]`
+- **WHEN** a malformed `Canonical` representation requests `SameDimension[D, D]`
 - **THEN** reflexive identity and `alignTo[D]` MAY be available, but normalization and arithmetic SHALL reject the
   malformed representation
 
@@ -86,7 +86,7 @@ Addition and subtraction SHALL accept only quantities with the exact same Scala 
 `Normalize[D]`, and SHALL return `Quantity[D]`. They SHALL NOT consume `SameDimension` to align a right operand whose
 static dimension type differs from the left operand's type. Multiplication by `Rational` SHALL preserve the quantity's
 dimension. Multiplying `Quantity[A]` by `Quantity[B]` SHALL use the single normalization operation and return an exact
-quantity in a canonical `Dim`: nested products SHALL be flattened, inverse powers negated, equal singleton keys
+quantity in a canonical `Canonical`: nested products SHALL be flattened, inverse powers negated, equal singleton keys
 combined, zero powers removed, and every surviving key stored exactly once with a nonzero `Int` exponent. Entry order
 MAY follow operand order and SHALL NOT affect dimension equivalence.
 
@@ -122,7 +122,7 @@ validation.
   chosen result type
 
 #### Scenario: Reject malformed dimension-preserving arithmetic
-- **WHEN** a zero-power or otherwise malformed `Dim` is used with quantity or grid zero, addition, subtraction, scalar
+- **WHEN** a zero-power or otherwise malformed `Canonical` is used with quantity or grid zero, addition, subtraction, scalar
   arithmetic, exact scalar division, allocation, quantization, refined arithmetic, or an arithmetic algebra instance
 - **THEN** the boundary cannot obtain `Normalize[D]` and compilation fails even though reflexive `SameDimension[D, D]`
   remains identity-only
@@ -138,7 +138,7 @@ validation.
 
 #### Scenario: Multiply dimensions
 - **WHEN** exact quantities in concrete dimensions `A` and `B` are multiplied
-- **THEN** the exact result's public dimension is their validated canonical `Dim` product
+- **THEN** the exact result's public dimension is their validated canonical `Canonical` product
 
 #### Scenario: Cancel a price denominator
 - **WHEN** `Quantity[Position]` is multiplied by a quantity in `Settlement / Position`
@@ -194,7 +194,7 @@ validation.
 
 #### Scenario: Preserve endpoint-depth coherence
 - **WHEN** transparent aliases or exact `Normalize.Aux` refinements successively expose a fully concrete operation output
-- **THEN** every use reaches the same canonical `Dim` and runtime `DimensionKey` as direct use of the concrete endpoint
+- **THEN** every use reaches the same canonical `Canonical` and runtime `DimKey` as direct use of the concrete endpoint
 
 #### Scenario: Canonicalize definitionally equal aliases coherently
 - **WHEN** `holder.D` is a transparent alias for `Times[A, B]`
@@ -202,9 +202,9 @@ validation.
   combination, cancellation, inversion, and runtime-key agreement
 
 #### Scenario: Canonicalize definitionally equal annotated inputs coherently
-- **WHEN** a stable atom, canonical `Dim`, reducible expression, or transparent alias differs from another input only by
+- **WHEN** a stable atom, canonical `Canonical`, reducible expression, or transparent alias differs from another input only by
   annotations
-- **THEN** normalization produces the same unannotated canonical output and agrees with runtime `DimensionKey`
+- **THEN** normalization produces the same unannotated canonical output and agrees with runtime `DimKey`
   multiplication and inversion
 
 #### Scenario: Keep runtime-hidden structure opaque

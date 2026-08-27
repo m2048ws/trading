@@ -11,7 +11,7 @@ class PublicApiBoundarySuite extends FunSuite:
       import trading.quantity.*
 
       val forged = new DimRef[One]:
-        val key = DimensionKey.one
+        val key = DimKey.one
     """
 
     assertDoesNotCompile:
@@ -34,7 +34,7 @@ class PublicApiBoundarySuite extends FunSuite:
       import trading.quantity.*
       import trading.quantity.runtime.*
 
-      def requireGrid[D <: Dimension](v: RegisteredGridRef[D]): Unit = ()
+      def requireGrid[D <: Dim](v: RegisteredGridRef[D]): Unit = ()
       val registry = new QuantityRegistry
       val asset = registry
         .registerAsset(AssetDefinition(AssetId("witness-role-asset"), AtomId("witness-role-atom")))
@@ -100,7 +100,7 @@ class PublicApiBoundarySuite extends FunSuite:
     assertDoesNotCompile:
       """
       import trading.quantity.*
-      val nonCanonical = DimensionKey.fromProduct(
+      val nonCanonical = DimKey.fromProduct(
         Tuple1(Vector(AtomId("duplicate") -> 1, AtomId("duplicate") -> 1))
       )
     """
@@ -115,7 +115,7 @@ class PublicApiBoundarySuite extends FunSuite:
       """
       import trading.quantity.*
       type Entry = Power["forged", 1]
-      val forged = new Dim[Entry *: EmptyTuple] {}
+      val forged = new Canonical[Entry *: EmptyTuple] {}
       """
     assertDoesNotCompile:
       """
@@ -133,7 +133,7 @@ class PublicApiBoundarySuite extends FunSuite:
     assertDoesNotCompile:
       """
       import trading.quantity.*
-      type Normalized = Dim[Power["normalized", 1] *: EmptyTuple]
+      type Normalized = Canonical[Power["normalized", 1] *: EmptyTuple]
       val forged: Quantity[Normalized] = Rational.one
       """
     assertDoesNotCompile:

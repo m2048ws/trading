@@ -1,7 +1,15 @@
-package trading.economics
+package trading.economics.instrument
 
 import trading.quantity.*
 import trading.quantity.runtime.RegisteredGridRef
+
+/** Fee classification of one complete scenario slice. */
+enum LiquidityRole:
+  case Maker, Taker
+
+/** Entry or exit attribution retained on converted fee contributions. */
+enum ScenarioLeg:
+  case Entry, Exit
 
 sealed trait TriggerEvidence[+P]:
   def reference: PriceReference
@@ -21,7 +29,7 @@ sealed trait PricingAssumption[+P]
 case object DirectPricingAssumption                                     extends PricingAssumption[Nothing]
 final case class ResolvedPegAssumption[P](resolution: PegResolution[P]) extends PricingAssumption[P]
 
-final case class InstrumentLiquiditySlice[L, M] private[economics] (
+final case class LiquiditySlice[L, M] private[instrument] (
   instrumentId: InstrumentId,
   lots: L,
   market: M,
@@ -31,28 +39,28 @@ final case class ScenarioAssumptions[L, P, M](
   instrumentId: InstrumentId,
   activation: ActivationAssumption[P],
   pricing: PricingAssumption[P],
-  matchedSlices: Vector[InstrumentLiquiditySlice[L, M]])
+  matchedSlices: Vector[LiquiditySlice[L, M]])
 
-final case class InstrumentOrderScenario[L, P, M, Pos] private[economics] (
+final case class OrderScenario[L, P, M, Pos] private[instrument] (
   instrumentId: InstrumentId,
-  order: InstrumentOrder[L, P],
+  order: Order[L, P],
   assumptions: ScenarioAssumptions[L, P, M],
   positionChange: Pos)
 
-final case class InstrumentRoundTripScenario[L, P, M, Pos] private[economics] (
+final case class RoundTripScenario[L, P, M, Pos] private[instrument] (
   instrumentId: InstrumentId,
-  entry: InstrumentOrderScenario[L, P, M, Pos],
-  exit: InstrumentOrderScenario[L, P, M, Pos],
+  entry: OrderScenario[L, P, M, Pos],
+  exit: OrderScenario[L, P, M, Pos],
   heldPosition: Pos)
 
-final class InstrumentScenarios[D <: Dimension, B <: Dimension, Q <: Dimension, S <: Dimension] private[economics] (
+final class Scenarios[D <: Dim, B <: Dim, Q <: Dim, S <: Dim] private[instrument] (
   instrumentId: InstrumentId,
   positionGrid: RegisteredGridRef[D]):
 
-  private type Lots     = InstrumentLots[D]
-  private type Price    = InstrumentPrice[B, Q]
-  private type Market   = InstrumentMarketState[B, Q, S]
-  private type Position = InstrumentPosition[D]
+  private type Lots     = _root_.trading.economics.instrument.Lots[D]
+  private type Price    = _root_.trading.economics.instrument.Price[B, Q]
+  private type Market   = _root_.trading.economics.instrument.MarketState[B, Q, S]
+  private type Position = _root_.trading.economics.instrument.Position[D]
 
   val immediate: ActivationAssumption[Price]  = ImmediateAssumption
   val directPricing: PricingAssumption[Price] = DirectPricingAssumption
@@ -84,22 +92,22 @@ final class InstrumentScenarios[D <: Dimension, B <: Dimension, Q <: Dimension, 
     lots: Lots,
     market: Market,
     role: LiquidityRole
-  ): Either[EconomicsError, InstrumentLiquiditySlice[Lots, Market]] =
-    InstrumentIdentityChecks
+  ): Either[EconomicsError, LiquiditySlice[Lots, Market]] =
+    IdentityChecks
       .check("scenario.slice", instrumentId, "lots" -> lots.instrumentId, "market" -> market.instrumentId)
-      .map(_ => InstrumentLiquiditySlice(instrumentId, lots, market, role))
+      .map(_ => LiquiditySlice(instrumentId, lots, market, role))
 
   def assumptions(
     activation: ActivationAssumption[Price],
     pricing: PricingAssumption[Price],
-    matchedSlices: Vector[InstrumentLiquiditySlice[Lots, Market]]
+    matchedSlices: Vector[LiquiditySlice[Lots, Market]]
   ): ScenarioAssumptions[Lots, Price, Market] =
     ScenarioAssumptions(instrumentId, activation, pricing, matchedSlices)
 
   def order(
-    order: InstrumentOrder[Lots, Price],
+    order: Order[Lots, Price],
     assumptions: ScenarioAssumptions[Lots, Price, Market]
-  ): Either[EconomicsError, InstrumentOrderScenario[Lots, Price, Market, Position]] =
+  ): Either[EconomicsError, OrderScenario[Lots, Price, Market, Position]] =
     for
       _              <- validateIdentities(order, assumptions)
       _              <- validateSliceTotals(order.intent.lots, assumptions.matchedSlices)
@@ -108,19 +116,19 @@ final class InstrumentScenarios[D <: Dimension, B <: Dimension, Q <: Dimension, 
       _              <- validateSlices(order, assumptions.matchedSlices, effectiveLimit)
     yield
       val coordinate = order.intent.side.sign * order.intent.lots.count.unrefined
-      val change     = InstrumentPosition(
+      val change     = Position(
         instrumentId,
         coordinate,
         positionGrid.asQuantity(positionGrid.fromCoordinate(coordinate))
       )
-      InstrumentOrderScenario(instrumentId, order, assumptions, change)
+      OrderScenario(instrumentId, order, assumptions, change)
 
   def roundTrip(
-    entry: InstrumentOrderScenario[Lots, Price, Market, Position],
-    exit: InstrumentOrderScenario[Lots, Price, Market, Position]
-  ): Either[EconomicsError, InstrumentRoundTripScenario[Lots, Price, Market, Position]] =
+    entry: OrderScenario[Lots, Price, Market, Position],
+    exit: OrderScenario[Lots, Price, Market, Position]
+  ): Either[EconomicsError, RoundTripScenario[Lots, Price, Market, Position]] =
     for
-      _ <- InstrumentIdentityChecks.check(
+      _ <- IdentityChecks.check(
              "roundTrip",
              instrumentId,
              "entry"                -> entry.instrumentId,
@@ -132,11 +140,11 @@ final class InstrumentScenarios[D <: Dimension, B <: Dimension, Q <: Dimension, 
         val entryCount = entry.positionChange.count
         val exitCount  = exit.positionChange.count
         if entryCount + exitCount != 0 then Left(InvalidRoundTrip(entryCount, exitCount))
-        else Right(InstrumentRoundTripScenario(instrumentId, entry, exit, entry.positionChange))
+        else Right(RoundTripScenario(instrumentId, entry, exit, entry.positionChange))
     yield result
 
   private def validateIdentities(
-    order: InstrumentOrder[Lots, Price],
+    order: Order[Lots, Price],
     assumptions: ScenarioAssumptions[Lots, Price, Market]
   ): Either[EconomicsError, Unit] =
     val supplied = Vector.newBuilder[(String, InstrumentId)]
@@ -159,12 +167,12 @@ final class InstrumentScenarios[D <: Dimension, B <: Dimension, Q <: Dimension, 
       supplied += s"slices[$index].lots"   -> slice.lots.instrumentId
       supplied += s"slices[$index].market" -> slice.market.instrumentId
       supplied += s"slices[$index].price"  -> slice.market.price.instrumentId
-    InstrumentIdentityChecks.check("scenario", instrumentId, supplied.result()*)
+    IdentityChecks.check("scenario", instrumentId, supplied.result()*)
   end validateIdentities
 
   private def validateSliceTotals(
     expected: Lots,
-    slices: Vector[InstrumentLiquiditySlice[Lots, Market]]
+    slices: Vector[LiquiditySlice[Lots, Market]]
   ): Either[EconomicsError, Unit] =
     val supplied = slices.foldLeft(BigInt(0))((total, slice) => total + slice.lots.count.unrefined)
     if slices.isEmpty then Left(InvalidScenario(ScenarioFailureReason.NoSlices))
@@ -242,8 +250,8 @@ final class InstrumentScenarios[D <: Dimension, B <: Dimension, Q <: Dimension, 
                 else Right(Some(evidence.resolvedLimit.ticks.unrefined))
 
   private def validateSlices(
-    order: InstrumentOrder[Lots, Price],
-    slices: Vector[InstrumentLiquiditySlice[Lots, Market]],
+    order: Order[Lots, Price],
+    slices: Vector[LiquiditySlice[Lots, Market]],
     effectiveLimit: Option[BigInt]
   ): Either[EconomicsError, Unit] =
     slices.zipWithIndex.collectFirst:
@@ -273,4 +281,4 @@ final class InstrumentScenarios[D <: Dimension, B <: Dimension, Q <: Dimension, 
       case TriggerComparison.AtOrAbove => observed >= threshold
       case TriggerComparison.AtOrBelow => observed <= threshold
 
-end InstrumentScenarios
+end Scenarios

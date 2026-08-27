@@ -12,11 +12,11 @@ import trading.quantity.refinement.*
  *
  * The opaque representation prevents a raw scalar from being mistaken for a dimensional value, while `D` prevents
  * incompatible quantities from being combined. A value stores only its exact coefficient and carries no [[DimRef]] or
- * [[DimensionKey]] that callers can recover. Public constructors that attach caller-supplied coefficients require an
+ * [[DimKey]] that callers can recover. Public constructors that attach caller-supplied coefficients require an
  * authoritative `DimRef[D]`. Every normally returned value therefore has an authoritative construction path, while
  * operations that transform trusted carriers require no repeated dimension capability.
  */
-opaque type Quantity[D <: Dimension] = Rational
+opaque type Quantity[D <: Dim] = Rational
 
 /** Static zero, witness-requiring coefficient constructors, and dimension-safe arithmetic for [[Quantity]]. */
 object Quantity:
@@ -24,27 +24,27 @@ object Quantity:
   /** Maximum absolute Java BigDecimal scale accepted by the eager exact constructor. */
   val MaximumFiniteDecimalScaleMagnitude: Int = 1_000_000
 
-  def zero[D <: Dimension](using dimension: DimRef[D]): Quantity[D] =
+  def zero[D <: Dim](using dimension: DimRef[D]): Quantity[D] =
     val _ = dimension.key
     fromCoefficient(Rational.zero)
 
-  def apply[D <: Dimension](dimension: DimRef[D], coefficient: Rational): Quantity[D] =
+  def apply[D <: Dim](dimension: DimRef[D], coefficient: Rational): Quantity[D] =
     val _ = dimension.key
     fromCoefficient(coefficient)
 
-  def apply[D <: Dimension](d: DimRef[D], coefficient: BigInt): Quantity[D] =
+  def apply[D <: Dim](d: DimRef[D], coefficient: BigInt): Quantity[D] =
     apply(d, Rational(coefficient))
 
-  def apply[D <: Dimension](d: DimRef[D], coefficient: Int): Quantity[D] =
+  def apply[D <: Dim](d: DimRef[D], coefficient: Int): Quantity[D] =
     apply(d, BigInt(coefficient))
 
-  def apply[D <: Dimension](d: DimRef[D], coefficient: Long): Quantity[D] =
+  def apply[D <: Dim](d: DimRef[D], coefficient: Long): Quantity[D] =
     apply(d, BigInt(coefficient))
 
-  def apply[D <: Dimension](d: DimRef[D], coefficient: String): Either[String, Quantity[D]] =
+  def apply[D <: Dim](d: DimRef[D], coefficient: String): Either[String, Quantity[D]] =
     Rational.parse(coefficient).map(parsed => apply(d, parsed))
 
-  def apply[D <: Dimension](d: DimRef[D], coefficient: BigDecimal): Either[UnsupportedFiniteDecimalScale, Quantity[D]] =
+  def apply[D <: Dim](d: DimRef[D], coefficient: BigDecimal): Either[UnsupportedFiniteDecimalScale, Quantity[D]] =
     validateFiniteDecimalScale(coefficient.scale)
       .map(scale => apply(d, rationalFromFiniteDecimal(coefficient, scale)))
 
@@ -65,70 +65,70 @@ object Quantity:
   private def decimalScaleFactor(scaleMagnitude: Int): BigInt =
     BigInt(10).pow(scaleMagnitude)
 
-  private def fromCoefficient[D <: Dimension](coefficient: Rational): Quantity[D] =
+  private def fromCoefficient[D <: Dim](coefficient: Rational): Quantity[D] =
     Objects.requireNonNull(coefficient, "quantity coefficient")
 
-  private def add[D <: Dimension](l: Quantity[D], r: Quantity[D]): Quantity[D] =
+  private def add[D <: Dim](l: Quantity[D], r: Quantity[D]): Quantity[D] =
     fromCoefficient(l.coefficient + r.coefficient)
 
-  private def subtract[D <: Dimension](l: Quantity[D], r: Quantity[D]): Quantity[D] =
+  private def subtract[D <: Dim](l: Quantity[D], r: Quantity[D]): Quantity[D] =
     fromCoefficient(l.coefficient - r.coefficient)
 
-  private def scale[D <: Dimension](v: Quantity[D], s: Rational): Quantity[D] =
+  private def scale[D <: Dim](v: Quantity[D], s: Rational): Quantity[D] =
     fromCoefficient(v.coefficient * s)
 
-  private def multiply[A <: Dimension, B <: Dimension](
+  private def multiply[A <: Dim, B <: Dim](
     l: Quantity[A],
     r: Quantity[B]
   ): Quantity[Times[A, B]] =
     fromCoefficient(l.coefficient * r.coefficient)
 
-  private def convert[F <: Dimension, T <: Dimension](
+  private def convert[F <: Dim, T <: Dim](
     v: Quantity[F],
     r: Rate[F, T]
   ): Quantity[T] =
     fromCoefficient(v.coefficient * r.coefficient)
 
-  private def compose[A <: Dimension, B <: Dimension, C <: Dimension](
+  private def compose[A <: Dim, B <: Dim, C <: Dim](
     f: Rate[A, B],
     s: Rate[B, C]
   ): Rate[A, C] =
     fromCoefficient(f.coefficient * s.coefficient)
 
-  private def cross[A <: Dimension, B <: Dimension, C <: Dimension](
+  private def cross[A <: Dim, B <: Dim, C <: Dim](
     numerator: Rate[A, B],
     denominator: NonZero[Rate[C, B]]
   ): Rate[A, C] =
     fromCoefficient(quotient(numerator.coefficient, denominator.unrefined.coefficient))
 
-  private def reciprocal[A <: Dimension, B <: Dimension](rate: NonZero[Rate[A, B]]): Rate[B, A] =
+  private def reciprocal[A <: Dim, B <: Dim](rate: NonZero[Rate[A, B]]): Rate[B, A] =
     fromCoefficient(quotient(Rational.one, rate.unrefined.coefficient))
 
   private def quotient(l: Rational, r: Rational): Rational =
     Rational(l.numerator * r.denominator, l.denominator * r.numerator)
 
-  private def divide[D <: Dimension, E <: Dimension](
+  private def divide[D <: Dim, E <: Dim](
     v: Quantity[D],
     d: NonZero[Quantity[E]]
   ): Quantity[Divide[D, E]] =
     fromCoefficient(quotient(v.coefficient, d.unrefined.coefficient))
 
-  private def ratio[D <: Dimension](
+  private def ratio[D <: Dim](
     v: Quantity[D],
     d: NonZero[Quantity[D]]
   ): Ratio =
     fromCoefficient(quotient(v.coefficient, d.unrefined.coefficient))
 
-  private def exactDivide[D <: Dimension](v: Quantity[D], d: NonZeroWhole): Quantity[D] =
+  private def exactDivide[D <: Dim](v: Quantity[D], d: NonZeroWhole): Quantity[D] =
     fromCoefficient(quotient(v.coefficient, Rational(d.unrefined)))
 
-  extension [D <: Dimension](v: Quantity[D])
+  extension [D <: Dim](v: Quantity[D])
 
     def coefficient: Rational =
       v
 
     /** Explicitly align this value to an equivalent static dimension spelling without changing its coefficient. */
-    def alignTo[Target <: Dimension](using same: SameDimension[D, Target]): Quantity[Target] =
+    def alignTo[Target <: Dim](using same: SameDimension[D, Target]): Quantity[Target] =
       val _ = Objects.requireNonNull(same, "same dimension evidence")
       v.asInstanceOf[Quantity[Target]]
 
@@ -143,23 +143,23 @@ object Quantity:
       scale(v, s)
 
     @targetName("multiplyQuantities")
-    def *[E <: Dimension](
+    def *[E <: Dim](
       r: Quantity[E]
     ): Quantity[Times[D, E]] =
       multiply(v, r)
 
-    def multiplyExact[E <: Dimension, G](
+    def multiplyExact[E <: Dim, G](
       r: GridQuantity[E, G],
       g: Grid[E, G]
     ): Quantity[Times[D, E]] =
       v * g.asQuantity(r)
 
-    def applyRate[E <: Dimension](
+    def applyRate[E <: Dim](
       r: Rate[D, E]
     ): Quantity[E] =
       convert(v, r)
 
-    def divideBy[E <: Dimension](
+    def divideBy[E <: Dim](
       d: NonZero[Quantity[E]]
     ): Quantity[Divide[D, E]] =
       divide(v, d)
@@ -174,19 +174,19 @@ object Quantity:
 
   end extension
 
-  extension [A <: Dimension, B <: Dimension](f: Rate[A, B])
-    def andThen[C <: Dimension](
+  extension [A <: Dim, B <: Dim](f: Rate[A, B])
+    def andThen[C <: Dim](
       s: Rate[B, C]
     ): Rate[A, C] =
       compose(f, s)
 
     /** Divide rates with a common target and expose the remaining endpoint orientation directly. */
-    def crossRate[C <: Dimension](
+    def crossRate[C <: Dim](
       denominator: NonZero[Rate[C, B]]
     ): Rate[A, C] =
       cross(f, denominator)
 
-  extension [A <: Dimension, B <: Dimension](rate: NonZero[Rate[A, B]])
+  extension [A <: Dim, B <: Dim](rate: NonZero[Rate[A, B]])
     /** Return the exact checked reciprocal with its endpoint orientation reversed. */
     def reciprocalRate: Rate[B, A] =
       reciprocal(rate)

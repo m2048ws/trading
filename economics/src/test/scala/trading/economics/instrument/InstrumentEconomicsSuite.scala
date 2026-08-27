@@ -1,4 +1,4 @@
-package trading.economics
+package trading.economics.instrument
 
 import munit.FunSuite
 
@@ -36,38 +36,38 @@ class InstrumentEconomicsSuite extends FunSuite:
     assertEquals(selected.coefficient + residual.coefficient, Rational(5, 4))
 
     val typed = Rate(
-      instrument.roles.base.dimension.asDimensionRef,
-      instrument.roles.quote.dimension.asDimensionRef,
+      instrument.roles.base.dimension.ref,
+      instrument.roles.quote.dimension.ref,
       Rational(3, 2)
     )
     assertEquals(instrument.prices.fromRate(typed).map(_.ticks.unrefined), Right(BigInt(3)))
     assertEquals(instrument.prices.fromTicks(PositiveWhole(3).toOption.get).coefficient, Rational(3, 2))
 
   test("component-based construction rejects contradictory roles, wrong grids, and empty payoff"):
-    val identity = InstrumentIdentity(InstrumentId("invalid"), UnderlyingId("index:not-a-currency"))
-    val roles    = new InstrumentRoles(fixture.btc, fixture.btc, fixture.contract, fixture.usd)
+    val identity = Identity(InstrumentId("invalid"), UnderlyingId("index:not-a-currency"))
+    val roles    = new Roles(fixture.btc, fixture.btc, fixture.contract, fixture.usd)
     val listing  = new ListingRules(roles)(fixture.contractLots, fixture.usdPerBtcTicks)
     val payoff   = new ContractPayoff(roles)(
-      Rate(roles.position.dimension.asDimensionRef, roles.base.dimension.asDimensionRef, Rational.one),
-      Rate(roles.position.dimension.asDimensionRef, roles.quote.dimension.asDimensionRef, Rational.zero)
+      Rate(roles.position.dimension.ref, roles.base.dimension.ref, Rational.one),
+      Rate(roles.position.dimension.ref, roles.quote.dimension.ref, Rational.zero)
     )
     assertEquals(
-      Instrument.create(InstrumentDefinition(identity, roles, listing, payoff)),
-      Left(ContradictoryInstrument(identity.id, InstrumentContradiction.BaseEqualsQuote))
+      Instrument.create(Definition(identity, roles, listing, payoff)),
+      Left(ContradictoryInstrument(identity.id, Contradiction.BaseEqualsQuote))
     )
 
-    val validRoles   = new InstrumentRoles(fixture.btc, fixture.usd, fixture.contract, fixture.usd)
+    val validRoles   = new Roles(fixture.btc, fixture.usd, fixture.contract, fixture.usd)
     val wrongListing = new ListingRules(validRoles)(fixture.usdCents, fixture.usdPerBtcTicks)
     val empty        = new ContractPayoff(validRoles)(
-      Rate(validRoles.position.dimension.asDimensionRef, validRoles.base.dimension.asDimensionRef, Rational.zero),
-      Rate(validRoles.position.dimension.asDimensionRef, validRoles.quote.dimension.asDimensionRef, Rational.zero)
+      Rate(validRoles.position.dimension.ref, validRoles.base.dimension.ref, Rational.zero),
+      Rate(validRoles.position.dimension.ref, validRoles.quote.dimension.ref, Rational.zero)
     )
-    val wrongGrid = Instrument.create(InstrumentDefinition(identity, validRoles, wrongListing, empty))
+    val wrongGrid = Instrument.create(Definition(identity, validRoles, wrongListing, empty))
     assert(wrongGrid.swap.exists(_.isInstanceOf[GridDimensionFailure]))
 
     val validListing = new ListingRules(validRoles)(fixture.contractLots, fixture.usdPerBtcTicks)
     assertEquals(
-      Instrument.create(InstrumentDefinition(identity, validRoles, validListing, empty)),
+      Instrument.create(Definition(identity, validRoles, validListing, empty)),
       Left(EmptyContractPayoff(identity.id))
     )
 
@@ -75,16 +75,16 @@ class InstrumentEconomicsSuite extends FunSuite:
     val foreignListing = new ListingRules(validRoles)(foreign.contractLots, foreign.usdPerBtcTicks)
     assert(
       Instrument
-        .create(InstrumentDefinition(identity, validRoles, foreignListing, empty))
+        .create(Definition(identity, validRoles, foreignListing, empty))
         .swap
         .exists(_.isInstanceOf[ForeignRegistry])
     )
 
-    val otherRoles           = new InstrumentRoles(fixture.btc, fixture.usd, fixture.contract, fixture.usd)
+    val otherRoles           = new Roles(fixture.btc, fixture.usd, fixture.contract, fixture.usd)
     val contradictoryListing = new ListingRules(otherRoles)(fixture.contractLots, fixture.usdPerBtcTicks)
     assertEquals(
-      Instrument.create(InstrumentDefinition(identity, validRoles, contradictoryListing, empty)),
-      Left(ContradictoryInstrument(identity.id, InstrumentContradiction.ListingRolesDiffer))
+      Instrument.create(Definition(identity, validRoles, contradictoryListing, empty)),
+      Left(ContradictoryInstrument(identity.id, Contradiction.ListingRolesDiffer))
     )
 
   test("market states preserve exact anchor equations and own settle conversion"):
@@ -94,7 +94,7 @@ class InstrumentEconomicsSuite extends FunSuite:
     assertEquals(quoteSettled.quoteToSettle.coefficient, Rational.one)
     assertEquals(
       quoteSettled
-        .convertToSettle(fixture.usd)(Quantity(fixture.usd.dimension.asDimensionRef, Rational(7)))
+        .convertToSettle(fixture.usd)(Quantity(fixture.usd.dimension.ref, Rational(7)))
         .map(_.coefficient),
       Right(Rational(7))
     )
@@ -103,7 +103,7 @@ class InstrumentEconomicsSuite extends FunSuite:
     val withToken = instrument.market.quoteSettled(price, Vector(token)).toOption.get
     assertEquals(
       withToken
-        .convertToSettle(fixture.token)(Quantity(fixture.token.dimension.asDimensionRef, Rational(3)))
+        .convertToSettle(fixture.token)(Quantity(fixture.token.dimension.ref, Rational(3)))
         .map(_.coefficient),
       Right(Rational(6))
     )
@@ -114,8 +114,8 @@ class InstrumentEconomicsSuite extends FunSuite:
 
     val scalar    = instrument.market.fromQuoteAnchor(price, Rational.one).toOption.get
     val typedRate = Rate(
-      instrument.roles.quote.dimension.asDimensionRef,
-      instrument.roles.settle.dimension.asDimensionRef,
+      instrument.roles.quote.dimension.ref,
+      instrument.roles.settle.dimension.ref,
       Rational.one
     )
     val typed = instrument.market.fromQuoteRate(price, typedRate).toOption.get
@@ -142,8 +142,8 @@ class InstrumentEconomicsSuite extends FunSuite:
 
     val quantoPrice = fixture.price(fixture.quanto, 100)
     val quoteToEur  = Rate(
-      fixture.quanto.roles.quote.dimension.asDimensionRef,
-      fixture.quanto.roles.settle.dimension.asDimensionRef,
+      fixture.quanto.roles.quote.dimension.ref,
+      fixture.quanto.roles.settle.dimension.ref,
       Rational(9, 10)
     )
     val quantoState = fixture.quanto.market.fromQuoteRate(quantoPrice, quoteToEur).toOption.get

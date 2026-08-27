@@ -83,7 +83,7 @@ Canonicalization must be deterministic for supported inputs.
 
 ## INV-S3 — Static and runtime arithmetic agree
 
-For valid dimension expressions, static dimensional arithmetic and runtime `DimensionKey` arithmetic must denote the same dimension.
+For valid dimension expressions, static dimensional arithmetic and runtime `DimKey` arithmetic must denote the same dimension.
 
 ## INV-S4 — Static interpretation is library-private
 
@@ -145,7 +145,7 @@ Conceptually:
 
 ```text
 same publicly accepted static atom identity
-    => same authoritative runtime DimensionKey
+    => same authoritative runtime DimKey
 ```
 
 ## INV-I2 — Runtime authority is not required to be total
@@ -157,7 +157,7 @@ have a public runtime `DimRef` constructor.
 
 ## INV-I3 — Runtime equivalence is checked
 
-When equivalence is recovered from runtime values rather than already known statically, it must be based on checked authoritative runtime identity such as `DimensionKey` equality.
+When equivalence is recovered from runtime values rather than already known statically, it must be based on checked authoritative runtime identity such as `DimKey` equality.
 
 ## INV-I4 — Generative identities remain distinct
 
