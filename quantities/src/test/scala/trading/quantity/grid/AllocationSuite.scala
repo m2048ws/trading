@@ -10,12 +10,9 @@ import trading.quantity.testkit.ExactGenerators.*
 import trading.quantity.testkit.TestAsset
 
 class AllocationSuite extends ScalaCheckSuite:
-  private val asset = TestAsset.runtime(AssetId("allocation-laws"))
+  private val asset = TestAsset.runtime(AtomId("allocation-laws"))
   private val grid  =
-    UniformGrid.create(
-      GridId("allocation-laws"),
-      GridVersion(1),
-      asset.dimension,
+    UniformGrid.create(asset.dimension,
       PositiveRational.exact(1, 100).toOption.get
     )
 

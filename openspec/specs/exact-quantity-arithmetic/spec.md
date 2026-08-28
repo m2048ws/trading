@@ -799,17 +799,19 @@ introduced merely to bypass the authority requirement.
 ### Requirement: Supported Scala trust and serialization boundary
 Construction guarantees SHALL apply to well-typed supported Scala 3 callers without casts, reflection, unsafe JVM
 access, hand-written bytecode, or constructor-bypassing deserialization. Java object serialization SHALL fail closed
-through the common project-owned `NotSerializableException` mechanism for invariant-bearing public result and error
-records, nominal and logical packed records, and dependent resolved runtime carriers; project-owned checked logical
-decoders remain supported.
+through the common project-owned `NotSerializableException` mechanism for invariant-bearing quantity result and error
+records and dependent runtime-dimension carriers. Stable asset and grid identities, authority-bearing reference-data
+handles, and durable boundary records SHALL be owned and specified by downstream artifacts rather than by the quantity
+serialization boundary.
 
 #### Scenario: Reject Java serialization
-- **WHEN** an invariant-bearing identifier, grid definition, result record, error record, or grid-packed record is serialized
+- **WHEN** an invariant-bearing quantity result, dimension-identity record, or quantity error record is serialized
 - **THEN** Java serialization fails instead of creating an unchecked reconstruction path
 
 #### Scenario: Use checked logical decoding
-- **WHEN** a logical grid-packed record is passed directly to its project-owned decoder
-- **THEN** runtime identity and provenance checks proceed normally
+- **WHEN** a wire or database record must reconstruct a typed quantity together with stable asset or grid identity
+- **THEN** an explicit downstream codec and trusted reference-data boundary perform the reconstruction rather than a
+  quantity-owned packed decoder
 
 ### Requirement: Static dimension capabilities remain independent
 The public static-dimension model SHALL keep private static interpretation, runtime inhabitation, equivalence, and
@@ -878,16 +880,17 @@ trusted carrier SHALL require `DimRef[D]` or a documented stronger matching witn
 For supported, well-typed Scala callers, every normally returned `Quantity[D]` and `GridQuantity[D, G]` SHALL have a
 valid closed dimension index `D`. The invariant SHALL be established at public construction roots: coefficient-bearing
 quantities and zero manufacture without an existing carrier require an authoritative `DimRef[D]`; nonzero grid
-coordinates require a matching `GridRef[D]`; grid zero requires `DimRef[D]` or a stronger matching grid witness;
-non-reflexive alignment requires a non-null `SameDimension`; and runtime reconstruction requires checked witness
-ownership. Dimension-changing results derived from existing trusted carriers SHALL preserve their complete `Times`,
-`Inverse`, or `Divide` expression rather than require or expose a caller-selected canonical output.
+coordinates require a matching anonymous `GridRef[D]`; grid zero requires `DimRef[D]` or a stronger matching grid
+witness; non-reflexive alignment requires a non-null `SameDimension`; and checked runtime reconstruction must delegate
+to those same roots after obtaining the required trusted witness. Dimension-changing results derived from existing
+trusted carriers SHALL preserve their complete `Times`, `Inverse`, or `Divide` expression rather than require or expose
+a caller-selected canonical output.
 
-Possessing a dimensional value SHALL NOT materialize or permit recovery of `DimRef[D]`, `DimKey`,
-`SameDimension`, `GridRef[D, G]`, private static interpretation, or registered provenance. It SHALL only allow operations
-that preserve its already validated dimension index to construct further values at that same index without requesting
-dimension authority again. Refined wrappers over an existing dimensional value SHALL inherit the same dimension-index
-invariant.
+Possessing a dimensional value SHALL NOT materialize or permit recovery of `DimRef[D]`, `DimKey`, `SameDimension`, a
+matching `GridRef[D]`, private static interpretation, stable reference-data identity, or catalog provenance. It SHALL only
+allow operations that preserve its already validated dimension index to construct further values at that same index
+without requesting dimension authority again. Refined wrappers over an existing dimensional value SHALL inherit the
+same dimension-index invariant.
 
 Operation-local rejection of a hypothetical malformed carrier type SHALL NOT be required. A method body that accepts an
 otherwise unobtainable `Quantity[Bad]` or `GridQuantity[Bad, G]` parameter MAY type-check for index-preserving
@@ -896,8 +899,8 @@ The ordinary supported-caller exclusions for casts, reflection, unsafe bytecode,
 deserialization remain unchanged; cast-free `null` SHALL NOT inhabit either opaque carrier. Literal `null` supplied as
 reference-valued construction or alignment authority SHALL fail at the public boundary before a witness, dimensional
 carrier, rate, or identity-bearing algebra capability is returned. A typed null `Rational` coefficient or `BigInt`
-coordinate SHALL likewise be rejected at the shared coefficient or coordinate construction boundary; checked grid
-decoding SHALL reconstruct through the same guarded coordinate boundary.
+coordinate SHALL likewise be rejected at the shared coefficient or coordinate construction boundary; any downstream
+checked decoder SHALL reconstruct through that same guarded coordinate boundary.
 
 #### Scenario: Reduce existing generic quantities
 - **WHEN** generic code receives a nonempty collection of `Quantity[D]` values and combines them with homogeneous
@@ -916,11 +919,11 @@ decoding SHALL reconstruct through the same guarded coordinate boundary.
 #### Scenario: Keep value trust non-extractable
 - **WHEN** generic code possesses `Quantity[D]` or `GridQuantity[D, G]`
 - **THEN** it cannot summon or recover `DimRef[D]`, `SameDimension`, a runtime key, a grid witness, private static
-  interpretation, or registry provenance from that value
+  interpretation, stable reference-data identity, or catalog provenance from that value
 
 #### Scenario: Reject malformed carrier construction
 - **WHEN** supported code selects a zero-power or otherwise malformed `D` and attempts raw construction, witness-backed
-  zero or coefficient construction, non-reflexive alignment from a valid carrier, or checked decoding
+  zero or coefficient construction, non-reflexive alignment from a valid carrier, or checked downstream reconstruction
 - **THEN** no normally returning `Quantity[D]` or `GridQuantity[D, G]` is produced
 
 #### Scenario: Permit an uncallable hypothetical transformation
@@ -933,8 +936,9 @@ decoding SHALL reconstruct through the same guarded coordinate boundary.
 
 #### Scenario: Reject null numeric carrier payloads
 - **WHEN** supported Scala supplies a typed null `Rational` coefficient or `BigInt` coordinate to witness-backed
-  construction, including a coordinate in otherwise valid packed data passed to checked decoding
-- **THEN** the shared construction boundary terminates before returning a `Quantity`, `GridQuantity`, or resolved carrier
+  construction, including through an otherwise valid downstream record passed to checked decoding
+- **THEN** the shared construction boundary terminates before returning a `Quantity`, `GridQuantity`, or dependent
+  reconstructed carrier
 
 #### Scenario: Reject null dimensional construction authority
 - **WHEN** supported Scala explicitly supplies literal `null` as `DimRef[D]` to quantity, grid, refinement, rate, or
@@ -952,10 +956,10 @@ decoding SHALL reconstruct through the same guarded coordinate boundary.
 
 #### Scenario: Reject null grid-construction authority
 - **WHEN** supported Scala supplies literal `null` as the `DimRef[D]` authority to uniform-grid construction
-- **THEN** construction terminates before returning a `GridRef[D]` capable of attaching coordinates
+- **THEN** construction terminates before returning an anonymous `GridRef[D]` capable of attaching coordinates
 
 #### Scenario: Reject null runtime-identity authority
-- **WHEN** supported Scala supplies literal `null` as a `DimKey` atom or power component, a fresh key, an atomic or
-  nominal atom ID, a grid identity component, or registry identity input
-- **THEN** the public construction root terminates before returning a key, dimension or grid witness, registered
-  identity, equivalence, or dimensional carrier
+- **WHEN** supported Scala supplies literal `null` as a `DimKey` atom or power component, a fresh key, or an atomic or
+  nominal atom ID
+- **THEN** the quantity construction root terminates before returning a key, dimension witness, equivalence, or
+  dimensional carrier

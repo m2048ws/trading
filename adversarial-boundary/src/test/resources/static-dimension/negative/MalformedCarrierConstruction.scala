@@ -15,10 +15,7 @@ object MalformedCarrierConstruction:
   sealed trait G
 
   val validQuantity: Quantity[One] = Quantity(DimRef.one, 1)
-  val validGrid                    = UniformGrid.create(
-    GridId("construction-valid"),
-    GridVersion(1),
-    DimRef.one,
+  val validGrid                    = UniformGrid.create(DimRef.one,
     PositiveRational.exact(1, 100).toOption.get
   )
 

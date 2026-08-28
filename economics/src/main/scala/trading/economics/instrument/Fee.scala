@@ -5,7 +5,7 @@ import cats.syntax.all.*
 
 import trading.quantity.*
 import trading.quantity.grid.*
-import trading.quantity.runtime.*
+import trading.reference.*
 
 /** Semantic identity of a trading-fee component. */
 final case class FeeKind(value: String):
@@ -17,8 +17,8 @@ final case class FeeRate(coefficient: Rational):
 
 final class FeeDenomination[DD <: Dim] private[instrument] (
   val instrumentId: InstrumentId,
-  val asset: AssetRef { type D = DD },
-  private val grid: RegisteredGridRef[DD],
+  val asset: Asset { type D = DD },
+  private val grid: GridHandle[DD],
   val policy: QuantizationPolicy):
 
   val gridKey: GridKey      = grid.key
@@ -32,7 +32,7 @@ final class FeeDenomination[DD <: Dim] private[instrument] (
       .map(coefficient => Quantity(asset.dimension.ref, coefficient))
 
   def quantize(kind: FeeKind, unrounded: Quantity[DD]): Fee[DD] =
-    val result = unrounded.quantizeTo(grid.asGridRef, policy)
+    val result = unrounded.quantizeTo(grid.grid, policy)
     Fee(
       instrumentId,
       this,
@@ -58,7 +58,7 @@ final case class Fee[DD <: Dim] private[instrument] (
   denomination: FeeDenomination[DD],
   kind: FeeKind,
   coordinate: BigInt,
-  asset: AssetRef { type D = DD },
+  asset: Asset { type D = DD },
   amount: Quantity[DD],
   residual: Quantity[DD],
   unrounded: Quantity[DD])
@@ -90,7 +90,7 @@ end Fees
 
 final class Fees[D <: Dim, B <: Dim, Q <: Dim, S <: Dim] private[instrument] (
   val instrumentId: InstrumentId,
-  settle: AssetRef { type D = S }):
+  settle: Asset { type D = S }):
 
   private type Lots     = _root_.trading.economics.instrument.Lots[D]
   private type Price    = _root_.trading.economics.instrument.Price[B, Q]
@@ -100,19 +100,21 @@ final class Fees[D <: Dim, B <: Dim, Q <: Dim, S <: Dim] private[instrument] (
   private type Schedule = _root_.trading.economics.instrument.FeeSchedule[Lots, Price, Market, Position]
 
   def denomination(
-    feeAsset: AssetRef
+    feeAsset: Asset
   )(
-    grid: RegisteredGridRef[? <: Dim],
+    grid: GridHandle[? <: Dim],
     policy: QuantizationPolicy
   ): Either[EconomicsError, FeeDenomination[feeAsset.D]] =
-    if !feeAsset.dimension.sharesRegistryWith(settle.dimension) then
-      Left(ForeignRegistry("fee asset", settle.dimension.key, feeAsset.dimension.key))
-    else if !grid.dimension.sharesRegistryWith(feeAsset.dimension) then
-      Left(ForeignRegistry("fee grid", feeAsset.dimension.key, grid.dimension.key))
+    if DimensionHandle.sameLineage(feeAsset.dimension, settle.dimension).isLeft then
+      Left(ForeignReferenceDataLineage("fee asset", settle.dimension.key, feeAsset.dimension.key))
+    else if DimensionHandle.sameLineage(grid.dimension, feeAsset.dimension).isLeft then
+      Left(ForeignReferenceDataLineage("fee grid", feeAsset.dimension.key, grid.dimension.key))
     else if grid.dimension.key != feeAsset.dimension.key then
       Left(InvalidFeeGrid(feeAsset.id, grid.key, feeAsset.dimension.key, grid.dimension.key))
     else
-      val typedGrid = grid.asInstanceOf[RegisteredGridRef[feeAsset.D]]
+      // The preceding lineage and canonical-key checks establish the existential grid's exact asset dimension. This
+      // cast is private to denomination construction and the resulting checked handle retains the evidence.
+      val typedGrid = grid.asInstanceOf[GridHandle[feeAsset.D]]
       Right(new FeeDenomination(instrumentId, feeAsset, typedGrid, policy))
 
   def line[FD <: Dim](

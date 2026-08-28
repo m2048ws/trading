@@ -22,7 +22,7 @@ class PackageSpoofBoundarySuite extends FunSuite:
       import trading.quantity.*
       import trading.quantity.refinement.*
       val dimension = DimRef.atomic(AtomId("package-spoof-prelude"))
-      val grid = UniformGrid.create(GridId("package-spoof-prelude"), GridVersion(1), dimension.dimension,
+      val grid = UniformGrid.create(dimension.dimension,
         PositiveRational.exact(1, 100).toOption.get)
       val exact = Quantity(dimension.dimension, 1)
       val coordinate = grid.fromCoordinate(1)
@@ -50,7 +50,7 @@ class PackageSpoofBoundarySuite extends FunSuite:
       import trading.quantity.*
       import trading.quantity.refinement.*
       val dimension = DimRef.atomic(AtomId("raw-grid-inspection"))
-      val grid = UniformGrid.create(GridId("raw-grid-inspection"), GridVersion(1), dimension.dimension,
+      val grid = UniformGrid.create(dimension.dimension,
         PositiveRational.exact(1, 100).toOption.get)
       val value = grid.fromCoordinate(99)
       val forged = GridQuantity.coordinate(value)
@@ -127,7 +127,7 @@ class PackageSpoofBoundarySuite extends FunSuite:
       import trading.quantity.*
       import trading.quantity.refinement.*
       val dimension = DimRef.atomic(AtomId("private-grid-add"))
-      val grid = UniformGrid.create(GridId("private-grid-add"), GridVersion(1), dimension.dimension,
+      val grid = UniformGrid.create(dimension.dimension,
         PositiveRational.exact(1, 100).toOption.get)
       val left = grid.fromCoordinate(2)
       val right = grid.fromCoordinate(3)
@@ -138,7 +138,7 @@ class PackageSpoofBoundarySuite extends FunSuite:
       import trading.quantity.*
       import trading.quantity.refinement.*
       val dimension = DimRef.atomic(AtomId("private-grid-scale"))
-      val grid = UniformGrid.create(GridId("private-grid-scale"), GridVersion(1), dimension.dimension,
+      val grid = UniformGrid.create(dimension.dimension,
         PositiveRational.exact(1, 100).toOption.get)
       val value = grid.fromCoordinate(2)
       val forged = GridQuantity.scale(value, BigInt(3))
@@ -148,7 +148,7 @@ class PackageSpoofBoundarySuite extends FunSuite:
       import trading.quantity.*
       import trading.quantity.refinement.*
       val dimension = DimRef.atomic(AtomId("private-grid-quot-rem"))
-      val grid = UniformGrid.create(GridId("private-grid-quot-rem"), GridVersion(1), dimension.dimension,
+      val grid = UniformGrid.create(dimension.dimension,
         PositiveRational.exact(1, 100).toOption.get)
       val value = grid.fromCoordinate(7)
       val divisor = PositiveWhole(2).toOption.get
@@ -168,8 +168,6 @@ class PackageSpoofBoundarySuite extends FunSuite:
       import trading.quantity.refinement.*
       val forged = new GridRef[One]:
         type G = this.type
-        val id = GridId("forged")
-        val version = GridVersion(1)
         val dimension = DimRef.one
         val quantum = PositiveRational.exact(1, 100).toOption.get
       """

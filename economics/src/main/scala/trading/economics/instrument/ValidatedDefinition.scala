@@ -3,27 +3,30 @@ package trading.economics.instrument
 import cats.syntax.all.*
 
 import trading.quantity.*
-import trading.quantity.runtime.*
+import trading.reference.*
 
 /** A raw definition together with the checked evidence needed for total instrument construction. */
 sealed abstract class ValidatedDefinition private (val raw: Definition):
-  private[instrument] def positionGrid: RegisteredGridRef[raw.roles.position.D]
-  private[instrument] def priceGrid: RegisteredGridRef[Divide[raw.roles.quote.D, raw.roles.base.D]]
+  private[instrument] def positionGrid: GridHandle[raw.roles.position.D]
+  private[instrument] def priceGrid: GridHandle[Divide[raw.roles.quote.D, raw.roles.base.D]]
   private[instrument] def basePerPosition: Rate[raw.roles.position.D, raw.roles.base.D]
   private[instrument] def quotePerPosition: Rate[raw.roles.position.D, raw.roles.quote.D]
 
 private[instrument] object ValidatedDefinition:
   private final class CheckedDefinition(
     definition: Definition,
-    checkedPositionGrid: RegisteredGridRef[? <: Dim],
-    checkedPriceGrid: RegisteredGridRef[? <: Dim])
+    checkedPositionGrid: GridHandle[? <: Dim],
+    checkedPriceGrid: GridHandle[? <: Dim])
     extends ValidatedDefinition(definition):
 
-    val positionGrid: RegisteredGridRef[raw.roles.position.D] =
-      checkedPositionGrid.asInstanceOf[RegisteredGridRef[raw.roles.position.D]]
+    // Validation below first proves shared lineage and exact runtime dimension keys. These private casts recover the
+    // path-dependent types hidden by the raw Definition shape; no retagging capability escapes this checked carrier.
 
-    val priceGrid: RegisteredGridRef[Divide[raw.roles.quote.D, raw.roles.base.D]] =
-      checkedPriceGrid.asInstanceOf[RegisteredGridRef[Divide[raw.roles.quote.D, raw.roles.base.D]]]
+    val positionGrid: GridHandle[raw.roles.position.D] =
+      checkedPositionGrid.asInstanceOf[GridHandle[raw.roles.position.D]]
+
+    val priceGrid: GridHandle[Divide[raw.roles.quote.D, raw.roles.base.D]] =
+      checkedPriceGrid.asInstanceOf[GridHandle[Divide[raw.roles.quote.D, raw.roles.base.D]]]
 
     val basePerPosition: Rate[raw.roles.position.D, raw.roles.base.D] =
       raw.contractPayoff.basePerPosition.asInstanceOf[Rate[raw.roles.position.D, raw.roles.base.D]]
@@ -40,14 +43,14 @@ private[instrument] object ValidatedDefinition:
     val id      = definition.identity.id
 
     val structural = (
-      ensure(0, roles.base.dimension.sharesRegistryWith(roles.quote.dimension))(
-        DefinitionViolation.Registry("quote", roles.base.dimension.key, roles.quote.dimension.key)
+      ensure(0, DimensionHandle.sameLineage(roles.base.dimension, roles.quote.dimension).isRight)(
+        DefinitionViolation.Lineage("quote", roles.base.dimension.key, roles.quote.dimension.key)
       ),
-      ensure(1, roles.base.dimension.sharesRegistryWith(roles.position.dimension))(
-        DefinitionViolation.Registry("position", roles.base.dimension.key, roles.position.dimension.key)
+      ensure(1, DimensionHandle.sameLineage(roles.base.dimension, roles.position.dimension).isRight)(
+        DefinitionViolation.Lineage("position", roles.base.dimension.key, roles.position.dimension.key)
       ),
-      ensure(2, roles.base.dimension.sharesRegistryWith(roles.settle.dimension))(
-        DefinitionViolation.Registry("settle", roles.base.dimension.key, roles.settle.dimension.key)
+      ensure(2, DimensionHandle.sameLineage(roles.base.dimension, roles.settle.dimension).isRight)(
+        DefinitionViolation.Lineage("settle", roles.base.dimension.key, roles.settle.dimension.key)
       ),
       ensure(3, listing.roles.eq(roles))(
         DefinitionViolation.ComponentRoles(id, Contradiction.ListingRolesDiffer)
@@ -65,9 +68,9 @@ private[instrument] object ValidatedDefinition:
 
     val positionRegistry = ensure(
       6,
-      listing.positionLotGrid.dimension.sharesRegistryWith(roles.position.dimension)
+      DimensionHandle.sameLineage(listing.positionLotGrid.dimension, roles.position.dimension).isRight
     )(
-      DefinitionViolation.Registry(
+      DefinitionViolation.Lineage(
         "position grid",
         roles.position.dimension.key,
         listing.positionLotGrid.dimension.key
@@ -86,9 +89,9 @@ private[instrument] object ValidatedDefinition:
     val expectedPrice = DimRef.divide(roles.quote.dimension.ref, roles.base.dimension.ref).key
     val priceRegistry = ensure(
       8,
-      listing.priceGrid.dimension.sharesRegistryWith(roles.base.dimension)
+      DimensionHandle.sameLineage(listing.priceGrid.dimension, roles.base.dimension).isRight
     )(
-      DefinitionViolation.Registry("price grid", expectedPrice, listing.priceGrid.dimension.key)
+      DefinitionViolation.Lineage("price grid", expectedPrice, listing.priceGrid.dimension.key)
     )
     val priceBranch = stage(priceRegistry): _ =>
       ensure(9, listing.priceGrid.dimension.key == expectedPrice)(

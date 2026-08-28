@@ -6,7 +6,8 @@ import java.util.Objects
  * Canonical value used to identify a dimension at runtime.
  *
  * Atom powers are normalized, so algebraically equal dimensions have equal keys. A key is runtime data rather than type
- * evidence; use a [[DimRef]] or [[trading.quantity.runtime.QuantityRegistry]] to bring it into type-safe operations.
+ * evidence; use an authoritative [[DimRef]] to bring it into type-safe operations. Stable asset and grid identity is a
+ * downstream reference-data concern.
  */
 final class DimKey private (val powers: Vector[(AtomId, BigInt)]):
   powers.foreach: (atom, power) =>

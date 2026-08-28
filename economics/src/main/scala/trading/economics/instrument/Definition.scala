@@ -1,7 +1,7 @@
 package trading.economics.instrument
 
 import trading.quantity.*
-import trading.quantity.runtime.*
+import trading.reference.*
 
 /** Stable external identity of a validated listing or contract. */
 final case class InstrumentId(value: String):
@@ -14,19 +14,19 @@ final case class UnderlyingId(value: String):
 /** Cohesive semantic identity of one instrument. */
 final case class Identity(id: InstrumentId, underlying: UnderlyingId)
 
-/** The registered asset roles shared by listing rules and payoff terms. */
+/** The trusted asset roles shared by listing rules and payoff terms. */
 final class Roles(
-  val base: AssetRef,
-  val quote: AssetRef,
-  val position: AssetRef,
-  val settle: AssetRef)
+  val base: Asset,
+  val quote: Asset,
+  val position: Asset,
+  val settle: Asset)
 
 /** Contextual grids for the exact role value supplied at construction. */
 final class ListingRules(
   val roles: Roles
 )(
-  val positionLotGrid: RegisteredGridRef[? <: Dim],
-  val priceGrid: RegisteredGridRef[? <: Dim])
+  val positionLotGrid: GridHandle[? <: Dim],
+  val priceGrid: GridHandle[? <: Dim])
 
 /** Product-family-neutral two-leg payoff for the exact role value supplied at construction. */
 final class ContractPayoff(

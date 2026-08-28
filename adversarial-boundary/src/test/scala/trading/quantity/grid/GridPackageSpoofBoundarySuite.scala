@@ -24,8 +24,8 @@ class GridPackageSpoofBoundarySuite extends FunSuite:
       import trading.quantity.refinement.*
       val dimension = DimRef.atomic(AtomId("grid-package-prelude"))
       val quantum = PositiveRational.exact(1, 100).toOption.get
-      val left = UniformGrid.create(GridId("grid-package-prelude"), GridVersion(1), dimension.dimension, quantum)
-      val right = UniformGrid.create(GridId("grid-package-prelude"), GridVersion(1), dimension.dimension, quantum)
+      val left = UniformGrid.create(dimension.dimension, quantum)
+      val right = UniformGrid.create(dimension.dimension, quantum)
       val sameGrid = SameGrid.between(left, right)
       val sameQuantum = SameQuantum.between(left, right)
       val embedding = Embedding.between(left, right)
@@ -40,7 +40,7 @@ class GridPackageSpoofBoundarySuite extends FunSuite:
       val quantum = PositiveRational.exact(1, 100).toOption.get
       val divisor = PositiveWhole(3).toOption.get
       val count = PositiveInt(3).toOption.get
-      val grid = UniformGrid.create(GridId("grid-package-operations"), GridVersion(1), DimRef.one, quantum)
+      val grid = UniformGrid.create(DimRef.one, quantum)
       val value = grid.fromCoordinate(10)
       val divided = value.quotRemBy(divisor, grid)
       val allocated = value.allocateEvenly(count, RemainderOrder.FirstToLast, grid)
@@ -65,8 +65,8 @@ class GridPackageSpoofBoundarySuite extends FunSuite:
       import trading.quantity.grid.*
       import trading.quantity.refinement.*
       val quantum = PositiveRational.exact(1, 100).toOption.get
-      val left = UniformGrid.create(GridId("private-embedding-left"), GridVersion(1), DimRef.one, quantum)
-      val right = UniformGrid.create(GridId("private-embedding-right"), GridVersion(1), DimRef.one, quantum)
+      val left = UniformGrid.create(DimRef.one, quantum)
+      val right = UniformGrid.create(DimRef.one, quantum)
       val forged = new Embedding[One, left.G, One, right.G](BigInt(1), left, right)
       """
 
@@ -92,7 +92,7 @@ class GridPackageSpoofBoundarySuite extends FunSuite:
       import trading.quantity.grid.*
       import trading.quantity.refinement.*
       val dimension = DimRef.atomic(AtomId("private-quantization-result"))
-      val grid = UniformGrid.create(GridId("private-quantization-result"), GridVersion(1), dimension.dimension,
+      val grid = UniformGrid.create(dimension.dimension,
         PositiveRational.exact(1, 100).toOption.get)
       val forged = new Quantization(grid.fromCoordinate(1), Quantity(dimension.dimension, 0))
       """

@@ -4,7 +4,7 @@ import cats.data.Chain
 import cats.syntax.all.*
 
 import trading.quantity.*
-import trading.quantity.runtime.AssetRef
+import trading.reference.Asset
 
 final case class ConvertedFeeLine[S <: Dim] private[instrument] (
   instrumentId: InstrumentId,
@@ -22,7 +22,7 @@ final case class Pnl[S <: Dim] private[instrument] (
 
 final class Valuation[PosD <: Dim, B <: Dim, Q <: Dim, S <: Dim] private[instrument] (
   instrumentId: InstrumentId,
-  settle: AssetRef { type D = S },
+  settle: Asset { type D = S },
   basePerPosition: Rate[PosD, B],
   quotePerPosition: Rate[PosD, Q]):
 

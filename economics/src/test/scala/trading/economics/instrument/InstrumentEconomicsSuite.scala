@@ -82,7 +82,7 @@ class InstrumentEconomicsSuite extends FunSuite:
       Instrument
         .create(Definition(identity, validRoles, foreignListing, empty))
         .swap
-        .exists(_.isInstanceOf[ForeignRegistry])
+        .exists(_.isInstanceOf[ForeignReferenceDataLineage])
     )
 
     val otherRoles           = new Roles(fixture.btc, fixture.usd, fixture.contract, fixture.usd)
@@ -148,12 +148,12 @@ class InstrumentEconomicsSuite extends FunSuite:
     assertEquals(
       foreignViolations,
       Vector(
-        DefinitionViolation.Registry(
+        DefinitionViolation.Lineage(
           "position grid",
           validRoles.position.dimension.key,
           foreign.contractLots.dimension.key
         ),
-        DefinitionViolation.Registry(
+        DefinitionViolation.Lineage(
           "price grid",
           DimRef.divide(validRoles.quote.dimension.ref, validRoles.base.dimension.ref).key,
           foreign.usdPerBtcTicks.dimension.key
@@ -212,7 +212,7 @@ class InstrumentEconomicsSuite extends FunSuite:
       withToken
         .convertToSettle(foreign.token)(Quantity(foreign.token.dimension.ref, Rational.one))
         .swap
-        .exists(_.isInstanceOf[ForeignRegistry])
+        .exists(_.isInstanceOf[ForeignReferenceDataLineage])
     )
     assertEquals(
       instrument.market.fromAnchors(price, Rational(99), Rational.one),

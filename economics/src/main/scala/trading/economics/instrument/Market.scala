@@ -4,14 +4,14 @@ import cats.syntax.all.*
 
 import trading.quantity.*
 import trading.quantity.refinement.NonZero
-import trading.quantity.runtime.*
+import trading.reference.*
 
-/** One registered source and its endpoint-typed conversion into settlement. */
+/** One trusted source and its endpoint-typed conversion into settlement. */
 final class SettlementConversion[S <: Dim] private[instrument] (
   val instrumentId: InstrumentId,
-  val source: AssetRef
+  val source: Asset
 )(
-  val target: AssetRef { type D = S },
+  val target: Asset { type D = S },
   val rate: Rate[source.D, S]):
 
   def coefficient: Rational = rate.coefficient
@@ -26,16 +26,22 @@ final class MarketState[B <: Dim, Q <: Dim, S <: Dim] private[instrument] (
   private val byId                       = conversions.map(value => value.source.id -> value).toMap
   val conversionSources: Vector[AssetId] = conversions.map(_.source.id)
 
-  def convertToSettle(source: AssetRef)(value: Quantity[source.D]): Either[EconomicsError, Quantity[S]] =
+  def convertToSettle(source: Asset)(value: Quantity[source.D]): Either[EconomicsError, Quantity[S]] =
     byId.get(source.id) match
       case None => Left(MissingConversion(source.id, None, None))
-      case Some(conversion) if !conversion.source.dimension.sharesRegistryWith(source.dimension) =>
-        Left(ForeignRegistry("conversion lookup", conversion.source.dimension.key, source.dimension.key))
+      case Some(conversion) if DimensionHandle.sameLineage(conversion.source.dimension, source.dimension).isLeft =>
+        Left(
+          ForeignReferenceDataLineage(
+            "conversion lookup",
+            conversion.source.dimension.key,
+            source.dimension.key
+          )
+        )
       case Some(conversion) =>
-        RuntimeEvidence
-          .sameDimension(source, conversion.source)
+        Asset
+          .reconcile(source, conversion.source)
           .left
-          .map(error => RuntimeEvidenceFailure("conversion lookup", error))
+          .map(error => ReferenceDataFailure("conversion lookup", error))
           .map: same =>
             val aligned = value.alignTo[conversion.source.D](using same)
             aligned.applyRate(conversion.rate)
@@ -44,20 +50,20 @@ end MarketState
 
 final class Market[B <: Dim, Q <: Dim, S <: Dim] private[instrument] (
   instrumentId: InstrumentId,
-  base: AssetRef { type D = B },
-  quote: AssetRef { type D = Q },
-  settle: AssetRef { type D = S }):
+  base: Asset { type D = B },
+  quote: Asset { type D = Q },
+  settle: Asset { type D = S }):
 
-  def conversion(source: AssetRef, coefficient: Rational): Either[EconomicsError, SettlementConversion[S]] =
+  def conversion(source: Asset, coefficient: Rational): Either[EconomicsError, SettlementConversion[S]] =
     conversionFromRate(source)(Rate(source.dimension.ref, settle.dimension.ref, coefficient))
 
   def conversionFromRate(
-    source: AssetRef
+    source: Asset
   )(
     rate: Rate[source.D, S]
   ): Either[EconomicsError, SettlementConversion[S]] =
-    if !source.dimension.sharesRegistryWith(settle.dimension) then
-      Left(ForeignRegistry("settlement conversion", settle.dimension.key, source.dimension.key))
+    if DimensionHandle.sameLineage(source.dimension, settle.dimension).isLeft then
+      Left(ForeignReferenceDataLineage("settlement conversion", settle.dimension.key, source.dimension.key))
     else
       validateConversion(source.id, rate.coefficient)
         .map(_ => new SettlementConversion(instrumentId, source)(settle, rate))
@@ -214,8 +220,7 @@ final class Market[B <: Dim, Q <: Dim, S <: Dim] private[instrument] (
     seed.flatMap: initial =>
       additional.foldM(initial): (accumulated, candidate) =>
         if candidate.target.id != settle.id ||
-          !candidate.target.dimension.sharesRegistryWith(settle.dimension) ||
-          candidate.target.dimension.key != settle.dimension.key
+          Asset.reconcile(candidate.target, settle).isLeft
         then
           Left(
             InvalidConversion(
@@ -225,8 +230,10 @@ final class Market[B <: Dim, Q <: Dim, S <: Dim] private[instrument] (
               ConversionFailureReason.TargetIsNotSettle
             )
           )
-        else if !candidate.source.dimension.sharesRegistryWith(settle.dimension) then
-          Left(ForeignRegistry("additional conversion", settle.dimension.key, candidate.source.dimension.key))
+        else if DimensionHandle.sameLineage(candidate.source.dimension, settle.dimension).isLeft then
+          Left(
+            ForeignReferenceDataLineage("additional conversion", settle.dimension.key, candidate.source.dimension.key)
+          )
         else if accumulated.exists(_.source.id == candidate.source.id) then
           Left(DuplicateConversion(candidate.source.id))
         else Right(accumulated :+ candidate)

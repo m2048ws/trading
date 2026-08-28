@@ -4,7 +4,7 @@ import trading.economics.instrument.*
 import trading.quantity.*
 import trading.quantity.grid.QuantizationPolicy
 import trading.quantity.refinement.*
-import trading.quantity.runtime.*
+import trading.reference.*
 
 object CompleteEconomicsClient:
   def genericLotCount(instrument: Instrument)(lots: instrument.Lots): BigInt = lots.count.unrefined
@@ -36,16 +36,26 @@ object CompleteEconomicsClient:
     instrument.valuation.pnl(roundTrip, schedule)
 
   val registry = new QuantityRegistry
-  val base = registry.registerAsset(AssetDefinition(AssetId("client-base"), AtomId("client:base"))).toOption.get
-  val quote = registry.registerAsset(AssetDefinition(AssetId("client-quote"), AtomId("client:quote"))).toOption.get
+  val base = registry
+    .registerAsset(AssetDefinition(AssetId.from("client-base").toOption.get, AtomId("client:base")))
+    .toOption
+    .get
+  val quote = registry
+    .registerAsset(AssetDefinition(AssetId.from("client-quote").toOption.get, AtomId("client:quote")))
+    .toOption
+    .get
   val position =
-    registry.registerAsset(AssetDefinition(AssetId("client-position"), AtomId("client:position"))).toOption.get
+    registry
+      .registerAsset(AssetDefinition(AssetId.from("client-position").toOption.get, AtomId("client:position")))
+      .toOption
+      .get
   val lotsGrid = registry
     .registerGrid(position)(
       GridDefinition(
-        position.dimension.key,
-        GridId("client-lots"),
-        GridVersion(1),
+        GridIdentity(
+          position.dimension.key,
+          GridKey(GridId.from("client-lots").toOption.get, GridVersion.from(1).toOption.get)
+        ),
         PositiveRational(Rational.one).toOption.get
       )
     )
@@ -54,9 +64,10 @@ object CompleteEconomicsClient:
   val quoteGrid = registry
     .registerGrid(quote)(
       GridDefinition(
-        quote.dimension.key,
-        GridId("client-quote-grid"),
-        GridVersion(1),
+        GridIdentity(
+          quote.dimension.key,
+          GridKey(GridId.from("client-quote-grid").toOption.get, GridVersion.from(1).toOption.get)
+        ),
         PositiveRational(Rational(1, 100)).toOption.get
       )
     )
@@ -67,9 +78,10 @@ object CompleteEconomicsClient:
   val priceGrid = registry
     .registerGrid(priceDimension)(
       GridDefinition(
-        priceDimension.dimension.key,
-        GridId("client-price-grid"),
-        GridVersion(1),
+        GridIdentity(
+          priceDimension.key,
+          GridKey(GridId.from("client-price-grid").toOption.get, GridVersion.from(1).toOption.get)
+        ),
         PositiveRational(Rational(1, 2)).toOption.get
       )
     )
@@ -153,15 +165,15 @@ object CompleteEconomicsClient:
     .toOption
     .get
   assert(checkedBaseValue.coefficient == Rational(100, 3))
-  val foreignRegistry = new QuantityRegistry
-  val foreignBase = foreignRegistry
+  val foreignReferenceData = new QuantityRegistry
+  val foreignBase = foreignReferenceData
     .registerAsset(AssetDefinition(base.id, AtomId("client:base")))
     .toOption
     .get
   val foreignLookup = entryState.convertToSettle(foreignBase)(
     Quantity(foreignBase.dimension.ref, Rational.one)
   )
-  assert(foreignLookup.swap.exists(_.isInstanceOf[ForeignRegistry]))
+  assert(foreignLookup.swap.exists(_.isInstanceOf[ForeignReferenceDataLineage]))
   val stop = stable.orders.stopMarket(Side.Buy, lots, directActivation).toOption.get
   val stopAssumptions = stable.scenarios.assumptionsOne(stop)(
     directEvidence,

@@ -6,10 +6,10 @@ import java.io.ObjectStreamException
 /**
  * Fail-closed hook for public carriers whose Scala case-class shape must not become a persistence boundary.
  *
- * Project-owned logical packed models remain ordinary in-memory values. Java ObjectOutputStream/ObjectInputStream is
- * not a supported codec for them or for any other invariant-bearing carrier.
+ * Java ObjectOutputStream/ObjectInputStream is not a supported durable format for mathematical values or
+ * authority-bearing handles.
  */
-abstract class JavaSerializationUnsupported extends Serializable:
+trait JavaSerializationUnsupported extends Serializable:
 
   @throws[ObjectStreamException]
   protected final def writeReplace(): AnyRef = throw JavaSerializationUnsupported.failure(this)

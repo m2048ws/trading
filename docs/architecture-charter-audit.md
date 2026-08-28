@@ -23,28 +23,27 @@ Each dependent change passed strict validation individually. Repository-wide
 strict validation passed all 17 registered change/spec items. No missing or
 materially unresolved planning artifact blocks Proposal 0.
 
-## Current physical baseline
+## Current physical implementation
 
-This table describes implemented SBT projects at the audit baseline. It must not
-be confused with the proposed target.
+Proposal 1 has now established the first dependent physical boundary. This table describes the implemented SBT
+projects and must not be confused with the remaining proposed target.
 
 | State | SBT project | Artifact/directory | Production dependency |
 | --- | --- | --- | --- |
-| Current | root `trading` | unpublished aggregate | aggregates quantities, economics, adversarial boundary |
+| Current | root `trading` | unpublished aggregate | aggregates quantities, reference data, economics, adversarial boundary |
 | Current | `quantities` | `trading-quantities` / `quantities/` | external mathematical libraries only |
-| Current | `economics` | `trading-economics` / `economics/` | quantities |
-| Current test-only | `adversarialBoundary` | unpublished / `adversarial-boundary/` | packaged quantities and economics artifacts |
+| Current | `referenceData` | `trading-reference-data` / `reference-data/` | quantities |
+| Current | `economics` | `trading-economics` / `economics/` | quantities and reference data |
+| Current test-only | `adversarialBoundary` | unpublished / `adversarial-boundary/` | packaged quantities, reference data, and economics artifacts |
 
-The current graph is acyclic: `quantities <- economics <- adversarialBoundary`,
-with `adversarialBoundary` also consuming `quantities` directly. Proposal 0 adds
-no project, dependency, plugin, source package, or build edge.
+The current graph is acyclic: `quantities <- referenceData <- economics <- adversarialBoundary`, with the test-only
+boundary consuming each completed production artifact directly.
 
-Current dependency coordinates include Scala `3.8.4`, a single
-`typelevelVersion = 2.13.0` used coincidentally for Cats and Algebra artifacts,
+Current dependency coordinates include Scala `3.8.4`, independent
+`catsVersion = 2.13.0` and `algebraVersion = 2.13.0` coordinates,
 `discipline-munit` `2.0.0`, MUnit `1.3.4`, ScalaCheck `1.19.0`, and
 `munit-scalacheck` `1.0.0`. The minimum build/runtime JDK is documented as 17.
-Proposal 1, not Proposal 0, owns splitting `typelevelVersion` into independent
-Cats and Algebra coordinates without changing their selected releases.
+with no resolved dependency upgrade from the Proposal 0 baseline.
 
 ## Primary ownership and target dependency audit
 
@@ -122,13 +121,12 @@ the first deliberate durable compatibility contract.
 
 | Current exception | Why it is transitional | Migration owner |
 | --- | --- | --- |
-| Quantities contain asset IDs, stable grid IDs/versions, registry provenance, and packed logical records | Growth-order boundary combines mathematics, reference identity, and codecs | Proposal 1 moves identity/handles and removes packing; Proposal 9 adds versioned codecs |
-| `QuantityRegistry` combines definition semantics, mutable coordination, and reads | No immutable catalog/snapshot boundary exists yet | Proposal 1 moves the bridge; Proposal 2 replaces it with pure catalog state/snapshots; Proposal 8 adds runtime interpreter |
+| Reference data contains the synchronized `QuantityRegistry` construction bridge | No immutable catalog/snapshot boundary exists yet | Proposal 2 replaces it with pure catalog state/snapshots; Proposal 8 adds runtime interpreter |
+| Quantity-owned packing has been removed, leaving a deliberate durable-codec gap | Stable records require snapshots and an explicit schema owner | Proposal 9 adds versioned codecs |
 | `trading-economics` owns instruments, orders, scenarios, fee policy, P&L, and sizing | Current aggregate predates responsibility split | Proposals 3–7, with Proposal 7 removing the empty aggregate |
 | Instrument construction starts from issued handles and repeats provenance checks | Assembly does not yet own one snapshot-based trust transition | Proposal 3 |
 | Order/scenario/fee/risk capabilities are discoverable through `Instrument` | Instrument currently acts as a service locator | Proposals 4–7 |
 | Root documentation previously listed only quantities | Documentation lagged the implemented economics module | Proposal 0 documentation update |
-| Cats and Algebra share one SBT version variable | Equal current strings obscure independent release trains | Proposal 1 |
 | Application, runtime, codec, and benchmark target modules do not exist | Their physical boundaries require real implementation/dependency bodies | Proposals 2, 8, and 9 |
 
 These exceptions describe current implementation facts, not accepted permanent

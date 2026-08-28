@@ -48,13 +48,15 @@ object GridQuantity:
     /** Static identity of coordinates created by this grid reference. */
     type G
 
-    def id: GridId
-    def version: GridVersion
     def dimension: DimRef[D]
     def quantum: PositiveRational
 
-    final def key: GridKey =
-      GridKey(id, version)
+    private val anonymousIdentity: AnyRef = new AnyRef
+
+    private[quantity] final def isSameAnonymousGrid(other: GridRef[? <: Dim]): Boolean =
+      anonymousIdentity.eq(other.anonymousIdentity) &&
+        dimension.key == other.dimension.key &&
+        quantum.unrefined == other.quantum.unrefined
 
     final def fromCoordinate(c: BigInt): GridQuantity[D, G] =
       GridQuantity.fromCoordinate(c)
@@ -180,23 +182,42 @@ object GridRef:
 /**
  * Factory for generative, in-memory grid witnesses.
  *
- * Each returned stable value has a fresh associated grid type. Registry-owned provenance is added separately by
- * [[trading.quantity.runtime.QuantityRegistry]].
+ * Each returned stable value has a fresh associated grid type. Stable identity and issuer provenance are composed by
+ * the downstream reference-data artifact.
  */
 object UniformGrid:
 
-  def create[D <: Dim](
-    gridId: GridId,
-    gridVersion: GridVersion,
+  private def build[D <: Dim](
     dimensionRef: DimRef[D],
     gridQuantum: PositiveRational
   ): GridRef[D] =
-    val checkedGridId      = Objects.requireNonNull(gridId, "grid ID")
-    val checkedGridVersion = Objects.requireNonNull(gridVersion, "grid version")
-    val _                  = dimensionRef.key
     new GridRef[D]:
       type G = this.type
-      val id: GridId                = checkedGridId
-      val version: GridVersion      = checkedGridVersion
       val dimension: DimRef[D]      = dimensionRef
       val quantum: PositiveRational = gridQuantum
+
+  private def requirePositive(value: PositiveRational): PositiveRational =
+    val checked = Objects.requireNonNull(value, "grid quantum")
+    PositiveRational(checked.unrefined).fold(
+      _ => throw new IllegalArgumentException("grid quantum must be positive"),
+      identity
+    )
+
+  def create[D <: Dim](
+    dimensionRef: DimRef[D],
+    gridQuantum: PositiveRational
+  ): GridRef[D] =
+    val checkedDimension = Objects.requireNonNull(dimensionRef, "grid dimension")
+    val _                = checkedDimension.key
+    build(checkedDimension, requirePositive(gridQuantum))
+
+  /** Checked raw/JVM boundary for expected invalid quantum input. */
+  def from[D <: Dim](
+    dimensionRef: DimRef[D],
+    gridQuantum: Rational
+  ): Either[ExpectedPositive.type, GridRef[D]] =
+    val checkedDimension = Objects.requireNonNull(dimensionRef, "grid dimension")
+    val _                = checkedDimension.key
+    PositiveRational(Objects.requireNonNull(gridQuantum, "grid quantum"))
+      .map(positive => build(checkedDimension, positive))
+end UniformGrid

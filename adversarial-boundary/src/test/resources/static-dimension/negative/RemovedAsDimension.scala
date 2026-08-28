@@ -6,10 +6,7 @@ object RemovedAsDimension:
   val source = DimRef.atomic(AtomId("removed-as-dimension:source"))
   val target = DimRef.atomic(AtomId("removed-as-dimension:source"))
   val exact = Quantity(source.dimension, 1)
-  val grid = UniformGrid.create(
-    GridId("removed-as-dimension:grid"),
-    GridVersion(1),
-    source.dimension,
+  val grid = UniformGrid.create(source.dimension,
     trading.quantity.refinement.PositiveRational.exact(1, 1).toOption.get
   )
   val gridValue = grid.fromCoordinate(1)

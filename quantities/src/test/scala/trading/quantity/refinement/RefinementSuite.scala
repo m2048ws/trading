@@ -6,12 +6,9 @@ import trading.quantity.*
 import trading.quantity.testkit.CompileAssertions.*
 
 class RefinementSuite extends FunSuite:
-  private val usd   = trading.quantity.testkit.TestAsset.runtime(AssetId("USD-refinement-suite"))
+  private val usd   = trading.quantity.testkit.TestAsset.runtime(AtomId("USD-refinement-suite"))
   private val cents =
-    UniformGrid.create[usd.D](
-      GridId("usd-cent-refinement-suite"),
-      GridVersion(1),
-      usd.dimension,
+    UniformGrid.create[usd.D](usd.dimension,
       PositiveRational.exact(1, 100).toOption.get
     )
 

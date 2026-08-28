@@ -9,53 +9,30 @@ class GridEvidenceSuite extends ScalaCheckSuite:
   private val usd =
     trading.quantity.testkit.TestAsset
       .runtime:
-        AssetId:
+        AtomId:
           "USD-grid-relationships-suite"
   private val btc =
     trading.quantity.testkit.TestAsset
       .runtime:
-        AssetId:
+        AtomId:
           "BTC-grid-relationships-suite"
   private val quantum = PositiveRational.exact(1, 100).toOption.get
 
   private val venueA =
-    UniformGrid.create[usd.D](
-      GridId:
-        "venue-a-cent"
-      ,
-      GridVersion(1),
-      usd.dimension,
+    UniformGrid.create[usd.D](usd.dimension,
       quantum
     )
-  private val venueASecondPath =
-    UniformGrid.create[usd.D](
-      GridId:
-        "venue-a-cent"
-      ,
-      GridVersion(1),
-      usd.dimension,
-      quantum
-    )
-  private val venueB =
-    UniformGrid.create[usd.D](
-      GridId:
-        "venue-b-cent"
-      ,
-      GridVersion(1),
-      usd.dimension,
+  private val venueASecondPath: GridRef[usd.D] = venueA
+  private val venueB                           =
+    UniformGrid.create[usd.D](usd.dimension,
       quantum
     )
   private val btcCents =
-    UniformGrid.create[btc.D](
-      GridId:
-        "btc-cent"
-      ,
-      GridVersion(1),
-      btc.dimension,
+    UniformGrid.create[btc.D](btc.dimension,
       quantum
     )
 
-  test("same-grid evidence is recovered across separate stable witness paths"):
+  test("same-grid evidence is recovered across retained paths to one anonymous grid"):
     val evidence = SameGrid.between(venueA, venueASecondPath).toOption.get
     val source   =
       venueA.fromCoordinate:
@@ -75,23 +52,23 @@ class GridEvidenceSuite extends ScalaCheckSuite:
   test("dimension evidence preserves grid identity and does not replace same-grid evidence"):
     val leftDimension  = DimRef.atomic(AtomId("grid-dimension-evidence"))
     val rightDimension = DimRef.atomic(AtomId("grid-dimension-evidence"))
-    val left    = UniformGrid.create(GridId("grid-dimension-left"), GridVersion(1), leftDimension.dimension, quantum)
-    val right   = UniformGrid.create(GridId("grid-dimension-right"), GridVersion(1), rightDimension.dimension, quantum)
-    val checked = SameDimension.between(leftDimension.dimension, rightDimension.dimension).get
-    val source  = left.fromCoordinate(9)
+    val left           = UniformGrid.create(leftDimension.dimension, quantum)
+    val right          = UniformGrid.create(rightDimension.dimension, quantum)
+    val checked        = SameDimension.between(leftDimension.dimension, rightDimension.dimension).get
+    val source         = left.fromCoordinate(9)
     val aligned: GridQuantity[rightDimension.D, left.G] =
       source.alignTo[rightDimension.D](using checked)
     val reverse  = SameDimension.between(rightDimension.dimension, leftDimension.dimension).get
     val restored = aligned.alignTo[leftDimension.D](using reverse)
 
     assertEquals(left.coordinate(restored), BigInt(9))
-    assertEquals(SameGrid.between(left, right), Left(GridIdentityMismatch))
+    assertEquals(SameGrid.between(left, right), Left(AnonymousGridMismatch))
 
   test("equal quantum on different grids is numerical compatibility, not identity"):
     assertEquals(
       SameGrid.between(venueA, venueB),
       Left:
-        GridIdentityMismatch
+        AnonymousGridMismatch
     )
 
     val compatibility = SameQuantum.between(venueA, venueB).toOption.get
@@ -119,24 +96,24 @@ class GridEvidenceSuite extends ScalaCheckSuite:
         GridDimensionMismatch
     )
 
-  test("conflicting immutable definitions cannot yield same-grid evidence"):
-    val conflicting =
-      UniformGrid.create[usd.D](venueA.id, venueA.version, usd.dimension, PositiveRational.exact(3, 100).toOption.get)
+  test("separate different-quantum grids yield neither same-grid nor same-quantum evidence"):
+    val differentQuantum =
+      UniformGrid.create[usd.D](usd.dimension, PositiveRational.exact(3, 100).toOption.get)
 
     assertEquals(
-      SameGrid.between(venueA, conflicting),
+      SameGrid.between(venueA, differentQuantum),
       Left:
-        GridDefinitionConflict
+        AnonymousGridMismatch
+    )
+    assertEquals(
+      SameQuantum.between(venueA, differentQuantum),
+      Left:
+        GridQuantumMismatch
     )
 
   test("three-cent values embed globally and exactly into cents"):
     val threeCents =
-      UniformGrid.create[usd.D](
-        GridId:
-          "three-cent-embedding-suite"
-        ,
-        GridVersion(1),
-        usd.dimension,
+      UniformGrid.create[usd.D](usd.dimension,
         PositiveRational.exact(3, 100).toOption.get
       )
     val embedding = Embedding.between(threeCents, venueA).toOption.get
@@ -154,12 +131,7 @@ class GridEvidenceSuite extends ScalaCheckSuite:
 
   test("cent values do not globally embed into the three-cent grid"):
     val threeCents =
-      UniformGrid.create[usd.D](
-        GridId:
-          "three-cent-rejected-embedding-suite"
-        ,
-        GridVersion(1),
-        usd.dimension,
+      UniformGrid.create[usd.D](usd.dimension,
         PositiveRational.exact(3, 100).toOption.get
       )
 

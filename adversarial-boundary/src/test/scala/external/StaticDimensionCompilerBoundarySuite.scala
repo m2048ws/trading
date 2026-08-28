@@ -37,11 +37,14 @@ class StaticDimensionCompilerBoundarySuite extends FunSuite:
       entry.getFileName.toString.startsWith("trading-quantities_3-")
     val economicsArtifacts = entries.filter: entry =>
       entry.getFileName.toString.startsWith("trading-economics_3-")
+    val referenceDataArtifacts = entries.filter: entry =>
+      entry.getFileName.toString.startsWith("trading-reference-data_3-")
     val compilerArtifacts = entries.filter: entry =>
       entry.getFileName.toString.startsWith("scala3-compiler_3-")
 
     assertEquals(quantitiesArtifacts.size, 1)
     assertEquals(economicsArtifacts.size, 1)
+    assertEquals(referenceDataArtifacts.size, 1)
     assertEquals(compilerArtifacts.size, 1)
     assert(entries.forall(path => Files.isRegularFile(path)), entries.mkString("\n"))
     assert(quantitiesArtifacts.head.getFileName.toString.endsWith(".jar"))
@@ -117,14 +120,13 @@ class StaticDimensionCompilerBoundarySuite extends FunSuite:
       minimumErrors = 12
     ),
     NegativeFixture("ValueDoesNotRevealAuthority.scala", List("No given instance", "key is not a member"),
-      minimumErrors = 5),
+      minimumErrors = 3),
     NegativeFixture("NullCarrierConstruction.scala", List("Found:", "Required:"), minimumErrors = 2),
     NegativeFixture(
       "PackageSpoofCarrierConstruction.scala",
       List("fromCoefficient", "fromCoordinate", "Normalize", "sealed trait DimRef"),
       minimumErrors = 6
     ),
-    NegativeFixture("DecodedCarrierCannotSelectMalformedIndex.scala", List("Found:", "Required:")),
     NegativeFixture(
       "RemovedExplicitNormalizationArguments.scala",
       List("does not take more parameters"),

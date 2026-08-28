@@ -3,20 +3,30 @@ package external.economics.fixtures
 import trading.economics.instrument.*
 import trading.quantity.*
 import trading.quantity.refinement.*
-import trading.quantity.runtime.*
+import trading.reference.*
 
 object SharedEconomicsSetup:
   val registry = new QuantityRegistry
-  val base = registry.registerAsset(AssetDefinition(AssetId("shape-base"), AtomId("shape:base"))).toOption.get
-  val quote = registry.registerAsset(AssetDefinition(AssetId("shape-quote"), AtomId("shape:quote"))).toOption.get
+  val base = registry
+    .registerAsset(AssetDefinition(AssetId.from("shape-base").toOption.get, AtomId("shape:base")))
+    .toOption
+    .get
+  val quote = registry
+    .registerAsset(AssetDefinition(AssetId.from("shape-quote").toOption.get, AtomId("shape:quote")))
+    .toOption
+    .get
   val position =
-    registry.registerAsset(AssetDefinition(AssetId("shape-position"), AtomId("shape:position"))).toOption.get
+    registry
+      .registerAsset(AssetDefinition(AssetId.from("shape-position").toOption.get, AtomId("shape:position")))
+      .toOption
+      .get
   val lotsGrid = registry
     .registerGrid(position)(
       GridDefinition(
-        position.dimension.key,
-        GridId("shape-lots"),
-        GridVersion(1),
+        GridIdentity(
+          position.dimension.key,
+          GridKey(GridId.from("shape-lots").toOption.get, GridVersion.from(1).toOption.get)
+        ),
         PositiveRational(Rational.one).toOption.get
       )
     )
@@ -27,9 +37,10 @@ object SharedEconomicsSetup:
   val priceGrid = registry
     .registerGrid(priceDimension)(
       GridDefinition(
-        priceDimension.dimension.key,
-        GridId("shape-prices"),
-        GridVersion(1),
+        GridIdentity(
+          priceDimension.key,
+          GridKey(GridId.from("shape-prices").toOption.get, GridVersion.from(1).toOption.get)
+        ),
         PositiveRational(Rational.one).toOption.get
       )
     )
@@ -38,9 +49,10 @@ object SharedEconomicsSetup:
   val settleGrid = registry
     .registerGrid(quote)(
       GridDefinition(
-        quote.dimension.key,
-        GridId("shape-settle"),
-        GridVersion(1),
+        GridIdentity(
+          quote.dimension.key,
+          GridKey(GridId.from("shape-settle").toOption.get, GridVersion.from(1).toOption.get)
+        ),
         PositiveRational(Rational(1, 100)).toOption.get
       )
     )

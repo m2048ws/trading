@@ -2,7 +2,7 @@ package trading.economics.instrument
 
 import trading.quantity.*
 import trading.quantity.grid.*
-import trading.quantity.runtime.*
+import trading.reference.*
 
 enum Contradiction:
   case BaseEqualsQuote
@@ -44,7 +44,7 @@ sealed abstract class EconomicsError extends Product with Serializable
 
 /** Closed, domain-owned diagnostics emitted by raw instrument-definition validation. */
 enum DefinitionViolation:
-  case Registry(role: String, expected: DimKey, supplied: DimKey)
+  case Lineage(role: String, expected: DimKey, supplied: DimKey)
   case ComponentRoles(instrumentId: InstrumentId, reason: Contradiction)
   case GridDimension(role: String, grid: GridKey, expected: DimKey, supplied: DimKey)
   case EmptyPayoff(instrumentId: InstrumentId)
@@ -83,7 +83,8 @@ final case class InvalidScenarioDiagnostics(head: ScenarioViolation, tail: Vecto
 private[instrument] object ViolationMapping:
   def definition(violation: DefinitionViolation): EconomicsError =
     violation match
-      case DefinitionViolation.Registry(role, expected, supplied)   => ForeignRegistry(role, expected, supplied)
+      case DefinitionViolation.Lineage(role, expected, supplied) =>
+        ForeignReferenceDataLineage(role, expected, supplied)
       case DefinitionViolation.ComponentRoles(instrumentId, reason) => ContradictoryInstrument(instrumentId, reason)
       case DefinitionViolation.GridDimension(role, grid, expected, supplied) =>
         GridDimensionFailure(role, grid, expected, supplied)
@@ -136,9 +137,9 @@ private[instrument] object IdentityChecks:
       case Some(error) => Left(error)
       case None        => Right(())
 
-final case class ForeignRegistry(role: String, expected: DimKey, supplied: DimKey) extends EconomicsError
+final case class ForeignReferenceDataLineage(role: String, expected: DimKey, supplied: DimKey) extends EconomicsError
 
-final case class RuntimeEvidenceFailure(role: String, cause: RuntimeEvidenceError) extends EconomicsError
+final case class ReferenceDataFailure(role: String, cause: ReferenceDataError) extends EconomicsError
 
 final case class GridDimensionFailure(role: String, grid: GridKey, expected: DimKey, supplied: DimKey)
   extends EconomicsError

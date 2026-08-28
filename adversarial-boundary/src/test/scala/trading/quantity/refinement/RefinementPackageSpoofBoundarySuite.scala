@@ -22,7 +22,7 @@ class RefinementPackageSpoofBoundarySuite extends FunSuite:
       import trading.quantity.*
       import trading.quantity.refinement.*
       val dimension = DimRef.atomic(AtomId("refinement-package-prelude"))
-      val grid = UniformGrid.create(GridId("refinement-package-prelude"), GridVersion(1), dimension.dimension,
+      val grid = UniformGrid.create(dimension.dimension,
         PositiveRational.exact(1, 100).toOption.get)
       val exact = Quantity(dimension.dimension, 1)
       val coordinate = grid.fromCoordinate(1)

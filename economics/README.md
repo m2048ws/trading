@@ -1,7 +1,8 @@
 # trading-economics
 
 This is the current production aggregate for pure instrument, order, execution-scenario, fee, valuation, P&L, and
-risk-sizing behavior. It depends on `trading-quantities`; it introduces no concrete effect runtime or production I/O.
+risk-sizing behavior. It depends on `trading-quantities` and `trading-reference-data`; it introduces no concrete effect
+runtime or production I/O.
 
 ## Current ownership
 
@@ -13,10 +14,11 @@ The implemented package `trading.economics.instrument` currently contains:
 - fee denomination/policy and fee-inclusive P&L;
 - isolated-instrument risk sizing.
 
-This aggregate reflects implementation history. It is not the proposed final ownership graph. Current code may depend
-on quantities, but must not depend on future application, runtime, codec, persistence, network, or telemetry layers.
-Quantities must not depend back on economics. The adversarial-boundary project may consume the packaged artifact only
-for tests.
+This aggregate reflects implementation history. It is not the proposed final ownership graph. It consumes immutable
+`Asset`, `DimensionHandle`, and `GridHandle` capabilities without receiving the transitional registry construction
+mechanism. It must not depend on future application, runtime, codec, persistence, network, or telemetry layers.
+Quantities and reference data must not depend back on economics. The adversarial-boundary project consumes completed
+packaged artifacts for tests.
 
 ## Proposed migrations
 

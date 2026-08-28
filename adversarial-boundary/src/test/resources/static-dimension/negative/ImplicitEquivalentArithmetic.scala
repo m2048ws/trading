@@ -15,16 +15,10 @@ object ImplicitEquivalentArithmetic:
   val left = Quantity(ab, 2)
   val right = Quantity(ba, 3)
 
-  val leftGrid = UniformGrid.create(
-    GridId("implicit-equivalent:left"),
-    GridVersion(1),
-    ab,
+  val leftGrid = UniformGrid.create(ab,
     PositiveRational.exact(1, 10).toOption.get
   )
-  val rightGrid = UniformGrid.create(
-    GridId("implicit-equivalent:right"),
-    GridVersion(1),
-    ba,
+  val rightGrid = UniformGrid.create(ba,
     PositiveRational.exact(1, 10).toOption.get
   )
   val leftGridValue = leftGrid.fromCoordinate(2)

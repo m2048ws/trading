@@ -13,11 +13,8 @@ import trading.quantity.refinement.*
 import trading.quantity.testkit.CompileAssertions.*
 
 class AlgebraInstancesSuite extends FunSuite:
-  private val usd   = trading.quantity.testkit.TestAsset.runtime(AssetId("USD-algebra-suite"))
-  private val cents = UniformGrid.create[usd.D](
-    GridId("usd-cent-algebra-suite"),
-    GridVersion(1),
-    usd.dimension,
+  private val usd   = trading.quantity.testkit.TestAsset.runtime(AtomId("USD-algebra-suite"))
+  private val cents = UniformGrid.create[usd.D](usd.dimension,
     PositiveRational.exact(1, 100).toOption.get
   )
   private given DimRef[usd.D] = usd.dimension
@@ -110,7 +107,7 @@ class AlgebraInstancesSuite extends FunSuite:
     assertEquals(NonZero(Rational.zero), Left(ExpectedNonZero))
 
   test("optional imports preserve expression results and explicit dimension evidence"):
-    val btc                     = trading.quantity.testkit.TestAsset.runtime(AssetId("BTC-algebra-normalization-suite"))
+    val btc                     = trading.quantity.testkit.TestAsset.runtime(AtomId("BTC-algebra-normalization-suite"))
     val amount                  = Quantity(btc.dimension, Rational(1, 10))
     val usdPerBtc               = Rate(btc.dimension, usd.dimension, Rational(6000001, 100))
     val direct: Quantity[usd.D] = amount.applyRate(usdPerBtc)

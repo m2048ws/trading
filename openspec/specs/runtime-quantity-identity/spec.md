@@ -2,131 +2,42 @@
 
 ## Purpose
 
-Defines runtime dimensions and assets, registered grid provenance, heterogeneous exact arithmetic, and logical packing
-for registered grid quantities.
+Defines domain-neutral runtime dimension identity and checked mathematical evidence without asset, stable-grid,
+registry, or packed-record ownership.
 ## Requirements
-### Requirement: Runtime dimensions and assets
-The runtime layer SHALL create opaque dimension witnesses for runtime identifiers and SHALL interpret compound
-dimensions through canonical `DimKey` values. `AssetRef` SHALL bind an asset identity to its canonical dimension
-without imposing a grid. `DimKey` SHALL remain the runtime free abelian group of dimensions and SHALL expose
-multiplicative identity, multiplication, inverse, and canonical equality through an opt-in production algebra
-instance. Those operations SHALL delegate to primitive arbitrary-precision key arithmetic. Algebraic equality SHALL NOT
-replace registry identity, registry ownership, registered provenance, or full grid identity.
-
-`DimRef[D]` SHALL remain authoritative for the runtime identity inhabited by `D`. Its public algebra SHALL preserve
-static expressions: identity returns `DimRef[One]`, product returns `DimRef[Times[A, B]]`, inverse returns
-`DimRef[Inverse[A]]`, and quotient returns `DimRef[Divide[A, B]]`. Each operation SHALL compute the exactly
-corresponding canonical runtime key and SHALL require no public canonical-output capability. Publicly inhabitable atom
-types SHALL retain their one-to-one static/runtime authority; private static interpretation SHALL neither totalize
-`DimRef` over all accepted keys nor manufacture a runtime witness.
-
-#### Scenario: Register an asset
-- **WHEN** an asset definition is registered
-- **THEN** the registry returns an asset witness with a canonical path-dependent dimension type
-
-#### Scenario: Canonicalize a compound runtime key
-- **WHEN** runtime dimension multiplication and inversion cancel factors
-- **THEN** the resulting canonical `DimKey` is equal regardless of expression shape
-
-#### Scenario: Normalize a compound dimension
-- **WHEN** runtime dimension multiplication and inversion cancel factors
-- **THEN** the resulting canonical `DimKey` is equal regardless of the expression-preserving static shape
-
-#### Scenario: Preserve a product witness expression
-- **WHEN** `DimRef[A]` and `DimRef[B]` are multiplied
-- **THEN** the result is `DimRef[Times[A, B]]` and its key is the canonical product of the input keys
-
-#### Scenario: Preserve inverse and quotient witness expressions
-- **WHEN** authoritative witnesses are inverted or divided
-- **THEN** their result types are `Inverse[A]` or `Divide[A, B]` and their keys are the exact corresponding runtime
-  operations
-
-#### Scenario: Preserve public atom authority uniqueness
-- **WHEN** two witnesses of the same publicly inhabitable `Atom[K]` type are obtained through supported constructors
-- **THEN** they have the same runtime atom key
-
-#### Scenario: Do not totalize privately accepted keys
-- **WHEN** private static interpretation accepts a concrete stable key for equivalence but no public atom authority owns
-  that key
-- **THEN** no `DimRef[Atom[K]]` is inferred or constructed
-
-#### Scenario: Algebraic equality does not confer authority
-- **WHEN** two canonical keys or numerical grid definitions compare equal
-- **THEN** registered operations still require witnesses created by the owning `QuantityRegistry`
-
-### Requirement: Registered witnesses retain provenance
-`RegisteredDimensionRef` and `RegisteredGridRef` SHALL be registry-owned nominal witnesses. A plain generative
-dimension or grid witness SHALL NOT satisfy registered provenance, and a witness owned by another registry SHALL be
-rejected by runtime evidence recovery. Concrete registered dimension, grid, asset, and dimension-witness
-implementations SHALL be lexically private to each `QuantityRegistry`; only successful operations of that registry
-SHALL produce them. Package-qualified or top-level privacy SHALL NOT be the provenance boundary.
-
-#### Scenario: Reject a plain grid for registered packing
-- **WHEN** a caller attempts to pack through `UniformGrid.create` without registration
-- **THEN** the code does not compile against the registered packing API
-
-#### Scenario: Reject foreign registry evidence
-- **WHEN** equal-looking witnesses from different registries are compared for trusted evidence
-- **THEN** evidence recovery returns an explicit foreign-registry failure
-
-#### Scenario: Reject same-package witness construction
-- **WHEN** downstream Scala declares `package trading.quantity.runtime` and attempts to instantiate a concrete registered witness
-  or provide an arbitrary registry owner
-- **THEN** lexical registry ownership prevents the construction
-
-### Requirement: Full grid identity is dimension-scoped
-Full registered grid identity SHALL be `(canonical DimKey, GridId, GridVersion)`. A `GridKey` containing only ID
-and version SHALL remain dimension-local. Definitions SHALL be immutable per full identity, and equal quanta SHALL NOT
-erase distinct IDs or versions. The exact positive rational quantum associated with a registered full identity SHALL
-remain immutable and SHALL be obtainable only through the registry-produced witness for that identity.
-
-#### Scenario: Reuse a local grid key under another dimension
-- **WHEN** the same `GridId` and `GridVersion` are registered under USD and BTC
-- **THEN** the registry stores distinct full grid identities
-
-#### Scenario: Reject a conflicting definition
-- **WHEN** the same full identity is registered with a different quantum
-- **THEN** registration fails without replacing the canonical definition
-
 ### Requirement: Checked runtime evidence
 `SameDimension[A, B]` SHALL remain one restricted capability for explicit alignment and equivalence-aware comparison,
 whether it was derived by private interpretation of statically visible expressions or recovered from authoritative
-runtime witnesses. Runtime recovery SHALL issue `SameDimension` only after canonical `DimKey` equality and, for
-registered witnesses, shared registry ownership. It SHALL expose controlled quantity and grid alignment through
-`alignTo`; it SHALL NOT expose unrestricted Scala type equality, synthesize `DimRef`, install a global implicit
-conversion, or align different static types inside homogeneous arithmetic.
-
-`trading.quantity.grid.SameGrid` SHALL remain generic mathematical grid-identity evidence: it MAY be recovered for
-matching generative `GridRef` values without registered provenance, and SHALL check canonical runtime dimension, grid
-ID, version, and quantum compatibility. `RuntimeEvidence.sameGrid` SHALL remain the registry-aware operation. It SHALL
-first verify that both registered witnesses share registry ownership and, only after that succeeds, SHALL perform the
-ordinary `SameGrid` compatibility checks. Runtime evidence SHALL remain a scoped success value rather than an unchecked
-claim derived from identifiers alone.
+`DimRef` witnesses. Runtime recovery in the quantity artifact SHALL issue `SameDimension` only after canonical
+`DimKey` equality. It SHALL expose controlled quantity and grid alignment through `alignTo`; it SHALL NOT expose
+unrestricted Scala type equality, synthesize `DimRef`, install a global implicit conversion, align different static
+types inside homogeneous arithmetic, or claim reference-data issuer provenance.
 
 Reflexive `SameDimension[D, D]` SHALL remain structural Scala type identity and SHALL NOT certify static validity or
 runtime inhabitation. Non-reflexive static derivation, authority-bearing construction, and checked runtime recovery
 SHALL remain independent trust boundaries. Transparent Scala type annotations SHALL NOT alter static or runtime
-dimension identity: accepted annotated inputs SHALL have the same private mathematical interpretation and
-`DimKey` as their unannotated underlying dimensions.
+dimension identity: accepted annotated inputs SHALL have the same private mathematical interpretation and `DimKey` as
+their unannotated underlying dimensions. Stable-handle reconciliation SHALL be a downstream reference-data operation
+that may return ordinary `SameDimension` only after its additional lineage checks.
 
 #### Scenario: Align an exact quantity after runtime recovery
-- **WHEN** two registry witnesses have checked-equal canonical dimensions
+- **WHEN** two authoritative dimension witnesses have checked-equal canonical dimensions
 - **THEN** recovered `SameDimension` permits `alignTo` to change only the phantom dimension type of an exact quantity
 
 #### Scenario: Align a grid quantity after runtime recovery
 - **WHEN** checked dimension equality is available for a grid quantity
-- **THEN** `alignTo` preserves its grid type and integer coordinate while selecting the target dimension type
+- **THEN** `alignTo` preserves its generative grid type and integer coordinate while selecting the target dimension type
 
 #### Scenario: Coerce an exact quantity
-- **WHEN** two registry witnesses have checked-equal canonical dimensions and recovery supplies
+- **WHEN** authoritative dimension witnesses have checked-equal canonical dimensions and recovery supplies
   `SameDimension[Source, Target]`
 - **THEN** `Quantity[Source].alignTo[Target]` changes only the phantom dimension type and preserves the exact coefficient;
   no separate low-level coercion operation is exposed
 
 #### Scenario: Coerce a grid quantity
 - **WHEN** checked dimension equality supplies `SameDimension[Source, Target]` for a grid quantity
-- **THEN** `GridQuantity[Source, G].alignTo[Target]` preserves its grid type and coordinate while changing only the
-  phantom dimension type; no separate low-level coercion operation is exposed
+- **THEN** `GridQuantity[Source, G].alignTo[Target]` preserves its generative grid type and coordinate while changing only
+  the phantom dimension type; no separate low-level coercion operation is exposed
 
 #### Scenario: Consume static and runtime evidence uniformly
 - **WHEN** a caller receives `SameDimension[A, B]` from static derivation or successful runtime recovery
@@ -138,7 +49,7 @@ dimension identity: accepted annotated inputs SHALL have the same private mathem
 - **THEN** addition and subtraction still reject mixed operands until the caller explicitly aligns one value
 
 #### Scenario: Reject runtime dimension mismatch
-- **WHEN** independently resolved witnesses have different canonical dimension keys
+- **WHEN** independently obtained dimension witnesses have different canonical keys
 - **THEN** runtime recovery returns an explicit mismatch and issues no `SameDimension`
 
 #### Scenario: Keep reflexivity separate from authority
@@ -146,121 +57,53 @@ dimension identity: accepted annotated inputs SHALL have the same private mathem
 - **THEN** that evidence creates neither a `DimRef[D]` nor a quantity or grid value at `D`
 
 #### Scenario: Recover generic evidence for generative grids
-- **WHEN** two generative `GridRef` values have matching canonical dimension, grid ID, version, and quantum
-- **THEN** `SameGrid.between` can recover mathematical grid-identity evidence without registered provenance
+- **WHEN** two retained anonymous `GridRef` values denote the same generated mathematical grid and have coherent
+  authoritative definitions
+- **THEN** ordinary quantity-layer `SameGrid` recovery may issue mathematical grid evidence without stable
+  reference-data identity or issuer provenance
 
 #### Scenario: Check registry ownership before grid compatibility
-- **WHEN** `RuntimeEvidence.sameGrid` compares equal-looking registered grids owned by different registries
-- **THEN** it returns a foreign-registry failure before ordinary grid compatibility checks
+- **WHEN** equal dimension witnesses are retained by handles from different reference-data lineages
+- **THEN** quantity-level equality alone makes no claim that those handles may be reconciled
 
 #### Scenario: Ignore transparent annotations in runtime identity
 - **WHEN** an accepted static expression uses an annotated atom, expression, or transparent alias
 - **THEN** its authoritative runtime key equals the key produced from the corresponding unannotated operands
 
-### Requirement: Heterogeneous grid quantities recover evidence before arithmetic
-Heterogeneous registered values SHALL be represented as `ResolvedAssetGridQuantity` or `ResolvedGridQuantity`.
-Same-grid arithmetic SHALL recover checked grid evidence, retype one trusted coordinate to the selected grid type, and
-then invoke exact-type grid arithmetic without a static validity capability. Exact cross-grid arithmetic SHALL recover
-checked dimension evidence, explicitly embed both operands, align one embedded quantity to the selected result
-dimension, and then invoke exact-type homogeneous arithmetic. It SHALL return `ResolvedExactQuantity` containing
-`Quantity[D]` indexed by the selected authoritative runtime witness.
-
-Dimension-changing heterogeneous operations SHALL preserve raw static expressions unless they invoke a documented
-endpoint operation such as rate application. A runtime result package SHALL retain the authoritative witness needed to
-interpret its path-dependent result type; it SHALL not expose public normalization evidence.
-
-#### Scenario: Add heterogeneous same-grid values
-- **WHEN** two resolved grid quantities carry the same registered grid identity
-- **THEN** checked grid recovery permits their exact coordinate sum to be returned as `ResolvedGridQuantity`
-
-#### Scenario: Add heterogeneous distinct-grid values
-- **WHEN** two resolved quantities share a runtime dimension but have different grids and static dimension types
-- **THEN** checked recovery explicitly aligns one exact embedding before exact-type addition returns
-  `ResolvedExactQuantity`
-
-#### Scenario: Multiply heterogeneous values
-- **WHEN** checked runtime logic multiplies trusted exact values in path-dependent dimensions `A` and `B`
-- **THEN** the typed result preserves `Times[A, B]` together with the authoritative runtime product witness
-
-#### Scenario: Apply a heterogeneous rate
-- **WHEN** a resolved value and runtime-constructed rate share the same source endpoint type
-- **THEN** rate application returns a resolved exact value at the declared target endpoint type
-
-#### Scenario: Reject heterogeneous dimension mismatch
-- **WHEN** resolved USD and BTC grid quantities are added without a rate
-- **THEN** the operation returns a heterogeneous dimension error without attempting alignment or arithmetic
-
-### Requirement: Registered grid quantities have unambiguous packed records
-The logical packed types SHALL be named `PackedAssetGridQuantity` and `PackedGridQuantity`. They SHALL contain asset or
-dimension identity, grid ID, grid version, and integer coordinate. Checked decoding SHALL return
-`ResolvedAssetGridQuantity` or `ResolvedGridQuantity` with registry-owned witnesses.
-Packing SHALL require true registry-produced `RegisteredGridRef` provenance; a plain or counterfeit witness with an
-equal-looking dimension, ID, and version SHALL not satisfy the API.
-
-#### Scenario: Pack and reconstruct an asset grid quantity
-- **WHEN** a registered satoshi quantity is packed and decoded through the same definitions
-- **THEN** asset, dimension, grid identity, version, and coordinate are reconstructed exactly
-
-#### Scenario: Pack a compound-dimension grid quantity
-- **WHEN** a registered grid belongs to a normalized rate dimension
-- **THEN** `PackedGridQuantity` stores that canonical dimension key and reconstructs the typed grid value
-
-#### Scenario: Reject counterfeit quantum provenance
-- **WHEN** a canonical grid has quantum `1/100` and downstream `trading.quantity.runtime` source attempts to substitute quantum
-  `7/13` under the same dimension, ID, and version before packing coordinate `42`
-- **THEN** counterfeit registered-witness construction and registered packing do not compile
-
-#### Scenario: Preserve canonical coordinate interpretation
-- **WHEN** registry-produced provenance packs and decodes coordinate `42` on the canonical `1/100` grid
-- **THEN** the decoded coordinate remains `42` and its exact value remains `21/50`
-
-### Requirement: Decoding verifies dimension before grid
-Asset-specialized decoding SHALL verify `expectedDimension` after asset resolution and before grid lookup. General
-decoding SHALL resolve the canonical dimension before resolving the dimension-scoped grid identity. Unknown dimensions,
-unknown versions, remapped assets, and mismatched grids SHALL fail explicitly.
-
-#### Scenario: Reject a remapped asset
-- **WHEN** a packed asset ID resolves to a different canonical dimension than `expectedDimension`
-- **THEN** decoding fails before attaching the coordinate to a grid
-
-#### Scenario: Reject an unknown historical version
-- **WHEN** the referenced grid version is not registered for the resolved dimension
-- **THEN** decoding returns an unknown-grid failure
-
 ### Requirement: Arbitrary exact quantities are not packed
-The runtime layer SHALL NOT provide logical packing for arbitrary `Quantity[D]`. An exact packed format is deferred
-until numerator, denominator, dimension identity, and schema design are specified.
+The quantity artifact SHALL NOT provide logical or wire packing for arbitrary `Quantity[D]` or `GridQuantity[D, G]`.
+A durable representation belongs to the boundary-codec layer and SHALL specify its own schema version, exact numeric
+representation, stable identity fields, and checked reconstruction dependency.
 
 #### Scenario: Exact heterogeneous result remains in memory
-- **WHEN** heterogeneous cross-grid arithmetic returns `ResolvedExactQuantity`
-- **THEN** it has no automatic conversion to a grid-packed record
+- **WHEN** runtime arithmetic produces an exact quantity in a path-dependent dimension
+- **THEN** the quantity artifact provides no automatic stable-identity record for it
 
 #### Scenario: Projection precedes grid packing
-- **WHEN** an exact result must enter a registered grid boundary
-- **THEN** callers first narrow or quantize explicitly and then pack the resulting registered grid quantity
-
-### Requirement: Logical packing is not a wire schema
-Grid-packed case classes SHALL be logical in-memory boundary records, not a stable production wire format. A future wire
-format SHALL define a separate schema version and version-dispatching decoder; `GridVersion` SHALL continue to select
-only the immutable grid definition and coordinate interpretation.
-
-#### Scenario: Evolve a future record shape
-- **WHEN** a future wire record changes fields or codecs
-- **THEN** a wire-schema version, not `GridVersion`, selects the decoder
+- **WHEN** an exact result must enter a stable grid-coordinate representation
+- **THEN** callers first narrow or quantize explicitly and then let a downstream codec encode the trusted grid handle
+  and coordinate
 
 ### Requirement: Java serialization fails closed
-Java object serialization SHALL NOT reconstruct registry identities, packed records, dependent resolved results, or
-invariant-bearing public result and error records. Those records SHALL fail through the common project-owned
-`NotSerializableException` mechanism, while supported checked logical decoding remains available. The explicit
-fail-closed inventory SHALL include `ResolvedAssetGridQuantity`, `ResolvedGridQuantity`, and `ResolvedExactQuantity`.
+Java object serialization SHALL NOT reconstruct authoritative runtime dimension witnesses, dependent runtime carriers,
+or invariant-bearing quantity result and error records. Those records SHALL fail through the common project-owned
+`NotSerializableException` mechanism. Stable reference-data handles and boundary records SHALL define their own
+serialization contracts outside the quantity artifact.
 
 #### Scenario: Serialize a grid-packed record
-- **WHEN** a caller passes `PackedAssetGridQuantity` or `PackedGridQuantity` to `ObjectOutputStream`
-- **THEN** serialization fails without producing a persistence payload
+- **WHEN** a caller needs to serialize a stable grid-coordinate record
+- **THEN** the quantity artifact exposes no grid-packed record, and a downstream codec owns the durable representation
+  and checked reconstruction
+
+#### Scenario: Reject Java serialization of an authority-bearing runtime carrier
+- **WHEN** a caller passes an authority-bearing runtime dimension carrier to `ObjectOutputStream`
+- **THEN** serialization fails through the project-owned `NotSerializableException` mechanism without producing a
+  supported persistence payload
 
 #### Scenario: Decode logical boundary data
-- **WHEN** an in-memory packed record is passed directly to its checked decoder
-- **THEN** normal registry validation and reconstruction proceed
+- **WHEN** an external record must recover path-dependent dimensions and grids
+- **THEN** checked reconstruction occurs through explicit reference-data and codec boundaries rather than Java
+  deserialization
 
 ### Requirement: Public DimRef atom authority is unique
 `DimRef[D]` SHALL be the authoritative public association between an inhabited static dimension type `D` and its
@@ -326,57 +169,55 @@ code SHALL NOT directly construct or implement `DimRef` to bypass these roots an
 - **THEN** construction is unavailable and no contradictory runtime identity can inhabit the chosen static type
 
 ### Requirement: Checked runtime reconstruction preserves carrier trust
-Registry adoption, checked logical decoding, and heterogeneous result construction SHALL return dimensional carriers
-only through registry-owned dimension and grid witnesses. Every normally returned `Quantity[D]` or
-`GridQuantity[D, G]` inside a resolved runtime carrier SHALL therefore have a valid dimension index and MAY undergo
-index-preserving transformations without a static-dimension capability. A dimension-changing heterogeneous result
-SHALL retain the matching expression-preserving `DimRef` produced from its authoritative inputs.
+Checked runtime-dimension construction and operations SHALL return dimensional carriers only through authoritative
+`DimRef` and anonymous `GridRef` witnesses. Every normally returned `Quantity[D]` or `GridQuantity[D, G]` inside a
+dependent runtime carrier SHALL therefore have a valid dimension index and MAY undergo index-preserving transformations
+without a static-dimension capability. A dimension-changing runtime result SHALL retain the matching
+expression-preserving `DimRef` produced from its authoritative inputs.
 
-Raw packed identities, coordinates, and caller-selected type arguments SHALL NOT become dimensional values without the
-existing dimension-first registry checks. Possessing a reconstructed value SHALL NOT allow callers to recover or forge
-its registered witness, registry owner, `DimRef`, runtime key, grid provenance, or private static interpretation; those
-capabilities remain available only from the resolved dependent package and registry APIs.
+Raw runtime keys, coordinates, and caller-selected type arguments SHALL NOT become dimensional values without the
+existing witness-backed construction checks. Possessing a reconstructed value SHALL NOT allow callers to recover or
+forge its `DimRef`, runtime key, anonymous grid witness, private static interpretation, stable reference-data handle, or
+catalog lineage. Downstream reference-data and codec layers SHALL perform their additional identity checks before
+delegating carrier construction to the quantity roots.
 
 #### Scenario: Transform a decoded grid value
-- **WHEN** a checked packed record is decoded to a resolved grid quantity and generic code performs same-index grid
-  arithmetic on its value
+- **WHEN** checked runtime construction returns an exact or grid quantity and generic code performs same-index arithmetic
+  on it
 - **THEN** the arithmetic requires no static dimension or equivalence capability
 
 #### Scenario: Transform a heterogeneous exact result
-- **WHEN** checked heterogeneous arithmetic returns `ResolvedExactQuantity`
-- **THEN** its dependent `Quantity[result.dimension.D]` can undergo index-preserving arithmetic without a static
-  dimension capability
+- **WHEN** runtime arithmetic produces a value in a `Times`, `Inverse`, or `Divide` endpoint
+- **THEN** its dependent package retains the corresponding authoritative expression-preserving `DimRef`
 
 #### Scenario: Reject unchecked packed construction
-- **WHEN** raw packed data names an unknown, mismatched, foreign, or conflicting dimension or grid identity
-- **THEN** decoding fails before attaching its coordinate to a typed grid carrier
+- **WHEN** raw runtime input cannot establish the requested dimension and anonymous grid witness
+- **THEN** reconstruction fails before attaching its coordinate to a typed grid carrier
 
 #### Scenario: Keep runtime provenance non-extractable
-- **WHEN** code possesses only the dimensional value stored inside a resolved runtime result
-- **THEN** the value alone does not supply registry ownership, registered grid identity, `DimRef`, `DimKey`, or
-  private static-interpretation authority
+- **WHEN** code possesses only the dimensional value stored inside a dependent runtime result
+- **THEN** the value alone supplies no `DimRef`, `DimKey`, grid witness, reference-data identity, or catalog provenance
 
 ### Requirement: Runtime-resolved endpoints support authoritative rates
 The public rate constructor SHALL accept authoritative `DimRef[From]` and `DimRef[To]` values and an exact coefficient,
 and SHALL return `Rate[From, To]` without requiring statically visible endpoint decomposition or public normalization
-evidence. It SHALL work for named static atoms, compound expression witnesses, registry-resolved path-dependent
+evidence. It SHALL work for named static atoms, compound expression witnesses, reference-data path-dependent
 dimensions, and fresh runtime dimensions. The constructed rate's runtime dimension key SHALL be exactly
 `to.key / from.key`.
 
 Applying a runtime-constructed rate to an existing `Quantity[From]` or canonically embedded
 `GridQuantity[From, G]` SHALL return `Quantity[To]` directly. Endpoint composition, checked reciprocal, and cross-rate
-operations SHALL retain their declared endpoint types. If independently resolved endpoint types denote equal runtime
+operations SHALL retain their declared endpoint types. If independently obtained endpoint types denote equal runtime
 keys but are distinct Scala types, the caller SHALL first recover `SameDimension` and explicitly align the relevant
 value or endpoint; construction SHALL NOT install a global conversion.
 
-The quantity runtime layer SHALL NOT infer domain metadata such as an instrument's base, quote, position, settlement,
-or underlying currency from a symbol or from another endpoint. Runtime adapters SHALL resolve and supply every endpoint
-required by their domain model. This requirement SHALL add no instrument, order, position, payoff, or venue type to the
-quantity library.
+The quantity runtime layer SHALL NOT infer domain metadata such as an asset, instrument base, quote, position,
+settlement, or underlying identity from a symbol or another endpoint. A downstream adapter SHALL resolve and supply
+every endpoint required by its domain model. This requirement SHALL add no asset, instrument, order, position, payoff,
+or venue type to the quantity library.
 
 #### Scenario: Construct a rate from registry dimensions
-- **WHEN** a registry resolves stable path-dependent source and target dimension witnesses and the caller supplies an
-  exact coefficient
+- **WHEN** authoritative path-dependent source and target dimension witnesses are supplied with an exact coefficient
 - **THEN** the constructor returns `Rate[source.D, target.D]` with runtime key `target.key / source.key`
 
 #### Scenario: Apply a runtime rate
@@ -388,11 +229,54 @@ quantity library.
 - **THEN** composition returns a rate between the outer endpoint types directly
 
 #### Scenario: Reconcile independently resolved equal endpoints
-- **WHEN** two stable runtime endpoint witnesses have equal authoritative keys but distinct path-dependent types
+- **WHEN** two runtime endpoint witnesses have equal authoritative keys but distinct path-dependent types
 - **THEN** checked runtime recovery plus explicit alignment permits their intended composition without a global implicit
   conversion
 
 #### Scenario: Require the adapter to name endpoints
 - **WHEN** a venue payload provides symbols, multipliers, or partial currency metadata
-- **THEN** the quantity layer does not guess missing position or settlement endpoints and the adapter must resolve them
-  under its own domain rules
+- **THEN** the quantity layer does not guess missing asset, position, or settlement endpoints and the adapter must
+  resolve them under its own domain rules
+
+### Requirement: Runtime dimension identity is domain-neutral
+The quantity runtime layer SHALL create opaque dimension witnesses for runtime identifiers and SHALL interpret compound
+dimensions through canonical `DimKey` values. `DimKey` SHALL remain the runtime free abelian group of dimensions and
+SHALL expose multiplicative identity, multiplication, inverse, and canonical equality through its opt-in production
+algebra instance. Those operations SHALL delegate to primitive arbitrary-precision key arithmetic.
+
+`DimRef[D]` SHALL remain authoritative for the runtime identity inhabited by `D`. Its public algebra SHALL preserve
+static expressions: identity returns `DimRef[One]`, product returns `DimRef[Times[A, B]]`, inverse returns
+`DimRef[Inverse[A]]`, and quotient returns `DimRef[Divide[A, B]]`. Each operation SHALL compute the exactly
+corresponding canonical runtime key and SHALL require no public canonical-output capability. Publicly inhabitable atom
+types SHALL retain their one-to-one static/runtime authority; private static interpretation SHALL neither totalize
+`DimRef` over all accepted keys nor manufacture a runtime witness.
+
+The quantity runtime layer SHALL NOT define an asset, stable grid identity, catalog issuer, registry, or boundary
+record. Algebraic equality of runtime keys SHALL NOT establish downstream asset identity, stable grid identity, or
+catalog provenance.
+
+#### Scenario: Construct a fresh runtime dimension
+- **WHEN** a trusted runtime boundary creates a dimension witness for one canonical key
+- **THEN** the witness retains a path-dependent type and authoritative `DimRef` without becoming an asset or catalog
+  handle
+
+#### Scenario: Canonicalize a compound runtime key
+- **WHEN** runtime dimension multiplication and inversion cancel factors
+- **THEN** the resulting canonical `DimKey` is equal regardless of expression shape
+
+#### Scenario: Preserve a product witness expression
+- **WHEN** `DimRef[A]` and `DimRef[B]` are multiplied
+- **THEN** the result is `DimRef[Times[A, B]]` and its key is the canonical product of the input keys
+
+#### Scenario: Preserve inverse and quotient witness expressions
+- **WHEN** authoritative witnesses are inverted or divided
+- **THEN** their result types are `Inverse[A]` or `Divide[A, B]` and their keys are the exact corresponding runtime
+  operations
+
+#### Scenario: Preserve public atom authority uniqueness
+- **WHEN** two witnesses of the same publicly inhabitable `Atom[K]` type are obtained through supported constructors
+- **THEN** they have the same runtime atom key
+
+#### Scenario: Do not infer reference-data authority
+- **WHEN** two canonical dimension keys compare equal
+- **THEN** the quantity layer supplies no asset, stable grid, or catalog-lineage evidence

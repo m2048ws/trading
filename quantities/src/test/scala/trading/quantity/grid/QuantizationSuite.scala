@@ -15,29 +15,18 @@ class QuantizationSuite extends ScalaCheckSuite:
   private val usd =
     trading.quantity.testkit.TestAsset
       .runtime:
-        AssetId:
+        AtomId:
           "USD-quantization-suite"
   private val cents =
-    UniformGrid.create[usd.D](
-      GridId:
-        "usd-cent-quantization-suite"
-      ,
-      GridVersion(1),
-      usd.dimension,
+    UniformGrid.create[usd.D](usd.dimension,
       PositiveRational.exact(1, 100).toOption.get
     )
   private val threeCents =
-    UniformGrid.create[usd.D](
-      GridId("usd-three-cent-quantization-suite"),
-      GridVersion(1),
-      usd.dimension,
+    UniformGrid.create[usd.D](usd.dimension,
       PositiveRational.exact(3, 100).toOption.get
     )
   private val twoFifteenths =
-    UniformGrid.create[usd.D](
-      GridId("usd-two-fifteenths-quantization-suite"),
-      GridVersion(1),
-      usd.dimension,
+    UniformGrid.create[usd.D](usd.dimension,
       PositiveRational.exact(2, 15).toOption.get
     )
   private val policies =

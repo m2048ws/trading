@@ -3,7 +3,7 @@ package trading.economics.instrument
 import trading.quantity.*
 import trading.quantity.grid.*
 import trading.quantity.refinement.*
-import trading.quantity.runtime.*
+import trading.reference.*
 
 /** Strictly positive grid price for one ordinary runtime instrument identity. */
 final case class Price[B <: Dim, Q <: Dim] private[instrument] (
@@ -14,16 +14,16 @@ final case class Price[B <: Dim, Q <: Dim] private[instrument] (
 
 final class Prices[B <: Dim, Q <: Dim] private[instrument] (
   instrumentId: InstrumentId,
-  base: AssetRef { type D = B },
-  quote: AssetRef { type D = Q },
-  grid: RegisteredGridRef[Divide[Q, B]]):
+  base: Asset { type D = B },
+  quote: Asset { type D = Q },
+  grid: GridHandle[Divide[Q, B]]):
 
   def exact(coefficient: Rational): Either[EconomicsError, Price[B, Q]] =
     fromRate(Rate(base.dimension.ref, quote.dimension.ref, coefficient))
 
   def fromRate(value: Rate[B, Q]): Either[EconomicsError, Price[B, Q]] =
     value
-      .narrowExactlyTo(grid.asGridRef)
+      .narrowExactlyTo(grid.grid)
       .left
       .map(PriceNotOnGrid(_))
       .flatMap(refine)
@@ -42,7 +42,7 @@ final class Prices[B <: Dim, Q <: Dim] private[instrument] (
     value: Rate[B, Q],
     policy: QuantizationPolicy
   ): Either[EconomicsError, (Price[B, Q], Quantity[Divide[Q, B]])] =
-    val result = value.quantizeTo(grid.asGridRef, policy)
+    val result = value.quantizeTo(grid.grid, policy)
     refine(result.value).map(_ -> result.residual)
 
   private def refine(

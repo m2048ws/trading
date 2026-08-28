@@ -11,18 +11,12 @@ class CompileTimeArithmeticSuite extends FunSuite:
       import trading.quantity.*
       import trading.quantity.refinement.*
 
-      val usd = trading.quantity.testkit.TestAsset.runtime(AssetId("USD-compile-suite"))
-      val btc = trading.quantity.testkit.TestAsset.runtime(AssetId("BTC-compile-suite"))
-      val cents = UniformGrid.create[usd.D](
-        GridId("usd-cent-compile-suite"),
-        GridVersion(1),
-        usd.dimension,
+      val usd = trading.quantity.testkit.TestAsset.runtime(AtomId("USD-compile-suite"))
+      val btc = trading.quantity.testkit.TestAsset.runtime(AtomId("BTC-compile-suite"))
+      val cents = UniformGrid.create[usd.D](usd.dimension,
         PositiveRational.exact(1, 100).toOption.get
       )
-      val satoshis = UniformGrid.create[btc.D](
-        GridId("btc-satoshi-compile-suite"),
-        GridVersion(1),
-        btc.dimension,
+      val satoshis = UniformGrid.create[btc.D](btc.dimension,
         PositiveRational.exact(1, 100000000).toOption.get
       )
 
@@ -35,13 +29,11 @@ class CompileTimeArithmeticSuite extends FunSuite:
       import trading.quantity.*
       import trading.quantity.refinement.*
 
-      val usd = trading.quantity.testkit.TestAsset.runtime(AssetId("USD-expected-type-suite"))
-      val cents = UniformGrid.create[usd.D](
-        GridId("usd-cent-expected-type-suite"), GridVersion(1), usd.dimension,
+      val usd = trading.quantity.testkit.TestAsset.runtime(AtomId("USD-expected-type-suite"))
+      val cents = UniformGrid.create[usd.D](usd.dimension,
         PositiveRational.exact(1, 100).toOption.get
       )
-      val threeCents = UniformGrid.create[usd.D](
-        GridId("usd-three-cent-expected-type-suite"), GridVersion(1), usd.dimension,
+      val threeCents = UniformGrid.create[usd.D](usd.dimension,
         PositiveRational.exact(3, 100).toOption.get
       )
 
@@ -67,13 +59,11 @@ class CompileTimeArithmeticSuite extends FunSuite:
       import RoundingImports.given
       import AlgebraImports.given
 
-      val usd = trading.quantity.testkit.TestAsset.runtime(AssetId("USD-import-coherence-suite"))
-      val cents = UniformGrid.create[usd.D](
-        GridId("usd-cent-import-coherence-suite"), GridVersion(1), usd.dimension,
+      val usd = trading.quantity.testkit.TestAsset.runtime(AtomId("USD-import-coherence-suite"))
+      val cents = UniformGrid.create[usd.D](usd.dimension,
         PositiveRational.exact(1, 100).toOption.get
       )
-      val threeCents = UniformGrid.create[usd.D](
-        GridId("usd-three-cent-import-coherence-suite"), GridVersion(1), usd.dimension,
+      val threeCents = UniformGrid.create[usd.D](usd.dimension,
         PositiveRational.exact(3, 100).toOption.get
       )
 
@@ -90,9 +80,9 @@ class CompileTimeArithmeticSuite extends FunSuite:
       import trading.quantity.*
       import trading.quantity.refinement.*
 
-      val usd = trading.quantity.testkit.TestAsset.runtime(AssetId("USD-rate-mismatch-suite"))
-      val btc = trading.quantity.testkit.TestAsset.runtime(AssetId("BTC-rate-mismatch-suite"))
-      val eur = trading.quantity.testkit.TestAsset.runtime(AssetId("EUR-rate-mismatch-suite"))
+      val usd = trading.quantity.testkit.TestAsset.runtime(AtomId("USD-rate-mismatch-suite"))
+      val btc = trading.quantity.testkit.TestAsset.runtime(AtomId("BTC-rate-mismatch-suite"))
+      val eur = trading.quantity.testkit.TestAsset.runtime(AtomId("EUR-rate-mismatch-suite"))
       val bitcoin = Quantity(btc.dimension, 1)
       val usdToEur = Rate(usd.dimension, eur.dimension, Rational(9, 10))
 

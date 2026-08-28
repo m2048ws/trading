@@ -10,12 +10,9 @@ import trading.quantity.testkit.ExactGenerators.*
 import trading.quantity.testkit.TestAsset
 
 class SameGridArithmeticSuite extends ScalaCheckSuite:
-  private val asset = TestAsset.runtime(AssetId("same-grid-laws"))
+  private val asset = TestAsset.runtime(AtomId("same-grid-laws"))
   private val grid  =
-    UniformGrid.create(
-      GridId("same-grid-laws"),
-      GridVersion(1),
-      asset.dimension,
+    UniformGrid.create(asset.dimension,
       PositiveRational.exact(1, 100).toOption.get
     )
 

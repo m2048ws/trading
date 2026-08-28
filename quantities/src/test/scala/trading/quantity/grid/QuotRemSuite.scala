@@ -10,12 +10,9 @@ import trading.quantity.testkit.ExactGenerators.*
 import trading.quantity.testkit.TestAsset
 
 class QuotRemSuite extends ScalaCheckSuite:
-  private val asset = TestAsset.runtime(AssetId("quot-rem-laws"))
+  private val asset = TestAsset.runtime(AtomId("quot-rem-laws"))
   private val grid  =
-    UniformGrid.create(
-      GridId("quot-rem-laws"),
-      GridVersion(1),
-      asset.dimension,
+    UniformGrid.create(asset.dimension,
       PositiveRational.exact(1, 100).toOption.get
     )
 

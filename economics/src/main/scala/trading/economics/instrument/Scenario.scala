@@ -4,7 +4,7 @@ import cats.data.NonEmptyVector
 import cats.syntax.all.*
 
 import trading.quantity.*
-import trading.quantity.runtime.RegisteredGridRef
+import trading.reference.GridHandle
 
 /** Fee classification of one complete scenario slice. */
 enum LiquidityRole:
@@ -44,7 +44,7 @@ final case class RoundTripScenario[L, P, M, Pos] private[instrument] (
 
 final class Scenarios[D <: Dim, B <: Dim, Q <: Dim, S <: Dim] private[instrument] (
   instrumentId: InstrumentId,
-  positionGrid: RegisteredGridRef[D]):
+  positionGrid: GridHandle[D]):
 
   private type Lots     = _root_.trading.economics.instrument.Lots[D]
   private type Price    = _root_.trading.economics.instrument.Price[B, Q]

@@ -32,15 +32,42 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
     try new String(resource.readAllBytes(), StandardCharsets.UTF_8).trim
     finally resource.close()
 
-  test("quantities artifact remains free of economics classes"):
+  test("packaged artifacts preserve the quantities to reference-data to economics boundary"):
     val quantitiesJar = compilationClasspath
       .split(File.pathSeparator)
       .map(Paths.get(_))
       .find(_.getFileName.toString.startsWith("trading-quantities_3-"))
       .getOrElse(fail("missing packaged quantities artifact"))
-    val jar = new JarFile(quantitiesJar.toFile)
-    try assert(!jar.entries().asScala.exists(_.getName.startsWith("trading/economics/")))
-    finally jar.close()
+    val referenceDataJar = compilationClasspath
+      .split(File.pathSeparator)
+      .map(Paths.get(_))
+      .find(_.getFileName.toString.startsWith("trading-reference-data_3-"))
+      .getOrElse(fail("missing packaged reference-data artifact"))
+    val quantitiesArchive = new JarFile(quantitiesJar.toFile)
+    val referenceArchive  = new JarFile(referenceDataJar.toFile)
+    try
+      val quantityEntries  = quantitiesArchive.entries().asScala.map(_.getName).toSet
+      val referenceEntries = referenceArchive.entries().asScala.map(_.getName).toSet
+      assert(!quantityEntries.exists(_.startsWith("trading/reference/")))
+      assert(!quantityEntries.exists(_.startsWith("trading/economics/")))
+      List(
+        "AssetId.class",
+        "GridId.class",
+        "GridVersion.class",
+        "GridKey.class",
+        "GridIdentity.class",
+        "QuantityRegistry.class",
+        "Asset.class",
+        "DimensionHandle.class",
+        "GridHandle.class"
+      ).foreach: name =>
+        assert(!quantityEntries.contains(s"trading/quantity/$name"), s"quantity JAR retained $name")
+        assert(referenceEntries.contains(s"trading/reference/$name"), s"reference-data JAR is missing $name")
+      assert(!referenceEntries.exists(_.startsWith("trading/economics/")))
+    finally
+      quantitiesArchive.close()
+      referenceArchive.close()
+    end try
 
   test("economics artifact exposes concise instrument concern classes without stale flat API names"):
     val economicsJar = packagedEconomicsJar

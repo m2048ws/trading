@@ -8,10 +8,7 @@ object RemovedExplicitNormalizationArguments:
   val authority: DimRef[One]         = DimRef.one
   val left: Quantity[One]           = Quantity(DimRef.one, 1)
   val right: Quantity[One]          = Quantity(DimRef.one, 2)
-  val grid                          = UniformGrid.create(
-    GridId("removed-explicit-normalization"),
-    GridVersion(1),
-    DimRef.one,
+  val grid                          = UniformGrid.create(DimRef.one,
     PositiveRational.exact(1, 100).toOption.get
   )
   val coordinate = grid.fromCoordinate(1)

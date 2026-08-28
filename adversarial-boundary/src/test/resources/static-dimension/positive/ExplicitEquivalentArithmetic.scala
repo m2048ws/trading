@@ -18,16 +18,10 @@ object ExplicitEquivalentArithmetic:
   val exactAdd: Quantity[AB] = left + alignedRight
   val exactSubtract: Quantity[AB] = left - alignedRight
 
-  val leftGrid = UniformGrid.create(
-    GridId("explicit-equivalent:left-grid"),
-    GridVersion(1),
-    ab,
+  val leftGrid = UniformGrid.create(ab,
     PositiveRational.exact(1, 10).toOption.get
   )
-  val rightGrid = UniformGrid.create(
-    GridId("explicit-equivalent:right-grid"),
-    GridVersion(1),
-    ba,
+  val rightGrid = UniformGrid.create(ba,
     PositiveRational.exact(3, 10).toOption.get
   )
   val leftGridValue = leftGrid.fromCoordinate(2)

@@ -9,14 +9,11 @@ sealed abstract class GridError extends JavaSerializationUnsupported with Produc
 /** The compared grids belong to different canonical dimensions. */
 case object GridDimensionMismatch extends GridError
 
-/** The compared grids have different identifiers or versions. */
-case object GridIdentityMismatch extends GridError
+/** The compared references denote different anonymous coordinate namespaces. */
+case object AnonymousGridMismatch extends GridError
 
 /** The compared grids represent different exact values per coordinate unit. */
 case object GridQuantumMismatch extends GridError
-
-/** One grid identity was paired with conflicting immutable definitions. */
-case object GridDefinitionConflict extends GridError
 
 /** The source grid has values that cannot all be represented exactly on the target grid. */
 case object NoGridEmbedding extends GridError
@@ -38,14 +35,12 @@ object SameGrid:
     l: GridRef[A],
     r: GridRef[B]
   ): Either[GridError, SameGrid[A, l.G, B, r.G]] =
-    if l.dimension.key != r.dimension.key then
-      Left(GridDimensionMismatch)
-    else if l.id != r.id || l.version != r.version then
-      Left(GridIdentityMismatch)
-    else if l.quantum.unrefined != r.quantum.unrefined then
-      Left(GridDefinitionConflict)
-    else
+    if l.isSameAnonymousGrid(r) then
       Right(new SameGrid())
+    else if l.dimension.key != r.dimension.key then
+      Left(GridDimensionMismatch)
+    else
+      Left(AnonymousGridMismatch)
 
 /**
  * Evidence that two grids share a dimension and exact quantum.

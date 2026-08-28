@@ -6,30 +6,18 @@ import trading.quantity.testkit.ExactGenerators.given
 import trading.quantity.testkit.TestAsset
 
 class ProjectionDisciplineSuite extends TradingDisciplineSuite:
-  private val asset = TestAsset.runtime(AssetId("projection-discipline"))
+  private val asset = TestAsset.runtime(AtomId("projection-discipline"))
 
-  private val cent = UniformGrid.create(
-    GridId("projection-cent"),
-    GridVersion(1),
-    asset.dimension,
+  private val cent = UniformGrid.create(asset.dimension,
     PositiveRational.exact(1, 100).toOption.get
   )
-  private val satoshi = UniformGrid.create(
-    GridId("projection-satoshi"),
-    GridVersion(1),
-    asset.dimension,
+  private val satoshi = UniformGrid.create(asset.dimension,
     PositiveRational.exact(1, 100000000).toOption.get
   )
-  private val threeHundredths = UniformGrid.create(
-    GridId("projection-three-hundredths"),
-    GridVersion(1),
-    asset.dimension,
+  private val threeHundredths = UniformGrid.create(asset.dimension,
     PositiveRational.exact(3, 100).toOption.get
   )
-  private val twoFifteenths = UniformGrid.create(
-    GridId("projection-two-fifteenths"),
-    GridVersion(1),
-    asset.dimension,
+  private val twoFifteenths = UniformGrid.create(asset.dimension,
     PositiveRational.exact(2, 15).toOption.get
   )
 

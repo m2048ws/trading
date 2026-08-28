@@ -17,7 +17,7 @@ import trading.quantity.testkit.ExactGenerators.given
 import trading.quantity.testkit.TestAsset
 
 class QuantityDisciplineSuite extends TradingDisciplineSuite:
-  private val asset             = TestAsset.runtime(AssetId("quantity-discipline"))
+  private val asset             = TestAsset.runtime(AtomId("quantity-discipline"))
   private given DimRef[asset.D] = asset.dimension
 
   private given Arbitrary[Quantity[asset.D]]              = ExactGenerators.arbitraryQuantity(asset.dimension)
@@ -42,9 +42,9 @@ class QuantityDisciplineSuite extends TradingDisciplineSuite:
     new VectorSpaceLaws(summon[VectorSpace[Quantity[asset.D], Rational]]).vectorSpace
   )
 
-  private val first  = TestAsset.runtime(AssetId("graded-first"))
-  private val second = TestAsset.runtime(AssetId("graded-second"))
-  private val third  = TestAsset.runtime(AssetId("graded-third"))
+  private val first  = TestAsset.runtime(AtomId("graded-first"))
+  private val second = TestAsset.runtime(AtomId("graded-second"))
+  private val third  = TestAsset.runtime(AtomId("graded-third"))
 
   checkAll(
     "Quantity.gradedMultiplication",

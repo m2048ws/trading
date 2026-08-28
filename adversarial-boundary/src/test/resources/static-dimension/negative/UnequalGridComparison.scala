@@ -6,16 +6,10 @@ import trading.quantity.refinement.*
 object UnequalGridComparison:
   val leftDimension = DimRef.atomic(AtomId("unequal-grid-comparison:left"))
   val rightDimension = DimRef.atomic(AtomId("unequal-grid-comparison:right"))
-  val leftGrid = UniformGrid.create(
-    GridId("unequal-grid-comparison:left-grid"),
-    GridVersion(1),
-    leftDimension.dimension,
+  val leftGrid = UniformGrid.create(leftDimension.dimension,
     PositiveRational.exact(1, 1).toOption.get
   )
-  val rightGrid = UniformGrid.create(
-    GridId("unequal-grid-comparison:right-grid"),
-    GridVersion(1),
-    rightDimension.dimension,
+  val rightGrid = UniformGrid.create(rightDimension.dimension,
     PositiveRational.exact(1, 1).toOption.get
   )
   val left = leftGrid.fromCoordinate(1)

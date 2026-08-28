@@ -2,7 +2,7 @@ package trading.economics.instrument
 
 import trading.quantity.*
 import trading.quantity.refinement.*
-import trading.quantity.runtime.*
+import trading.reference.*
 
 final class EconomicsFixtures:
   val registry = new QuantityRegistry
@@ -28,9 +28,13 @@ final class EconomicsFixtures:
     registry
       .registerGrid(usdPerBtcDimension)(
         GridDefinition(
-          usdPerBtcDimension.dimension.key,
-          GridId("usd-per-btc-half-dollar"),
-          GridVersion(1),
+          GridIdentity(
+            usdPerBtcDimension.key,
+            GridKey(
+              GridId.from("usd-per-btc-half-dollar").toOption.get,
+              GridVersion.from(1).toOption.get
+            )
+          ),
           PositiveRational(Rational(1, 2)).toOption.get
         )
       )
@@ -106,13 +110,13 @@ final class EconomicsFixtures:
   private def instrument(
     id: String,
     underlying: String,
-    base: AssetRef,
-    quote: AssetRef,
-    position: AssetRef,
-    settle: AssetRef
+    base: Asset,
+    quote: Asset,
+    position: Asset,
+    settle: Asset
   )(
-    positionGrid: RegisteredGridRef[? <: Dim],
-    priceGrid: RegisteredGridRef[? <: Dim],
+    positionGrid: GridHandle[? <: Dim],
+    priceGrid: GridHandle[? <: Dim],
     baseCoefficient: Rational,
     quoteCoefficient: Rational
   ): Instrument =
@@ -126,19 +130,20 @@ final class EconomicsFixtures:
     Instrument.create(Definition(identity, roles, listing, payoff)).toOption.get
   end instrument
 
-  private def asset(name: String): AssetRef =
+  private def asset(name: String): Asset =
     registry
-      .registerAsset(AssetDefinition(AssetId(name), AtomId(s"asset:$name")))
+      .registerAsset(AssetDefinition(AssetId.from(name).toOption.get, AtomId(s"asset:$name")))
       .toOption
       .get
 
-  private def grid(asset: AssetRef, name: String, quantum: Rational): RegisteredGridRef[asset.D] =
+  private def grid(asset: Asset, name: String, quantum: Rational): GridHandle[asset.D] =
     registry
       .registerGrid(asset)(
         GridDefinition(
-          asset.dimension.key,
-          GridId(name),
-          GridVersion(1),
+          GridIdentity(
+            asset.dimension.key,
+            GridKey(GridId.from(name).toOption.get, GridVersion.from(1).toOption.get)
+          ),
           PositiveRational(quantum).toOption.get
         )
       )

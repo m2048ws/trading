@@ -4,8 +4,7 @@ import trading.quantity.*
 import trading.quantity.refinement.*
 
 /** Describes an exact quantity that cannot be represented by the requested target grid. */
-final case class NotOnGrid[D <: Dim](source: Rational, target: GridKey, targetQuantum: Rational)
-  extends JavaSerializationUnsupported
+final case class NotOnGrid[D <: Dim](source: Rational, targetQuantum: Rational) extends JavaSerializationUnsupported
 
 /** Exact narrowing operations that reject nonrepresentable values instead of rounding them. */
 object GridProjection:
@@ -22,7 +21,7 @@ object GridProjection:
     if coordinate.isWhole then
       Right(t.fromCoordinate(coordinate.numerator / coordinate.denominator))
     else
-      Left(NotOnGrid(coefficient, t.key, quantum))
+      Left(NotOnGrid(coefficient, quantum))
 
   def narrowGridExactlyTo[D <: Dim](
     g: GridRef[D],

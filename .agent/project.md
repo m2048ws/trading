@@ -25,28 +25,35 @@ The current production modules are:
 - project: `quantities`
 - artifact: `trading-quantities`
 - primary package: `trading.quantity`
+- project: `referenceData`
+- artifact: `trading-reference-data`
+- primary package: `trading.reference`
 - project: `economics`
 - artifact: `trading-economics`
 - primary package: `trading.economics.instrument`
 
-A separate downstream/boundary project exercises the published/public API from outside the quantities module.
+A separate downstream/boundary project exercises completed public artifacts from outside their production modules.
 
 The current physical dependency graph is:
 
 ```text
-quantities <- economics <- adversarialBoundary (test-only)
-     ^______________________________|
+quantities <- referenceData <- economics <- adversarialBoundary (test-only)
+     ^______________^_____________^______________|
 ```
 
-The root aggregates all three and is not published. This is the implemented baseline, not the target module graph.
+The root aggregates all four and is not published. Reference data currently contains the explicitly transitional
+synchronized construction bridge; Proposal 2 replaces it with pure catalog state and snapshots.
 
 The quantities production package layout includes:
 
 - `trading.quantity`
 - `trading.quantity.grid`
 - `trading.quantity.refinement`
-- `trading.quantity.runtime`
 - `trading.quantity.algebra`
+
+The reference-data production package is `trading.reference`. It owns stable asset/grid identity, definitions, trusted
+handles, opaque lineage, pure handle reconciliation, and the unreleased synchronized bridge. Quantity-owned packed
+records are absent; Proposal 9 owns their durable replacement.
 
 Avoid speculative package subdivision unless an actual body of code requires it.
 
@@ -233,13 +240,15 @@ Algebra instances must reflect the same arithmetic and authority semantics as th
 
 Do not let an algebra instance create an arithmetic capability that the direct API intentionally rejects.
 
-## Runtime / Heterogeneous Values
+## Domain-Neutral Runtime Dimension Identity
 
-Runtime registries and heterogeneous quantities exist to recover checked relationships when static types are not already known to agree.
+`DimKey`, `DimRef`, and checked `SameDimension` recovery live directly in `trading.quantity`; there is no separate
+`trading.quantity.runtime` production package or quantity-owned heterogeneous carrier. These mathematical runtime
+capabilities establish dimension identity only and confer no stable asset, grid, or reference-data provenance.
 
-Registry ownership and provenance are separate concerns from generic static dimension equivalence.
-
-Do not weaken provenance checks in order to simplify static arithmetic.
+The synchronized `QuantityRegistry` is currently a downstream `trading.reference` construction bridge. It issues
+immutable trusted handles but is not a quantity runtime service or the proposed final catalog/runtime architecture.
+Proposal 2 owns its replacement with pure catalog state and snapshots, and Proposal 9 owns future durable decoding.
 
 ## Design Philosophy
 
@@ -264,9 +273,9 @@ Avoid:
 
 ## Architecture and Functional Design Charter
 
-The active OpenSpec change `establish-architecture-and-functional-design-charter` governs the architecture charter
-until independent approval and archive. The detailed guide is `docs/design-principles.md`; the current/target and
-cross-proposal record is `docs/architecture-charter-audit.md`.
+The canonical OpenSpec capabilities `repository-architecture` and `scala-functional-design` govern the architecture
+charter. The detailed guide is `docs/design-principles.md`; the current/target and cross-proposal record is
+`docs/architecture-charter-audit.md`.
 
 Every production concept has one primary owning layer for its vocabulary, invariants, construction, and errors.
 Dependencies remain acyclic and point toward the smallest lower-level meaning required. Lower mathematical/domain
@@ -294,7 +303,8 @@ verification boundary.
 ## Layer-Specific Functional Profile
 
 - quantities are pure, exact, type-indexed, algebraic, and law-tested;
-- reference data use pure immutable state transitions and coherent snapshots;
+- reference data target pure immutable state transitions and coherent snapshots; until Proposal 2, the current artifact
+  contains the explicit synchronized construction bridge while issued handles and reconciliation remain immutable;
 - domain and economics values use closed ADTs, refinements, smart constructors, typed errors, and no infrastructure
   effects;
 - application ports use effect polymorphism only for genuine environmental variation;

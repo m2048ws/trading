@@ -12,7 +12,7 @@ class GridOperationImportBoundarySuite extends FunSuite:
       import trading.quantity.*
 
       val quantum = trading.quantity.refinement.PositiveRational.exact(1, 100).toOption.get
-      val grid = UniformGrid.create(GridId("core-only-grid"), GridVersion(1), DimRef.one, quantum)
+      val grid = UniformGrid.create(DimRef.one, quantum)
       val value = grid.fromCoordinate(7)
       val sum: GridQuantity[One, grid.G] = value + value
       val difference: GridQuantity[One, grid.G] = value - value
@@ -58,7 +58,7 @@ class GridOperationImportBoundarySuite extends FunSuite:
       val quantum = trading.quantity.refinement.PositiveRational.exact(1, 100).toOption.get
       val divisor = trading.quantity.refinement.PositiveWhole(3).toOption.get
       val count = trading.quantity.refinement.PositiveInt(3).toOption.get
-      val grid = UniformGrid.create(GridId("grid-operations-import"), GridVersion(1), DimRef.one, quantum)
+      val grid = UniformGrid.create(DimRef.one, quantum)
       val value = grid.fromCoordinate(10)
       val divided: QuotRem[GridQuantity[One, grid.G]] = value.quotRemBy(divisor, grid)
       val allocated: Allocation[GridQuantity[One, grid.G]] =

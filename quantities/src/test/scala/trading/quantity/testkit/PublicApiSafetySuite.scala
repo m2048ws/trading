@@ -9,13 +9,13 @@ class PublicApiSafetySuite extends FunSuite:
     assertDoesNotCompile:
       """
       import trading.quantity.*
-      val asset = trading.quantity.testkit.TestAsset.runtime(AssetId("floating-apply-double"))
+      val asset = trading.quantity.testkit.TestAsset.runtime(AtomId("floating-apply-double"))
       val value = Quantity(asset.dimension, 0.1d)
     """
     assertDoesNotCompile:
       """
       import trading.quantity.*
-      val asset = trading.quantity.testkit.TestAsset.runtime(AssetId("floating-apply-float"))
+      val asset = trading.quantity.testkit.TestAsset.runtime(AtomId("floating-apply-float"))
       val value = Quantity(asset.dimension, 0.1f)
     """
     assertDoesNotCompile:
@@ -52,9 +52,8 @@ class PublicApiSafetySuite extends FunSuite:
       import trading.quantity.*
       import trading.quantity.grid.*
       import trading.quantity.refinement.*
-      val asset = trading.quantity.testkit.TestAsset.runtime(AssetId("parameterless-quantization"))
-      val grid = UniformGrid.create[asset.D](
-        GridId("parameterless-grid"), GridVersion(1), asset.dimension,
+      val asset = trading.quantity.testkit.TestAsset.runtime(AtomId("parameterless-quantization"))
+      val grid = UniformGrid.create[asset.D](asset.dimension,
         PositiveRational.exact(1, 100).toOption.get
       )
       val source = Quantity(asset.dimension, Rational(1, 3))
@@ -82,13 +81,11 @@ class PublicApiSafetySuite extends FunSuite:
       """
       import trading.quantity.*
       import trading.quantity.refinement.*
-      val asset = trading.quantity.testkit.TestAsset.runtime(AssetId("expected-type-audit"))
-      val cents = UniformGrid.create[asset.D](
-        GridId("expected-cent"), GridVersion(1), asset.dimension,
+      val asset = trading.quantity.testkit.TestAsset.runtime(AtomId("expected-type-audit"))
+      val cents = UniformGrid.create[asset.D](asset.dimension,
         PositiveRational.exact(1, 100).toOption.get
       )
-      val threeCents = UniformGrid.create[asset.D](
-        GridId("expected-three-cent"), GridVersion(1), asset.dimension,
+      val threeCents = UniformGrid.create[asset.D](asset.dimension,
         PositiveRational.exact(3, 100).toOption.get
       )
       val selected: GridQuantity[asset.D, cents.G] =
@@ -101,7 +98,7 @@ class PublicApiSafetySuite extends FunSuite:
     assertCompiles:
       """
       import trading.quantity.*
-      val asset = trading.quantity.testkit.TestAsset.runtime(AssetId("exact-construction-control"))
+      val asset = trading.quantity.testkit.TestAsset.runtime(AtomId("exact-construction-control"))
       val fromIntegerLiteral: Quantity[asset.D] = Quantity(asset.dimension, 42)
       val fromLongLiteral: Quantity[asset.D] = Quantity(asset.dimension, 42L)
       val integerValue: Int = Int.MinValue

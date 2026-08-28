@@ -2,7 +2,7 @@ package trading.economics.instrument
 
 import trading.quantity.*
 import trading.quantity.refinement.*
-import trading.quantity.runtime.*
+import trading.reference.*
 
 /** Strictly positive lots for one ordinary runtime instrument identity. */
 final case class Lots[D <: Dim] private[instrument] (
@@ -23,8 +23,8 @@ final class Instrument private (
   val listingRules: ListingRules,
   val contractPayoff: ContractPayoff
 )(
-  private val positionGrid: RegisteredGridRef[roles.position.D],
-  private val priceGrid: RegisteredGridRef[Divide[roles.quote.D, roles.base.D]],
+  private val positionGrid: GridHandle[roles.position.D],
+  private val priceGrid: GridHandle[Divide[roles.quote.D, roles.base.D]],
   private val basePerPosition: Rate[roles.position.D, roles.base.D],
   private val quotePerPosition: Rate[roles.position.D, roles.quote.D]):
 
