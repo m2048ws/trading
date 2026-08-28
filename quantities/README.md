@@ -3,6 +3,20 @@
 This Scala 3 module provides exact dimensionful arithmetic, explicit uniform-grid boundaries, runtime identity, and
 checked reconstruction.
 
+## Responsibility and dependencies
+
+The current `trading-quantities` artifact owns exact rational arithmetic, static and runtime dimension mathematics,
+exact quantities, mathematical grid operations, refinements, and optional lawful mathematical interoperability. Its
+production dependencies are restricted to mathematical foundations such as Algebra and Cats Kernel.
+
+It must not acquire instrument, order, scenario, fee-policy, risk, application-workflow, codec, I/O, concrete-effect,
+or telemetry responsibilities. Stable asset/catalog identity, mutable registration, and packed logical records still
+present in the current source tree are known transitional exceptions, not the target ownership model. Proposal 1
+(`separate-quantity-and-reference-data-boundaries`) moves stable identity and catalog handles to reference data and
+removes quantity-owned packing; Proposal 2 replaces the temporary registry bridge; Proposal 9 introduces versioned
+boundary codecs. See the [project charter](../docs/design-principles.md) and
+[transition audit](../docs/architecture-charter-audit.md).
+
 > A dimension says what is measured.
 >
 > `Quantity[D]` is an arbitrary exact rational value in that dimension.
@@ -16,10 +30,10 @@ The primary public vocabulary is `Quantity[D]`, `GridQuantity[D, G]`, `Rate[From
 
 | Package | Responsibility |
 | --- | --- |
-| `trading.quantity` | Core exact quantities, dimensions, grids, and identifiers |
+| `trading.quantity` | Core exact quantities, dimensions, grids, and currently colocated identifiers |
 | `trading.quantity.grid` | Projection, quantization, encoding, quotient/remainder, and allocation |
 | `trading.quantity.refinement` | Checked refinements and refinement-aware operations |
-| `trading.quantity.runtime` | Runtime witnesses, registry, heterogeneous values, and logical persistence |
+| `trading.quantity.runtime` | Runtime witnesses plus transitional registry, heterogeneous, and logical-persistence concerns |
 | `trading.quantity.algebra` | Optional Typelevel Algebra integration |
 
 ## Static types and runtime authority

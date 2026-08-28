@@ -333,6 +333,11 @@ Workers still read all invariants.
 
 Extract the load-bearing obligations from the active OpenSpec change.
 
+For a nontrivial architecture or API change, include the applicable charter obligations from `docs/design-principles.md`
+and `INV-C1` through `INV-C11`: owner/error owner, allowed/forbidden dependencies, trust transition, algebraic model,
+validation stages, effect placement, dependency admission, codec ownership, hot-path impact, and proportional evidence.
+Mark an obligation not applicable only with a reason grounded in the active design.
+
 Prefer semantic statements such as:
 
 ```text
@@ -794,6 +799,41 @@ SUSPICIOUS:
 Do not automatically reject suspicious changes; require explanation.
 
 If they amount to another design change, escalate or separate them.
+
+---
+
+# Charter Obligation Routing
+
+Before launching apply, review, or remediation for a nontrivial change, classify the relevant architecture charter
+obligations:
+
+```text
+primary owner and error owner
+allowed and forbidden dependencies
+boundary -> trusted transition
+algebraic model and laws
+independent/dependent validation
+expected-input totality and partiality/unsafe containment
+pure/application/runtime effect placement
+third-party mechanism and public exposure
+codec/schema ownership
+control-plane/data-plane impact
+claim-proportional verification
+current/transitional/proposed status
+```
+
+Pass the applicable obligations to apply/remediation as semantic constraints and to review as falsification targets.
+Do not treat the checklist as proof of conformance. If implementation requires a deliberate charter exception or
+changes a settled layer boundary, classify it as `DESIGN_CONFLICT` and route to exploration/proposal rather than
+allowing incidental implementation.
+
+For expected-input totality, require public mathematical/domain APIs to represent expected absence, invalidity,
+conflict, and failure in result types. Apply, review, and remediation must reject `null`, unchecked extraction,
+sentinel values, and ordinary exceptions as control flow, and must keep unavoidable partial operations, casts, and
+mutable mechanisms narrowly scoped behind a stated invariant without exposing public construction authority.
+
+Do not ask a worker to create a target module solely because the target graph names it. Physical module creation
+belongs to the proposal that supplies a coherent code body or enforceable dependency/publication/test boundary.
 
 ---
 
@@ -1283,7 +1323,9 @@ Then run:
 
 Do not overload `CHANGE_OBLIGATIONS` with implementation instructions.
 
-Extract semantic obligations from the active OpenSpec change.
+Extract semantic obligations from the active OpenSpec change. For nontrivial changes include the applicable charter
+ownership, dependency, trust, algebra, validation, effect, dependency-admission, codec, hot-path, state-labeling, and
+verification obligations.
 
 ---
 

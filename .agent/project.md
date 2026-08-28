@@ -12,21 +12,33 @@ The foundation intentionally separates:
 - runtime dimension identity;
 - runtime grids and provenance.
 
-The quantities foundation must remain useful independently of later domain models such as instruments, orders, executions, positions, P&L, accounts, ledgers, and wallets.
-
-Those higher-level concepts belong in later modules rather than in the quantities foundation.
+The quantities foundation must remain useful independently of higher-level domain models such as instruments, orders,
+executions, positions, P&L, accounts, ledgers, and wallets. A current aggregate economics module implements some of
+those concerns, but they remain outside the quantities foundation and are being separated by active proposals.
 
 ## Modules
 
 The root SBT project is `trading` and is an unpublished aggregator.
 
-The primary foundation module is:
+The current production modules are:
 
 - project: `quantities`
 - artifact: `trading-quantities`
 - primary package: `trading.quantity`
+- project: `economics`
+- artifact: `trading-economics`
+- primary package: `trading.economics.instrument`
 
 A separate downstream/boundary project exercises the published/public API from outside the quantities module.
+
+The current physical dependency graph is:
+
+```text
+quantities <- economics <- adversarialBoundary (test-only)
+     ^______________________________|
+```
+
+The root aggregates all three and is not published. This is the implemented baseline, not the target module graph.
 
 The quantities production package layout includes:
 
@@ -37,6 +49,10 @@ The quantities production package layout includes:
 - `trading.quantity.algebra`
 
 Avoid speculative package subdivision unless an actual body of code requires it.
+
+The economics production package currently aggregates instrument construction, prices and market state, orders,
+hypothetical execution scenarios, fees/P&L, and sizing. This is an explicit transitional exception owned by active
+Proposals 3 through 7.
 
 ## Exact Quantity Model
 
@@ -245,6 +261,84 @@ Avoid:
 - public evidence families that exist only to support macro internals;
 - silent authority expansion;
 - fixes that solve one compiler fixture by weakening a global invariant.
+
+## Architecture and Functional Design Charter
+
+The active OpenSpec change `establish-architecture-and-functional-design-charter` governs the architecture charter
+until independent approval and archive. The detailed guide is `docs/design-principles.md`; the current/target and
+cross-proposal record is `docs/architecture-charter-audit.md`.
+
+Every production concept has one primary owning layer for its vocabulary, invariants, construction, and errors.
+Dependencies remain acyclic and point toward the smallest lower-level meaning required. Lower mathematical/domain
+layers do not depend on higher policy, workflows, codecs, or runtime implementations.
+
+The proposed responsibility graph is:
+
+| Proposed layer | Owns | May depend on |
+| --- | --- | --- |
+| quantities | exact arithmetic, dimensions, anonymous grids, refinements, mathematical algebra | mathematical foundations |
+| reference data | stable identities/versions, trusted handles, immutable catalog transitions/snapshots/errors | quantities |
+| instrument economics | assembled instrument meaning, lots, prices, valuation, economic fee values, P&L | quantities and reference data |
+| order model | immutable order instructions | instrument economics |
+| execution scenario | hypothetical execution evidence and checked outcomes | order model and instrument economics |
+| fee policy | venue/account/tier policy and assessed attribution | instrument economics, orders, scenarios |
+| risk | downside and sizing procedures | quantities and instrument economics |
+| application | effect-polymorphic ports/workflows for genuine external capabilities | required reference/domain layers |
+| boundary codecs | versioned boundary records and checked reconstruction | internal values encoded, never runtime |
+| runtime | concrete effects, resources, coordination, streams, clients, telemetry, interpreters | application and required domain/codec layers |
+
+These target modules and APIs are proposed until their owning change is implemented. Logical boundaries precede
+physical modules; create a module only with a coherent code body or enforceable dependency, publication, or independent
+verification boundary.
+
+## Layer-Specific Functional Profile
+
+- quantities are pure, exact, type-indexed, algebraic, and law-tested;
+- reference data use pure immutable state transitions and coherent snapshots;
+- domain and economics values use closed ADTs, refinements, smart constructors, typed errors, and no infrastructure
+  effects;
+- application ports use effect polymorphism only for genuine environmental variation;
+- codecs remain pure where possible and reconstruct through owning checked boundaries against an explicit snapshot;
+- runtime contains concrete effects, mutation, concurrency, resources, transactions, streams, clients, and telemetry.
+
+Design begins by identifying honest sums, products, refinements, non-empty structures, associative combinations,
+identities, orderings, traversals, and pure state transitions. Use the weakest complete abstraction and keep common
+public calls domain-readable.
+
+Independent validation failures accumulate in deterministic order. Dependent checks sequence only from evidence
+produced by a successful prerequisite. Successful results retain the strongest useful evidence, and errors remain
+owned by the layer that can explain them.
+
+Public mathematical and domain APIs represent expected absence, invalidity, conflict, and failure in their result
+types. They do not use `null`, unchecked extraction, sentinel values, or ordinary exceptions as control flow.
+Unavoidable partial operations, casts, and mutable mechanisms remain narrowly scoped, explicitly named or hidden,
+protected by a stated invariant, and inaccessible as public construction authority.
+
+## Dependency and Platform Baseline
+
+Prefer mature maintained mechanisms for general infrastructure when they satisfy the actual contract, but contain a
+dependency in the narrowest owning module/configuration. Project-owned domain meanings, trusted transitions, public
+errors, and durable schema semantics do not become third-party representations accidentally. A second vocabulary for
+the same concern needs an explicit distinct requirement.
+
+The minimum build and runtime JDK is 17 while the repository uses Scala 3.8.x. Independently released libraries use
+independently named version coordinates even when their current strings match. Proposal 1 owns splitting the current
+shared Cats/Algebra coordinate; Proposal 0 does not edit `build.sbt`.
+
+## Trust, Effects, and Hot Paths
+
+Boundary primitives become trusted domain data once through parse, resolution against one coherent immutable view,
+validation, and assembly. Trusted values carry their established identity/evidence into pure calculations and do not
+repeatedly resolve through live state.
+
+Control-plane identity/configuration/publication work stays out of data-plane arithmetic, valuation, decoding, event
+processing, and replay. Prefer immutable snapshots, batching, resolved capabilities, and caching. Any unavoidable live
+coordination in a hot path requires an explicit invariant and representative measurement.
+
+Verification is proportional to the claim: laws receive property/discipline tests; type-level authority receives
+packaged downstream positive/negative fixtures; multiple interpreters share contracts; concurrency receives coherence
+tests; complexity receives deterministic bounds; and performance-sensitive hot paths receive representative JMH
+evidence.
 
 ## Pre-release History Policy
 

@@ -4,6 +4,11 @@ This repository uses a project-steward workflow for OpenSpec-driven development.
 
 Stable project context lives under `.agent/`.
 
+Normative architecture and Scala/functional-design behavior is defined by the canonical OpenSpec capabilities
+`repository-architecture` and `scala-functional-design` after this active charter is archived. The human guide is
+`docs/design-principles.md`; `docs/architecture-charter-audit.md` distinguishes the current tree, transitional
+exceptions, and proposed target.
+
 Volatile Git, source, build, test, and OpenSpec state must be refreshed from the
 repository rather than trusted from prior conversations or reports.
 
@@ -73,6 +78,33 @@ Do not silently implement decisions marked `PROPOSED` or `EXPLORING` in:
 If a sound fix requires changing a settled invariant or making an unresolved
 design choice, stop routine apply/remediation and escalate to OpenSpec
 exploration/design review.
+
+## Architecture and Functional Design
+
+For every nontrivial proposal or implementation:
+
+- assign each concept and error one primary owner and preserve acyclic, one-way dependencies;
+- look for honest sums, products, refinements, non-empty structures, lawful combinations, traversals, and pure state
+  transitions before using flags, primitives, mutation, or ad hoc control flow;
+- preserve dimension, grid, identity, provenance, validation, and endpoint information in types across trusted
+  transitions;
+- accumulate independent validation failures deterministically and sequence dependent checks from prior evidence;
+- represent expected absence, invalidity, conflict, and failure in public mathematical/domain result types; do not use
+  `null`, unchecked extraction, sentinel values, or ordinary exceptions as control flow, and quarantine unavoidable
+  partiality or unsafe mechanisms behind stated checked invariants without exposing construction authority;
+- keep pure mathematical/domain/economic code free of live catalogs, codecs, concrete effects, and runtime state;
+- use effect-polymorphic application ports only for genuine external variation and confine concrete effects,
+  concurrency, resources, streams, clients, and telemetry to runtime interpreters;
+- admit mature dependencies for a named mechanism in the narrowest owning layer, keep independently released version
+  coordinates separate, and preserve the JDK 17 minimum unless an explicit compatibility change says otherwise;
+- require advanced Scala and functional abstractions to protect semantics while keeping common public calls
+  domain-readable;
+- verify laws, downstream compiler boundaries, interpreter contracts, concurrency, complexity, and hot-path
+  performance in proportion to the claim.
+
+Logical responsibility boundaries precede physical modules. Do not create an empty target module or present a proposed
+module/API as implemented. A required charter exception is a design change: stop apply/remediation and escalate rather
+than introducing it as incidental cleanup.
 
 ## OpenSpec
 

@@ -264,6 +264,36 @@ Archival requires independent approval.
 
 ---
 
+# Settled Architecture Decisions
+
+## DEC-C01 — Architecture and functional design charter
+
+**Status:** SETTLED
+
+**OpenSpec change:**
+
+```text
+establish-architecture-and-functional-design-charter
+```
+
+The archived change establishes cohesive one-way responsibility ownership, algebra-first modeling, semantic type
+preservation, evidence-producing validation, a pure domain core with effect-polymorphic application ports and concrete
+runtime interpreters, contained dependency admission, logical-before-physical modules, control-plane/data-plane
+separation, domain-readable advanced Scala, and claim-proportional verification.
+
+It records JDK 17 as the current minimum build/runtime baseline and requires independent version coordinates for
+independently released libraries. Proposal 1 owns the actual Cats/Algebra coordinate split; this charter makes no build
+change.
+
+The target reference-data, instrument-economics, order, scenario, fee, risk, application, codec, and runtime graph is a
+governance decision in this change. Its physical modules/APIs remain proposed until their owning dependent changes are
+implemented. Current transitional exceptions are recorded in `docs/architecture-charter-audit.md`.
+
+Fresh independent approval and archive established this decision as part of the accepted baseline. The proposed
+physical modules and APIs remain governed by their owning dependent changes.
+
+---
+
 # Settled Simplification Decisions
 
 ## DEC-A01 — Simplified static dimension model

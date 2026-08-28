@@ -4,11 +4,19 @@ context: |
   Project: trading
   Build: Scala 3 multi-module SBT
 
-  Current module:
-    SBT ID: quantities
-    Directory: quantities
-    Artifact: trading-quantities
-    Primary package: trading.quantity
+  Current production modules:
+    - SBT ID: quantities
+      Directory: quantities
+      Artifact: trading-quantities
+      Primary package: trading.quantity
+    - SBT ID: economics
+      Directory: economics
+      Artifact: trading-economics
+      Primary package: trading.economics.instrument
+
+  Current test-only boundary:
+    SBT ID: adversarialBoundary
+    Directory: adversarial-boundary
 
   Production package structure:
     trading.quantity
@@ -16,13 +24,18 @@ context: |
     trading.quantity.refinement
     trading.quantity.runtime
     trading.quantity.algebra
+    trading.economics.instrument
 
-  Current scope is exact dimension-safe quantities, uniform-grid arithmetic
-  and projection, checked refinements, runtime quantity identity, logical
-  grid-quantity reconstruction, and optional exact algebra.
+  Current scope includes exact dimension-safe quantities, uniform-grid
+  arithmetic and projection, checked refinements, runtime quantity identity,
+  logical grid-quantity reconstruction, optional exact algebra, and the
+  transitional aggregate instrument/order/scenario/fee/P&L/risk economics
+  surface.
 
-  Instruments, orders, positions, accounts, wallets, and other trading
-  domain modules are deferred.
+  The architecture charter is documented in docs/design-principles.md. Its
+  proposed target modules are not implemented merely because they are named.
+  Current transitional exceptions and proposal owners are recorded in
+  docs/architecture-charter-audit.md. Minimum build/runtime JDK: 17.
 
 # Per-artifact rules (optional)
 # Add custom rules for specific artifacts.

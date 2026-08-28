@@ -158,6 +158,26 @@ Review the underlying semantic rule rather than mechanically testing only the su
 
 ---
 
+# Architecture Charter Review
+
+For nontrivial architecture or API changes, independently falsify the applicable charter obligations in
+`docs/design-principles.md`, `INV-C1` through `INV-C11`, and `.agent/review-policy.md`. Check owner/error ownership,
+dependency direction and acyclicity, trust transitions and retained evidence, algebra and validation structure,
+pure/application/runtime effect placement, dependency containment/platform fit, codec ownership, hot-path coordination,
+common-call-site readability, proportional verification, and honest current/transitional/proposed labeling.
+
+Falsify expected-input totality at public mathematical/domain boundaries: verify that expected absence, invalidity,
+conflict, and failure are represented in result types, and reject `null`, unchecked extraction, sentinel values, or
+ordinary exceptions used as control flow. Audit unavoidable partial operations, casts, and mutable mechanisms for
+narrow scope, an explicit name or hidden placement, a stated protecting invariant, and no public construction
+authority. Exercise nearby successful and expected-failure paths in proportion to the claim.
+
+A checklist entry is not evidence. Inspect the staged implementation, build graph, public signatures, tests, and prose.
+Treat an incidental charter exception, cyclic boundary, concrete effect leak, repeated live resolution, or speculative
+empty module as a blocking finding and identify whether it requires design escalation.
+
+---
+
 # Known Regression Obligations
 
 Previously established regression classes relevant to this change:
