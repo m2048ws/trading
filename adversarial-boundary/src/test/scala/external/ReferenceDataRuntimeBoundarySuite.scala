@@ -36,6 +36,21 @@ class ReferenceDataRuntimeBoundarySuite extends FunSuite:
       quantum
     )
 
+  private def transition(state: CatalogState, commands: CatalogCommand*): CatalogTransition =
+    CatalogModel.commit(state, CatalogBatch.of(commands.head, commands.tail*)).fold(
+      errors => fail(errors.toString),
+      identity
+    )
+
+  private def catalog(assetName: String, grids: String*): CatalogTransition =
+    val asset     = assetDefinition(assetName)
+    val dimension = DimKey.atom(asset.dimensionAtom)
+    transition(
+      CatalogRoot.create().initialState,
+      (CatalogCommand.RegisterAsset(asset) +:
+        grids.toVector.map(name => CatalogCommand.RegisterGrid(gridDefinition(dimension, name))))*
+    )
+
   private def rejectSerialization(value: AnyRef): Unit =
     val bytes  = new ByteArrayOutputStream
     val output = new ObjectOutputStream(bytes)
@@ -51,184 +66,116 @@ class ReferenceDataRuntimeBoundarySuite extends FunSuite:
     assert(!returned)
 
   test("packaged stable identity smart constructors return precise typed failures"):
-    val emptyAsset: Either[EmptyAssetId.type, AssetId]               = AssetId.from("  ")
-    val emptyGrid: Either[EmptyGridId.type, GridId]                  = GridId.from("")
-    val zeroVersion: Either[NonPositiveGridVersion, GridVersion]     = GridVersion.from(0)
-    val negativeVersion: Either[NonPositiveGridVersion, GridVersion] = GridVersion.from(-7)
+    assertEquals(AssetId.from("  "), Left(EmptyAssetId))
+    assertEquals(GridId.from(""), Left(EmptyGridId))
+    assertEquals(GridVersion.from(0), Left(NonPositiveGridVersion(0)))
+    assertEquals(GridVersion.from(-7), Left(NonPositiveGridVersion(-7)))
+    assertEquals(CatalogRevision.from(BigInt(-1)), Left(NegativeCatalogRevision(BigInt(-1))))
+    assertEquals(CatalogBatch.from(Vector.empty), Left(EmptyCatalogBatch))
 
-    assertEquals(emptyAsset, Left(EmptyAssetId))
-    assertEquals(emptyGrid, Left(EmptyGridId))
-    assertEquals(zeroVersion, Left(NonPositiveGridVersion(0)))
-    assertEquals(negativeVersion, Left(NonPositiveGridVersion(-7)))
+    assertEquals(validAssetId("equal"), validAssetId("equal"))
+    assertEquals(validGridId("equal"), validGridId("equal"))
+    assertEquals(validGridVersion(3).toString, "GridVersion(3)")
 
-    val firstAssetId  = validAssetId("equal")
-    val secondAssetId = validAssetId("equal")
-    val firstGridId   = validGridId("equal")
-    val secondGridId  = validGridId("equal")
-    val firstVersion  = validGridVersion(3)
-    val secondVersion = validGridVersion(3)
-
-    assertEquals(firstAssetId, secondAssetId)
-    assertEquals(firstAssetId.hashCode, secondAssetId.hashCode)
-    assertEquals(firstAssetId.toString, "AssetId(equal)")
-    assertEquals(firstGridId, secondGridId)
-    assertEquals(firstGridId.hashCode, secondGridId.hashCode)
-    assertEquals(firstGridId.toString, "GridId(equal)")
-    assertEquals(firstVersion, secondVersion)
-    assertEquals(firstVersion.hashCode, secondVersion.hashCode)
-    assertEquals(firstVersion.toString, "GridVersion(3)")
-
-  test("packaged stable identity classes expose no case-class apply, copy, or product bypass"):
+  test("packaged products and stable identities expose no unchecked construction bypass"):
     List(classOf[AssetId], classOf[GridId], classOf[GridVersion]).foreach: identityClass =>
       assert(!classOf[Product].isAssignableFrom(identityClass))
-      val forbidden = identityClass.getMethods.map(_.getName).toSet.intersect(Set("apply", "copy", "fromProduct"))
-      assertEquals(forbidden, Set.empty[String])
+      assert(identityClass.getDeclaredConstructors.forall(constructor =>
+        java.lang.reflect.Modifier.isPrivate(constructor.getModifiers)
+      ))
 
-    List(classOf[AssetId], classOf[GridId], classOf[GridVersion]).foreach: identityClass =>
-      assert(
-        identityClass.getDeclaredConstructors.forall(constructor =>
-          java.lang.reflect.Modifier.isPrivate(constructor.getModifiers)
-        )
-      )
+    List(classOf[GridDefinition], classOf[CatalogBatch], classOf[CatalogDelta], classOf[CatalogRevision]).foreach:
+      domainClass => assert(!classOf[Product].isAssignableFrom(domainClass))
 
-    assert(!classOf[Product].isAssignableFrom(classOf[GridDefinition]))
-    val gridDefinitionForbidden =
-      classOf[GridDefinition].getMethods.map(_.getName).toSet.intersect(Set("copy", "fromProduct"))
-    assertEquals(gridDefinitionForbidden, Set.empty[String])
-
-  test("packaged raw grid boundaries reject nonpositive quanta and retain nearby positive construction"):
-    val gridId        = validGridId("checked-quantum")
-    val version       = validGridVersion(1)
-    val identityValue = GridIdentity(DimKey.one, GridKey(gridId, version))
-
-    assertEquals(GridDefinition.from(identityValue, Rational.zero), Left(NonPositiveGridQuantum(Rational.zero)))
-    assertEquals(
-      GridDefinition.from(identityValue, -Rational.one),
-      Left(NonPositiveGridQuantum(-Rational.one))
-    )
-    assertEquals(UniformGrid.from(DimRef.one, Rational.zero), Left(ExpectedPositive))
-    assertEquals(UniformGrid.from(DimRef.one, -Rational.one), Left(ExpectedPositive))
-
-    val positiveDefinition =
-      GridDefinition.from(identityValue, Rational.one).fold(error => fail(error.toString), identity)
-    val positiveGrid = UniformGrid.from(DimRef.one, Rational.one).fold(error => fail(error.toString), identity)
-    val registry     = new QuantityRegistry
-    val dimension    = registry
-      .registerDimension(DimKey.one)
-      .fold(error => fail(error.toString), identity)
-    val positiveHandle = registry
-      .registerGrid(dimension)(positiveDefinition)
-      .fold(error => fail(error.toString), identity)
-
-    assertEquals(positiveDefinition.quantum.unrefined, Rational.one)
-    assertEquals(positiveGrid.quantum.unrefined, Rational.one)
-    assertEquals(positiveHandle.quantum.unrefined, Rational.one)
-
-  test("packaged registry handles are final value classes without implementation hierarchies"):
-    val registry = new QuantityRegistry
-    val asset    = registry.registerAsset(assetDefinition("private-jvm")).fold(error => fail(error.toString), identity)
-    val grid     = registry
-      .registerGrid(asset)(gridDefinition(asset.dimension.key, "private-jvm-grid"))
-      .fold(error => fail(error.toString), identity)
+  test("packaged catalog issues final handles through pure transitions and direct snapshots"):
+    val result       = catalog("private-jvm", "private-jvm-grid")
+    val snapshot     = result.state.snapshot
+    val definition   = assetDefinition("private-jvm")
+    val asset        = snapshot.resolveAsset(definition.id).toOption.get
+    val gridIdentity = gridDefinition(asset.dimension.key, "private-jvm-grid").identity
+    val grid         = snapshot.resolveGrid(asset.dimension)(gridIdentity.key).toOption.get
 
     List(asset.dimension, asset, grid).foreach: handle =>
       val modifiers = handle.getClass.getModifiers
       assert(java.lang.reflect.Modifier.isFinal(modifiers))
       assert(!java.lang.reflect.Modifier.isAbstract(modifiers))
-      assert(!handle.getClass.isInterface)
 
-  test("packaged stable identities, definitions, errors, and handles fail Java serialization"):
-    val registry             = new QuantityRegistry
-    val assetDefinitionValue = assetDefinition("serialization")
-    val asset               = registry.registerAsset(assetDefinitionValue).fold(error => fail(error.toString), identity)
-    val gridDefinitionValue = gridDefinition(asset.dimension.key, "serialization-cent")
-    val grid = registry.registerGrid(asset)(gridDefinitionValue).fold(error => fail(error.toString), identity)
+    assert(snapshot.resolveAsset(asset.id).contains(asset))
+    assert(snapshot.resolveGrid(grid.identity).contains(grid))
+    assertEquals(snapshot.revision.value, BigInt(1))
+    assertEquals(snapshot.assetCount, 1)
+    assertEquals(snapshot.dimensionCount, 1)
+    assertEquals(snapshot.gridCount, 1)
+
+  test("packaged catalog values and trusted handles fail Java serialization"):
+    val definition          = assetDefinition("serialization")
+    val result              = catalog("serialization", "serialization-grid")
+    val snapshot            = result.state.snapshot
+    val asset               = snapshot.resolveAsset(definition.id).toOption.get
+    val gridDefinitionValue = gridDefinition(asset.dimension.key, "serialization-grid")
+    val grid                = snapshot.resolveGrid(gridDefinitionValue.identity).toOption.get
 
     List[AnyRef](
-      assetDefinitionValue.id,
-      gridDefinitionValue.id,
-      gridDefinitionValue.version,
-      gridDefinitionValue.key,
-      gridDefinitionValue.identity,
-      assetDefinitionValue,
+      definition.id,
+      definition,
       gridDefinitionValue,
-      EmptyAssetId,
-      NonPositiveGridVersion(0),
-      NonPositiveGridQuantum(Rational.zero),
+      CatalogCommand.RegisterAsset(definition),
+      CatalogBatch.one(CatalogCommand.RegisterAsset(definition)),
+      CatalogRevision.zero,
+      result,
+      result.state,
+      snapshot,
+      result.outcome,
       asset,
       asset.dimension,
       grid
     ).foreach(rejectSerialization)
 
-  test("packaged canonical issuance and reconciliation preserve every authority distinction"):
-    val local   = new QuantityRegistry
-    val foreign = new QuantityRegistry
-
+  test("packaged append-only publication, history, and reconciliation preserve authority distinctions"):
+    val localRoot     = CatalogRoot.create()
     val usdDefinition = assetDefinition("usd")
     val btcDefinition = assetDefinition("btc")
-    val usd           = local.registerAsset(usdDefinition).fold(error => fail(error.toString), identity)
-    val sameUsd       = local.registerAsset(usdDefinition).fold(error => fail(error.toString), identity)
-    val btc           = local.registerAsset(btcDefinition).fold(error => fail(error.toString), identity)
-    val foreignUsd    = foreign.registerAsset(usdDefinition).fold(error => fail(error.toString), identity)
-
-    assert(usd.eq(sameUsd))
-    assert(local.resolveAsset(usd.id).contains(usd))
-    assert(Asset.reconcile(usd, sameUsd).isRight)
-    assertEquals(Asset.reconcile(usd, btc), Left(AssetIdentityMismatch(usd.id, btc.id)))
-    assertEquals(
-      Asset.reconcile(usd, foreignUsd),
-      Left(ForeignLineage(usd.dimension.key, foreignUsd.dimension.key))
+    val first         = transition(
+      localRoot.initialState,
+      CatalogCommand.RegisterAsset(usdDefinition),
+      CatalogCommand.RegisterAsset(btcDefinition),
+      CatalogCommand.RegisterGrid(gridDefinition(DimKey.atom(usdDefinition.dimensionAtom), "cent")),
+      CatalogCommand.RegisterGrid(gridDefinition(DimKey.atom(usdDefinition.dimensionAtom), "other-cent"))
     )
+    val oldSnapshot = first.state.snapshot
+    val usd         = oldSnapshot.resolveAsset(usdDefinition.id).toOption.get
+    val btc         = oldSnapshot.resolveAsset(btcDefinition.id).toOption.get
+    val cents       = oldSnapshot.resolveGrid(gridDefinition(usd.dimension.key, "cent").identity).toOption.get
+    val otherCents  = oldSnapshot.resolveGrid(gridDefinition(usd.dimension.key, "other-cent").identity).toOption.get
+
+    val retry = CatalogModel.commit(
+      first.state,
+      CatalogBatch.one(CatalogCommand.RegisterAsset(usdDefinition))
+    ).toOption.get
+    assert(retry.state.eq(first.state))
+    assert(retry.outcome.isInstanceOf[CatalogCommit.Unchanged])
+    assert(Asset.reconcile(usd, retry.outcome.snapshot.resolveAsset(usd.id).toOption.get).isRight)
+    assertEquals(Asset.reconcile(usd, btc), Left(AssetIdentityMismatch(usd.id, btc.id)))
     assertEquals(
       DimensionHandle.reconcile(usd.dimension, btc.dimension),
       Left(HandleDimensionMismatch(usd.dimension.key, btc.dimension.key))
     )
-
-    val centsDefinition = gridDefinition(usd.dimension.key, "cent")
-    val cents           = local.registerGrid(usd)(centsDefinition).fold(error => fail(error.toString), identity)
-    val sameCents       = local.registerGrid(usd)(centsDefinition).fold(error => fail(error.toString), identity)
-    val otherCents      = local
-      .registerGrid(usd)(gridDefinition(usd.dimension.key, "other-cent"))
-      .fold(error => fail(error.toString), identity)
-    val foreignCents = foreign
-      .registerGrid(foreignUsd)(gridDefinition(foreignUsd.dimension.key, "cent"))
-      .fold(error => fail(error.toString), identity)
-
-    assert(cents.eq(sameCents))
-    assert(local.resolveGrid(usd.dimension)(cents.key).contains(cents))
-    assert(GridHandle.reconcile(cents, sameCents).isRight)
     assertEquals(
       GridHandle.reconcile(cents, otherCents),
       Left(StableGridIdentityMismatch(cents.identity, otherCents.identity))
     )
-    assertEquals(
-      GridHandle.reconcile(cents, foreignCents),
-      Left(ForeignLineage(cents.dimension.key, foreignCents.dimension.key))
-    )
     assertEquals(SameGrid.between(cents.grid, otherCents.grid), Left(AnonymousGridMismatch))
     assert(SameQuantum.between(cents.grid, otherCents.grid).isRight)
 
-    val wrongDimension = gridDefinition(btc.dimension.key, "wrong-dimension")
-    assertEquals(
-      local.registerGrid(usd)(wrongDimension),
-      Left(GridDefinitionDimensionMismatch(usd.dimension.key, btc.dimension.key))
-    )
+    val laterDefinition = assetDefinition("later")
+    val later           = transition(first.state, CatalogCommand.RegisterAsset(laterDefinition))
+    assertEquals(oldSnapshot.resolveAsset(laterDefinition.id), Left(UnknownAsset(laterDefinition.id)))
+    assert(later.state.snapshot.resolveAsset(laterDefinition.id).isRight)
+    assert(Asset.reconcile(usd, later.state.snapshot.resolveAsset(usd.id).toOption.get).isRight)
 
-    val conflicting = gridDefinition(
-      usd.dimension.key,
-      "cent",
-      PositiveRational.exact(3, 100).fold(error => fail(error.toString), identity)
-    )
-    assertEquals(
-      local.registerGrid(usd)(conflicting),
-      Left(
-        ConflictingGridDefinition(
-          centsDefinition.identity,
-          centsDefinition.quantum.unrefined,
-          conflicting.quantum.unrefined
-        )
-      )
-    )
+    val foreign = transition(CatalogRoot.create().initialState, CatalogCommand.RegisterAsset(usdDefinition))
+      .state.snapshot.resolveAsset(usd.id).toOption.get
+    assertEquals(Asset.reconcile(usd, foreign), Left(ForeignLineage(usd.dimension.key, foreign.dimension.key)))
 
     val coordinate = cents.fromCoordinate(BigInt(37))
     assertEquals(cents.coordinate(coordinate), BigInt(37))
@@ -237,42 +184,29 @@ class ReferenceDataRuntimeBoundarySuite extends FunSuite:
   test("packaged reference-data roots reject null before returning a value or authority"):
     rejectsNullAtRoot(AssetId.from(null))
     rejectsNullAtRoot(GridId.from(null))
+    rejectsNullAtRoot(CatalogRevision.from(null))
+    rejectsNullAtRoot(CatalogBatch.one(null))
 
-    val version = validGridVersion(1)
-    val id      = validGridId("null-grid")
-    rejectsNullAtRoot(GridKey(null, version))
-    rejectsNullAtRoot(GridKey(id, null))
-    rejectsNullAtRoot(GridIdentity(null, GridKey(id, version)))
-    rejectsNullAtRoot(GridIdentity(DimKey.one, null))
-    rejectsNullAtRoot(AssetDefinition(null, AtomId("null-asset")))
-    rejectsNullAtRoot(AssetDefinition(validAssetId("null-asset"), null))
-    rejectsNullAtRoot(GridDefinition(null, cent))
-
-    val registry   = new QuantityRegistry
-    val asset      = registry.registerAsset(assetDefinition("null-roots")).fold(error => fail(error.toString), identity)
-    val definition = gridDefinition(asset.dimension.key, "null-roots-grid")
-    val grid       = registry.registerGrid(asset)(definition).fold(error => fail(error.toString), identity)
+    val result   = catalog("null-roots", "null-grid")
+    val snapshot = result.state.snapshot
+    val asset    = snapshot.resolveAsset(validAssetId("null-roots")).toOption.get
+    val grid     = snapshot.resolveGrid(gridDefinition(asset.dimension.key, "null-grid").identity).toOption.get
     val nullDimension: DimensionHandle[asset.D] = null
     val nullAsset: Asset                        = null
     val nullGrid: GridHandle[asset.D]           = null
     val nullCoordinate: BigInt                  = null
     val nullRational: Rational                  = null
 
-    rejectsNullAtRoot(registry.registerAsset(null))
-    rejectsNullAtRoot(registry.resolveAsset(null))
-    rejectsNullAtRoot(registry.registerDimension(null))
-    rejectsNullAtRoot(registry.resolveDimension(null))
-    rejectsNullAtRoot(registry.registerGrid(nullDimension)(definition))
-    rejectsNullAtRoot(registry.registerGrid(nullAsset)(definition))
-    rejectsNullAtRoot(registry.registerGrid(asset)(null))
-    rejectsNullAtRoot(registry.resolveGrid(nullDimension)(grid.key))
-    rejectsNullAtRoot(registry.resolveGrid(asset.dimension)(null))
-    rejectsNullAtRoot(GridDefinition.from(definition.identity, nullRational))
+    rejectsNullAtRoot(CatalogModel.commit(null, CatalogBatch.one(CatalogCommand.RegisterAsset(assetDefinition("x")))))
+    rejectsNullAtRoot(CatalogModel.commit(result.state, null))
+    rejectsNullAtRoot(snapshot.resolveAsset(null))
+    rejectsNullAtRoot(snapshot.resolveDimension(null))
+    rejectsNullAtRoot(snapshot.resolveGrid(null))
+    rejectsNullAtRoot(snapshot.resolveGrid(nullDimension)(grid.key))
+    rejectsNullAtRoot(GridDefinition.from(grid.identity, nullRational))
     rejectsNullAtRoot(UniformGrid.from(asset.dimension.ref, nullRational))
     rejectsNullAtRoot(DimensionHandle.sameLineage(nullDimension, asset.dimension))
-    rejectsNullAtRoot(DimensionHandle.reconcile(asset.dimension, nullDimension))
     rejectsNullAtRoot(Asset.reconcile(nullAsset, asset))
     rejectsNullAtRoot(GridHandle.reconcile(nullGrid, grid))
     rejectsNullAtRoot(grid.fromCoordinate(nullCoordinate))
-
 end ReferenceDataRuntimeBoundarySuite

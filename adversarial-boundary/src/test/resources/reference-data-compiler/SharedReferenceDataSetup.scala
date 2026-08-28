@@ -27,12 +27,19 @@ object SharedReferenceDataSetup:
       PositiveRational(quantum).fold(error => throw new AssertionError(error.toString), identity)
     )
 
-  val registry = new QuantityRegistry
-  val asset = registry
-    .registerAsset(assetDefinition("canonical-asset"))
+  val definition = assetDefinition("canonical-asset")
+  val gridDefinitionValue = gridDefinition(DimKey.atom(definition.dimensionAtom), "canonical-grid")
+  val batch = CatalogBatch.of(
+    CatalogCommand.RegisterGrid(gridDefinitionValue),
+    CatalogCommand.RegisterAsset(definition)
+  )
+  val transition = CatalogModel
+    .commit(CatalogRoot.create().initialState, batch)
     .fold(error => throw new AssertionError(error.toString), identity)
-  val grid = registry
-    .registerGrid(asset)(gridDefinition(asset.dimension.key, "canonical-grid"))
+  val snapshot = transition.state.snapshot
+  val asset = snapshot.resolveAsset(definition.id).fold(error => throw new AssertionError(error.toString), identity)
+  val grid = snapshot
+    .resolveGrid(asset.dimension)(gridDefinitionValue.key)
     .fold(error => throw new AssertionError(error.toString), identity)
 
 end SharedReferenceDataSetup

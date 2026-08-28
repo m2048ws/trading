@@ -23,14 +23,17 @@ class ReferenceDataJavaBoundarySuite extends FunSuite:
 
   private final case class Compilation(succeeded: Boolean, diagnostics: String)
 
-  test("completed public artifacts support registry-issued Java handles"):
+  test("completed public artifacts support catalog-issued Java handles"):
     val output = Files.createTempDirectory("reference-data-java-positive")
     val result = compile(
       List(
         fixturesRoot.resolve("SharedReferenceDataJavaSetup.java"),
-        fixturesRoot.resolve("positive/RegistryIssuedHandles.java"),
+        fixturesRoot.resolve("positive/CatalogIssuedHandles.java"),
+        fixturesRoot.resolve("positive/CatalogErrorConstructionBoundary.java"),
+        fixturesRoot.resolve("positive/CatalogOutcomeInspectionBoundary.java"),
         fixturesRoot.resolve("positive/HandleConstructionBoundary.java"),
-        fixturesRoot.resolve("positive/GridQuantumConstructionBoundary.java")
+        fixturesRoot.resolve("positive/GridQuantumConstructionBoundary.java"),
+        fixturesRoot.resolve("positive/GridReconciliationAuthority.java")
       ),
       output,
       classpath
@@ -40,9 +43,12 @@ class ReferenceDataJavaBoundarySuite extends FunSuite:
     val loader = new URLClassLoader(Array(output.toUri.toURL), getClass.getClassLoader)
     try
       List(
-        "external.referencejava.RegistryIssuedHandles",
+        "external.referencejava.CatalogIssuedHandles",
+        "external.referencejava.CatalogErrorConstructionBoundary",
+        "external.referencejava.CatalogOutcomeInspectionBoundary",
         "external.referencejava.HandleConstructionBoundary",
-        "external.referencejava.GridQuantumConstructionBoundary"
+        "external.referencejava.GridQuantumConstructionBoundary",
+        "external.referencejava.GridReconciliationAuthority"
       ).foreach: className =>
         val client = Class.forName(className, true, loader)
         val main   = client.getMethod("main", classOf[Array[String]])
@@ -59,14 +65,12 @@ class ReferenceDataJavaBoundarySuite extends FunSuite:
     assert(prelude.succeeded, prelude.diagnostics)
 
     val cases = List(
-      "AssetIdConstructor.java"         -> List("AssetId", "private access"),
-      "GridIdConstructor.java"          -> List("GridId", "private access"),
-      "GridVersionConstructor.java"     -> List("GridVersion", "private access"),
-      "GridDefinitionConstructor.java"  -> List("constructor GridDefinition", "cannot be applied"),
-      "LineageConstructor.java"         -> List("Lineage", "cannot find symbol"),
-      "DimensionHandleConstructor.java" -> List("InternedDimensionHandle", "cannot find symbol"),
-      "AssetHandleConstructor.java"     -> List("InternedAsset", "cannot find symbol"),
-      "GridHandleConstructor.java"      -> List("InternedGridHandle", "cannot find symbol")
+      "AssetIdConstructor.java"            -> List("AssetId", "private access"),
+      "GridIdConstructor.java"             -> List("GridId", "private access"),
+      "GridVersionConstructor.java"        -> List("GridVersion", "private access"),
+      "GridDefinitionConstructor.java"     -> List("constructor GridDefinition", "cannot be applied"),
+      "GridReconciliationConstructor.java" -> List("Reconciliation", "cannot find symbol"),
+      "CatalogOutcomeConstructor.java"     -> List("Published", "CatalogTransition")
     )
     val negativeClasspath = s"$classpath${java.io.File.pathSeparator}$preludeOutput"
 

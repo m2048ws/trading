@@ -28,6 +28,9 @@ The current production modules are:
 - project: `referenceData`
 - artifact: `trading-reference-data`
 - primary package: `trading.reference`
+- project: `application`
+- artifact: `trading-application`
+- primary package: `trading.application`
 - project: `economics`
 - artifact: `trading-economics`
 - primary package: `trading.economics.instrument`
@@ -37,12 +40,15 @@ A separate downstream/boundary project exercises completed public artifacts from
 The current physical dependency graph is:
 
 ```text
-quantities <- referenceData <- economics <- adversarialBoundary (test-only)
-     ^______________^_____________^______________|
+quantities <- referenceData <- application
+     ^             ^              |
+     |             +-- economics  |
+     +-----------------------------+-- adversarialBoundary (test-only)
 ```
 
-The root aggregates all four and is not published. Reference data currently contains the explicitly transitional
-synchronized construction bridge; Proposal 2 replaces it with pure catalog state and snapshots.
+The root aggregates the four production modules plus the test-only adversarial boundary and is not published. Reference
+data contains pure immutable catalog state/transitions and coherent snapshots. Application currently contains only the
+minimal `LiveCatalog[F]` port. The benchmark-only project is non-published and outside root aggregation.
 
 The quantities production package layout includes:
 
@@ -52,8 +58,8 @@ The quantities production package layout includes:
 - `trading.quantity.algebra`
 
 The reference-data production package is `trading.reference`. It owns stable asset/grid identity, definitions, trusted
-handles, opaque lineage, pure handle reconciliation, and the unreleased synchronized bridge. Quantity-owned packed
-records are absent; Proposal 9 owns their durable replacement.
+handles, opaque lineage, pure handle reconciliation, immutable catalog transitions, and snapshots. Quantity-owned
+packed records are absent; Proposal 9 owns their durable replacement.
 
 Avoid speculative package subdivision unless an actual body of code requires it.
 
@@ -246,9 +252,9 @@ Do not let an algebra instance create an arithmetic capability that the direct A
 `trading.quantity.runtime` production package or quantity-owned heterogeneous carrier. These mathematical runtime
 capabilities establish dimension identity only and confer no stable asset, grid, or reference-data provenance.
 
-The synchronized `QuantityRegistry` is currently a downstream `trading.reference` construction bridge. It issues
-immutable trusted handles but is not a quantity runtime service or the proposed final catalog/runtime architecture.
-Proposal 2 owns its replacement with pure catalog state and snapshots, and Proposal 9 owns future durable decoding.
+Pure `CatalogModel.commit` and immutable `CatalogSnapshot` own reference-data construction and lookup. The application
+artifact owns only `LiveCatalog[F]`; Proposal 8 owns concrete live coordination, and Proposal 9 owns future durable
+decoding.
 
 ## Design Philosophy
 
@@ -296,15 +302,16 @@ The proposed responsibility graph is:
 | boundary codecs | versioned boundary records and checked reconstruction | internal values encoded, never runtime |
 | runtime | concrete effects, resources, coordination, streams, clients, telemetry, interpreters | application and required domain/codec layers |
 
-These target modules and APIs are proposed until their owning change is implemented. Logical boundaries precede
+Target modules and APIs remain proposed until their owning change is implemented; reference data and the initial
+application port are now physical. Logical boundaries precede
 physical modules; create a module only with a coherent code body or enforceable dependency, publication, or independent
 verification boundary.
 
 ## Layer-Specific Functional Profile
 
 - quantities are pure, exact, type-indexed, algebraic, and law-tested;
-- reference data target pure immutable state transitions and coherent snapshots; until Proposal 2, the current artifact
-  contains the explicit synchronized construction bridge while issued handles and reconciliation remain immutable;
+- reference data uses pure immutable state transitions and coherent snapshots; issued handles and reconciliation remain
+  immutable;
 - domain and economics values use closed ADTs, refinements, smart constructors, typed errors, and no infrastructure
   effects;
 - application ports use effect polymorphism only for genuine environmental variation;

@@ -56,7 +56,12 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
         "GridVersion.class",
         "GridKey.class",
         "GridIdentity.class",
-        "QuantityRegistry.class",
+        "CatalogRoot.class",
+        "CatalogState.class",
+        "CatalogSnapshot.class",
+        "CatalogBatch.class",
+        "CatalogCommand.class",
+        "CatalogModel.class",
         "Asset.class",
         "DimensionHandle.class",
         "GridHandle.class"

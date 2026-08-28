@@ -5,41 +5,62 @@ import trading.quantity.refinement.*
 import trading.reference.*
 
 final class EconomicsFixtures:
-  val registry = new QuantityRegistry
+  private val assetDefinitions = Vector("btc", "usd", "contract", "eur", "fee-token").map: name =>
+    AssetDefinition(AssetId.from(name).toOption.get, AtomId(s"asset:$name"))
 
-  val btc      = asset("btc")
-  val usd      = asset("usd")
-  val contract = asset("contract")
-  val eur      = asset("eur")
-  val token    = asset("fee-token")
+  private val baseGridDefinitions = Vector(
+    gridDefinition("contract", "contract-lots", Rational(1, 1000)),
+    gridDefinition("usd", "usd-cents", Rational(1, 100)),
+    gridDefinition("btc", "btc-satoshis", Rational(1, 100_000_000)),
+    gridDefinition("eur", "eur-cents", Rational(1, 100)),
+    gridDefinition("fee-token", "token-millis", Rational(1, 1000))
+  )
 
-  val contractLots = grid(contract, "contract-lots", Rational(1, 1000))
-  val usdCents     = grid(usd, "usd-cents", Rational(1, 100))
-  val btcSatoshis  = grid(btc, "btc-satoshis", Rational(1, 100_000_000))
-  val eurCents     = grid(eur, "eur-cents", Rational(1, 100))
-  val tokenMillis  = grid(token, "token-millis", Rational(1, 1000))
+  private val baseBatch = CatalogBatch.from(
+    assetDefinitions.map(CatalogCommand.RegisterAsset.apply) ++
+      baseGridDefinitions.map(CatalogCommand.RegisterGrid.apply)
+  ).toOption.get
+  private val baseState    = CatalogModel.commit(CatalogRoot.create().initialState, baseBatch).toOption.get.state
+  private val baseSnapshot = baseState.snapshot
+
+  val btc      = resolvedAsset("btc", baseSnapshot)
+  val usd      = resolvedAsset("usd", baseSnapshot)
+  val contract = resolvedAsset("contract", baseSnapshot)
+  val eur      = resolvedAsset("eur", baseSnapshot)
+  val token    = resolvedAsset("fee-token", baseSnapshot)
+
+  val contractLots = resolvedGrid(contract, "contract-lots", baseSnapshot)
+  val usdCents     = resolvedGrid(usd, "usd-cents", baseSnapshot)
+  val btcSatoshis  = resolvedGrid(btc, "btc-satoshis", baseSnapshot)
+  val eurCents     = resolvedGrid(eur, "eur-cents", baseSnapshot)
+  val tokenMillis  = resolvedGrid(token, "token-millis", baseSnapshot)
 
   val usdPerBtcDimension =
-    registry
-      .registerDimension(DimRef.divide(usd.dimension.ref, btc.dimension.ref).key)
-      .toOption
-      .get
-  val usdPerBtcTicks =
-    registry
-      .registerGrid(usdPerBtcDimension)(
-        GridDefinition(
-          GridIdentity(
-            usdPerBtcDimension.key,
-            GridKey(
-              GridId.from("usd-per-btc-half-dollar").toOption.get,
-              GridVersion.from(1).toOption.get
-            )
-          ),
-          PositiveRational(Rational(1, 2)).toOption.get
-        )
+    DimRef.divide(usd.dimension.ref, btc.dimension.ref).key
+  private val usdPerBtcDefinition = GridDefinition(
+    GridIdentity(
+      usdPerBtcDimension,
+      GridKey(
+        GridId.from("usd-per-btc-half-dollar").toOption.get,
+        GridVersion.from(1).toOption.get
       )
-      .toOption
-      .get
+    ),
+    PositiveRational(Rational(1, 2)).toOption.get
+  )
+  private val completeState = CatalogModel
+    .commit(
+      baseState,
+      CatalogBatch.of(
+        CatalogCommand.RegisterDimension(usdPerBtcDimension),
+        CatalogCommand.RegisterGrid(usdPerBtcDefinition)
+      )
+    )
+    .toOption
+    .get
+    .state
+  private val completeSnapshot = completeState.snapshot
+  val usdPerBtcTicks           =
+    completeSnapshot.resolveGrid(usdPerBtcDefinition.identity).toOption.get
 
   val linear: Instrument =
     instrument("linear-btcusd", "bitcoin-index", btc, usd, contract, usd)(
@@ -130,23 +151,21 @@ final class EconomicsFixtures:
     Instrument.create(Definition(identity, roles, listing, payoff)).toOption.get
   end instrument
 
-  private def asset(name: String): Asset =
-    registry
-      .registerAsset(AssetDefinition(AssetId.from(name).toOption.get, AtomId(s"asset:$name")))
-      .toOption
-      .get
+  private def gridDefinition(assetName: String, gridName: String, quantum: Rational): GridDefinition =
+    GridDefinition(
+      GridIdentity(
+        DimKey.atom(AtomId(s"asset:$assetName")),
+        GridKey(GridId.from(gridName).toOption.get, GridVersion.from(1).toOption.get)
+      ),
+      PositiveRational(quantum).toOption.get
+    )
 
-  private def grid(asset: Asset, name: String, quantum: Rational): GridHandle[asset.D] =
-    registry
-      .registerGrid(asset)(
-        GridDefinition(
-          GridIdentity(
-            asset.dimension.key,
-            GridKey(GridId.from(name).toOption.get, GridVersion.from(1).toOption.get)
-          ),
-          PositiveRational(quantum).toOption.get
-        )
-      )
+  private def resolvedAsset(name: String, snapshot: CatalogSnapshot): Asset =
+    snapshot.resolveAsset(AssetId.from(name).toOption.get).toOption.get
+
+  private def resolvedGrid(asset: Asset, name: String, snapshot: CatalogSnapshot): GridHandle[asset.D] =
+    snapshot
+      .resolveGrid(asset.dimension)(GridKey(GridId.from(name).toOption.get, GridVersion.from(1).toOption.get))
       .toOption
       .get
 

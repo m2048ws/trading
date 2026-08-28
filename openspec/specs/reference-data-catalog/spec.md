@@ -1,10 +1,9 @@
-## Purpose
+# reference-data-catalog Specification
 
+## Purpose
 Defines the pure append-only reference-data catalog, its immutable state transitions, canonical handle issuance,
 revisioned snapshots, transactional registration semantics, and typed lookup and definition failures.
-
-## ADDED Requirements
-
+## Requirements
 ### Requirement: Catalog evolution is an immutable state transition
 The reference-data artifact SHALL model catalog evolution as a pure transformation from one immutable catalog state and
 an explicit registration batch to either a non-empty domain failure or a new immutable state plus an observable commit
@@ -42,6 +41,12 @@ A grid command MAY refer to a dimension supplied anywhere in the same batch; its
 execution order. Public command and batch values SHALL retain the definitions needed for inspection, testing, logging,
 and future explicit encoding without containing trusted handles or private lineage authority.
 
+Every public catalog command, outcome, lookup error, violation, and guarded collection SHALL reject null payloads and
+malformed nested evidence such as negative or repeated command indices, duplicate definitions whose keys differ from
+the named key, equal conflict sides, or duplicate-proposal values that do not contain genuinely distinct conflicting
+definitions. Expected negative revision input SHALL continue to be represented by `CatalogRevision.from` as a typed
+domain result; defensive constructor rejection SHALL not replace that expected-input path with exception control flow.
+
 #### Scenario: Inspect registration intent
 - **WHEN** application code constructs an asset, dimension, or grid registration batch
 - **THEN** the requested definitions are ordinary immutable data and can be inspected before transition evaluation
@@ -53,6 +58,11 @@ and future explicit encoding without containing trusted handles or private linea
 #### Scenario: Reject an empty transaction
 - **WHEN** a caller attempts to construct a registration batch with no commands
 - **THEN** no batch value is returned and no meaningless publication can be requested
+
+#### Scenario: Reject malformed public error evidence
+- **WHEN** a Scala or Java caller attempts to construct a catalog error with a null payload, negative command index, or
+  non-conflicting duplicate-definition collection
+- **THEN** no malformed public error value is returned while checked expected-input factories retain their typed errors
 
 ### Requirement: Identity definitions are append-only and immutable by key
 The catalog SHALL add definitions and SHALL expose no command that deletes, overwrites, or mutates an existing identity
@@ -123,6 +133,12 @@ one successor state.
   dimension for another grid
 - **THEN** it returns all observable violations in stable order and publishes none of the otherwise valid commands
 
+#### Scenario: Classify a canonical retry and one new alias once
+- **WHEN** a batch repeats one canonical asset definition and then proposes one new asset for that already-bound
+  dimension
+- **THEN** the new alias command produces exactly one indexed binding violation rather than duplicate evidence from
+  current-state and within-batch stages
+
 #### Scenario: Suppress a dependent grid failure
 - **WHEN** a proposed dimension definition is itself incoherent and a grid command depends on it
 - **THEN** the catalog reports the prerequisite violation without constructing or validating a handle for that grid
@@ -153,6 +169,12 @@ SHALL never contain removal or replacement.
 - **WHEN** batch validation returns one or more violations
 - **THEN** no successor revision or delta is produced
 
+#### Scenario: Reject incoherent publication evidence
+- **WHEN** a Scala or Java caller attempts to retain duplicate delta additions or pair a state, snapshot, revision, and
+  publication delta that were not issued together by the catalog model
+- **THEN** the checked delta factory returns typed rejection evidence and no malformed delta, published outcome, or
+  transition is returned, while model-issued values remain publicly inspectable and pattern-matchable
+
 ### Requirement: Handles are canonical across a catalog lineage
 Within one lineage, each canonical dimension key, asset binding, and full grid identity SHALL have one semantic trusted
 handle and one immutable definition. Successor states and snapshots SHALL retain and structurally share existing
@@ -161,6 +183,11 @@ handles; they SHALL NOT reconstruct old path-dependent dimensions or grid coordi
 Repeated lookup in one or later snapshots SHALL return handles accepted by checked same-handle reconciliation. JVM
 reference equality MAY be used privately but SHALL NOT be the public contract. A handle remains valid after later
 catalog revisions and carries no mutable pointer to a current state.
+
+Only successful checked stable-grid reconciliation SHALL issue evidence capable of retyping coordinates between two
+handles. Ordinary downstream Scala and Java callers SHALL NOT obtain usable retyping authority by invoking the
+evidence constructor or by supplying a handle, visible identity, or observed lineage-related value as an issuance
+token.
 
 #### Scenario: Resolve an existing asset after a later commit
 - **WHEN** an asset is resolved at revision `3` and again after unrelated additions publish revision `9`
@@ -173,6 +200,11 @@ catalog revisions and carries no mutable pointer to a current state.
 #### Scenario: Avoid reference-equality dependence
 - **WHEN** an implementation changes its immutable-map or snapshot representation without changing catalog semantics
 - **THEN** callers continue to rely on checked handle evidence rather than `eq`
+
+#### Scenario: Retype only after checked grid reconciliation
+- **WHEN** a caller reconciles two stable grid handles and then retypes a coordinate
+- **THEN** successful checked reconciliation supplies the required evidence, while direct downstream evidence
+  construction cannot yield usable authority
 
 ### Requirement: Catalog snapshots are coherent pure read views
 A `CatalogSnapshot` SHALL be an immutable coherent view of exactly one lineage and revision. It SHALL provide pure

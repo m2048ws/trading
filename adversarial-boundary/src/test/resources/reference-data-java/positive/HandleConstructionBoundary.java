@@ -2,50 +2,31 @@ package external.referencejava;
 
 import java.lang.reflect.Modifier;
 import trading.quantity.Dim;
-import trading.quantity.Rational;
 import trading.reference.Asset;
 import trading.reference.AssetDefinition;
+import trading.reference.CatalogRoot;
+import trading.reference.CatalogTransition;
 import trading.reference.DimensionHandle;
-import trading.reference.GridDefinition;
 import trading.reference.GridHandle;
-import trading.reference.GridIdentity;
-import trading.reference.GridKey;
-import trading.reference.QuantityRegistry;
 
 public final class HandleConstructionBoundary extends SharedReferenceDataJavaSetup {
   public static void main(String[] args) {
-    QuantityRegistry registry = new QuantityRegistry();
     AssetDefinition definition = assetDefinition("EUR");
-    Asset issuedAsset = right(registry.registerAsset(definition));
-
-    @SuppressWarnings("unchecked")
-    DimensionHandle<Dim> issuedDimension = (DimensionHandle<Dim>) issuedAsset.dimension();
-    GridIdentity identity =
-        new GridIdentity(
-            issuedDimension.key(), new GridKey(gridId("cent"), gridVersion(1)));
-    GridHandle<Dim> issuedGrid =
-        right(
-            registry.registerGrid(
-                issuedDimension, right(GridDefinition.from(identity, Rational.one()))));
-    Object observedLineage =
-        issuedDimension.trading$reference$DimensionHandle$$lineageToken();
+    CatalogTransition transition = commitAsset(CatalogRoot.create().initialState(), definition);
+    Asset issuedAsset = right(transition.state().snapshot().resolveAsset(definition.id()));
 
     requireFinalValue(DimensionHandle.class);
     requireFinalValue(Asset.class);
     requireFinalValue(GridHandle.class);
+    if (issuedAsset.dimension().key() == null) {
+      throw new AssertionError("catalog-issued dimension was unavailable");
+    }
 
-    rejectsConstruction(
-        () -> new DimensionHandle<>(new Object(), observedLineage, issuedDimension.ref()));
-    rejectsConstruction(
-        () -> new Asset(new Object(), observedLineage, issuedAsset.id(), issuedDimension));
-    rejectsConstruction(
-        () ->
-            new GridHandle<>(
-                new Object(),
-                observedLineage,
-                issuedGrid.identity(),
-                issuedDimension,
-                issuedGrid.grid()));
+    @SuppressWarnings("unchecked")
+    DimensionHandle<Dim> dimension = (DimensionHandle<Dim>) issuedAsset.dimension();
+    rejectsConstruction(() -> new DimensionHandle<>(new Object(), new Object(), dimension.ref()));
+    rejectsConstruction(() -> new Asset(new Object(), new Object(), issuedAsset.id(), dimension));
+    rejectsConstruction(() -> new GridHandle<>(new Object(), new Object(), null, dimension, null));
   }
 
   private static void requireFinalValue(Class<?> handleClass) {
@@ -57,9 +38,9 @@ public final class HandleConstructionBoundary extends SharedReferenceDataJavaSet
   private static void rejectsConstruction(Runnable attempt) {
     try {
       attempt.run();
-      throw new AssertionError("client-defined handle construction returned a value");
+      throw new AssertionError("caller construction returned trusted authority");
     } catch (IllegalArgumentException expected) {
-      // The registry owns the only accepted construction argument.
+      // The inaccessible catalog permit is required before any handle can be valid.
     }
   }
 }

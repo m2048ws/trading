@@ -13,6 +13,10 @@ context: |
       Directory: reference-data
       Artifact: trading-reference-data
       Primary package: trading.reference
+    - SBT ID: application
+      Directory: application
+      Artifact: trading-application
+      Primary package: trading.application
     - SBT ID: economics
       Directory: economics
       Artifact: trading-economics
@@ -28,6 +32,7 @@ context: |
     trading.quantity.refinement
     trading.quantity.algebra
     trading.reference
+    trading.application
     trading.economics.instrument
 
   Current scope includes exact dimension-safe quantities, anonymous uniform-grid
@@ -35,10 +40,11 @@ context: |
   stable reference-data handles, optional exact algebra, and the transitional
   aggregate instrument/order/scenario/fee/P&L/risk economics surface.
 
-  Reference data currently retains the explicitly transitional synchronized
-  construction bridge until the catalog change replaces it. Quantity-owned
-  logical packing is absent until the boundary-codec change restores durable
-  reconstruction against immutable reference-data state.
+  Reference data owns pure immutable catalog transitions and coherent snapshots;
+  application currently owns only the two-method effect-polymorphic LiveCatalog
+  port. Concrete runtime interpretation and boundary codecs remain future-owned.
+  Quantity-owned logical packing is absent until the boundary-codec change
+  restores durable reconstruction against immutable reference-data state.
 
   The architecture charter is documented in docs/design-principles.md. Its
   proposed target modules are not implemented merely because they are named.

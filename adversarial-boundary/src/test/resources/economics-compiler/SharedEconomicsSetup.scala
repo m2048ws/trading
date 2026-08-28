@@ -6,58 +6,51 @@ import trading.quantity.refinement.*
 import trading.reference.*
 
 object SharedEconomicsSetup:
-  val registry = new QuantityRegistry
-  val base = registry
-    .registerAsset(AssetDefinition(AssetId.from("shape-base").toOption.get, AtomId("shape:base")))
-    .toOption
-    .get
-  val quote = registry
-    .registerAsset(AssetDefinition(AssetId.from("shape-quote").toOption.get, AtomId("shape:quote")))
-    .toOption
-    .get
-  val position =
-    registry
-      .registerAsset(AssetDefinition(AssetId.from("shape-position").toOption.get, AtomId("shape:position")))
-      .toOption
-      .get
-  val lotsGrid = registry
-    .registerGrid(position)(
-      GridDefinition(
-        GridIdentity(
-          position.dimension.key,
-          GridKey(GridId.from("shape-lots").toOption.get, GridVersion.from(1).toOption.get)
-        ),
-        PositiveRational(Rational.one).toOption.get
-      )
-    )
-    .toOption
-    .get
-  val priceDimension =
-    registry.registerDimension(DimRef.divide(quote.dimension.ref, base.dimension.ref).key).toOption.get
-  val priceGrid = registry
-    .registerGrid(priceDimension)(
-      GridDefinition(
-        GridIdentity(
-          priceDimension.key,
-          GridKey(GridId.from("shape-prices").toOption.get, GridVersion.from(1).toOption.get)
-        ),
-        PositiveRational(Rational.one).toOption.get
-      )
-    )
-    .toOption
-    .get
-  val settleGrid = registry
-    .registerGrid(quote)(
-      GridDefinition(
-        GridIdentity(
-          quote.dimension.key,
-          GridKey(GridId.from("shape-settle").toOption.get, GridVersion.from(1).toOption.get)
-        ),
-        PositiveRational(Rational(1, 100)).toOption.get
-      )
-    )
-    .toOption
-    .get
+  val baseDefinition = AssetDefinition(AssetId.from("shape-base").toOption.get, AtomId("shape:base"))
+  val quoteDefinition = AssetDefinition(AssetId.from("shape-quote").toOption.get, AtomId("shape:quote"))
+  val positionDefinition = AssetDefinition(AssetId.from("shape-position").toOption.get, AtomId("shape:position"))
+  val baseDimensionKey = DimKey.atom(baseDefinition.dimensionAtom)
+  val quoteDimensionKey = DimKey.atom(quoteDefinition.dimensionAtom)
+  val positionDimensionKey = DimKey.atom(positionDefinition.dimensionAtom)
+  val priceDimensionKey = DimKey.multiply(quoteDimensionKey, DimKey.inverse(baseDimensionKey))
+  val lotsDefinition = GridDefinition(
+    GridIdentity(
+      positionDimensionKey,
+      GridKey(GridId.from("shape-lots").toOption.get, GridVersion.from(1).toOption.get)
+    ),
+    PositiveRational(Rational.one).toOption.get
+  )
+  val priceDefinition = GridDefinition(
+    GridIdentity(
+      priceDimensionKey,
+      GridKey(GridId.from("shape-prices").toOption.get, GridVersion.from(1).toOption.get)
+    ),
+    PositiveRational(Rational.one).toOption.get
+  )
+  val settleDefinition = GridDefinition(
+    GridIdentity(
+      quoteDimensionKey,
+      GridKey(GridId.from("shape-settle").toOption.get, GridVersion.from(1).toOption.get)
+    ),
+    PositiveRational(Rational(1, 100)).toOption.get
+  )
+  val catalogBatch = CatalogBatch.of(
+    CatalogCommand.RegisterAsset(baseDefinition),
+    CatalogCommand.RegisterAsset(quoteDefinition),
+    CatalogCommand.RegisterAsset(positionDefinition),
+    CatalogCommand.RegisterDimension(priceDimensionKey),
+    CatalogCommand.RegisterGrid(lotsDefinition),
+    CatalogCommand.RegisterGrid(priceDefinition),
+    CatalogCommand.RegisterGrid(settleDefinition)
+  )
+  val catalogSnapshot = CatalogModel.commit(CatalogRoot.create().initialState, catalogBatch).toOption.get.state.snapshot
+  val base = catalogSnapshot.resolveAsset(baseDefinition.id).toOption.get
+  val quote = catalogSnapshot.resolveAsset(quoteDefinition.id).toOption.get
+  val position = catalogSnapshot.resolveAsset(positionDefinition.id).toOption.get
+  val lotsGrid = catalogSnapshot.resolveGrid(position.dimension)(lotsDefinition.key).toOption.get
+  val priceDimension = catalogSnapshot.resolveDimension(priceDimensionKey).toOption.get
+  val priceGrid = catalogSnapshot.resolveGrid(priceDimension)(priceDefinition.key).toOption.get
+  val settleGrid = catalogSnapshot.resolveGrid(quote.dimension)(settleDefinition.key).toOption.get
   val roles      = new Roles(base, quote, position, quote)
   val identity   = Identity(InstrumentId("shape-instrument"), UnderlyingId("shape-underlying"))
   val listing    = new ListingRules(roles)(lotsGrid, priceGrid)

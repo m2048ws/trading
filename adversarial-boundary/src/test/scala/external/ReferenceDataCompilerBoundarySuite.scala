@@ -6,6 +6,8 @@ import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
+import java.util.jar.JarFile
+import scala.jdk.CollectionConverters.*
 
 import dotty.tools.dotc.Main
 import dotty.tools.dotc.reporting.StoreReporter
@@ -33,16 +35,43 @@ class ReferenceDataCompilerBoundarySuite extends FunSuite:
     val entries       = compilationClasspath.split(File.pathSeparator).toList.map(Paths.get(_))
     val quantities    = entries.filter(_.getFileName.toString.startsWith("trading-quantities_3-"))
     val referenceData = entries.filter(_.getFileName.toString.startsWith("trading-reference-data_3-"))
+    val application   = entries.filter(_.getFileName.toString.startsWith("trading-application_3-"))
+    val economics     = entries.filter(_.getFileName.toString.startsWith("trading-economics_3-"))
 
     assertEquals(quantities.size, 1)
     assertEquals(referenceData.size, 1)
+    assertEquals(application.size, 1)
+    assertEquals(economics.size, 1)
     assert(entries.forall(Files.isRegularFile(_)), entries.mkString("\n"))
     assert(quantities.head.getFileName.toString.endsWith(".jar"))
     assert(referenceData.head.getFileName.toString.endsWith(".jar"))
+    assert(application.head.getFileName.toString.endsWith(".jar"))
+
+    (quantities ++ referenceData ++ economics).foreach: artifact =>
+      val jar = new JarFile(artifact.toFile)
+      try
+        val names = jar.entries().asScala.map(_.getName).toVector
+        assert(!names.exists(_.startsWith("trading/application/")), artifact.toString)
+      finally jar.close()
+
+    val applicationJar = new JarFile(application.head.toFile)
+    try
+      val names = applicationJar.entries().asScala.map(_.getName).toSet
+      assert(names.contains("trading/application/LiveCatalog.class"))
+      assertEquals(
+        names.filter(name => name.startsWith("trading/application/") && name.endsWith(".class")),
+        Set("trading/application/LiveCatalog.class")
+      )
+    finally applicationJar.close()
 
   private val positiveFixtures = List(
-    "ConcreteReferenceDataClient.scala" -> "external.reference.positive.ConcreteReferenceDataClient$",
-    "GenericReferenceDataClient.scala"  -> "external.reference.positive.GenericReferenceDataClient$"
+    "ConcreteReferenceDataClient.scala"          -> "external.reference.positive.ConcreteReferenceDataClient$",
+    "GenericReferenceDataClient.scala"           -> "external.reference.positive.GenericReferenceDataClient$",
+    "ApplicationPortClient.scala"                -> "external.reference.positive.ApplicationPortClient$",
+    "CatalogViolationConstructionBoundary.scala" ->
+      "external.reference.positive.CatalogViolationConstructionBoundary$",
+    "CatalogOutcomeInspectionBoundary.scala" ->
+      "external.reference.positive.CatalogOutcomeInspectionBoundary$"
   )
 
   positiveFixtures.foreach: (file, moduleClass) =>
@@ -59,8 +88,8 @@ class ReferenceDataCompilerBoundarySuite extends FunSuite:
     ),
     NegativeFixture(
       "InternalImplementationAccess.scala",
-      List("not a member", "Lineage", "InternedDimensionHandle", "InternedAsset", "InternedGridHandle"),
-      minimumErrors = 4
+      List("cannot be accessed", "handlePermit", "lineage", "CatalogState", "CatalogSnapshot", "Reconciliation"),
+      minimumErrors = 5
     ),
     NegativeFixture(
       "AnonymousGridStablePromotion.scala",
@@ -88,6 +117,16 @@ class ReferenceDataCompilerBoundarySuite extends FunSuite:
     NegativeFixture(
       "GridDefinitionProductBypass.scala",
       List("Found:", "Positive", "copy", "fromProduct", "is not a member"),
+      minimumErrors = 3
+    ),
+    NegativeFixture(
+      "CatalogGuardedConstruction.scala",
+      List("cannot be accessed", "CatalogBatch", "CatalogRevision", "CatalogDelta", "CatalogViolations"),
+      minimumErrors = 4
+    ),
+    NegativeFixture(
+      "CatalogOutcomeConstruction.scala",
+      List("cannot be accessed", "CatalogTransition", "Published", "Unchanged"),
       minimumErrors = 3
     )
   )

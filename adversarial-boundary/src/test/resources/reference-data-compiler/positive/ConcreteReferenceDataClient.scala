@@ -6,8 +6,8 @@ import trading.quantity.Rational
 import trading.reference.*
 
 object ConcreteReferenceDataClient:
-  val sameAsset = registry.resolveAsset(asset.id)
-  val sameGrid  = registry.resolveGrid(asset.dimension)(grid.key)
+  val sameAsset = snapshot.resolveAsset(asset.id)
+  val sameGrid  = snapshot.resolveGrid(asset.dimension)(grid.key)
   val value     = grid.fromCoordinate(BigInt(125))
 
   assert(sameAsset.contains(asset))

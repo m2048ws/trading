@@ -5,6 +5,8 @@ import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
+import java.util.jar.JarFile
+import scala.jdk.CollectionConverters.*
 
 import dotty.tools.dotc.Main
 import dotty.tools.dotc.reporting.StoreReporter
@@ -49,6 +51,31 @@ class StaticDimensionCompilerBoundarySuite extends FunSuite:
     assert(entries.forall(path => Files.isRegularFile(path)), entries.mkString("\n"))
     assert(quantitiesArtifacts.head.getFileName.toString.endsWith(".jar"))
     assert(economicsArtifacts.head.getFileName.toString.endsWith(".jar"))
+
+    val quantitiesArchive = new JarFile(quantitiesArtifacts.head.toFile)
+    try
+      val packagedEntries     = quantitiesArchive.entries().asScala.map(_.getName).toSet
+      val requiredMainEntries = Set(
+        "trading/quantity/AtomId.class",
+        "trading/quantity/AtomId.tasty",
+        "trading/quantity/DimKey.class",
+        "trading/quantity/DimKey.tasty",
+        "trading/quantity/DimRef.class",
+        "trading/quantity/DimRef.tasty",
+        "trading/quantity/JavaSerializationUnsupported.class",
+        "trading/quantity/JavaSerializationUnsupported.tasty",
+        "trading/quantity/Quantity$package.class",
+        "trading/quantity/Quantity$package.tasty",
+        "trading/quantity/Rational.class",
+        "trading/quantity/Rational.tasty",
+        "trading/quantity/SameDimension.class",
+        "trading/quantity/SameDimension.tasty",
+        "trading/quantity/refinement/RefinementError.class",
+        "trading/quantity/refinement/RefinementError.tasty"
+      )
+      assertEquals(requiredMainEntries.diff(packagedEntries), Set.empty[String])
+    finally quantitiesArchive.close()
+    end try
 
   private val positiveFixtures = List(
     "AssociationIndependentOrder.scala",

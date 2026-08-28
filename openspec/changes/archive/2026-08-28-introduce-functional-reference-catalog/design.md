@@ -238,6 +238,12 @@ assets, and grids. It contains no replacement/removal. A valid batch that adds a
 once. A fully idempotent valid batch yields `Unchanged`; failure remains the `Left` case and therefore cannot be confused
 with a no-op success.
 
+Delta factories reject duplicate additions with typed `CatalogDeltaError` evidence. `CatalogCommit` alternatives and
+`CatalogTransition` retain public
+inspection and pattern matching, while their construction remains catalog-owned because exact state, snapshot,
+revision, and delta coherence cannot be established from any one component in isolation. JVM-visible defensive
+constructors require the existing catalog issuance permit and reject caller forgery.
+
 Callers obtain newly issued handles by resolving their stable keys from the outcome snapshot. This avoids a
 path-dependent heterogeneous result tuple mirroring every command shape and makes batch results naturally useful for
 later assembly.

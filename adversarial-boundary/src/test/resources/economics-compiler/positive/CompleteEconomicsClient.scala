@@ -35,58 +35,42 @@ object CompleteEconomicsClient:
   ): Either[EconomicsError, instrument.Pnl] =
     instrument.valuation.pnl(roundTrip, schedule)
 
-  val registry = new QuantityRegistry
-  val base = registry
-    .registerAsset(AssetDefinition(AssetId.from("client-base").toOption.get, AtomId("client:base")))
-    .toOption
-    .get
-  val quote = registry
-    .registerAsset(AssetDefinition(AssetId.from("client-quote").toOption.get, AtomId("client:quote")))
-    .toOption
-    .get
-  val position =
-    registry
-      .registerAsset(AssetDefinition(AssetId.from("client-position").toOption.get, AtomId("client:position")))
-      .toOption
-      .get
-  val lotsGrid = registry
-    .registerGrid(position)(
-      GridDefinition(
-        GridIdentity(
-          position.dimension.key,
-          GridKey(GridId.from("client-lots").toOption.get, GridVersion.from(1).toOption.get)
-        ),
-        PositiveRational(Rational.one).toOption.get
-      )
-    )
-    .toOption
-    .get
-  val quoteGrid = registry
-    .registerGrid(quote)(
-      GridDefinition(
-        GridIdentity(
-          quote.dimension.key,
-          GridKey(GridId.from("client-quote-grid").toOption.get, GridVersion.from(1).toOption.get)
-        ),
-        PositiveRational(Rational(1, 100)).toOption.get
-      )
-    )
-    .toOption
-    .get
-  val priceDimension =
-    registry.registerDimension(DimRef.divide(quote.dimension.ref, base.dimension.ref).key).toOption.get
-  val priceGrid = registry
-    .registerGrid(priceDimension)(
-      GridDefinition(
-        GridIdentity(
-          priceDimension.key,
-          GridKey(GridId.from("client-price-grid").toOption.get, GridVersion.from(1).toOption.get)
-        ),
-        PositiveRational(Rational(1, 2)).toOption.get
-      )
-    )
-    .toOption
-    .get
+  val baseDefinition = AssetDefinition(AssetId.from("client-base").toOption.get, AtomId("client:base"))
+  val quoteDefinition = AssetDefinition(AssetId.from("client-quote").toOption.get, AtomId("client:quote"))
+  val positionDefinition = AssetDefinition(AssetId.from("client-position").toOption.get, AtomId("client:position"))
+  val baseKey = DimKey.atom(baseDefinition.dimensionAtom)
+  val quoteKey = DimKey.atom(quoteDefinition.dimensionAtom)
+  val positionKey = DimKey.atom(positionDefinition.dimensionAtom)
+  val priceKey = DimKey.multiply(quoteKey, DimKey.inverse(baseKey))
+  val lotsDefinition = GridDefinition(
+    GridIdentity(positionKey, GridKey(GridId.from("client-lots").toOption.get, GridVersion.from(1).toOption.get)),
+    PositiveRational(Rational.one).toOption.get
+  )
+  val quoteGridDefinition = GridDefinition(
+    GridIdentity(quoteKey, GridKey(GridId.from("client-quote-grid").toOption.get, GridVersion.from(1).toOption.get)),
+    PositiveRational(Rational(1, 100)).toOption.get
+  )
+  val priceGridDefinition = GridDefinition(
+    GridIdentity(priceKey, GridKey(GridId.from("client-price-grid").toOption.get, GridVersion.from(1).toOption.get)),
+    PositiveRational(Rational(1, 2)).toOption.get
+  )
+  val catalogBatch = CatalogBatch.of(
+    CatalogCommand.RegisterAsset(baseDefinition),
+    CatalogCommand.RegisterAsset(quoteDefinition),
+    CatalogCommand.RegisterAsset(positionDefinition),
+    CatalogCommand.RegisterDimension(priceKey),
+    CatalogCommand.RegisterGrid(lotsDefinition),
+    CatalogCommand.RegisterGrid(quoteGridDefinition),
+    CatalogCommand.RegisterGrid(priceGridDefinition)
+  )
+  val catalogSnapshot = CatalogModel.commit(CatalogRoot.create().initialState, catalogBatch).toOption.get.state.snapshot
+  val base = catalogSnapshot.resolveAsset(baseDefinition.id).toOption.get
+  val quote = catalogSnapshot.resolveAsset(quoteDefinition.id).toOption.get
+  val position = catalogSnapshot.resolveAsset(positionDefinition.id).toOption.get
+  val lotsGrid = catalogSnapshot.resolveGrid(position.dimension)(lotsDefinition.key).toOption.get
+  val quoteGrid = catalogSnapshot.resolveGrid(quote.dimension)(quoteGridDefinition.key).toOption.get
+  val priceDimension = catalogSnapshot.resolveDimension(priceKey).toOption.get
+  val priceGrid = catalogSnapshot.resolveGrid(priceDimension)(priceGridDefinition.key).toOption.get
 
   val roles = new Roles(base, quote, position, quote)
   val identity = Identity(InstrumentId("client-instrument"), UnderlyingId("client-underlying"))
@@ -165,9 +149,17 @@ object CompleteEconomicsClient:
     .toOption
     .get
   assert(checkedBaseValue.coefficient == Rational(100, 3))
-  val foreignReferenceData = new QuantityRegistry
-  val foreignBase = foreignReferenceData
-    .registerAsset(AssetDefinition(base.id, AtomId("client:base")))
+  val foreignBaseDefinition = AssetDefinition(base.id, AtomId("client:base"))
+  val foreignBase = CatalogModel
+    .commit(
+      CatalogRoot.create().initialState,
+      CatalogBatch.one(CatalogCommand.RegisterAsset(foreignBaseDefinition))
+    )
+    .toOption
+    .get
+    .state
+    .snapshot
+    .resolveAsset(base.id)
     .toOption
     .get
   val foreignLookup = entryState.convertToSettle(foreignBase)(

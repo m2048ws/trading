@@ -9,7 +9,7 @@ object StableIdentityUnavailable:
   val assetId = trading.reference.AssetId.from("USD")
   val gridId = trading.reference.GridId.from("cent")
   val version = trading.reference.GridVersion.from(1)
-  val registry = new trading.reference.QuantityRegistry
+  val catalog = trading.reference.CatalogRoot.create()
   val packed = trading.quantity.runtime.PackedGridQuantity
   // OFFENDING-END
 

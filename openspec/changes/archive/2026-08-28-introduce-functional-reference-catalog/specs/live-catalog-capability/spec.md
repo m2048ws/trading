@@ -76,6 +76,11 @@ revisioning, deltas, and errors. An interpreter MAY choose in-memory atomic refe
 database transactions, remote coordination, or another mechanism, but SHALL NOT change append-only behavior, error
 ordering, idempotence, snapshot coherence, or handle lineage.
 
+The reusable interpreter-conformance contract SHALL compare both typed failures and successful outcomes with the pure
+model after consecutive commits, require idempotent retries to remain unchanged, require a concurrent losing conflict
+to return the pure typed conflict, and exercise overlapping snapshot/commit capture so a revision never exposes a
+partial or unrelated generation.
+
 The application capability SHALL not require Cats Effect, FS2, ZIO, Akka, or another concrete runtime dependency in its
 public artifact. Runtime-specific constraints, resources, cancellation behavior, retries, telemetry, and durability
 guarantees SHALL be specified by concrete interpreter proposals rather than inferred from `F[_]` alone.
@@ -83,6 +88,11 @@ guarantees SHALL be specified by concrete interpreter proposals rather than infe
 #### Scenario: Compare pure and live execution
 - **WHEN** the same starting definitions and batch are run through the pure model and a conforming live interpreter
 - **THEN** they produce the same domain outcome, revision, delta, lookup results, and handle relationships
+
+#### Scenario: Reject an interpreter that hides a conflict
+- **WHEN** an interpreter maps a pure `CatalogViolations` result to successful unchanged
+- **THEN** the reusable contract fails because the live typed result differs from revalidation against current pure
+  state
 
 #### Scenario: Change coordination mechanism
 - **WHEN** an application replaces a single-process interpreter with a transactional database interpreter

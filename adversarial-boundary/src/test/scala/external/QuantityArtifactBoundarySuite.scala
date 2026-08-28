@@ -34,7 +34,7 @@ class QuantityArtifactBoundarySuite extends FunSuite:
     val result = compile(fixturesRoot.resolve("positive/QuantitiesOnlyClient.scala"))
     assert(result.succeeded, result.rendered)
 
-  test("the quantities-only classpath rejects stable identity, registry, and packed-record ownership"):
+  test("the quantities-only classpath rejects stable identity, catalog, and packed-record ownership"):
     val source  = fixturesRoot.resolve("negative/StableIdentityUnavailable.scala")
     val prelude = compilePrelude(source)
     assert(prelude.succeeded, s"negative fixture prelude failed independently:\n${prelude.rendered}")

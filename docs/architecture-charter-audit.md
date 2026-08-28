@@ -25,19 +25,31 @@ materially unresolved planning artifact blocks Proposal 0.
 
 ## Current physical implementation
 
-Proposal 1 has now established the first dependent physical boundary. This table describes the implemented SBT
-projects and must not be confused with the remaining proposed target.
+Proposal 1 and the staged implementation of active Proposal 2 have now established the first dependent physical
+boundaries. This table describes the implemented SBT projects and must not be confused with the remaining proposed
+target.
 
 | State | SBT project | Artifact/directory | Production dependency |
 | --- | --- | --- | --- |
-| Current | root `trading` | unpublished aggregate | aggregates quantities, reference data, economics, adversarial boundary |
+| Current | root `trading` | unpublished aggregate | aggregates quantities, reference data, application, economics, adversarial boundary |
 | Current | `quantities` | `trading-quantities` / `quantities/` | external mathematical libraries only |
 | Current | `referenceData` | `trading-reference-data` / `reference-data/` | quantities |
+| Current | `application` | `trading-application` / `application/` | reference data |
 | Current | `economics` | `trading-economics` / `economics/` | quantities and reference data |
-| Current test-only | `adversarialBoundary` | unpublished / `adversarial-boundary/` | packaged quantities, reference data, and economics artifacts |
+| Current test-only | `adversarialBoundary` | unpublished / `adversarial-boundary/` | packaged quantities, reference data, application, and economics artifacts |
+| Current benchmark-only | `benchmarks` | unpublished / `benchmarks/` | reference data; outside root aggregation |
 
-The current graph is acyclic: `quantities <- referenceData <- economics <- adversarialBoundary`, with the test-only
-boundary consuming each completed production artifact directly.
+The current graph is acyclic:
+
+```text
+quantities <- referenceData <- application
+     ^             ^              |
+     |             +-- economics  |
+     +-----------------------------+-- adversarialBoundary (test-only)
+```
+
+The test-only boundary consumes each completed production artifact directly. Concrete runtime interpretation and
+boundary codecs remain future-owned.
 
 Current dependency coordinates include Scala `3.8.4`, independent
 `catsVersion = 2.13.0` and `algebraVersion = 2.13.0` coordinates,
@@ -95,9 +107,8 @@ independent-review, archive, and validation gates.
 
 The important intermediate constraints are:
 
-- Proposal 1 creates reference data and a temporary synchronized construction
-  bridge; Proposal 2 replaces that bridge with pure state/snapshots and the
-  application port, so the two should land consecutively.
+- Proposal 2 has replaced Proposal 1's temporary construction bridge with pure state/snapshots and the application
+  port; Proposal 8 supplies its first runtime interpreter.
 - Proposal 3 establishes snapshot-based assembly before Proposal 4 narrows the
   instrument economics artifact.
 - Proposal 4 leaves order/scenario, fee, and risk in a transitional aggregate;
@@ -121,13 +132,12 @@ the first deliberate durable compatibility contract.
 
 | Current exception | Why it is transitional | Migration owner |
 | --- | --- | --- |
-| Reference data contains the synchronized `QuantityRegistry` construction bridge | No immutable catalog/snapshot boundary exists yet | Proposal 2 replaces it with pure catalog state/snapshots; Proposal 8 adds runtime interpreter |
 | Quantity-owned packing has been removed, leaving a deliberate durable-codec gap | Stable records require snapshots and an explicit schema owner | Proposal 9 adds versioned codecs |
 | `trading-economics` owns instruments, orders, scenarios, fee policy, P&L, and sizing | Current aggregate predates responsibility split | Proposals 3–7, with Proposal 7 removing the empty aggregate |
 | Instrument construction starts from issued handles and repeats provenance checks | Assembly does not yet own one snapshot-based trust transition | Proposal 3 |
 | Order/scenario/fee/risk capabilities are discoverable through `Instrument` | Instrument currently acts as a service locator | Proposals 4–7 |
 | Root documentation previously listed only quantities | Documentation lagged the implemented economics module | Proposal 0 documentation update |
-| Application, runtime, codec, and benchmark target modules do not exist | Their physical boundaries require real implementation/dependency bodies | Proposals 2, 8, and 9 |
+| Runtime and codec target modules do not exist | Their physical boundaries require real implementation/dependency bodies | Proposals 8 and 9 |
 
 These exceptions describe current implementation facts, not accepted permanent
 architecture. No proposed module or API is presented as available today.
