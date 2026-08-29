@@ -149,9 +149,12 @@ class ScriptedRunner:
 
 
 class ClaimRunner:
-    def __init__(self, root: pathlib.Path, cfg: object):
+    def __init__(self, root: pathlib.Path, cfg: object, blocked_by=None):
         self.root = root.resolve()
         self.cfg = cfg
+        self.blocked_by = (
+            {"nodes": [], "totalCount": 0} if blocked_by is None else blocked_by
+        )
         self.calls: list[tuple[str, ...]] = []
 
     def run(self, args, *, cwd, accepted=(0,), input_text=None):
@@ -190,7 +193,9 @@ class ClaimRunner:
             if operation == ("rev-parse", "--verify", "HEAD"):
                 return corgi_pr.Completed(command, 0, HEAD + "\n", "")
         if command[:3] == ("gh", "issue", "view"):
-            return corgi_pr.Completed(command, 0, '{"blockedBy": []}\n', "")
+            return corgi_pr.Completed(
+                command, 0, json.dumps({"blockedBy": self.blocked_by}) + "\n", ""
+            )
         raise AssertionError(f"unexpected command: {command}")
 
 
@@ -236,6 +241,28 @@ class CorgiPrTest(unittest.TestCase):
             self.assertTrue(
                 any(call[:3] == ("gh", "issue", "view") for call in runner.calls)
             )
+
+    def test_dependency_check_accepts_legacy_array_shape(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory).resolve()
+            cfg = config(root)
+            runner = ClaimRunner(root, cfg, blocked_by=[])
+            corgi_pr.Adapter(root, cfg, runner).require_dependencies_closed(6)
+
+    def test_dependency_check_rejects_open_connection_nodes(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory).resolve()
+            cfg = config(root)
+            runner = ClaimRunner(
+                root,
+                cfg,
+                blocked_by={
+                    "nodes": [{"number": 11, "state": "OPEN"}],
+                    "totalCount": 1,
+                },
+            )
+            with self.assertRaisesRegex(corgi_pr.PilotError, "Open dependencies: #11"):
+                corgi_pr.Adapter(root, cfg, runner).require_dependencies_closed(6)
 
     def test_writer_lock_excludes_same_change_but_allows_distinct_worktrees(self):
         with tempfile.TemporaryDirectory() as directory:

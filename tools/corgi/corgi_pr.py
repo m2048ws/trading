@@ -954,9 +954,21 @@ class Adapter:
             ).stdout,
             "GitHub issue dependencies",
         )
-        blocked_by = mapping(raw, "issue dependencies").get("blockedBy")
-        if not isinstance(blocked_by, list):
-            raise PilotError("dependency_response_invalid", "blockedBy must be an array")
+        blocked_by_value = mapping(raw, "issue dependencies").get("blockedBy")
+        if isinstance(blocked_by_value, list):
+            blocked_by = blocked_by_value
+        elif isinstance(blocked_by_value, dict):
+            blocked_by = blocked_by_value.get("nodes")
+            if not isinstance(blocked_by, list):
+                raise PilotError(
+                    "dependency_response_invalid",
+                    "blockedBy.nodes must be an array",
+                )
+        else:
+            raise PilotError(
+                "dependency_response_invalid",
+                "blockedBy must be an array or connection object",
+            )
         open_dependencies = [
             item
             for item in blocked_by
