@@ -15,20 +15,19 @@ updated: 2026-08-30
 - **Change**: introduce-application-and-runtime-foundation
 - **Worktree**: /Users/m/src/money/.worktrees/introduce-application-and-runtime-foundation
 - **Phase at Checkpoint**: applying
-- **Task Group at Checkpoint**: 5
-- **Observed Run Revision**: 6
-- **Last Verified HEAD**: c54f944a52e6d15ca45ff5fdf3d5a006da859219
+- **Task Group at Checkpoint**: 6
+- **Observed Run Revision**: 7
+- **Last Verified HEAD**: 14854ce174059114e01ee7e9ef29578c8268cfb0
 
 ## Next Action
-- Commit and acknowledge Task Group 5 after its concurrency, cancellation, stress, and performance checks and
-  structured review.
+- Commit and acknowledge Task Group 6 after its shared conformance checks and structured review.
 
 ## Blockers
 - none
 
 ## Uncommitted Work
-- Concurrency/cancellation/stress tests, live-runtime benchmark code and evidence, the benchmark dependency update, and
-  this Task Group 5 bridge checkpoint.
+- The framework-neutral effectful conformance harness, its thunk registration layer, the in-memory IO instantiation,
+  shared-versus-interpreter-specific documentation, and this Task Group 6 bridge checkpoint.
 
 ## Discoveries
 - Baseline inventory found `LiveCatalog[F]`, `CatalogModel`, completed-JAR compiler fixtures, and the non-published
@@ -45,6 +44,10 @@ updated: 2026-08-30
   evidence proves cancellation exposes only a complete predecessor or successor and supports an unchanged retry.
 - The live-runtime JMH run separates coordinated snapshot capture, one-capture high-volume lookup, uncontended
   publication, and four-thread contention; its JDK 26.0.2 figures are directional machine-local evidence only.
+- The application test-source contract now returns effectful cases without MUnit, Cats Effect, or synchronous effect
+  execution; thin thunk and IO suites supply their own constructors, sequencing, and concurrency.
+- Pure-oracle snapshots compare structurally across independently allocated roots; handle reconciliation is asserted
+  only within one interpreter lineage, while equal independent interpreters are required not to reconcile.
 
 ## Promotion Queue
 - After whole-change verification and Archive, promote the delivered runtime/application dependency boundary and
@@ -52,3 +55,5 @@ updated: 2026-08-30
 - Retain the dependency-coordinate rename as delivery evidence; promote only if it remains true at Archive.
 - Preserve the one-capture high-volume lookup guidance and atomic concurrency semantics if whole-change verification
   confirms them.
+- Promote the shared observable contract versus interpreter-specific mechanism-test split if final verification
+  confirms both instantiations.
