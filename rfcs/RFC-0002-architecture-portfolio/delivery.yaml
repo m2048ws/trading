@@ -1,0 +1,14 @@
+schemaVersion: 1
+rfcId: RFC-0002-architecture-portfolio
+revision: 1
+slices:
+  S-01-application-runtime-foundation:
+    status: unbound
+  S-02-order-execution-scenarios:
+    status: unbound
+  S-03-pure-risk:
+    status: unbound
+  S-04-fee-policy:
+    status: unbound
+  S-05-versioned-boundary-codecs:
+    status: unbound
