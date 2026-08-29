@@ -1,0 +1,125 @@
+#!/usr/bin/env python3
+
+import hashlib
+import json
+import os
+import pathlib
+import shutil
+import stat
+import subprocess
+import tempfile
+from typing import Any
+
+
+ROOT = pathlib.Path(__file__).resolve().parents[2]
+
+
+def run_bytes(*args: str) -> bytes:
+    return subprocess.run(
+        args,
+        cwd=ROOT,
+        check=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    ).stdout
+
+
+def field(digest: Any, value: bytes) -> None:
+    digest.update(len(value).to_bytes(8, "big"))
+    digest.update(value)
+
+
+def path_identity(
+    digest: Any, category: bytes, relative: bytes
+) -> None:
+    field(digest, category)
+    field(digest, relative)
+    absolute = os.path.join(os.fsencode(ROOT), relative)
+    try:
+        metadata = os.lstat(absolute)
+    except FileNotFoundError:
+        field(digest, b"missing")
+        return
+
+    field(digest, str(stat.S_IFMT(metadata.st_mode)).encode())
+    field(digest, str(stat.S_IMODE(metadata.st_mode)).encode())
+    if stat.S_ISREG(metadata.st_mode):
+        field(digest, b"regular")
+        digest.update(metadata.st_size.to_bytes(8, "big"))
+        with open(absolute, "rb") as stream:
+            for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+                digest.update(chunk)
+    elif stat.S_ISLNK(metadata.st_mode):
+        field(digest, b"symlink")
+        field(digest, os.readlink(absolute))
+    elif stat.S_ISDIR(metadata.st_mode):
+        field(digest, b"directory")
+    else:
+        field(digest, b"special")
+        field(digest, str(metadata.st_rdev).encode())
+        field(digest, str(metadata.st_size).encode())
+
+
+def working_tree_fingerprint() -> str:
+    tracked = run_bytes(
+        "git", "diff", "--no-ext-diff", "--no-renames", "--name-only", "-z", "--"
+    ).split(b"\0")
+    untracked = run_bytes(
+        "git", "ls-files", "--others", "--exclude-standard", "-z", "--"
+    ).split(b"\0")
+    digest = hashlib.sha256()
+    field(digest, b"trading-working-tree-v1")
+    for category, paths in ((b"tracked", tracked), (b"untracked", untracked)):
+        for relative in sorted(set(paths) - {b""}):
+            path_identity(digest, category, relative)
+    return f"sha256:{digest.hexdigest()}"
+
+
+def git_text(*args: str) -> str:
+    return run_bytes("git", *args).decode().strip()
+
+
+def staged_tree() -> str:
+    def target_git_path(name: str) -> pathlib.Path:
+        value = pathlib.Path(git_text("rev-parse", "--git-path", name))
+        return value.resolve() if value.is_absolute() else (ROOT / value).resolve()
+
+    index = target_git_path("index")
+    objects = target_git_path("objects")
+    with tempfile.TemporaryDirectory(prefix="trading-index-identity.") as temporary:
+        temporary_path = pathlib.Path(temporary)
+        temporary_index = temporary_path / "index"
+        temporary_objects = temporary_path / "objects"
+        temporary_objects.mkdir()
+        if index.is_file():
+            shutil.copy2(index, temporary_index)
+        environment = os.environ.copy()
+        environment["GIT_INDEX_FILE"] = str(temporary_index)
+        environment["GIT_OBJECT_DIRECTORY"] = str(temporary_objects)
+        environment["GIT_ALTERNATE_OBJECT_DIRECTORIES"] = str(objects)
+        if not temporary_index.exists():
+            subprocess.run(
+                ("git", "read-tree", "HEAD"),
+                cwd=ROOT,
+                env=environment,
+                check=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+            )
+        return subprocess.run(
+            ("git", "write-tree"),
+            cwd=ROOT,
+            env=environment,
+            check=True,
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        ).stdout.strip()
+
+
+identity = {
+    "head": git_text("rev-parse", "HEAD"),
+    "staged_tree": staged_tree(),
+    "working_tree_fingerprint": working_tree_fingerprint(),
+}
+print(json.dumps(identity, indent=2, sort_keys=True))

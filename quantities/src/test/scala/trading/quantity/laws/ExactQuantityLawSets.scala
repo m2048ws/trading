@@ -84,11 +84,11 @@ final class DimensionNormalizationLaws extends Laws:
   val normalization: RuleSet = new SimpleRuleSet(
     "dimension normalization",
     "independent normalized powers" -> forAll(ExactGenerators.dimensionPowers): raw =>
-      Prop(DimensionKey(raw).powers == reference(raw)),
+      Prop(DimKey(raw).powers == reference(raw)),
     "zero exponents are removed" -> forAll(ExactGenerators.dimensionPowers): raw =>
-      Prop(DimensionKey(raw).powers.forall(_._2 != 0)),
+      Prop(DimKey(raw).powers.forall(_._2 != 0)),
     "duplicate atoms are merged" -> forAll(ExactGenerators.dimensionPowers): raw =>
-      val actual   = DimensionKey(raw).powers.toMap
+      val actual   = DimKey(raw).powers.toMap
       val expected = raw
         .map(_._1)
         .distinct
@@ -102,22 +102,22 @@ final class DimensionNormalizationLaws extends Laws:
       Prop(expected)
     ,
     "canonical powers are sorted" -> forAll(ExactGenerators.dimensionPowers): raw =>
-      val names = DimensionKey(raw).powers.map(_._1.value)
+      val names = DimKey(raw).powers.map(_._1.value)
       Prop(names == names.sorted)
     ,
     "equal normalized keys have equal hashes" -> forAll(ExactGenerators.dimensionPowers): raw =>
-      val reversed = DimensionKey(raw.reverse)
-      val original = DimensionKey(raw)
+      val reversed = DimKey(raw.reverse)
+      val original = DimKey(raw)
       Prop(original == reversed && original.hashCode == reversed.hashCode)
     ,
     "division is multiplication by inverse" -> forAll(
-      ExactGenerators.dimensionKey,
-      ExactGenerators.dimensionKey
+      ExactGenerators.dimKey,
+      ExactGenerators.dimKey
     ): (numerator, denominator) =>
       val numeratorRef   = DimRef.fresh(numerator)
       val denominatorRef = DimRef.fresh(denominator)
       val divided        = DimRef.divide(numeratorRef.dimension, denominatorRef.dimension).key
-      val multiplied     = DimensionKey.multiply(numerator, DimensionKey.inverse(denominator))
+      val multiplied     = DimKey.multiply(numerator, DimKey.inverse(denominator))
       Prop(divided == multiplied)
     ,
     "BigInt exponent boundaries remain exact" -> {
@@ -130,7 +130,7 @@ final class DimensionNormalizationLaws extends Laws:
       )
       Prop:
         boundaries.forall: exponent =>
-          val key      = DimensionKey(List(atom -> exponent, atom -> BigInt(1)))
+          val key      = DimKey(List(atom -> exponent, atom -> BigInt(1)))
           val expected = exponent + 1
 
           if expected == 0 then
@@ -147,7 +147,7 @@ end DimensionNormalizationLaws
  *
  * Expected coefficients use standalone rational equations, while expected dimensions use canonical public keys.
  */
-final class GradedQuantityLaws[A <: Dimension, B <: Dimension, C <: Dimension](
+final class GradedQuantityLaws[A <: Dim, B <: Dim, C <: Dim](
   aDimension: DimRef[A],
   bDimension: DimRef[B],
   cDimension: DimRef[C]
@@ -155,7 +155,7 @@ final class GradedQuantityLaws[A <: Dimension, B <: Dimension, C <: Dimension](
   arbitrary: Arbitrary[Rational])
   extends Laws:
 
-  private def quantity[D <: Dimension](d: DimRef[D], c: Rational): Quantity[D] =
+  private def quantity[D <: Dim](d: DimRef[D], c: Rational): Quantity[D] =
     Quantity(d, c)
 
   val gradedQuantity: RuleSet = new SimpleRuleSet(
@@ -205,7 +205,7 @@ end GradedQuantityLaws
  *
  * Expected orientation and composition use independent rational coefficient products and witness-built identities.
  */
-final class RateLaws[A <: Dimension, B <: Dimension, C <: Dimension, D <: Dimension](
+final class RateLaws[A <: Dim, B <: Dim, C <: Dim, D <: Dim](
   aDimension: DimRef[A],
   bDimension: DimRef[B],
   cDimension: DimRef[C],
@@ -213,7 +213,7 @@ final class RateLaws[A <: Dimension, B <: Dimension, C <: Dimension, D <: Dimens
 )(using arbitrary: Arbitrary[Rational])
   extends Laws:
 
-  private def rate[F <: Dimension, T <: Dimension](
+  private def rate[F <: Dim, T <: Dim](
     f: DimRef[F],
     t: DimRef[T],
     c: Rational

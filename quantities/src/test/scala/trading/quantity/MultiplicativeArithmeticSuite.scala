@@ -8,35 +8,25 @@ class MultiplicativeArithmeticSuite extends FunSuite:
   private val btc =
     trading.quantity.testkit.TestAsset
       .runtime:
-        AssetId:
+        AtomId:
           "BTC-multiplication-suite"
   private val usd =
     trading.quantity.testkit.TestAsset
       .runtime:
-        AssetId:
+        AtomId:
           "USD-multiplication-suite"
   private val eur =
     trading.quantity.testkit.TestAsset
       .runtime:
-        AssetId:
+        AtomId:
           "EUR-multiplication-suite"
 
   private val btcTenths =
-    UniformGrid.create[btc.D](
-      GridId:
-        "btc-tenths-multiplication-suite"
-      ,
-      GridVersion(1),
-      btc.dimension,
+    UniformGrid.create[btc.D](btc.dimension,
       PositiveRational.exact(1, 10).toOption.get
     )
   private val usdCentsPerBtc =
-    UniformGrid.create(
-      GridId:
-        "usd-cents-per-btc-multiplication-suite"
-      ,
-      GridVersion(1),
-      DimRef.divide(usd.dimension, btc.dimension),
+    UniformGrid.create(DimRef.divide(usd.dimension, btc.dimension),
       PositiveRational.exact(1, 100).toOption.get
     )
 

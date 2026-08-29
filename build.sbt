@@ -1,11 +1,10 @@
 val scala3Version          = "3.8.4"
-val typelevelVersion       = "2.13.0"
+val catsVersion            = "2.13.0"
+val algebraVersion         = "2.13.0"
 val disciplineMunitVersion = "2.0.0"
 
 val staticDimensionCompilerClasspath =
   taskKey[Seq[File]]("Immutable classpath for real-source static-dimension compiler fixtures")
-val quantitiesExternalArtifact =
-  taskKey[File]("Completed quantities main artifact for external build consumers")
 
 ThisBuild / scalaVersion := scala3Version
 ThisBuild / version      := "0.1.0-SNAPSHOT"
@@ -15,18 +14,25 @@ lazy val root =
     .in(file("."))
     .aggregate(
       quantities,
+      referenceData,
+      application,
+      economics,
       adversarialBoundary
     )
     .settings(
       name                    := "trading",
       publish / skip          := true,
       Test / test / aggregate := false,
-      // Scala 3 compiler fixtures load the completed quantities TASTy from the packaged JAR. Keep the root test command
-      // ordered so they never run a second compiler concurrently with quantities' own clean test compilation.
+      // Keep the compiler-heavy module suites ordered. Each test task obtains immutable main JARs through SBT's
+      // exportedProducts graph, so artifact construction remains a dependency of its consumer rather than a separate
+      // prebuild stage that can reevaluate the same package path.
       Test / test :=
         Def
           .sequential(
             quantities / Test / test,
+            referenceData / Test / test,
+            application / Test / test,
+            economics / Test / test,
             adversarialBoundary / Test / test
           )
           .value
@@ -39,17 +45,20 @@ lazy val quantities =
       name       := "trading-quantities",
       moduleName := "trading-quantities",
 
-      // Same-project tests retain SBT's normal Compile/classes dependency. External consumers synchronize on one
-      // completed immutable artifact without changing Compile/exportedProducts or Test/internalDependencyClasspath.
-      quantitiesExternalArtifact := (Compile / packageBin).value,
+      // SBT packages this project's completed main products before exposing them to same-build consumers.
+      Compile / exportJars := true,
 
       Test / classLoaderLayeringStrategy := ClassLoaderLayeringStrategy.Flat,
+      // The clean aggregate gate showed missing compiled classes when quantity suites shared this in-process loader.
+      // Isolate and serialize this module's tests so the configured gate does not depend on classloader timing.
+      Test / fork              := true,
+      Test / parallelExecution := false,
 
       libraryDependencies ++= Seq(
-        "org.typelevel"  %% "algebra"          % typelevelVersion,
-        "org.typelevel"  %% "cats-kernel"      % typelevelVersion,
-        "org.typelevel"  %% "algebra-laws"     % typelevelVersion       % Test,
-        "org.typelevel"  %% "cats-laws"        % typelevelVersion       % Test,
+        "org.typelevel"  %% "algebra"          % algebraVersion,
+        "org.typelevel"  %% "cats-kernel"      % catsVersion,
+        "org.typelevel"  %% "algebra-laws"     % algebraVersion         % Test,
+        "org.typelevel"  %% "cats-laws"        % catsVersion            % Test,
         "org.typelevel"  %% "discipline-munit" % disciplineMunitVersion % Test,
         "org.scalameta"  %% "munit"            % "1.3.4"                % Test,
         "org.scalacheck" %% "scalacheck"       % "1.19.0"               % Test,
@@ -57,27 +66,102 @@ lazy val quantities =
       )
     )
 
+lazy val referenceData =
+  project
+    .in(file("reference-data"))
+    .dependsOn(quantities)
+    .settings(
+      name       := "trading-reference-data",
+      moduleName := "trading-reference-data",
+
+      Compile / exportJars := true,
+      Compile / javacOptions ++= Seq("--release", "17"),
+
+      Test / classLoaderLayeringStrategy := ClassLoaderLayeringStrategy.Flat,
+
+      libraryDependencies ++= Seq(
+        "org.scalameta"  %% "munit"            % "1.3.4"  % Test,
+        "org.scalacheck" %% "scalacheck"       % "1.19.0" % Test,
+        "org.scalameta"  %% "munit-scalacheck" % "1.0.0"  % Test
+      )
+    )
+
+lazy val economics =
+  project
+    .in(file("economics"))
+    .dependsOn(quantities, referenceData)
+    .settings(
+      name       := "trading-economics",
+      moduleName := "trading-economics",
+
+      Compile / exportJars := true,
+
+      Test / classLoaderLayeringStrategy := ClassLoaderLayeringStrategy.Flat,
+      // The root clean gate rebuilds reference-data between sequential module test tasks. Isolate this downstream test
+      // runner so it observes one completed dependency classpath instead of an in-process loader cached across
+      // rebuilds.
+      Test / fork := true,
+
+      libraryDependencies ++= Seq(
+        "org.typelevel"  %% "cats-core"        % catsVersion,
+        "org.scalameta"  %% "munit"            % "1.3.4"  % Test,
+        "org.scalacheck" %% "scalacheck"       % "1.19.0" % Test,
+        "org.scalameta"  %% "munit-scalacheck" % "1.0.0"  % Test
+      )
+    )
+
+lazy val application =
+  project
+    .in(file("application"))
+    .dependsOn(referenceData)
+    .settings(
+      name       := "trading-application",
+      moduleName := "trading-application",
+
+      Compile / exportJars := true,
+
+      Test / classLoaderLayeringStrategy := ClassLoaderLayeringStrategy.Flat,
+      // The root clean gate rebuilds reference data before this downstream contract suite. Fork the test runner so
+      // it always loads that completed dependency generation instead of an in-process classloader cached earlier.
+      Test / fork := true,
+
+      libraryDependencies += "org.scalameta" %% "munit" % "1.3.4" % Test
+    )
+
+// Non-published performance evidence is compiled and run explicitly; it is intentionally outside root aggregation.
+lazy val benchmarks =
+  project
+    .in(file("benchmarks"))
+    .enablePlugins(JmhPlugin)
+    .dependsOn(referenceData)
+    .settings(
+      name           := "trading-benchmarks",
+      publish / skip := true
+    )
+
 lazy val adversarialBoundary =
   project
     .in(file("adversarial-boundary"))
-    .dependsOn(quantities)
+    .dependsOn(quantities, referenceData, application, economics)
     .settings(
       name           := "trading-quantities-adversarial-boundary",
       publish / skip := true,
       Test / scalacOptions += "-Werror",
-      // Both external-consumer edges depend on the same completed package task; neither observes Compile/classes.
-      Compile / internalDependencyClasspath :=
-        Seq(Attributed.blank((quantities / quantitiesExternalArtifact).value)),
-      Test / internalDependencyClasspath := {
-        val ownMain       = (Compile / products).value.map(Attributed.blank)
-        val quantitiesJar = Attributed.blank((quantities / quantitiesExternalArtifact).value)
-        (ownMain :+ quantitiesJar).distinct
-      },
+      // These suites run several Scala 3 compiler instances in-process. Dotty compiler state is not safe to share
+      // across concurrently executing suites, so serialize this test-only boundary without affecting other modules.
+      Test / parallelExecution         := false,
       staticDimensionCompilerClasspath := {
-        val quantitiesProduct      = Seq((quantities / quantitiesExternalArtifact).value)
-        val quantitiesDependencies = (quantities / Compile / externalDependencyClasspath).value.files
-        val compilerDependencies   = (Test / externalDependencyClasspath).value.files
-        (quantitiesProduct ++ quantitiesDependencies ++ compilerDependencies).distinct
+        val moduleProducts = (quantities / Compile / exportedProducts).value.files ++
+          (referenceData / Compile / exportedProducts).value.files ++
+          (application / Compile / exportedProducts).value.files ++
+          (economics / Compile / exportedProducts).value.files
+        val quantitiesDependencies    = (quantities / Compile / externalDependencyClasspath).value.files
+        val referenceDataDependencies = (referenceData / Compile / externalDependencyClasspath).value.files
+        val applicationDependencies   = (application / Compile / externalDependencyClasspath).value.files
+        val economicsDependencies     = (economics / Compile / externalDependencyClasspath).value.files
+        val compilerDependencies      = (Test / externalDependencyClasspath).value.files
+        (moduleProducts ++ quantitiesDependencies ++ referenceDataDependencies ++ applicationDependencies ++
+          economicsDependencies ++ compilerDependencies).distinct
       },
       Test / resourceGenerators += Def.task {
         val output    = (Test / resourceManaged).value / "static-dimension-compiler.classpath"

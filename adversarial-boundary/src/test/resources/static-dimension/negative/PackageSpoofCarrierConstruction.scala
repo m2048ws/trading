@@ -1,7 +1,7 @@
 package trading.quantity
 
 object PackageSpoofCarrierConstruction:
-  type Bad = Dim[Power["spoof:construction:bad", 0] *: EmptyTuple]
+  type Bad = Canonical[Power["spoof:construction:bad", 0] *: EmptyTuple]
   sealed trait G
 
   // OFFENDING-BEGIN
@@ -11,7 +11,7 @@ object PackageSpoofCarrierConstruction:
   val hiddenCoordinate: GridQuantity[Bad, G] = GridQuantity.fromCoordinate(BigInt(1))
   val removedNormalization                   = new Normalize[Bad]
   val forgedDimension = new DimRef[Bad]:
-    val key = DimensionKey.one
+    val key = DimKey.one
   // OFFENDING-END
 
 end PackageSpoofCarrierConstruction

@@ -3,7 +3,7 @@ package external.fixtures.negative
 import trading.quantity.*
 
 object DirectSameDimensionRetagging:
-  def quantity[A <: Dimension, B <: Dimension](
+  def quantity[A <: Dim, B <: Dim](
     same: SameDimension[A, B],
     value: Quantity[A]
   ): Unit =
@@ -13,7 +13,7 @@ object DirectSameDimensionRetagging:
     val rejected: Quantity[B] = same.coerceQuantity(value)
     // OFFENDING-END
 
-  def grid[A <: Dimension, B <: Dimension, G](
+  def grid[A <: Dim, B <: Dim, G](
     same: SameDimension[A, B],
     value: GridQuantity[A, G]
   ): Unit =

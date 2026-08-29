@@ -5,6 +5,8 @@ import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
+import java.util.jar.JarFile
+import scala.jdk.CollectionConverters.*
 
 import dotty.tools.dotc.Main
 import dotty.tools.dotc.reporting.StoreReporter
@@ -35,13 +37,45 @@ class StaticDimensionCompilerBoundarySuite extends FunSuite:
     val entries             = compilationClasspath.split(File.pathSeparator).toList.map(Paths.get(_))
     val quantitiesArtifacts = entries.filter: entry =>
       entry.getFileName.toString.startsWith("trading-quantities_3-")
+    val economicsArtifacts = entries.filter: entry =>
+      entry.getFileName.toString.startsWith("trading-economics_3-")
+    val referenceDataArtifacts = entries.filter: entry =>
+      entry.getFileName.toString.startsWith("trading-reference-data_3-")
     val compilerArtifacts = entries.filter: entry =>
       entry.getFileName.toString.startsWith("scala3-compiler_3-")
 
     assertEquals(quantitiesArtifacts.size, 1)
+    assertEquals(economicsArtifacts.size, 1)
+    assertEquals(referenceDataArtifacts.size, 1)
     assertEquals(compilerArtifacts.size, 1)
     assert(entries.forall(path => Files.isRegularFile(path)), entries.mkString("\n"))
     assert(quantitiesArtifacts.head.getFileName.toString.endsWith(".jar"))
+    assert(economicsArtifacts.head.getFileName.toString.endsWith(".jar"))
+
+    val quantitiesArchive = new JarFile(quantitiesArtifacts.head.toFile)
+    try
+      val packagedEntries     = quantitiesArchive.entries().asScala.map(_.getName).toSet
+      val requiredMainEntries = Set(
+        "trading/quantity/AtomId.class",
+        "trading/quantity/AtomId.tasty",
+        "trading/quantity/DimKey.class",
+        "trading/quantity/DimKey.tasty",
+        "trading/quantity/DimRef.class",
+        "trading/quantity/DimRef.tasty",
+        "trading/quantity/JavaSerializationUnsupported.class",
+        "trading/quantity/JavaSerializationUnsupported.tasty",
+        "trading/quantity/Quantity$package.class",
+        "trading/quantity/Quantity$package.tasty",
+        "trading/quantity/Rational.class",
+        "trading/quantity/Rational.tasty",
+        "trading/quantity/SameDimension.class",
+        "trading/quantity/SameDimension.tasty",
+        "trading/quantity/refinement/RefinementError.class",
+        "trading/quantity/refinement/RefinementError.tasty"
+      )
+      assertEquals(requiredMainEntries.diff(packagedEntries), Set.empty[String])
+    finally quantitiesArchive.close()
+    end try
 
   private val positiveFixtures = List(
     "AssociationIndependentOrder.scala",
@@ -113,14 +147,13 @@ class StaticDimensionCompilerBoundarySuite extends FunSuite:
       minimumErrors = 12
     ),
     NegativeFixture("ValueDoesNotRevealAuthority.scala", List("No given instance", "key is not a member"),
-      minimumErrors = 5),
+      minimumErrors = 3),
     NegativeFixture("NullCarrierConstruction.scala", List("Found:", "Required:"), minimumErrors = 2),
     NegativeFixture(
       "PackageSpoofCarrierConstruction.scala",
       List("fromCoefficient", "fromCoordinate", "Normalize", "sealed trait DimRef"),
       minimumErrors = 6
     ),
-    NegativeFixture("DecodedCarrierCannotSelectMalformedIndex.scala", List("Found:", "Required:")),
     NegativeFixture(
       "RemovedExplicitNormalizationArguments.scala",
       List("does not take more parameters"),

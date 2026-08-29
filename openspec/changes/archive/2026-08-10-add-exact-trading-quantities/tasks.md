@@ -68,7 +68,7 @@
 ## 8. Runtime evidence and registered grid packing
 
 - [x] 8.1 Implement runtime asset, dimension, and registered-grid witnesses with concrete implementations nested privately in each registry.
-- [x] 8.2 Preserve dimension-scoped `(DimensionKey, GridId, GridVersion)` identity and immutable definitions.
+- [x] 8.2 Preserve dimension-scoped `(DimKey, GridId, GridVersion)` identity and immutable definitions.
 - [x] 8.3 Keep generic `SameGrid` recovery independent of registry provenance, and have
   `RuntimeEvidence.sameGrid` reject foreign registries before ordinary grid compatibility checks.
 - [x] 8.4 Implement heterogeneous `ResolvedAssetGridQuantity`, `ResolvedGridQuantity`, and `ResolvedExactQuantity`.

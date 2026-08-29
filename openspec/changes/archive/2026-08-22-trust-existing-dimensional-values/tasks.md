@@ -9,7 +9,7 @@
   public raw coefficient, coordinate, proof, or opaque-carrier constructor can manufacture a caller-selected malformed
   dimension or return a carrier backed by a null numeric payload.
 - [x] 1.4 Extend immutable-JAR downstream fixtures for package spoofing, inaccessible opaque constructors, literal
-  `null` authority and numeric payloads, and the inability to recover `Normalize`, `DimRef`, `DimensionKey`, `GridRef`,
+  `null` authority and numeric payloads, and the inability to recover `Normalize`, `DimRef`, `DimKey`, `GridRef`,
   or registry provenance from a dimensional value.
 - [x] 1.5 Add malformed-index construction fixtures covering type-only zero, coefficient and coordinate construction,
   alignment, grid evidence, refinements, and identity-bearing algebra, while retaining the supported exclusions for

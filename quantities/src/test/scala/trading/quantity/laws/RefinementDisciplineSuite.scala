@@ -6,11 +6,8 @@ import trading.quantity.testkit.ExactGenerators.given
 import trading.quantity.testkit.TestAsset
 
 class RefinementDisciplineSuite extends TradingDisciplineSuite:
-  private val asset = TestAsset.runtime(AssetId("refinement-discipline"))
-  private val grid  = UniformGrid.create(
-    GridId("refinement-discipline-grid"),
-    GridVersion(1),
-    asset.dimension,
+  private val asset = TestAsset.runtime(AtomId("refinement-discipline"))
+  private val grid  = UniformGrid.create(asset.dimension,
     PositiveRational.exact(1, 100).toOption.get
   )
 

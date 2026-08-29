@@ -11,42 +11,19 @@ class ConversionLawsSuite extends ScalaCheckSuite:
   private val usd =
     trading.quantity.testkit.TestAsset
       .runtime:
-        AssetId:
+        AtomId:
           "USD-conversion-laws"
   private val cents =
-    UniformGrid.create[usd.D](
-      GridId:
-        "USD-cent-conversion-laws"
-      ,
-      GridVersion(1),
-      usd.dimension,
+    UniformGrid.create[usd.D](usd.dimension,
       PositiveRational.exact(1, 100).toOption.get
     )
-  private val equivalentCents =
-    UniformGrid.create[usd.D](
-      GridId:
-        "USD-cent-conversion-laws"
-      ,
-      GridVersion(1),
-      usd.dimension,
-      PositiveRational.exact(1, 100).toOption.get
-    )
-  private val alternateCents =
-    UniformGrid.create[usd.D](
-      GridId:
-        "USD-alternate-cent-conversion-laws"
-      ,
-      GridVersion(1),
-      usd.dimension,
+  private val equivalentCents: GridRef[usd.D] = cents
+  private val alternateCents                  =
+    UniformGrid.create[usd.D](usd.dimension,
       PositiveRational.exact(1, 100).toOption.get
     )
   private val mills =
-    UniformGrid.create[usd.D](
-      GridId:
-        "USD-mill-conversion-laws"
-      ,
-      GridVersion(1),
-      usd.dimension,
+    UniformGrid.create[usd.D](usd.dimension,
       PositiveRational.exact(1, 1000).toOption.get
     )
 

@@ -7,14 +7,11 @@ import trading.quantity.refinement.*
 import trading.quantity.testkit.ExactGenerators.*
 
 class QuantityDivisionSuite extends ScalaCheckSuite:
-  private val usd = trading.quantity.testkit.TestAsset.runtime(AssetId("USD-division-suite"))
-  private val btc = trading.quantity.testkit.TestAsset.runtime(AssetId("BTC-division-suite"))
+  private val usd = trading.quantity.testkit.TestAsset.runtime(AtomId("USD-division-suite"))
+  private val btc = trading.quantity.testkit.TestAsset.runtime(AtomId("BTC-division-suite"))
   private type UsdPerBtc = Divide[usd.D, btc.D]
   private val cents =
-    UniformGrid.create[usd.D](
-      GridId("usd-cent-division-suite"),
-      GridVersion(1),
-      usd.dimension,
+    UniformGrid.create[usd.D](usd.dimension,
       PositiveRational.exact(1, 100).toOption.get
     )
 

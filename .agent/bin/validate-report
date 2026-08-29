@@ -300,10 +300,6 @@ elif role == "finalize":
             f"finalize {status} requires clean Git diff checks",
         )
         require(
-            git["staged"] is True,
-            f"finalize {status} requires intended changes staged",
-        )
-        require(
             git["unstaged"] is False,
             f"finalize {status} requires no unexplained unstaged files",
         )
@@ -314,11 +310,27 @@ elif role == "finalize":
 
     if status == "commit_ready":
         require(
+            git["staged"] is True,
+            "COMMIT_READY requires intended changes to remain staged",
+        )
+        require(
+            commit["authorized"] is False,
+            "COMMIT_READY requires commit.authorized=false",
+        )
+        require(
             commit["created"] is False,
             "COMMIT_READY cannot report that a commit was created",
         )
+        require(
+            commit["hash"] == "",
+            "COMMIT_READY requires an empty commit hash",
+        )
 
     elif status == "committed":
+        require(
+            git["staged"] is False,
+            "COMMITTED requires no staged changes",
+        )
         require(
             commit["authorized"] is True,
             "COMMITTED requires explicit commit authorization",
@@ -330,6 +342,10 @@ elif role == "finalize":
         require(
             nonempty(commit["hash"]),
             "COMMITTED requires a nonempty commit hash",
+        )
+        require(
+            git["head"] == commit["hash"],
+            "COMMITTED requires the commit hash to equal Git HEAD",
         )
 
     elif status == "blocked":

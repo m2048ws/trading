@@ -11,24 +11,14 @@ class CrossGridArithmeticSuite extends ScalaCheckSuite:
   private val usd =
     trading.quantity.testkit.TestAsset
       .runtime:
-        AssetId:
+        AtomId:
           "USD-cross-grid-suite"
   private val cents =
-    UniformGrid.create[usd.D](
-      GridId:
-        "usd-cent-cross-grid-suite"
-      ,
-      GridVersion(1),
-      usd.dimension,
+    UniformGrid.create[usd.D](usd.dimension,
       PositiveRational.exact(1, 100).toOption.get
     )
   private val threeCents =
-    UniformGrid.create[usd.D](
-      GridId:
-        "usd-three-cent-cross-grid-suite"
-      ,
-      GridVersion(1),
-      usd.dimension,
+    UniformGrid.create[usd.D](usd.dimension,
       PositiveRational.exact(3, 100).toOption.get
     )
 
@@ -74,16 +64,10 @@ class CrossGridArithmeticSuite extends ScalaCheckSuite:
     type BA = Times[b.D, a.D]
     val ab: DimRef[AB] = DimRef.times(a.dimension, b.dimension)
     val ba: DimRef[BA] = DimRef.times(b.dimension, a.dimension)
-    val abGrid         = UniformGrid.create(
-      GridId("cross-grid-comparison:ab"),
-      GridVersion(1),
-      ab,
+    val abGrid         = UniformGrid.create(ab,
       PositiveRational.exact(1, 10).toOption.get
     )
-    val baGrid = UniformGrid.create(
-      GridId("cross-grid-comparison:ba"),
-      GridVersion(1),
-      ba,
+    val baGrid = UniformGrid.create(ba,
       PositiveRational.exact(1, 5).toOption.get
     )
     val left         = abGrid.fromCoordinate(2)

@@ -89,7 +89,7 @@ class AdversarialConstructionBoundarySuite extends FunSuite:
     assertDoesNotCompile:
       """
       import trading.quantity.*
-      val asset = Asset.runtime(AssetId("ephemeral"))
+      val asset = Asset.runtime(AtomId("ephemeral"))
     """
 
   test("canonical core values do not advertise default Java serialization"):
@@ -102,7 +102,7 @@ class AdversarialConstructionBoundarySuite extends FunSuite:
     assertDoesNotCompile:
       """
       import trading.quantity.*
-      val serialized: java.io.Serializable = DimensionKey.one
+      val serialized: java.io.Serializable = DimKey.one
     """
 
 end AdversarialConstructionBoundarySuite

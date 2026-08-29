@@ -1,7 +1,19 @@
 # trading-quantities
 
-This Scala 3 module provides exact dimensionful arithmetic, explicit uniform-grid boundaries, runtime identity, and
-checked reconstruction.
+This Scala 3 module provides exact dimensionful arithmetic, anonymous uniform-grid boundaries, and domain-neutral
+runtime dimension identity.
+
+## Responsibility and dependencies
+
+The current `trading-quantities` artifact owns exact rational arithmetic, static and runtime dimension mathematics,
+exact quantities, mathematical grid operations, refinements, and optional lawful mathematical interoperability. Its
+production dependencies are restricted to mathematical foundations such as Algebra and Cats Kernel.
+
+It does not own instrument, asset, stable-grid, registration, order, scenario, fee-policy, risk, application-workflow,
+codec, I/O, concrete-effect, or telemetry responsibilities. Stable identity and trusted handles live in
+`trading-reference-data`; Proposal 2 replaces that artifact's temporary registry bridge, and Proposal 9 introduces the
+first versioned boundary codecs. See the [project charter](../docs/design-principles.md) and
+[transition audit](../docs/architecture-charter-audit.md).
 
 > A dimension says what is measured.
 >
@@ -16,11 +28,13 @@ The primary public vocabulary is `Quantity[D]`, `GridQuantity[D, G]`, `Rate[From
 
 | Package | Responsibility |
 | --- | --- |
-| `trading.quantity` | Core exact quantities, dimensions, grids, and identifiers |
-| `trading.quantity.grid` | Projection, quantization, encoding, quotient/remainder, and allocation |
+| `trading.quantity` | Core exact quantities, dimensions, and anonymous grids |
+| `trading.quantity.grid` | Projection, quantization, mathematical grid evidence, quotient/remainder, and allocation |
 | `trading.quantity.refinement` | Checked refinements and refinement-aware operations |
-| `trading.quantity.runtime` | Runtime witnesses, registry, heterogeneous values, and logical persistence |
 | `trading.quantity.algebra` | Optional Typelevel Algebra integration |
+
+Domain-neutral runtime identity is represented by `DimKey`, `DimRef`, and checked `SameDimension` recovery in the core
+`trading.quantity` package. The artifact has no separate runtime package or heterogeneous registered-value carrier.
 
 ## Static types and runtime authority
 
@@ -28,7 +42,7 @@ Three public capabilities remain deliberately independent:
 
 | Capability | Establishes | Does not establish |
 | --- | --- | --- |
-| `DimRef[D]` | This inhabited `D` has one authoritative `DimensionKey` | A value, grid, or registry provenance |
+| `DimRef[D]` | This inhabited `D` has one authoritative `DimKey` | A value, grid, or registry provenance |
 | `SameDimension[A, B]` | Controlled retagging between equivalent dimension indices | Runtime identity or construction authority |
 | `Quantity[D]` / `GridQuantity[D, G]` | A trusted carrier created by an authoritative or checked path | A `DimRef`, grid witness, or registry ownership |
 
@@ -41,7 +55,7 @@ The closed static language is:
 
 ```scala
 Atom[K]
-Dim[Power[K, E] *: ... *: EmptyTuple]
+Canonical[Power[K, E] *: ... *: EmptyTuple]
 Times[A, B]
 Inverse[A]
 Divide[A, B]
@@ -51,7 +65,7 @@ One
 Declared `Power` entries require concrete stable singleton keys and nonzero singleton `Int` exponents. Complete
 expressions may accumulate exponents outside the `Int` range before later cancellation because the private interpreter
 uses `BigInt`. Duplicate or zero declared powers, unresolved keys, malformed tuple tails, and shapes outside the grammar
-are rejected. Runtime `DimensionKey` powers are also arbitrary precision.
+are rejected. Runtime `DimKey` powers are also arbitrary precision.
 
 Literal construction derives authority from the literal type itself:
 
@@ -93,13 +107,13 @@ Addition, subtraction, scaling, comparison, refinement, and other dimension-pres
 Dimension-changing primitive operations preserve the expression spelling uniformly:
 
 ```scala
-def multiply[A <: Dimension, B <: Dimension](
+def multiply[A <: Dim, B <: Dim](
   left: Quantity[A],
   right: Quantity[B]
 ): Quantity[Times[A, B]] =
   left * right
 
-def divide[A <: Dimension, B <: Dimension](
+def divide[A <: Dim, B <: Dim](
   left: Quantity[A],
   right: NonZero[Quantity[B]]
 ): Quantity[Divide[A, B]] =
@@ -113,7 +127,7 @@ expression witness.
 When an API wants a nominated equivalent spelling, select it explicitly with `SameDimension`:
 
 ```scala
-def notional[A <: Dimension, B <: Dimension, Out <: Dimension](
+def notional[A <: Dim, B <: Dim, Out <: Dim](
   amount: Quantity[A],
   price: Quantity[B]
 )(using SameDimension[Times[A, B], Out]): Quantity[Out] =
@@ -123,14 +137,14 @@ def notional[A <: Dimension, B <: Dimension, Out <: Dimension](
 There is no implicit global retagging. Homogeneous generic code simply preserves its input type:
 
 ```scala
-def total[D <: Dimension](left: Quantity[D], right: Quantity[D]): Quantity[D] =
+def total[D <: Dim](left: Quantity[D], right: Quantity[D]): Quantity[D] =
   left + right
 ```
 
 Empty construction is authority-bearing. A local `DimRef[D]` is therefore required:
 
 ```scala
-def empty[D <: Dimension](using dimension: DimRef[D]): Quantity[D] =
+def empty[D <: Dim](using dimension: DimRef[D]): Quantity[D] =
   Quantity.zero[D]
 ```
 
@@ -184,8 +198,6 @@ universal grid; grids belong to storage, trading, transfer, or settlement bounda
 import trading.quantity.grid.*
 
 val cents = UniformGrid.create(
-  GridId("USD-cent"),
-  GridVersion(1),
   usd.dimension,
   PositiveRational.exact(1, 100).toOption.get
 )
@@ -193,9 +205,10 @@ val stored: GridQuantity[usd.D, cents.G] = cents.fromCoordinate(600_000)
 val embedded: Quantity[usd.D] = stored.asQuantity(cents)
 ```
 
-The embedding is explicit and canonical. Returning to a grid is either checked with `narrowExactlyTo` or explicitly
-lossy with `quantizeTo` and a named policy. Equal quanta do not imply equal grid identity. Coordinate construction and
-inspection remain owned by the matching witness.
+Each construction creates a fresh coordinate namespace. The embedding is explicit and exact. Returning to a grid is
+either checked with `narrowExactlyTo` or explicitly lossy with `quantizeTo` and a named policy. Equal quanta permit
+`SameQuantum` when dimensions agree but do not imply `SameGrid`. Coordinate construction and inspection remain owned
+by the matching witness.
 
 ## Refinements and algebra
 
@@ -210,26 +223,22 @@ import trading.quantity.algebra.exactQuantityAlgebra.given
 import trading.quantity.algebra.gridQuantityAlgebra.given
 import trading.quantity.algebra.refinedAdditive.given
 
-def exactSpace[D <: Dimension](using DimRef[D]) =
+def exactSpace[D <: Dim](using DimRef[D]) =
   summon[VectorSpace[Quantity[D], Rational]]
 
-def gridModule[D <: Dimension, G](using DimRef[D]) =
+def gridModule[D <: Dim, G](using DimRef[D]) =
   summon[LeftModule[GridQuantity[D, G], BigInt]]
 ```
 
 Positive quantities expose combine-only semigroups and need no empty-value authority. There is no additive structure
 for `NonZero[A]`, no public `Numeric[Quantity[D]]`, and no ring for dimensionful quantities.
 
-## Runtime identity and heterogeneous values
+## Runtime dimension identity
 
-`QuantityRegistry` owns registered dimension and grid provenance. Checked reconstruction rejects foreign registries,
-unexpected dimensions, unknown versions, and conflicting definitions. Heterogeneous dimension-changing results retain
-the raw expression-typed value together with its matching authoritative `DimRef`; endpoint-oriented operations retain
-their declared target witnesses.
-
-`PackedAssetGridQuantity` and `PackedGridQuantity` store logical identity plus an integer coordinate.
-`ResolvedAssetGridQuantity`, `ResolvedGridQuantity`, and `ResolvedExactQuantity` package checked results. Their runtime
-and logical wire representations are unchanged; arbitrary exact quantities still have no packed wire format.
+`DimKey` and `DimRef` remain mathematical runtime identity. They provide no asset, stable grid, catalog lineage,
+registration, or persistence authority. Quantity-owned packed records and registry-backed decoded packages have been
+removed; Proposal 9 restores durable reconstruction in the boundary-codec artifact against an immutable reference-data
+snapshot.
 
 Two independently obtained witnesses can be reconciled with `SameDimension.between`. Successful checked evidence can
 then align a value for homogeneous arithmetic. Reflexive static identity is never used as runtime authority.
@@ -255,8 +264,8 @@ Typical migrations are:
 ## Supported trust boundary
 
 Guarantees apply to well-typed Scala 3 callers using the public API without casts, reflection, `Unsafe`, hand-written
-bytecode, foreign-language ABI calls, or constructor-bypassing deserialization. External data enters through checked
-parsers, registries, and decoders.
+bytecode, foreign-language ABI calls, or constructor-bypassing deserialization. External stable identity and durable
+records enter through downstream reference-data and codec boundaries.
 
 ## Verification
 

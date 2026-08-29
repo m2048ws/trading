@@ -8,7 +8,7 @@ object UnsupportedDimensionShapes:
   type Refined = A { type Marker = String }
   type Intersected = A & B
   type Unioned = A | B
-  type Selected[D <: Dimension] <: Dimension = D match
+  type Selected[D <: Dim] <: Dim = D match
     case One => A
     case _   => B
 
@@ -16,7 +16,7 @@ object UnsupportedDimensionShapes:
   val refined = SameDimension.derived[Refined, One]
   val intersected = SameDimension.derived[Intersected, One]
   val unioned = SameDimension.derived[Unioned, One]
-  def unresolvedMatch[D <: Dimension] = SameDimension.derived[Selected[D], One]
+  def unresolvedMatch[D <: Dim] = SameDimension.derived[Selected[D], One]
   // OFFENDING-END
 
 end UnsupportedDimensionShapes

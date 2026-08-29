@@ -12,22 +12,22 @@ sealed trait Power[Key <: Singleton, Exponent <: Int]
  *
  * Reflexive evidence is ordinary Scala type identity and does not certify that either type belongs to the closed static
  * grammar. Non-reflexive static derivation validates both complete representations; runtime recovery issues the same
- * capability only after authoritative [[DimensionKey]] equality. Evidence alone provides no [[DimRef]] and exposes no
- * runtime key.
+ * capability only after authoritative [[DimKey]] equality. Evidence alone provides no [[DimRef]] and exposes no runtime
+ * key.
  */
 @implicitNotFound("The requested dimensions are not equivalent; provide checked SameDimension evidence")
-sealed trait SameDimension[A <: Dimension, B <: Dimension]
+sealed trait SameDimension[A <: Dim, B <: Dim]
 
 object SameDimension:
   /** Scala type identity is safe without certifying a manually named canonical representation. */
-  given reflexive[D <: Dimension]: SameDimension[D, D] with {}
+  given reflexive[D <: Dim]: SameDimension[D, D] with {}
 
   /** Derive evidence after both closed expressions normalize to equal powers modulo tuple order. */
-  transparent inline given derived[A <: Dimension, B <: Dimension]: SameDimension[A, B] =
+  transparent inline given derived[A <: Dim, B <: Dim]: SameDimension[A, B] =
     ${ StaticDimensionMacros.sameDimension[A, B] }
 
   /** Recover type evidence only after authoritative runtime identities agree. */
-  def between[A <: Dimension, B <: Dimension](l: DimRef[A], r: DimRef[B]): Option[SameDimension[A, B]] =
+  def between[A <: Dim, B <: Dim](l: DimRef[A], r: DimRef[B]): Option[SameDimension[A, B]] =
     Option.when(l.key == r.key):
       new SameDimension[A, B] {}
 
@@ -36,7 +36,7 @@ end SameDimension
 /** Atomic quoted implementation for the closed static-dimension grammar. */
 private object StaticDimensionMacros:
 
-  def sameDimension[A <: Dimension: Type, B <: Dimension: Type](using Quotes): Expr[SameDimension[A, B]] =
+  def sameDimension[A <: Dim: Type, B <: Dim: Type](using Quotes): Expr[SameDimension[A, B]] =
     val engine = new Engine
     val left   = engine.interpret(engine.typeOf[A])
     val right  = engine.interpret(engine.typeOf[B])
@@ -53,10 +53,10 @@ private object StaticDimensionMacros:
 
     def typeOf[T: Type]: TypeRepr = TypeRepr.of[T]
 
-    private val dimensionType  = TypeRepr.of[Dimension]
+    private val dimensionType  = TypeRepr.of[Dim]
     private val emptyTupleType = TypeRepr.of[EmptyTuple]
 
-    private val dimConstructor       = constructorOf(TypeRepr.of[Dim[EmptyTuple]])
+    private val dimConstructor       = constructorOf(TypeRepr.of[Canonical[EmptyTuple]])
     private val timesConstructor     = constructorOf(TypeRepr.of[Times[One, One]])
     private val inverseConstructor   = constructorOf(TypeRepr.of[Inverse[One]])
     private val powerConstructor     = constructorOf(TypeRepr.of[Power["static-dimension-probe", 1]])
@@ -69,7 +69,7 @@ private object StaticDimensionMacros:
       val current = expose(raw)
 
       if current =:= dimensionType then
-        invalid("the base Dimension type is outside the closed static grammar")
+        invalid("the base Dim type is outside the closed static grammar")
       else
         current match
           case AppliedType(constructor, List(entries)) if sameConstructor(constructor, dimConstructor) =>
@@ -81,7 +81,7 @@ private object StaticDimensionMacros:
           case _: AndType | _: OrType | _: Refinement | _: MatchType | _: TypeLambda | _: TypeBounds =>
             invalid("refined, intersected, union, match, and unresolved types are outside the closed static grammar")
           case _ =>
-            invalid("expected Dim, Times, Inverse, Atom, One, or Divide")
+            invalid("expected Canonical, Times, Inverse, Atom, One, or Divide")
 
     private def combine(entries: List[Entry]): List[Entry] =
       val accumulated = entries.foldLeft(List.empty[Entry]): (current, added) =>
@@ -106,18 +106,18 @@ private object StaticDimensionMacros:
                 case AppliedType(power, List(key, exponent)) if sameConstructor(power, powerConstructor) =>
                   val checkedKey = validateKey(key)
                   if seen.exists(_ =:= checkedKey) then
-                    invalid("canonical Dim keys must be unique")
+                    invalid("canonical Canonical keys must be unique")
                   val checkedExponent = parseExponent(exponent)
                   Entry(checkedKey, checkedExponent) :: loop(tail, checkedKey :: seen)
-                case _ => invalid("every canonical Dim tuple entry must be a Power")
-            case _ => invalid("canonical Dim entries must form a concrete Tuple")
+                case _ => invalid("every canonical Canonical tuple entry must be a Power")
+            case _ => invalid("canonical Canonical entries must form a concrete Tuple")
 
       loop(raw, Nil)
 
     private def parseExponent(raw: TypeRepr): BigInt =
       expose(raw) match
         case ConstantType(IntConstant(value)) if value != 0 => BigInt(value)
-        case ConstantType(IntConstant(_)) => invalid("zero exponents cannot be stored in a canonical Dim")
+        case ConstantType(IntConstant(_)) => invalid("zero exponents cannot be stored in a canonical Canonical")
         case _                            => invalid("a Power exponent must be a nonzero singleton Int literal")
 
     private def validateKey(raw: TypeRepr): TypeRepr =

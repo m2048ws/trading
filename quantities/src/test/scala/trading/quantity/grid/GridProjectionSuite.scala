@@ -11,28 +11,18 @@ class GridProjectionSuite extends ScalaCheckSuite:
   private val usd =
     trading.quantity.testkit.TestAsset
       .runtime:
-        AssetId:
+        AtomId:
           "USD-grid-projection-suite"
   private val quantum = PositiveRational.exact(1, 100).toOption.get
 
   private val venueA =
-    UniformGrid.create[usd.D](
-      GridId:
-        "venue-a-cent"
-      ,
-      GridVersion(1),
-      usd.dimension,
+    UniformGrid.create[usd.D](usd.dimension,
       quantum
     )
 
   test("six cents narrows exactly to coordinate two on a three-cent grid"):
     val threeCents =
-      UniformGrid.create[usd.D](
-        GridId:
-          "three-cent-narrowing-suite"
-        ,
-        GridVersion(1),
-        usd.dimension,
+      UniformGrid.create[usd.D](usd.dimension,
         PositiveRational.exact(3, 100).toOption.get
       )
     val exactSixCents = Quantity(usd.dimension, Rational(6, 100))
@@ -52,18 +42,13 @@ class GridProjectionSuite extends ScalaCheckSuite:
 
   test("one cent returns a structured not-on-three-cent-grid error"):
     val threeCents =
-      UniformGrid.create[usd.D](
-        GridId:
-          "three-cent-rejected-narrowing-suite"
-        ,
-        GridVersion(1),
-        usd.dimension,
+      UniformGrid.create[usd.D](usd.dimension,
         PositiveRational.exact(3, 100).toOption.get
       )
     val exactOneCent = Quantity(usd.dimension, Rational(1, 100))
     val expected: Either[NotOnGrid[usd.D], GridQuantity[usd.D, threeCents.G]] =
       Left:
-        NotOnGrid[usd.D](Rational(1, 100), threeCents.key, Rational(3, 100))
+        NotOnGrid[usd.D](Rational(1, 100), Rational(3, 100))
 
     assertEquals(
       exactOneCent.narrowExactlyTo:
@@ -74,12 +59,7 @@ class GridProjectionSuite extends ScalaCheckSuite:
 
   test("grid quantities can narrow value-specifically through exact interpretation"):
     val threeCents =
-      UniformGrid.create[usd.D](
-        GridId:
-          "three-cent-grid-narrowing-suite"
-        ,
-        GridVersion(1),
-        usd.dimension,
+      UniformGrid.create[usd.D](usd.dimension,
         PositiveRational.exact(3, 100).toOption.get
       )
 
@@ -98,12 +78,7 @@ class GridProjectionSuite extends ScalaCheckSuite:
 
   property("exact narrowing rejects every nonrepresentable three-cent value"):
     val threeCents =
-      UniformGrid.create[usd.D](
-        GridId:
-          "three-cent-property-narrowing-suite"
-        ,
-        GridVersion(1),
-        usd.dimension,
+      UniformGrid.create[usd.D](usd.dimension,
         PositiveRational.exact(3, 100).toOption.get
       )
 

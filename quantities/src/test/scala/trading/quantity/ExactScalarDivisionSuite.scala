@@ -10,15 +10,10 @@ class ExactScalarDivisionSuite extends FunSuite:
   private val usd =
     trading.quantity.testkit.TestAsset
       .runtime:
-        AssetId:
+        AtomId:
           "USD-exact-scalar-division-suite"
   private val cents =
-    UniformGrid.create[usd.D](
-      GridId:
-        "usd-cent-exact-scalar-division-suite"
-      ,
-      GridVersion(1),
-      usd.dimension,
+    UniformGrid.create[usd.D](usd.dimension,
       PositiveRational.exact(1, 100).toOption.get
     )
 
@@ -84,9 +79,8 @@ class ExactScalarDivisionSuite extends FunSuite:
       import trading.quantity.*
       import trading.quantity.refinement.*
 
-      val usd = trading.quantity.testkit.TestAsset.runtime(AssetId("scalar-expected-type-suite"))
-      val cents = UniformGrid.create[usd.D](
-        GridId("scalar-expected-grid-suite"), GridVersion(1), usd.dimension,
+      val usd = trading.quantity.testkit.TestAsset.runtime(AtomId("scalar-expected-type-suite"))
+      val cents = UniformGrid.create[usd.D](usd.dimension,
         PositiveRational.exact(1, 100).toOption.get
       )
       val divisor = NonZeroWhole(3).toOption.get
@@ -107,9 +101,8 @@ class ExactScalarDivisionSuite extends FunSuite:
 
       import UnrelatedImports.given
 
-      val usd = trading.quantity.testkit.TestAsset.runtime(AssetId("scalar-import-suite"))
-      val cents = UniformGrid.create[usd.D](
-        GridId("scalar-import-grid-suite"), GridVersion(1), usd.dimension,
+      val usd = trading.quantity.testkit.TestAsset.runtime(AtomId("scalar-import-suite"))
+      val cents = UniformGrid.create[usd.D](usd.dimension,
         PositiveRational.exact(1, 100).toOption.get
       )
       val divisor = NonZeroWhole(3).toOption.get

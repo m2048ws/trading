@@ -2,9 +2,6 @@ package external
 
 import munit.FunSuite
 
-import trading.quantity.*
-import trading.quantity.refinement.*
-import trading.quantity.runtime.*
 import trading.quantity.testkit.CompileAssertions.*
 
 class ConstructionAndProvenanceBoundarySuite extends FunSuite:
@@ -26,7 +23,7 @@ class ConstructionAndProvenanceBoundarySuite extends FunSuite:
       import trading.quantity.*
       import trading.quantity.refinement.*
       val dimension = DimRef.atomic(AtomId("supported-helper-prelude"))
-      val grid = UniformGrid.create(GridId("supported-helper-grid"), GridVersion(1), dimension.dimension,
+      val grid = UniformGrid.create(dimension.dimension,
         PositiveRational.exact(1, 100).toOption.get)
       val exact = Quantity(dimension.dimension, 2)
       val coordinate = grid.fromCoordinate(3)
@@ -47,7 +44,7 @@ class ConstructionAndProvenanceBoundarySuite extends FunSuite:
       import trading.quantity.*
       import trading.quantity.refinement.*
       val dimension = DimRef.atomic(AtomId("computed-grid"))
-      val grid = UniformGrid.create(GridId("computed-grid"), GridVersion(1), dimension.dimension,
+      val grid = UniformGrid.create(dimension.dimension,
         PositiveRational.exact(1, 100).toOption.get)
       val left = grid.fromCoordinate(2)
       val right = grid.fromCoordinate(3)
@@ -99,61 +96,5 @@ class ConstructionAndProvenanceBoundarySuite extends FunSuite:
       val divisor = NonZero(value).toOption.get
       val forged = Quantity.ratio(value, divisor)
       """
-
-  test("plain witnesses cannot satisfy registered provenance"):
-    assertDoesNotCompile:
-      """
-      import trading.quantity.*
-      import trading.quantity.runtime.*
-      val plain: DimRef[One] = DimRef.one
-      val forged: RegisteredDimensionRef[One] = plain
-      """
-    assertDoesNotCompile:
-      """
-      import trading.quantity.*
-      import trading.quantity.refinement.*
-      import trading.quantity.runtime.*
-      val registry = new QuantityRegistry
-      val asset = registry.registerAsset(
-        AssetDefinition(AssetId("plain-grid-asset"), AtomId("plain-grid-atom"))
-      ).toOption.get
-      val plain = UniformGrid.create(GridId("plain-grid"), GridVersion(1), asset.dimension.asDimensionRef,
-        PositiveRational.exact(1, 100).toOption.get)
-      val forged: RegisteredGridRef[asset.D] = plain
-      """
-    assertDoesNotCompile:
-      """
-      import trading.quantity.*
-      import trading.quantity.refinement.*
-      import trading.quantity.runtime.*
-      val registry = new QuantityRegistry
-      val asset = registry.registerAsset(
-        AssetDefinition(AssetId("plain-pack-asset"), AtomId("plain-pack-atom"))
-      ).toOption.get
-      val plain = UniformGrid.create(GridId("plain-pack-grid"), GridVersion(1), asset.dimension.asDimensionRef,
-        PositiveRational.exact(1, 100).toOption.get)
-      val packed = PackedGridQuantity.pack(plain)(plain.fromCoordinate(99))
-      """
-
-  test("registry-produced witnesses pack through the supported path"):
-    val registry = new QuantityRegistry
-    val asset    =
-      registry
-        .registerAsset:
-          AssetDefinition(AssetId("registered-pack-asset"), AtomId("registered-pack-atom"))
-        .toOption
-        .get
-    val definition =
-      GridDefinition(
-        asset.dimension.key,
-        GridId("registered-pack-grid"),
-        GridVersion(1),
-        PositiveRational.exact(1, 100).toOption.get
-      )
-    val grid   = registry.registerGrid(asset)(definition).toOption.get
-    val packed = PackedAssetGridQuantity.pack(asset)(grid)(grid.fromCoordinate(99))
-
-    assertEquals(packed.coordinate, BigInt(99))
-    assertEquals(registry.registeredGridCount, 1)
 
 end ConstructionAndProvenanceBoundarySuite

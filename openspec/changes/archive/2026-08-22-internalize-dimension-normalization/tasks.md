@@ -4,7 +4,7 @@
   malformed-input rejection, and runtime-key agreement assertions that describe the new private interpreter contract.
 - [x] 1.2 Refactor `StaticDimension.scala` so one private engine validates the closed grammar, exposes aliases and
   annotations safely, combines powers as `BigInt`, and derives non-reflexive `SameDimension` without emitting a
-  canonical `Dim` output.
+  canonical `Canonical` output.
 - [x] 1.3 Add static-equivalence tests for association, commutation, cancellation, canonical tuple permutation,
   transparent aliases and annotations, unresolved generic inputs, an independently compiled recursive or
   non-progressing path with controlled diagnostics, and unequal dimensions.
@@ -19,11 +19,11 @@
 
 ## 2. Expression-Preserving Dimension Witness API
 
-- [x] 2.1 Update `Dimension`, `Times`, `Inverse`, `Divide`, `Dim`, `Rate`, and `Ratio` scaladoc so expressions are public
+- [x] 2.1 Update `Dim`, `Times`, `Inverse`, `Divide`, `Canonical`, `Rate`, and `Ratio` scaladoc so expressions are public
   result types and mathematical equality is explicitly separate from Scala type identity.
 - [x] 2.2 Change `DimRef.times`, `DimRef.inverse`, and `DimRef.divide` to return `DimRef[Times[A, B]]`,
   `DimRef[Inverse[A]]`, and `DimRef[Divide[A, B]]` without contextual canonical-output evidence.
-- [x] 2.3 Verify witness identity, product, inverse, and quotient keys against primitive `DimensionKey` operations,
+- [x] 2.3 Verify witness identity, product, inverse, and quotient keys against primitive `DimKey` operations,
   including cancellation, repeated construction, opaque runtime atoms, and powers beyond machine range.
 - [x] 2.4 Add downstream compile fixtures showing generic witness algebra needs no output type parameter and that an
   explicitly nominated spelling is related with `SameDimension`, not inferred by witness algebra.
@@ -89,12 +89,12 @@
   the design's authority table.
 - [x] 6.5 Add positive tests for generic zero and identity-bearing algebra with locally scoped `DimRef` values and
   negative tests for missing or ambiguous authority.
-- [x] 6.6 Add adversarial fixtures proving malformed `Dim` types cannot obtain quantity zero, grid zero, refined zero,
+- [x] 6.6 Add adversarial fixtures proving malformed `Canonical` types cannot obtain quantity zero, grid zero, refined zero,
   an identity-bearing algebra instance, a coefficient-bearing constructor, or a non-reflexive alignment.
 
 ## 7. Runtime-Resolved Arithmetic and Endpoint Rates
 
-- [x] 7.1 Refactor `ResolvedExactQuantity` into a dependent in-memory package that owns one `D <: Dimension`,
+- [x] 7.1 Refactor `ResolvedExactQuantity` into a dependent in-memory package that owns one `D <: Dim`,
   `DimRef[D]`, and `Quantity[D]`, so expression results need not be converted to a fresh registered atom.
 - [x] 7.2 Migrate heterogeneous same-grid and exact-addition flows to checked retyping plus explicit `alignTo`, followed by
   exact-type proof-free arithmetic, while preserving registry ownership failures.

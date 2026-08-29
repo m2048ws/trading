@@ -55,8 +55,8 @@ with `SameDimension` was also rejected because a `Quantity[D]` does not certify 
 Both exact and grid quantities expose:
 
 ```scala
-def alignTo[Target <: Dimension](using SameDimension[D, Target]): Quantity[Target]
-def alignTo[Target <: Dimension](using SameDimension[D, Target]): GridQuantity[Target, G]
+def alignTo[Target <: Dim](using SameDimension[D, Target]): Quantity[Target]
+def alignTo[Target <: Dim](using SameDimension[D, Target]): GridQuantity[Target, G]
 ```
 
 The implementation remains zero-allocation phantom retagging backed by the restricted proof. `asDimension` is removed

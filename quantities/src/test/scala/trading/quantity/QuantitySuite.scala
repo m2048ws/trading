@@ -10,15 +10,10 @@ class QuantitySuite extends ScalaCheckSuite:
   private val usd =
     trading.quantity.testkit.TestAsset
       .runtime:
-        AssetId:
+        AtomId:
           "USD-quantity-suite"
   private val cents =
-    UniformGrid.create[usd.D](
-      GridId:
-        "usd-cent-quantity-suite"
-      ,
-      GridVersion(1),
-      usd.dimension,
+    UniformGrid.create[usd.D](usd.dimension,
       PositiveRational.exact(1, 100).toOption.get
     )
 

@@ -22,35 +22,18 @@ EOF
 role="$1"
 output_file="$2"
 schema_file="${3:-}"
-
-case "$role" in
-  apply)
-    model="gpt-5.6-sol"
-    reasoning_effort="high"
-    ;;
-
-  review)
-    model="gpt-5.6-sol"
-    reasoning_effort="max"
-    ;;
-
-  remediate)
-    model="gpt-5.6-sol"
-    reasoning_effort="xhigh"
-    ;;
-
-  finalize)
-    model="gpt-5.6-sol"
-    reasoning_effort="medium"
-    ;;
-
-  *)
-    echo "Unknown worker role: $role" >&2
-    usage
-    ;;
-esac
-
 root="$(git rev-parse --show-toplevel)"
+model="$("$root/.agent/bin/worker-policy" "$role" model)" || usage
+reasoning_effort="$(
+  "$root/.agent/bin/worker-policy" "$role" reasoning_effort
+)" || usage
+formal="$("$root/.agent/bin/worker-policy" "$role" formal)" || usage
+
+[[ "$formal" == true ]] || {
+  echo "Worker role is not supported by the script launcher: $role" >&2
+  usage
+}
+
 mkdir -p "$(dirname "$output_file")"
 
 codex_args_for() {
@@ -97,6 +80,9 @@ trap cleanup EXIT INT TERM
 
 git -C "$root" worktree add --detach "$review_dir" "$snapshot" >/dev/null
 
+snapshot_head="$(git -C "$review_dir" rev-parse HEAD)"
+snapshot_tree="$(git -C "$review_dir" rev-parse 'HEAD^{tree}')"
+
 codex_args_for "$review_dir"
 
 set +e
@@ -111,15 +97,33 @@ after_status="$(
     --porcelain=v1 \
     --untracked-files=all
 )"
+after_head="$(git -C "$review_dir" rev-parse HEAD)"
+after_tree="$(git -C "$review_dir" rev-parse 'HEAD^{tree}')"
 
 snapshot_clean=true
 
-if [[ -n "$after_status" ]]; then
+if [[ "$after_head" != "$snapshot_head" || \
+  "$after_tree" != "$snapshot_tree" || \
+  -n "$after_status" ]]
+then
   snapshot_clean=false
 
   echo >&2
   echo "Independent review modified its staged-snapshot worktree:" >&2
-  printf '%s\n' "$after_status" >&2
+
+  if [[ "$after_head" != "$snapshot_head" ]]; then
+    printf 'Detached HEAD: expected %s, found %s\n' \
+      "$snapshot_head" "$after_head" >&2
+  fi
+
+  if [[ "$after_tree" != "$snapshot_tree" ]]; then
+    printf 'Detached tree: expected %s, found %s\n' \
+      "$snapshot_tree" "$after_tree" >&2
+  fi
+
+  if [[ -n "$after_status" ]]; then
+    printf '%s\n' "$after_status" >&2
+  fi
 
   echo >&2
   echo "Tracked diff:" >&2

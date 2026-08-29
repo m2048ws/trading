@@ -8,21 +8,16 @@ class GridQuantitySuite extends FunSuite:
   private val usd =
     trading.quantity.testkit.TestAsset
       .runtime:
-        AssetId:
+        AtomId:
           "USD"
   private val btc =
     trading.quantity.testkit.TestAsset
       .runtime:
-        AssetId:
+        AtomId:
           "BTC"
 
   private val cents =
-    UniformGrid.create[usd.D](
-      GridId:
-        "usd-cent"
-      ,
-      GridVersion(1),
-      usd.dimension,
+    UniformGrid.create[usd.D](usd.dimension,
       PositiveRational
         .decimal:
           "0.01"
@@ -31,22 +26,12 @@ class GridQuantitySuite extends FunSuite:
     )
 
   private val satoshis =
-    UniformGrid.create[btc.D](
-      GridId:
-        "btc-satoshi"
-      ,
-      GridVersion(1),
-      btc.dimension,
+    UniformGrid.create[btc.D](btc.dimension,
       PositiveRational.exact(1, 100_000_000).toOption.get
     )
 
   private val threeCents =
-    UniformGrid.create[usd.D](
-      GridId:
-        "usd-three-cent"
-      ,
-      GridVersion(1),
-      usd.dimension,
+    UniformGrid.create[usd.D](usd.dimension,
       PositiveRational
         .decimal:
           "0.03"

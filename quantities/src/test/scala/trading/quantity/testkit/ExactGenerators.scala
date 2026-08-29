@@ -95,28 +95,28 @@ object ExactGenerators:
 
   val coordinate: Gen[BigInt] = bigInt
 
-  def quantity[D <: Dimension](d: DimRef[D]): Gen[Quantity[D]] =
+  def quantity[D <: Dim](d: DimRef[D]): Gen[Quantity[D]] =
     rational.map(Quantity(d, _))
 
-  def nonNegativeQuantity[D <: Dimension](d: DimRef[D]): Gen[NonNegative[Quantity[D]]] =
+  def nonNegativeQuantity[D <: Dim](d: DimRef[D]): Gen[NonNegative[Quantity[D]]] =
     nonNegativeRational.flatMap(v => checked(NonNegative(Quantity(d, v))))
 
-  def positiveQuantity[D <: Dimension](d: DimRef[D]): Gen[Positive[Quantity[D]]] =
+  def positiveQuantity[D <: Dim](d: DimRef[D]): Gen[Positive[Quantity[D]]] =
     positiveRationalValue.flatMap(v => checked(Positive(Quantity(d, v))))
 
-  def nonZeroQuantity[D <: Dimension](d: DimRef[D]): Gen[NonZero[Quantity[D]]] =
+  def nonZeroQuantity[D <: Dim](d: DimRef[D]): Gen[NonZero[Quantity[D]]] =
     nonZeroRational.flatMap(v => checked(NonZero(Quantity(d, v))))
 
-  def gridQuantity[D <: Dimension, G](g: GridRef.Grid[D, G]): Gen[GridQuantity[D, G]] =
+  def gridQuantity[D <: Dim, G](g: GridRef.Grid[D, G]): Gen[GridQuantity[D, G]] =
     coordinate.map(g.fromCoordinate)
 
-  def nonNegativeGridQuantity[D <: Dimension, G](g: GridRef.Grid[D, G]): Gen[NonNegative[GridQuantity[D, G]]] =
+  def nonNegativeGridQuantity[D <: Dim, G](g: GridRef.Grid[D, G]): Gen[NonNegative[GridQuantity[D, G]]] =
     nonNegativeBigInt.flatMap(v => checked(NonNegative(g.fromCoordinate(v))))
 
-  def positiveGridQuantity[D <: Dimension, G](g: GridRef.Grid[D, G]): Gen[Positive[GridQuantity[D, G]]] =
+  def positiveGridQuantity[D <: Dim, G](g: GridRef.Grid[D, G]): Gen[Positive[GridQuantity[D, G]]] =
     positiveBigInt.flatMap(v => checked(Positive(g.fromCoordinate(v))))
 
-  def nonZeroGridQuantity[D <: Dimension, G](g: GridRef.Grid[D, G]): Gen[NonZero[GridQuantity[D, G]]] =
+  def nonZeroGridQuantity[D <: Dim, G](g: GridRef.Grid[D, G]): Gen[NonZero[GridQuantity[D, G]]] =
     nonZeroBigInt.flatMap(v => checked(NonZero(g.fromCoordinate(v))))
 
   private val atomName: Gen[String] =
@@ -138,7 +138,7 @@ object ExactGenerators:
         power <- dimensionExponent
       yield atom -> power
 
-  val dimensionKey: Gen[DimensionKey] = dimensionPowers.map(powers => DimensionKey(powers))
+  val dimKey: Gen[DimKey] = dimensionPowers.map(powers => DimKey(powers))
 
   val quantizationPolicy: Gen[QuantizationPolicy] =
     Gen.oneOf(
@@ -169,20 +169,20 @@ object ExactGenerators:
   given Arbitrary[Rational]          = Arbitrary(rational)
   given Arbitrary[NonZero[Rational]] = Arbitrary(nonZeroRationalRefined)
   given Arbitrary[PositiveRational]  = Arbitrary(positiveRational)
-  given Arbitrary[DimensionKey]      = Arbitrary(dimensionKey)
+  given Arbitrary[DimKey]            = Arbitrary(dimKey)
   given Cogen[Rational]              = Cogen[String].contramap(_.toString)
-  given Cogen[DimensionKey]          = Cogen[String].contramap(_.powers.mkString("|"))
+  given Cogen[DimKey]                = Cogen[String].contramap(_.powers.mkString("|"))
 
-  def arbitraryQuantity[D <: Dimension](d: DimRef[D]): Arbitrary[Quantity[D]] =
+  def arbitraryQuantity[D <: Dim](d: DimRef[D]): Arbitrary[Quantity[D]] =
     Arbitrary(quantity(d))
 
-  def cogenQuantity[D <: Dimension]: Cogen[Quantity[D]] =
+  def cogenQuantity[D <: Dim]: Cogen[Quantity[D]] =
     Cogen[String].contramap(_.coefficient.toString)
 
-  def arbitraryGridQuantity[D <: Dimension, G](g: GridRef.Grid[D, G]): Arbitrary[GridQuantity[D, G]] =
+  def arbitraryGridQuantity[D <: Dim, G](g: GridRef.Grid[D, G]): Arbitrary[GridQuantity[D, G]] =
     Arbitrary(gridQuantity(g))
 
-  def cogenGridQuantity[D <: Dimension, G](g: GridRef.Grid[D, G]): Cogen[GridQuantity[D, G]] =
+  def cogenGridQuantity[D <: Dim, G](g: GridRef.Grid[D, G]): Cogen[GridQuantity[D, G]] =
     Cogen[String].contramap(v => g.coordinate(v).toString)
 
 end ExactGenerators

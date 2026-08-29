@@ -35,7 +35,7 @@ object CanonicalKeyMatrix:
   val generated = DimRef.atomic(AtomId("matrix:generated"))
   val generatedInterpretation: SameDimension[Times[generated.D, One], generated.D] = summon
 
-  val fresh = DimRef.fresh(DimensionKey.atom(AtomId("matrix:fresh")))
+  val fresh = DimRef.fresh(DimKey.atom(AtomId("matrix:fresh")))
   val freshInterpretation: SameDimension[Times[fresh.D, One], fresh.D] = summon
 
   final class ThisKey:

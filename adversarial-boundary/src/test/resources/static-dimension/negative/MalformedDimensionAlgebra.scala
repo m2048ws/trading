@@ -10,7 +10,7 @@ import trading.quantity.algebra.refinedAdditive.given
 import trading.quantity.refinement.*
 
 object MalformedDimensionAlgebra:
-  type Bad = Dim[Power["algebra:bad", 0] *: EmptyTuple]
+  type Bad = Canonical[Power["algebra:bad", 0] *: EmptyTuple]
   sealed trait G
 
   // OFFENDING-BEGIN

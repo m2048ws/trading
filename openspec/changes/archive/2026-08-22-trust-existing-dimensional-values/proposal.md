@@ -11,7 +11,7 @@ invariant so ordinary dimension-preserving code no longer repeats type-validity 
   valid closed dimension index `D`, because all raw construction, witness, registry, and decoding paths are sealed or
   checked.
 - Preserve the capability separation: possessing a value does not materialize `Normalize[D]`, `DimRef[D]`,
-  `DimensionKey`, `GridRef[D, G]`, or registered identity; operations may only rely on the construction invariant when
+  `DimKey`, `GridRef[D, G]`, or registered identity; operations may only rely on the construction invariant when
   they preserve an existing dimension index.
 - **BREAKING** Remove contextual `Normalize[D]` from dimension-preserving exact and grid arithmetic, whole-scalar
   division, refinement operations, grid projection and quantization, allocation, constrained encoding, and other

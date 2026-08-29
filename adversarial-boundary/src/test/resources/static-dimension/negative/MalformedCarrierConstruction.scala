@@ -11,14 +11,11 @@ import trading.quantity.grid.*
 import trading.quantity.refinement.*
 
 object MalformedCarrierConstruction:
-  type Bad = Dim[Power["construction:bad", 0] *: EmptyTuple]
+  type Bad = Canonical[Power["construction:bad", 0] *: EmptyTuple]
   sealed trait G
 
   val validQuantity: Quantity[One] = Quantity(DimRef.one, 1)
-  val validGrid                    = UniformGrid.create(
-    GridId("construction-valid"),
-    GridVersion(1),
-    DimRef.one,
+  val validGrid                    = UniformGrid.create(DimRef.one,
     PositiveRational.exact(1, 100).toOption.get
   )
 

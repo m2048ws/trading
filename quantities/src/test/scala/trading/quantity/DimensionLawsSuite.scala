@@ -9,7 +9,7 @@ class DimensionLawsSuite extends ScalaCheckSuite:
   property("normalization sorts atoms, combines duplicates, and removes zero powers"):
     forAll(dimensionPowers): rawPowers =>
       val normalized =
-        DimensionKey:
+        DimKey:
           rawPowers
       normalized.powers
         .foreach: (atom, power) =>
@@ -31,31 +31,31 @@ class DimensionLawsSuite extends ScalaCheckSuite:
             _._2 != 0
 
   property("one is the multiplication identity"):
-    forAll(dimensionKey): key =>
-      assertEquals(DimensionKey.multiply(key, DimensionKey.one), key)
-      assertEquals(DimensionKey.multiply(DimensionKey.one, key), key)
+    forAll(dimKey): key =>
+      assertEquals(DimKey.multiply(key, DimKey.one), key)
+      assertEquals(DimKey.multiply(DimKey.one, key), key)
 
   property("multiplication is associative and commutative"):
-    forAll(dimensionKey, dimensionKey, dimensionKey): (a, b, c) =>
-      assertEquals(DimensionKey.multiply(a, b), DimensionKey.multiply(b, a))
+    forAll(dimKey, dimKey, dimKey): (a, b, c) =>
+      assertEquals(DimKey.multiply(a, b), DimKey.multiply(b, a))
       assertEquals(
-        DimensionKey.multiply(DimensionKey.multiply(a, b), c),
-        DimensionKey.multiply(a, DimensionKey.multiply(b, c))
+        DimKey.multiply(DimKey.multiply(a, b), c),
+        DimKey.multiply(a, DimKey.multiply(b, c))
       )
 
   property("inverse and cancellation laws hold"):
-    forAll(dimensionKey, dimensionKey): (a, b) =>
+    forAll(dimKey, dimKey): (a, b) =>
       assertEquals(
-        DimensionKey.inverse:
-          DimensionKey.inverse(a)
+        DimKey.inverse:
+          DimKey.inverse(a)
         ,
         a
       )
-      assertEquals(DimensionKey.multiply(a, DimensionKey.inverse(a)), DimensionKey.one)
-      assertEquals(DimensionKey.multiply(DimensionKey.multiply(a, b), DimensionKey.inverse(b)), a)
+      assertEquals(DimKey.multiply(a, DimKey.inverse(a)), DimKey.one)
+      assertEquals(DimKey.multiply(DimKey.multiply(a, b), DimKey.inverse(b)), a)
 
   property("same-dimension evidence is recovered exactly for equal canonical keys"):
-    forAll(dimensionKey, rational): (key, coefficient) =>
+    forAll(dimKey, rational): (key, coefficient) =>
       val left =
         DimRef.fresh:
           key
@@ -71,11 +71,11 @@ class DimensionLawsSuite extends ScalaCheckSuite:
       assertEquals(coerced.coefficient, coefficient)
 
   property("same-dimension evidence is rejected for unequal canonical keys"):
-    forAll(dimensionKey): key =>
+    forAll(dimKey): key =>
       val distinct =
-        DimensionKey.multiply(
+        DimKey.multiply(
           key,
-          DimensionKey.atom:
+          DimKey.atom:
             AtomId:
               "__distinct_atom__"
         )

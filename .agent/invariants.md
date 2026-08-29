@@ -83,7 +83,7 @@ Canonicalization must be deterministic for supported inputs.
 
 ## INV-S3 — Static and runtime arithmetic agree
 
-For valid dimension expressions, static dimensional arithmetic and runtime `DimensionKey` arithmetic must denote the same dimension.
+For valid dimension expressions, static dimensional arithmetic and runtime `DimKey` arithmetic must denote the same dimension.
 
 ## INV-S4 — Static interpretation is library-private
 
@@ -145,7 +145,7 @@ Conceptually:
 
 ```text
 same publicly accepted static atom identity
-    => same authoritative runtime DimensionKey
+    => same authoritative runtime DimKey
 ```
 
 ## INV-I2 — Runtime authority is not required to be total
@@ -157,7 +157,7 @@ have a public runtime `DimRef` constructor.
 
 ## INV-I3 — Runtime equivalence is checked
 
-When equivalence is recovered from runtime values rather than already known statically, it must be based on checked authoritative runtime identity such as `DimensionKey` equality.
+When equivalence is recovered from runtime values rather than already known statically, it must be based on checked authoritative runtime identity such as `DimKey` equality.
 
 ## INV-I4 — Generative identities remain distinct
 
@@ -249,6 +249,80 @@ Fixes that make sound concrete use materially more cumbersome require explicit e
 ## INV-P5 — Generic programming remains intentional
 
 Generic clients should be able to forward the project's intended public capabilities without depending on private macro machinery, casts, or implementation-specific types.
+
+## INV-C1 — Production ownership is cohesive and directed
+
+Every production concept and its errors have one primary owning layer. Dependencies remain acyclic and point toward
+the smallest lower-level meaning required; lower layers do not depend on higher policy, workflows, codecs, or runtime
+implementations.
+
+## INV-C2 — Logical boundaries precede physical modules
+
+Responsibility boundaries are established before or with the code that needs them. A physical module requires a
+coherent implementation body or useful dependency, publication, or independent verification boundary. Empty or
+speculative modules created only to mirror a target diagram are forbidden.
+
+## INV-C3 — Dependencies supply contained mechanisms
+
+A third-party dependency supplies an identified mechanism in the narrowest owning module/configuration. The project
+retains ownership of domain meanings, trusted transitions, public errors, and durable schema semantics. Another
+library vocabulary for the same concern requires an explicit distinct need.
+
+## INV-C4 — Platform and release coordinates are explicit
+
+The minimum build/runtime JDK is 17 while using Scala 3.8.x. Raising that floor requires an explicit compatibility
+decision. Independently released libraries use independently named version coordinates even when current version
+strings coincide.
+
+## INV-C5 — Design identifies algebra before control flow
+
+Design must examine honest sums, products, refinements, non-empty structures, combinations, identities, orderings,
+traversals, and pure state transitions before replacing them with flags, primitives, mutation, or ad hoc branching.
+Use the weakest abstraction that completely captures the real laws; no abstraction is required where no useful law or
+consumer exists.
+
+## INV-C6 — Established semantic information is preserved
+
+Dimension, grid, refinement, identity, provenance, validation, and endpoint information established by an input or
+boundary result remains represented in downstream types. It may be erased only inside the owning representation, at
+an explicit serialization/interoperability boundary, or behind a measured semantics-preserving optimization.
+
+## INV-C7 — Validation and expected-input totality produce evidence by dependency stage
+
+Independent violations accumulate in deterministic order. A dependent check sequences only after its prerequisite
+produces the value/evidence it needs. Success returns the strongest useful trusted value, and each error belongs to the
+layer able to explain and remediate it.
+
+Public mathematical and domain APIs represent expected absence, invalidity, conflict, and failure in their result
+types. They do not use `null`, unchecked extraction, sentinel values, or ordinary exceptions as control flow.
+Unavoidable partial operations, casts, and mutable mechanisms are narrowly scoped, explicitly named or hidden,
+protected by a stated invariant, and inaccessible as public construction authority.
+
+## INV-C8 — Pure semantics and external effects remain separate
+
+Mathematical, reference-data transition, domain, and economic semantics are pure transformations over immutable
+values. Effect polymorphism describes only genuine variable external capabilities in application code. Concrete
+effects, mutation, resources, concurrency, streams, transactions, clients, and telemetry remain in runtime
+interpreters.
+
+## INV-C9 — Control-plane coordination stays out of data-plane hot paths
+
+Identity, configuration, registration, and publication work must not become per-value coordination in arithmetic,
+valuation, decoding, event processing, or replay when snapshots, resolved capabilities, batching, or caching preserve
+the semantics. An unavoidable coordinated hot-path read requires an explicit invariant and measured justification.
+
+## INV-C10 — Advanced Scala remains domain-readable
+
+Advanced type and functional machinery must prevent a real invalid state, preserve downstream information, encode an
+honest reusable law, or enforce a boundary. Common public use remains small, domain-named, and locally understandable;
+unsafe details are contained behind stated checked invariants.
+
+## INV-C11 — Verification is proportional to the claim
+
+Algebraic laws require property or discipline coverage; load-bearing type authority requires packaged downstream
+positive/negative compiler coverage; multiple interpreters require shared contracts; concurrency requires coherence
+tests; complexity requires deterministic bounds; and performance-sensitive hot paths require representative
+measurement when cost can affect the design.
 
 ---
 

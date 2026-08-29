@@ -9,7 +9,7 @@
 
 ## 2. Introduce the Closed Static Dimension Model
 
-- [x] 2.1 Replace the open dimension representation with sealed `Dimension`, `Dim[Entries]`, `Power[Key, Exponent <: Int]`,
+- [x] 2.1 Replace the open dimension representation with sealed `Dim`, `Canonical[Entries]`, `Power[Key, Exponent <: Int]`,
   `Times`, and `Inverse`, and define `Atom`, `One`, and `Divide` as the specified aliases.
 - [x] 2.2 Add the restricted `Normalize[D]` façade, its `Aux[D, Out]` refinement, transparent automatic derivation, and
   actionable missing-evidence diagnostics for generic code.
@@ -18,15 +18,15 @@
 
 ## 3. Implement the Closed Quoted Normalizer
 
-- [x] 3.1 Implement guarded transparent alias and annotation exposure for the closed `Dim`, `Times`, and `Inverse`
+- [x] 3.1 Implement guarded transparent alias and annotation exposure for the closed `Canonical`, `Times`, and `Inverse`
   grammar, with clean cycle and non-progress diagnostics.
-- [x] 3.2 Parse canonical `Dim` tuples into ordered singleton-key and `BigInt` exponent entries, rejecting unresolved
+- [x] 3.2 Parse canonical `Canonical` tuples into ordered singleton-key and `BigInt` exponent entries, rejecting unresolved
   tails, non-`Power` entries, unstable or unresolved keys, nonliteral exponents, zero powers, and duplicate keys.
 - [x] 3.3 Normalize nested product, quotient, and inverse expressions by combining type-equal keys in first-occurrence
   order and deleting exact zero results.
 - [x] 3.4 Range-check every surviving exponent against `Int`, emit singleton `IntConstant` types, and diagnose
   `Int.MinValue` negation and addition beyond either bound without wrapping.
-- [x] 3.5 Reparse and independently validate each emitted `Dim` before constructing final `Normalize` evidence.
+- [x] 3.5 Reparse and independently validate each emitted `Canonical` before constructing final `Normalize` evidence.
 - [x] 3.6 Reimplement static `SameDimension` using the same normalizer and key/exponent comparison modulo tuple order,
   while retaining separate reflexive identity semantics.
 - [x] 3.7 Add focused macro tests for aliases, annotations, nested expressions, cancellation, tuple permutation,
@@ -39,7 +39,7 @@
 - [x] 4.2 Represent `DimRef.fresh` runtime-only keys as opaque singleton-key atoms without exposing or guessing their
   runtime decomposition.
 - [x] 4.3 Rewrite `DimRef.times`, `inverse`, and `divide` to return one transparent `Normalize` dependent output while
-  continuing to compute values through `DimensionKey` multiplication and inversion.
+  continuing to compute values through `DimKey` multiplication and inversion.
 - [x] 4.4 Update registry, asset, resolved-dimension, and runtime-evidence integrations for the new witness aliases while
   preserving ownership checks and scoped `SameDimension` recovery.
 - [x] 4.5 Add static/runtime agreement tests for named atoms, generative atoms, products, inverses, cancellation, opaque
@@ -73,12 +73,12 @@
 ## 7. Remove the Legacy Static Algebra
 
 - [x] 7.1 Migrate all repository atom declarations, explicit result annotations, examples, and test aliases from arbitrary
-  `Dimension` subtypes and `Powers` to singleton-key `Atom`, `Dim`, and literal `Int` powers.
+  `Dim` subtypes and `Powers` to singleton-key `Atom`, `Canonical`, and literal `Int` powers.
 - [x] 7.2 Remove `Natural`, signed-natural exponent types, `Powers`, `NormalizedPowers`, `DimensionProduct`,
   `DimensionInverse`, `DimensionQuotient`, `DimensionAlignment`, and their companion APIs.
 - [x] 7.3 Delete associated-output fixed-point exposure, arbitrary factor classification, recursive term-path traversal,
   and other macro machinery made unreachable by the closed singleton-key grammar.
-- [x] 7.4 Replace obsolete adversarial fixtures with smaller boundary fixtures for malformed `Dim`, unforgeable evidence,
+- [x] 7.4 Replace obsolete adversarial fixtures with smaller boundary fixtures for malformed `Canonical`, unforgeable evidence,
   unresolved generic keys, explicit overflow, and downstream warning-free derivation.
 - [x] 7.5 Verify by source search and public API compilation that no legacy proof carrier, signed-natural encoding, or
   specialized operation evidence remains accessible or referenced.

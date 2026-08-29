@@ -27,7 +27,7 @@ only from the resolved dependent package and registry APIs.
 
 #### Scenario: Keep runtime provenance non-extractable
 - **WHEN** code possesses only the dimensional value stored inside a resolved runtime result
-- **THEN** the value alone does not supply registry ownership, registered grid identity, `DimRef`, or `DimensionKey`
+- **THEN** the value alone does not supply registry ownership, registered grid identity, `DimRef`, or `DimKey`
   authority
 
 ## MODIFIED Requirements

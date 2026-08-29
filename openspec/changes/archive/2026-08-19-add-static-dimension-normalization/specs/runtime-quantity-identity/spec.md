@@ -15,7 +15,7 @@ claim derived from identifiers alone. Reflexive `SameDimension[D, D]` SHALL rema
 NOT certify that `D` is a canonical static power representation. Static operation-result validation and checked runtime
 witness recovery remain independent trust boundaries.
 Transparent Scala type annotations SHALL NOT alter runtime dimension identity: accepted annotated static inputs SHALL
-normalize to the same canonical output and `DimensionKey` as their unannotated underlying dimensions.
+normalize to the same canonical output and `DimKey` as their unannotated underlying dimensions.
 
 #### Scenario: Coerce an exact quantity
 - **WHEN** two registry witnesses have checked-equal canonical dimensions

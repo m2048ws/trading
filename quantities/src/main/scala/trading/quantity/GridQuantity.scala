@@ -12,28 +12,28 @@ import trading.quantity.refinement.*
  * Nonzero construction and exact interpretation require the corresponding [[GridRef]], while polymorphic zero requires
  * an authoritative [[DimRef]]. Possessing a value supplies neither a grid witness nor dimension or registry authority.
  */
-opaque type GridQuantity[D <: Dimension, G] = BigInt
+opaque type GridQuantity[D <: Dim, G] = BigInt
 
 /** Same-grid arithmetic and controlled coordinate access for [[GridQuantity]]. */
 object GridQuantity:
 
-  def zero[D <: Dimension, G](using dimension: DimRef[D]): GridQuantity[D, G] =
+  def zero[D <: Dim, G](using dimension: DimRef[D]): GridQuantity[D, G] =
     val _ = dimension.key
     fromCoordinate(BigInt(0))
 
-  private def fromCoordinate[D <: Dimension, G](c: BigInt): GridQuantity[D, G] =
+  private def fromCoordinate[D <: Dim, G](c: BigInt): GridQuantity[D, G] =
     Objects.requireNonNull(c, "grid coordinate")
 
-  private def coordinate[D <: Dimension, G](v: GridQuantity[D, G]): BigInt =
+  private def coordinate[D <: Dim, G](v: GridQuantity[D, G]): BigInt =
     v
 
-  private def add[D <: Dimension, G](l: GridQuantity[D, G], r: GridQuantity[D, G]): GridQuantity[D, G] =
+  private def add[D <: Dim, G](l: GridQuantity[D, G], r: GridQuantity[D, G]): GridQuantity[D, G] =
     fromCoordinate(l + r)
 
-  private def subtract[D <: Dimension, G](l: GridQuantity[D, G], r: GridQuantity[D, G]): GridQuantity[D, G] =
+  private def subtract[D <: Dim, G](l: GridQuantity[D, G], r: GridQuantity[D, G]): GridQuantity[D, G] =
     fromCoordinate(l - r)
 
-  private def scale[D <: Dimension, G](v: GridQuantity[D, G], s: BigInt): GridQuantity[D, G] =
+  private def scale[D <: Dim, G](v: GridQuantity[D, G], s: BigInt): GridQuantity[D, G] =
     fromCoordinate(v * s)
 
   /**
@@ -44,17 +44,19 @@ object GridQuantity:
    *
    * @tparam D the dimension inhabited by the grid
    */
-  sealed trait GridRef[D <: Dimension]:
+  sealed trait GridRef[D <: Dim]:
     /** Static identity of coordinates created by this grid reference. */
     type G
 
-    def id: GridId
-    def version: GridVersion
     def dimension: DimRef[D]
     def quantum: PositiveRational
 
-    final def key: GridKey =
-      GridKey(id, version)
+    private val anonymousIdentity: AnyRef = new AnyRef
+
+    private[quantity] final def isSameAnonymousGrid(other: GridRef[? <: Dim]): Boolean =
+      anonymousIdentity.eq(other.anonymousIdentity) &&
+        dimension.key == other.dimension.key &&
+        quantum.unrefined == other.quantum.unrefined
 
     final def fromCoordinate(c: BigInt): GridQuantity[D, G] =
       GridQuantity.fromCoordinate(c)
@@ -67,10 +69,10 @@ object GridQuantity:
 
   end GridRef
 
-  given ordering[D <: Dimension, G]: Ordering[GridQuantity[D, G]] with
+  given ordering[D <: Dim, G]: Ordering[GridQuantity[D, G]] with
     def compare(l: GridQuantity[D, G], r: GridQuantity[D, G]): Int = coordinate(l).compare(coordinate(r))
 
-  extension [D <: Dimension, G](v: GridQuantity[D, G])
+  extension [D <: Dim, G](v: GridQuantity[D, G])
 
     def +(r: GridQuantity[D, G]): GridQuantity[D, G] =
       add(v, r)
@@ -97,7 +99,7 @@ object GridQuantity:
       g.asQuantity(v)
 
     /** Explicitly align the phantom dimension while preserving the grid identity and coordinate. */
-    def alignTo[Target <: Dimension](using same: SameDimension[D, Target]): GridQuantity[Target, G] =
+    def alignTo[Target <: Dim](using same: SameDimension[D, Target]): GridQuantity[Target, G] =
       val _ = Objects.requireNonNull(same, "same dimension evidence")
       v.asInstanceOf[GridQuantity[Target, G]]
 
@@ -115,7 +117,7 @@ object GridQuantity:
     ): Quantity[D] =
       lg.asQuantity(v) - rg.asQuantity(r)
 
-    def exactlyEquals[E <: Dimension, H](
+    def exactlyEquals[E <: Dim, H](
       r: GridQuantity[E, H],
       lg: Grid[D, G],
       rg: Grid[E, H]
@@ -123,7 +125,7 @@ object GridQuantity:
     ): Boolean =
       lg.asQuantity(v).alignTo[E].coefficient == rg.asQuantity(r).coefficient
 
-    def compareExact[E <: Dimension, H](
+    def compareExact[E <: Dim, H](
       r: GridQuantity[E, H],
       lg: Grid[D, G],
       rg: Grid[E, H]
@@ -131,26 +133,26 @@ object GridQuantity:
     ): Int =
       lg.asQuantity(v).alignTo[E].coefficient.compare(rg.asQuantity(r).coefficient)
 
-    def multiplyExact[E <: Dimension, H](
+    def multiplyExact[E <: Dim, H](
       r: GridQuantity[E, H],
       lg: Grid[D, G],
       rg: Grid[E, H]
     ): Quantity[Times[D, E]] =
       lg.asQuantity(v) * rg.asQuantity(r)
 
-    def multiplyExact[E <: Dimension](
+    def multiplyExact[E <: Dim](
       r: Quantity[E],
       g: Grid[D, G]
     ): Quantity[Times[D, E]] =
       g.asQuantity(v) * r
 
-    def applyRate[E <: Dimension](
+    def applyRate[E <: Dim](
       r: Rate[D, E],
       g: Grid[D, G]
     ): Quantity[E] =
       g.asQuantity(v).applyRate(r)
 
-    def divideBy[E <: Dimension](
+    def divideBy[E <: Dim](
       d: NonZero[Quantity[E]],
       g: Grid[D, G]
     ): Quantity[Divide[D, E]] =
@@ -170,33 +172,52 @@ object GridQuantity:
 end GridQuantity
 
 /** A grid reference whose path-dependent grid identity is retained by the reference value. */
-type GridRef[D <: Dimension] = GridQuantity.GridRef[D]
+type GridRef[D <: Dim] = GridQuantity.GridRef[D]
 
 /** Type refinements for APIs that need to name a grid reference's associated identity. */
 object GridRef:
   /** A grid reference whose associated identity is statically known as `G0`. */
-  type Grid[D <: Dimension, G0] = GridRef[D] { type G = G0 }
+  type Grid[D <: Dim, G0] = GridRef[D] { type G = G0 }
 
 /**
  * Factory for generative, in-memory grid witnesses.
  *
- * Each returned stable value has a fresh associated grid type. Registry-owned provenance is added separately by
- * [[trading.quantity.runtime.QuantityRegistry]].
+ * Each returned stable value has a fresh associated grid type. Stable identity and issuer provenance are composed by
+ * the downstream reference-data artifact.
  */
 object UniformGrid:
 
-  def create[D <: Dimension](
-    gridId: GridId,
-    gridVersion: GridVersion,
+  private def build[D <: Dim](
     dimensionRef: DimRef[D],
     gridQuantum: PositiveRational
   ): GridRef[D] =
-    val checkedGridId      = Objects.requireNonNull(gridId, "grid ID")
-    val checkedGridVersion = Objects.requireNonNull(gridVersion, "grid version")
-    val _                  = dimensionRef.key
     new GridRef[D]:
       type G = this.type
-      val id: GridId                = checkedGridId
-      val version: GridVersion      = checkedGridVersion
       val dimension: DimRef[D]      = dimensionRef
       val quantum: PositiveRational = gridQuantum
+
+  private def requirePositive(value: PositiveRational): PositiveRational =
+    val checked = Objects.requireNonNull(value, "grid quantum")
+    PositiveRational(checked.unrefined).fold(
+      _ => throw new IllegalArgumentException("grid quantum must be positive"),
+      identity
+    )
+
+  def create[D <: Dim](
+    dimensionRef: DimRef[D],
+    gridQuantum: PositiveRational
+  ): GridRef[D] =
+    val checkedDimension = Objects.requireNonNull(dimensionRef, "grid dimension")
+    val _                = checkedDimension.key
+    build(checkedDimension, requirePositive(gridQuantum))
+
+  /** Checked raw/JVM boundary for expected invalid quantum input. */
+  def from[D <: Dim](
+    dimensionRef: DimRef[D],
+    gridQuantum: Rational
+  ): Either[ExpectedPositive.type, GridRef[D]] =
+    val checkedDimension = Objects.requireNonNull(dimensionRef, "grid dimension")
+    val _                = checkedDimension.key
+    PositiveRational(Objects.requireNonNull(gridQuantum, "grid quantum"))
+      .map(positive => build(checkedDimension, positive))
+end UniformGrid

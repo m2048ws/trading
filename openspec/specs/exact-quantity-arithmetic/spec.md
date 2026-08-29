@@ -5,7 +5,7 @@
 Defines unrestricted exact quantities, dimension-safe arithmetic, checked refinements, and exact-only algebra.
 ## Requirements
 ### Requirement: Public exact quantity model
-The public unrestricted quantity type SHALL be `Quantity[D]`, where `D <: Dimension`. It SHALL have canonical
+The public unrestricted quantity type SHALL be `Quantity[D]`, where `D <: Dim`. It SHALL have canonical
 `trading.quantity.Rational` coefficient semantics and SHALL NOT expose a representation type parameter, public generic
 carrier, or alternate public exact-quantity kind. `GridQuantity[D, G]` SHALL be the separate grid-proven carrier.
 
@@ -51,7 +51,7 @@ authoritative witnesses, and checked evidence.
 - **THEN** it must supply an authoritative `DimRef[D]`
 
 #### Scenario: Reject a type-only malformed zero
-- **WHEN** supported code selects a malformed `Dim` as `D` and attempts to call `Quantity.zero[D]`
+- **WHEN** supported code selects a malformed `Canonical` as `D` and attempts to call `Quantity.zero[D]`
 - **THEN** no zero is produced because no authoritative `DimRef[D]` can be publicly obtained
 
 #### Scenario: Reject removed named constructors
@@ -84,7 +84,7 @@ scale exceeds `1,000,000` or the scale is `Int.MinValue`.
 `SameDimension[A, B]` SHALL be derivable at compile time when the library's private canonical interpreter can validate
 both statically visible closed dimension expressions and establish that their singleton-key powers are mathematically
 equal modulo expression shape and canonical tuple order. The interpreter SHALL accumulate powers with arbitrary
-precision and SHALL require no runtime `DimRef`, `DimensionKey`, or total ordering over singleton keys. The evidence
+precision and SHALL require no runtime `DimRef`, `DimKey`, or total ordering over singleton keys. The evidence
 SHALL remain a restricted capability whose construction is unavailable to supported downstream code.
 
 `SameDimension` SHALL authorize controlled explicit alignment and equivalence-aware comparison. The public value-level
@@ -99,7 +99,7 @@ validate both complete expressions. Runtime recovery SHALL continue to issue the
 authoritative runtime keys agree. `SameDimension` SHALL NOT synthesize a `DimRef` for either side.
 
 #### Scenario: Align commuted canonical dimensions
-- **WHEN** two canonical `Dim` values contain the same singleton-key powers in different tuple orders
+- **WHEN** two canonical `Canonical` values contain the same singleton-key powers in different tuple orders
 - **THEN** compile-time `SameDimension` evidence is derivable without assigning a total order to their keys
 
 #### Scenario: Align commuted expression products
@@ -124,11 +124,11 @@ authoritative runtime keys agree. `SameDimension` SHALL NOT synthesize a `DimRef
 - **THEN** non-reflexive `SameDimension` is not derivable and `alignTo` cannot cross between the types
 
 #### Scenario: Recover checked runtime equivalence
-- **WHEN** two opaque runtime witnesses have equal authoritative `DimensionKey` values but distinct singleton-key types
+- **WHEN** two opaque runtime witnesses have equal authoritative `DimKey` values but distinct singleton-key types
 - **THEN** successful runtime comparison may issue scoped `SameDimension` evidence for explicit `alignTo`
 
 #### Scenario: Keep reflexivity separate from validity
-- **WHEN** a malformed `Dim` representation requests `SameDimension[D, D]`
+- **WHEN** a malformed `Canonical` representation requests `SameDimension[D, D]`
 - **THEN** reflexive identity and the no-op `alignTo[D]` MAY be available, but neither creates a dimensional value,
   `DimRef[D]`, or proof that the representation is valid
 
@@ -169,19 +169,19 @@ authoritative runtime keys agree. `SameDimension` SHALL NOT synthesize a `DimRef
 - **THEN** the evidence compiles without inaccessible-member diagnostics or access to private interpreter machinery
 
 #### Scenario: Keep reflexivity separate from canonical certification
-- **WHEN** a malformed `Dim` representation requests `SameDimension[D, D]`
+- **WHEN** a malformed `Canonical` representation requests `SameDimension[D, D]`
 - **THEN** reflexive identity and `alignTo[D]` MAY be available, but they do not certify `D` or provide a normally
   returned carrier; supported construction rejects the malformed representation, while an otherwise uncallable
   index-preserving transformation body MAY type-check
 
 ### Requirement: Atomic and canonical static derivation
-The public static dimension language SHALL remain closed over canonical `Dim[Entries]`, expression constructors
+The public static dimension language SHALL remain closed over canonical `Canonical[Entries]`, expression constructors
 `Times[A, B]` and `Inverse[A]`, and `Divide[A, B]` as quotient syntax. A canonical entry SHALL be
 `Power[Key, Exponent]`, where `Key <: Singleton` identifies an atom and `Exponent <: Int` is a nonzero singleton integer
-literal. `Atom[Key]` SHALL denote `Dim[Power[Key, 1] *: EmptyTuple]`, and `One` SHALL denote `Dim[EmptyTuple]`. An
-arbitrary subtype of `Dimension` SHALL NOT silently become a new atomic identity.
+literal. `Atom[Key]` SHALL denote `Canonical[Power[Key, 1] *: EmptyTuple]`, and `One` SHALL denote `Canonical[EmptyTuple]`. An
+arbitrary subtype of `Dim` SHALL NOT silently become a new atomic identity.
 
-A declared canonical `Dim` SHALL contain each singleton key at most once and SHALL store only nonzero literal
+A declared canonical `Canonical` SHALL contain each singleton key at most once and SHALL store only nonzero literal
 exponents. Tuple order SHALL not carry mathematical meaning. A zero exponent, duplicate key, non-`Power` entry,
 abstract or nonliteral exponent, unresolved tuple, or key that is not a supported concrete stable singleton identity
 SHALL make a claimed canonical representation invalid. Floating-point, decimal, and rational exponent types SHALL not
@@ -231,11 +231,11 @@ not all be publicly inhabitable, and private canonical interpretation alone SHAL
 - **THEN** private interpretation treats the key coherently wherever that boundary is authorized to inspect it
 
 #### Scenario: Reject malformed canonical entries
-- **WHEN** a claimed `Dim` contains a zero power, duplicate key, non-`Power` entry, abstract exponent, or unresolved tuple
+- **WHEN** a claimed `Canonical` contains a zero power, duplicate key, non-`Power` entry, abstract exponent, or unresolved tuple
 - **THEN** no authoritative constructor or non-reflexive `SameDimension` derivation accepts the representation
 
 #### Scenario: Preserve expression types in generic code
-- **WHEN** generic code multiplies values indexed by abstract `A <: Dimension` and `B <: Dimension`
+- **WHEN** generic code multiplies values indexed by abstract `A <: Dim` and `B <: Dim`
 - **THEN** the public result type is `Times[A, B]` without contextual canonical-output evidence
 
 #### Scenario: Reject the public normalization surface
@@ -254,7 +254,7 @@ not all be publicly inhabitable, and private canonical interpretation alone SHAL
   assertion, stack overflow, or accidental new atomic identity
 
 #### Scenario: Name an integer-powered canonical dimension
-- **WHEN** a caller names `Dim[Power["length", 2] *: Power["time", -1] *: EmptyTuple]`
+- **WHEN** a caller names `Canonical[Power["length", 2] *: Power["time", -1] *: EmptyTuple]`
 - **THEN** private validation accepts the nonzero singleton `Int` powers and preserves their exact mathematical values
 
 #### Scenario: Reject fractional exponents
@@ -262,7 +262,7 @@ not all be publicly inhabitable, and private canonical interpretation alone SHAL
 - **THEN** the type does not satisfy the static exponent contract and compilation fails
 
 #### Scenario: Normalize the closed expression grammar
-- **WHEN** a concrete expression combines `Dim`, `Times`, `Inverse`, `Divide`, `Atom`, `One`, transparent aliases, and
+- **WHEN** a concrete expression combines `Canonical`, `Times`, `Inverse`, `Divide`, `Atom`, `One`, transparent aliases, and
   transparent annotations
 - **THEN** the library-private interpreter validates and mathematically interprets the complete expression without
   exposing public associated-output evidence
@@ -326,7 +326,7 @@ not all be publicly inhabitable, and private canonical interpretation alone SHAL
   endpoint regardless of alias depth
 
 #### Scenario: Reject nested powers after endpoint exposure
-- **WHEN** a claimed canonical entry or alias exposes a nested `Dim`, `Times`, `Inverse`, or other dimension expression
+- **WHEN** a claimed canonical entry or alias exposes a nested `Canonical`, `Times`, `Inverse`, or other dimension expression
   where a concrete singleton key is required
 - **THEN** final validation rejects it instead of certifying the expression as an atomic key
 
@@ -350,7 +350,7 @@ not all be publicly inhabitable, and private canonical interpretation alone SHAL
 - **THEN** private interpretation produces the same mathematical interpretation as for the unannotated atom
 
 #### Scenario: Normalize an annotated reducible expression
-- **WHEN** `Times[A, B]`, `Inverse[A]`, `Divide[A, B]`, a canonical `Dim`, or a transparent alias is annotated
+- **WHEN** `Times[A, B]`, `Inverse[A]`, `Divide[A, B]`, a canonical `Canonical`, or a transparent alias is annotated
 - **THEN** private interpretation exposes and reduces the underlying expression and stores no annotation wrapper
 
 #### Scenario: Canonicalize annotated natural magnitudes
@@ -358,19 +358,19 @@ not all be publicly inhabitable, and private canonical interpretation alone SHAL
 - **THEN** private interpretation reads the corresponding ordinary unannotated mathematical exponent
 
 #### Scenario: Reject invalid annotated underlying structure
-- **WHEN** an annotation wraps a nonliteral exponent, malformed `Dim`, nonconcrete key, unresolved generic expression, or
+- **WHEN** an annotation wraps a nonliteral exponent, malformed `Canonical`, nonconcrete key, unresolved generic expression, or
   structure outside the closed grammar
 - **THEN** private interpretation rejects the exposed underlying structure by the same rule as the unannotated form
 
 ### Requirement: Arbitrary-precision exactness
 Quantity coefficients, grid coordinates, rational numerators and denominators, private canonical interpretation, and
-runtime `DimensionKey` exponents SHALL retain arbitrary-precision semantics. A declared canonical `Power` exponent
+runtime `DimKey` exponents SHALL retain arbitrary-precision semantics. A declared canonical `Power` exponent
 SHALL remain limited to the exact values representable by Scala singleton `Int` literals. Expression-preserving static
 arithmetic SHALL not emit a new `Power` literal and therefore SHALL preserve a valid expression even when its
 mathematical accumulated exponent lies outside the singleton-`Int` range.
 
 Private equivalence checking and runtime witness algebra SHALL accumulate exponents with `BigInt` and SHALL NOT wrap,
-truncate, saturate, or approximate them. Lack of a representable canonical `Dim[Power[K, N]]` spelling for an
+truncate, saturate, or approximate them. Lack of a representable canonical `Canonical[Power[K, N]]` spelling for an
 out-of-range `N` SHALL NOT make an expression-preserving arithmetic result numerically or dimensionally incorrect.
 
 #### Scenario: Denominator grows during arithmetic
@@ -404,7 +404,7 @@ out-of-range `N` SHALL NOT make an expression-preserving arithmetic result numer
 - **THEN** the raw expression remains valid and exact without emitting an out-of-range canonical `Power` literal
 
 #### Scenario: Runtime exponent exceeds the static range
-- **WHEN** runtime `DimensionKey` arithmetic produces an exponent outside the singleton-`Int` range
+- **WHEN** runtime `DimKey` arithmetic produces an exponent outside the singleton-`Int` range
 - **THEN** the runtime key preserves the exact `BigInt` exponent without approximation
 
 #### Scenario: Dimension exponent exceeds machine range
@@ -483,7 +483,7 @@ substitute for construction authority.
 #### Scenario: Lift authoritative witness algebra
 - **WHEN** authoritative dimension witnesses are multiplied, inverted, or divided
 - **THEN** their result types preserve `Times`, `Inverse`, or `Divide` and their runtime keys perform the matching exact
-  `DimensionKey` operation
+  `DimKey` operation
 
 #### Scenario: Keep runtime-hidden structure opaque
 - **WHEN** an opaque runtime dimension's key contains a factor that would cancel a separate static atom
@@ -496,7 +496,7 @@ substitute for construction authority.
 
 #### Scenario: Multiply dimensions
 - **WHEN** exact quantities in concrete dimensions `A` and `B` are multiplied
-- **THEN** the result preserves the complete `Times[A, B]` expression rather than emitting a canonical `Dim`
+- **THEN** the result preserves the complete `Times[A, B]` expression rather than emitting a canonical `Canonical`
 
 #### Scenario: Cancel a price denominator
 - **WHEN** `Quantity[Position]` is multiplied by a quantity in `Divide[Settlement, Position]`
@@ -526,7 +526,7 @@ substitute for construction authority.
 #### Scenario: Specialize generic inversion to a visible product
 - **WHEN** generic witness inversion is instantiated with a concrete product `Times[A, B]`
 - **THEN** its result type is `Inverse[Times[A, B]]`, its private interpretation negates both powers, and its runtime key
-  matches exact `DimensionKey` inversion
+  matches exact `DimKey` inversion
 
 #### Scenario: Reject late alias specialization without contextual evidence
 - **WHEN** a generic method requests non-reflexive equivalence for aliases of unresolved dimensions before a caller later
@@ -552,7 +552,7 @@ substitute for construction authority.
 
 #### Scenario: Preserve endpoint-depth coherence
 - **WHEN** transparent aliases successively expose a fully concrete expression result
-- **THEN** every use has the same private mathematical interpretation and runtime `DimensionKey` as direct use of the
+- **THEN** every use has the same private mathematical interpretation and runtime `DimKey` as direct use of the
   concrete endpoint
 
 #### Scenario: Canonicalize definitionally equal aliases coherently
@@ -561,10 +561,10 @@ substitute for construction authority.
   combination, cancellation, inversion, and runtime-key agreement
 
 #### Scenario: Canonicalize definitionally equal annotated inputs coherently
-- **WHEN** a stable atom, canonical `Dim`, reducible expression, or transparent alias differs from another input only by
+- **WHEN** a stable atom, canonical `Canonical`, reducible expression, or transparent alias differs from another input only by
   annotations
 - **THEN** private interpretation establishes the same unannotated mathematical powers and agrees with runtime
-  `DimensionKey` multiplication and inversion
+  `DimKey` multiplication and inversion
 
 ### Requirement: Exact rates and ratios
 `Rate[From, To]` SHALL represent an exact coefficient oriented from `From` to `To`, and `Ratio` SHALL denote
@@ -799,17 +799,19 @@ introduced merely to bypass the authority requirement.
 ### Requirement: Supported Scala trust and serialization boundary
 Construction guarantees SHALL apply to well-typed supported Scala 3 callers without casts, reflection, unsafe JVM
 access, hand-written bytecode, or constructor-bypassing deserialization. Java object serialization SHALL fail closed
-through the common project-owned `NotSerializableException` mechanism for invariant-bearing public result and error
-records, nominal and logical packed records, and dependent resolved runtime carriers; project-owned checked logical
-decoders remain supported.
+through the common project-owned `NotSerializableException` mechanism for invariant-bearing quantity result and error
+records and dependent runtime-dimension carriers. Stable asset and grid identities, authority-bearing reference-data
+handles, and durable boundary records SHALL be owned and specified by downstream artifacts rather than by the quantity
+serialization boundary.
 
 #### Scenario: Reject Java serialization
-- **WHEN** an invariant-bearing identifier, grid definition, result record, error record, or grid-packed record is serialized
+- **WHEN** an invariant-bearing quantity result, dimension-identity record, or quantity error record is serialized
 - **THEN** Java serialization fails instead of creating an unchecked reconstruction path
 
 #### Scenario: Use checked logical decoding
-- **WHEN** a logical grid-packed record is passed directly to its project-owned decoder
-- **THEN** runtime identity and provenance checks proceed normally
+- **WHEN** a wire or database record must reconstruct a typed quantity together with stable asset or grid identity
+- **THEN** an explicit downstream codec and trusted reference-data boundary perform the reconstruction rather than a
+  quantity-owned packed decoder
 
 ### Requirement: Static dimension capabilities remain independent
 The public static-dimension model SHALL keep private static interpretation, runtime inhabitation, equivalence, and
@@ -829,7 +831,7 @@ already match exactly.
 `DimRef[D]` SHALL remain runtime-inhabitation authority rather than public static-result computation. Possessing one
 SHALL authorize documented construction roots and expression-preserving witness algebra, but SHALL NOT expose a
 canonical output type or make an unrelated static atom inhabitable. `Quantity[D]` SHALL remain an exact coefficient
-indexed by `D`, not a runtime identity witness. Possessing a quantity SHALL NOT provide `DimRef[D]`, `DimensionKey`,
+indexed by `D`, not a runtime identity witness. Possessing a quantity SHALL NOT provide `DimRef[D]`, `DimKey`,
 `SameDimension`, a grid witness, or registered provenance. Manufacturing quantity or grid zero without an existing
 trusted carrier SHALL require `DimRef[D]` or a documented stronger matching witness.
 
@@ -865,29 +867,30 @@ trusted carrier SHALL require `DimRef[D]` or a documented stronger matching witn
   witness
 
 #### Scenario: Keep reflexivity separate from validity
-- **WHEN** a malformed `Dim` representation obtains reflexive `SameDimension[D, D]` through Scala type identity
+- **WHEN** a malformed `Canonical` representation obtains reflexive `SameDimension[D, D]` through Scala type identity
 - **THEN** reflexivity cannot construct a normally returned carrier or runtime witness; an otherwise uncallable
   index-preserving transformation body MAY still type-check without a dimension capability
 
 #### Scenario: Keep equivalence separate from runtime identity
 - **WHEN** `SameDimension[A, B]` is derived from statically equivalent closed expressions without runtime witnesses
 - **THEN** it permits only documented explicit alignment and comparison and does not furnish a `DimRef` or
-  `DimensionKey` for either expression
+  `DimKey` for either expression
 
 ### Requirement: Existing dimensional carriers have validated indices
 For supported, well-typed Scala callers, every normally returned `Quantity[D]` and `GridQuantity[D, G]` SHALL have a
 valid closed dimension index `D`. The invariant SHALL be established at public construction roots: coefficient-bearing
 quantities and zero manufacture without an existing carrier require an authoritative `DimRef[D]`; nonzero grid
-coordinates require a matching `GridRef[D]`; grid zero requires `DimRef[D]` or a stronger matching grid witness;
-non-reflexive alignment requires a non-null `SameDimension`; and runtime reconstruction requires checked witness
-ownership. Dimension-changing results derived from existing trusted carriers SHALL preserve their complete `Times`,
-`Inverse`, or `Divide` expression rather than require or expose a caller-selected canonical output.
+coordinates require a matching anonymous `GridRef[D]`; grid zero requires `DimRef[D]` or a stronger matching grid
+witness; non-reflexive alignment requires a non-null `SameDimension`; and checked runtime reconstruction must delegate
+to those same roots after obtaining the required trusted witness. Dimension-changing results derived from existing
+trusted carriers SHALL preserve their complete `Times`, `Inverse`, or `Divide` expression rather than require or expose
+a caller-selected canonical output.
 
-Possessing a dimensional value SHALL NOT materialize or permit recovery of `DimRef[D]`, `DimensionKey`,
-`SameDimension`, `GridRef[D, G]`, private static interpretation, or registered provenance. It SHALL only allow operations
-that preserve its already validated dimension index to construct further values at that same index without requesting
-dimension authority again. Refined wrappers over an existing dimensional value SHALL inherit the same dimension-index
-invariant.
+Possessing a dimensional value SHALL NOT materialize or permit recovery of `DimRef[D]`, `DimKey`, `SameDimension`, a
+matching `GridRef[D]`, private static interpretation, stable reference-data identity, or catalog provenance. It SHALL only
+allow operations that preserve its already validated dimension index to construct further values at that same index
+without requesting dimension authority again. Refined wrappers over an existing dimensional value SHALL inherit the
+same dimension-index invariant.
 
 Operation-local rejection of a hypothetical malformed carrier type SHALL NOT be required. A method body that accepts an
 otherwise unobtainable `Quantity[Bad]` or `GridQuantity[Bad, G]` parameter MAY type-check for index-preserving
@@ -896,8 +899,8 @@ The ordinary supported-caller exclusions for casts, reflection, unsafe bytecode,
 deserialization remain unchanged; cast-free `null` SHALL NOT inhabit either opaque carrier. Literal `null` supplied as
 reference-valued construction or alignment authority SHALL fail at the public boundary before a witness, dimensional
 carrier, rate, or identity-bearing algebra capability is returned. A typed null `Rational` coefficient or `BigInt`
-coordinate SHALL likewise be rejected at the shared coefficient or coordinate construction boundary; checked grid
-decoding SHALL reconstruct through the same guarded coordinate boundary.
+coordinate SHALL likewise be rejected at the shared coefficient or coordinate construction boundary; any downstream
+checked decoder SHALL reconstruct through that same guarded coordinate boundary.
 
 #### Scenario: Reduce existing generic quantities
 - **WHEN** generic code receives a nonempty collection of `Quantity[D]` values and combines them with homogeneous
@@ -916,11 +919,11 @@ decoding SHALL reconstruct through the same guarded coordinate boundary.
 #### Scenario: Keep value trust non-extractable
 - **WHEN** generic code possesses `Quantity[D]` or `GridQuantity[D, G]`
 - **THEN** it cannot summon or recover `DimRef[D]`, `SameDimension`, a runtime key, a grid witness, private static
-  interpretation, or registry provenance from that value
+  interpretation, stable reference-data identity, or catalog provenance from that value
 
 #### Scenario: Reject malformed carrier construction
 - **WHEN** supported code selects a zero-power or otherwise malformed `D` and attempts raw construction, witness-backed
-  zero or coefficient construction, non-reflexive alignment from a valid carrier, or checked decoding
+  zero or coefficient construction, non-reflexive alignment from a valid carrier, or checked downstream reconstruction
 - **THEN** no normally returning `Quantity[D]` or `GridQuantity[D, G]` is produced
 
 #### Scenario: Permit an uncallable hypothetical transformation
@@ -933,8 +936,9 @@ decoding SHALL reconstruct through the same guarded coordinate boundary.
 
 #### Scenario: Reject null numeric carrier payloads
 - **WHEN** supported Scala supplies a typed null `Rational` coefficient or `BigInt` coordinate to witness-backed
-  construction, including a coordinate in otherwise valid packed data passed to checked decoding
-- **THEN** the shared construction boundary terminates before returning a `Quantity`, `GridQuantity`, or resolved carrier
+  construction, including through an otherwise valid downstream record passed to checked decoding
+- **THEN** the shared construction boundary terminates before returning a `Quantity`, `GridQuantity`, or dependent
+  reconstructed carrier
 
 #### Scenario: Reject null dimensional construction authority
 - **WHEN** supported Scala explicitly supplies literal `null` as `DimRef[D]` to quantity, grid, refinement, rate, or
@@ -952,10 +956,10 @@ decoding SHALL reconstruct through the same guarded coordinate boundary.
 
 #### Scenario: Reject null grid-construction authority
 - **WHEN** supported Scala supplies literal `null` as the `DimRef[D]` authority to uniform-grid construction
-- **THEN** construction terminates before returning a `GridRef[D]` capable of attaching coordinates
+- **THEN** construction terminates before returning an anonymous `GridRef[D]` capable of attaching coordinates
 
 #### Scenario: Reject null runtime-identity authority
-- **WHEN** supported Scala supplies literal `null` as a `DimensionKey` atom or power component, a fresh key, an atomic or
-  nominal atom ID, a grid identity component, or registry identity input
-- **THEN** the public construction root terminates before returning a key, dimension or grid witness, registered
-  identity, equivalence, or dimensional carrier
+- **WHEN** supported Scala supplies literal `null` as a `DimKey` atom or power component, a fresh key, or an atomic or
+  nominal atom ID
+- **THEN** the quantity construction root terminates before returning a key, dimension witness, equivalence, or
+  dimensional carrier

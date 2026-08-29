@@ -263,7 +263,7 @@ Examples include:
 - inversion;
 - rate composition;
 - grid-to-exact embedding;
-- runtime `DimensionKey` normalization;
+- runtime `DimKey` normalization;
 - `DimRef` static/runtime identity.
 
 A successful static result with a contradictory runtime key is blocking.
@@ -477,7 +477,7 @@ change affects both.
 
 For runtime registries and heterogeneous values, check:
 
-- authoritative `DimensionKey` equality;
+- authoritative `DimKey` equality;
 - registry ownership;
 - provenance;
 - checked recovery of static evidence;
@@ -564,6 +564,58 @@ A checked task without current supporting evidence is a process finding.
 
 A parser-valid specification that contradicts implementation is a semantic
 finding.
+
+---
+
+# Architecture Charter Review
+
+For every nontrivial capability or responsibility change, identify:
+
+1. the primary owning layer and the owner of each public error;
+2. allowed and forbidden dependency directions and whether the combined graph remains acyclic;
+3. boundary representations, trusted representations, and the one checked transition between them;
+4. semantic information/evidence retained after validation;
+5. independent versus dependent validation stages and deterministic error order;
+6. the algebraic data model and any claimed lawful structure;
+7. pure work, genuine external capabilities, and concrete runtime interpretation;
+8. codec/schema ownership and whether lower domain layers remain independent of it;
+9. third-party mechanism, narrow owning configuration, public-type exposure, platform compatibility, and competing
+   vocabulary justification;
+10. control-plane coordination and data-plane hot-path implications;
+11. common-call-site ergonomics and required claim-proportional evidence;
+12. current, transitional, and proposed state without presenting future modules/APIs as implemented.
+
+Expected-input totality is part of every public mathematical/domain API review. Verify that expected absence,
+invalidity, conflict, and failure are represented in result types and that `null`, unchecked extraction, sentinel
+values, and ordinary exceptions are not used as control flow. Audit unavoidable partial operations, casts, and mutable
+mechanisms for narrow scope, an explicit name or hidden placement, a stated protecting invariant, and no public
+construction authority. Exercise focused successful and expected-failure paths in proportion to the API claim.
+
+Reject service-locator types, cyclic convenience dependencies, repeated live resolution of already trusted values,
+effect parameters on fully deterministic calculations, concrete runtime state in application/domain contracts, and
+empty target modules. A deliberate exception is a design question, not an implementation cleanup; route it to
+`DESIGN_CONFLICT`.
+
+The current JDK 17 floor and independently named coordinates for independently released libraries are reviewable
+compatibility obligations. A dependency proposal must explain its mechanism, owning module/configuration, public
+exposure, platform fit, and why an already selected vocabulary is insufficient.
+
+## Claim-proportional evidence matrix
+
+| Claim | Required review evidence |
+| --- | --- |
+| Pure domain behavior | Focused examples and unit/property tests |
+| Associativity, identity, order, module, traversal, or another law | Property or discipline law tests, compared with direct API behavior |
+| Refinement closure | Boundary examples and closure properties |
+| Type-level rejection or construction authority | Packaged downstream negative fixture with valid prelude and nearby positive fixture |
+| Static/runtime coherence | Static result plus runtime identity/value agreement |
+| Multiple interpreters | One shared observable contract suite plus interpreter-specific tests |
+| Concurrent state transition | Atomicity/coherence tests appropriate to the interpreter, including cancellation semantics where claimed |
+| Complexity bound | Deterministic operation/probe-count property against the bound |
+| Hot-path suitability | Representative JMH evidence when contention, latency, throughput, or allocation could change the design |
+
+Do not demand every row for every change. Require the rows proportional to the claims actually made, and treat missing
+evidence for a load-bearing claim as a finding.
 
 ---
 

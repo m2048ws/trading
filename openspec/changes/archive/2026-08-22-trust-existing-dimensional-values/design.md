@@ -48,7 +48,7 @@ Quantity[D] or GridQuantity[D, G] returned normally
                  D was validated at a root
 
 value[D]  does not imply  summon[Normalize[D]]
-value[D]  does not imply  DimRef[D] or DimensionKey
+value[D]  does not imply  DimRef[D] or DimKey
 gridValue[D, G] does not imply GridRef[D, G] or registry identity
 ```
 
@@ -66,7 +66,7 @@ The audit obligation is:
 
 | Boundary | Why the result index is valid |
 | --- | --- |
-| `DimensionKey` and `DimRef` roots | Reject null atom/key identity before returning canonical runtime authority |
+| `DimKey` and `DimRef` roots | Reject null atom/key identity before returning canonical runtime authority |
 | `Quantity.zero[D]`, `GridQuantity.zero[D, G]`, refined zero | Requires non-null `Normalize[D]` |
 | Coefficient-bearing `Quantity[D]` | Requires sealed authoritative `DimRef[D]` and a non-null exact coefficient |
 | Nonzero `GridQuantity[D, G]` | Constructed and inspected only by its sealed `GridRef[D]` from a non-null coordinate |

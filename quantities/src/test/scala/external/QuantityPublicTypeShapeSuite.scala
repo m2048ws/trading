@@ -17,8 +17,7 @@ class QuantityPublicTypeShapeSuite extends FunSuite:
       type D = firstDimension.D
       type A = firstDimension.D
       type B = secondDimension.D
-      val grid = UniformGrid.create(
-        GridId("public-shape-grid"), GridVersion(1), firstDimension.dimension,
+      val grid = UniformGrid.create(firstDimension.dimension,
         PositiveRational.exact(1, 100).toOption.get
       )
       type G = grid.G
@@ -43,8 +42,7 @@ class QuantityPublicTypeShapeSuite extends FunSuite:
       type D = firstDimension.D
       type A = firstDimension.D
       type B = secondDimension.D
-      val grid = UniformGrid.create(
-        GridId("public-shape-grid"), GridVersion(1), firstDimension.dimension,
+      val grid = UniformGrid.create(firstDimension.dimension,
         PositiveRational.exact(1, 100).toOption.get
       )
       type G = grid.G
@@ -65,8 +63,7 @@ class QuantityPublicTypeShapeSuite extends FunSuite:
       type D = firstDimension.D
       type A = firstDimension.D
       type B = secondDimension.D
-      val grid = UniformGrid.create(
-        GridId("public-shape-grid"), GridVersion(1), firstDimension.dimension,
+      val grid = UniformGrid.create(firstDimension.dimension,
         PositiveRational.exact(1, 100).toOption.get
       )
       type G = grid.G
@@ -92,8 +89,7 @@ class QuantityPublicTypeShapeSuite extends FunSuite:
       type D = firstDimension.D
       type A = firstDimension.D
       type B = secondDimension.D
-      val grid = UniformGrid.create(
-        GridId("public-shape-grid"), GridVersion(1), firstDimension.dimension,
+      val grid = UniformGrid.create(firstDimension.dimension,
         PositiveRational.exact(1, 100).toOption.get
       )
       type G = grid.G
@@ -114,8 +110,7 @@ class QuantityPublicTypeShapeSuite extends FunSuite:
       type D = firstDimension.D
       type A = firstDimension.D
       type B = secondDimension.D
-      val grid = UniformGrid.create(
-        GridId("public-shape-grid"), GridVersion(1), firstDimension.dimension,
+      val grid = UniformGrid.create(firstDimension.dimension,
         PositiveRational.exact(1, 100).toOption.get
       )
       type G = grid.G
@@ -141,8 +136,7 @@ class QuantityPublicTypeShapeSuite extends FunSuite:
       type D = firstDimension.D
       type A = firstDimension.D
       type B = secondDimension.D
-      val grid = UniformGrid.create(
-        GridId("public-shape-grid"), GridVersion(1), firstDimension.dimension,
+      val grid = UniformGrid.create(firstDimension.dimension,
         PositiveRational.exact(1, 100).toOption.get
       )
       type G = grid.G
@@ -163,8 +157,7 @@ class QuantityPublicTypeShapeSuite extends FunSuite:
       type D = firstDimension.D
       type A = firstDimension.D
       type B = secondDimension.D
-      val grid = UniformGrid.create(
-        GridId("public-shape-grid"), GridVersion(1), firstDimension.dimension,
+      val grid = UniformGrid.create(firstDimension.dimension,
         PositiveRational.exact(1, 100).toOption.get
       )
       type G = grid.G
@@ -190,8 +183,7 @@ class QuantityPublicTypeShapeSuite extends FunSuite:
       type D = firstDimension.D
       type A = firstDimension.D
       type B = secondDimension.D
-      val grid = UniformGrid.create(
-        GridId("public-shape-grid"), GridVersion(1), firstDimension.dimension,
+      val grid = UniformGrid.create(firstDimension.dimension,
         PositiveRational.exact(1, 100).toOption.get
       )
       type G = grid.G
@@ -212,8 +204,7 @@ class QuantityPublicTypeShapeSuite extends FunSuite:
       type D = firstDimension.D
       type A = firstDimension.D
       type B = secondDimension.D
-      val grid = UniformGrid.create(
-        GridId("public-shape-grid"), GridVersion(1), firstDimension.dimension,
+      val grid = UniformGrid.create(firstDimension.dimension,
         PositiveRational.exact(1, 100).toOption.get
       )
       type G = grid.G
@@ -239,8 +230,7 @@ class QuantityPublicTypeShapeSuite extends FunSuite:
       type D = firstDimension.D
       type A = firstDimension.D
       type B = secondDimension.D
-      val grid = UniformGrid.create(
-        GridId("public-shape-grid"), GridVersion(1), firstDimension.dimension,
+      val grid = UniformGrid.create(firstDimension.dimension,
         PositiveRational.exact(1, 100).toOption.get
       )
       type G = grid.G
@@ -261,8 +251,7 @@ class QuantityPublicTypeShapeSuite extends FunSuite:
       type D = firstDimension.D
       type A = firstDimension.D
       type B = secondDimension.D
-      val grid = UniformGrid.create(
-        GridId("public-shape-grid"), GridVersion(1), firstDimension.dimension,
+      val grid = UniformGrid.create(firstDimension.dimension,
         PositiveRational.exact(1, 100).toOption.get
       )
       type G = grid.G

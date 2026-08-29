@@ -4,22 +4,22 @@ import trading.quantity.*
 import trading.quantity.refinement.*
 
 object ExpressionGeneric:
-  def multiply[A <: Dimension, B <: Dimension](
+  def multiply[A <: Dim, B <: Dim](
     left: Quantity[A],
     right: Quantity[B]
   ): Quantity[Times[A, B]] =
     left * right
 
-  def invert[A <: Dimension](dimension: DimRef[A]): DimRef[Inverse[A]] =
+  def invert[A <: Dim](dimension: DimRef[A]): DimRef[Inverse[A]] =
     DimRef.inverse(dimension)
 
-  def quotient[A <: Dimension, B <: Dimension](
+  def quotient[A <: Dim, B <: Dim](
     numerator: Quantity[A],
     denominator: NonZero[Quantity[B]]
   ): Quantity[Divide[A, B]] =
     numerator.divideBy(denominator)
 
-  def nominate[A <: Dimension, B <: Dimension, O <: Dimension](
+  def nominate[A <: Dim, B <: Dim, O <: Dim](
     left: Quantity[A],
     right: Quantity[B]
   )(using SameDimension[Times[A, B], O]): Quantity[O] =
@@ -27,7 +27,7 @@ object ExpressionGeneric:
 
   type A = Atom["generic:A"]
   type B = Atom["generic:B"]
-  type AB = Dim[Power["generic:A", 1] *: Power["generic:B", 1] *: EmptyTuple]
+  type AB = Canonical[Power["generic:A", 1] *: Power["generic:B", 1] *: EmptyTuple]
 
   val a: DimRef[A] = DimRef.atom["generic:A"]
   val b: DimRef[B] = DimRef.atom["generic:B"]

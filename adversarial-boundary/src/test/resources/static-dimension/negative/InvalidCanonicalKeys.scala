@@ -3,11 +3,11 @@ package external.fixtures.negative
 import trading.quantity.*
 
 object InvalidCanonicalKeys:
-  type Broad = Dim[Power[Singleton, 1] *: EmptyTuple]
-  type Bottom = Dim[Power[Nothing, 1] *: EmptyTuple]
-  type NullKey = Dim[Power[Null, 1] *: EmptyTuple]
-  type WidenedString = Dim[Power[String & Singleton, 1] *: EmptyTuple]
-  type WidenedNominal = Dim[Power[DimRef.NominalAtom & Singleton, 1] *: EmptyTuple]
+  type Broad = Canonical[Power[Singleton, 1] *: EmptyTuple]
+  type Bottom = Canonical[Power[Nothing, 1] *: EmptyTuple]
+  type NullKey = Canonical[Power[Null, 1] *: EmptyTuple]
+  type WidenedString = Canonical[Power[String & Singleton, 1] *: EmptyTuple]
+  type WidenedNominal = Canonical[Power[DimRef.NominalAtom & Singleton, 1] *: EmptyTuple]
 
   sealed trait AbstractKeyHolder:
     type Key <: Singleton

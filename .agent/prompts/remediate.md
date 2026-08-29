@@ -106,6 +106,24 @@ Verify any volatile Git/OpenSpec claims directly from the repository.
 
 ---
 
+# Architecture Charter Preservation
+
+When findings touch ownership, dependencies, validation, effects, codecs, dependency admission, or performance, preserve
+the applicable rules in `docs/design-principles.md` and `INV-C1` through `INV-C11`. Repair the concrete defect without
+moving semantics into another layer, erasing established evidence, adding concrete runtime state to pure/application
+contracts, inventing a competing library vocabulary, or creating a speculative target module.
+
+Preserve expected-input totality: public mathematical/domain APIs represent expected absence, invalidity, conflict,
+and failure in result types rather than using `null`, unchecked extraction, sentinel values, or ordinary exceptions as
+control flow. Keep unavoidable partial operations, casts, and mutable mechanisms narrowly scoped, explicitly named or
+hidden, protected by a stated invariant, and inaccessible as public construction authority. Do not repair another
+finding by weakening this boundary.
+
+If the smallest repair requires a deliberate charter exception or settled layer-boundary change not authorized by the
+active OpenSpec change, return `DESIGN_CONFLICT`. Do not encode the exception as remediation cleanup.
+
+---
+
 # Refresh Repository State
 
 Before editing, run the current equivalents of:
@@ -473,7 +491,7 @@ The steward may provide specific targets:
 
 For compiler-boundary changes, run the real public compiler fixture suite.
 
-For static/runtime changes, compare `DimensionKey` behavior where relevant.
+For static/runtime changes, compare `DimKey` behavior where relevant.
 
 For configured checks, run repository formatting and diff validation.
 

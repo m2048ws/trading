@@ -9,7 +9,7 @@ object StaticEquivalenceNoRuntimeAuthority:
   val equivalence: SameDimension[A, B] = summon
 
   // OFFENDING-BEGIN
-  val key: DimensionKey  = equivalence.key
+  val key: DimKey  = equivalence.key
   val witness: DimRef[B] = summon[DimRef[B]]
   // OFFENDING-END
 

@@ -8,7 +8,7 @@ zeros require `Normalize[D]`, checked alignment requires `SameDimension`, dimens
 normalization of their complete expression, and runtime reconstruction requires checked witness ownership.
 
 Possessing a dimensional value SHALL NOT materialize or permit recovery of `Normalize[D]`, `DimRef[D]`,
-`DimensionKey`, `GridRef[D, G]`, or registered provenance. It SHALL only allow operations that preserve its already
+`DimKey`, `GridRef[D, G]`, or registered provenance. It SHALL only allow operations that preserve its already
 validated dimension index to construct further values at that same index without requesting `Normalize[D]` again.
 Refined wrappers over an existing dimensional value SHALL inherit the same dimension-index invariant.
 
@@ -71,7 +71,7 @@ boundary.
 - **THEN** construction terminates before returning a `GridRef[D]` capable of attaching coordinates
 
 #### Scenario: Reject null runtime-identity authority
-- **WHEN** supported Scala supplies literal `null` as a `DimensionKey` atom or power component, a fresh key, an atomic or
+- **WHEN** supported Scala supplies literal `null` as a `DimKey` atom or power component, a fresh key, an atomic or
   nominal atom ID, a grid identity component, or registry identity input
 - **THEN** the public construction root terminates before returning a key, dimension or grid witness, registered
   identity, equivalence, or dimensional carrier
@@ -80,8 +80,8 @@ boundary.
 
 ### Requirement: Compile-time dimension equivalence
 `SameDimension[A, B]` SHALL be derivable at compile time when normalization of the statically visible closed dimension
-expressions `A` and `B` produces canonical `Dim` entries with the same singleton keys and `Int` exponents modulo tuple
-permutation. Static derivation SHALL require no runtime `DimRef`, `DimensionKey`, or total ordering over singleton keys.
+expressions `A` and `B` produces canonical `Canonical` entries with the same singleton keys and `Int` exponents modulo tuple
+permutation. Static derivation SHALL require no runtime `DimRef`, `DimKey`, or total ordering over singleton keys.
 The evidence SHALL remain a restricted capability whose construction is unavailable to supported downstream code; it
 SHALL authorize controlled explicit quantity- and grid-dimension alignment and equivalence-aware comparison but SHALL
 NOT expose unrestricted Scala type equality, a global implicit conversion between arbitrary quantity types, or implicit
@@ -99,7 +99,7 @@ representation. Every operation that computes a new type-level result dimension 
 complete result expression.
 
 #### Scenario: Align commuted canonical dimensions
-- **WHEN** two canonical `Dim` values contain the same singleton-key powers in different tuple orders
+- **WHEN** two canonical `Canonical` values contain the same singleton-key powers in different tuple orders
 - **THEN** compile-time `SameDimension` evidence is derivable without assigning a total order to their keys
 
 #### Scenario: Align commuted products
@@ -147,7 +147,7 @@ complete result expression.
 - **THEN** `SameDimension` is not derivable and `alignTo` cannot cross between the dimension types
 
 #### Scenario: Recover checked runtime equivalence
-- **WHEN** two opaque runtime witnesses have equal authoritative `DimensionKey` values but distinct singleton-key types
+- **WHEN** two opaque runtime witnesses have equal authoritative `DimKey` values but distinct singleton-key types
 - **THEN** successful runtime comparison may issue scoped `SameDimension` evidence for explicit `alignTo`
 
 #### Scenario: Derive evidence from downstream code
@@ -156,19 +156,19 @@ complete result expression.
 - **THEN** the evidence compiles without inaccessible-member diagnostics or access to implementation-only proof rules
 
 #### Scenario: Keep reflexivity separate from canonical certification
-- **WHEN** a malformed `Dim` representation requests `SameDimension[D, D]`
+- **WHEN** a malformed `Canonical` representation requests `SameDimension[D, D]`
 - **THEN** reflexive identity and `alignTo[D]` MAY be available, but they do not certify `D` or provide a normally
   returned carrier; supported construction and complete-result computation reject the malformed representation, while
   an otherwise uncallable index-preserving transformation body MAY type-check
 
 ### Requirement: Atomic and canonical static derivation
-The public static dimension language SHALL be closed over canonical `Dim[Entries]`, source expressions `Times[A, B]` and
+The public static dimension language SHALL be closed over canonical `Canonical[Entries]`, source expressions `Times[A, B]` and
 `Inverse[A]`, and `Divide[A, B]` as quotient syntax. A canonical entry SHALL be
 `Power[Key, Exponent]`, where `Key <: Singleton` identifies an atom and `Exponent <: Int` is a singleton integer literal.
-`Atom[Key]` SHALL denote `Dim[Power[Key, 1] *: EmptyTuple]`, and `One` SHALL denote `Dim[EmptyTuple]`. An arbitrary subtype
-of `Dimension` SHALL NOT silently become a new atomic identity.
+`Atom[Key]` SHALL denote `Canonical[Power[Key, 1] *: EmptyTuple]`, and `One` SHALL denote `Canonical[EmptyTuple]`. An arbitrary subtype
+of `Dim` SHALL NOT silently become a new atomic identity.
 
-A canonical `Dim` SHALL contain each singleton key at most once and SHALL store only nonzero literal exponents. Tuple
+A canonical `Canonical` SHALL contain each singleton key at most once and SHALL store only nonzero literal exponents. Tuple
 order SHALL not carry mathematical meaning. A zero exponent, duplicate key, non-`Power` entry, abstract or nonliteral
 exponent, unresolved tuple, or key that is not a stable singleton type SHALL make a claimed canonical representation
 invalid. Floating-point, decimal, and rational exponent types SHALL not be part of the static dimension language.
@@ -181,7 +181,7 @@ ordinary non-term `TypeRef` values, abstract/deferred/parameter keys, and unknow
 `Null` SHALL follow this structural whitelist rather than a permissive subtype test.
 
 `Normalize[D]` SHALL be the sole public associated-output evidence for reducing a dimension expression to a canonical
-`Dim`. Its automatic derivation SHALL parse only the closed grammar, expose definitionally transparent aliases and
+`Canonical`. Its automatic derivation SHALL parse only the closed grammar, expose definitionally transparent aliases and
 annotations, combine equal keys, remove zero results, validate the complete output, and then issue final evidence as one
 trusted operation. Public `NormalizedPowers`, `DimensionProduct`, `DimensionInverse`, `DimensionQuotient`,
 `DimensionAlignment`, recursive merge rules, guards, and caller-constructible proof tokens SHALL NOT be available.
@@ -227,11 +227,11 @@ package-qualified visibility alone SHALL NOT grant that authority to downstream 
 - **THEN** normalization succeeds without a caller manually constructing evidence
 
 #### Scenario: Name an integer-powered canonical dimension
-- **WHEN** a caller names `Dim[Power["length", 2] *: Power["time", -1] *: EmptyTuple]`
+- **WHEN** a caller names `Canonical[Power["length", 2] *: Power["time", -1] *: EmptyTuple]`
 - **THEN** normalization accepts the nonzero literal `Int` powers and preserves their exact mathematical values
 
 #### Scenario: Reject malformed canonical entries
-- **WHEN** a claimed `Dim` contains a zero power, duplicate key, non-`Power` entry, abstract exponent, or unresolved tuple
+- **WHEN** a claimed `Canonical` contains a zero power, duplicate key, non-`Power` entry, abstract exponent, or unresolved tuple
 - **THEN** normalization, supported public construction, and complete-result computation reject the representation;
   index-preserving transformations over an otherwise unobtainable carrier need not reject it again
 
@@ -240,12 +240,12 @@ package-qualified visibility alone SHALL NOT grant that authority to downstream 
 - **THEN** the type does not satisfy the static exponent contract and compilation fails
 
 #### Scenario: Normalize the closed expression grammar
-- **WHEN** a concrete expression combines `Dim`, `Times`, `Inverse`, `Divide`, `Atom`, `One`, transparent aliases, and
+- **WHEN** a concrete expression combines `Canonical`, `Times`, `Inverse`, `Divide`, `Atom`, `One`, transparent aliases, and
   transparent annotations
-- **THEN** one `Normalize` derivation produces a validated, unannotated canonical `Dim`
+- **THEN** one `Normalize` derivation produces a validated, unannotated canonical `Canonical`
 
 #### Scenario: Require one contextual operation in generic code
-- **WHEN** generic code manufactures a value from an abstract `D <: Dimension` or computes a new result dimension whose
+- **WHEN** generic code manufactures a value from an abstract `D <: Dim` or computes a new result dimension whose
   entries are not statically visible
 - **THEN** it accepts and forwards the applicable `Normalize[D]` for type-only manufacture or one contextual `Normalize`
   for the complete result expression; preserving an existing carrier's index requires neither
@@ -302,10 +302,10 @@ package-qualified visibility alone SHALL NOT grant that authority to downstream 
 
 #### Scenario: Expose concrete operation endpoints transitively
 - **WHEN** transparent aliases successively expose a fully concrete normalized operation result
-- **THEN** normalization reaches the same canonical `Dim` as the final concrete endpoint regardless of alias depth
+- **THEN** normalization reaches the same canonical `Canonical` as the final concrete endpoint regardless of alias depth
 
 #### Scenario: Reject nested powers after endpoint exposure
-- **WHEN** a claimed canonical entry or alias exposes a nested `Dim`, `Times`, `Inverse`, or other dimension expression
+- **WHEN** a claimed canonical entry or alias exposes a nested `Canonical`, `Times`, `Inverse`, or other dimension expression
   where a concrete singleton key is required
 - **THEN** final validation rejects it instead of certifying the expression as an atomic key
 
@@ -326,10 +326,10 @@ package-qualified visibility alone SHALL NOT grant that authority to downstream 
 
 #### Scenario: Canonicalize an annotated atom coherently
 - **WHEN** a valid stable singleton key or `Atom[K]` is wrapped in a transparent annotation
-- **THEN** normalization derives the same unannotated canonical `Dim` as for the underlying atom
+- **THEN** normalization derives the same unannotated canonical `Canonical` as for the underlying atom
 
 #### Scenario: Normalize an annotated reducible expression
-- **WHEN** `Times[A, B]`, `Inverse[A]`, `Divide[A, B]`, a canonical `Dim`, or a transparent alias is annotated
+- **WHEN** `Times[A, B]`, `Inverse[A]`, `Divide[A, B]`, a canonical `Canonical`, or a transparent alias is annotated
 - **THEN** derivation exposes and reduces the underlying expression normally and stores no annotation wrapper
 
 #### Scenario: Canonicalize annotated natural magnitudes
@@ -337,7 +337,7 @@ package-qualified visibility alone SHALL NOT grant that authority to downstream 
 - **THEN** normalization emits the corresponding ordinary unannotated singleton `Int` exponent
 
 #### Scenario: Reject invalid annotated underlying structure
-- **WHEN** an annotation wraps a nonliteral exponent, malformed `Dim`, nonconcrete key, unresolved generic expression, or
+- **WHEN** an annotation wraps a nonliteral exponent, malformed `Canonical`, nonconcrete key, unresolved generic expression, or
   structure outside the closed grammar
 - **THEN** derivation rejects the exposed underlying structure by the same rule as the unannotated form
 
@@ -345,7 +345,7 @@ package-qualified visibility alone SHALL NOT grant that authority to downstream 
 Addition and subtraction SHALL accept only quantities with the exact same Scala dimension type `D`, SHALL return
 `Quantity[D]`, and SHALL require neither `Normalize[D]` nor `SameDimension`. Multiplication by `Rational` and exact
 division by a nonzero whole scalar SHALL preserve `D` without normalization. Multiplying `Quantity[A]` by
-`Quantity[B]` SHALL use the single normalization operation and return an exact quantity in a canonical `Dim`: nested
+`Quantity[B]` SHALL use the single normalization operation and return an exact quantity in a canonical `Canonical`: nested
 products SHALL be flattened, inverse powers negated, equal singleton keys combined, zero powers removed, and every
 surviving key stored exactly once with a nonzero `Int` exponent. Entry order MAY follow operand order and SHALL NOT
 affect dimension equivalence.
@@ -401,7 +401,7 @@ runtime recovery SHALL remain governed by their own documented boundaries.
 
 #### Scenario: Multiply dimensions
 - **WHEN** exact quantities in concrete dimensions `A` and `B` are multiplied
-- **THEN** the exact result's public dimension is their validated canonical `Dim` product
+- **THEN** the exact result's public dimension is their validated canonical `Canonical` product
 
 #### Scenario: Cancel a price denominator
 - **WHEN** `Quantity[Position]` is multiplied by a quantity in `Settlement / Position`
@@ -459,7 +459,7 @@ runtime recovery SHALL remain governed by their own documented boundaries.
 
 #### Scenario: Preserve endpoint-depth coherence
 - **WHEN** transparent aliases or exact `Normalize.Aux` refinements successively expose a fully concrete operation output
-- **THEN** every use reaches the same canonical `Dim` and runtime `DimensionKey` as direct use of the concrete endpoint
+- **THEN** every use reaches the same canonical `Canonical` and runtime `DimKey` as direct use of the concrete endpoint
 
 #### Scenario: Canonicalize definitionally equal aliases coherently
 - **WHEN** `holder.D` is a transparent alias for `Times[A, B]`
@@ -467,9 +467,9 @@ runtime recovery SHALL remain governed by their own documented boundaries.
   combination, cancellation, inversion, and runtime-key agreement
 
 #### Scenario: Canonicalize definitionally equal annotated inputs coherently
-- **WHEN** a stable atom, canonical `Dim`, reducible expression, or transparent alias differs from another input only by
+- **WHEN** a stable atom, canonical `Canonical`, reducible expression, or transparent alias differs from another input only by
   annotations
-- **THEN** normalization produces the same unannotated canonical output and agrees with runtime `DimensionKey`
+- **THEN** normalization produces the same unannotated canonical output and agrees with runtime `DimKey`
   multiplication and inversion
 
 #### Scenario: Keep runtime-hidden structure opaque
@@ -557,7 +557,7 @@ complete-result computation. Those boundaries SHALL require the applicable `Norm
 index-preserving transformations of existing trusted carriers SHALL not require `Normalize[D]`.
 
 `Quantity[D]` SHALL remain an exact coefficient indexed by `D`, not a runtime identity witness. Possessing a
-`Quantity[D]` SHALL NOT provide a `DimRef[D]` or `DimensionKey`. Dimension-polymorphic zero SHALL remain available for any
+`Quantity[D]` SHALL NOT provide a `DimRef[D]` or `DimKey`. Dimension-polymorphic zero SHALL remain available for any
 normalized `D`; attaching a caller-supplied coefficient SHALL continue to require an authoritative `DimRef[D]`.
 Similarly, possession of `DimRef[D]` SHALL NOT implicitly materialize contextual `Normalize` evidence for generic code
 that computes a new static result dimension.
@@ -579,11 +579,11 @@ that computes a new static result dimension.
   does not satisfy static evidence search
 
 #### Scenario: Keep reflexivity separate from validity
-- **WHEN** a malformed `Dim` representation obtains reflexive `SameDimension[D, D]` through Scala type identity
+- **WHEN** a malformed `Canonical` representation obtains reflexive `SameDimension[D, D]` through Scala type identity
 - **THEN** reflexivity cannot normalize `D` or construct a normally returned carrier; an otherwise uncallable
   index-preserving transformation body MAY still type-check without `Normalize[D]`
 
 #### Scenario: Keep equivalence separate from runtime identity
 - **WHEN** `SameDimension[A, B]` is derived from statically equivalent closed expressions without runtime witnesses
-- **THEN** it permits only the documented controlled coercions and does not furnish a `DimRef` or `DimensionKey` for
+- **THEN** it permits only the documented controlled coercions and does not furnish a `DimRef` or `DimKey` for
   either expression

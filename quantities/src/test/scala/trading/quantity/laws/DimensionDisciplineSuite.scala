@@ -3,24 +3,24 @@ package trading.quantity.laws
 import algebra.laws.RingLaws
 import org.typelevel.discipline.Predicate
 
-import trading.quantity.DimensionKey
+import trading.quantity.DimKey
 import trading.quantity.algebra.dimensionAlgebra.given
 import trading.quantity.testkit.ExactGenerators.given
 
 class DimensionDisciplineSuite extends TradingDisciplineSuite:
 
-  private val everyDimension = new Predicate[DimensionKey]:
-    def apply(v: DimensionKey): Boolean = true
+  private val everyDimension = new Predicate[DimKey]:
+    def apply(v: DimKey): Boolean = true
 
   checkAll(
-    "DimensionKey.multiplicativeCommutativeGroup",
+    "DimKey.multiplicativeCommutativeGroup",
     RingLaws
-      .withPred[DimensionKey](everyDimension)
+      .withPred[DimKey](everyDimension)
       .multiplicativeCommutativeGroup
   )
 
   checkAll(
-    "DimensionKey.normalization",
+    "DimKey.normalization",
     new DimensionNormalizationLaws().normalization
   )
 

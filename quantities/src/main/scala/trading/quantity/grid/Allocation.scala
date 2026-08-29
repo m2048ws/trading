@@ -48,7 +48,7 @@ object Allocation:
   def tabulate[Q](count: PositiveInt)(f: Int => Q): Allocation[Q] =
     new Allocation(Vector.tabulate(count.unrefined)(f))
 
-extension [D <: Dimension, G](v: GridQuantity[D, G])
+extension [D <: Dim, G](v: GridQuantity[D, G])
 
   /** Euclidean coordinate division using the matching grid witness for safe inspection and reconstruction. */
   def quotRemBy(d: PositiveWhole, g: GridRef.Grid[D, G]): QuotRem[GridQuantity[D, G]] =

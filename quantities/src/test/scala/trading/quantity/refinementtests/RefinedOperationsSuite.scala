@@ -8,12 +8,9 @@ import trading.quantity.refinement.*
 import trading.quantity.testkit.CompileAssertions.*
 
 class RefinedOperationsSuite extends FunSuite:
-  private val usd   = trading.quantity.testkit.TestAsset.runtime(AssetId("USD-refined-operations-suite"))
+  private val usd   = trading.quantity.testkit.TestAsset.runtime(AtomId("USD-refined-operations-suite"))
   private val cents =
-    UniformGrid.create[usd.D](
-      GridId("usd-cent-refined-operations-suite"),
-      GridVersion(1),
-      usd.dimension,
+    UniformGrid.create[usd.D](usd.dimension,
       PositiveRational.exact(1, 100).toOption.get
     )
 
@@ -120,8 +117,8 @@ class RefinedOperationsSuite extends FunSuite:
       """
       import trading.quantity.*
       import trading.quantity.refinement.*
-      val usd = trading.quantity.testkit.TestAsset.runtime(AssetId("positive-quotient-type-suite"))
-      val cents = UniformGrid.create[usd.D](GridId("positive-quotient-grid-suite"), GridVersion(1), usd.dimension,
+      val usd = trading.quantity.testkit.TestAsset.runtime(AtomId("positive-quotient-type-suite"))
+      val cents = UniformGrid.create[usd.D](usd.dimension,
         PositiveRational.exact(1, 100).toOption.get)
       val positive = Positive(cents.fromCoordinate(1)).toOption.get
       val invalid: Positive[GridQuantity[usd.D, cents.G]] =
@@ -131,8 +128,8 @@ class RefinedOperationsSuite extends FunSuite:
       """
       import trading.quantity.*
       import trading.quantity.refinement.*
-      val usd = trading.quantity.testkit.TestAsset.runtime(AssetId("nonzero-quotient-type-suite"))
-      val cents = UniformGrid.create[usd.D](GridId("nonzero-quotient-grid-suite"), GridVersion(1), usd.dimension,
+      val usd = trading.quantity.testkit.TestAsset.runtime(AtomId("nonzero-quotient-type-suite"))
+      val cents = UniformGrid.create[usd.D](usd.dimension,
         PositiveRational.exact(1, 100).toOption.get)
       val nonzero = NonZero(cents.fromCoordinate(1)).toOption.get
       val invalid: NonZero[GridQuantity[usd.D, cents.G]] =

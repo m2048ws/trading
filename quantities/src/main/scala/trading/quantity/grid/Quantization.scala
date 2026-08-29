@@ -12,13 +12,13 @@ import trading.quantity.refinement.*
  * @tparam D the quantity dimension
  * @tparam G the target grid identity
  */
-final class Quantization[D <: Dimension, G] private (val value: GridQuantity[D, G], val residual: Quantity[D])
+final class Quantization[D <: Dim, G] private (val value: GridQuantity[D, G], val residual: Quantity[D])
   extends JavaSerializationUnsupported
 
 /** Projects exact or grid quantities onto a target grid using an explicit [[QuantizationPolicy]]. */
 object Quantization:
 
-  def toGrid[D <: Dimension](
+  def toGrid[D <: Dim](
     t: GridRef[D]
   )(
     v: Quantity[D],
@@ -39,7 +39,7 @@ object Quantization:
 
   end toGrid
 
-  def gridToGrid[D <: Dimension](
+  def gridToGrid[D <: Dim](
     g: GridRef[D],
     t: GridRef[D]
   )(
@@ -50,12 +50,12 @@ object Quantization:
 
 end Quantization
 
-extension [D <: Dimension](v: Quantity[D])
+extension [D <: Dim](v: Quantity[D])
 
   def quantizeTo(t: GridRef[D], p: QuantizationPolicy): Quantization[D, t.G] =
     Quantization.toGrid(t)(v, p)
 
-extension [D <: Dimension, G](v: GridQuantity[D, G])
+extension [D <: Dim, G](v: GridQuantity[D, G])
 
   def quantizeTo(
     g: GridRef.Grid[D, G],

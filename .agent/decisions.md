@@ -61,6 +61,52 @@ A new explicit design decision would be required to bring it back.
 
 # Settled Decisions
 
+## DEC-011 — Hybrid native worker orchestration
+
+**Status:** SETTLED
+
+**OpenSpec change:**
+
+```text
+adopt-native-subagent-orchestration
+```
+
+Codex-native subagents are the preferred interactive control plane only for
+worker roles whose required guards can be satisfied. Repository scripts remain
+the guard plane and complete portable fallback. The current repository/client
+boundary satisfies that rule only for bounded read-only exploration: native
+primary-worktree writers are mechanically ineligible because the complete
+executable decision closure is worker-writable and the broker-owned reservation
+does not survive broker-process death.
+
+The archived change preserves all existing workflow invariants while introducing:
+
+- one shared machine-readable role policy for both backends;
+- retained profiles and a diagnostic broker protocol for possible future
+  native apply, remediation, and finalization workers, without current launch
+  or transition authority;
+- bounded native read-only exploration;
+- script-only formal independent review against an isolated staged snapshot;
+- schema and logical validation before any worker report informs a transition;
+- a steward-owned broker whose private control channel and protected memory
+  retain the full launch tuple, monotonic generation, and random one-shot
+  capability outside worker-owned handoffs;
+- a parent-held root-inode writer reservation for script-backed formal writers,
+  never inherited by delegated workers;
+- compact collection output with complete evidence retained by ignored path;
+- content-sensitive dirty-state refresh and classification instead of blind
+  fallback after possible native mutation;
+- volatile backend, worker-identity, artifact-path, and staged-tree trace data.
+
+Enabling native primary-worktree writers later requires protected immutable
+execution for their complete transition/release/fallback decision closure and
+an independent controller that retains exclusion across broker death. Fresh
+independent approval and archive established this conservative boundary as part
+of the accepted baseline. The change itself was bootstrapped through the
+pre-existing script workflow.
+
+---
+
 ## DEC-001 — Exact rational interior
 
 **Status:** SETTLED
@@ -163,7 +209,7 @@ different responsibilities.
 Acceptance by library-private static interpretation does not imply existence of
 a runtime dimension witness.
 
-A runtime `DimRef[D]` carries authority about the runtime `DimensionKey`
+A runtime `DimRef[D]` carries authority about the runtime `DimKey`
 represented by `D`.
 
 ---
@@ -229,7 +275,7 @@ Validity and equivalence remain separate concepts.
 
 When equivalence is not already statically known and must be recovered from
 runtime witnesses, it must be backed by checked authoritative runtime identity,
-such as `DimensionKey` equality.
+such as `DimKey` equality.
 
 Runtime evidence recovery must not assume equivalence solely from generic type
 shape.
@@ -264,6 +310,36 @@ Archival requires independent approval.
 
 ---
 
+# Settled Architecture Decisions
+
+## DEC-C01 — Architecture and functional design charter
+
+**Status:** SETTLED
+
+**OpenSpec change:**
+
+```text
+establish-architecture-and-functional-design-charter
+```
+
+The archived change establishes cohesive one-way responsibility ownership, algebra-first modeling, semantic type
+preservation, evidence-producing validation, a pure domain core with effect-polymorphic application ports and concrete
+runtime interpreters, contained dependency admission, logical-before-physical modules, control-plane/data-plane
+separation, domain-readable advanced Scala, and claim-proportional verification.
+
+It records JDK 17 as the current minimum build/runtime baseline and requires independent version coordinates for
+independently released libraries. Proposal 1 owns the actual Cats/Algebra coordinate split; this charter makes no build
+change.
+
+The target reference-data, instrument-economics, order, scenario, fee, risk, application, codec, and runtime graph is a
+governance decision in this change. Its physical modules/APIs remain proposed until their owning dependent changes are
+implemented. Current transitional exceptions are recorded in `docs/architecture-charter-audit.md`.
+
+Fresh independent approval and archive established this decision as part of the accepted baseline. The proposed
+physical modules and APIs remain governed by their owning dependent changes.
+
+---
+
 # Settled Simplification Decisions
 
 ## DEC-A01 — Simplified static dimension model
@@ -281,8 +357,8 @@ architecture. Subsequent approved changes internalized its temporary public
 normalization capability. The current public model is centered conceptually on:
 
 ```scala
-Dimension
-Dim[...]
+Dim
+Canonical[...]
 Power[K, Int]
 Atom[K]
 One
@@ -373,7 +449,7 @@ def +(that: Quantity[D]): Quantity[D]
 over:
 
 ```scala
-def +[E <: Dimension](
+def +[E <: Dim](
   that: Quantity[E]
 )(using SameDimension[D,E]): Quantity[D]
 ```
@@ -387,7 +463,7 @@ def +[E <: Dimension](
 Illustrative client code:
 
 ```scala
-def total[D <: Dimension](
+def total[D <: Dim](
   left: Quantity[D],
   right: Quantity[D]
 ): Quantity[D] =
@@ -427,7 +503,7 @@ equivalence evidence.
 Example target ergonomics:
 
 ```scala
-def twice[D <: Dimension](
+def twice[D <: Dim](
   value: Quantity[D]
 ): Quantity[D] =
   value + value
@@ -436,7 +512,7 @@ def twice[D <: Dimension](
 and:
 
 ```scala
-def scale[D <: Dimension](
+def scale[D <: Dim](
   value: Quantity[D],
   factor: Rational
 ): Quantity[D] =
@@ -560,7 +636,7 @@ internalize-dimension-normalization
 Manufacturing a quantity from only:
 
 ```scala
-D <: Dimension
+D <: Dim
 ```
 
 requires an authority source. The accepted API is:

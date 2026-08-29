@@ -11,7 +11,7 @@ class PublicApiBoundarySuite extends FunSuite:
       import trading.quantity.*
 
       val forged = new DimRef[One]:
-        val key = DimensionKey.one
+        val key = DimKey.one
     """
 
     assertDoesNotCompile:
@@ -19,64 +19,21 @@ class PublicApiBoundarySuite extends FunSuite:
       import trading.quantity.*
       import trading.quantity.refinement.*
 
-      val asset = trading.quantity.testkit.TestAsset.runtime(AssetId("forged-grid-asset"))
+      val asset = trading.quantity.testkit.TestAsset.runtime(AtomId("forged-grid-asset"))
       val forged = new GridRef[asset.D]:
         type G = this.type
-        val id = GridId("forged-grid")
-        val version = GridVersion(1)
         val dimension = asset.dimension
         val quantum = PositiveRational.exact(1, 100).toOption.get
     """
 
-  test("runtime asset, dimension, and grid witness roles cannot be interchanged"):
-    assertDoesNotCompile:
-      """
-      import trading.quantity.*
-      import trading.quantity.runtime.*
-
-      def requireGrid[D <: Dimension](v: RegisteredGridRef[D]): Unit = ()
-      val registry = new QuantityRegistry
-      val asset = registry
-        .registerAsset(AssetDefinition(AssetId("witness-role-asset"), AtomId("witness-role-atom")))
-        .toOption.get
-      requireGrid(asset)
-    """
-
+  test("uniform mathematical grid construction has no stable-identity overload"):
     assertDoesNotCompile:
       """
       import trading.quantity.*
       import trading.quantity.refinement.*
-      import trading.quantity.runtime.*
-
-      def requireAsset(v: trading.quantity.runtime.AssetRef): Unit = ()
-      val registry = new QuantityRegistry
-      val asset = registry
-        .registerAsset(AssetDefinition(AssetId("witness-role-grid"), AtomId("witness-role-grid-atom")))
-        .toOption.get
-      val grid = registry.registerGrid(asset)(GridDefinition(
-        asset.dimension.key, GridId("witness-role-grid-id"), GridVersion(1),
-        PositiveRational.exact(1, 100).toOption.get
-      )).toOption.get
-      requireAsset(grid)
-    """
-
-  test("packed coordinates cannot be treated as typed quantities before decoding"):
-    assertDoesNotCompile:
-      """
-      import trading.quantity.*
-      import trading.quantity.refinement.*
-      import trading.quantity.runtime.*
-
-      val registry = new QuantityRegistry
-      val asset = registry
-        .registerAsset(AssetDefinition(AssetId("raw-coordinate-asset"), AtomId("raw-coordinate-atom")))
-        .toOption.get
-      val grid = registry.registerGrid(asset)(GridDefinition(
-        asset.dimension.key, GridId("raw-coordinate-grid"), GridVersion(1),
-        PositiveRational.exact(1, 100).toOption.get
-      )).toOption.get
-      val packed = PackedAssetGridQuantity(asset.id, asset.dimension.key, grid.id, grid.version, BigInt(1000))
-      val invalid: GridQuantity[asset.D, grid.G] = packed
+      val dimension = DimRef.atomic(AtomId("anonymous-grid-signature"))
+      val quantum = PositiveRational.exact(1, 100).toOption.get
+      val invalid = UniformGrid.create(dimension.dimension, quantum, 1)
     """
 
   test("client code cannot supply an unchecked quantization policy"):
@@ -100,7 +57,7 @@ class PublicApiBoundarySuite extends FunSuite:
     assertDoesNotCompile:
       """
       import trading.quantity.*
-      val nonCanonical = DimensionKey.fromProduct(
+      val nonCanonical = DimKey.fromProduct(
         Tuple1(Vector(AtomId("duplicate") -> 1, AtomId("duplicate") -> 1))
       )
     """
@@ -115,7 +72,7 @@ class PublicApiBoundarySuite extends FunSuite:
       """
       import trading.quantity.*
       type Entry = Power["forged", 1]
-      val forged = new Dim[Entry *: EmptyTuple] {}
+      val forged = new Canonical[Entry *: EmptyTuple] {}
       """
     assertDoesNotCompile:
       """
@@ -133,7 +90,7 @@ class PublicApiBoundarySuite extends FunSuite:
     assertDoesNotCompile:
       """
       import trading.quantity.*
-      type Normalized = Dim[Power["normalized", 1] *: EmptyTuple]
+      type Normalized = Canonical[Power["normalized", 1] *: EmptyTuple]
       val forged: Quantity[Normalized] = Rational.one
       """
     assertDoesNotCompile:

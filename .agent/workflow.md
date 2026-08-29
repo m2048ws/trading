@@ -8,6 +8,76 @@ Worker agents do not decide workflow state for themselves.
 
 ---
 
+# Orchestration Backends
+
+The interactive steward uses a hybrid architecture:
+
+```text
+native subagents
+    -> preferred control plane for eligible roles
+
+repository scripts
+    -> guard plane and complete fallback
+```
+
+The machine-readable role matrix is `.agent/worker-roles.json`. It defines one
+model/effort mapping, mutation class, native eligibility, prompt, report schema,
+and required backend guards for every worker role. Native preparation and
+`.agent/bin/run-worker` must consume that same policy.
+
+Initial backend policy:
+
+| Role | Preferred backend | Required boundary |
+| --- | --- | --- |
+| bounded exploration | native | read-only and never transition-authoritative |
+| apply | script | fresh serialized writer and validated report |
+| independent review | script | detached staged snapshot plus cleanliness and tree freshness |
+| remediation | script | fresh serialized writer and validated report |
+| finalization | script | fresh serialized writer plus review/archive/commit gates |
+
+Backend selection is per launch. Native availability alone is insufficient;
+every role guard must be present. Missing guards deterministically select the
+script fallback.
+
+The current boundary cannot make the full executable transition closure
+immutable to a workspace-writing subagent and cannot keep exclusion alive after
+broker-process death. Native apply, remediation, and finalization are therefore
+ineligible regardless of claimed client capabilities. Their retained profiles
+and broker protocol are diagnostic foundations only. Enabling them requires a
+later reviewed implementation of both guards.
+
+The dormant native-writer protocol specifies one long-lived authority
+broker over a private client control channel. Protected broker memory retains
+the full launch tuple, monotonic generation, cryptographically random one-shot
+capability, and parent-held root-inode writer reservation. Preparation returns
+only the bounded spawn assignment and non-authorizing identifiers. A manifest,
+report, prompt, trace, lease-evidence file, digest, environment value, or
+visible command argument cannot invoke collection, failure classification,
+release, fallback, or recovery.
+
+Broker-mediated collection verifies the exact active generation, manifest and
+prompt integrity, and lease-evidence equality before report validation,
+release, transition, or fallback classification. It atomically consumes the
+one-shot capability before release or authority return. It writes
+the complete report, refreshed state, and detailed diagnostics to ignored
+artifacts and returns only a compact transition result plus stable paths and
+digests. A rejected writer report retains its lease until correction or
+independently refreshed failure classification completes.
+
+Formal preparation binds the rendered context's `CHANGE_NAME` to the change
+named by the launch. Report validation likewise rejects any explicit OpenSpec
+change identity that differs from that assignment; roles whose schemas do not
+repeat a change field remain governed by the launch identity.
+
+Only one script-backed apply, remediation, or finalization worker may hold the
+parent-owned primary-worktree reservation at a time. Parallel native work is
+limited to bounded, non-mutating investigations.
+
+Formal independent review remains script-backed. The complete script backend
+remains supported for every formal role.
+
+---
+
 # Core Principle
 
 The normal lifecycle is:
@@ -137,6 +207,11 @@ $openspec-apply-change
 
 or the project's equivalent apply workflow.
 
+Use `.agent/bin/run-worker apply`; current policy makes native apply
+mechanically ineligible. The retained native protocol uses the same prompt,
+role settings, report schema, and logical validation for diagnostic coverage
+but is not transition-authoritative.
+
 The apply agent may:
 
 * edit implementation;
@@ -197,6 +272,12 @@ REVIEWING
 ## REVIEWING
 
 A fresh reviewer performs read-only validation.
+
+Formal review is launched through `.agent/bin/run-worker review`, never through
+the initial native path. The launcher binds the reviewer to the exact staged
+tree in a detached worktree, permits ignored build outputs, rejects tracked or
+non-ignored review changes, rejects detached `HEAD` or tree mutation even after
+a clean reviewer commit, and preserves staged-tree freshness checks.
 
 The reviewer's primary objective is:
 
@@ -445,6 +526,10 @@ Its instruction is:
 
 > Repair the findings with the smallest sound change while preserving all previously established invariants.
 
+Use the complete script fallback for remediation; current policy makes every
+native primary-worktree writer ineligible. A remediation report transitions
+only to fresh script-backed independent review.
+
 A remediation agent may:
 
 * edit source;
@@ -678,6 +763,42 @@ The standard pre-release finalization order is:
 
 9. Hand off for commit or commit if explicitly authorized.
 ```
+
+Native and script-backed finalization use identical review-approval,
+archive/post-archive validation, and explicit commit-authorization gates.
+Backend selection never broadens finalization authority.
+
+---
+
+# Native Failure Classification
+
+Current policy never reaches this protocol for a primary-worktree writer. It is
+retained as the fail-closed contract for a future implementation that first
+protects the complete executable decision closure and makes writer exclusion
+survive broker-process death. Bounded read-only native exploration has no
+writer release or fallback authority.
+
+If native execution fails before repository work begins, or its report is
+rejected while refreshed state is identical to the launch snapshot, the steward
+may classify an infrastructure failure or safely select the script fallback.
+
+Launch and refreshed identity compare HEAD, staged tree, and a fingerprint of
+tracked-unstaged and non-ignored-untracked path, type, mode, and content.
+Ignored diagnostics and build output do not affect that fingerprint, while a
+same-path mutation does.
+
+Until broker-mediated classification is complete, the rejected launch retains its writer
+lease and excludes every other native or script primary-worktree writer. If
+repository state differs, fallback is not automatic. The steward must refresh
+Git and OpenSpec state, classify the mutation or partial work, and route from
+that actual state. Blindly rerunning the same mutating role through `run-worker`
+is forbidden.
+
+Missing, malformed, or altered manifest or lease state, broker/channel loss,
+generation mismatch, capability mismatch, or replay is integrity-invalid. It
+cannot release the writer, authorize a transition, or make fallback safe.
+Protected recovery requires the exact live generation over the private channel
+and an independent repository/OpenSpec refresh.
 
 Archive normally occurs before the final commit.
 

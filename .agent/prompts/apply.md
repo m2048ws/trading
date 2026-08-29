@@ -129,6 +129,24 @@ They do not authorize unrelated redesign.
 
 ---
 
+# Architecture Charter Gate
+
+For nontrivial architecture or API work, apply the relevant rules in `docs/design-principles.md` and `INV-C1` through
+`INV-C11`. Confirm the primary owner/error owner, allowed and forbidden dependencies, boundary-to-trusted transition,
+algebraic model, validation stages, pure/effect placement, dependency mechanism and public exposure, codec ownership,
+hot-path impact, public ergonomics, and claim-proportional evidence.
+
+Public mathematical and domain APIs must represent expected absence, invalidity, conflict, and failure in result
+types. Do not use `null`, unchecked extraction, sentinel values, or ordinary exceptions as control flow. Keep
+unavoidable partial operations, casts, and mutable mechanisms narrowly scoped, explicitly named or hidden, protected
+by a stated invariant, and inaccessible as public construction authority.
+
+Keep current, transitional, and proposed states distinct. Do not create an empty target module or present a future API
+as implemented. If satisfying the active task requires a deliberate charter exception or settled layer-boundary change,
+stop and report `DESIGN_CONFLICT`; do not introduce it as incidental cleanup.
+
+---
+
 # Implementation Rules
 
 Apply the active change as written.
@@ -239,7 +257,7 @@ Do not solve soundness by unnecessarily rejecting useful concrete or generic pro
 
 # Static / Runtime Agreement
 
-For dimension operations with runtime meaning, verify the static result agrees with runtime `DimensionKey` behavior.
+For dimension operations with runtime meaning, verify the static result agrees with runtime `DimKey` behavior.
 
 A mathematically correct coefficient does not excuse a malformed trusted static result.
 

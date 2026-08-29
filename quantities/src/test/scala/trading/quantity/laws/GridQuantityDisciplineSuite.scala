@@ -16,11 +16,8 @@ import trading.quantity.testkit.ExactGenerators
 import trading.quantity.testkit.TestAsset
 
 class GridQuantityDisciplineSuite extends TradingDisciplineSuite:
-  private val asset                  = TestAsset.runtime(AssetId("grid-discipline"))
-  private val grid: GridRef[asset.D] = UniformGrid.create(
-    GridId("grid-discipline-cent"),
-    GridVersion(1),
-    asset.dimension,
+  private val asset                  = TestAsset.runtime(AtomId("grid-discipline"))
+  private val grid: GridRef[asset.D] = UniformGrid.create(asset.dimension,
     PositiveRational.exact(1, 100).toOption.get
   )
   private given DimRef[asset.D] = asset.dimension

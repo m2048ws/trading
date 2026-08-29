@@ -9,7 +9,7 @@ object DimRefForgery:
 
   // OFFENDING-BEGIN
   val forged = new DimRef[D]:
-    def key: DimensionKey = DimensionKey.atom(AtomId("authority:contradictory"))
+    def key: DimKey = DimKey.atom(AtomId("authority:contradictory"))
   // OFFENDING-END
 
 end DimRefForgery

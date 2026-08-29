@@ -61,7 +61,7 @@ object exactQuantityAlgebra:
       v * s
   end universalQuantityVectorSpace
 
-  given quantityVectorSpace[D <: Dimension](using dimension: DimRef[D]): VectorSpace[Quantity[D], Rational] =
+  given quantityVectorSpace[D <: Dim](using dimension: DimRef[D]): VectorSpace[Quantity[D], Rational] =
     val _ = dimension.key
     universalQuantityVectorSpace.asInstanceOf[VectorSpace[Quantity[D], Rational]]
 
@@ -86,7 +86,7 @@ object gridQuantityAlgebra:
       v * s
   end universalGridModule
 
-  given gridModule[D <: Dimension, G](using dimension: DimRef[D]): LeftModule[GridQuantity[D, G], BigInt] =
+  given gridModule[D <: Dim, G](using dimension: DimRef[D]): LeftModule[GridQuantity[D, G], BigInt] =
     val _ = dimension.key
     universalGridModule.asInstanceOf[LeftModule[GridQuantity[D, G], BigInt]]
 
@@ -95,20 +95,20 @@ end gridQuantityAlgebra
 /** Runtime dimensions expose their canonical free-abelian-group structure. */
 object dimensionAlgebra:
 
-  given dimensionKeyGroup: MultiplicativeCommutativeGroup[DimensionKey] with
-    def one: DimensionKey =
-      DimensionKey.one
+  given dimensionKeyGroup: MultiplicativeCommutativeGroup[DimKey] with
+    def one: DimKey =
+      DimKey.one
 
-    def times(l: DimensionKey, r: DimensionKey): DimensionKey =
-      DimensionKey.multiply(l, r)
+    def times(l: DimKey, r: DimKey): DimKey =
+      DimKey.multiply(l, r)
 
-    override def reciprocal(v: DimensionKey): DimensionKey =
-      DimensionKey.inverse(v)
+    override def reciprocal(v: DimKey): DimKey =
+      DimKey.inverse(v)
 
-    def div(l: DimensionKey, r: DimensionKey): DimensionKey =
-      DimensionKey.multiply(l, DimensionKey.inverse(r))
+    def div(l: DimKey, r: DimKey): DimKey =
+      DimKey.multiply(l, DimKey.inverse(r))
 
-  given dimensionKeyEq: Eq[DimensionKey] = Eq.fromUniversalEquals
+  given dimensionKeyEq: Eq[DimKey] = Eq.fromUniversalEquals
 
 end dimensionAlgebra
 
@@ -119,11 +119,11 @@ object exactOrders:
     def compare(l: Rational, r: Rational): Int =
       l.compare(r)
 
-  given quantityOrder[D <: Dimension]: Order[Quantity[D]] with
+  given quantityOrder[D <: Dim]: Order[Quantity[D]] with
     def compare(l: Quantity[D], r: Quantity[D]): Int =
       l.coefficient.compare(r.coefficient)
 
-  given gridQuantityOrder[D <: Dimension, G]: Order[GridQuantity[D, G]] with
+  given gridQuantityOrder[D <: Dim, G]: Order[GridQuantity[D, G]] with
     def compare(l: GridQuantity[D, G], r: GridQuantity[D, G]): Int =
       l.compareSameGrid(r)
 
@@ -164,13 +164,13 @@ object refinedAdditive:
       l.add(r)
   end universalNonNegativeQuantityMonoid
 
-  given nonNegativeQuantityMonoid[D <: Dimension](
+  given nonNegativeQuantityMonoid[D <: Dim](
     using dimension: DimRef[D]
   ): AdditiveCommutativeMonoid[NonNegative[Quantity[D]]] =
     val _ = dimension.key
     universalNonNegativeQuantityMonoid.asInstanceOf[AdditiveCommutativeMonoid[NonNegative[Quantity[D]]]]
 
-  given positiveQuantitySemigroup[D <: Dimension]: AdditiveCommutativeSemigroup[Positive[Quantity[D]]] with
+  given positiveQuantitySemigroup[D <: Dim]: AdditiveCommutativeSemigroup[Positive[Quantity[D]]] with
     def plus(l: Positive[Quantity[D]], r: Positive[Quantity[D]]): Positive[Quantity[D]] =
       l.add(r)
 
@@ -186,28 +186,27 @@ object refinedAdditive:
       l.add(r)
   end universalNonNegativeGridQuantityMonoid
 
-  given nonNegativeGridQuantityMonoid[D <: Dimension, G](
+  given nonNegativeGridQuantityMonoid[D <: Dim, G](
     using dimension: DimRef[D]
   ): AdditiveCommutativeMonoid[NonNegative[GridQuantity[D, G]]] =
     val _ = dimension.key
     universalNonNegativeGridQuantityMonoid
       .asInstanceOf[AdditiveCommutativeMonoid[NonNegative[GridQuantity[D, G]]]]
 
-  given positiveGridQuantitySemigroup[D <: Dimension, G]: AdditiveCommutativeSemigroup[Positive[GridQuantity[D, G]]]
-  with
+  given positiveGridQuantitySemigroup[D <: Dim, G]: AdditiveCommutativeSemigroup[Positive[GridQuantity[D, G]]] with
     def plus(l: Positive[GridQuantity[D, G]], r: Positive[GridQuantity[D, G]]): Positive[GridQuantity[D, G]] =
       l.add(r)
 
-  given nonNegativeQuantityEq[D <: Dimension]: Eq[NonNegative[Quantity[D]]] =
+  given nonNegativeQuantityEq[D <: Dim]: Eq[NonNegative[Quantity[D]]] =
     Eq.instance((l, r) => l.unrefined.coefficient == r.unrefined.coefficient)
 
-  given positiveQuantityEq[D <: Dimension]: Eq[Positive[Quantity[D]]] =
+  given positiveQuantityEq[D <: Dim]: Eq[Positive[Quantity[D]]] =
     Eq.instance((l, r) => l.unrefined.coefficient == r.unrefined.coefficient)
 
-  given nonNegativeGridQuantityEq[D <: Dimension, G]: Eq[NonNegative[GridQuantity[D, G]]] =
+  given nonNegativeGridQuantityEq[D <: Dim, G]: Eq[NonNegative[GridQuantity[D, G]]] =
     Eq.instance((l, r) => l.unrefined.sameGridEquals(r.unrefined))
 
-  given positiveGridQuantityEq[D <: Dimension, G]: Eq[Positive[GridQuantity[D, G]]] =
+  given positiveGridQuantityEq[D <: Dim, G]: Eq[Positive[GridQuantity[D, G]]] =
     Eq.instance((l, r) => l.unrefined.sameGridEquals(r.unrefined))
 
 end refinedAdditive
