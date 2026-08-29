@@ -1,167 +1,64 @@
 # Trading Repository Agent Instructions
 
-This repository uses a project-steward workflow for OpenSpec-driven development.
+This repository uses CorgiSpec v4 with RFC-first Run Contract v3 delivery. Do not substitute the retired project-steward, `run-worker`, or OpenSpec worker-role workflow.
 
-Stable project context lives under `.agent/`.
+## Startup and authority
 
-Normative architecture and Scala/functional-design behavior is defined by the canonical OpenSpec capabilities
-`repository-architecture` and `scala-functional-design` after this active charter is archived. The human guide is
-`docs/design-principles.md`; `docs/architecture-charter-audit.md` distinguishes the current tree, transitional
-exceptions, and proposed target.
+Start with `memory/session-bridge.md`, then `memory/MEMORY.md` and `wiki/hot.md`. Read additional Wiki pages only when the task needs them. Refresh volatile Git, source, build, Corgi, and tracker state from the repository and provider rather than trusting an earlier transcript.
 
-Volatile Git, source, build, test, and OpenSpec state must be refreshed from the
-repository rather than trusted from prior conversations or reports.
+## Session Memory Protocol
 
-## Role Selection
+At session startup, read `memory/session-bridge.md`, then `memory/MEMORY.md`, then `wiki/hot.md`. Read `wiki/index.md` only on demand. Treat `.corgi/loop` as lifecycle authority and the bridge as a durable checkpoint, not live state. During Apply, queue discoveries for later promotion; only `corgispec archive --local` writes archive-derived delivery knowledge.
 
-Determine your role from the initial prompt.
+The authoritative delivery surfaces are:
 
-### Explicit worker role
+- accepted RFCs and their delivery sidecars under `rfcs/`;
+- Corgi planning packages in the CLI-reported change root;
+- Corgi Run Contract state, accessed only through the CLI;
+- the single tracker Issue bound by `corgi/source.yaml`;
+- `tools/corgi/pilot.json` and the guarded adapter documented in `tools/corgi/README.md`.
 
-If the initial prompt explicitly assigns one of these roles:
+When worktree isolation is enabled, discover and work inside the registered delivery worktree. Do not infer an active change from the primary checkout.
 
-- apply / implementation worker;
-- independent review worker;
-- remediation worker;
-- finalization worker;
+## Workflow selection
 
-then you are that worker, **not the project steward**.
+Use the applicable `/corgi-*` command or `corgispec-*` skill for RFC, Propose, Apply, Verify, Human Review, Human QA, and Archive. If a requested Corgi command or skill is unavailable, report that gap; never fall back to a different orchestration framework.
 
-Follow the rendered worker prompt you were given.
+For Apply:
 
-Read only the `.agent` context required by that worker prompt.
+1. require a strict-ready finalized proposal and closed native `blockedBy` dependencies;
+2. claim through `.agent/bin/corgi-pr claim` so the adapter checks admission and creates the local CAS handoff;
+3. implement exactly one current Task Group at a time;
+4. run checks and the automated Task Group review loop before its dedicated commit;
+5. acknowledge that exact commit with the Corgi CLI and retained four-field token;
+6. after the first acknowledged Task Group, use `.agent/bin/corgi-pr open`, then `sync` for later groups;
+7. stop Apply at `awaiting_verify`.
 
-Do not independently take over orchestration.
+Never hand-edit `.corgi/loop/**`, canonical evidence, Issue dashboards, or planning task checkboxes. Run Contract state is execution authority. Corgi Verify, explicit human whole-change Review, Human QA when applicable, and Archive are separate gates.
 
-### Default interactive role
+## GitHub and Git authority
 
-If no explicit worker role is assigned, the primary Codex thread is the project
-steward.
+The checked-in pilot may permit local Corgi commits, fast-forward WIP pushes, and draft PR creation or synchronization. It does not imply authority to mark ready, assign reviewers, merge, delete remote branches, tag, publish, or release. Re-read `tools/corgi/pilot.json` before acting.
 
-Before substantive action, read:
+Do not commit, push, create a PR, or mutate an Issue unless the user has authorized that action or the active Corgi command and pilot authority explicitly own it. Never force-push. Use one branch, one worktree, one Issue, and one draft PR per admitted change.
 
-```text
-.agent/project.md
-.agent/invariants.md
-.agent/decisions.md
-.agent/workflow.md
-.agent/review-policy.md
-.agent/steward.md
-```
-
-Then follow `.agent/steward.md` as the primary orchestration role.
-
-## Steward Delegation
-
-The steward uses Codex-native subagents as the preferred control plane only for
-roles whose required guards are satisfied. Repository helpers under
-`.agent/bin/` remain the guard plane for role policy, prompt rendering, report
-validation, steward-retained launch identity, writer serialization, volatile
-trace output, state refresh, and review isolation. The current repository and
-client boundary cannot protect the complete executable decision closure from a
-workspace-writing subagent or retain writer exclusion after broker-process
-death. Native primary-worktree writers are therefore mechanically ineligible;
-bounded read-only native exploration remains available.
-
-The role matrix is:
-
-| Role | Preferred backend | Mutation class |
-| --- | --- | --- |
-| bounded exploration | native | read-only |
-| apply | script only | one primary-worktree writer |
-| independent review | script only | isolated staged-snapshot reviewer |
-| remediation | script only | one primary-worktree writer |
-| finalization | script only | one primary-worktree writer |
-
-Formal workers use the canonical rendered prompts under:
-
-```text
-.agent/prompts/apply.md
-.agent/prompts/review.md
-.agent/prompts/remediate.md
-.agent/prompts/finalize.md
-```
-
-and the shared role settings in:
-
-```text
-.agent/worker-roles.json
-```
-
-The retained native broker protocol and writer profiles are diagnostic
-foundations, not launch authority. `.agent/bin/native-worker select` and broker
-preparation must select the script backend for apply, remediation, and
-finalization even when a capabilities file claims every historical broker
-guard. Enabling native writers requires a later reviewed change that supplies
-both protected immutable execution for the complete transition/release/fallback
-decision closure and exclusion owned independently of broker-process lifetime.
-
-Use the complete `.agent/bin/run-worker` path for every formal role. It remains
-the deterministic writer fallback and the detached staged-snapshot review
-backend.
-
-Implementation and remediation workers must never certify their own independent
-review.
-
-Independent review must use a fresh worker context through the detached
-staged-snapshot script backend.
-
-At most one apply, remediation, or finalization worker may be active against the
-primary worktree. Parallel native delegation is limited to bounded,
-non-mutating investigations.
-
-## Design Boundary
-
-Do not silently implement decisions marked `PROPOSED` or `EXPLORING` in:
-
-```text
-.agent/decisions.md
-```
-
-If a sound fix requires changing a settled invariant or making an unresolved
-design choice, stop routine apply/remediation and escalate to OpenSpec
-exploration/design review.
-
-## Architecture and Functional Design
+## Architecture and functional design
 
 For every nontrivial proposal or implementation:
 
 - assign each concept and error one primary owner and preserve acyclic, one-way dependencies;
-- look for honest sums, products, refinements, non-empty structures, lawful combinations, traversals, and pure state
-  transitions before using flags, primitives, mutation, or ad hoc control flow;
-- preserve dimension, grid, identity, provenance, validation, and endpoint information in types across trusted
-  transitions;
+- look for honest sums, products, refinements, non-empty structures, lawful combinations, traversals, and pure state transitions before using flags, primitives, mutation, or ad hoc control flow;
+- preserve dimension, grid, identity, provenance, validation, and endpoint information in types across trusted transitions;
 - accumulate independent validation failures deterministically and sequence dependent checks from prior evidence;
-- represent expected absence, invalidity, conflict, and failure in public mathematical/domain result types; do not use
-  `null`, unchecked extraction, sentinel values, or ordinary exceptions as control flow, and quarantine unavoidable
-  partiality or unsafe mechanisms behind stated checked invariants without exposing construction authority;
-- keep pure mathematical/domain/economic code free of live catalogs, codecs, concrete effects, and runtime state;
-- use effect-polymorphic application ports only for genuine external variation and confine concrete effects,
-  concurrency, resources, streams, clients, and telemetry to runtime interpreters;
-- admit mature dependencies for a named mechanism in the narrowest owning layer, keep independently released version
-  coordinates separate, and preserve the JDK 17 minimum unless an explicit compatibility change says otherwise;
-- require advanced Scala and functional abstractions to protect semantics while keeping common public calls
-  domain-readable;
-- verify laws, downstream compiler boundaries, interpreter contracts, concurrency, complexity, and hot-path
-  performance in proportion to the claim.
+- represent expected absence, invalidity, conflict, and failure in public mathematical/domain result types; quarantine unavoidable partiality behind checked invariants;
+- keep pure mathematical, domain, and economic code free of live catalogs, codecs, concrete effects, and runtime state;
+- use effect-polymorphic application ports only for genuine external variation and confine concrete effects, concurrency, resources, streams, clients, and telemetry to runtime interpreters;
+- admit dependencies for a named mechanism in the narrowest owning layer, keep independently released version coordinates separate, and preserve the JDK 17 minimum unless an explicit compatibility change says otherwise;
+- require advanced Scala and functional abstractions to protect semantics while keeping common public calls domain-readable;
+- verify laws, downstream compiler boundaries, interpreter contracts, concurrency, complexity, and hot-path performance in proportion to the claim.
 
-Logical responsibility boundaries precede physical modules. Do not create an empty target module or present a proposed
-module/API as implemented. A required charter exception is a design change: stop apply/remediation and escalate rather
-than introducing it as incidental cleanup.
+Logical responsibility boundaries precede physical modules. Do not create an empty target module or present a proposed module/API as implemented. Normative architecture and Scala design behavior lives in `openspec/specs/repository-architecture/`, `openspec/specs/scala-functional-design/`, and `docs/design-principles.md`; current delivery boundaries live in accepted RFCs.
 
-## OpenSpec
+## Worktree safety
 
-For an active OpenSpec change:
-
-1. read proposal, design, tasks, and all delta specs required by your assigned
-   role;
-2. preserve the independent-review gate;
-3. do not archive before fresh independent approval;
-4. normally archive before the final pre-release commit;
-5. run post-archive validation before declaring commit readiness.
-
-## Commit Policy
-
-Do not commit, push, publish, tag, or release unless explicitly authorized.
-
-Default final state is a validated, staged, commit-ready worktree.
+Preserve unrelated user changes. Use `rg` for discovery and `apply_patch` for focused edits. Avoid destructive Git operations. Do not archive, remove a worktree, delete a branch, or discard recovery state until its Corgi lifecycle and tracker state make that action safe.

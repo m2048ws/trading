@@ -1,0 +1,514 @@
+#!/usr/bin/env python3
+
+from __future__ import annotations
+
+import importlib.util
+import json
+import pathlib
+import subprocess
+import sys
+import tempfile
+import unittest
+
+
+SOURCE_ROOT = pathlib.Path(__file__).resolve().parents[2]
+MODULE_PATH = SOURCE_ROOT / "tools" / "corgi" / "corgi_pr.py"
+SPEC = importlib.util.spec_from_file_location("trading_corgi_pr", MODULE_PATH)
+assert SPEC is not None and SPEC.loader is not None
+corgi_pr = importlib.util.module_from_spec(SPEC)
+sys.modules[SPEC.name] = corgi_pr
+SPEC.loader.exec_module(corgi_pr)
+
+
+HEAD = "1" * 40
+
+
+def config(root: pathlib.Path, *, enabled: bool = True) -> object:
+    binary = root / "tools/corgi/node_modules/.bin/corgispec"
+    binary.parent.mkdir(parents=True)
+    binary.write_text("fixture")
+    return corgi_pr.PilotConfig(
+        path=root / "pilot.json",
+        enabled=enabled,
+        blocked_reason="qualification gate",
+        corgi_version="4.0.0-rc2",
+        corgi_binary=binary,
+        corgi_integrity="sha512-fixture",
+        repository="owner/repo",
+        remote="origin",
+        base_branch="main",
+        branch_prefix="corgi/",
+        worktree_root=root / ".worktrees",
+        admitted_changes=frozenset({"demo-change"}),
+        authority=corgi_pr.Authority(
+            local_corgi_commits=True,
+            fast_forward_wip_push=True,
+            draft_pr_create_or_update=True,
+            ready_for_review=False,
+            request_reviewers=False,
+            merge=False,
+            remote_branch_delete=False,
+            tag=False,
+            publish=False,
+            release=False,
+        ),
+    )
+
+
+def status_json() -> dict[str, object]:
+    return {
+        "changeName": "demo-change",
+        "state": "awaiting_verify",
+        "contract": {
+            "tracker": {
+                "provider": "github",
+                "issue": {
+                    "id": "17",
+                    "url": "https://github.com/owner/repo/issues/17",
+                },
+            }
+        },
+        "runContract": {
+            "schemaVersion": 3,
+            "phase": "awaiting_verify",
+            "finalRevision": None,
+        },
+        "taskGroups": [
+            {"id": "1", "name": "First", "status": "completed"},
+            {"id": "2", "name": "Second", "status": "pending"},
+        ],
+    }
+
+
+class ScriptedRunner:
+    def __init__(self, root: pathlib.Path, cfg: object, *, divergent: bool = False):
+        self.root = root
+        self.cfg = cfg
+        self.divergent = divergent
+        self.calls: list[tuple[str, ...]] = []
+
+    def run(self, args, *, cwd, accepted=(0,), input_text=None):
+        del cwd, accepted, input_text
+        command = tuple(str(item) for item in args)
+        self.calls.append(command)
+        if pathlib.Path(command[0]).resolve() == self.cfg.corgi_binary.resolve():
+            if command[1:] == ("--version",):
+                return corgi_pr.Completed(command, 0, "4.0.0-rc2\n", "")
+            return corgi_pr.Completed(command, 0, json.dumps(status_json()), "")
+        if command[0] == "git":
+            operation = command[1:]
+            if operation == ("rev-parse", "--show-toplevel"):
+                return corgi_pr.Completed(command, 0, str(self.root) + "\n", "")
+            if operation == ("branch", "--show-current"):
+                return corgi_pr.Completed(command, 0, "corgi/demo-change\n", "")
+            if operation == ("rev-parse", "--verify", "HEAD"):
+                return corgi_pr.Completed(command, 0, HEAD + "\n", "")
+            if operation == ("status", "--porcelain=v1", "--untracked-files=all"):
+                return corgi_pr.Completed(command, 0, "", "")
+            if operation[:2] == ("ls-remote", "--heads"):
+                ref = operation[-1]
+                return corgi_pr.Completed(command, 0, f"{HEAD}\t{ref}\n", "")
+            if operation[:2] == ("fetch", "--no-tags"):
+                return corgi_pr.Completed(command, 0, "", "")
+            if operation == ("rev-parse", "--verify", "FETCH_HEAD"):
+                return corgi_pr.Completed(command, 0, HEAD + "\n", "")
+            if operation[:2] == ("merge-base", "--is-ancestor"):
+                return corgi_pr.Completed(command, 1 if self.divergent else 0, "", "")
+            if operation[0] == "push":
+                return corgi_pr.Completed(command, 0, "", "")
+            raise AssertionError(f"unexpected git call: {command}")
+        if command[:3] == ("gh", "pr", "list"):
+            delivery = corgi_pr.DeliveryStatus(
+                raw=status_json(),
+                change="demo-change",
+                phase="awaiting_verify",
+                final_revision=None,
+                issue_id=17,
+                issue_url="https://github.com/owner/repo/issues/17",
+                groups_complete=1,
+                groups_total=2,
+            )
+            body = corgi_pr.render_body(
+                delivery, self.cfg, "corgi/demo-change", HEAD
+            )
+            payload = [
+                {
+                    "number": 9,
+                    "url": "https://github.com/owner/repo/pull/9",
+                    "isDraft": True,
+                    "state": "OPEN",
+                    "headRefName": "corgi/demo-change",
+                    "headRepositoryOwner": {"login": "owner"},
+                    "baseRefName": "main",
+                    "headRefOid": HEAD,
+                    "body": body,
+                }
+            ]
+            return corgi_pr.Completed(command, 0, json.dumps(payload), "")
+        raise AssertionError(f"unexpected command: {command}")
+
+
+class ClaimRunner:
+    def __init__(self, root: pathlib.Path, cfg: object, blocked_by=None):
+        self.root = root.resolve()
+        self.cfg = cfg
+        self.blocked_by = (
+            {"nodes": [], "totalCount": 0} if blocked_by is None else blocked_by
+        )
+        self.calls: list[tuple[str, ...]] = []
+
+    def run(self, args, *, cwd, accepted=(0,), input_text=None):
+        del cwd, accepted, input_text
+        command = tuple(str(item) for item in args)
+        self.calls.append(command)
+        if pathlib.Path(command[0]).resolve() == self.cfg.corgi_binary.resolve():
+            if command[1:] == ("--version",):
+                return corgi_pr.Completed(command, 0, "4.0.0-rc2\n", "")
+            if command[1] == "status":
+                payload = status_json()
+                payload["planningComplete"] = True
+                payload["runContract"] = None
+                payload["taskGroups"] = [
+                    {"id": "1", "name": "First", "status": "pending"}
+                ]
+                return corgi_pr.Completed(command, 0, json.dumps(payload), "")
+            if command[1] == "apply":
+                payload = {
+                    "status": "ok",
+                    "state": {"changeName": "demo-change", "phase": "applying"},
+                    "token": {
+                        "runId": "run-1",
+                        "sessionId": "session-1",
+                        "stateRevision": 1,
+                        "nonce": "nonce-1",
+                    },
+                }
+                return corgi_pr.Completed(command, 0, json.dumps(payload), "")
+        if command[0] == "git":
+            operation = command[1:]
+            if operation == ("rev-parse", "--show-toplevel"):
+                return corgi_pr.Completed(command, 0, str(self.root) + "\n", "")
+            if operation == ("branch", "--show-current"):
+                return corgi_pr.Completed(command, 0, "corgi/demo-change\n", "")
+            if operation == ("rev-parse", "--verify", "HEAD"):
+                return corgi_pr.Completed(command, 0, HEAD + "\n", "")
+        if command[:3] == ("gh", "issue", "view"):
+            return corgi_pr.Completed(
+                command, 0, json.dumps({"blockedBy": self.blocked_by}) + "\n", ""
+            )
+        raise AssertionError(f"unexpected command: {command}")
+
+
+class CorgiPrTest(unittest.TestCase):
+    def test_package_lock_pins_qualified_mit_release(self):
+        lock = json.loads(
+            (SOURCE_ROOT / "tools/corgi/package-lock.json").read_text()
+        )
+        package = lock["packages"]["node_modules/corgispec"]
+        self.assertEqual(package["version"], "4.0.0-rc2")
+        self.assertEqual(package["license"], "MIT")
+        self.assertEqual(
+            package["integrity"],
+            "sha512-J+i7s4BthgIDvnMFTq/o/moRmnELa9EZ7So/a+3x+0CcUvzgASt/mESHX+/aTd3KuETk5onEkXZqZUhV/RX+ZQ==",
+        )
+
+    def test_cas_handoff_is_local_bounded_and_owner_only(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory).resolve()
+            path = root / ".corgi/adapter/demo-change-token.json"
+            token = {
+                "runId": "run-1",
+                "sessionId": "session-1",
+                "stateRevision": 2,
+                "nonce": "local-nonce",
+            }
+            corgi_pr.write_token_file(path, token, root)
+            self.assertEqual(path.stat().st_mode & 0o777, 0o600)
+            self.assertEqual(corgi_pr.load_token_file(path, root), token)
+
+    def test_claim_checks_dependencies_and_persists_no_public_token(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory).resolve()
+            cfg = config(root)
+            runner = ClaimRunner(root, cfg)
+            result = corgi_pr.Adapter(root, cfg, runner).claim(
+                "demo-change", owner="agent-1", session="session-1"
+            )
+            self.assertEqual(result["operation"], "claimed")
+            self.assertNotIn("nonce", json.dumps(result).lower())
+            token_path = root / result["tokenFile"]
+            self.assertEqual(token_path.stat().st_mode & 0o777, 0o600)
+            self.assertTrue(
+                any(call[:3] == ("gh", "issue", "view") for call in runner.calls)
+            )
+
+    def test_dependency_check_accepts_legacy_array_shape(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory).resolve()
+            cfg = config(root)
+            runner = ClaimRunner(root, cfg, blocked_by=[])
+            corgi_pr.Adapter(root, cfg, runner).require_dependencies_closed(6)
+
+    def test_dependency_check_rejects_open_connection_nodes(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory).resolve()
+            cfg = config(root)
+            runner = ClaimRunner(
+                root,
+                cfg,
+                blocked_by={
+                    "nodes": [{"number": 11, "state": "OPEN"}],
+                    "totalCount": 1,
+                },
+            )
+            with self.assertRaisesRegex(corgi_pr.PilotError, "Open dependencies: #11"):
+                corgi_pr.Adapter(root, cfg, runner).require_dependencies_closed(6)
+
+    def test_writer_lock_excludes_same_change_but_allows_distinct_worktrees(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            first = root / "first"
+            second = root / "second"
+            first.mkdir()
+            second.mkdir()
+            with corgi_pr.DescriptorLock(first, "first change"):
+                with self.assertRaises(corgi_pr.PilotError) as caught:
+                    with corgi_pr.DescriptorLock(first, "first change"):
+                        pass
+                self.assertEqual(caught.exception.code, "lock_busy")
+                with corgi_pr.DescriptorLock(second, "second change"):
+                    pass
+
+    def test_admission_creates_and_reuses_one_exact_worktree(self):
+        with tempfile.TemporaryDirectory() as directory:
+            fixture = pathlib.Path(directory)
+            remote = fixture / "remote.git"
+            root = fixture / "repo"
+            subprocess.run(["git", "init", "--bare", "-q", str(remote)], check=True)
+            subprocess.run(["git", "init", "-q", "-b", "main", str(root)], check=True)
+            subprocess.run(
+                ["git", "-C", str(root), "config", "user.name", "Corgi Test"],
+                check=True,
+            )
+            subprocess.run(
+                ["git", "-C", str(root), "config", "user.email", "test@example.invalid"],
+                check=True,
+            )
+            subprocess.run(
+                ["git", "-C", str(root), "config", "commit.gpgsign", "false"],
+                check=True,
+            )
+            (root / "README.md").write_text("fixture\n")
+            subprocess.run(["git", "-C", str(root), "add", "README.md"], check=True)
+            subprocess.run(
+                ["git", "-C", str(root), "commit", "-qm", "initial"], check=True
+            )
+            subprocess.run(
+                ["git", "-C", str(root), "remote", "add", "origin", str(remote)],
+                check=True,
+            )
+            subprocess.run(
+                ["git", "-C", str(root), "push", "-q", "-u", "origin", "main"],
+                check=True,
+            )
+            cfg = config(root)
+            adapter = corgi_pr.Adapter(root, cfg)
+            created = adapter.admit("demo-change")
+            reused = adapter.admit("demo-change")
+            self.assertEqual(created["operation"], "admitted")
+            self.assertEqual(reused["operation"], "already-admitted")
+            worktree = root / ".worktrees/demo-change"
+            branch = subprocess.run(
+                ["git", "-C", str(worktree), "branch", "--show-current"],
+                check=True,
+                text=True,
+                stdout=subprocess.PIPE,
+            ).stdout.strip()
+            self.assertEqual(branch, "corgi/demo-change")
+
+    def test_worktree_porcelain_preserves_exact_branch_identity(self):
+        payload = (
+            f"worktree /repo\nHEAD {HEAD}\nbranch refs/heads/main\n\n"
+            f"worktree /repo/.worktrees/demo-change\nHEAD {'2' * 40}\n"
+            "branch refs/heads/corgi/demo-change\n"
+        )
+        worktrees = corgi_pr.parse_worktrees(payload)
+        self.assertEqual([item.branch for item in worktrees], ["main", "corgi/demo-change"])
+        self.assertEqual(worktrees[1].head, "2" * 40)
+
+    def test_enabled_repository_rejects_unadmitted_change(self):
+        result = subprocess.run(
+            [
+                str(SOURCE_ROOT / ".agent/bin/corgi-pr"),
+                "--root",
+                str(SOURCE_ROOT),
+                "--json",
+                "open",
+                "demo-change",
+            ],
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
+        self.assertEqual(result.returncode, 2)
+        payload = json.loads(result.stdout)
+        self.assertEqual(payload["error"]["code"], "change_not_admitted")
+
+    def test_sync_is_idempotent_and_push_is_never_forced(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            cfg = config(root)
+            runner = ScriptedRunner(root, cfg)
+            adapter = corgi_pr.Adapter(root, cfg, runner)
+            result = adapter.open_or_sync("demo-change", create=False)
+            self.assertEqual(result["operation"], "synchronized")
+            pushes = [call for call in runner.calls if call[:2] == ("git", "push")]
+            self.assertEqual(len(pushes), 1)
+            self.assertEqual(
+                pushes[0][-1], "HEAD:refs/heads/corgi/demo-change"
+            )
+            self.assertFalse(any("force" in argument for argument in pushes[0]))
+
+    def test_remote_divergence_stops_before_push(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            cfg = config(root)
+            runner = ScriptedRunner(root, cfg, divergent=True)
+            adapter = corgi_pr.Adapter(root, cfg, runner)
+            with self.assertRaisesRegex(corgi_pr.PilotError, "not an ancestor") as caught:
+                adapter.open_or_sync("demo-change", create=False)
+            self.assertEqual(caught.exception.code, "remote_diverged")
+            self.assertFalse(any(call[:2] == ("git", "push") for call in runner.calls))
+
+    def test_existing_pr_marker_must_match_every_identity(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            cfg = config(root)
+            delivery = corgi_pr.DeliveryStatus(
+                raw={},
+                change="demo-change",
+                phase="awaiting_verify",
+                final_revision=None,
+                issue_id=17,
+                issue_url="https://github.com/owner/repo/issues/17",
+                groups_complete=1,
+                groups_total=1,
+            )
+            pr = corgi_pr.PullRequest(
+                number=1,
+                url="https://github.com/owner/repo/pull/1",
+                state="OPEN",
+                is_draft=True,
+                head_ref="corgi/demo-change",
+                head_owner="owner",
+                base_ref="main",
+                head_oid=HEAD,
+                body=corgi_pr.marker_for(
+                    "demo-change", 18, "main", "corgi/demo-change"
+                ),
+            )
+            with self.assertRaises(corgi_pr.PilotError) as caught:
+                corgi_pr.require_one_pr(
+                    [pr], cfg, delivery, "corgi/demo-change"
+                )
+            self.assertEqual(caught.exception.code, "pr_marker_mismatch")
+
+    def test_review_projection_redacts_private_and_secret_fields(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            report = {
+                "verdict": "blocked",
+                "summary": f"Observed {root}/private/file",
+                "findings": [
+                    {
+                        "id": "F1",
+                        "severity": "high",
+                        "title": "github_pat_not-a-real-token",
+                        "smallest_remediation": f"Inspect {root}/private/file",
+                    }
+                ],
+            }
+            body = corgi_pr.render_review_comment(
+                "demo-change", HEAD, report, root
+            )
+            self.assertNotIn(str(root), body)
+            self.assertNotIn("github_pat_not-a-real-token", body)
+            self.assertIn("[redacted from PR projection]", body)
+            corgi_pr.assert_safe_projection(body, root)
+
+    def test_corgi_review_report_accepts_ready_and_actionable_blocked_shapes(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory).resolve()
+            report_path = root / "review.json"
+            ready = {
+                "schemaVersion": 1,
+                "verdict": "ready",
+                "summary": "No actionable findings.",
+                "findings": [],
+                "repository_unchanged": True,
+            }
+            report_path.write_text(json.dumps(ready))
+            self.assertEqual(
+                corgi_pr.load_review_report(report_path, root)["verdict"], "ready"
+            )
+
+            blocked = {
+                "schemaVersion": 1,
+                "verdict": "blocked",
+                "summary": "One correctness finding.",
+                "findings": [
+                    {
+                        "id": "R1",
+                        "severity": "high",
+                        "title": "Lost update",
+                        "location": "runtime/Catalog.scala:42",
+                        "evidence": "The concurrent test loses one commit.",
+                        "smallest_remediation": "Use one atomic state transition.",
+                    }
+                ],
+                "repository_unchanged": True,
+            }
+            report_path.write_text(json.dumps(blocked))
+            self.assertEqual(
+                corgi_pr.load_review_report(report_path, root)["verdict"], "blocked"
+            )
+
+    def test_corgi_review_report_rejects_legacy_worker_shape(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory).resolve()
+            report_path = root / "review.json"
+            report_path.write_text(
+                json.dumps(
+                    {
+                        "verdict": "ready",
+                        "summary": "Legacy report.",
+                        "findings": [],
+                        "repository_unchanged": True,
+                        "openspec": {},
+                    }
+                )
+            )
+            with self.assertRaises(corgi_pr.PilotError) as caught:
+                corgi_pr.load_review_report(report_path, root)
+            self.assertEqual(caught.exception.code, "review_report_invalid")
+
+    def test_merge_gate_requires_exact_head_approval_and_green_checks(self):
+        detail = {
+            "headRefOid": HEAD,
+            "isDraft": False,
+            "reviewDecision": "APPROVED",
+            "mergeStateStatus": "CLEAN",
+            "statusCheckRollup": [
+                {"name": "test", "conclusion": "SUCCESS"},
+                {"name": "docs", "conclusion": "SKIPPED"},
+            ],
+        }
+        corgi_pr.require_mergeable(detail, HEAD)
+        detail["statusCheckRollup"][0]["conclusion"] = "FAILURE"
+        with self.assertRaises(corgi_pr.PilotError) as caught:
+            corgi_pr.require_mergeable(detail, HEAD)
+        self.assertEqual(caught.exception.code, "checks_not_green")
+
+
+if __name__ == "__main__":
+    unittest.main()

@@ -1,0 +1,15 @@
+# These fields were applied before the successful fresh bootstrap so the
+# generated installation manifest and project configuration agree.
+isolation:
+  mode: worktree
+  root: .worktrees
+  branch_prefix: corgi/
+
+corgi:
+  tracking:
+    provider: github
+  contract: rfc-v1
+  rfcRoot: rfcs
+  foundation: RFC-0001-project-foundation
+  governance:
+    integrationBranch: origin/main

@@ -1,5 +1,4 @@
 schema: spec-driven
-
 context: |
   Project: trading
   Build: Scala 3 multi-module SBT
@@ -60,25 +59,18 @@ context: |
   proposed target modules are not implemented merely because they are named.
   Current transitional exceptions and proposal owners are recorded in
   docs/architecture-charter-audit.md. Minimum build/runtime JDK: 17.
-
-# Per-artifact rules (optional)
-# Add custom rules for specific artifacts.
-# Example:
-#   rules:
-#     proposal:
-#       - Keep proposals under 500 words
-#       - Always include a "Non-goals" section
-#     tasks:
-#       - Break tasks into chunks of max 2 hours
-
-# Per-operation guidance (optional)
-# Add advisory guidance for how apply and archive work should be conducted.
-# This is separate from artifact rules above.
-# Example:
-#   operations:
-#     apply:
-#       guidance:
-#         - Keep test summaries concise
-#     archive:
-#       guidance:
-#         - Summarize the archive outcome before finishing
+isolation:
+  mode: worktree
+  root: .worktrees
+  branch_prefix: corgi/
+corgi:
+  tracking:
+    provider: github
+  contract: rfc-v1
+  rfcRoot: rfcs
+  foundation: RFC-0001-project-foundation
+  governance:
+    integrationBranch: origin/main
+installer:
+  version: 2
+  managed_at: '2026-08-29T19:30:09.485Z'

@@ -1,0 +1,10 @@
+schemaVersion: 1
+id: RFC-0002-architecture-portfolio
+type: feature
+status: accepted
+author: m@2048.ws
+createdAt: '2026-08-29T19:45:35.536Z'
+acceptance:
+  approver: m2048ws
+  approvedAt: '2026-08-29T19:50:05.661Z'
+  digest: a00c0cf1e3a4440bfce7dc828ad4ac119414f10d72e8d8c52c613403ef5977e2
