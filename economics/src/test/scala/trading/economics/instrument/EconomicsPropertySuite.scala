@@ -7,6 +7,7 @@ import org.scalacheck.Prop.forAll
 import trading.quantity.*
 import trading.quantity.grid.QuantizationPolicy
 import trading.quantity.refinement.PositiveWhole
+import trading.reference.AssetId
 
 class EconomicsPropertySuite extends ScalaCheckSuite:
   private val fixture    = new EconomicsFixtures
@@ -71,6 +72,46 @@ class EconomicsPropertySuite extends ScalaCheckSuite:
         Rational(count, 100).compare(Rational(budgetCents, 100)) <= 0
 
       assertEquals(sized.map(_.map(_.count.unrefined)), Right(expected.lastOption))
+
+  property("assembly preserves every generated exact payoff coefficient"):
+    forAll(Gen.choose(-10_000, 10_000), Gen.choose(1, 997)): (numerator, denominator) =>
+      val baseCoefficient  = Rational(numerator, denominator)
+      val quoteCoefficient = if baseCoefficient.isZero then Rational.one else Rational.zero
+      val definition       = InstrumentDefinition(
+        InstrumentIdentity(
+          InstrumentId.from(s"property-exact-$numerator-$denominator").toOption.get,
+          UnderlyingId.from("property-underlying").toOption.get
+        ),
+        AssetRoleIds(fixture.btc.id, fixture.usd.id, fixture.contract.id, fixture.usd.id),
+        ListingDefinition(fixture.contractLots.identity, fixture.usdPerBtcTicks.identity),
+        PayoffDefinition(baseCoefficient, quoteCoefficient)
+      )
+      val spec = InstrumentAssembler.assemble(definition, fixture.snapshot).toOption.get
+
+      assertEquals(spec.basePerPosition.coefficient, baseCoefficient)
+      assertEquals(spec.quotePerPosition.coefficient, quoteCoefficient)
+      assertEquals(
+        spec.priceGrid.dimension.key,
+        DimRef.divide(spec.roles.quote.dimension.ref, spec.roles.base.dimension.ref).key
+      )
+
+  property("repeated invalid assembly preserves deterministic stage and role order"):
+    forAll(Gen.choose(1, 10_000)): suffix =>
+      val missing    = AssetId.from(s"property-missing-$suffix").toOption.get
+      val definition = InstrumentDefinition(
+        InstrumentIdentity(
+          InstrumentId.from(s"property-invalid-$suffix").toOption.get,
+          UnderlyingId.from("property-underlying").toOption.get
+        ),
+        AssetRoleIds(missing, missing, fixture.contract.id, fixture.usd.id),
+        ListingDefinition(fixture.contractLots.identity, fixture.usdPerBtcTicks.identity),
+        PayoffDefinition(Rational.zero, Rational.zero)
+      )
+      val first  = InstrumentAssembler.assemble(definition, fixture.snapshot).swap.toOption.get
+      val second = InstrumentAssembler.assemble(definition, fixture.snapshot).swap.toOption.get
+
+      assertEquals(first, second)
+      assertEquals(InstrumentAssembler.assembleFirst(definition, fixture.snapshot), Left(first.head))
 
   private def completeMarket(
     side: Side,

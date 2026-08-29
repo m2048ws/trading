@@ -1,43 +1,99 @@
 package trading.economics.instrument
 
+import java.util.Objects
+
 import trading.quantity.*
 import trading.reference.*
 
-/** Stable external identity of a validated listing or contract. */
-final case class InstrumentId(value: String):
-  require(value.trim.nonEmpty, "instrument ID cannot be empty")
+/** Expected failures while constructing stable instrument identity values. */
+sealed abstract class InstrumentIdentityError extends JavaSerializationUnsupported with Product with Serializable
+
+case object EmptyInstrumentId extends InstrumentIdentityError
+case object EmptyUnderlyingId extends InstrumentIdentityError
+
+/** Stable external identity of a listing or contract. */
+final class InstrumentId private (val value: String) extends JavaSerializationUnsupported:
+  override def equals(other: Any): Boolean =
+    other match
+      case that: InstrumentId => value == that.value
+      case _                  => false
+
+  override def hashCode: Int    = value.hashCode
+  override def toString: String = s"InstrumentId($value)"
+end InstrumentId
+
+object InstrumentId:
+  def from(value: String): Either[EmptyInstrumentId.type, InstrumentId] =
+    val checked = Objects.requireNonNull(value, "instrument ID")
+    if checked.trim.nonEmpty then Right(new InstrumentId(checked)) else Left(EmptyInstrumentId)
+end InstrumentId
 
 /** Stable identity of an instrument's possibly non-currency underlying. */
-final case class UnderlyingId(value: String):
-  require(value.trim.nonEmpty, "underlying ID cannot be empty")
+final class UnderlyingId private (val value: String) extends JavaSerializationUnsupported:
+  override def equals(other: Any): Boolean =
+    other match
+      case that: UnderlyingId => value == that.value
+      case _                  => false
+
+  override def hashCode: Int    = value.hashCode
+  override def toString: String = s"UnderlyingId($value)"
+end UnderlyingId
+
+object UnderlyingId:
+  def from(value: String): Either[EmptyUnderlyingId.type, UnderlyingId] =
+    val checked = Objects.requireNonNull(value, "underlying ID")
+    if checked.trim.nonEmpty then Right(new UnderlyingId(checked)) else Left(EmptyUnderlyingId)
+end UnderlyingId
 
 /** Cohesive semantic identity of one instrument. */
-final case class Identity(id: InstrumentId, underlying: UnderlyingId)
+final case class InstrumentIdentity(id: InstrumentId, underlying: UnderlyingId) extends JavaSerializationUnsupported:
+  val _ = Objects.requireNonNull(id, "instrument ID")
+  val _ = Objects.requireNonNull(underlying, "underlying ID")
 
-/** The trusted asset roles shared by listing rules and payoff terms. */
-final class Roles(
-  val base: Asset,
-  val quote: Asset,
-  val position: Asset,
-  val settle: Asset)
+/** Closed asset fields resolved by instrument assembly. */
+enum AssetRole extends JavaSerializationUnsupported:
+  case Base, Quote, Position, Settle
 
-/** Contextual grids for the exact role value supplied at construction. */
-final class ListingRules(
-  val roles: Roles
-)(
-  val positionLotGrid: GridHandle[? <: Dim],
-  val priceGrid: GridHandle[? <: Dim])
+/** Closed listing-grid fields resolved by instrument assembly. */
+enum ListingGridRole extends JavaSerializationUnsupported:
+  case PositionLot, Price
 
-/** Product-family-neutral two-leg payoff for the exact role value supplied at construction. */
-final class ContractPayoff(
-  val roles: Roles
-)(
-  val basePerPosition: Rate[roles.position.D, roles.base.D],
-  val quotePerPosition: Rate[roles.position.D, roles.quote.D])
+/** Stable asset identities for every economic role. */
+final case class AssetRoleIds(
+  base: AssetId,
+  quote: AssetId,
+  position: AssetId,
+  settle: AssetId)
+  extends JavaSerializationUnsupported:
+  val _ = Objects.requireNonNull(base, "base asset ID")
+  val _ = Objects.requireNonNull(quote, "quote asset ID")
+  val _ = Objects.requireNonNull(position, "position asset ID")
+  val _ = Objects.requireNonNull(settle, "settle asset ID")
 
-/** One cohesive input to the final validated instrument boundary. */
-final case class Definition(
-  identity: Identity,
-  roles: Roles,
-  listingRules: ListingRules,
-  contractPayoff: ContractPayoff)
+/** Full stable identities of the position-lot and quote-per-base price grids. */
+final case class ListingDefinition(
+  positionLotGrid: GridIdentity,
+  priceGrid: GridIdentity)
+  extends JavaSerializationUnsupported:
+  val _ = Objects.requireNonNull(positionLotGrid, "position-lot grid identity")
+  val _ = Objects.requireNonNull(priceGrid, "price grid identity")
+
+/** Exact product-family-neutral two-leg payoff coefficients before endpoint resolution. */
+final case class PayoffDefinition(
+  basePerPosition: Rational,
+  quotePerPosition: Rational)
+  extends JavaSerializationUnsupported:
+  val _ = Objects.requireNonNull(basePerPosition, "base-per-position coefficient")
+  val _ = Objects.requireNonNull(quotePerPosition, "quote-per-position coefficient")
+
+/** Stable-ID-only in-memory command consumed by [[InstrumentAssembler]]. */
+final case class InstrumentDefinition(
+  identity: InstrumentIdentity,
+  roles: AssetRoleIds,
+  listing: ListingDefinition,
+  payoff: PayoffDefinition)
+  extends JavaSerializationUnsupported:
+  val _ = Objects.requireNonNull(identity, "instrument identity")
+  val _ = Objects.requireNonNull(roles, "asset role IDs")
+  val _ = Objects.requireNonNull(listing, "listing definition")
+  val _ = Objects.requireNonNull(payoff, "payoff definition")

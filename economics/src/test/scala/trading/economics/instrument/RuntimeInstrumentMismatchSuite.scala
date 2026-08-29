@@ -10,7 +10,7 @@ class RuntimeInstrumentMismatchSuite extends FunSuite:
   private val fixture    = new EconomicsFixtures
   private val instrument = fixture.linear
   private val expected   = instrument.identity.id
-  private val foreign    = InstrumentId("foreign-instrument")
+  private val foreign    = InstrumentId.from("foreign-instrument").toOption.get
   private val lots       = instrument.lots(10).toOption.get
   private val price      = fixture.price(instrument, 100)
   private val market     = fixture.state(instrument, 100)

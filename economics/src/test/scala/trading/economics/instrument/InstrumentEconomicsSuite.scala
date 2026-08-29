@@ -1,8 +1,6 @@
 package trading.economics.instrument
 
-import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
-import java.io.ObjectInputStream
 import java.io.ObjectOutputStream
 
 import munit.FunSuite
@@ -10,6 +8,7 @@ import munit.FunSuite
 import trading.quantity.*
 import trading.quantity.grid.*
 import trading.quantity.refinement.*
+import trading.reference.*
 
 class InstrumentEconomicsSuite extends FunSuite:
   private val fixture    = new EconomicsFixtures
@@ -48,135 +47,123 @@ class InstrumentEconomicsSuite extends FunSuite:
     assertEquals(instrument.prices.fromRate(typed).map(_.ticks.unrefined), Right(BigInt(3)))
     assertEquals(instrument.prices.fromTicks(PositiveWhole(3).toOption.get).coefficient, Rational(3, 2))
 
-  test("component-based construction rejects contradictory roles, wrong grids, and empty payoff"):
-    val identity = Identity(InstrumentId("invalid"), UnderlyingId("index:not-a-currency"))
-    val roles    = new Roles(fixture.btc, fixture.btc, fixture.contract, fixture.usd)
-    val listing  = new ListingRules(roles)(fixture.contractLots, fixture.usdPerBtcTicks)
-    val payoff   = new ContractPayoff(roles)(
-      Rate(roles.position.dimension.ref, roles.base.dimension.ref, Rational.one),
-      Rate(roles.position.dimension.ref, roles.quote.dimension.ref, Rational.zero)
-    )
+  test("stable definition identities and non-empty diagnostics are guarded"):
+    assertEquals(InstrumentId.from("  "), Left(EmptyInstrumentId))
+    assertEquals(UnderlyingId.from(""), Left(EmptyUnderlyingId))
+    assertEquals(InstrumentAssemblyErrors.from(Vector.empty), Left(EmptyInstrumentAssemblyErrors))
+
+    val raw = validDefinition("stable-command")
+    assertEquals(raw.roles.base, fixture.btc.id)
+    assertEquals(raw.listing.positionLotGrid, fixture.contractLots.identity)
+    assertEquals(raw.payoff.basePerPosition, Rational.one)
+
+  test("assembly succeeds exactly and total instrument construction preserves every trusted component"):
+    val raw   = validDefinition("assembled")
+    val spec  = InstrumentAssembler.assemble(raw, fixture.snapshot).toOption.get
+    val built = Instrument.fromSpec(spec)
+
+    assertEquals(spec.identity, raw.identity)
+    assert(spec.roles.base.eq(fixture.btc))
+    assert(spec.roles.quote.eq(fixture.usd))
+    assert(spec.roles.position.eq(fixture.contract))
+    assert(spec.roles.settle.eq(fixture.usd))
+    assert(spec.positionLotGrid.eq(fixture.contractLots))
+    assert(spec.priceGrid.eq(fixture.usdPerBtcTicks))
+    assertEquals(spec.basePerPosition.coefficient, Rational.one)
+    assertEquals(spec.quotePerPosition.coefficient, Rational.zero)
+    assertEquals(spec.positionLotGrid.dimension.key, spec.roles.position.dimension.key)
     assertEquals(
-      Instrument.create(Definition(identity, roles, listing, payoff)),
-      Left(ContradictoryInstrument(identity.id, Contradiction.BaseEqualsQuote))
+      spec.priceGrid.dimension.key,
+      DimRef.divide(spec.roles.quote.dimension.ref, spec.roles.base.dimension.ref).key
+    )
+    assert(built.spec.eq(spec))
+    assert(built.roles.eq(spec.roles))
+    assert(built.positionLotGrid.eq(spec.positionLotGrid))
+    assert(built.priceGrid.eq(spec.priceGrid))
+
+  test("assembly accumulates structural, lookup, and eligible dependent failures in stable stage order"):
+    val missingBase   = AssetId.from("missing-base").toOption.get
+    val missingSettle = AssetId.from("missing-settle").toOption.get
+    val missingLots   = GridIdentity(
+      fixture.contract.dimension.key,
+      GridKey(GridId.from("missing-lots").toOption.get, GridVersion.from(1).toOption.get)
+    )
+    val raw = InstrumentDefinition(
+      validIdentity("ordered-errors"),
+      AssetRoleIds(missingBase, missingBase, fixture.contract.id, missingSettle),
+      ListingDefinition(missingLots, fixture.usdCents.identity),
+      PayoffDefinition(Rational.zero, Rational.zero)
     )
 
-    val validRoles   = new Roles(fixture.btc, fixture.usd, fixture.contract, fixture.usd)
-    val wrongListing = new ListingRules(validRoles)(fixture.usdCents, fixture.usdPerBtcTicks)
-    val empty        = new ContractPayoff(validRoles)(
-      Rate(validRoles.position.dimension.ref, validRoles.base.dimension.ref, Rational.zero),
-      Rate(validRoles.position.dimension.ref, validRoles.quote.dimension.ref, Rational.zero)
-    )
-    val wrongGrid = Instrument.create(Definition(identity, validRoles, wrongListing, empty))
-    assert(wrongGrid.swap.exists(_.isInstanceOf[GridDimensionFailure]))
-
-    val validListing = new ListingRules(validRoles)(fixture.contractLots, fixture.usdPerBtcTicks)
+    val errors = InstrumentAssembler.assemble(raw, fixture.snapshot).swap.toOption.get
     assertEquals(
-      Instrument.create(Definition(identity, validRoles, validListing, empty)),
-      Left(EmptyContractPayoff(identity.id))
-    )
-
-    val foreign        = new EconomicsFixtures
-    val foreignListing = new ListingRules(validRoles)(foreign.contractLots, foreign.usdPerBtcTicks)
-    assert(
-      Instrument
-        .create(Definition(identity, validRoles, foreignListing, empty))
-        .swap
-        .exists(_.isInstanceOf[ForeignReferenceDataLineage])
-    )
-
-    val otherRoles           = new Roles(fixture.btc, fixture.usd, fixture.contract, fixture.usd)
-    val contradictoryListing = new ListingRules(otherRoles)(fixture.contractLots, fixture.usdPerBtcTicks)
-    assertEquals(
-      Instrument.create(Definition(identity, validRoles, contradictoryListing, empty)),
-      Left(ContradictoryInstrument(identity.id, Contradiction.ListingRolesDiffer))
-    )
-
-  test("validated definitions accumulate ordered independent violations and suppress dependent grid failures"):
-    val coherentRaw = Definition(
-      instrument.identity,
-      instrument.roles,
-      instrument.listingRules,
-      instrument.contractPayoff
-    )
-    val validated = Instrument.validate(coherentRaw).toOption.get
-    val rebuilt   = Instrument.fromValidated(validated)
-    assert(rebuilt.roles.eq(coherentRaw.roles))
-    assert(rebuilt.listingRules.eq(coherentRaw.listingRules))
-    assert(rebuilt.contractPayoff.eq(coherentRaw.contractPayoff))
-
-    val id         = Identity(InstrumentId("accumulated-invalid"), UnderlyingId("index"))
-    val roles      = new Roles(fixture.btc, fixture.btc, fixture.contract, fixture.usd)
-    val otherRoles = new Roles(fixture.btc, fixture.usd, fixture.contract, fixture.usd)
-    val listing    = new ListingRules(otherRoles)(fixture.contractLots, fixture.usdPerBtcTicks)
-    val payoff     = new ContractPayoff(otherRoles)(
-      Rate(otherRoles.position.dimension.ref, otherRoles.base.dimension.ref, Rational.zero),
-      Rate(otherRoles.position.dimension.ref, otherRoles.quote.dimension.ref, Rational.zero)
-    )
-    val raw      = Definition(id, roles, listing, payoff)
-    val expected = Vector(
-      DefinitionViolation.ComponentRoles(id.id, Contradiction.ListingRolesDiffer),
-      DefinitionViolation.ComponentRoles(id.id, Contradiction.PayoffRolesDiffer),
-      DefinitionViolation.ComponentRoles(id.id, Contradiction.BaseEqualsQuote),
-      DefinitionViolation.GridDimension(
-        "price grid",
-        fixture.usdPerBtcTicks.key,
-        DimRef.divide(roles.quote.dimension.ref, roles.base.dimension.ref).key,
-        fixture.usdPerBtcTicks.dimension.key
-      ),
-      DefinitionViolation.EmptyPayoff(id.id)
-    )
-    assertEquals(Instrument.validate(raw).left.map(_.violations), Left(expected))
-    assertEquals(
-      Instrument.create(raw),
-      Left(ContradictoryInstrument(id.id, Contradiction.ListingRolesDiffer))
-    )
-
-    val validRoles     = new Roles(fixture.btc, fixture.usd, fixture.contract, fixture.usd)
-    val foreign        = new EconomicsFixtures
-    val foreignListing = new ListingRules(validRoles)(foreign.contractLots, foreign.usdPerBtcTicks)
-    val nonEmpty       = new ContractPayoff(validRoles)(
-      Rate(validRoles.position.dimension.ref, validRoles.base.dimension.ref, Rational.one),
-      Rate(validRoles.position.dimension.ref, validRoles.quote.dimension.ref, Rational.zero)
-    )
-    val foreignViolations = Instrument
-      .validate(Definition(id, validRoles, foreignListing, nonEmpty))
-      .swap
-      .toOption
-      .get
-      .violations
-    assertEquals(
-      foreignViolations,
+      errors.violations.map:
+        case InstrumentAssemblyViolation.EqualBaseAndQuote(_, _)           => "structural:equal"
+        case InstrumentAssemblyViolation.EmptyPayoff(_)                    => "structural:empty"
+        case InstrumentAssemblyViolation.AssetResolution(_, role, _, _, _) => s"asset:$role"
+        case InstrumentAssemblyViolation.GridResolution(_, role, _, _, _)  => s"grid:$role"
+        case InstrumentAssemblyViolation.GridDimension(_, role, _, _, _)   => s"dimension:$role",
       Vector(
-        DefinitionViolation.Lineage(
-          "position grid",
-          validRoles.position.dimension.key,
-          foreign.contractLots.dimension.key
-        ),
-        DefinitionViolation.Lineage(
-          "price grid",
-          DimRef.divide(validRoles.quote.dimension.ref, validRoles.base.dimension.ref).key,
-          foreign.usdPerBtcTicks.dimension.key
-        )
+        "structural:equal",
+        "structural:empty",
+        "asset:Base",
+        "asset:Quote",
+        "asset:Settle",
+        "grid:PositionLot"
       )
     )
-    assert(!foreignViolations.exists(_.isInstanceOf[DefinitionViolation.GridDimension]))
+    assert(errors.violations.collect { case _: InstrumentAssemblyViolation.GridDimension => () }.isEmpty)
+    assertEquals(InstrumentAssembler.assembleFirst(raw, fixture.snapshot), Left(errors.head))
+    errors.violations.collect { case value: InstrumentAssemblyViolation.AssetResolution => value }.foreach: value =>
+      assertEquals(value.revision, fixture.snapshot.revision)
+      assert(value.cause.isInstanceOf[UnknownAsset])
 
-  test("public aggregate errors retain product and Java serialization behavior without Cats error containers"):
-    val aggregate = InvalidDefinition(
-      DefinitionViolation.ComponentRoles(instrument.identity.id, Contradiction.BaseEqualsQuote),
-      Vector(DefinitionViolation.EmptyPayoff(instrument.identity.id))
+  test("dependent grid checks run only with their own prerequisites"):
+    val missingSettle = AssetId.from("missing-dependent-settle").toOption.get
+    val raw           = InstrumentDefinition(
+      validIdentity("dependent-errors"),
+      AssetRoleIds(fixture.btc.id, fixture.usd.id, fixture.contract.id, missingSettle),
+      ListingDefinition(fixture.usdCents.identity, fixture.usdCents.identity),
+      PayoffDefinition(Rational.one, Rational.zero)
     )
-    val bytes = new ByteArrayOutputStream
-    val out   = new ObjectOutputStream(bytes)
-    out.writeObject(aggregate)
-    out.close()
-    val in      = new ObjectInputStream(new ByteArrayInputStream(bytes.toByteArray))
-    val decoded = in.readObject()
-    in.close()
-    assertEquals(decoded, aggregate)
-    assertEquals(aggregate.productElementName(0), "head")
-    val signatures = Instrument.getClass.getMethods.toVector.map(_.toGenericString).mkString("\n")
+    val violations = InstrumentAssembler.assemble(raw, fixture.snapshot).swap.toOption.get.violations
+    assertEquals(
+      violations.map:
+        case InstrumentAssemblyViolation.AssetResolution(_, role, _, _, _) => s"asset:$role"
+        case InstrumentAssemblyViolation.GridDimension(_, role, _, _, _)   => s"dimension:$role"
+        case other                                                         => fail(s"unexpected violation $other"),
+      Vector("asset:Settle", "dimension:PositionLot", "dimension:Price")
+    )
+
+  test("one supplied snapshot fixes membership and later catalog publication is observed only when selected"):
+    val raw       = validDefinition("fixed-snapshot")
+    val oldResult = InstrumentAssembler.assemble(raw, fixture.snapshotBeforePriceGrid)
+    val oldErrors = oldResult.swap.toOption.get
+    assertEquals(oldErrors.violations.size, 1)
+    oldErrors.head match
+      case InstrumentAssemblyViolation.GridResolution(_, ListingGridRole.Price, requested, revision, cause) =>
+        assertEquals(requested, fixture.usdPerBtcTicks.identity)
+        assertEquals(revision, fixture.snapshotBeforePriceGrid.revision)
+        assertEquals(cause, UnknownGrid(requested))
+      case other => fail(s"unexpected old-snapshot violation $other")
+    assert(InstrumentAssembler.assemble(raw, fixture.snapshot).isRight)
+    assertEquals(InstrumentAssembler.assemble(raw, fixture.snapshotBeforePriceGrid), oldResult)
+
+  test("assembly diagnostics, specifications, and instruments reject Java object serialization"):
+    val raw       = validDefinition("serialization")
+    val spec      = InstrumentAssembler.assemble(raw, fixture.snapshot).toOption.get
+    val built     = Instrument.fromSpec(spec)
+    val aggregate = InstrumentAssemblyErrors.one(
+      InstrumentAssemblyViolation.EmptyPayoff(raw.identity.id)
+    )
+
+    Vector(aggregate, spec, built).foreach: value =>
+      val bytes = new ByteArrayOutputStream
+      val out   = new ObjectOutputStream(bytes)
+      val _     = intercept[java.io.NotSerializableException](out.writeObject(value))
+      out.close()
+
+    val signatures = InstrumentAssembler.getClass.getMethods.toVector.map(_.toGenericString).mkString("\n")
     assert(!signatures.contains("ValidatedNec"))
     assert(!signatures.contains("NonEmptyChain"))
 
@@ -258,5 +245,19 @@ class InstrumentEconomicsSuite extends FunSuite:
 
     val spotLots = fixture.spotLike.lots(100_000_000).toOption.get
     assertEquals(spotLots.quantity.coefficient, Rational.one)
+
+  private def validIdentity(name: String): InstrumentIdentity =
+    InstrumentIdentity(
+      InstrumentId.from(name).toOption.get,
+      UnderlyingId.from(s"underlying:$name").toOption.get
+    )
+
+  private def validDefinition(name: String): InstrumentDefinition =
+    InstrumentDefinition(
+      validIdentity(name),
+      AssetRoleIds(fixture.btc.id, fixture.usd.id, fixture.contract.id, fixture.usd.id),
+      ListingDefinition(fixture.contractLots.identity, fixture.usdPerBtcTicks.identity),
+      PayoffDefinition(Rational.one, Rational.zero)
+    )
 
 end InstrumentEconomicsSuite

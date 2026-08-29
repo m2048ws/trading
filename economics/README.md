@@ -8,15 +8,32 @@ runtime or production I/O.
 
 The implemented package `trading.economics.instrument` currently contains:
 
-- instrument definitions, validation, trusted construction, and errors;
+- stable-ID instrument definitions, pure snapshot-based assembly, proof-carrying specifications, and total trusted
+  construction;
 - prices, lots, positions, market state, and valuation;
 - immutable order and hypothetical execution-scenario models;
 - fee denomination/policy and fee-inclusive P&L;
 - isolated-instrument risk sizing.
 
+Instrument construction follows one explicit trust transition:
+
+```text
+InstrumentDefinition + CatalogSnapshot
+  -> InstrumentAssembler.assemble / assembleFirst
+  -> InstrumentSpec
+  -> Instrument.fromSpec
+```
+
+`InstrumentDefinition` contains guarded stable IDs, full grid identities, and exact payoff coefficients only. Assembly
+is pure, resolves every role through exactly the supplied immutable snapshot, accumulates independent failures in
+deterministic stage/role order, and retains only the resolved handles and typed rates in `InstrumentSpec`. The final
+`Instrument.fromSpec` step is total and performs no lookup, recasting, validation, or quantization. Adapters and the
+future boundary-codec artifact own parsing and durable versioned records; neither `InstrumentSpec` nor `Instrument` is
+a Java-serialization format.
+
 This aggregate reflects implementation history. It is not the proposed final ownership graph. It consumes immutable
-`Asset`, `DimensionHandle`, and `GridHandle` capabilities without receiving the transitional registry construction
-mechanism. It must not depend on future application, runtime, codec, persistence, network, or telemetry layers.
+`Asset`, `DimensionHandle`, `GridHandle`, and `CatalogSnapshot` capabilities without receiving live catalog or runtime
+coordination. It must not depend on future application, runtime, codec, persistence, network, or telemetry layers.
 Quantities and reference data must not depend back on economics. The adversarial-boundary project consumes completed
 packaged artifacts for tests.
 
@@ -26,7 +43,7 @@ The active architecture portfolio assigns the aggregate's responsibilities as fo
 
 | Current concern | Proposed owner | Proposal |
 | --- | --- | --- |
-| Snapshot-based stable-ID instrument assembly | focused assembly boundary | 3, `introduce-instrument-assembly-boundary` |
+| Snapshot-based stable-ID instrument assembly | focused assembly boundary in this artifact | 3, `introduce-instrument-assembly-boundary` |
 | Instrument meaning, lots, prices, valuation, economic fee values, P&L | `trading-instrument-economics` | 4, `establish-pure-instrument-economics` |
 | Order instructions | `trading-order-model` | 5, `separate-order-and-execution-scenario-modules` |
 | Hypothetical execution evidence | `trading-execution-scenario` | 5 |

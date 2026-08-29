@@ -134,7 +134,7 @@ the first deliberate durable compatibility contract.
 | --- | --- | --- |
 | Quantity-owned packing has been removed, leaving a deliberate durable-codec gap | Stable records require snapshots and an explicit schema owner | Proposal 9 adds versioned codecs |
 | `trading-economics` owns instruments, orders, scenarios, fee policy, P&L, and sizing | Current aggregate predates responsibility split | Proposals 3–7, with Proposal 7 removing the empty aggregate |
-| Instrument construction starts from issued handles and repeats provenance checks | Assembly does not yet own one snapshot-based trust transition | Proposal 3 |
+| Instrument assembly and downstream economics temporarily share `trading-economics` | Proposal 3 now owns the focused pure snapshot trust transition; physical narrowing follows | Proposal 4 |
 | Order/scenario/fee/risk capabilities are discoverable through `Instrument` | Instrument currently acts as a service locator | Proposals 4–7 |
 | Root documentation previously listed only quantities | Documentation lagged the implemented economics module | Proposal 0 documentation update |
 | Runtime and codec target modules do not exist | Their physical boundaries require real implementation/dependency bodies | Proposals 8 and 9 |

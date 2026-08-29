@@ -20,20 +20,20 @@ final class EconomicsFixtures:
     assetDefinitions.map(CatalogCommand.RegisterAsset.apply) ++
       baseGridDefinitions.map(CatalogCommand.RegisterGrid.apply)
   ).toOption.get
-  private val baseState    = CatalogModel.commit(CatalogRoot.create().initialState, baseBatch).toOption.get.state
-  private val baseSnapshot = baseState.snapshot
+  private val baseState       = CatalogModel.commit(CatalogRoot.create().initialState, baseBatch).toOption.get.state
+  val snapshotBeforePriceGrid = baseState.snapshot
 
-  val btc      = resolvedAsset("btc", baseSnapshot)
-  val usd      = resolvedAsset("usd", baseSnapshot)
-  val contract = resolvedAsset("contract", baseSnapshot)
-  val eur      = resolvedAsset("eur", baseSnapshot)
-  val token    = resolvedAsset("fee-token", baseSnapshot)
+  val btc      = resolvedAsset("btc", snapshotBeforePriceGrid)
+  val usd      = resolvedAsset("usd", snapshotBeforePriceGrid)
+  val contract = resolvedAsset("contract", snapshotBeforePriceGrid)
+  val eur      = resolvedAsset("eur", snapshotBeforePriceGrid)
+  val token    = resolvedAsset("fee-token", snapshotBeforePriceGrid)
 
-  val contractLots = resolvedGrid(contract, "contract-lots", baseSnapshot)
-  val usdCents     = resolvedGrid(usd, "usd-cents", baseSnapshot)
-  val btcSatoshis  = resolvedGrid(btc, "btc-satoshis", baseSnapshot)
-  val eurCents     = resolvedGrid(eur, "eur-cents", baseSnapshot)
-  val tokenMillis  = resolvedGrid(token, "token-millis", baseSnapshot)
+  val contractLots = resolvedGrid(contract, "contract-lots", snapshotBeforePriceGrid)
+  val usdCents     = resolvedGrid(usd, "usd-cents", snapshotBeforePriceGrid)
+  val btcSatoshis  = resolvedGrid(btc, "btc-satoshis", snapshotBeforePriceGrid)
+  val eurCents     = resolvedGrid(eur, "eur-cents", snapshotBeforePriceGrid)
+  val tokenMillis  = resolvedGrid(token, "token-millis", snapshotBeforePriceGrid)
 
   val usdPerBtcDimension =
     DimRef.divide(usd.dimension.ref, btc.dimension.ref).key
@@ -58,9 +58,9 @@ final class EconomicsFixtures:
     .toOption
     .get
     .state
-  private val completeSnapshot = completeState.snapshot
-  val usdPerBtcTicks           =
-    completeSnapshot.resolveGrid(usdPerBtcDefinition.identity).toOption.get
+  val snapshot       = completeState.snapshot
+  val usdPerBtcTicks =
+    snapshot.resolveGrid(usdPerBtcDefinition.identity).toOption.get
 
   val linear: Instrument =
     instrument("linear-btcusd", "bitcoin-index", btc, usd, contract, usd)(
@@ -141,14 +141,16 @@ final class EconomicsFixtures:
     baseCoefficient: Rational,
     quoteCoefficient: Rational
   ): Instrument =
-    val roles    = new Roles(base, quote, position, settle)
-    val identity = Identity(InstrumentId(id), UnderlyingId(underlying))
-    val listing  = new ListingRules(roles)(positionGrid, priceGrid)
-    val payoff   = new ContractPayoff(roles)(
-      Rate(roles.position.dimension.ref, roles.base.dimension.ref, baseCoefficient),
-      Rate(roles.position.dimension.ref, roles.quote.dimension.ref, quoteCoefficient)
+    val definition = InstrumentDefinition(
+      InstrumentIdentity(
+        InstrumentId.from(id).toOption.get,
+        UnderlyingId.from(underlying).toOption.get
+      ),
+      AssetRoleIds(base.id, quote.id, position.id, settle.id),
+      ListingDefinition(positionGrid.identity, priceGrid.identity),
+      PayoffDefinition(baseCoefficient, quoteCoefficient)
     )
-    Instrument.create(Definition(identity, roles, listing, payoff)).toOption.get
+    Instrument.fromSpec(InstrumentAssembler.assemble(definition, snapshot).toOption.get)
   end instrument
 
   private def gridDefinition(assetName: String, gridName: String, quantum: Rational): GridDefinition =

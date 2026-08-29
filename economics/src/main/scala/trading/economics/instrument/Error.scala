@@ -4,11 +4,6 @@ import trading.quantity.*
 import trading.quantity.grid.*
 import trading.reference.*
 
-enum Contradiction:
-  case BaseEqualsQuote
-  case ListingRolesDiffer
-  case PayoffRolesDiffer
-
 enum ConversionFailureReason:
   case NonPositive
   case IdentityNotOne
@@ -42,17 +37,6 @@ enum FeeScheduleFailureReason:
 /** Closed hierarchy of expected economics failures. */
 sealed abstract class EconomicsError extends Product with Serializable
 
-/** Closed, domain-owned diagnostics emitted by raw instrument-definition validation. */
-enum DefinitionViolation:
-  case Lineage(role: String, expected: DimKey, supplied: DimKey)
-  case ComponentRoles(instrumentId: InstrumentId, reason: Contradiction)
-  case GridDimension(role: String, grid: GridKey, expected: DimKey, supplied: DimKey)
-  case EmptyPayoff(instrumentId: InstrumentId)
-
-/** A non-empty, deterministically ordered set of definition violations. */
-final case class InvalidDefinition(head: DefinitionViolation, tail: Vector[DefinitionViolation]):
-  def violations: Vector[DefinitionViolation] = head +: tail
-
 /** Semantic failures from correctly shaped activation evidence. */
 enum ActivationViolation:
   case FixedTriggerUnsatisfied
@@ -81,15 +65,6 @@ final case class InvalidScenarioDiagnostics(head: ScenarioViolation, tail: Vecto
   def violations: Vector[ScenarioViolation] = head +: tail
 
 private[instrument] object ViolationMapping:
-  def definition(violation: DefinitionViolation): EconomicsError =
-    violation match
-      case DefinitionViolation.Lineage(role, expected, supplied) =>
-        ForeignReferenceDataLineage(role, expected, supplied)
-      case DefinitionViolation.ComponentRoles(instrumentId, reason) => ContradictoryInstrument(instrumentId, reason)
-      case DefinitionViolation.GridDimension(role, grid, expected, supplied) =>
-        GridDimensionFailure(role, grid, expected, supplied)
-      case DefinitionViolation.EmptyPayoff(instrumentId) => EmptyContractPayoff(instrumentId)
-
   def activation(violation: ActivationViolation): EconomicsError =
     violation match
       case ActivationViolation.FixedTriggerUnsatisfied =>
@@ -140,13 +115,6 @@ private[instrument] object IdentityChecks:
 final case class ForeignReferenceDataLineage(role: String, expected: DimKey, supplied: DimKey) extends EconomicsError
 
 final case class ReferenceDataFailure(role: String, cause: ReferenceDataError) extends EconomicsError
-
-final case class GridDimensionFailure(role: String, grid: GridKey, expected: DimKey, supplied: DimKey)
-  extends EconomicsError
-
-final case class EmptyContractPayoff(instrumentId: InstrumentId) extends EconomicsError
-
-final case class ContradictoryInstrument(instrumentId: InstrumentId, reason: Contradiction) extends EconomicsError
 
 final case class InvalidLots(count: BigInt) extends EconomicsError
 

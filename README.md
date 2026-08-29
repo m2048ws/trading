@@ -9,6 +9,8 @@ uniform-grid arithmetic and projection, checked refinements, domain-neutral runt
 Typelevel Algebra integration. `trading-reference-data` owns stable asset/grid identity, immutable catalog transitions,
 trusted handles, and coherent snapshots. `trading-application` owns the minimal interpreter-neutral `LiveCatalog[F]`
 port. `trading-economics` contains the current aggregate instrument, order, scenario, fee, valuation, and sizing surface.
+Its instrument entry point is the pure `InstrumentDefinition + CatalogSnapshot -> InstrumentSpec -> Instrument` trust
+transition; constructed instruments retain trusted handles and do not consult a live catalog.
 
 | Module | Directory | SBT ID | Artifact | Package |
 | --- | --- | --- | --- | --- |
@@ -29,10 +31,11 @@ separation, dependency admission, Scala API ergonomics, and claim-proportional v
 [portfolio audit](docs/architecture-charter-audit.md) records the current module graph, transitional exceptions, and
 the proposed target architecture separately.
 
-The catalog, snapshot, application-port, and shared benchmark responsibilities now have concrete owners. The target
-instrument-economics, order-model, execution-scenario, fee-policy, risk, runtime, and boundary-codec responsibilities
-remain active proposals. Proposal 8 owns the first live catalog interpreter; Proposal 9 owns the removed packing
-capability's durable replacement. No empty target module is created solely to match the diagram.
+The catalog, snapshot, application-port, instrument-assembly, and shared benchmark responsibilities now have concrete
+owners. The target physical instrument-economics, order-model, execution-scenario, fee-policy, risk, runtime, and
+boundary-codec responsibilities remain active proposals. Proposal 8 owns the first live catalog interpreter; Proposal
+9 owns the removed packing capability's durable replacement. No empty target module is created solely to match the
+diagram.
 
 ## Build commands
 

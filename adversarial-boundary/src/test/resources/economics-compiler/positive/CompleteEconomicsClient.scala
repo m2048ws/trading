@@ -72,16 +72,18 @@ object CompleteEconomicsClient:
   val priceDimension = catalogSnapshot.resolveDimension(priceKey).toOption.get
   val priceGrid = catalogSnapshot.resolveGrid(priceDimension)(priceGridDefinition.key).toOption.get
 
-  val roles = new Roles(base, quote, position, quote)
-  val identity = Identity(InstrumentId("client-instrument"), UnderlyingId("client-underlying"))
-  val listing = new ListingRules(roles)(lotsGrid, priceGrid)
-  val payoff = new ContractPayoff(roles)(
-    Rate(roles.position.dimension.ref, roles.base.dimension.ref, Rational.one),
-    Rate(roles.position.dimension.ref, roles.quote.dimension.ref, Rational.zero)
+  val identity = InstrumentIdentity(
+    InstrumentId.from("client-instrument").toOption.get,
+    UnderlyingId.from("client-underlying").toOption.get
   )
-  val definition = Definition(identity, roles, listing, payoff)
-  val validated = Instrument.validate(definition).toOption.get
-  val instrument = Instrument.fromValidated(validated)
+  val definition = InstrumentDefinition(
+    identity,
+    AssetRoleIds(baseDefinition.id, quoteDefinition.id, positionDefinition.id, quoteDefinition.id),
+    ListingDefinition(lotsDefinition.identity, priceGridDefinition.identity),
+    PayoffDefinition(Rational.one, Rational.zero)
+  )
+  val spec = InstrumentAssembler.assemble(definition, catalogSnapshot).toOption.get
+  val instrument = Instrument.fromSpec(spec)
   val stable = instrument
 
   val lots = stable.lots(2).toOption.get
@@ -133,7 +135,12 @@ object CompleteEconomicsClient:
     case FixedActivation(PriceReference.Mark, TriggerComparison.AtOrAbove, triggerPrice) =>
       triggerPrice.ticks.unrefined
     case _ => BigInt(-1)
-  val foreignIntent = OrderIntent(InstrumentId("foreign-instrument"), Side.Buy, lots, PositionEffect.Unrestricted)
+  val foreignIntent = OrderIntent(
+    InstrumentId.from("foreign-instrument").toOption.get,
+    Side.Buy,
+    lots,
+    PositionEffect.Unrestricted
+  )
   val runtimeMismatch = stable.orders.create(
     foreignIntent,
     stable.orders.immediate,

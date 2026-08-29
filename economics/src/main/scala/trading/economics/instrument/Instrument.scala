@@ -17,16 +17,15 @@ final case class Position[D <: Dim] private[instrument] (
   quantity: Quantity[D])
 
 /** One validated instrument aggregate. Runtime identity is ordinary domain data, not issuance authority. */
-final class Instrument private (
-  val identity: Identity,
-  val roles: Roles,
-  val listingRules: ListingRules,
-  val contractPayoff: ContractPayoff
-)(
-  private val positionGrid: GridHandle[roles.position.D],
-  private val priceGrid: GridHandle[Divide[roles.quote.D, roles.base.D]],
-  private val basePerPosition: Rate[roles.position.D, roles.base.D],
-  private val quotePerPosition: Rate[roles.position.D, roles.quote.D]):
+final class Instrument private (val spec: InstrumentSpec) extends JavaSerializationUnsupported:
+
+  val identity: InstrumentIdentity = spec.identity
+  val roles: spec.roles.type       = spec.roles
+
+  val positionLotGrid: GridHandle[roles.position.D]              = spec.positionLotGrid
+  val priceGrid: GridHandle[Divide[roles.quote.D, roles.base.D]] = spec.priceGrid
+  val basePerPosition: Rate[roles.position.D, roles.base.D]      = spec.basePerPosition
+  val quotePerPosition: Rate[roles.position.D, roles.quote.D]    = spec.quotePerPosition
 
   type Lots              = _root_.trading.economics.instrument.Lots[roles.position.D]
   type PositionLots      = _root_.trading.economics.instrument.Position[roles.position.D]
@@ -41,26 +40,27 @@ final class Instrument private (
   type Pnl               = _root_.trading.economics.instrument.Pnl[roles.settle.D]
 
   def lots(count: BigInt): Either[EconomicsError, Lots] =
-    val coordinate = positionGrid.fromCoordinate(count)
+    val coordinate = positionLotGrid.fromCoordinate(count)
     Positive(coordinate)
       .left
       .map(_ => InvalidLots(count))
-      .map: positive =>
-        Lots(
-          identity.id,
-          PositiveWhole(positionGrid.coordinate(positive.unrefined)).toOption.get,
-          positionGrid.asQuantity(positive.unrefined)
-        )
+      .flatMap: positive =>
+        PositiveWhole(positionLotGrid.coordinate(positive.unrefined))
+          .left
+          .map(_ => InvalidLots(count))
+          .map(positiveCount =>
+            Lots(identity.id, positiveCount, positionLotGrid.asQuantity(positive.unrefined))
+          )
 
   def positionLots(side: Side, lots: Lots): Either[EconomicsError, PositionLots] =
     IdentityChecks
       .check("positionLots", identity.id, "lots" -> lots.instrumentId)
       .map: _ =>
         val count = side.sign * lots.count.unrefined
-        Position(identity.id, count, positionGrid.asQuantity(positionGrid.fromCoordinate(count)))
+        Position(identity.id, count, positionLotGrid.asQuantity(positionLotGrid.fromCoordinate(count)))
 
   val flatPosition: PositionLots =
-    Position(identity.id, BigInt(0), positionGrid.asQuantity(positionGrid.fromCoordinate(0)))
+    Position(identity.id, BigInt(0), positionLotGrid.asQuantity(positionLotGrid.fromCoordinate(0)))
 
   val prices: Prices[roles.base.D, roles.quote.D] =
     new Prices(identity.id, roles.base, roles.quote, priceGrid)
@@ -72,7 +72,7 @@ final class Instrument private (
     new Orders(identity.id)
 
   val scenarios: Scenarios[roles.position.D, roles.base.D, roles.quote.D, roles.settle.D] =
-    new Scenarios(identity.id, positionGrid)
+    new Scenarios(identity.id, positionLotGrid)
 
   val fees: Fees[roles.position.D, roles.base.D, roles.quote.D, roles.settle.D] =
     new Fees(identity.id, roles.settle)
@@ -90,26 +90,8 @@ final class Instrument private (
 end Instrument
 
 object Instrument:
-  /** Accumulating raw-definition validation with deterministic, domain-owned diagnostics. */
-  def validate(definition: Definition): Either[InvalidDefinition, ValidatedDefinition] =
-    ValidatedDefinition.validate(definition)
-
-  /** Total construction from proof-carrying definition evidence. */
-  def fromValidated(validated: ValidatedDefinition): Instrument =
-    val raw: validated.raw.type = validated.raw
-    new Instrument(raw.identity, raw.roles, raw.listingRules, raw.contractPayoff)(
-      validated.positionGrid,
-      validated.priceGrid,
-      validated.basePerPosition,
-      validated.quotePerPosition
-    )
-
-  /** Final validated definition boundary. */
-  def create(definition: Definition): Either[EconomicsError, Instrument] =
-    validate(definition)
-      .left
-      .map(error => ViolationMapping.definition(error.head))
-      .map(fromValidated)
-  end create
+  /** Total construction from the proof-carrying assembly result. */
+  def fromSpec(spec: InstrumentSpec): Instrument =
+    new Instrument(spec)
 
 end Instrument

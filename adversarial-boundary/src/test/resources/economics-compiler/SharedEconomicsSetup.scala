@@ -34,16 +34,26 @@ object SharedEconomicsSetup:
     ),
     PositiveRational(Rational(1, 100)).toOption.get
   )
-  val catalogBatch = CatalogBatch.of(
+  val initialCatalogBatch = CatalogBatch.of(
     CatalogCommand.RegisterAsset(baseDefinition),
     CatalogCommand.RegisterAsset(quoteDefinition),
     CatalogCommand.RegisterAsset(positionDefinition),
     CatalogCommand.RegisterDimension(priceDimensionKey),
     CatalogCommand.RegisterGrid(lotsDefinition),
-    CatalogCommand.RegisterGrid(priceDefinition),
     CatalogCommand.RegisterGrid(settleDefinition)
   )
-  val catalogSnapshot = CatalogModel.commit(CatalogRoot.create().initialState, catalogBatch).toOption.get.state.snapshot
+  val initialCatalogState = CatalogModel
+    .commit(CatalogRoot.create().initialState, initialCatalogBatch)
+    .toOption
+    .get
+    .state
+  val olderSnapshot = initialCatalogState.snapshot
+  val catalogSnapshot = CatalogModel
+    .commit(initialCatalogState, CatalogBatch.one(CatalogCommand.RegisterGrid(priceDefinition)))
+    .toOption
+    .get
+    .state
+    .snapshot
   val base = catalogSnapshot.resolveAsset(baseDefinition.id).toOption.get
   val quote = catalogSnapshot.resolveAsset(quoteDefinition.id).toOption.get
   val position = catalogSnapshot.resolveAsset(positionDefinition.id).toOption.get
@@ -51,16 +61,18 @@ object SharedEconomicsSetup:
   val priceDimension = catalogSnapshot.resolveDimension(priceDimensionKey).toOption.get
   val priceGrid = catalogSnapshot.resolveGrid(priceDimension)(priceDefinition.key).toOption.get
   val settleGrid = catalogSnapshot.resolveGrid(quote.dimension)(settleDefinition.key).toOption.get
-  val roles      = new Roles(base, quote, position, quote)
-  val identity   = Identity(InstrumentId("shape-instrument"), UnderlyingId("shape-underlying"))
-  val listing    = new ListingRules(roles)(lotsGrid, priceGrid)
-  val payoff     = new ContractPayoff(roles)(
-    Rate(roles.position.dimension.ref, roles.base.dimension.ref, Rational.one),
-    Rate(roles.position.dimension.ref, roles.quote.dimension.ref, Rational.zero)
+  val identity = InstrumentIdentity(
+    InstrumentId.from("shape-instrument").toOption.get,
+    UnderlyingId.from("shape-underlying").toOption.get
   )
-  val definition = Definition(identity, roles, listing, payoff)
-  val validated  = Instrument.validate(definition).toOption.get
-  val instrument = Instrument.fromValidated(validated)
+  val definition = InstrumentDefinition(
+    identity,
+    AssetRoleIds(baseDefinition.id, quoteDefinition.id, positionDefinition.id, quoteDefinition.id),
+    ListingDefinition(lotsDefinition.identity, priceDefinition.identity),
+    PayoffDefinition(Rational.one, Rational.zero)
+  )
+  val spec       = InstrumentAssembler.assemble(definition, catalogSnapshot).toOption.get
+  val instrument = Instrument.fromSpec(spec)
   val lots       = instrument.lots(2).toOption.get
   val price99    = instrument.prices.exact(Rational(99)).toOption.get
   val price100   = instrument.prices.exact(Rational(100)).toOption.get

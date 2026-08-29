@@ -53,43 +53,65 @@ duplicate capability paths, and authority-forwarding APIs SHALL NOT remain in th
 - **THEN** compilation fails rather than selecting a compatibility alias
 
 ### Requirement: Validated Instrument identity and roles
-The public validated contract/listing aggregate SHALL remain named `Instrument`. Its definition SHALL be expressed
-through cohesive semantic components for instrument identity, trusted asset roles, listing rules, and contract payoff
-rather than one undifferentiated parameter list. The components SHALL retain a stable instrument identity, an
-underlying identity that is not required to be a currency, the trusted `base`, `quote`, `position`, and `settle`
-`Asset` roles, the position lot `GridHandle`, the quote-per-base price `GridHandle`, and signed base-per-position and
-quote-per-position payoff terms.
+The public validated contract/listing aggregate SHALL remain named `Instrument`. It SHALL be constructed totally from
+one trusted `InstrumentSpec` and SHALL retain the specification's stable instrument identity, possibly non-currency
+underlying identity, base/quote/position/settle `Asset` roles, typed position-lot and quote-per-base `GridHandle`s, and
+exact signed base-per-position and quote-per-position payoff rates.
 
-The final construction boundary SHALL validate the components together. It SHALL require reference-data-coherent asset
-and grid handles, a position lot grid matching the position dimension, a price grid dimensionally equal to quote per
-base, distinct base and quote assets, and at least one nonzero payoff term. It SHALL reject foreign issuer lineage,
-mismatched grid dimensions, contradictory definitions, and economically empty payoff. Successful construction SHALL
-return one `Instrument` without a generative owner type or lasting resolved wrapper. A separate public `Contract` and
-`Listing` hierarchy SHALL NOT be introduced by this change.
+Instrument construction SHALL NOT accept raw stable IDs or an `InstrumentDefinition`; resolve catalog membership;
+compare issuer lineage; validate base/quote distinction, grid dimensions, or nonempty payoff; reconstruct rate endpoints
+from scalar coefficients; or return catalog/assembly errors. Those obligations belong to the preceding pure assembly
+boundary, and the proof-carrying specification makes their repetition unnecessary.
+
+Successful construction SHALL return one `Instrument` without a generative owner type, lasting resolved wrapper,
+snapshot, or live catalog dependency. A separate public `Contract` and `Listing` hierarchy SHALL NOT be introduced by
+this change.
 
 #### Scenario: Construct a coherent instrument
-- **WHEN** identity, asset roles, listing rules, and payoff components agree on issuer lineage, dimensions, grids, and
-  endpoints and at least one payoff term is nonzero
-- **THEN** construction returns an `Instrument` retaining those exact components and its stable runtime instrument
-  identity
+- **WHEN** a stable-ID definition resolves against one supplied snapshot with coherent roles and grids and at least one
+  nonzero payoff coefficient, and assembly returns an `InstrumentSpec`
+- **THEN** total construction returns an `Instrument` retaining those exact identities, trusted handles, typed rates,
+  and stable runtime instrument identity
+
+#### Scenario: Construct an assembled instrument
+- **WHEN** a caller supplies an `InstrumentSpec` whose assembly already established roles, grids, and payoff endpoints
+- **THEN** construction returns an `Instrument` retaining those exact trusted components without another fallible step
 
 #### Scenario: Represent a non-currency underlying
-- **WHEN** an instrument definition references an index or basket as its underlying
-- **THEN** the underlying identity is retained without manufacturing a fifth currency role
+- **WHEN** an assembled specification references an index or basket as its underlying
+- **THEN** the instrument retains that identity without manufacturing a fifth currency role
 
 #### Scenario: Reject a foreign grid
-- **WHEN** listing rules contain a lot or price grid handle issued by another reference-data lineage or with the wrong
-  dimension
-- **THEN** final instrument construction fails without retagging the grid or weakening its provenance
+- **WHEN** a raw definition names a lot or price grid identity that is absent from the supplied snapshot, including one
+  known only to another catalog snapshot, or whose resolved handle has the wrong dimension
+- **THEN** assembly returns a contextual typed resolution or dimension violation and no `InstrumentSpec`, without
+  retagging the grid or weakening its provenance
 
 #### Scenario: Reject contradictory components
-- **WHEN** independently valid definition components disagree at their shared asset, dimension, issuer, or grid boundary
-- **THEN** final instrument construction returns a typed contradiction instead of constructing a partially coherent
-  instrument
+- **WHEN** a raw definition has a remaining role or dimension contradiction such as equal base and quote or a listing
+  grid that conflicts with its resolved role dimensions
+- **THEN** assembly returns a typed structural or dimension violation and no `InstrumentSpec` instead of constructing
+  a partially coherent instrument; the cohesive raw product prevents independently owned listing or payoff components
 
 #### Scenario: Reject an empty payoff
-- **WHEN** both signed payoff terms are zero
-- **THEN** construction fails because the position has no economic value
+- **WHEN** both exact payoff coefficients in a raw definition are zero
+- **THEN** assembly returns the typed empty-payoff violation and no `InstrumentSpec`, so final instrument construction
+  never receives an economically empty definition
+
+#### Scenario: Reject raw construction statically
+- **WHEN** downstream Scala attempts to pass raw stable IDs, a raw definition, or a catalog snapshot to final instrument
+  construction
+- **THEN** compilation fails because only `InstrumentSpec` is accepted
+
+#### Scenario: Keep assembly failures out of economics
+- **WHEN** a raw definition contains unknown identities, a wrong grid dimension, equal base and quote, or an empty
+  payoff
+- **THEN** instrument assembly rejects it before `Instrument` construction and ordinary economics receives no partial
+  value
+
+#### Scenario: Preserve catalog independence after assembly
+- **WHEN** an instrument is used after later catalog revisions are published
+- **THEN** it retains its assembled handles and meaning without consulting the catalog
 
 ### Requirement: Instrument-bound lots, positions, and prices
 `Lots`, `PositionLots`, and `Price` SHALL be ordinary non-owner-parameterized domain types that retain the stable `InstrumentId` for which they were produced. `Lots` SHALL be represented as a strictly positive value on the instrument's position lot grid and SHALL expose its positive coordinate and exact position quantity. `PositionLots` SHALL be represented independently as a signed coordinate on the same grid, including flat zero, and SHALL expose its signed coordinate and exact position quantity. `Price` SHALL be represented as a strictly positive value on the instrument's quote-per-base price grid and SHALL expose its positive tick coordinate, exact coefficient, and endpoint-typed quote-per-base rate.
@@ -259,50 +281,6 @@ because anti-deserialization hardening is removed.
 - **WHEN** a caller needs durable economics persistence
 - **THEN** it uses an explicit adapter or schema rather than relying on Java object serialization as a supported
   compatibility contract
-
-### Requirement: Proof-carrying instrument definition validation
-The economics artifact SHALL distinguish a raw `Definition` from a `ValidatedDefinition` produced only by the
-instrument-definition validation boundary. A `ValidatedDefinition` SHALL retain the raw identity, trusted asset roles,
-listing rules, and payoff together with checked evidence that all handles share the required reference-data lineage,
-the position grid has the exact position dimension, the price grid has the exact quote-per-base dimension, and the
-payoff endpoints are those exact roles. Constructing an `Instrument` from a `ValidatedDefinition` SHALL be total and
-SHALL NOT repeat fallible handle-provenance, grid, role, or payoff checks.
-
-The validation boundary SHALL expose domain-specific definition violations and SHALL return every independently
-detectable violation in a deterministic order. Its public invalid result SHALL contain a non-empty ordered domain
-collection and SHALL NOT expose a validation-library collection type. Checks that require evidence produced by an
-earlier successful stage SHALL run only after that stage succeeds and SHALL NOT fabricate dependent violations when the
-prerequisite evidence is absent.
-
-The existing fail-fast `Instrument.create(Definition)` boundary SHALL remain available. It SHALL use the same validation
-rules and deterministic ordering, return the first corresponding `EconomicsError`, and produce the same successful
-`Instrument` as validation followed by total construction.
-
-#### Scenario: Validate a coherent raw definition
-- **WHEN** a raw definition has coherent asset roles, reference-data provenance, grids, and at least one nonzero payoff
-  term
-- **THEN** validation returns a `ValidatedDefinition` whose checked grid and payoff evidence can construct the final
-  `Instrument` without another fallible narrowing step
-
-#### Scenario: Accumulate independent definition violations
-- **WHEN** one raw definition independently has contradictory component roles, equal base and quote assets, and an
-  empty payoff
-- **THEN** the accumulating boundary returns all applicable domain violations in stable order rather than only the first
-
-#### Scenario: Do not invent dependent evidence failures
-- **WHEN** a prerequisite issuer-provenance or dimension check fails and later evidence cannot be soundly produced
-- **THEN** validation reports the observable prerequisite violations and does not execute checks that require the
-  missing evidence
-
-#### Scenario: Preserve deterministic fail-fast construction
-- **WHEN** the same invalid raw definition is supplied to the accumulating validator and to `Instrument.create`
-- **THEN** `Instrument.create` returns the domain error corresponding to the first accumulated violation according to
-  the shared stable ordering
-
-#### Scenario: Keep checked casts private
-- **WHEN** downstream Scala validates and constructs an instrument
-- **THEN** it neither performs a cast nor receives public authority to retag a grid, payoff, dimension, or
-  reference-data handle
 
 ### Requirement: Settlement conversions preserve typed endpoints
 A settle-targeted conversion SHALL retain its trusted source asset, target settlement asset, and an endpoint-typed

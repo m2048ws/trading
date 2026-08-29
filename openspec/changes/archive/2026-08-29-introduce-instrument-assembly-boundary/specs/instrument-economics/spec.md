@@ -15,6 +15,12 @@ Successful construction SHALL return one `Instrument` without a generative owner
 snapshot, or live catalog dependency. A separate public `Contract` and `Listing` hierarchy SHALL NOT be introduced by
 this change.
 
+#### Scenario: Construct a coherent instrument
+- **WHEN** a stable-ID definition resolves against one supplied snapshot with coherent roles and grids and at least one
+  nonzero payoff coefficient, and assembly returns an `InstrumentSpec`
+- **THEN** total construction returns an `Instrument` retaining those exact identities, trusted handles, typed rates,
+  and stable runtime instrument identity
+
 #### Scenario: Construct an assembled instrument
 - **WHEN** a caller supplies an `InstrumentSpec` whose assembly already established roles, grids, and payoff endpoints
 - **THEN** construction returns an `Instrument` retaining those exact trusted components without another fallible step
@@ -22,6 +28,23 @@ this change.
 #### Scenario: Represent a non-currency underlying
 - **WHEN** an assembled specification references an index or basket as its underlying
 - **THEN** the instrument retains that identity without manufacturing a fifth currency role
+
+#### Scenario: Reject a foreign grid
+- **WHEN** a raw definition names a lot or price grid identity that is absent from the supplied snapshot, including one
+  known only to another catalog snapshot, or whose resolved handle has the wrong dimension
+- **THEN** assembly returns a contextual typed resolution or dimension violation and no `InstrumentSpec`, without
+  retagging the grid or weakening its provenance
+
+#### Scenario: Reject contradictory components
+- **WHEN** a raw definition has a remaining role or dimension contradiction such as equal base and quote or a listing
+  grid that conflicts with its resolved role dimensions
+- **THEN** assembly returns a typed structural or dimension violation and no `InstrumentSpec` instead of constructing
+  a partially coherent instrument; the cohesive raw product prevents independently owned listing or payoff components
+
+#### Scenario: Reject an empty payoff
+- **WHEN** both exact payoff coefficients in a raw definition are zero
+- **THEN** assembly returns the typed empty-payoff violation and no `InstrumentSpec`, so final instrument construction
+  never receives an economically empty definition
 
 #### Scenario: Reject raw construction statically
 - **WHEN** downstream Scala attempts to pass raw stable IDs, a raw definition, or a catalog snapshot to final instrument

@@ -80,6 +80,9 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
     try
       val entries  = jar.entries().asScala.map(_.getName).toSet
       val expected = List(
+        "InstrumentDefinition.class",
+        "InstrumentAssembler.class",
+        "InstrumentSpec.class",
         "Instrument.class",
         "Prices.class",
         "Market.class",
@@ -100,6 +103,14 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
 
       val stale = List(
         "trading/economics/Instrument.class",
+        "trading/economics/instrument/Definition.class",
+        "trading/economics/instrument/Identity.class",
+        "trading/economics/instrument/Roles.class",
+        "trading/economics/instrument/ListingRules.class",
+        "trading/economics/instrument/ContractPayoff.class",
+        "trading/economics/instrument/ValidatedDefinition.class",
+        "trading/economics/instrument/DefinitionViolation.class",
+        "trading/economics/instrument/InvalidDefinition.class",
         "trading/economics/instrument/InstrumentPrices.class",
         "trading/economics/instrument/InstrumentMarket.class",
         "trading/economics/instrument/InstrumentOrders.class",
@@ -129,7 +140,12 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
     NegativeFixture("RefinementLoss.scala", List("Found:", "Required:"), 5, Some(5)),
     NegativeFixture("DeferredLifecycle.scala", List("is not a member"), 9, Some(9)),
     NegativeFixture("AssociatedEvidenceShapes.scala", List("Found:", "Required:"), 6),
-    NegativeFixture("ValidatedDefinitionAuthority.scala", List("cannot be accessed"), 5),
+    NegativeFixture("InstrumentSpecAuthority.scala", List("InstrumentSpec"), 1),
+    NegativeFixture("PackageSpoofInstrumentSpec.scala", List("sealed", "InstrumentSpec"), 1),
+    NegativeFixture("RawInstrumentConstruction.scala", List("Found:", "Required:", "is not a member"), 3),
+    NegativeFixture("RawDefinitionShape.scala", List("cannot be accessed", "Found:", "Required:"), 6),
+    NegativeFixture("ReversedPayoffEndpoint.scala", List("Found:", "Required:"), 1, Some(1)),
+    NegativeFixture("SpecAuthorityExtraction.scala", List("is not a member"), 4, Some(4)),
     NegativeFixture("ReversedSettlementRate.scala", List("Found:", "Required:"), 1, Some(1)),
     NegativeFixture("ConversionDoesNotGrantGrid.scala", List("Found:", "Required:"), 1, Some(1))
   )

@@ -22,6 +22,13 @@ object SameShapeReplayClient:
   assert(peg.resolve(pegResolution).isRight)
   assert(genericPricing(peg)(pegResolution).isRight)
 
+  private val olderAssemblyErrors = InstrumentAssembler.assemble(definition, olderSnapshot).swap.toOption.get
+  assert(
+    olderAssemblyErrors.head.isInstanceOf[InstrumentAssemblyViolation.GridResolution],
+    olderAssemblyErrors.toString
+  )
+  assert(InstrumentAssembler.assemble(definition, catalogSnapshot).isRight)
+
   private val price101 = instrument.prices.exact(Rational(101)).toOption.get
 
   private val fixedTriggerChanged =
