@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "enabled": false,
-  "blockedReason": "CorgiSpec v4 bootstrap is complete; admission awaits accepted Foundation and portfolio RFCs plus semantic rehydration of the five selected changes.",
+  "enabled": true,
+  "blockedReason": null,
   "corgi": {
     "version": "4.0.0-rc2",
     "binary": "tools/corgi/node_modules/.bin/corgispec",
@@ -16,7 +16,13 @@
   "worktrees": {
     "root": ".worktrees"
   },
-  "admittedChanges": [],
+  "admittedChanges": [
+    "introduce-application-and-runtime-foundation",
+    "separate-order-and-execution-scenario-modules",
+    "introduce-pure-risk-module",
+    "introduce-pure-fee-policy-module",
+    "introduce-versioned-boundary-codecs"
+  ],
   "authority": {
     "localCorgiCommits": true,
     "fastForwardWipPush": true,

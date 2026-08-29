@@ -1,8 +1,9 @@
 # Coding Corgi Flow pilot
 
-This directory pins the reversible Corgi delivery pilot. Corgi v4 bootstrap has completed on the cutover branch with
-GitHub tracking and worktree isolation configured. Admission remains deliberately dormant: `pilot.json` has
-`enabled: false` and no admitted changes while the Foundation/portfolio RFCs and five converted changes are prepared.
+This directory pins the reversible Corgi delivery pilot. Corgi v4 bootstrap, the accepted Foundation/portfolio RFCs,
+and semantic rehydration are complete. Admission is enabled for exactly the five names in `pilot.json`; all other
+changes remain rejected. GitHub-native dependencies gate claims: Issues #7 and #8 are blocked by the external
+instrument-economics tracker #11, while Issues #9 and #10 are blocked by #7.
 
 ## Reproduce the runtime and preflight
 
@@ -18,20 +19,20 @@ changes; checks the Codex skill target; checks GitHub CLI authentication; and re
 admission switch is enabled. In a sandbox that cannot read the macOS credential store, run GitHub-dependent checks in
 the normal user shell.
 
-## Activation boundary
+## Activation evidence
 
 Bootstrap cleared its zero-active-change migration gate, installed the RFC/Memory/Wiki foundation, preserved hook
 opt-out, replaced the old project-local skills with 27 verified user-level Corgi skills, and restored GitHub CLI
 authentication. The exact legacy source trees and dependency map are recorded in `migration-manifest.json`.
 
-Before admission is enabled:
+Admission was enabled only after:
 
-1. replace the generated Foundation RFC placeholders, validate it, commit it, and record explicit human acceptance;
-2. create and accept the architecture-portfolio RFC containing five delivery slices;
-3. use Corgi Propose plus agent reconciliation to rehydrate the five named changes from the preserved source commit;
-4. validate semantic coverage and create the native GitHub dependency relationships;
-5. add exactly those five names to `admittedChanges`; and
-6. set `enabled: true` only after the preceding checks pass.
+1. the Foundation RFC was validated, explicitly accepted, merged, and effective;
+2. the architecture-portfolio RFC with five delivery Slices was validated, explicitly accepted, merged, and effective;
+3. Corgi Propose plus semantic reconciliation rehydrated all five changes from the preserved source commit;
+4. every package passed strict planning readiness with complete RFC acceptance traceability;
+5. Issues #6–#10 received finalized Task Group dashboards and the native dependency relationships were verified;
+6. exactly those five names were added to `admittedChanges` while ready/reviewer/merge/release authority remained off.
 
 Release-candidate evidence: `corgispec validate` searches project-local skill directories even though v4 installs Codex
 skills user-level; use `corgispec doctor` to verify that installation. Bootstrap `verify` also rejects this valid
@@ -81,9 +82,8 @@ snapshot behavior. PR publication performs the second freshness check against Gi
 
 ## Rollback
 
-Before admission creates an Issue or Run, rollback is a Git revert of the cutover/bootstrap commits plus optional
-removal of the 27 user-level Corgi skills. The exact pre-migration source remains at the commit recorded in
-`migration-manifest.json`; no remote delivery cleanup exists yet because the adapter remains disabled.
+The exact pre-migration source remains at the commit recorded in `migration-manifest.json`. The pilot now has Issues,
+worktrees, and finalized planning state, so rollback must use the supported lifecycle and preserve tracker evidence.
 
 After an activated pilot, rollback is intentionally explicit and recoverable:
 
