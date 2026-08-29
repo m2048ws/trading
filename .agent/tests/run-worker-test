@@ -248,6 +248,34 @@ cat >"$test_dir/finalize-report.json" <<'EOF'
 }
 EOF
 
+cat >"$test_dir/finalize-committed-report.json" <<'EOF'
+{
+  "status": "committed",
+  "summary": "committed",
+  "review_task_completed": true,
+  "archive": {
+    "completed": true,
+    "archived_location": "archive/test",
+    "canonical_specs_updated": true,
+    "unexpected_effects": "none"
+  },
+  "decision_updates": [],
+  "validation": {"passed": true, "summary": "passed"},
+  "git": {
+    "head": "committed-test-head",
+    "staged": false,
+    "unstaged": false,
+    "untracked": false,
+    "diff_check_passed": true
+  },
+  "commit": {
+    "authorized": true,
+    "created": true,
+    "hash": "committed-test-head"
+  }
+}
+EOF
+
 python3 - "$test_dir" <<'PY'
 import copy
 import json
@@ -297,6 +325,62 @@ for role, valid_path in valid_paths.items():
     (root / f"{role}-cross-change-report.json").write_text(
         json.dumps(cross_change)
     )
+
+
+def write_variant(name, source, update):
+    report = copy.deepcopy(source)
+    update(report)
+    (root / f"finalize-{name}-report.json").write_text(json.dumps(report))
+
+
+commit_ready = json.loads((root / "finalize-report.json").read_text())
+committed = json.loads((root / "finalize-committed-report.json").read_text())
+
+write_variant(
+    "commit-ready-clean-index",
+    commit_ready,
+    lambda report: report["git"].update(staged=False),
+)
+write_variant(
+    "commit-ready-authorized",
+    commit_ready,
+    lambda report: report["commit"].update(authorized=True),
+)
+write_variant(
+    "commit-ready-created",
+    commit_ready,
+    lambda report: report["commit"].update(created=True),
+)
+write_variant(
+    "commit-ready-hash",
+    commit_ready,
+    lambda report: report["commit"].update(hash="unexpected-commit"),
+)
+write_variant(
+    "committed-staged",
+    committed,
+    lambda report: report["git"].update(staged=True),
+)
+write_variant(
+    "committed-unauthorized",
+    committed,
+    lambda report: report["commit"].update(authorized=False),
+)
+write_variant(
+    "committed-not-created",
+    committed,
+    lambda report: report["commit"].update(created=False),
+)
+write_variant(
+    "committed-empty-hash",
+    committed,
+    lambda report: report["commit"].update(hash=""),
+)
+write_variant(
+    "committed-head-mismatch",
+    committed,
+    lambda report: report["commit"].update(hash="different-commit"),
+)
 PY
 
 report_context() {
@@ -418,6 +502,54 @@ assert_formal_report_rejected() {
     fail "$role $report_case retained a primary-worktree writer reservation"
 }
 
+assert_finalize_report_accepted() {
+  local name="$1"
+  local report_source="$2"
+  local schema="$repo/.agent/schemas/finalize.json"
+
+  "$repo/.agent/bin/validate-worker-report" \
+    finalize "$report_source" "$schema" assigned-change \
+    >"$test_dir/validator-finalize-$name.stdout" \
+    2>"$test_dir/validator-finalize-$name.stderr"
+
+  env \
+    PATH="$test_path" \
+    RUN_WORKER_TEST_ROOT="$repo" \
+    RUN_WORKER_TEST_REPORT="$report_source" \
+    "$repo/.agent/bin/run-worker" \
+    finalize assigned-change "$test_dir/finalize-context.json" \
+    "$test_dir/script-finalize-$name-output.json" \
+    >"$test_dir/script-finalize-$name.stdout" \
+    2>"$test_dir/script-finalize-$name.stderr"
+}
+
+assert_finalize_product_rejected() {
+  local name="$1"
+  local report_source="$test_dir/finalize-$name-report.json"
+  local schema="$repo/.agent/schemas/finalize.json"
+
+  expect_status 1 "validator-finalize-$name" \
+    "$repo/.agent/bin/validate-worker-report" \
+    finalize "$report_source" "$schema" assigned-change
+  grep -Fq "INVALID FINALIZE REPORT" \
+    "$test_dir/validator-finalize-$name.stderr" ||
+    fail "$name direct validation diagnostic was omitted"
+
+  expect_status 3 "script-finalize-$name" \
+    env \
+    PATH="$test_path" \
+    RUN_WORKER_TEST_ROOT="$repo" \
+    RUN_WORKER_TEST_REPORT="$report_source" \
+    "$repo/.agent/bin/run-worker" \
+    finalize assigned-change "$test_dir/finalize-context.json" \
+    "$test_dir/script-finalize-$name-output.json"
+  grep -Fq "Worker produced an invalid structured report" \
+    "$test_dir/script-finalize-$name.stderr" ||
+    fail "$name did not fail at the script report boundary"
+  "$repo/.agent/bin/worker-guard" probe >/dev/null ||
+    fail "$name retained a primary-worktree writer reservation"
+}
+
 test_path="$stub_dir:$PATH"
 
 cd "$repo"
@@ -478,14 +610,26 @@ env \
   "$test_dir/remediate-output.json" \
   >"$test_dir/remediate.stdout" 2>"$test_dir/remediate.stderr"
 
-env \
-  PATH="$test_path" \
-  RUN_WORKER_TEST_ROOT="$repo" \
-  RUN_WORKER_TEST_REPORT="$test_dir/finalize-report.json" \
-  "$repo/.agent/bin/run-worker" \
-  finalize assigned-change "$test_dir/finalize-context.json" \
-  "$test_dir/finalize-output.json" \
-  >"$test_dir/finalize.stdout" 2>"$test_dir/finalize.stderr"
+finalize_head_before="$(git -C "$repo" rev-parse HEAD)"
+assert_finalize_report_accepted commit-ready "$test_dir/finalize-report.json"
+assert_finalize_report_accepted committed "$test_dir/finalize-committed-report.json"
+
+for report_case in \
+  commit-ready-clean-index \
+  commit-ready-authorized \
+  commit-ready-created \
+  commit-ready-hash \
+  committed-staged \
+  committed-unauthorized \
+  committed-not-created \
+  committed-empty-hash \
+  committed-head-mismatch
+do
+  assert_finalize_product_rejected "$report_case"
+done
+
+[[ "$(git -C "$repo" rev-parse HEAD)" == "$finalize_head_before" ]] ||
+  fail "finalization report boundary tests created a real commit"
 
 env \
   PATH="$test_path" \
