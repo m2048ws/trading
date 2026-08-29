@@ -309,7 +309,7 @@ class CorgiPrTest(unittest.TestCase):
         self.assertEqual([item.branch for item in worktrees], ["main", "corgi/demo-change"])
         self.assertEqual(worktrees[1].head, "2" * 40)
 
-    def test_dormant_repository_config_fails_closed(self):
+    def test_enabled_repository_rejects_unadmitted_change(self):
         result = subprocess.run(
             [
                 str(SOURCE_ROOT / ".agent/bin/corgi-pr"),
@@ -325,7 +325,7 @@ class CorgiPrTest(unittest.TestCase):
         )
         self.assertEqual(result.returncode, 2)
         payload = json.loads(result.stdout)
-        self.assertEqual(payload["error"]["code"], "pilot_disabled")
+        self.assertEqual(payload["error"]["code"], "change_not_admitted")
 
     def test_sync_is_idempotent_and_push_is_never_forced(self):
         with tempfile.TemporaryDirectory() as directory:
