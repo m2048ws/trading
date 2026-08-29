@@ -9,6 +9,7 @@ updated: 2026-08-29
 
 ## Pages
 - [[wiki/architecture/implicit-contracts|Implicit Contracts]]
+- [[wiki/architecture/project-foundations|Project Foundations]]
 
 ## Verified Delivery Sources
 <!-- corgi:managed:start architecture-deliveries -->
