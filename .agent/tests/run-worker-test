@@ -1,0 +1,537 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+source_root="$(git rev-parse --show-toplevel)"
+test_dir="$(mktemp -d "${TMPDIR:-/tmp}/trading-run-worker-test.XXXXXX")"
+repo="$test_dir/repo"
+stub_dir="$test_dir/bin"
+
+cleanup() {
+  rm -rf -- "$test_dir"
+}
+
+trap cleanup EXIT INT TERM
+
+fail() {
+  echo "run-worker-test: $*" >&2
+  exit 1
+}
+
+expect_status() {
+  local expected="$1"
+  local name="$2"
+  shift 2
+
+  set +e
+  "$@" >"$test_dir/$name.stdout" 2>"$test_dir/$name.stderr"
+  local actual=$?
+  set -e
+
+  [[ "$actual" -eq "$expected" ]] ||
+    fail "$name returned $actual instead of $expected"
+}
+
+mkdir -p "$repo" "$stub_dir"
+cp "$source_root/AGENTS.md" "$repo/AGENTS.md"
+cp "$source_root/.gitignore" "$repo/.gitignore"
+cp -R "$source_root/.agent" "$repo/.agent"
+
+git -C "$repo" init -q
+git -C "$repo" config user.name "Worker Regression"
+git -C "$repo" config user.email "worker-regression@example.invalid"
+git -C "$repo" config commit.gpgsign false
+git -C "$repo" add AGENTS.md .gitignore .agent
+git -C "$repo" commit -qm "test fixture"
+
+cat >"$stub_dir/codex" <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+
+output=""
+workdir=""
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --output-last-message)
+      output="$2"
+      shift 2
+      ;;
+    -C)
+      workdir="$2"
+      shift 2
+      ;;
+    *)
+      shift
+      ;;
+  esac
+done
+
+if [[ "${RUN_WORKER_TEST_OMIT_REPORT:-false}" != true ]]; then
+  cp "$RUN_WORKER_TEST_REPORT" "$output"
+fi
+
+if [[ "${RUN_WORKER_TEST_PROBE_PARENT:-false}" == true ]]; then
+  set +e
+  "$RUN_WORKER_TEST_ROOT/.agent/bin/worker-guard" probe >/dev/null
+  probe_status=$?
+  set -e
+  printf '%s\n' "$probe_status" >"$RUN_WORKER_TEST_PROBE_RESULT"
+fi
+
+if [[ "${RUN_WORKER_TEST_MUTATE_PRIMARY:-false}" == true ]]; then
+  printf '\nprimary staged mutation\n' >>"$RUN_WORKER_TEST_ROOT/AGENTS.md"
+  git -C "$RUN_WORKER_TEST_ROOT" add AGENTS.md
+fi
+
+if [[ "${RUN_WORKER_TEST_MUTATE_REVIEW:-false}" == true && \
+  "$workdir" != "$RUN_WORKER_TEST_ROOT" ]]
+then
+  printf '\ncommitted review mutation\n' >>"$workdir/AGENTS.md"
+  git -C "$workdir" add AGENTS.md
+  git -C "$workdir" commit -qm "reviewer mutation"
+fi
+
+[[ -n "$workdir" ]]
+EOF
+chmod +x "$stub_dir/codex"
+
+cat >"$test_dir/review-context.json" <<'EOF'
+{
+  "CHANGE_NAME": "test-change",
+  "IMPLEMENTATION_CLAIMS": "claims only",
+  "RELEVANT_INVARIANTS": ["INV-W2"],
+  "REVIEW_TARGETS": ["independent review"],
+  "REGRESSION_OBLIGATIONS": ["fresh context"],
+  "VALIDATION_TARGETS": ["focused regression"]
+}
+EOF
+
+cat >"$test_dir/review-report.json" <<'EOF'
+{
+  "verdict": "ready",
+  "summary": "ready",
+  "findings": [],
+  "primary_evidence": ["isolated snapshot"],
+  "validation": {"passed": true, "summary": "passed"},
+  "openspec": {
+    "semantic_match": true,
+    "task_status": "review is sole gate",
+    "independent_review_is_sole_gate": true
+  },
+  "repository_unchanged": true
+}
+EOF
+
+cat >"$test_dir/matching-apply-context.json" <<'EOF'
+{
+  "CHANGE_NAME": "assigned-change",
+  "STEWARD_CONTEXT": "matching assignment",
+  "RELEVANT_INVARIANTS": ["INV-W1"],
+  "CHANGE_OBLIGATIONS": ["bind assigned change"]
+}
+EOF
+
+cat >"$test_dir/mismatched-apply-context.json" <<'EOF'
+{
+  "CHANGE_NAME": "different-change",
+  "STEWARD_CONTEXT": "mismatched assignment",
+  "RELEVANT_INVARIANTS": ["INV-W1"],
+  "CHANGE_OBLIGATIONS": ["bind assigned change"]
+}
+EOF
+
+cat >"$test_dir/remediate-context.json" <<'EOF'
+{
+  "CHANGE_NAME": "assigned-change",
+  "STEWARD_CONTEXT": "matching remediation assignment",
+  "REVIEW_FINDINGS": ["F1"],
+  "RELEVANT_INVARIANTS": ["INV-W1"],
+  "REGRESSION_OBLIGATIONS": ["bind assigned change"],
+  "VALIDATION_TARGETS": ["focused regression"]
+}
+EOF
+
+cat >"$test_dir/finalize-context.json" <<'EOF'
+{
+  "CHANGE_NAME": "assigned-change",
+  "REVIEW_RESULT": "approved",
+  "DECISION_UPDATES": ["none"],
+  "COMMIT_AUTHORIZATION": "not authorized",
+  "VALIDATION_TARGETS": ["focused regression"]
+}
+EOF
+
+cat >"$test_dir/matching-apply-report.json" <<'EOF'
+{
+  "status": "ready_for_independent_review",
+  "summary": "ready",
+  "implementation_claims": ["implemented"],
+  "validation": {"passed": true, "summary": "passed"},
+  "openspec": {
+    "change": "assigned-change",
+    "task_status": "implementation complete",
+    "independent_review_incomplete": true,
+    "archived": false
+  },
+  "git": {
+    "head": "test",
+    "staged": true,
+    "unstaged": false,
+    "untracked": false,
+    "commit_created": false
+  },
+  "design_conflict": null
+}
+EOF
+
+python3 - \
+  "$test_dir/matching-apply-report.json" \
+  "$test_dir/mismatched-apply-report.json" <<'PY'
+import json
+import sys
+
+report = json.load(open(sys.argv[1]))
+report["openspec"]["change"] = "different-change"
+json.dump(report, open(sys.argv[2], "w"))
+PY
+
+cat >"$test_dir/remediate-report.json" <<'EOF'
+{
+  "status": "ready_for_independent_review",
+  "summary": "ready",
+  "finding_results": [
+    {"id": "F1", "reproduced_before": true, "closed_after": true, "result": "closed"}
+  ],
+  "regressions": {
+    "new_negative": ["rejection"],
+    "new_positive": ["support"],
+    "previous_obligations_preserved": true
+  },
+  "validation": {"passed": true, "summary": "passed"},
+  "openspec": {
+    "task_status": "remediated",
+    "independent_review_incomplete": true,
+    "archived": false
+  },
+  "git": {
+    "head": "test",
+    "staged": true,
+    "unstaged": false,
+    "untracked": false,
+    "commit_created": false
+  },
+  "design_conflict": null
+}
+EOF
+
+cat >"$test_dir/finalize-report.json" <<'EOF'
+{
+  "status": "commit_ready",
+  "summary": "ready",
+  "review_task_completed": true,
+  "archive": {
+    "completed": true,
+    "archived_location": "archive/test",
+    "canonical_specs_updated": true,
+    "unexpected_effects": "none"
+  },
+  "decision_updates": [],
+  "validation": {"passed": true, "summary": "passed"},
+  "git": {
+    "head": "test",
+    "staged": true,
+    "unstaged": false,
+    "untracked": false,
+    "diff_check_passed": true
+  },
+  "commit": {"authorized": false, "created": false, "hash": ""}
+}
+EOF
+
+python3 - "$test_dir" <<'PY'
+import copy
+import json
+import pathlib
+import sys
+
+root = pathlib.Path(sys.argv[1])
+valid_paths = {
+    "apply": root / "matching-apply-report.json",
+    "review": root / "review-report.json",
+    "remediate": root / "remediate-report.json",
+    "finalize": root / "finalize-report.json",
+}
+
+for role, valid_path in valid_paths.items():
+    valid = json.loads(valid_path.read_text())
+
+    schema_invalid = copy.deepcopy(valid)
+    schema_invalid["summary"] = False
+    (root / f"{role}-schema-invalid-report.json").write_text(
+        json.dumps(schema_invalid)
+    )
+
+    contradictory = copy.deepcopy(valid)
+    if role in {"apply", "review"}:
+        contradictory["validation"]["passed"] = False
+    elif role == "remediate":
+        contradictory["finding_results"][0]["closed_after"] = False
+    else:
+        contradictory["archive"]["completed"] = False
+    (root / f"{role}-contradictory-report.json").write_text(
+        json.dumps(contradictory)
+    )
+
+    (root / f"{role}-summary-only-report.json").write_text(
+        json.dumps({"summary": f"{role} prose summary only"})
+    )
+    (root / f"{role}-malformed-report.json").write_text('{"summary":')
+
+    cross_change = copy.deepcopy(valid)
+    if role == "apply":
+        cross_change["openspec"]["change"] = "different-change"
+    elif role in {"review", "remediate"}:
+        cross_change["openspec"]["change"] = "different-change"
+    else:
+        cross_change["openspec"] = {"change": "different-change"}
+    (root / f"{role}-cross-change-report.json").write_text(
+        json.dumps(cross_change)
+    )
+PY
+
+report_context() {
+  case "$1" in
+    apply) printf '%s\n' "$test_dir/matching-apply-context.json" ;;
+    review) printf '%s\n' "$test_dir/review-context.json" ;;
+    remediate) printf '%s\n' "$test_dir/remediate-context.json" ;;
+    finalize) printf '%s\n' "$test_dir/finalize-context.json" ;;
+    *) fail "unknown report role $1" ;;
+  esac
+}
+
+report_change() {
+  case "$1" in
+    review) printf '%s\n' test-change ;;
+    apply | remediate | finalize) printf '%s\n' assigned-change ;;
+    *) fail "unknown report role $1" ;;
+  esac
+}
+
+valid_report() {
+  case "$1" in
+    apply) printf '%s\n' "$test_dir/matching-apply-report.json" ;;
+    review) printf '%s\n' "$test_dir/review-report.json" ;;
+    remediate) printf '%s\n' "$test_dir/remediate-report.json" ;;
+    finalize) printf '%s\n' "$test_dir/finalize-report.json" ;;
+    *) fail "unknown report role $1" ;;
+  esac
+}
+
+assert_rejection_diagnostic() {
+  local role="$1"
+  local report_case="$2"
+  local stderr_file="$3"
+
+  case "$report_case" in
+    missing | malformed)
+      grep -Fq "Invalid report JSON" "$stderr_file" ||
+        fail "$report_case diagnostic was omitted from $stderr_file"
+      ;;
+    schema-invalid)
+      grep -Fq "expected type" "$stderr_file" ||
+        fail "schema-invalid diagnostic was omitted from $stderr_file"
+      ;;
+    summary-only)
+      grep -Fq "missing required property" "$stderr_file" ||
+        fail "summary-only diagnostic was omitted from $stderr_file"
+      ;;
+    contradictory)
+      grep -Fq "INVALID " "$stderr_file" ||
+        fail "contradictory-report diagnostic was omitted from $stderr_file"
+      ;;
+    cross-change)
+      case "$role" in
+        apply)
+          grep -Fq "OpenSpec change does not match assigned change" "$stderr_file" ||
+            fail "apply cross-change diagnostic was omitted from $stderr_file"
+          ;;
+        review | remediate)
+          grep -Fq "$.openspec: unexpected property 'change'" "$stderr_file" ||
+            fail "$role identity-injection diagnostic was omitted from $stderr_file"
+          ;;
+        finalize)
+          grep -Fq "$: unexpected property 'openspec'" "$stderr_file" ||
+            fail "finalize identity-injection diagnostic was omitted from $stderr_file"
+          ;;
+        *) fail "unknown report role $role" ;;
+      esac
+      ;;
+    *) fail "unknown report case $report_case" ;;
+  esac
+}
+
+assert_formal_report_rejected() {
+  local role="$1"
+  local report_case="$2"
+  local context
+  local change
+  local report_source
+  local worker_report
+  local omit_report=false
+  local schema="$repo/.agent/schemas/$role.json"
+
+  context="$(report_context "$role")"
+  change="$(report_change "$role")"
+  if [[ "$report_case" == missing ]]; then
+    report_source="$test_dir/$role-missing-report.json"
+    worker_report="$(valid_report "$role")"
+    omit_report=true
+  elif [[ "$report_case" == cross-change ]]; then
+    report_source="$test_dir/$role-cross-change-report.json"
+    worker_report="$report_source"
+  else
+    report_source="$test_dir/$role-$report_case-report.json"
+    worker_report="$report_source"
+  fi
+
+  expect_status 1 "validator-$role-$report_case" \
+    "$repo/.agent/bin/validate-worker-report" \
+    "$role" "$report_source" "$schema" "$change"
+  assert_rejection_diagnostic \
+    "$role" "$report_case" "$test_dir/validator-$role-$report_case.stderr"
+
+  expect_status 3 "script-$role-$report_case" \
+    env \
+    PATH="$test_path" \
+    RUN_WORKER_TEST_ROOT="$repo" \
+    RUN_WORKER_TEST_REPORT="$worker_report" \
+    RUN_WORKER_TEST_OMIT_REPORT="$omit_report" \
+    "$repo/.agent/bin/run-worker" \
+    "$role" "$change" "$context" \
+    "$test_dir/script-$role-$report_case-output.json"
+  assert_rejection_diagnostic \
+    "$role" "$report_case" "$test_dir/script-$role-$report_case.stderr"
+  grep -Fq "Worker produced an invalid structured report" \
+    "$test_dir/script-$role-$report_case.stderr" ||
+    fail "$role $report_case did not fail at the script report boundary"
+  "$repo/.agent/bin/worker-guard" probe >/dev/null ||
+    fail "$role $report_case retained a primary-worktree writer reservation"
+}
+
+test_path="$stub_dir:$PATH"
+
+cd "$repo"
+
+for role in apply review remediate finalize; do
+  for report_case in missing malformed schema-invalid summary-only contradictory cross-change; do
+    assert_formal_report_rejected "$role" "$report_case"
+  done
+done
+
+expect_status 1 mismatched-context \
+  env \
+  PATH="$test_path" \
+  RUN_WORKER_TEST_ROOT="$repo" \
+  RUN_WORKER_TEST_REPORT="$test_dir/matching-apply-report.json" \
+  "$repo/.agent/bin/run-worker" \
+  apply assigned-change "$test_dir/mismatched-apply-context.json" \
+  "$test_dir/mismatched-context-report.json"
+grep -Fq "CHANGE_NAME does not match assigned change" \
+  "$test_dir/mismatched-context.stderr" ||
+  fail "script context mismatch diagnostic was omitted"
+[[ ! -e "$test_dir/mismatched-context-report.json" ]] ||
+  fail "script context mismatch launched a worker"
+
+expect_status 3 mismatched-report \
+  env \
+  PATH="$test_path" \
+  RUN_WORKER_TEST_ROOT="$repo" \
+  RUN_WORKER_TEST_REPORT="$test_dir/mismatched-apply-report.json" \
+  "$repo/.agent/bin/run-worker" \
+  apply assigned-change "$test_dir/matching-apply-context.json" \
+  "$test_dir/mismatched-report.json"
+grep -Fq "OpenSpec change does not match assigned change" \
+  "$test_dir/mismatched-report.stderr" ||
+  fail "script report mismatch diagnostic was omitted"
+"$repo/.agent/bin/worker-guard" probe >/dev/null ||
+  fail "script report mismatch retained its parent writer reservation"
+
+env \
+  PATH="$test_path" \
+  RUN_WORKER_TEST_ROOT="$repo" \
+  RUN_WORKER_TEST_REPORT="$test_dir/matching-apply-report.json" \
+  RUN_WORKER_TEST_PROBE_PARENT=true \
+  RUN_WORKER_TEST_PROBE_RESULT="$test_dir/parent-reservation-status" \
+  "$repo/.agent/bin/run-worker" \
+  apply assigned-change "$test_dir/matching-apply-context.json" \
+  "$test_dir/matching-apply-output.json" \
+  >"$test_dir/matching-apply.stdout" 2>"$test_dir/matching-apply.stderr"
+[[ "$(cat "$test_dir/parent-reservation-status")" -eq 3 ]] ||
+  fail "nested script worker inherited or bypassed parent release authority"
+
+env \
+  PATH="$test_path" \
+  RUN_WORKER_TEST_ROOT="$repo" \
+  RUN_WORKER_TEST_REPORT="$test_dir/remediate-report.json" \
+  "$repo/.agent/bin/run-worker" \
+  remediate assigned-change "$test_dir/remediate-context.json" \
+  "$test_dir/remediate-output.json" \
+  >"$test_dir/remediate.stdout" 2>"$test_dir/remediate.stderr"
+
+env \
+  PATH="$test_path" \
+  RUN_WORKER_TEST_ROOT="$repo" \
+  RUN_WORKER_TEST_REPORT="$test_dir/finalize-report.json" \
+  "$repo/.agent/bin/run-worker" \
+  finalize assigned-change "$test_dir/finalize-context.json" \
+  "$test_dir/finalize-output.json" \
+  >"$test_dir/finalize.stdout" 2>"$test_dir/finalize.stderr"
+
+env \
+  PATH="$test_path" \
+  RUN_WORKER_TEST_ROOT="$repo" \
+  RUN_WORKER_TEST_REPORT="$test_dir/review-report.json" \
+  RUN_WORKER_TEST_MUTATE_PRIMARY=false \
+  "$repo/.agent/bin/run-worker" \
+  review test-change "$test_dir/review-context.json" \
+  "$test_dir/clean-report.json" \
+  >"$test_dir/clean.stdout" 2>"$test_dir/clean.stderr"
+
+grep -Fq '"verdict": "ready"' "$test_dir/clean.stdout" ||
+  fail "clean script-backed review did not return its validated report"
+
+primary_tree_before_committed_review="$(git -C "$repo" write-tree)"
+expect_status 4 committed-review \
+  env \
+  PATH="$test_path" \
+  RUN_WORKER_TEST_ROOT="$repo" \
+  RUN_WORKER_TEST_REPORT="$test_dir/review-report.json" \
+  RUN_WORKER_TEST_MUTATE_REVIEW=true \
+  "$repo/.agent/bin/run-worker" \
+  review test-change "$test_dir/review-context.json" \
+  "$test_dir/committed-review-report.json"
+grep -Fq "Independent review modified its staged-snapshot worktree" \
+  "$test_dir/committed-review.stderr" ||
+  fail "committed review mutation diagnostic was omitted"
+[[ "$(git -C "$repo" write-tree)" == "$primary_tree_before_committed_review" ]] ||
+  fail "committed detached-review mutation changed the primary staged tree"
+
+set +e
+env \
+  PATH="$test_path" \
+  RUN_WORKER_TEST_ROOT="$repo" \
+  RUN_WORKER_TEST_REPORT="$test_dir/review-report.json" \
+  RUN_WORKER_TEST_MUTATE_PRIMARY=true \
+  "$repo/.agent/bin/run-worker" \
+  review test-change "$test_dir/review-context.json" \
+  "$test_dir/stale-report.json" \
+  >"$test_dir/stale.stdout" 2>"$test_dir/stale.stderr"
+stale_status=$?
+set -e
+
+[[ "$stale_status" -eq 5 ]] ||
+  fail "stale staged tree returned $stale_status instead of 5"
+grep -Fq "staged tree changed" "$test_dir/stale.stderr" ||
+  fail "stale staged-tree diagnostic was omitted"
+
+echo "run-worker integration regression tests passed"

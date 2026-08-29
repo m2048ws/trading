@@ -9,11 +9,17 @@ changing settled semantics.
 You are an orchestrator.
 
 You should normally delegate implementation, review, remediation, and
-finalization to fresh worker agents using the templates under:
+finalization to fresh worker agents using the shared role policy and templates
+under:
 
 ```text
+.agent/worker-roles.json
 .agent/prompts/
 ```
+
+Use eligible Codex-native subagents as the preferred control plane. Keep the
+repository helpers as the guard plane and complete script fallback. Formal
+independent review remains on the detached staged-snapshot script backend.
 
 You do not treat worker reports as authoritative repository state.
 
@@ -50,6 +56,7 @@ At the beginning of every steward run, read completely:
 .agent/decisions.md
 .agent/workflow.md
 .agent/review-policy.md
+.agent/worker-roles.json
 ```
 
 Then inspect:
@@ -245,7 +252,25 @@ Use a new worker/subagent/session for every independent review.
 
 # Worker Launch Mechanism
 
-Use the environment's available fresh-agent/subagent mechanism.
+Select the backend independently for every launch using the policy in:
+
+```text
+.agent/worker-roles.json
+```
+
+Preferred roles:
+
+| Role | Backend |
+| --- | --- |
+| bounded exploration | native |
+| apply | native when every guard is present; otherwise script |
+| independent review | script |
+| remediation | native when every guard is present; otherwise script |
+| finalization | native when every guard is present; otherwise script |
+
+Native availability is not sufficient by itself. Run the native selection and
+preparation helpers described below. If any role guard is missing, select
+`.agent/bin/run-worker` deterministically.
 
 When launching a worker:
 
@@ -255,6 +280,16 @@ When launching a worker:
 4. do not inject private reasoning from prior workers;
 5. wait for its completion report;
 6. preserve the report for workflow classification.
+
+For a native formal worker, freshness means a spawn with no inherited worker
+turns or private reasoning, using the explicit model and effort returned by the
+guard plane. Prefer the matching project agent profile when the client exposes
+named profiles; otherwise pass the equivalent explicit spawn settings.
+
+At most one apply, remediation, or finalization worker may be active against
+the primary worktree across both backends. The guard plane holds a writer lease
+as a parent-owned root-inode reservation for those launches. Native parallelism is limited to bounded investigations
+whose assignment and agent profile forbid repository mutation.
 
 If the environment supports named worker roles, use names such as:
 
@@ -266,6 +301,11 @@ openspec-finalize
 ```
 
 Do not depend on the name for independence; the actual context must be fresh.
+
+Native lifecycle controls may be used to wait, inspect progress, send a
+role-consistent clarification, or interrupt. They do not expand the worker's
+authority. After interruption or failure, run native failure classification;
+never blindly switch a possibly started writer to the script backend.
 
 ---
 
@@ -1244,7 +1284,165 @@ The repository remains the source of truth.
 
 # Worker Execution
 
-Launch workers through:
+Inspect the shared role policy through:
+
+```bash
+.agent/bin/worker-policy [role [field]]
+```
+
+For each interactive launch, create a small native-capabilities JSON file that
+records only currently available guards. Do not claim a guard merely because a
+future client may support it. Then select the backend:
+
+```bash
+.agent/bin/native-worker \
+  select \
+  <role> \
+  /tmp/trading-agent/native-capabilities.json
+```
+
+`selected_backend=script` is deterministic fallback authority. It is always the
+selected backend for every formal role in the current policy. Bounded read-only
+exploration is the only native-eligible role.
+
+## Dormant native formal-worker protocol
+
+Do not start this protocol for apply, remediation, or finalization under the
+current policy. The repository cannot yet protect its complete executable
+transition/release/fallback closure from a workspace-writing subagent, and the
+broker-owned reservation does not survive broker-process death. The retained
+protocol and profiles are diagnostic foundations for a later reviewed change,
+not current transition or writer-release authority.
+
+If a future change supplies both missing guards and makes a formal role
+eligible, the required protocol is:
+
+When selection returns `native`, start one long-lived broker in a private client
+execution session:
+
+```bash
+.agent/bin/native-worker \
+  broker \
+  /tmp/trading-agent/native-capabilities.json
+```
+
+The broker's stdin/stdout session is the steward-private control channel. Do not
+pass its session handle, stdin, or protected state to a delegated worker. Send
+one-line JSON requests over that session. Preparation is:
+
+```json
+{
+  "command": "prepare",
+  "role": "<role>",
+  "change": "<change-name>",
+  "context_file": "<absolute-context-json>"
+}
+```
+
+The broker:
+
+1. validates the role and binds context `CHANGE_NAME` to the assigned change;
+2. renders the canonical role prompt;
+3. allocates unique ignored prompt, report, manifest, non-authorizing lease
+   evidence, state, diagnostics, and detailed-result destinations;
+4. retains the complete role/change/path/snapshot/lease launch tuple, a
+   monotonic generation, and a cryptographically random one-shot capability
+   only in protected broker memory;
+5. acquires a parent-held root-inode writer reservation where required;
+6. records the launch in volatile trace output;
+7. returns the profile, explicit model/effort, `fork_turns=none`, non-authorizing
+   launch id/generation and artifact paths, and a short prompt-file
+   `spawn_assignment`.
+
+Deliver only the returned short `spawn_assignment` to a fresh native subagent.
+Do not read and resend the rendered prompt through the primary conversation.
+Spawn with no inherited turns or worker reasoning and the returned model/effort.
+Record the returned agent/thread identity when the native surface provides one.
+The worker must not receive broker stdin, a broker session handle, the full
+launch tuple, or the one-shot capability.
+
+Wait for completion. Follow-up steering may clarify the existing assignment but
+must not change roles or bypass guards. Interrupt when necessary, then classify
+failure as described below.
+
+After a native worker finishes, send collection over the same private broker
+session:
+
+```json
+{
+  "command": "collect",
+  "launch_id": "<prepared-launch-id>",
+  "generation": 1,
+  "agent_id": "<agent-id-or-dash>",
+  "thread_id": "<thread-id-or-dash>"
+}
+```
+
+Collection verifies the exact active launch/generation against protected broker
+state, then validates manifest, prompt, schema, policy, and lease-evidence
+integrity. It applies the role's JSON schema, logical workflow checks,
+assigned-change identity checks, and a fresh `steward-state` read. Missing,
+malformed, contradictory, cross-change, prose-only, or integrity-invalid results
+are rejected. A rejected result retains the writer. Correct the assigned report
+and collect again, classify failure, or use protected recovery; do not launch
+another native or script writer until the broker consumes its one-shot authority
+and releases the reservation.
+
+Successful collection stdout is compact: transition/integrity outcome,
+role/change/launch identity, concise repository/OpenSpec state, and paths,
+digests, and byte sizes for the complete ignored report, refreshed state,
+diagnostics, and detailed result. Inspect those artifacts only when needed; do
+not routinely load the complete payloads into steward conversation context.
+
+If a native worker fails, is interrupted, or has its report rejected without a
+correction, send:
+
+```json
+{
+  "command": "classify_failure",
+  "launch_id": "<prepared-launch-id>",
+  "generation": 1,
+  "agent_id": "<agent-id-or-dash>",
+  "thread_id": "<thread-id-or-dash>"
+}
+```
+
+Only `fallback_safe=true` permits immediate script fallback. A changed
+repository snapshot requires classification from refreshed Git/OpenSpec state.
+Repository identity fingerprints tracked-unstaged and non-ignored-untracked
+path, type, mode, and content, so mutation of an already-dirty path is visible
+while ignored artifacts remain irrelevant. Missing or altered manifest/lease
+state, generation mismatch, replay, or broker/channel loss cannot release the
+writer or authorize fallback.
+
+Protected recovery is available only over the still-private broker channel:
+
+```json
+{
+  "command": "recover",
+  "launch_id": "<prepared-launch-id>",
+  "generation": 1,
+  "reason": "<why guarded abandonment is required>"
+}
+```
+
+The dormant recovery procedure refreshes actual repository/OpenSpec state,
+records detailed ignored diagnostics, consumes one-shot authority, and releases
+the reservation without granting transition or blind-fallback authority. It is
+not safe to use for a current writer: broker-process death releases that
+descriptor. A future eligible implementation must retain exclusion in an
+independent protected controller before this procedure becomes authoritative.
+
+## Native bounded exploration
+
+Bounded exploration uses the `openspec_exploration` project profile and a fresh
+native context. Its assignment must be non-mutating and may run in parallel
+only when independent of active mutation. Exploration summaries inform steward
+reasoning but never authorize a formal workflow transition.
+
+## Script formal workers
+
+Launch the complete fallback through:
 
 ```bash
 .agent/bin/run-worker <role> <change-name> <context-json> [report-file]
@@ -1261,14 +1459,21 @@ finalize
 
 `run-worker`:
 
-1. renders the appropriate prompt template;
-2. selects the appropriate output schema;
-3. launches a fresh ephemeral Codex worker;
-4. isolates independent review in a detached staged-snapshot worktree;
-5. validates the worker's structured report;
-6. returns the validated JSON report.
+1. consumes the same role policy as native preparation;
+2. renders the appropriate canonical prompt template;
+3. selects the shared output schema and model/effort;
+4. acquires the shared root-inode writer reservation in the parent process
+   where required and never inherits it into the nested worker;
+5. launches a fresh ephemeral Codex worker;
+6. isolates independent review in a detached staged-snapshot worktree;
+7. rejects tracked, non-ignored, committed-`HEAD`, or committed-tree review
+   mutations;
+8. applies schema, logical, and assigned-change report validation;
+9. rejects a review verdict when the primary staged tree changed;
+10. records volatile trace output and returns the validated JSON report.
 
-Do not bypass `run-worker` for normal workflow execution.
+Keep this path usable for every formal role. Do not bypass both the native
+preparation/collection path and `run-worker` for normal execution.
 
 ---
 
@@ -1469,16 +1674,33 @@ and logically checked by:
 .agent/bin/validate-report
 ```
 
-A successful `run-worker` invocation means:
+The backend-neutral entry point is:
+
+```text
+.agent/bin/validate-worker-report
+```
+
+It applies the role's version-controlled JSON schema first and the existing
+workflow-consistency rules second. When the assigned change is supplied, it
+also rejects an explicit OpenSpec report change that names another workflow
+instance; schemas without a repeated change field remain valid.
+
+A successful `run-worker` invocation or native collection with
+`transition_authority=true` means:
 
 ```text
 schema-valid
 +
 workflow-logically-consistent
++
+bound to the assigned change when the report repeats that identity
 ```
 
 It does **not** mean the worker's factual claims have been independently proven
 unless the worker role itself is independent review.
+
+A native final summary, a missing report file, or a result that passes only one
+validation layer never authorizes a transition.
 
 ---
 
@@ -1626,6 +1848,14 @@ Raw worker reports may be retained under:
 for debugging and workflow traceability.
 
 They are volatile workflow artifacts and should not normally be committed.
+
+Native prompt files, launch manifests, assigned reports, complete refreshed
+state, detailed results, diagnostics, non-authorizing lease evidence, and
+workflow trace JSONL also live under this ignored directory. Trace records
+include backend, role, change, launch id/generation, HEAD, and staged-tree
+identity where applicable. These files are diagnostic workflow state, not
+architectural truth or transition/release authority. The one-shot capability
+and full broker launch tuple must never be written there.
 
 Ensure:
 

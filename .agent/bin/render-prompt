@@ -8,20 +8,31 @@ import sys
 
 def usage() -> None:
     print(
-        "Usage: render-prompt <template-file> <context-json>",
+        "Usage: render-prompt <template-file> <context-json> [assigned-change]",
         file=sys.stderr,
     )
     raise SystemExit(2)
 
 
-if len(sys.argv) != 3:
+if len(sys.argv) not in {3, 4}:
     usage()
 
 template_path = pathlib.Path(sys.argv[1])
 context_path = pathlib.Path(sys.argv[2])
+assigned_change = sys.argv[3] if len(sys.argv) == 4 else None
 
 template = template_path.read_text()
 context = json.loads(context_path.read_text())
+
+if assigned_change is not None:
+    context_change = context.get("CHANGE_NAME")
+    if context_change != assigned_change:
+        print(
+            "Prompt context CHANGE_NAME does not match assigned change: "
+            f"expected {assigned_change!r}, found {context_change!r}",
+            file=sys.stderr,
+        )
+        raise SystemExit(1)
 
 pattern = re.compile(r"\{\{([A-Z0-9_]+)\}\}")
 

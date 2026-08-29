@@ -61,6 +61,52 @@ A new explicit design decision would be required to bring it back.
 
 # Settled Decisions
 
+## DEC-011 — Hybrid native worker orchestration
+
+**Status:** SETTLED
+
+**OpenSpec change:**
+
+```text
+adopt-native-subagent-orchestration
+```
+
+Codex-native subagents are the preferred interactive control plane only for
+worker roles whose required guards can be satisfied. Repository scripts remain
+the guard plane and complete portable fallback. The current repository/client
+boundary satisfies that rule only for bounded read-only exploration: native
+primary-worktree writers are mechanically ineligible because the complete
+executable decision closure is worker-writable and the broker-owned reservation
+does not survive broker-process death.
+
+The archived change preserves all existing workflow invariants while introducing:
+
+- one shared machine-readable role policy for both backends;
+- retained profiles and a diagnostic broker protocol for possible future
+  native apply, remediation, and finalization workers, without current launch
+  or transition authority;
+- bounded native read-only exploration;
+- script-only formal independent review against an isolated staged snapshot;
+- schema and logical validation before any worker report informs a transition;
+- a steward-owned broker whose private control channel and protected memory
+  retain the full launch tuple, monotonic generation, and random one-shot
+  capability outside worker-owned handoffs;
+- a parent-held root-inode writer reservation for script-backed formal writers,
+  never inherited by delegated workers;
+- compact collection output with complete evidence retained by ignored path;
+- content-sensitive dirty-state refresh and classification instead of blind
+  fallback after possible native mutation;
+- volatile backend, worker-identity, artifact-path, and staged-tree trace data.
+
+Enabling native primary-worktree writers later requires protected immutable
+execution for their complete transition/release/fallback decision closure and
+an independent controller that retains exclusion across broker death. Fresh
+independent approval and archive established this conservative boundary as part
+of the accepted baseline. The change itself was bootstrapped through the
+pre-existing script workflow.
+
+---
+
 ## DEC-001 — Exact rational interior
 
 **Status:** SETTLED

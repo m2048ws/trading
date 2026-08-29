@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+usage() {
+  echo \
+    "Usage: validate-worker-report <role> <report-json> [schema-json] [assigned-change]" \
+    >&2
+  exit 2
+}
+
+[[ $# -ge 2 && $# -le 4 ]] || usage
+
+role="$1"
+report_file="$2"
+root="$(git rev-parse --show-toplevel)"
+schema_file="${3:-}"
+assigned_change="${4:-}"
+
+if [[ -z "$schema_file" ]]; then
+  schema_relative="$("$root/.agent/bin/worker-policy" "$role" report_schema)"
+  [[ "$schema_relative" != null ]] || {
+    echo "Role $role has no structured report schema" >&2
+    exit 2
+  }
+  schema_file="$root/$schema_relative"
+fi
+
+"$root/.agent/bin/validate-report-schema" "$schema_file" "$report_file"
+"$root/.agent/bin/validate-report" "$role" "$report_file"
+
+if [[ -n "$assigned_change" ]]; then
+  python3 - "$report_file" "$assigned_change" <<'PY'
+import json
+import sys
+
+report = json.load(open(sys.argv[1]))
+assigned_change = sys.argv[2]
+openspec = report.get("openspec")
+
+if isinstance(openspec, dict) and "change" in openspec:
+    report_change = openspec["change"]
+    if report_change != assigned_change:
+        print(
+            "Worker report OpenSpec change does not match assigned change: "
+            f"expected {assigned_change!r}, found {report_change!r}",
+            file=sys.stderr,
+        )
+        raise SystemExit(1)
+PY
+fi
