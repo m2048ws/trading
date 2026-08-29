@@ -14,22 +14,24 @@ updated: 2026-08-29
 - **Issue**: 6 https://github.com/m2048ws/trading/issues/6
 - **Change**: introduce-application-and-runtime-foundation
 - **Worktree**: /Users/m/src/money/.worktrees/introduce-application-and-runtime-foundation
-- **Phase at Checkpoint**: planning_ready
+- **Phase at Checkpoint**: applying
 - **Task Group at Checkpoint**: 1
-- **Observed Run Revision**: none
-- **Last Verified HEAD**: ff52468f5f0fa673476edc4b5e96d2a3e5120033
+- **Observed Run Revision**: 2
+- **Last Verified HEAD**: 6fe255164044ce04da9d4e3b49e44ff4d266e57e
 
 ## Next Action
-- Start Apply for `introduce-application-and-runtime-foundation` Task Group 1.
+- Commit and acknowledge Task Group 1 after its clean baseline and structured review.
 
 ## Blockers
-- Foundation RFC is not yet accepted and merged.
+- none
 
 ## Uncommitted Work
-- none
+- Session Bridge checkpoint for Task Group 1.
 
 ## Discoveries
-- none
+- Baseline inventory confirms `LiveCatalog[F]`, `CatalogModel`, completed-JAR compiler fixtures, and the non-published
+  benchmark project already exist; no `runtime` module or concrete live-catalog interpreter exists yet.
 
 ## Promotion Queue
-- Review agent-configuration constraints before promoting any item to `memory/MEMORY.md`.
+- After whole-change verification and Archive, promote the delivered runtime/application dependency boundary and
+  in-memory interpreter ownership from concrete source evidence.
