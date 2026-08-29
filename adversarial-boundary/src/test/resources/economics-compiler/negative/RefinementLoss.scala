@@ -1,22 +1,14 @@
 package external.economics.negative
 
-import trading.economics.instrument.*
+import external.economics.fixtures.SharedEconomicsSetup.*
 
 object RefinementLoss:
-  def reject(
-    instrument: Instrument,
-    lots: instrument.Lots,
-    price: instrument.Price
-  ): Unit =
-    val _ = lots.count
-    val _ = price.ticks
+  val observed = lots.count
 
-    // OFFENDING-BEGIN
-    val _: instrument.Lots = instrument.flatPosition
-    val _: instrument.Lots = instrument.positionLots(Side.Buy, lots)
-    val _: instrument.Lots = lots.quantity - lots.quantity
-    val _: instrument.Price = price.rate - price.rate
-    val _: instrument.Price = -price.rate
-    // OFFENDING-END
-
+  // OFFENDING-BEGIN
+  val lotsFromQuantity: instrument.Lots = lots.quantity
+  val lotsFromPosition: instrument.Lots = trading.economics.instrument.PositionLots.flat(instrument)
+  val priceFromRate: instrument.Price = price100.rate
+  val priceFromDifference: instrument.Price = price100.rate - price100.rate
+  // OFFENDING-END
 end RefinementLoss

@@ -31,8 +31,38 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
       throw new IllegalStateException("missing generated external compiler classpath")
     try new String(resource.readAllBytes(), StandardCharsets.UTF_8).trim
     finally resource.close()
+  private val coreCompilationClasspath =
+    val resource = Option(getClass.getResourceAsStream("/instrument-economics-compiler.classpath")).getOrElse:
+      throw new IllegalStateException("missing generated instrument-economics compiler classpath")
+    try new String(resource.readAllBytes(), StandardCharsets.UTF_8).trim
+    finally resource.close()
 
-  test("packaged artifacts preserve the quantities to reference-data to economics boundary"):
+  test("completed pure JAR compiles and runs a concrete core-only client with generic helpers"):
+    val entries = coreCompilationClasspath.split(File.pathSeparator).map(Paths.get(_)).map(_.getFileName.toString)
+    assert(entries.exists(_.startsWith("trading-instrument-economics_3-")))
+    assert(!entries.exists(_.startsWith("trading-economics_3-")))
+    assert(!entries.exists(_.startsWith("trading-application_3-")))
+    val result = compileCore(Paths.get(getClass.getResource("/economics-core-compiler/PureCoreClient.scala").toURI))
+    assert(result.succeeded, result.rendered)
+    runModule(result.output, "external.economics.core.PureCoreClient$", "run")
+
+  test("completed pure JAR preserves retained denomination definition and provenance in equality"):
+    val result = compileCore(
+      Paths.get(getClass.getResource("/economics-core-compiler/RetainedDenominationEqualityClient.scala").toURI)
+    )
+    assert(result.succeeded, result.rendered)
+    runModule(result.output, "external.economics.core.RetainedDenominationEqualityClient$", "run")
+
+  test("completed pure JAR cannot import downstream packages"):
+    val source  = Paths.get(getClass.getResource("/economics-core-compiler/CoreHasNoDownstream.scala").toURI)
+    val prelude = compileCorePrelude(source)
+    assert(prelude.succeeded, s"fixture prelude must compile independently:\n${prelude.rendered}")
+    val rejected = compileCore(source)
+    assert(rejected.errors.size >= 4, rejected.rendered)
+    assert(rejected.rendered.contains("is not a member"), rejected.rendered)
+    economicsForbiddenDiagnostics.foreach(fragment => assert(!rejected.rendered.contains(fragment), rejected.rendered))
+
+  test("packaged artifacts preserve quantities, reference-data, and pure instrument-economics boundaries"):
     val quantitiesJar = compilationClasspath
       .split(File.pathSeparator)
       .map(Paths.get(_))
@@ -43,11 +73,14 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
       .map(Paths.get(_))
       .find(_.getFileName.toString.startsWith("trading-reference-data_3-"))
       .getOrElse(fail("missing packaged reference-data artifact"))
+    val instrumentJar     = packagedInstrumentEconomicsJar
     val quantitiesArchive = new JarFile(quantitiesJar.toFile)
     val referenceArchive  = new JarFile(referenceDataJar.toFile)
+    val instrumentArchive = new JarFile(instrumentJar.toFile)
     try
-      val quantityEntries  = quantitiesArchive.entries().asScala.map(_.getName).toSet
-      val referenceEntries = referenceArchive.entries().asScala.map(_.getName).toSet
+      val quantityEntries   = quantitiesArchive.entries().asScala.map(_.getName).toSet
+      val referenceEntries  = referenceArchive.entries().asScala.map(_.getName).toSet
+      val instrumentEntries = instrumentArchive.entries().asScala.map(_.getName).toSet
       assert(!quantityEntries.exists(_.startsWith("trading/reference/")))
       assert(!quantityEntries.exists(_.startsWith("trading/economics/")))
       List(
@@ -69,59 +102,61 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
         assert(!quantityEntries.contains(s"trading/quantity/$name"), s"quantity JAR retained $name")
         assert(referenceEntries.contains(s"trading/reference/$name"), s"reference-data JAR is missing $name")
       assert(!referenceEntries.exists(_.startsWith("trading/economics/")))
+      assert(instrumentEntries.exists(_ == "trading/economics/instrument/Instrument.class"))
+      List("trading/order/", "trading/scenario/", "trading/fee/policy/", "trading/risk/", "trading/application/")
+        .foreach(prefix => assert(!instrumentEntries.exists(_.startsWith(prefix)), s"pure JAR retained $prefix"))
     finally
       quantitiesArchive.close()
       referenceArchive.close()
+      instrumentArchive.close()
     end try
 
-  test("economics artifact exposes concise instrument concern classes without stale flat API names"):
-    val economicsJar = packagedEconomicsJar
-    val jar          = new JarFile(economicsJar.toFile)
+  test("pure and transitional JARs expose their one-way owned classes"):
+    val instrumentJar = packagedInstrumentEconomicsJar
+    val economicsJar  = packagedEconomicsJar
+    val core          = new JarFile(instrumentJar.toFile)
+    val downstream    = new JarFile(economicsJar.toFile)
     try
-      val entries  = jar.entries().asScala.map(_.getName).toSet
-      val expected = List(
+      val coreEntries       = core.entries().asScala.map(_.getName).toSet
+      val downstreamEntries = downstream.entries().asScala.map(_.getName).toSet
+      val expectedCore      = List(
         "InstrumentDefinition.class",
         "InstrumentAssembler.class",
         "InstrumentSpec.class",
         "Instrument.class",
-        "Prices.class",
-        "Market.class",
-        "Orders.class",
-        "Scenarios.class",
-        "Fees.class",
-        "Valuation.class",
-        "Sizing.class",
-        "Mismatch.class"
+        "Lots.class",
+        "PositionLots.class",
+        "Price.class",
+        "SettlementConversion.class",
+        "MarketState.class",
+        "FeeDenomination.class",
+        "Fee.class",
+        "PricePnl.class",
+        "SettledFeeContribution.class",
+        "Pnl.class",
+        "Valuation.class"
       ).map(name => s"trading/economics/instrument/$name")
-      expected.foreach(entry => assert(entries.contains(entry), s"missing $entry from $economicsJar"))
+      expectedCore.foreach(entry => assert(coreEntries.contains(entry), s"missing $entry from $instrumentJar"))
+      assert(!downstreamEntries.exists(_.startsWith("trading/economics/instrument/")))
+      List(
+        "trading/order/Orders.class",
+        "trading/scenario/Scenarios.class",
+        "trading/fee/policy/FeePolicy.class",
+        "trading/risk/Risk.class"
+      ).foreach(entry => assert(downstreamEntries.contains(entry), s"missing $entry from $economicsJar"))
 
-      val forbidden = entries.filter(entry =>
-        entry.startsWith("trading/economics/instrument/") &&
-          (entry.contains("OwnerAuthority") || entry.contains("JvmOwnerAuthority") || entry.endsWith("Impl.class"))
+      val staleCore = List(
+        "trading/economics/instrument/Prices.class",
+        "trading/economics/instrument/Market.class",
+        "trading/economics/instrument/Fees.class",
+        "trading/economics/instrument/Sizing.class",
+        "trading/economics/instrument/EconomicsError.class",
+        "trading/economics/instrument/ForeignRegistry.class"
       )
-      assertEquals(forbidden, Set.empty[String])
-
-      val stale = List(
-        "trading/economics/Instrument.class",
-        "trading/economics/instrument/Definition.class",
-        "trading/economics/instrument/Identity.class",
-        "trading/economics/instrument/Roles.class",
-        "trading/economics/instrument/ListingRules.class",
-        "trading/economics/instrument/ContractPayoff.class",
-        "trading/economics/instrument/ValidatedDefinition.class",
-        "trading/economics/instrument/DefinitionViolation.class",
-        "trading/economics/instrument/InvalidDefinition.class",
-        "trading/economics/instrument/InstrumentPrices.class",
-        "trading/economics/instrument/InstrumentMarket.class",
-        "trading/economics/instrument/InstrumentOrders.class",
-        "trading/economics/instrument/InstrumentScenarios.class",
-        "trading/economics/instrument/InstrumentFees.class",
-        "trading/economics/instrument/InstrumentValuation.class",
-        "trading/economics/instrument/InstrumentSizing.class",
-        "trading/economics/instrument/InstrumentMismatch.class"
-      )
-      stale.foreach(entry => assert(!entries.contains(entry), s"stale $entry remains in $economicsJar"))
-    finally jar.close()
+      staleCore.foreach(entry => assert(!coreEntries.contains(entry), s"stale $entry remains in $instrumentJar"))
+    finally
+      core.close()
+      downstream.close()
     end try
 
   test("positive downstream economics fixture compiles without warnings and runs"):
@@ -135,19 +170,24 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
     initializeModule(result.output, "external.economics.positive.SameShapeReplayClient$")
 
   private val negativeFixtures = List(
-    NegativeFixture("RemovedFlatApi.scala", List("is not a member"), 10, Some(10)),
-    NegativeFixture("RemovedOwnerApi.scala", List("is not a member", "Owner"), 5, Some(5)),
-    NegativeFixture("RefinementLoss.scala", List("Found:", "Required:"), 5, Some(5)),
-    NegativeFixture("DeferredLifecycle.scala", List("is not a member"), 9, Some(9)),
-    NegativeFixture("AssociatedEvidenceShapes.scala", List("Found:", "Required:"), 6),
-    NegativeFixture("InstrumentSpecAuthority.scala", List("InstrumentSpec"), 1),
-    NegativeFixture("PackageSpoofInstrumentSpec.scala", List("sealed", "InstrumentSpec"), 1),
-    NegativeFixture("RawInstrumentConstruction.scala", List("Found:", "Required:", "is not a member"), 3),
+    NegativeFixture("InstrumentSpecAuthority.scala", List("Cannot extend sealed trait"), 1),
+    NegativeFixture("PackageSpoofInstrumentSpec.scala", List("Cannot extend sealed trait"), 1),
     NegativeFixture("RawDefinitionShape.scala", List("cannot be accessed", "Found:", "Required:"), 6),
+    NegativeFixture("RawInstrumentConstruction.scala", List("Found:", "Required:", "is not a member"), 3),
     NegativeFixture("ReversedPayoffEndpoint.scala", List("Found:", "Required:"), 1, Some(1)),
     NegativeFixture("SpecAuthorityExtraction.scala", List("is not a member"), 4, Some(4)),
+    NegativeFixture("ConversionDoesNotGrantGrid.scala", List("Found:", "Required:"), 1, Some(1)),
+    NegativeFixture("AssociatedEvidenceShapes.scala", List("Found:", "Required:"), 6, Some(6)),
+    NegativeFixture("RemovedCapabilityPaths.scala", List("is not a member"), 7, Some(7)),
+    NegativeFixture("DeferredLifecycle.scala", List("is not a member"), 9, Some(9)),
+    NegativeFixture("RemovedFlatApi.scala", List("is not a member"), 10, Some(10)),
+    NegativeFixture("RemovedOwnerApi.scala", List("is not a member", "Not found"), 4, Some(4)),
+    NegativeFixture("ReversedPriceRate.scala", List("Found:", "Required:"), 1, Some(1)),
     NegativeFixture("ReversedSettlementRate.scala", List("Found:", "Required:"), 1, Some(1)),
-    NegativeFixture("ConversionDoesNotGrantGrid.scala", List("Found:", "Required:"), 1, Some(1))
+    NegativeFixture("RefinementLoss.scala", List("Found:", "Required:"), 4, Some(4)),
+    NegativeFixture("CoreSideAbsent.scala", List("is not a member"), 2, Some(2)),
+    NegativeFixture("UnlawfulAlgebra.scala", List("No given instance"), 2, Some(2)),
+    NegativeFixture("RawCoreConstruction.scala", List("cannot be accessed"), 3, Some(3))
   )
 
   negativeFixtures.foreach: fixture =>
@@ -165,6 +205,12 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
       )
 
   private def compilePrelude(source: Path): Compilation =
+    compileFilteredPrelude(source, compile)
+
+  private def compileCorePrelude(source: Path): Compilation =
+    compileFilteredPrelude(source, compileCore)
+
+  private def compileFilteredPrelude(source: Path, compileFile: Path => Compilation): Compilation =
     val lines    = Files.readAllLines(source, StandardCharsets.UTF_8)
     val filtered = new java.util.ArrayList[String]()
     var dropping = false
@@ -177,22 +223,27 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
     val directory = Files.createTempDirectory("economics-prelude-")
     val copy      = directory.resolve(source.getFileName)
     val _         = Files.write(copy, filtered, StandardCharsets.UTF_8)
-    compile(copy)
+    compileFile(copy)
 
   private def compile(source: Path): Compilation =
-    val output    = Files.createTempDirectory("economics-classes-")
-    val reporter  = new StoreReporter()
-    val arguments = Array(
+    compileWith(source, compilationClasspath, Some(sharedFixture))
+
+  private def compileCore(source: Path): Compilation =
+    compileWith(source, coreCompilationClasspath, None)
+
+  private def compileWith(source: Path, classpath: String, shared: Option[Path]): Compilation =
+    val output        = Files.createTempDirectory("economics-classes-")
+    val reporter      = new StoreReporter()
+    val baseArguments = Array(
       "-classpath",
-      compilationClasspath,
+      classpath,
       "-d",
       output.toString,
       "-Werror",
-      "-source:future",
-      sharedFixture.toString,
-      source.toString
+      "-source:future"
     )
-    val _ = Main.process(arguments, reporter)
+    val arguments = baseArguments ++ shared.toVector.map(_.toString) :+ source.toString
+    val _         = Main.process(arguments, reporter)
     Compilation(output, reporter.allErrors.map(_.message), reporter.allWarnings.map(_.message))
 
   private def packagedEconomicsJar: Path =
@@ -201,6 +252,13 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
       .map(Paths.get(_))
       .find(_.getFileName.toString.startsWith("trading-economics_3-"))
       .getOrElse(fail("missing packaged economics artifact"))
+
+  private def packagedInstrumentEconomicsJar: Path =
+    compilationClasspath
+      .split(File.pathSeparator)
+      .map(Paths.get(_))
+      .find(_.getFileName.toString.startsWith("trading-instrument-economics_3-"))
+      .getOrElse(fail("missing packaged instrument-economics artifact"))
 
   private def initializeModule(output: Path, moduleClassName: String): Unit =
     val loader = new URLClassLoader(Array(output.toUri.toURL), getClass.getClassLoader)
@@ -215,6 +273,25 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
         fail(s"compiled positive economics client module could not be loaded: $error")
       case error: LinkageError =>
         fail(s"compiled positive economics client module could not be linked: $error")
+    finally loader.close()
+
+  private def runModule(output: Path, moduleClassName: String, methodName: String): Unit =
+    val loader = new URLClassLoader(Array(output.toUri.toURL), getClass.getClassLoader)
+    try
+      val moduleClass = Class.forName(moduleClassName, true, loader)
+      val module      = moduleClass.getField("MODULE$").get(null)
+      val _           = moduleClass.getMethod(methodName).invoke(module)
+    catch
+      case error: java.lang.reflect.InvocationTargetException =>
+        val cause = Option(error.getCause).fold(error.toString)(_.toString)
+        fail(s"compiled economics client $moduleClassName.$methodName failed: $cause")
+      case error: ExceptionInInitializerError =>
+        val cause = Option(error.getCause).fold(error.toString)(_.toString)
+        fail(s"compiled economics client $moduleClassName failed during initialization: $cause")
+      case error: ReflectiveOperationException =>
+        fail(s"compiled economics client $moduleClassName could not be invoked: $error")
+      case error: LinkageError =>
+        fail(s"compiled economics client $moduleClassName could not be linked: $error")
     finally loader.close()
 
 end EconomicsCompilerBoundarySuite

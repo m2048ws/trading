@@ -26,27 +26,29 @@ materially unresolved planning artifact blocks Proposal 0.
 
 ## Current physical implementation
 
-Proposal 1 and the staged implementation of active Proposal 2 have now established the first dependent physical
-boundaries. This table describes the implemented SBT projects and must not be confused with the remaining proposed
-target.
+Proposals 1 through 4 have established the current dependent physical boundaries. This table describes the implemented
+SBT projects and must not be confused with the remaining proposed target.
 
 | State | SBT project | Artifact/directory | Production dependency |
 | --- | --- | --- | --- |
-| Current | root `trading` | unpublished aggregate | aggregates quantities, reference data, application, economics, adversarial boundary |
+| Current | root `trading` | unpublished aggregate | aggregates quantities, reference data, application, instrument economics, economics, adversarial boundary |
 | Current | `quantities` | `trading-quantities` / `quantities/` | external mathematical libraries only |
 | Current | `referenceData` | `trading-reference-data` / `reference-data/` | quantities |
 | Current | `application` | `trading-application` / `application/` | reference data |
-| Current | `economics` | `trading-economics` / `economics/` | quantities and reference data |
-| Current test-only | `adversarialBoundary` | unpublished / `adversarial-boundary/` | packaged quantities, reference data, application, and economics artifacts |
+| Current | `instrumentEconomics` | `trading-instrument-economics` / `instrument-economics/` | quantities and reference data |
+| Transitional current | `economics` | `trading-economics` / `economics/` | instrument economics |
+| Current test-only | `adversarialBoundary` | unpublished / `adversarial-boundary/` | packaged quantities, reference data, application, instrument economics, and economics artifacts |
 | Current benchmark-only | `benchmarks` | unpublished / `benchmarks/` | reference data; outside root aggregation |
 
 The current graph is acyclic:
 
 ```text
 quantities <- referenceData <- application
-     ^             ^              |
-     |             +-- economics  |
-     +-----------------------------+-- adversarialBoundary (test-only)
+     ^             ^
+     |             +-- instrumentEconomics <- economics
+     +------------------------^
+
+all completed production artifacts -> adversarialBoundary (test-only)
 ```
 
 The test-only boundary consumes each completed production artifact directly. Concrete runtime interpretation and
@@ -137,10 +139,7 @@ the first deliberate durable compatibility contract.
 | Current exception | Why it is transitional | Migration owner |
 | --- | --- | --- |
 | Quantity-owned packing has been removed, leaving a deliberate durable-codec gap | Stable records require snapshots and an explicit schema owner | Proposal 9 adds versioned codecs |
-| `trading-economics` owns instruments, orders, scenarios, fee policy, P&L, and sizing | Current aggregate predates responsibility split | Proposals 3–7, with Proposal 7 removing the empty aggregate |
-| Instrument assembly and downstream economics temporarily share `trading-economics` | Proposal 3 now owns the focused pure snapshot trust transition; physical narrowing follows | Proposal 4 |
-| Order/scenario/fee/risk capabilities are discoverable through `Instrument` | Instrument currently acts as a service locator | Proposals 4–7 |
-| Root documentation previously listed only quantities | Documentation lagged the implemented economics module | Proposal 0 documentation update |
+| `trading-economics` temporarily owns order, scenario, fee-policy, and risk packages | Their final artifacts are owned by later proposals | Proposals 5–7, with Proposal 7 removing the empty aggregate |
 | Runtime and codec target modules do not exist | Their physical boundaries require real implementation/dependency bodies | Proposals 8 and 9 |
 
 These exceptions describe current implementation facts, not accepted permanent

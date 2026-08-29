@@ -1,23 +1,40 @@
 # order-scenarios Specification
 ## Requirements
 ### Requirement: Compositional immutable orders
-An order SHALL retain one stable runtime `InstrumentId`, an `OrderIntent` containing side, positive lots, and position effect, an explicit activation alternative, and an explicit execution-instruction alternative. The order and its components SHALL use ordinary non-owner-parameterized domain types. Activation SHALL distinguish immediate, fixed-trigger, and trailing-trigger forms by construction. Execution instructions SHALL distinguish market execution from priced execution by construction.
+An order SHALL retain one stable runtime `InstrumentId`, an `OrderIntent` containing side, positive lots, and position
+effect, an explicit activation alternative, and an explicit execution-instruction alternative. The order and its
+components SHALL use ordinary non-owner-parameterized domain types. Activation SHALL distinguish immediate,
+fixed-trigger, and trailing-trigger forms by construction. Execution instructions SHALL distinguish market execution
+from priced execution by construction.
 
-A market execution instruction SHALL retain only mechanics meaningful to a market order, including a valid non-resting duration, and SHALL not contain maker-only or visibility state. A priced execution instruction SHALL contain a limit or pegged price instruction together with duration, liquidity constraint, and displayed, hidden, or iceberg visibility. Shapes that were previously represented by `kind` values plus optional fields or by sentinel values such as not-applicable visibility SHALL not be representable as valid domain values.
+A market execution instruction SHALL retain only mechanics meaningful to a market order, including a valid non-resting
+duration, and SHALL not contain maker-only or visibility state. A priced execution instruction SHALL contain a limit or
+pegged price instruction together with duration, liquidity constraint, and displayed, hidden, or iceberg visibility.
+Shapes previously represented by `kind` values plus optional fields or by not-applicable sentinels SHALL not be
+representable as valid domain values.
 
-The instrument's `orders` capability SHALL construct components that need numeric refinement, validate cross-component conditions and runtime instrument identity that cannot be expressed locally, and construct an immutable `Order` from cohesive intent, activation, and execution inputs. Familiar market, limit, stop-market, and stop-limit entry points SHALL remain available. Venue adapters MAY impose additional venue-specific restrictions without weakening core construction.
+A pure order-construction boundary SHALL consume an explicit `Instrument`; construct side-directed position change from
+that instrument's positive `Lots`; construct components that require numeric refinement; validate cross-component
+conditions and ordinary runtime instrument identity; and construct an immutable `Order` from cohesive intent,
+activation, and execution inputs. `Instrument` SHALL NOT expose this boundary as an owned capability. Familiar market,
+limit, stop-market, and stop-limit entry points SHALL remain available. Venue adapters MAY impose additional
+venue-specific restrictions without weakening core construction.
 
 #### Scenario: Construct an immediate market order
-- **WHEN** a caller supplies buy or sell intent with positive lots to the market-order constructor
-- **THEN** it receives an immutable order with that runtime instrument identity, immediate activation, and a market execution instruction containing no priced-only state
+- **WHEN** a caller supplies an instrument and buy or sell intent with positive lots to the market-order constructor
+- **THEN** it receives an immutable order with that runtime instrument identity, the corresponding signed position
+  change, immediate activation, and a market execution instruction containing no priced-only state
 
 #### Scenario: Construct a stop-limit order compositionally
-- **WHEN** a caller combines a fixed or trailing activation with a limit-priced execution instruction for the same runtime instrument identity
-- **THEN** the resulting order retains both explicit alternatives without unrelated lifecycle state
+- **WHEN** a caller combines an instrument, fixed or trailing activation, and limit-priced execution instruction carrying
+  the same runtime identity
+- **THEN** the resulting order retains the explicit alternatives without unrelated lifecycle state
 
 #### Scenario: Reject market maker-only mechanics
-- **WHEN** a caller attempts to combine a market execution instruction with maker-only liquidity or priced-order visibility
-- **THEN** no valid market instruction can represent that combination because maker-only and visibility state are structurally absent
+- **WHEN** a caller attempts to combine a market execution instruction with maker-only liquidity or priced-order
+  visibility
+- **THEN** no valid market instruction can represent that combination because maker-only and visibility state are
+  structurally absent
 
 #### Scenario: Reject an invalid market duration
 - **WHEN** an adapter attempts to construct market execution with a resting duration
@@ -28,12 +45,18 @@ The instrument's `orders` capability SHALL construct components that need numeri
 - **THEN** final order construction fails with a typed order diagnostic
 
 #### Scenario: Reject an accidentally foreign component
-- **WHEN** final order construction receives lots, a trigger price, a limit price, or iceberg display lots carrying a different runtime `InstrumentId`
+- **WHEN** final order construction receives an instrument, lots, trigger price, limit price, or iceberg display lots
+  carrying different runtime `InstrumentId` values
 - **THEN** construction returns a typed instrument-mismatch failure
 
 #### Scenario: Keep lifecycle state absent
 - **WHEN** a caller inspects an immutable order
-- **THEN** it contains no venue order ID, submission status, fill quantity, cancellation state, fill record, or reported fee
+- **THEN** it contains no venue order ID, submission status, fill quantity, cancellation state, fill record, or reported
+  fee
+
+#### Scenario: Keep order construction downstream
+- **WHEN** downstream Scala depends only on instrument economics
+- **THEN** order-side, time-in-force, trigger, visibility, and order-construction types are absent
 
 ### Requirement: Explicit trigger and price mechanics
 Immediate, fixed-trigger, and trailing-trigger activation SHALL be direct closed alternatives rather than one record containing a kind and optional fields. The alternatives SHALL NOT carry a generative owner type or require owner authority to construct. A fixed trigger SHALL contain its observed reference, comparison direction, and positive instrument price. A trailing trigger SHALL contain its reference, comparison direction, and a strictly positive tick offset. It SHALL be impossible to obtain a valid fixed trigger without its price or a valid trailing trigger without its offset through the supported smart-construction API.
@@ -98,14 +121,28 @@ Market, limit, and pegged pricing SHALL likewise be explicit alternatives with a
 - **THEN** the order value remains unchanged and only the scenario outcomes differ
 
 ### Requirement: Complete checked order scenarios
-A complete order scenario SHALL bind one immutable order and one cohesive `ScenarioAssumptions` value containing activation status, pricing resolution, and a non-empty immutable vector of positive liquidity slices. These types SHALL be ordinary non-owner-parameterized domain types that retain their runtime `InstrumentId` where needed for aggregate coherence. Supported assumption construction SHALL consume activation evidence and pricing resolution associated with the corresponding order shapes, so missing, extraneous, fixed-versus-trailing, and direct-versus-pegged combinations are not representable through that construction path. An adapter starting from untyped or serialized input SHALL establish those associated values through the same typed validation boundaries before constructing assumptions.
+A complete order scenario SHALL bind one immutable order and one cohesive `ScenarioAssumptions` value containing
+activation status, pricing resolution, and a non-empty immutable vector of positive liquidity slices. These types SHALL
+be ordinary non-owner-parameterized domain types that retain their runtime `InstrumentId` where needed for aggregate
+coherence. Supported assumption construction SHALL consume activation evidence and pricing resolution associated with
+the corresponding order shapes, so missing, extraneous, fixed-versus-trailing, and direct-versus-pegged combinations
+are not representable through that construction path. An adapter starting from untyped or serialized input SHALL
+establish those associated values through the same typed validation boundaries before constructing assumptions.
 
-Each liquidity slice SHALL carry positive lots, a coherent market state representing its assumed matched price and conversions, and a liquidity role. The instrument's `scenarios` capability SHALL accept the order and cohesive assumptions, validate aggregate invariants, and return a valid `OrderScenario`. It SHALL validate runtime instrument identity, exact lot conservation, semantic activation satisfaction, peg consistency, limit-price quality, and liquidity-role compatibility without projecting the order into a parallel scalar `View` model.
+Each liquidity slice SHALL carry positive lots, a coherent market state representing its assumed matched price and
+conversions, and a liquidity role. A pure scenario-construction boundary SHALL consume an explicit `Instrument`, order,
+and cohesive assumptions; validate aggregate invariants; and return a valid `OrderScenario`. `Instrument` SHALL NOT
+expose this boundary as an owned capability. Construction SHALL validate runtime instrument identity, exact lot
+conservation, semantic activation satisfaction, peg consistency, limit-price quality, and liquidity-role compatibility
+without projecting the order into a parallel scalar `View` model.
 
-The capability SHALL offer an accumulating diagnostic boundary that returns every independently detectable scenario violation in deterministic order within each validation stage. A stage whose checks depend on a successfully resolved activation, pricing, identity, or collection value SHALL run only after that prerequisite succeeds. The existing fail-fast scenario-construction boundary SHALL remain available and SHALL return the first corresponding `EconomicsError` from the same ordered rules.
+The boundary SHALL offer an accumulating diagnostic path that returns every independently detectable scenario violation
+in deterministic order within each validation stage. A stage whose checks depend on successfully resolved activation,
+pricing, identity, or collection evidence SHALL run only after that prerequisite succeeds. A fail-fast construction
+path SHALL remain available and SHALL return the first corresponding scenario error from the same ordered rules.
 
 #### Scenario: Accept multiple assumed prices
-- **WHEN** a complete order is modeled as positive slices at several grid-valid prices for the same runtime instrument identity
+- **WHEN** a complete order is modeled as positive slices at several grid-valid prices for the same instrument
 - **THEN** the scenario retains every slice and their exact lot total
 
 #### Scenario: Accept one slice without a collection wrapper
@@ -121,11 +158,13 @@ The capability SHALL offer an accumulating diagnostic boundary that returns ever
 - **THEN** scenario construction fails with the offending slice identified
 
 #### Scenario: Reject missing trigger evidence
-- **WHEN** downstream Scala attempts to construct assumptions for a triggered activation without its associated trigger evidence
+- **WHEN** downstream Scala attempts to construct assumptions for a triggered activation without its associated trigger
+  evidence
 - **THEN** the supported associated-evidence construction call does not type-check for that invalid pairing
 
 #### Scenario: Reject extraneous trigger evidence
-- **WHEN** downstream Scala attempts to construct assumptions for immediate activation with fixed or trailing trigger evidence
+- **WHEN** downstream Scala attempts to construct assumptions for immediate activation with fixed or trailing trigger
+  evidence
 - **THEN** the supported associated-evidence construction call does not type-check for that invalid pairing
 
 #### Scenario: Reject an unsatisfied trigger semantically
@@ -137,7 +176,8 @@ The capability SHALL offer an accumulating diagnostic boundary that returns ever
 - **THEN** the typed associated-resolution boundary fails before producing effective pricing
 
 #### Scenario: Reject inconsistent same-shape peg resolution replay
-- **WHEN** a resolution constructed for one pegged instruction is supplied to a same-shape instruction with a different reference or offset
+- **WHEN** a resolution constructed for one pegged instruction is supplied to a same-shape instruction with a different
+  reference or offset
 - **THEN** pricing resolution returns a typed semantic mismatch before an `OrderScenario` is produced
 
 #### Scenario: Reject an incomplete lot allocation
@@ -145,7 +185,8 @@ The capability SHALL offer an accumulating diagnostic boundary that returns ever
 - **THEN** complete-scenario construction fails rather than treating the remainder as lifecycle state
 
 #### Scenario: Reject a foreign scenario value
-- **WHEN** an order, activation price, peg resolution, slice lots, or slice market state carries a different runtime `InstrumentId`
+- **WHEN** the instrument, order, activation price, peg resolution, slice lots, or market state carries a different
+  runtime `InstrumentId`
 - **THEN** complete-scenario construction returns a typed instrument-mismatch failure
 
 #### Scenario: Accumulate independent slice violations
@@ -154,29 +195,39 @@ The capability SHALL offer an accumulating diagnostic boundary that returns ever
 
 #### Scenario: Preserve deterministic fail-fast scenario construction
 - **WHEN** the same invalid scenario request is supplied to the accumulating and fail-fast boundaries
-- **THEN** the fail-fast boundary returns the error corresponding to the first accumulated violation reachable through the shared validation stages
+- **THEN** the fail-fast boundary returns the error corresponding to the first accumulated violation reachable through
+  the shared validation stages
 
 #### Scenario: Avoid a parallel validation model
 - **WHEN** scenario construction validates activation, pricing, lots, liquidity, and runtime instrument coherence
-- **THEN** the domain alternatives and their associated evidence provide the data and cases being validated, with no duplicate kind-plus-option projection or owner-authority implementation layer
+- **THEN** the domain alternatives and their associated evidence provide the data and cases being validated, with no
+  duplicate kind-plus-option projection or owner-authority implementation layer
+
+#### Scenario: Keep scenario evaluation downstream
+- **WHEN** downstream Scala depends only on instrument economics
+- **THEN** activation evidence, liquidity slices, scenario assumptions, and scenario-validation policy are absent
 
 ### Requirement: Checked round-trip scenarios
-A round-trip trade scenario SHALL contain complete entry and exit order scenarios carrying the same stable runtime `InstrumentId` and SHALL require their signed position changes to sum exactly to flat. The instrument's `scenarios` capability SHALL perform this checked construction and preserve each leg's activation and liquidity slices. It SHALL NOT infer a closing side, silently resize a leg, or combine values carrying different runtime instrument identities.
+A round-trip trade scenario SHALL contain complete entry and exit order scenarios carrying the same stable runtime
+`InstrumentId` and SHALL require their signed position changes to sum exactly to flat. A pure round-trip constructor
+SHALL consume an explicit `Instrument` and preserve each leg's activation and liquidity slices. `Instrument` SHALL NOT
+expose that constructor as an owned capability. Construction SHALL NOT infer a closing side, silently resize a leg, or
+combine values carrying different runtime instrument identities.
 
 #### Scenario: Construct a long round trip
-- **WHEN** a buy entry and equal-lot sell exit carry the target instrument's identity
-- **THEN** `scenarios` constructs a round trip whose held position is the entry's positive signed position change
+- **WHEN** a buy entry and equal-lot sell exit carry the supplied instrument identity
+- **THEN** round-trip construction returns a value whose held position is the entry's positive signed position change
 
 #### Scenario: Construct a short round trip
-- **WHEN** a sell entry and equal-lot buy exit carry the target instrument's identity
-- **THEN** `scenarios` constructs a round trip whose held position is the entry's negative signed position change
+- **WHEN** a sell entry and equal-lot buy exit carry the supplied instrument identity
+- **THEN** round-trip construction returns a value whose held position is the entry's negative signed position change
 
 #### Scenario: Reject unequal closing lots
 - **WHEN** entry and exit position changes do not sum exactly to flat
 - **THEN** round-trip construction fails
 
 #### Scenario: Reject cross-instrument legs
-- **WHEN** entry and exit scenarios carry different runtime `InstrumentId` values
+- **WHEN** the supplied instrument, entry scenario, and exit scenario do not carry one runtime `InstrumentId`
 - **THEN** round-trip construction returns a typed instrument-mismatch failure
 
 ## Purpose
