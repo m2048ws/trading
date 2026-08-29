@@ -1,6 +1,10 @@
 schemaVersion: 1
 id: RFC-0001-project-foundation
 type: foundation
-status: draft
+status: accepted
 author: m@2048.ws
 createdAt: '2026-08-29T19:30:10.671Z'
+acceptance:
+  approver: m2048ws
+  approvedAt: '2026-08-29T19:37:09.338Z'
+  digest: 29e99a4b72a62e15bf425a71134feb4f021bd759ea452563f776e38e2c62e6bd
