@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "source": {
+    "ref": "migration/pre-corgi-v4",
+    "commit": "e6c6f9c4eb4d75087b5a81e307e5ea6bf00a21b1"
+  },
+  "externalChanges": [
+    {
+      "name": "establish-pure-instrument-economics",
+      "tree": "46a73a2e6fb2b91941158e74af9bb0b25e5fb761",
+      "disposition": "implemented-in-separate-clone-and-integrated-later-as-archived"
+    }
+  ],
+  "convertedChanges": [
+    {
+      "name": "introduce-application-and-runtime-foundation",
+      "tree": "86a9cea3d45668a6f28ceb24c3f24ffa4735fadd",
+      "blockedBy": []
+    },
+    {
+      "name": "separate-order-and-execution-scenario-modules",
+      "tree": "5dba91b7f2ec8137a7e80fbbdae7ccc7d12da70e",
+      "blockedBy": [
+        "establish-pure-instrument-economics"
+      ]
+    },
+    {
+      "name": "introduce-pure-risk-module",
+      "tree": "918e214303f9f5ccceed8119e2f49ec685909441",
+      "blockedBy": [
+        "establish-pure-instrument-economics"
+      ]
+    },
+    {
+      "name": "introduce-pure-fee-policy-module",
+      "tree": "115e6fa8aa82acf69c117541ae09b16ab0ee5b58",
+      "blockedBy": [
+        "separate-order-and-execution-scenario-modules"
+      ]
+    },
+    {
+      "name": "introduce-versioned-boundary-codecs",
+      "tree": "5ad6e6adc55b117154f024bec5a9464e6ea8f36c",
+      "blockedBy": [
+        "separate-order-and-execution-scenario-modules"
+      ]
+    }
+  ],
+  "scaffoldingChanges": [
+    {
+      "name": "pilot-coding-corgi-flow-as-openspec-delivery-layer",
+      "tree": "b86358821c94491b2c4ac2ad2fce255b084b91c7",
+      "disposition": "archive-before-bootstrap"
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "name": "trading-corgi-pilot",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Pinned Coding Corgi Flow runtime for the reversible delivery pilot",
+  "license": "UNLICENSED",
+  "engines": {
+    "node": ">=20.19.0"
+  },
+  "dependencies": {
+    "corgispec": "4.0.0-rc2"
+  }
+}

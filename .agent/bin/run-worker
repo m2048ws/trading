@@ -48,6 +48,24 @@ def repository_identity() -> dict[str, str]:
     return json.loads(result.stdout)
 
 
+def review_revision(context_file: pathlib.Path, role: str) -> str | None:
+    if role != "review":
+        return None
+    try:
+        context = json.loads(context_file.read_text())
+    except (OSError, json.JSONDecodeError) as exc:
+        fail(f"Invalid context JSON: {exc}")
+    candidate = context.get("REVIEW_REVISION")
+    if candidate is None:
+        return None
+    if not isinstance(candidate, str) or not candidate:
+        fail("REVIEW_REVISION must be a full commit id")
+    resolved = run("git", "rev-parse", "--verify", f"{candidate}^{{commit}}")
+    if resolved.returncode != 0 or resolved.stdout.strip() != candidate:
+        fail("REVIEW_REVISION must resolve exactly to a full commit id")
+    return candidate
+
+
 def trace_identity(
     role: str,
     change: str,
@@ -88,6 +106,7 @@ def main() -> None:
     template = (ROOT / policy_field(role, "prompt_template")).resolve()
     schema = (ROOT / policy_field(role, "report_schema")).resolve()
     mutation_class = policy_field(role, "mutation_class")
+    selected_review_revision = review_revision(context_file, role)
     if not template.is_file():
         fail(f"Missing template: {template}")
     if not schema.is_file():
@@ -114,6 +133,16 @@ def main() -> None:
     identity = trace_identity(
         role, change, mutation_class, launch_id, report_file
     )
+    selected_tree_before = None
+    if selected_review_revision is not None:
+        selected = run(
+            "git", "rev-parse", "--verify", f"{selected_review_revision}^{{tree}}"
+        )
+        if selected.returncode != 0:
+            fail("Unable to resolve exact review tree")
+        selected_tree_before = selected.stdout.strip()
+        identity["review_revision"] = selected_review_revision
+        identity["review_tree"] = selected_tree_before
     reservation: WriterReservation | None = None
     if mutation_class == "primary_worktree_writer":
         reservation = WriterReservation(ROOT)
@@ -129,18 +158,21 @@ def main() -> None:
     print(f"  report: {report_file}", file=sys.stderr)
 
     review_tree_before = (
-        repository_identity()["staged_tree"] if role == "review" else None
+        repository_identity()["staged_tree"]
+        if role == "review" and selected_review_revision is None
+        else None
     )
     event = "interrupted"
     try:
-        worker = run(
+        worker_args = [
             str(ROOT / ".agent" / "bin" / "codex-worker"),
             role,
             str(report_file),
             str(schema),
-            input=rendered.stdout,
-            close_fds=True,
-        )
+        ]
+        if selected_review_revision is not None:
+            worker_args.append(selected_review_revision)
+        worker = run(*worker_args, input=rendered.stdout, close_fds=True)
         sys.stdout.write(worker.stdout)
         sys.stderr.write(worker.stderr)
         if worker.returncode != 0:
@@ -163,14 +195,38 @@ def main() -> None:
             raise SystemExit(3)
 
         if role == "review":
-            review_tree_after = repository_identity()["staged_tree"]
-            if review_tree_after != review_tree_before:
+            review_tree_after = (
+                repository_identity()["staged_tree"]
+                if selected_review_revision is None
+                else None
+            )
+            if (
+                selected_review_revision is None
+                and review_tree_after != review_tree_before
+            ):
                 print(
                     "Independent review approval is stale: staged tree changed",
                     file=sys.stderr,
                 )
                 event = "staged_tree_changed"
                 raise SystemExit(5)
+            if selected_review_revision is not None:
+                selected = run(
+                    "git",
+                    "rev-parse",
+                    "--verify",
+                    f"{selected_review_revision}^{{tree}}",
+                )
+                if (
+                    selected.returncode != 0
+                    or selected.stdout.strip() != selected_tree_before
+                ):
+                    print(
+                        "Independent review approval is stale: selected commit tree changed",
+                        file=sys.stderr,
+                    )
+                    event = "selected_tree_changed"
+                    raise SystemExit(5)
 
         event = "report_validated"
         print("\nWorker report:", file=sys.stderr)
