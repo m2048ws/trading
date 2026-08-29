@@ -31,9 +31,12 @@ The current production modules are:
 - project: `application`
 - artifact: `trading-application`
 - primary package: `trading.application`
+- project: `instrumentEconomics`
+- artifact: `trading-instrument-economics`
+- primary package: `trading.economics.instrument`
 - project: `economics`
 - artifact: `trading-economics`
-- primary package: `trading.economics.instrument`
+- primary packages: `trading.order`, `trading.scenario`, `trading.fee.policy`, `trading.risk`
 
 A separate downstream/boundary project exercises completed public artifacts from outside their production modules.
 
@@ -41,12 +44,14 @@ The current physical dependency graph is:
 
 ```text
 quantities <- referenceData <- application
-     ^             ^              |
-     |             +-- economics  |
-     +-----------------------------+-- adversarialBoundary (test-only)
+     ^             ^
+     |             +-- instrumentEconomics <- economics
+     +------------------------^
+
+all completed production artifacts -> adversarialBoundary (test-only)
 ```
 
-The root aggregates the four production modules plus the test-only adversarial boundary and is not published. Reference
+The root aggregates the five production modules plus the test-only adversarial boundary and is not published. Reference
 data contains pure immutable catalog state/transitions and coherent snapshots. Application currently contains only the
 minimal `LiveCatalog[F]` port. The benchmark-only project is non-published and outside root aggregation.
 
@@ -63,9 +68,9 @@ packed records are absent; Proposal 9 owns their durable replacement.
 
 Avoid speculative package subdivision unless an actual body of code requires it.
 
-The economics production package currently aggregates instrument construction, prices and market state, orders,
-hypothetical execution scenarios, fees/P&L, and sizing. This is an explicit transitional exception owned by active
-Proposals 3 through 7.
+Instrument economics owns assembled instruments, exact economic values, and pure valuation. The transitional economics
+artifact owns only downstream order, hypothetical execution-scenario, fee-policy, and risk packages until Proposals
+5 through 7 move them into their final artifacts.
 
 ## Exact Quantity Model
 

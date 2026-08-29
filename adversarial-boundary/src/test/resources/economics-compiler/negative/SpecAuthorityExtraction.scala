@@ -7,9 +7,8 @@ object SpecAuthorityExtraction:
 
   // OFFENDING-BEGIN
   val lineage = spec.lineage
-  val snapshot = spec.snapshot
+  val snapshotValue = spec.snapshot
   val retag = spec.retag
   val proof = spec.sameDimension
   // OFFENDING-END
-
 end SpecAuthorityExtraction

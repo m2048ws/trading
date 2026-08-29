@@ -10,7 +10,6 @@ object ConversionDoesNotGrantGrid:
     .get
 
   // OFFENDING-BEGIN
-  val coordinate: GridQuantity[quote.D, settleGrid.G] = exact
+  val coordinate: GridQuantity[quote.D, quoteGrid.G] = exact
   // OFFENDING-END
-
 end ConversionDoesNotGrantGrid
