@@ -1,8 +1,8 @@
 # Coding Corgi Flow pilot
 
-This directory pins the reversible Corgi delivery pilot. It is deliberately dormant: `pilot.json` has
-`enabled: false` and no admitted changes. The repository remains on its existing lifecycle until every activation gate
-passes.
+This directory pins the reversible Corgi delivery pilot. Corgi v4 bootstrap has completed on the cutover branch with
+GitHub tracking and worktree isolation configured. Admission remains deliberately dormant: `pilot.json` has
+`enabled: false` and no admitted changes while the Foundation/portfolio RFCs and five converted changes are prepared.
 
 ## Reproduce the runtime and preflight
 
@@ -13,23 +13,30 @@ cd ../..
 .agent/bin/corgi-qualify
 ```
 
-The preflight is read-only. It verifies the exact npm version, integrity, and MIT package metadata; runs Corgi's v4
-bootstrap dry-run; inventories active changes; checks the Codex skill target; checks GitHub CLI authentication; and
-reports whether the project-owned admission switch is enabled.
+The preflight is read-only. It verifies the exact npm version, integrity, and MIT package metadata; inventories active
+changes; checks the Codex skill target; checks GitHub CLI authentication; and reports whether the project-owned
+admission switch is enabled. In a sandbox that cannot read the macOS credential store, run GitHub-dependent checks in
+the normal user shell.
 
 ## Activation boundary
 
-Activation requires a follow-up, reviewed change after this change and every other active OpenSpec change is complete.
-That change must:
+Bootstrap cleared its zero-active-change migration gate, installed the RFC/Memory/Wiki foundation, preserved hook
+opt-out, replaced the old project-local skills with 27 verified user-level Corgi skills, and restored GitHub CLI
+authentication. The exact legacy source trees and dependency map are recorded in `migration-manifest.json`.
 
-1. make the v4 bootstrap dry-run succeed in every registered worktree;
-2. rerun bootstrap against an isolated clone and approve the complete generated-path diff;
-3. choose and validate the user-level Codex skill installation or a reviewed project/plugin substitute;
-4. apply the fields in `activation-config.yaml` without overwriting project-owned context;
-5. restore or intentionally replace any bootstrap-removed project-local skills;
-6. restore valid GitHub CLI authentication;
-7. add only the selected feature and maintenance pilot names to `admittedChanges`; and
-8. set `enabled: true` only after all preceding checks pass.
+Before admission is enabled:
+
+1. replace the generated Foundation RFC placeholders, validate it, commit it, and record explicit human acceptance;
+2. create and accept the architecture-portfolio RFC containing five delivery slices;
+3. use Corgi Propose plus agent reconciliation to rehydrate the five named changes from the preserved source commit;
+4. validate semantic coverage and create the native GitHub dependency relationships;
+5. add exactly those five names to `admittedChanges`; and
+6. set `enabled: true` only after the preceding checks pass.
+
+Release-candidate evidence: `corgispec validate` searches project-local skill directories even though v4 installs Codex
+skills user-level; use `corgispec doctor` to verify that installation. Bootstrap `verify` also rejects this valid
+`spec-driven` installation because its managed project-file set is empty. Doctor, Memory/Wiki lint, RFC, and lifecycle
+commands remain available; retain both observations for the final adoption decision.
 
 Do not hand-edit Corgi Run Contract state under `.corgi/loop`.
 
@@ -74,8 +81,9 @@ snapshot behavior. PR publication performs the second freshness check against Gi
 
 ## Rollback
 
-Before activation, rollback is only removal of these dormant tracked assets and restoration of the three small launcher
-changes; no remote cleanup exists because the adapter cannot run while disabled.
+Before admission creates an Issue or Run, rollback is a Git revert of the cutover/bootstrap commits plus optional
+removal of the 27 user-level Corgi skills. The exact pre-migration source remains at the commit recorded in
+`migration-manifest.json`; no remote delivery cleanup exists yet because the adapter remains disabled.
 
 After an activated pilot, rollback is intentionally explicit and recoverable:
 

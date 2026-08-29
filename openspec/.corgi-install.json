@@ -1,0 +1,35 @@
+{
+  "version": 2,
+  "packageVersion": "4.0.0-rc2",
+  "installedAt": "2026-08-29T19:30:09.485Z",
+  "updatedAt": "2026-08-29T19:30:09.485Z",
+  "sourceRepo": "/Users/m/src/money/tools/corgi/node_modules/corgispec",
+  "schema": "spec-driven",
+  "isolation": {
+    "mode": "worktree",
+    "root": ".worktrees",
+    "branch_prefix": "corgi/"
+  },
+  "files": {},
+  "hooks": {},
+  "latestMigration": {
+    "fromManifestVersion": null,
+    "repaired": [],
+    "updated": [],
+    "removed": [
+      ".codex/skills/openspec-apply-change",
+      ".codex/skills/openspec-archive-change",
+      ".codex/skills/openspec-explore",
+      ".codex/skills/openspec-propose",
+      ".codex/skills/openspec-sync-specs",
+      ".codex/skills/openspec-update-change"
+    ],
+    "preserved": [
+      "hooks:claude:not-installed",
+      "hooks:codex:not-installed",
+      "hooks:opencode:not-installed"
+    ],
+    "conflicts": [],
+    "backups": []
+  }
+}

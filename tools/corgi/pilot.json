@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "enabled": false,
-  "blockedReason": "CorgiSpec v4 bootstrap requires every repository worktree to have no active OpenSpec change; this pilot and six legacy changes are currently active.",
+  "blockedReason": "CorgiSpec v4 bootstrap is complete; admission awaits accepted Foundation and portfolio RFCs plus semantic rehydration of the five selected changes.",
   "corgi": {
     "version": "4.0.0-rc2",
     "binary": "tools/corgi/node_modules/.bin/corgispec",
