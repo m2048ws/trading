@@ -1,8 +1,9 @@
 # Architecture Charter Portfolio Audit
 
-This is the Proposal 0 coherence and traceability record for the active change
-`establish-architecture-and-functional-design-charter`. It records the audit
-performed on 2026-08-28 before project guidance was changed.
+This began as the Proposal 0 coherence and traceability audit performed on
+2026-08-28. It now serves as a historical design map. Accepted RFCs, Corgi
+planning packages, and the current source tree supersede its old proposal and
+steward sequencing language when they differ.
 
 ## Portfolio completeness
 
@@ -101,9 +102,12 @@ API.
 
 ## Accepted implementation order and compatibility policy
 
-The accepted order is Proposal 0 followed by Proposals 1 through 9 in the order
-listed under portfolio completeness. Each change uses the steward apply,
-independent-review, archive, and validation gates.
+The historical proposal ordering has been superseded by the accepted
+architecture-portfolio RFC and GitHub dependency graph. Application/runtime is
+independent; order/scenarios and risk wait for instrument economics; fee policy
+and codecs then wait for order/scenarios. Each admitted change uses the Corgi
+Run Contract gates for Apply, Verify, explicit Human Review, Human QA when
+applicable, and Archive.
 
 The important intermediate constraints are:
 
@@ -148,8 +152,8 @@ architecture. No proposed module or API is presented as available today.
 
 | Requirement | Guide | Stable context/decision | Review enforcement |
 | --- | --- | --- | --- |
-| Cohesive ownership and directed dependencies | Responsibility and dependency direction | `.agent/project.md`, architecture invariants, active charter decision | Charter ownership/dependency questions |
-| Target responsibility layers | Responsibility and dependency direction; layer profile | `.agent/project.md` target graph | Current/proposed state and scope review |
+| Cohesive ownership and directed dependencies | Responsibility and dependency direction | canonical architecture spec, accepted RFCs | Charter ownership/dependency questions |
+| Target responsibility layers | Responsibility and dependency direction; layer profile | architecture-portfolio RFC | Current/proposed state and scope review |
 | Mature mechanisms contained by responsibility | Dependency admission | dependency/platform invariants and active decision | Dependency-admission review |
 | Logical boundaries before physical modules | Responsibility and dependency direction | logical-before-physical invariant | Speculative module check |
 | Boundary data becomes trusted once | Preserve semantic information | trust-boundary invariant | Boundary/evidence review |
@@ -164,7 +168,7 @@ architecture. No proposed module or API is presented as available today.
 | Algebra before control flow | Algebra before control flow | algebra-first invariant | Algebra/law review |
 | Semantic information remains in types | Preserve semantic information | semantic-preservation invariant | Trust/type-erasure review |
 | Independent vs dependent validation | Validation and errors | evidence-validation invariant | Validation-stage/error-order review |
-| Public APIs total | `docs/design-principles.md` validation/errors and proposal checklist | `.agent/project.md`; `INV-C7` and `INV-C10` in `.agent/invariants.md` | `.agent/review-policy.md`; `.agent/steward.md`; apply/review/remediation charter gates; `AGENTS.md` |
+| Public APIs total | `docs/design-principles.md` validation/errors and proposal checklist | canonical Scala functional-design spec | Corgi Task Group review, Verify, and Human Review gates |
 | Advanced Scala serves semantics | Advanced Scala and readable APIs | domain-readable ergonomics invariant | Concrete/generic ergonomics review |
 | Standard composition replaces plumbing | Algebra and validation sections | mature-mechanism and algebra invariants | Mechanism/abstraction review |
 | Effect polymorphism for genuine capabilities | Layer profile | pure/effect invariant | Port-admission review |
