@@ -12,5 +12,10 @@ bootstrap through `CatalogModel.commit`, and returns typed violations or only th
 private `Ref` publishes complete immutable states. The interpreter owns no releasable resource, so construction returns
 `F[...]`; callers may lift it into a larger `Resource` graph without adding a meaningless finalizer.
 
+Snapshot capture performs one atomic state read and returns an immutable `CatalogSnapshot`; all point resolution after
+capture is pure. Commit performs one atomic modification whose retryable function invokes only `CatalogModel.commit`.
+Failures and idempotent retries retain the current state, while a valid non-empty transition publishes its complete
+successor revision and delta together.
+
 Callers depend on the application-facing `LiveCatalog[F]` capability. Runtime coordination classes and mutable state
 remain implementation details and do not appear in application signatures.

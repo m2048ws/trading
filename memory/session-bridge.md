@@ -15,19 +15,18 @@ updated: 2026-08-29
 - **Change**: introduce-application-and-runtime-foundation
 - **Worktree**: /Users/m/src/money/.worktrees/introduce-application-and-runtime-foundation
 - **Phase at Checkpoint**: applying
-- **Task Group at Checkpoint**: 3
-- **Observed Run Revision**: 4
-- **Last Verified HEAD**: c408671fab69cd22cd3e3c5aed38b7129f49a004
+- **Task Group at Checkpoint**: 4
+- **Observed Run Revision**: 5
+- **Last Verified HEAD**: 6a077e9eca36516da689afa31c7b3e84ae6a1b12
 
 ## Next Action
-- Commit and acknowledge Task Group 3 after its construction checks and structured review.
+- Commit and acknowledge Task Group 4 after its atomic-transition checks and structured review.
 
 ## Blockers
 - none
 
 ## Uncommitted Work
-- `InMemoryLiveCatalog` construction, construction and private-boundary tests, runtime documentation, and this Task
-  Group 3 bridge checkpoint.
+- Atomic snapshot/commit semantic tests, runtime documentation, and this Task Group 4 bridge checkpoint.
 
 ## Discoveries
 - Baseline inventory found `LiveCatalog[F]`, `CatalogModel`, completed-JAR compiler fixtures, and the non-published
@@ -38,6 +37,8 @@ updated: 2026-08-29
   the Group 3 interpreter factory.
 - The public factory exposes only `LiveCatalog[F]`; the concrete class and its single `Ref[F, CatalogState]` are private
   and rejected by the completed-artifact compiler fixture.
+- Sequential, failed, idempotent, and historical-snapshot checks confirm one published state lineage with exact
+  revision/delta conservation and deterministic accumulated errors.
 
 ## Promotion Queue
 - After whole-change verification and Archive, promote the delivered runtime/application dependency boundary and
