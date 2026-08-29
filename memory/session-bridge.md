@@ -1,6 +1,6 @@
 ---
 type: memory
-updated: 2026-08-29
+updated: 2026-08-30
 ---
 
 # Session Bridge
@@ -15,18 +15,20 @@ updated: 2026-08-29
 - **Change**: introduce-application-and-runtime-foundation
 - **Worktree**: /Users/m/src/money/.worktrees/introduce-application-and-runtime-foundation
 - **Phase at Checkpoint**: applying
-- **Task Group at Checkpoint**: 4
-- **Observed Run Revision**: 5
-- **Last Verified HEAD**: 6a077e9eca36516da689afa31c7b3e84ae6a1b12
+- **Task Group at Checkpoint**: 5
+- **Observed Run Revision**: 6
+- **Last Verified HEAD**: c54f944a52e6d15ca45ff5fdf3d5a006da859219
 
 ## Next Action
-- Commit and acknowledge Task Group 4 after its atomic-transition checks and structured review.
+- Commit and acknowledge Task Group 5 after its concurrency, cancellation, stress, and performance checks and
+  structured review.
 
 ## Blockers
 - none
 
 ## Uncommitted Work
-- Atomic snapshot/commit semantic tests, runtime documentation, and this Task Group 4 bridge checkpoint.
+- Concurrency/cancellation/stress tests, live-runtime benchmark code and evidence, the benchmark dependency update, and
+  this Task Group 5 bridge checkpoint.
 
 ## Discoveries
 - Baseline inventory found `LiveCatalog[F]`, `CatalogModel`, completed-JAR compiler fixtures, and the non-published
@@ -39,8 +41,14 @@ updated: 2026-08-29
   and rejected by the completed-artifact compiler fixture.
 - Sequential, failed, idempotent, and historical-snapshot checks confirm one published state lineage with exact
   revision/delta conservation and deterministic accumulated errors.
+- Real-runtime races establish one lossless publication order and typed loser revalidation; deterministic TestControl
+  evidence proves cancellation exposes only a complete predecessor or successor and supports an unchanged retry.
+- The live-runtime JMH run separates coordinated snapshot capture, one-capture high-volume lookup, uncontended
+  publication, and four-thread contention; its JDK 26.0.2 figures are directional machine-local evidence only.
 
 ## Promotion Queue
 - After whole-change verification and Archive, promote the delivered runtime/application dependency boundary and
   in-memory interpreter ownership from concrete source evidence.
 - Retain the dependency-coordinate rename as delivery evidence; promote only if it remains true at Archive.
+- Preserve the one-capture high-volume lookup guidance and atomic concurrency semantics if whole-change verification
+  confirms them.

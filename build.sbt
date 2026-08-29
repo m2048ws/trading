@@ -161,7 +161,7 @@ lazy val benchmarks =
   project
     .in(file("benchmarks"))
     .enablePlugins(JmhPlugin)
-    .dependsOn(referenceData)
+    .dependsOn(referenceData, application, runtime)
     .settings(
       name           := "trading-benchmarks",
       publish / skip := true
