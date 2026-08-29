@@ -1,0 +1,6 @@
+schemaVersion: 1
+rfcId: RFC-0002-architecture-portfolio
+revision: 0
+slices:
+  S-01-architecture-portfolio:
+    status: unbound
