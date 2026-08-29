@@ -15,23 +15,29 @@ updated: 2026-08-29
 - **Change**: introduce-application-and-runtime-foundation
 - **Worktree**: /Users/m/src/money/.worktrees/introduce-application-and-runtime-foundation
 - **Phase at Checkpoint**: applying
-- **Task Group at Checkpoint**: 1
-- **Observed Run Revision**: 2
-- **Last Verified HEAD**: 6fe255164044ce04da9d4e3b49e44ff4d266e57e
+- **Task Group at Checkpoint**: 2
+- **Observed Run Revision**: 3
+- **Last Verified HEAD**: a7b29bab55b368bb50cf3cadb8412d472d2087d0
 
 ## Next Action
-- Commit and acknowledge Task Group 1 after its clean baseline and structured review.
+- Commit and acknowledge Task Group 2 after its runtime-boundary checks and structured review.
 
 ## Blockers
 - none
 
 ## Uncommitted Work
-- Session Bridge checkpoint for Task Group 1.
+- Runtime SBT module and package documentation, dependency/classpath wiring, packaged boundary fixtures, module
+  documentation, and this Task Group 2 bridge checkpoint.
 
 ## Discoveries
-- Baseline inventory confirms `LiveCatalog[F]`, `CatalogModel`, completed-JAR compiler fixtures, and the non-published
-  benchmark project already exist; no `runtime` module or concrete live-catalog interpreter exists yet.
+- Baseline inventory found `LiveCatalog[F]`, `CatalogModel`, completed-JAR compiler fixtures, and the non-published
+  benchmark project, but no runtime module or concrete live-catalog interpreter at that checkpoint.
+- Current Typelevel `munit-cats-effect` 2.x is Cats Effect 3-only and supersedes the old
+  `munit-cats-effect-3` artifact coordinate named by the planning prose.
+- The `trading.runtime` package anchor contains documentation only and publishes no speculative callable member before
+  the Group 3 interpreter factory.
 
 ## Promotion Queue
 - After whole-change verification and Archive, promote the delivered runtime/application dependency boundary and
   in-memory interpreter ownership from concrete source evidence.
+- Retain the dependency-coordinate rename as delivery evidence; promote only if it remains true at Archive.

@@ -2,9 +2,15 @@ val scala3Version          = "3.8.4"
 val catsVersion            = "2.13.0"
 val algebraVersion         = "2.13.0"
 val disciplineMunitVersion = "2.0.0"
+val catsEffectVersion      = "3.7.0"
+val munitCatsEffectVersion = "2.2.0"
 
 val staticDimensionCompilerClasspath =
   taskKey[Seq[File]]("Immutable classpath for real-source static-dimension compiler fixtures")
+val applicationBoundaryClasspath =
+  taskKey[Seq[File]]("Completed application artifact classpath without runtime dependencies")
+val runtimeBoundaryClasspath =
+  taskKey[Seq[File]]("Completed runtime artifact classpath with its concrete effect dependencies")
 
 ThisBuild / scalaVersion := scala3Version
 ThisBuild / version      := "0.1.0-SNAPSHOT"
@@ -16,6 +22,7 @@ lazy val root =
       quantities,
       referenceData,
       application,
+      runtime,
       economics,
       adversarialBoundary
     )
@@ -32,6 +39,7 @@ lazy val root =
             quantities / Test / test,
             referenceData / Test / test,
             application / Test / test,
+            runtime / Test / test,
             economics / Test / test,
             adversarialBoundary / Test / test
           )
@@ -128,6 +136,26 @@ lazy val application =
       libraryDependencies += "org.scalameta" %% "munit" % "1.3.4" % Test
     )
 
+lazy val runtime =
+  project
+    .in(file("runtime"))
+    .dependsOn(application % "compile->compile;test->test", referenceData)
+    .settings(
+      name       := "trading-runtime",
+      moduleName := "trading-runtime",
+
+      Compile / exportJars := true,
+
+      Test / classLoaderLayeringStrategy := ClassLoaderLayeringStrategy.Flat,
+      Test / fork                        := true,
+
+      libraryDependencies ++= Seq(
+        "org.typelevel" %% "cats-effect"          % catsEffectVersion,
+        "org.typelevel" %% "cats-effect-testkit"  % catsEffectVersion      % Test,
+        "org.typelevel" %% "munit-cats-effect"    % munitCatsEffectVersion % Test
+      )
+    )
+
 // Non-published performance evidence is compiled and run explicitly; it is intentionally outside root aggregation.
 lazy val benchmarks =
   project
@@ -142,7 +170,7 @@ lazy val benchmarks =
 lazy val adversarialBoundary =
   project
     .in(file("adversarial-boundary"))
-    .dependsOn(quantities, referenceData, application, economics)
+    .dependsOn(quantities, referenceData, application, runtime, economics)
     .settings(
       name           := "trading-quantities-adversarial-boundary",
       publish / skip := true,
@@ -154,21 +182,55 @@ lazy val adversarialBoundary =
         val moduleProducts = (quantities / Compile / exportedProducts).value.files ++
           (referenceData / Compile / exportedProducts).value.files ++
           (application / Compile / exportedProducts).value.files ++
+          (runtime / Compile / exportedProducts).value.files ++
           (economics / Compile / exportedProducts).value.files
         val quantitiesDependencies    = (quantities / Compile / externalDependencyClasspath).value.files
         val referenceDataDependencies = (referenceData / Compile / externalDependencyClasspath).value.files
         val applicationDependencies   = (application / Compile / externalDependencyClasspath).value.files
+        val runtimeDependencies       = (runtime / Compile / externalDependencyClasspath).value.files
         val economicsDependencies     = (economics / Compile / externalDependencyClasspath).value.files
         val compilerDependencies      = (Test / externalDependencyClasspath).value.files
         (moduleProducts ++ quantitiesDependencies ++ referenceDataDependencies ++ applicationDependencies ++
-          economicsDependencies ++ compilerDependencies).distinct
+          runtimeDependencies ++ economicsDependencies ++ compilerDependencies).distinct
+      },
+      applicationBoundaryClasspath := {
+        val products =
+          (quantities / Compile / exportedProducts).value.files ++
+            (referenceData / Compile / exportedProducts).value.files ++
+            (application / Compile / exportedProducts).value.files
+        val dependencies =
+          (quantities / Compile / externalDependencyClasspath).value.files ++
+            (referenceData / Compile / externalDependencyClasspath).value.files ++
+            (application / Compile / externalDependencyClasspath).value.files ++
+            (Test / externalDependencyClasspath).value.files.filter { file =>
+              val name = file.getName
+              name.startsWith("scala3-compiler_3-") ||
+              name.startsWith("scala3-interfaces-") ||
+              name.startsWith("tasty-core_3-") ||
+              name.startsWith("scala-asm-") ||
+              name.startsWith("compiler-interface-") ||
+              name.startsWith("util-interface-")
+            }
+        (products ++ dependencies).distinct
+      },
+      runtimeBoundaryClasspath := {
+        val products =
+          applicationBoundaryClasspath.value ++
+            (runtime / Compile / exportedProducts).value.files
+        val dependencies = (runtime / Compile / externalDependencyClasspath).value.files
+        (products ++ dependencies).distinct
       },
       Test / resourceGenerators += Def.task {
-        val output    = (Test / resourceManaged).value / "static-dimension-compiler.classpath"
-        val classpath =
-          staticDimensionCompilerClasspath.value.map(_.getAbsolutePath).mkString(java.io.File.pathSeparator)
-        IO.write(output, classpath)
-        Seq(output)
+        val directory = (Test / resourceManaged).value
+        val outputs = Seq(
+          directory / "static-dimension-compiler.classpath" -> staticDimensionCompilerClasspath.value,
+          directory / "application-boundary.classpath"     -> applicationBoundaryClasspath.value,
+          directory / "runtime-boundary.classpath"         -> runtimeBoundaryClasspath.value
+        )
+        outputs.foreach { case (output, classpath) =>
+          IO.write(output, classpath.map(_.getAbsolutePath).mkString(java.io.File.pathSeparator))
+        }
+        outputs.map(_._1)
       }.taskValue,
       libraryDependencies ++= Seq(
         "org.scala-lang" %% "scala3-compiler" % scala3Version % Test,
