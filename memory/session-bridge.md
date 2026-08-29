@@ -14,13 +14,13 @@ updated: 2026-08-30
 - **Issue**: 6 https://github.com/m2048ws/trading/issues/6
 - **Change**: introduce-application-and-runtime-foundation
 - **Worktree**: /Users/m/src/money/.worktrees/introduce-application-and-runtime-foundation
-- **Phase at Checkpoint**: awaiting_verify
-- **Task Group at Checkpoint**: 8
-- **Observed Run Revision**: 9
-- **Last Verified HEAD**: 391c5e6641d2b9333bc931926bd84f3fa0f93ef9
+- **Phase at Checkpoint**: planning_ready
+- **Task Group at Checkpoint**: 9
+- **Observed Run Revision**: none
+- **Last Verified HEAD**: c0e80a3ecb4f2f45c67899685c1b092e8d523527
 
 ## Next Action
-- Commit and acknowledge Task Group 8, synchronize the draft PR, and stop Apply at `awaiting_verify`; canonical Verify
+- Start Apply for `introduce-application-and-runtime-foundation` Task Group 9.
   remains a separate gate.
 
 ## Blockers

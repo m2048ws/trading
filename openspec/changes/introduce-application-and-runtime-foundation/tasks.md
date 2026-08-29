@@ -98,3 +98,16 @@
   implementation drift before the final Task Group checkpoint.
 - [ ] 8.5 Prepare the final acknowledged Task Group commit and evidence for separate canonical Verify, human review,
   human QA, and Archive; do not begin the boundary-codec Slice in this delivery.
+
+## 9. Canonical Verify Repair
+
+- [ ] 9.1 Remove JVM-callable construction authority for the private runtime live-catalog interpreter and add a Java
+  boundary regression proving callers can obtain it only through `InMemoryLiveCatalog`.
+- [ ] 9.2 Move the accumulated, stable multi-error commit case into the shared interpreter contract and run it for the
+  thin application model and the Cats Effect runtime interpreter.
+- [ ] 9.3 Make the contended JMH case publish unique valid batches under genuine concurrent modification, rerun the
+  focused benchmark, and reconcile its recorded interpretation and parameters.
+- [ ] 9.4 Reconcile the WIP branch with current `main`, preserving CorgiSpec v4 authority and eliminating the draft PR's
+  integration conflict without entering any later RFC-0002 Slice.
+- [ ] 9.5 Refresh the durable bridge, rerun the full repository and boundary verification matrix, complete a fresh
+  automated Task Group review, and prepare the dedicated repair commit for a new canonical Verify.
