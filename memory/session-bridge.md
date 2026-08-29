@@ -15,19 +15,19 @@ updated: 2026-08-30
 - **Change**: introduce-application-and-runtime-foundation
 - **Worktree**: /Users/m/src/money/.worktrees/introduce-application-and-runtime-foundation
 - **Phase at Checkpoint**: applying
-- **Task Group at Checkpoint**: 6
-- **Observed Run Revision**: 7
-- **Last Verified HEAD**: 14854ce174059114e01ee7e9ef29578c8268cfb0
+- **Task Group at Checkpoint**: 7
+- **Observed Run Revision**: 8
+- **Last Verified HEAD**: 82cb7509bc062cacc045c4508d16afc14515d0db
 
 ## Next Action
-- Commit and acknowledge Task Group 6 after its shared conformance checks and structured review.
+- Commit and acknowledge Task Group 7 after its application/runtime architecture checks and structured review.
 
 ## Blockers
 - none
 
 ## Uncommitted Work
-- The framework-neutral effectful conformance harness, its thunk registration layer, the in-memory IO instantiation,
-  shared-versus-interpreter-specific documentation, and this Task Group 6 bridge checkpoint.
+- The strengthened completed-artifact architecture scan, RFC-first architecture/audit reconciliation, explicit future-
+  port admission rules, and this Task Group 7 bridge checkpoint.
 
 ## Discoveries
 - Baseline inventory found `LiveCatalog[F]`, `CatalogModel`, completed-JAR compiler fixtures, and the non-published
@@ -48,6 +48,11 @@ updated: 2026-08-30
   execution; thin thunk and IO suites supply their own constructors, sequencing, and concurrency.
 - Pure-oracle snapshots compare structurally across independently allocated roots; handle reconciliation is asserted
   only within one interpreter lineage, while equal independent interpreters are required not to reconcile.
+- The completed application JAR still contains only `LiveCatalog`, whose only methods are `snapshot` and `commit`; the
+  scan rejects universal environments/errors, service locators, capability registries, free programs, speculative
+  future ports, effect-wrapped pure facades, and runtime concurrency/stream vocabulary.
+- RFC-0002 S-01 is now documented as the implemented runtime and port-admission foundation, with wall versus monotonic
+  time, business atomicity versus scoped transactions, and telemetry versus durable audit explicitly separated.
 
 ## Promotion Queue
 - After whole-change verification and Archive, promote the delivered runtime/application dependency boundary and
@@ -57,3 +62,5 @@ updated: 2026-08-30
   confirms them.
 - Promote the shared observable contract versus interpreter-specific mechanism-test split if final verification
   confirms both instantiations.
+- Promote the future-port admission checklist only after whole-change verification confirms the packaged API remains
+  the single narrow live-catalog capability.

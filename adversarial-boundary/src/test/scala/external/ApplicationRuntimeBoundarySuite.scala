@@ -23,7 +23,7 @@ final class ApplicationRuntimeBoundarySuite extends FunSuite:
   private val applicationClasspath = classpath("/application-boundary.classpath")
   private val runtimeClasspath     = classpath("/runtime-boundary.classpath")
 
-  test("application packages one runtime-neutral port without concrete effect dependencies"):
+  test("application packages one narrow runtime-neutral port without architecture containers or concrete effects"):
     val entries        = classpathEntries(applicationClasspath)
     val applicationJar = exactlyOne(entries, "trading-application_3-")
     val internalJars   = entries.filter(_.getFileName.toString.startsWith("trading-"))
@@ -46,8 +46,11 @@ final class ApplicationRuntimeBoundarySuite extends FunSuite:
         finally input.close()
       val symbols = new String(bytes.toArray, StandardCharsets.ISO_8859_1)
       applicationForbiddenSymbols.foreach: symbol =>
-        assert(!symbols.contains(symbol), s"application artifact leaked forbidden runtime symbol '$symbol'")
+        assert(!symbols.contains(symbol), s"application artifact leaked forbidden architecture symbol '$symbol'")
     finally jar.close()
+
+    val publicMethods = classOf[trading.application.LiveCatalog[?]].getDeclaredMethods.map(_.getName).toSet
+    assertEquals(publicMethods, Set("snapshot", "commit"))
 
   test("runtime alone owns Cats Effect and keeps FS2 unadmitted"):
     val entries    = classpathEntries(runtimeClasspath)
@@ -161,10 +164,29 @@ private val applicationForbiddenSymbols = Vector(
   "cats/effect/Ref",
   "cats/effect/Resource",
   "cats/effect/kernel/Fiber",
+  "cats/effect/kernel/Clock",
+  "cats/effect/kernel/Temporal",
   "cats/effect/std/Queue",
+  "cats/free/Free",
   "fs2/Stream",
+  "scala/concurrent/ExecutionContext",
+  "java/util/concurrent",
   "java/util/concurrent/locks/Lock",
+  "ApplicationEnvironment",
+  "ApplicationEnv",
+  "ServiceLocator",
+  "CapabilityRegistry",
+  "ApplicationError",
+  "UniversalError",
+  "CallbackRegistry",
+  "Scheduler",
+  "MarketData",
+  "TradeStore",
+  "OrderExecution",
+  "ValuationService",
+  "PnlService",
   "Transaction",
+  "Telemetry",
   "Tracer",
   "Meter"
 )
