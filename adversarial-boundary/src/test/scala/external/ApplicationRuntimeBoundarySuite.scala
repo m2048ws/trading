@@ -76,13 +76,25 @@ final class ApplicationRuntimeBoundarySuite extends FunSuite:
 
   test("the application-only completed-artifact classpath rejects a concrete effect"):
     val source  = fixturesRoot.resolve("negative/ConcreteEffectLeak.scala")
-    val prelude = compilePrelude(source)
+    val prelude = compilePrelude(source, applicationClasspath)
     assert(prelude.succeeded, s"negative fixture prelude failed:\n${prelude.rendered}")
 
     val rejected = compile(source, applicationClasspath)
     assert(!rejected.succeeded, "Cats Effect unexpectedly compiled on the application-only classpath")
     assert(rejected.rendered.contains("effect"), rejected.rendered)
     assert(rejected.rendered.contains("cats"), rejected.rendered)
+    compilerForbiddenDiagnostics.foreach: diagnostic =>
+      assert(!rejected.rendered.contains(diagnostic), rejected.rendered)
+
+  test("runtime callers cannot name or construct the private Ref-backed interpreter"):
+    val source  = fixturesRoot.resolve("negative/RuntimeInternalsUnavailable.scala")
+    val prelude = compilePrelude(source, runtimeClasspath)
+    assert(prelude.succeeded, s"negative fixture prelude failed:\n${prelude.rendered}")
+
+    val rejected = compile(source, runtimeClasspath)
+    assert(!rejected.succeeded, "the private Ref-backed interpreter unexpectedly compiled for an external caller")
+    assert(rejected.rendered.contains("RefBackedLiveCatalog"), rejected.rendered)
+    assert(rejected.rendered.contains("cannot be accessed"), rejected.rendered)
     compilerForbiddenDiagnostics.foreach: diagnostic =>
       assert(!rejected.rendered.contains(diagnostic), rejected.rendered)
 
@@ -100,7 +112,7 @@ final class ApplicationRuntimeBoundarySuite extends FunSuite:
     assertEquals(matches.size, 1, matches.mkString("\n"))
     matches.head
 
-  private def compilePrelude(source: Path): Compilation =
+  private def compilePrelude(source: Path, compilationClasspath: String): Compilation =
     val lines    = Files.readAllLines(source, StandardCharsets.UTF_8)
     val filtered = new java.util.ArrayList[String]()
     var dropping = false
@@ -113,7 +125,7 @@ final class ApplicationRuntimeBoundarySuite extends FunSuite:
     val directory = Files.createTempDirectory("application-boundary-prelude-")
     val copy      = directory.resolve(source.getFileName)
     val _         = Files.write(copy, filtered, StandardCharsets.UTF_8)
-    compile(copy, applicationClasspath)
+    compile(copy, compilationClasspath)
 
   private def compile(source: Path, compilationClasspath: String): Compilation =
     val output   = Files.createTempDirectory("application-runtime-boundary-")

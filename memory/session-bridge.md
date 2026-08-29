@@ -15,19 +15,19 @@ updated: 2026-08-29
 - **Change**: introduce-application-and-runtime-foundation
 - **Worktree**: /Users/m/src/money/.worktrees/introduce-application-and-runtime-foundation
 - **Phase at Checkpoint**: applying
-- **Task Group at Checkpoint**: 2
-- **Observed Run Revision**: 3
-- **Last Verified HEAD**: a7b29bab55b368bb50cf3cadb8412d472d2087d0
+- **Task Group at Checkpoint**: 3
+- **Observed Run Revision**: 4
+- **Last Verified HEAD**: c408671fab69cd22cd3e3c5aed38b7129f49a004
 
 ## Next Action
-- Commit and acknowledge Task Group 2 after its runtime-boundary checks and structured review.
+- Commit and acknowledge Task Group 3 after its construction checks and structured review.
 
 ## Blockers
 - none
 
 ## Uncommitted Work
-- Runtime SBT module and package documentation, dependency/classpath wiring, packaged boundary fixtures, module
-  documentation, and this Task Group 2 bridge checkpoint.
+- `InMemoryLiveCatalog` construction, construction and private-boundary tests, runtime documentation, and this Task
+  Group 3 bridge checkpoint.
 
 ## Discoveries
 - Baseline inventory found `LiveCatalog[F]`, `CatalogModel`, completed-JAR compiler fixtures, and the non-published
@@ -36,6 +36,8 @@ updated: 2026-08-29
   `munit-cats-effect-3` artifact coordinate named by the planning prose.
 - The `trading.runtime` package anchor contains documentation only and publishes no speculative callable member before
   the Group 3 interpreter factory.
+- The public factory exposes only `LiveCatalog[F]`; the concrete class and its single `Ref[F, CatalogState]` are private
+  and rejected by the completed-artifact compiler fixture.
 
 ## Promotion Queue
 - After whole-change verification and Archive, promote the delivered runtime/application dependency boundary and
