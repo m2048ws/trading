@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "enabled": false,
+  "blockedReason": "CorgiSpec v4 bootstrap requires every repository worktree to have no active OpenSpec change; this pilot and six legacy changes are currently active.",
+  "corgi": {
+    "version": "4.0.0-rc2",
+    "binary": "tools/corgi/node_modules/.bin/corgispec",
+    "npmIntegrity": "sha512-J+i7s4BthgIDvnMFTq/o/moRmnELa9EZ7So/a+3x+0CcUvzgASt/mESHX+/aTd3KuETk5onEkXZqZUhV/RX+ZQ=="
+  },
+  "github": {
+    "repository": "m2048ws/trading",
+    "remote": "origin",
+    "baseBranch": "main",
+    "branchPrefix": "corgi/"
+  },
+  "worktrees": {
+    "root": ".worktrees"
+  },
+  "admittedChanges": [],
+  "authority": {
+    "localCorgiCommits": true,
+    "fastForwardWipPush": true,
+    "draftPrCreateOrUpdate": true,
+    "readyForReview": false,
+    "requestReviewers": false,
+    "merge": false,
+    "remoteBranchDelete": false,
+    "tag": false,
+    "publish": false,
+    "release": false
+  }
+}

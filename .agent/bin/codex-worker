@@ -4,7 +4,7 @@ set -euo pipefail
 usage() {
   cat >&2 <<'EOF'
 Usage:
-  codex-worker <role> <output-file> [schema-file]
+  codex-worker <role> <output-file> [schema-file] [review-revision]
 
 Roles:
   apply
@@ -13,15 +13,18 @@ Roles:
   finalize
 
 The fully rendered worker prompt is read from stdin.
+review-revision is accepted only for the review role and selects an exact
+committed PR-head tree instead of the legacy staged snapshot.
 EOF
   exit 2
 }
 
-[[ $# -ge 2 && $# -le 3 ]] || usage
+[[ $# -ge 2 && $# -le 4 ]] || usage
 
 role="$1"
 output_file="$2"
 schema_file="${3:-}"
+review_revision="${4:-}"
 root="$(git rev-parse --show-toplevel)"
 model="$("$root/.agent/bin/worker-policy" "$role" model)" || usage
 reasoning_effort="$(
@@ -58,16 +61,25 @@ codex_args_for() {
 }
 
 if [[ "$role" != "review" ]]; then
+  [[ -z "$review_revision" ]] || usage
   codex_args_for "$root"
   exec codex "${CODEX_ARGS[@]}"
 fi
 
-tree="$(git -C "$root" write-tree)"
+if [[ -n "$review_revision" ]]; then
+  snapshot="$(git -C "$root" rev-parse --verify "${review_revision}^{commit}")"
+  [[ "$snapshot" == "$review_revision" ]] || {
+    echo "Exact review revision must be a full commit id" >&2
+    exit 2
+  }
+else
+  tree="$(git -C "$root" write-tree)"
 
-snapshot="$(
-  printf '%s\n' "temporary independent review snapshot" |
-    git -C "$root" commit-tree "$tree" -p "$(git -C "$root" rev-parse HEAD)"
-)"
+  snapshot="$(
+    printf '%s\n' "temporary independent review snapshot" |
+      git -C "$root" commit-tree "$tree" -p "$(git -C "$root" rev-parse HEAD)"
+  )"
+fi
 
 review_dir="$(mktemp -d "${TMPDIR:-/tmp}/trading-review.XXXXXX")"
 
@@ -109,7 +121,7 @@ then
   snapshot_clean=false
 
   echo >&2
-  echo "Independent review modified its staged-snapshot worktree:" >&2
+  echo "Independent review modified its isolated review worktree:" >&2
 
   if [[ "$after_head" != "$snapshot_head" ]]; then
     printf 'Detached HEAD: expected %s, found %s\n' \

@@ -91,6 +91,12 @@ then
   git -C "$workdir" commit -qm "reviewer mutation"
 fi
 
+if [[ "${RUN_WORKER_TEST_CAPTURE_REVIEW_HEAD:-false}" == true && \
+  "$workdir" != "$RUN_WORKER_TEST_ROOT" ]]
+then
+  git -C "$workdir" rev-parse HEAD >"$RUN_WORKER_TEST_REVIEW_HEAD_RESULT"
+fi
+
 [[ -n "$workdir" ]]
 EOF
 chmod +x "$stub_dir/codex"
@@ -644,6 +650,36 @@ env \
 grep -Fq '"verdict": "ready"' "$test_dir/clean.stdout" ||
   fail "clean script-backed review did not return its validated report"
 
+exact_review_revision="$(git -C "$repo" rev-parse HEAD)"
+python3 - \
+  "$test_dir/review-context.json" \
+  "$test_dir/exact-review-context.json" \
+  "$exact_review_revision" <<'PY'
+import json
+import sys
+
+context = json.load(open(sys.argv[1]))
+context["REVIEW_REVISION"] = sys.argv[3]
+json.dump(context, open(sys.argv[2], "w"))
+PY
+
+env \
+  PATH="$test_path" \
+  RUN_WORKER_TEST_ROOT="$repo" \
+  RUN_WORKER_TEST_REPORT="$test_dir/review-report.json" \
+  RUN_WORKER_TEST_CAPTURE_REVIEW_HEAD=true \
+  RUN_WORKER_TEST_REVIEW_HEAD_RESULT="$test_dir/exact-review-head" \
+  "$repo/.agent/bin/run-worker" \
+  review test-change "$test_dir/exact-review-context.json" \
+  "$test_dir/exact-review-report.json" \
+  >"$test_dir/exact-review.stdout" 2>"$test_dir/exact-review.stderr"
+
+[[ "$(cat "$test_dir/exact-review-head")" == "$exact_review_revision" ]] ||
+  fail "exact committed review did not select the requested PR-head commit"
+grep -Fq "\"review_revision\": \"$exact_review_revision\"" \
+  "$repo/.agent/reports/workflow-trace.jsonl" ||
+  fail "exact committed review identity was omitted from the workflow trace"
+
 primary_tree_before_committed_review="$(git -C "$repo" write-tree)"
 expect_status 4 committed-review \
   env \
@@ -654,7 +690,7 @@ expect_status 4 committed-review \
   "$repo/.agent/bin/run-worker" \
   review test-change "$test_dir/review-context.json" \
   "$test_dir/committed-review-report.json"
-grep -Fq "Independent review modified its staged-snapshot worktree" \
+grep -Fq "Independent review modified its isolated review worktree" \
   "$test_dir/committed-review.stderr" ||
   fail "committed review mutation diagnostic was omitted"
 [[ "$(git -C "$repo" write-tree)" == "$primary_tree_before_committed_review" ]] ||

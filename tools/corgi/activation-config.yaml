@@ -1,0 +1,15 @@
+# Apply these Corgi-owned fields to openspec/config.yaml only after
+# tools/corgi/qualify reports that the v4 migration preflight is clear.
+isolation:
+  mode: worktree
+  root: .worktrees
+  branch_prefix: corgi/
+
+corgi:
+  tracking:
+    provider: github
+  contract: rfc-v1
+  rfcRoot: rfcs
+  foundation: RFC-0001-project-foundation
+  governance:
+    integrationBranch: origin/main

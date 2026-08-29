@@ -17,6 +17,12 @@ project/local-plugins.sbt
 local.sbt
 
 .agent/reports/
+__pycache__/
+
+# Project-local Coding Corgi Flow pilot runtime
+tools/corgi/node_modules/
+.corgi/
+.worktrees/
 
 # Bloop
 .bsp

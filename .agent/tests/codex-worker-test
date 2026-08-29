@@ -223,7 +223,7 @@ run_review_case() {
       fail "$name reported a clean snapshot as dirty"
     fi
   else
-    grep -Fq "Independent review modified its staged-snapshot worktree:" \
+    grep -Fq "Independent review modified its isolated review worktree:" \
       "$stderr" || fail "$name omitted dirty-snapshot diagnostics"
   fi
 
