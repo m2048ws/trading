@@ -14,20 +14,20 @@ updated: 2026-08-30
 - **Issue**: 6 https://github.com/m2048ws/trading/issues/6
 - **Change**: introduce-application-and-runtime-foundation
 - **Worktree**: /Users/m/src/money/.worktrees/introduce-application-and-runtime-foundation
-- **Phase at Checkpoint**: applying
-- **Task Group at Checkpoint**: 7
-- **Observed Run Revision**: 8
-- **Last Verified HEAD**: 82cb7509bc062cacc045c4508d16afc14515d0db
+- **Phase at Checkpoint**: awaiting_verify
+- **Task Group at Checkpoint**: 8
+- **Observed Run Revision**: 9
+- **Last Verified HEAD**: 391c5e6641d2b9333bc931926bd84f3fa0f93ef9
 
 ## Next Action
-- Commit and acknowledge Task Group 7 after its application/runtime architecture checks and structured review.
+- Commit and acknowledge Task Group 8, synchronize the draft PR, and stop Apply at `awaiting_verify`; canonical Verify
+  remains a separate gate.
 
 ## Blockers
 - none
 
 ## Uncommitted Work
-- The strengthened completed-artifact architecture scan, RFC-first architecture/audit reconciliation, explicit future-
-  port admission rules, and this Task Group 7 bridge checkpoint.
+- The final S-05 owner-label reconciliation and this Task Group 8 verification/handoff checkpoint.
 
 ## Discoveries
 - Baseline inventory found `LiveCatalog[F]`, `CatalogModel`, completed-JAR compiler fixtures, and the non-published
@@ -53,6 +53,15 @@ updated: 2026-08-30
   future ports, effect-wrapped pure facades, and runtime concurrency/stream vocabulary.
 - RFC-0002 S-01 is now documented as the implemented runtime and port-admission foundation, with wall versus monotonic
   time, business atomicity versus scoped transactions, and telemetry versus durable audit explicitly separated.
+- The final clean dependency-ordered gate passes 799 tests: 601 quantities, 13 reference-data, 8 application, 17
+  runtime, 40 economics, and 120 packaged adversarial tests; formatting and explicit JMH compilation also pass.
+- A focused JDK 26.0.2 JMH rerun completed all four runtime paths with the recorded one-fork, three-warmup,
+  five-measurement configuration and preserved the intended one-capture high-volume lookup shape.
+- Production dependency reports place Cats Effect only in runtime; the completed application API contains only
+  `LiveCatalog.snapshot` and `LiveCatalog.commit`, while Scala compiler evidence rejects the private Ref-backed class.
+- Strict readiness passes with planning revision
+  `sha256:ad1efb276d324572b823d389ec597e17b6d5555019065b8b5f0bed4aef2e0da1`, current RFC ancestry, source provenance,
+  and complete AC traceability.
 
 ## Promotion Queue
 - After whole-change verification and Archive, promote the delivered runtime/application dependency boundary and

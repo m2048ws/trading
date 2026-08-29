@@ -145,7 +145,7 @@ the first deliberate durable compatibility contract.
 
 | Current exception | Why it is transitional | Migration owner |
 | --- | --- | --- |
-| Quantity-owned packing has been removed, leaving a deliberate durable-codec gap | Stable records require snapshots and an explicit schema owner | Proposal 9 adds versioned codecs |
+| Quantity-owned packing has been removed, leaving a deliberate durable-codec gap | Stable records require snapshots and an explicit schema owner | RFC-0002 S-05 adds versioned codecs |
 | `trading-economics` owns instruments, orders, scenarios, fee policy, P&L, and sizing | Current aggregate predates responsibility split | Proposals 3–7, with Proposal 7 removing the empty aggregate |
 | Instrument assembly and downstream economics temporarily share `trading-economics` | Proposal 3 now owns the focused pure snapshot trust transition; physical narrowing follows | Proposal 4 |
 | Order/scenario/fee/risk capabilities are discoverable through `Instrument` | Instrument currently acts as a service locator | Proposals 4–7 |
