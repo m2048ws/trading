@@ -115,21 +115,27 @@ enum ActivationObservation:
 enum PricingObservation:
   case ReferencePrice, ResolvedLimit
 
-sealed trait OrderActivation[B <: Dim, Q <: Dim]:
+sealed abstract class OrderActivation[B <: Dim, Q <: Dim] protected ():
+  OrderActivation.requireBuiltin(this)
+
   type Evidence
 
   def verify(evidence: Evidence): Either[ActivationViolation, CheckedActivation[B, Q]]
+  private[trading] def acceptsEvidence(evidence: Any): Boolean
   private[trading] def observations(evidence: Evidence): Vector[(ActivationObservation, Price[B, Q])]
 
-sealed trait TriggerActivation[B <: Dim, Q <: Dim] extends OrderActivation[B, Q]
+sealed abstract class TriggerActivation[B <: Dim, Q <: Dim] protected () extends OrderActivation[B, Q]()
 
-final class ImmediateActivation[B <: Dim, Q <: Dim] private extends OrderActivation[B, Q]:
+final class ImmediateActivation[B <: Dim, Q <: Dim] private extends OrderActivation[B, Q]():
   type Evidence = ImmediateActivation.Evidence.type
 
   val evidence: Evidence = ImmediateActivation.Evidence
 
   def verify(evidence: Evidence): Either[ActivationViolation, CheckedActivation[B, Q]] =
     Right(CheckedActivation.immediate)
+
+  private[trading] def acceptsEvidence(evidence: Any): Boolean =
+    evidence.asInstanceOf[AnyRef].eq(ImmediateActivation.Evidence)
 
   private[trading] def observations(
     evidence: Evidence
@@ -145,7 +151,7 @@ final case class FixedActivation[B <: Dim, Q <: Dim](
   reference: PriceReference,
   comparison: TriggerComparison,
   triggerPrice: Price[B, Q])
-  extends TriggerActivation[B, Q]:
+  extends TriggerActivation[B, Q]():
 
   type Evidence = FixedTriggerEvidence[B, Q]
 
@@ -154,6 +160,9 @@ final case class FixedActivation[B <: Dim, Q <: Dim](
 
   def verify(evidence: Evidence): Either[ActivationViolation, CheckedActivation[B, Q]] =
     CheckedActivation.fixed(this, evidence)
+
+  private[trading] def acceptsEvidence(evidence: Any): Boolean =
+    evidence.isInstanceOf[FixedTriggerEvidence[?, ?]]
 
   private[trading] def observations(
     evidence: Evidence
@@ -165,7 +174,7 @@ final case class TrailingActivation[B <: Dim, Q <: Dim] private (
   reference: PriceReference,
   comparison: TriggerComparison,
   offsetTicks: PositiveWhole)
-  extends TriggerActivation[B, Q]:
+  extends TriggerActivation[B, Q]():
 
   type Evidence = TrailingTriggerEvidence[B, Q]
 
@@ -177,6 +186,9 @@ final case class TrailingActivation[B <: Dim, Q <: Dim] private (
 
   def verify(evidence: Evidence): Either[ActivationViolation, CheckedActivation[B, Q]] =
     CheckedActivation.trailing(this, evidence)
+
+  private[trading] def acceptsEvidence(evidence: Any): Boolean =
+    evidence.isInstanceOf[TrailingTriggerEvidence[?, ?]]
 
   private[trading] def observations(
     evidence: Evidence
@@ -199,6 +211,15 @@ object TrailingActivation:
       .map(new TrailingActivation(reference, comparison, _))
 
 object OrderActivation:
+  private[order] def requireBuiltin(value: OrderActivation[?, ?]): Unit =
+    val runtimeClass = value.getClass
+    val supported    =
+      runtimeClass == classOf[ImmediateActivation[?, ?]] ||
+        runtimeClass == classOf[FixedActivation[?, ?]] ||
+        runtimeClass == classOf[TrailingActivation[?, ?]]
+    if !supported then
+      throw new IllegalAccessError(s"unsupported OrderActivation implementation: ${runtimeClass.getName}")
+
   private[order] def comparisonSatisfied(
     comparison: TriggerComparison,
     observed: BigInt,
@@ -371,13 +392,24 @@ object PegResolution:
     else Left(PricingViolation.PegOffsetMismatch(pricing.offsetTicks, suppliedOffset))
 end PegResolution
 
-sealed trait OrderPricing[B <: Dim, Q <: Dim]:
+sealed abstract class OrderPricing[B <: Dim, Q <: Dim] protected ():
+  OrderPricing.requireBuiltin(this)
+
   type Resolution
 
   def resolve(resolution: Resolution): Either[PricingViolation, EffectivePricing[B, Q]]
+  private[trading] def acceptsResolution(resolution: Any): Boolean
   private[trading] def observations(resolution: Resolution): Vector[(PricingObservation, Price[B, Q])]
 
-final case class LimitPricing[B <: Dim, Q <: Dim](limit: Price[B, Q]) extends OrderPricing[B, Q]:
+object OrderPricing:
+  private[order] def requireBuiltin(value: OrderPricing[?, ?]): Unit =
+    val runtimeClass = value.getClass
+    val supported    =
+      runtimeClass == classOf[LimitPricing[?, ?]] || runtimeClass == classOf[PeggedPricing[?, ?]]
+    if !supported then
+      throw new IllegalAccessError(s"unsupported OrderPricing implementation: ${runtimeClass.getName}")
+
+final case class LimitPricing[B <: Dim, Q <: Dim](limit: Price[B, Q]) extends OrderPricing[B, Q]():
   type Resolution = DirectPricingResolution.type
 
   val resolution: Resolution = DirectPricingResolution
@@ -385,12 +417,15 @@ final case class LimitPricing[B <: Dim, Q <: Dim](limit: Price[B, Q]) extends Or
   def resolve(resolution: Resolution): Either[PricingViolation, EffectivePricing[B, Q]] =
     Right(EffectivePricing.Limited(limit))
 
+  private[trading] def acceptsResolution(resolution: Any): Boolean =
+    resolution.asInstanceOf[AnyRef].eq(DirectPricingResolution)
+
   private[trading] def observations(
     resolution: Resolution
   ): Vector[(PricingObservation, Price[B, Q])] = Vector.empty
 
 final case class PeggedPricing[B <: Dim, Q <: Dim](reference: PriceReference, offsetTicks: BigInt)
-  extends OrderPricing[B, Q]:
+  extends OrderPricing[B, Q]():
   type Resolution = PegResolution[B, Q]
 
   def resolution(
@@ -404,6 +439,9 @@ final case class PeggedPricing[B <: Dim, Q <: Dim](reference: PriceReference, of
       Left(PricingViolation.PegResolutionMismatch)
     else Right(EffectivePricing.Limited(resolution.resolvedLimit))
 
+  private[trading] def acceptsResolution(resolution: Any): Boolean =
+    resolution.isInstanceOf[PegResolution[?, ?]]
+
   private[trading] def observations(
     resolution: Resolution
   ): Vector[(PricingObservation, Price[B, Q])] =
@@ -413,26 +451,53 @@ final case class PeggedPricing[B <: Dim, Q <: Dim](reference: PriceReference, of
     )
 end PeggedPricing
 
-sealed trait PricedVisibility[+D <: Dim]
-case object DisplayedVisibility                                      extends PricedVisibility[Nothing]
-case object HiddenVisibility                                         extends PricedVisibility[Nothing]
-final case class IcebergVisibility[D <: Dim](displayedLots: Lots[D]) extends PricedVisibility[D]
+sealed abstract class PricedVisibility[+D <: Dim] protected ():
+  PricedVisibility.requireBuiltin(this)
 
-sealed trait OrderExecution[D <: Dim, B <: Dim, Q <: Dim]:
+object PricedVisibility:
+  private[order] def requireBuiltin(value: PricedVisibility[?]): Unit =
+    val runtimeClass = value.getClass
+    val supported    =
+      runtimeClass.getName == "trading.order.DisplayedVisibility$" ||
+        runtimeClass.getName == "trading.order.HiddenVisibility$" ||
+        runtimeClass == classOf[IcebergVisibility[?]]
+    if !supported then
+      throw new IllegalAccessError(s"unsupported PricedVisibility implementation: ${runtimeClass.getName}")
+
+case object DisplayedVisibility                                      extends PricedVisibility[Nothing]()
+case object HiddenVisibility                                         extends PricedVisibility[Nothing]()
+final case class IcebergVisibility[D <: Dim](displayedLots: Lots[D]) extends PricedVisibility[D]()
+
+sealed abstract class OrderExecution[D <: Dim, B <: Dim, Q <: Dim] protected ():
+  OrderExecution.requireBuiltin(this)
+
   type Resolution
 
   def resolve(resolution: Resolution): Either[PricingViolation, EffectivePricing[B, Q]]
+  private[trading] def acceptsResolution(resolution: Any): Boolean
   private[trading] def requiresMaker: Boolean
   private[trading] def observations(resolution: Resolution): Vector[(PricingObservation, Price[B, Q])]
 
+object OrderExecution:
+  private[order] def requireBuiltin(value: OrderExecution[?, ?, ?]): Unit =
+    val runtimeClass = value.getClass
+    val supported    =
+      runtimeClass == classOf[MarketExecution[?, ?, ?]] ||
+        runtimeClass == classOf[PricedExecution[?, ?, ?, ?]]
+    if !supported then
+      throw new IllegalAccessError(s"unsupported OrderExecution implementation: ${runtimeClass.getName}")
+
 final case class MarketExecution[D <: Dim, B <: Dim, Q <: Dim](timeInForce: NonRestingTimeInForce)
-  extends OrderExecution[D, B, Q]:
+  extends OrderExecution[D, B, Q]():
   type Resolution = DirectPricingResolution.type
 
   val resolution: Resolution = DirectPricingResolution
 
   def resolve(resolution: Resolution): Either[PricingViolation, EffectivePricing[B, Q]] =
     Right(EffectivePricing.Market())
+
+  private[trading] def acceptsResolution(resolution: Any): Boolean =
+    resolution.asInstanceOf[AnyRef].eq(DirectPricingResolution)
 
   private[trading] val requiresMaker: Boolean = false
 
@@ -445,12 +510,15 @@ final case class PricedExecution[D <: Dim, B <: Dim, Q <: Dim, PR <: OrderPricin
   timeInForce: TimeInForce,
   liquidityConstraint: LiquidityConstraint,
   visibility: PricedVisibility[D])
-  extends OrderExecution[D, B, Q]:
+  extends OrderExecution[D, B, Q]():
 
   type Resolution = pricing.Resolution
 
   def resolve(resolution: Resolution): Either[PricingViolation, EffectivePricing[B, Q]] =
     pricing.resolve(resolution)
+
+  private[trading] def acceptsResolution(resolution: Any): Boolean =
+    pricing.acceptsResolution(resolution)
 
   private[trading] def requiresMaker: Boolean = liquidityConstraint == LiquidityConstraint.MakerOnly
 
@@ -458,6 +526,7 @@ final case class PricedExecution[D <: Dim, B <: Dim, Q <: Dim, PR <: OrderPricin
     resolution: Resolution
   ): Vector[(PricingObservation, Price[B, Q])] =
     pricing.observations(resolution)
+end PricedExecution
 
 @nowarn("msg=Ignoring.*qualifier")
 final class OrderIntent[D <: Dim] private[this] (
@@ -531,7 +600,9 @@ object OrderIntent:
       )
 end OrderIntent
 
-sealed abstract class Order[D <: Dim, B <: Dim, Q <: Dim] private ():
+sealed abstract class Order[D <: Dim, B <: Dim, Q <: Dim] protected ():
+  Order.requireBuiltin(this)
+
   type Activation <: OrderActivation[B, Q]
   type Execution <: OrderExecution[D, B, Q]
 
@@ -541,13 +612,14 @@ sealed abstract class Order[D <: Dim, B <: Dim, Q <: Dim] private ():
   val execution: Execution
 
 object Order:
+  @nowarn("msg=Ignoring.*qualifier")
   private final class ConstructedOrder[
     D <: Dim,
     B <: Dim,
     Q <: Dim,
     A <: OrderActivation[B, Q],
     E <: OrderExecution[D, B, Q]
-  ](
+  ] private[this] (
     val instrumentId: InstrumentId,
     val intent: OrderIntent[D],
     val activation: A,
@@ -555,6 +627,41 @@ object Order:
     extends Order[D, B, Q]():
     type Activation = A
     type Execution  = E
+
+  private val constructor =
+    val owner = classOf[ConstructedOrder[?, ?, ?, ?, ?]]
+    MethodHandles
+      .privateLookupIn(owner, MethodHandles.lookup())
+      .findConstructor(
+        owner,
+        MethodType.methodType(
+          java.lang.Void.TYPE,
+          classOf[InstrumentId],
+          classOf[OrderIntent[?]],
+          classOf[OrderActivation[?, ?]],
+          classOf[OrderExecution[?, ?, ?]]
+        )
+      )
+
+  private def construct[
+    D <: Dim,
+    B <: Dim,
+    Q <: Dim,
+    A <: OrderActivation[B, Q],
+    E <: OrderExecution[D, B, Q]
+  ](
+    instrumentId: InstrumentId,
+    intent: OrderIntent[D],
+    activation: A,
+    execution: E
+  ): Order.Aux[D, B, Q, A, E] =
+    constructor
+      .invoke(instrumentId, intent, activation, execution)
+      .asInstanceOf[Order.Aux[D, B, Q, A, E]]
+
+  private[order] def requireBuiltin(value: Order[?, ?, ?]): Unit =
+    if value.getClass != classOf[ConstructedOrder[?, ?, ?, ?, ?]] then
+      throw new IllegalAccessError(s"unsupported Order implementation: ${value.getClass.getName}")
 
   type Aux[
     D <: Dim,
@@ -582,7 +689,7 @@ object Order:
     execution: E
   ): Either[OrderViolations, Order.Aux[D, B, Q, A, E]] =
     validate(instrument, intent, activation, execution).map: _ =>
-      new ConstructedOrder(instrument.identity.id, intent, activation, execution)
+      construct(instrument.identity.id, intent, activation, execution)
 
   def createFirst[
     D <: Dim,

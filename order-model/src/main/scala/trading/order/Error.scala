@@ -38,15 +38,17 @@ object OrderViolations:
       case _            => None
 end OrderViolations
 
-/** Semantic failures from correctly shaped activation evidence. */
+/** Shape and semantic failures from activation evidence. */
 enum ActivationViolation:
+  case EvidenceShapeMismatch
   case FixedTriggerUnsatisfied
   case FixedEvidenceMismatch
   case TrailingThresholdNonPositive
   case TrailingTriggerUnsatisfied
   case TrailingEvidenceMismatch
 
-/** Semantic failures from correctly shaped pricing resolution. */
+/** Shape and semantic failures from pricing resolution. */
 enum PricingViolation:
+  case ResolutionShapeMismatch
   case PegOffsetMismatch(expectedOffset: BigInt, suppliedOffset: BigInt)
   case PegResolutionMismatch

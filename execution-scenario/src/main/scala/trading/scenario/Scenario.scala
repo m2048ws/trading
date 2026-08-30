@@ -108,7 +108,8 @@ object LiquiditySlice:
 end LiquiditySlice
 
 /** Domain non-empty collection of matched liquidity. */
-final class MatchedSlices[L, M] private (
+@nowarn("msg=Ignoring.*qualifier")
+final class MatchedSlices[L, M] private[this] (
   val head: LiquiditySlice[L, M],
   val tail: Vector[LiquiditySlice[L, M]]):
 
@@ -125,20 +126,39 @@ final class MatchedSlices[L, M] private (
 end MatchedSlices
 
 object MatchedSlices:
+  private val constructor =
+    val owner = classOf[MatchedSlices[?, ?]]
+    MethodHandles
+      .privateLookupIn(owner, MethodHandles.lookup())
+      .findConstructor(
+        owner,
+        MethodType.methodType(
+          java.lang.Void.TYPE,
+          classOf[LiquiditySlice[?, ?]],
+          classOf[Vector[?]]
+        )
+      )
+
+  private def construct[L, M](
+    head: LiquiditySlice[L, M],
+    tail: Vector[LiquiditySlice[L, M]]
+  ): MatchedSlices[L, M] =
+    constructor.invoke(head, tail).asInstanceOf[MatchedSlices[L, M]]
+
   def one[L, M](head: LiquiditySlice[L, M]): MatchedSlices[L, M] =
-    new MatchedSlices(head, Vector.empty)
+    construct(head, Vector.empty)
 
   def of[L, M](
     head: LiquiditySlice[L, M],
     tail: LiquiditySlice[L, M]*
   ): MatchedSlices[L, M] =
-    new MatchedSlices(head, tail.toVector)
+    construct(head, tail.toVector)
 
   def fromVector[L, M](
     values: Vector[LiquiditySlice[L, M]]
   ): Either[ScenarioViolation, MatchedSlices[L, M]] =
     values match
-      case head +: tail => Right(new MatchedSlices(head, tail))
+      case head +: tail => Right(construct(head, tail))
       case _            => Left(ScenarioViolation.EmptySlices)
 end MatchedSlices
 
@@ -189,8 +209,12 @@ object ScenarioAssumptions:
     activationEvidence: order.activation.Evidence,
     pricingResolution: order.execution.Resolution,
     matchedSlices: MatchedSlices[Lots[D], M]
-  ): ScenarioAssumptions[D, B, Q, M] =
-    construct(order)(activationEvidence, pricingResolution, matchedSlices)
+  ): Either[ScenarioViolation, ScenarioAssumptions[D, B, Q, M]] =
+    if !order.activation.acceptsEvidence(activationEvidence) then
+      Left(ScenarioViolation.Activation(ActivationViolation.EvidenceShapeMismatch))
+    else if !order.execution.acceptsResolution(pricingResolution) then
+      Left(ScenarioViolation.Pricing(PricingViolation.ResolutionShapeMismatch))
+    else Right(construct(order)(activationEvidence, pricingResolution, matchedSlices))
 
   def one[D <: Dim, B <: Dim, Q <: Dim, M, O <: Order[D, B, Q]](
     order: O
@@ -198,7 +222,7 @@ object ScenarioAssumptions:
     activationEvidence: order.activation.Evidence,
     pricingResolution: order.execution.Resolution,
     matchedSlice: LiquiditySlice[Lots[D], M]
-  ): ScenarioAssumptions[D, B, Q, M] =
+  ): Either[ScenarioViolation, ScenarioAssumptions[D, B, Q, M]] =
     create(order)(activationEvidence, pricingResolution, MatchedSlices.one(matchedSlice))
 
   def many[D <: Dim, B <: Dim, Q <: Dim, M, O <: Order[D, B, Q]](
@@ -208,7 +232,7 @@ object ScenarioAssumptions:
     pricingResolution: order.execution.Resolution,
     head: LiquiditySlice[Lots[D], M],
     tail: LiquiditySlice[Lots[D], M]*
-  ): ScenarioAssumptions[D, B, Q, M] =
+  ): Either[ScenarioViolation, ScenarioAssumptions[D, B, Q, M]] =
     create(order)(activationEvidence, pricingResolution, MatchedSlices.of(head, tail*))
 
   def fromVector[D <: Dim, B <: Dim, Q <: Dim, M, O <: Order[D, B, Q]](
@@ -220,7 +244,7 @@ object ScenarioAssumptions:
   ): Either[ScenarioViolation, ScenarioAssumptions[D, B, Q, M]] =
     MatchedSlices
       .fromVector(matchedSlices)
-      .map(create(order)(activationEvidence, pricingResolution, _))
+      .flatMap(create(order)(activationEvidence, pricingResolution, _))
 end ScenarioAssumptions
 
 @nowarn("msg=Ignoring.*qualifier")

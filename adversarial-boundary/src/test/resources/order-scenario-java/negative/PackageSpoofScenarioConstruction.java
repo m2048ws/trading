@@ -13,6 +13,7 @@ final class PackageSpoofScenarioConstruction {
         assumptions.activationEvidence(),
         assumptions.pricingResolution(),
         assumptions.matchedSlices());
+    new MatchedSlices(assumptions.matchedSlices().head(), assumptions.matchedSlices().tail());
     new OrderScenario(
         scenario.assumptions(),
         scenario.checkedActivation(),

@@ -1,6 +1,7 @@
 package external
 
 import java.io.File
+import java.lang.reflect.Modifier
 import java.net.URLClassLoader
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
@@ -301,13 +302,14 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
           "FixedTriggerEvidence",
           "TrailingTriggerEvidence",
           "PegResolution",
-          "OrderIntent"
+          "OrderIntent",
+          "ConstructedOrder"
         )
       ),
       (
         javaFixturesRoot.resolve("negative/PackageSpoofScenarioConstruction.java"),
         scenarioCompilationClasspath,
-        List("LiquiditySlice", "ScenarioAssumptions", "OrderScenario", "RoundTripScenario")
+        List("LiquiditySlice", "ScenarioAssumptions", "MatchedSlices", "OrderScenario", "RoundTripScenario")
       )
     )
     cases.foreach: (source, classpath, protectedRepresentations) =>
@@ -315,6 +317,29 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
       assert(!result.succeeded, s"expected ${source.getFileName} to fail Java compilation")
       assert(result.diagnostics.contains("private access"), result.diagnostics)
       protectedRepresentations.foreach(fragment => assert(result.diagnostics.contains(fragment), result.diagnostics))
+
+  test("completed order-model JAR rejects instantiated Java algebra implementations"):
+    val source = javaFixturesRoot.resolve("negative/RejectedAlgebraImplementations.java")
+    val result = compileJava(source, orderCompilationClasspath)
+    assert(result.succeeded, result.diagnostics)
+    assertJavaBoolean(
+      result.output,
+      "external.order.negative.RejectedAlgebraImplementations",
+      "guardsRejectEveryUnknownImplementation"
+    )
+
+  test("completed scenario JAR exposes erased Java assumptions construction only as a typed result"):
+    val source = javaFixturesRoot.resolve("negative/ErasedScenarioAssumptions.java")
+    val result = compileJava(source, scenarioCompilationClasspath)
+    assert(result.succeeded, result.diagnostics)
+
+  test("completed JAR concrete order and matched-slice constructors are JVM-private"):
+    val orderClass = Class.forName("trading.order.Order$ConstructedOrder")
+    assert(orderClass.getDeclaredConstructors.nonEmpty)
+    assert(orderClass.getDeclaredConstructors.forall(constructor => Modifier.isPrivate(constructor.getModifiers)))
+    val slicesClass = Class.forName("trading.scenario.MatchedSlices")
+    assert(slicesClass.getDeclaredConstructors.nonEmpty)
+    assert(slicesClass.getDeclaredConstructors.forall(constructor => Modifier.isPrivate(constructor.getModifiers)))
 
   test("positive downstream economics fixture compiles without warnings and runs"):
     val result = compile(fixturesRoot.resolve("positive/CompleteEconomicsClient.scala"))
@@ -409,7 +434,7 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
     val _         = Main.process(arguments, reporter)
     Compilation(output, reporter.allErrors.map(_.message), reporter.allWarnings.map(_.message))
 
-  private final case class JavaCompilation(succeeded: Boolean, diagnostics: String)
+  private final case class JavaCompilation(output: Path, succeeded: Boolean, diagnostics: String)
 
   private def compileJava(source: Path, classpath: String): JavaCompilation =
     val compiler = Option(ToolProvider.getSystemJavaCompiler).getOrElse:
@@ -432,9 +457,24 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
       val rendered  = diagnostics.getDiagnostics.asScala
         .map(diagnostic => diagnostic.getMessage(Locale.ROOT))
         .mkString("\n")
-      JavaCompilation(succeeded, rendered)
+      JavaCompilation(output, succeeded, rendered)
     finally files.close()
   end compileJava
+
+  private def assertJavaBoolean(output: Path, className: String, methodName: String): Unit =
+    val loader = new URLClassLoader(Array(output.toUri.toURL), getClass.getClassLoader)
+    try
+      val fixture = Class.forName(className, true, loader)
+      assertEquals(fixture.getMethod(methodName).invoke(null), java.lang.Boolean.TRUE)
+    catch
+      case error: java.lang.reflect.InvocationTargetException =>
+        val cause = Option(error.getCause).fold(error.toString)(_.toString)
+        fail(s"compiled Java fixture $className.$methodName failed: $cause")
+      case error: ReflectiveOperationException =>
+        fail(s"compiled Java fixture $className.$methodName could not be invoked: $error")
+      case error: LinkageError =>
+        fail(s"compiled Java fixture $className.$methodName could not be linked: $error")
+    finally loader.close()
 
   private def packagedEconomicsJar: Path =
     compilationClasspath

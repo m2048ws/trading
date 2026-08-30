@@ -33,7 +33,7 @@ final class ScenarioPropertiesSuite extends ScalaCheckSuite:
       order.activation.evidence,
       order.execution.resolution,
       slice
-    )
+    ).toOption.get
     OrderScenario.evaluate(instrument)(assumptions).toOption.get
 
   property("equal opposite retained positions close exactly while unequal positions retain signed failure evidence"):

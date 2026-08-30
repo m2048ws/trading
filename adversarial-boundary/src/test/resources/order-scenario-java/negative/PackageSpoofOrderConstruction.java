@@ -6,7 +6,9 @@ final class PackageSpoofOrderConstruction {
       CheckedActivation checked,
       FixedTriggerEvidence fixed,
       TrailingTriggerEvidence trailing,
-      PegResolution peg) {
+      PegResolution peg,
+      OrderActivation activation,
+      OrderExecution execution) {
     new CheckedActivation(checked.observations());
     checked.copy(checked.observations());
     new FixedTriggerEvidence(
@@ -25,5 +27,6 @@ final class PackageSpoofOrderConstruction {
         intent.lots(),
         intent.positionEffect(),
         intent.positionChange());
+    new Order$ConstructedOrder(intent.instrumentId(), intent, activation, execution);
   }
 }

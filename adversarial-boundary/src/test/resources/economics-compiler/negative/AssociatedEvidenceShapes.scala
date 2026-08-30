@@ -36,17 +36,17 @@ object AssociatedEvidenceShapes:
     fixedEvidence,
     fixedOrder.execution.resolution,
     slice
-  )
+  ).toOption.get
   val trailingAssumptions = ScenarioAssumptions.one(trailingOrder)(
     trailingEvidence,
     trailingOrder.execution.resolution,
     slice
-  )
+  ).toOption.get
   val peggedAssumptions = ScenarioAssumptions.one(peggedOrder)(
     peggedOrder.activation.evidence,
     pegResolution,
     slice
-  )
+  ).toOption.get
 
   // OFFENDING-BEGIN
   val fixedOnImmediate = ScenarioAssumptions.one(marketOrder)(

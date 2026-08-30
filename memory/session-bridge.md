@@ -14,23 +14,25 @@ updated: 2026-08-30
 - **Issue**: 7 https://github.com/m2048ws/trading/issues/7
 - **Change**: separate-order-and-execution-scenario-modules
 - **Worktree**: /Users/m/src/money/.worktrees/separate-order-and-execution-scenario-modules
-- **Phase at Checkpoint**: planning_ready
+- **Phase at Checkpoint**: awaiting_verify
 - **Task Group at Checkpoint**: 11
-- **Observed Run Revision**: none
-- **Last Verified HEAD**: 9d43e1127a814a90513a61a5e125be251acc8ef1
+- **Observed Run Revision**: 2
+- **Last Verified HEAD**: f505beccacf3b9afc5cf0d399176db3fb63bd8a7
 
 The phase and revision above are the required next checkpoint carried by the Repair Task Group commit. Live Run
 Contract authority remains `applying` at revision 1 until Corgi acknowledges that commit.
 
 ## Next Action
-- Start Apply for `separate-order-and-execution-scenario-modules` Task Group 11.
-  canonical Verify remains a separate gate.
+- Complete the automated Task Group 11 review, prepare its dedicated commit and evidence, acknowledge it through Corgi,
+  synchronize draft PR #27, and run canonical Verify. Human Review remains a separate gate.
 
 ## Blockers
-- The merge-ancestry validation/evidence checkpoint and Task Group 10 acknowledgement.
+- none
 
 ## Uncommitted Work
-- none
+- JVM-closed order/activation/execution/pricing/visibility construction, genuinely private concrete order and matched
+  slice constructors, typed erased assumptions construction, completed-JAR Java adversarial fixtures, and this Task
+  Group 11 validation/evidence checkpoint.
 
 ## Discoveries
 - The archived `establish-pure-instrument-economics` boundary was reconciled from commit `86613ee` before S-02
@@ -94,6 +96,23 @@ Contract authority remains `applying` at revision 1 until Corgi acknowledges tha
 - The automated Task Group 10 review checked scope/topology, unchanged Group 9 behavior, RFC/AC alignment, completed-JAR
   construction authority, architecture, performance/security, test evidence, and planning integrity with no findings.
   It changed no file, triaged no finding, and is not canonical Verify or Human Review.
+- The exact-SHA independent review of Group 10 confirmed merge ancestry and conflict-free integration, then demonstrated
+  that ordinary Java could still subclass `Order`, implement activation/execution alternatives, construct
+  `Order$ConstructedOrder` and `MatchedSlices`, and supply arbitrary erased evidence to `ScenarioAssumptions.create`.
+  Human Review rejected the implementation and successor run `run-5a38d5b3-5939-4e79-9307-7b7ec506d02c` carries
+  Groups 1–10 into Repair Task Group 11 at planning revision
+  `sha256:ecc38c9f0cdaa28148a2c32c743e4ec24dd35f83cd2157cd2a09fe91f7697cfa`.
+- Order, activation, execution, pricing, and visibility abstract bases now execute exact built-in-class guards from their
+  JVM constructors, so externally compiled Java subclasses cannot instantiate. `Order$ConstructedOrder` and
+  `MatchedSlices` now have bytecode-private constructors reached only by cached private method handles in their owning
+  companions.
+- Every `ScenarioAssumptions` factory now returns a typed `Either` and checks the runtime evidence/resolution shape before
+  invoking its private constructor. Completed-JAR Java fixtures prove arbitrary `Object` inputs expose only the typed
+  result, while runtime tests return `EvidenceShapeMismatch` or `ResolutionShapeMismatch` rather than accepting forged
+  assumptions or throwing a cast failure.
+- The Task Group 11 clean matrix passes 819 tests: 601 quantities, 13 reference-data, 9 application, 18 runtime, 13
+  instrument-economics, 7 order-model, 9 execution-scenario, 10 downstream economics, and 139 packaged adversarial
+  tests. Explicit JMH compilation and the focused exact completed-JAR constructor/implementation probes also pass.
 
 ## Promotion Queue
 - Review agent-configuration constraints before promoting any item to `memory/MEMORY.md`.
