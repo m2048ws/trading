@@ -14,21 +14,20 @@ updated: 2026-08-30
 - **Issue**: 7 https://github.com/m2048ws/trading/issues/7
 - **Change**: separate-order-and-execution-scenario-modules
 - **Worktree**: /Users/m/src/money/.worktrees/separate-order-and-execution-scenario-modules
-- **Phase at Checkpoint**: planning_ready
+- **Phase at Checkpoint**: awaiting_verify
 - **Task Group at Checkpoint**: 10
-- **Observed Run Revision**: none
-- **Last Verified HEAD**: 1383bc64d113394d289e23288285f437fca0a08c
+- **Observed Run Revision**: 2
+- **Last Verified HEAD**: f8b486c3d170567a1b031b284e39f483795b89a6
 
 The phase and revision above are the required next checkpoint carried by the Repair Task Group commit. Live Run
 Contract authority remains `applying` at revision 1 until Corgi acknowledges that commit.
 
 ## Next Action
-- Start Apply for `separate-order-and-execution-scenario-modules` Task Group 10.
-  Verify remains a separate gate.
+- Commit and acknowledge Repair Task Group 10, synchronize draft PR #27, and stop Apply at `awaiting_verify`;
+  canonical Verify remains a separate gate.
 
 ## Blockers
-- The current-main integration, JVM construction-boundary repair, completed-JAR Scala/Java fixtures, documentation,
-  validation evidence, and this Task Group 9 checkpoint.
+- The merge-ancestry validation/evidence checkpoint and Task Group 10 acknowledgement.
 
 ## Uncommitted Work
 - none
@@ -74,6 +73,27 @@ Contract authority remains `applying` at revision 1 until Corgi acknowledges tha
 - The automated Repair Task Group review caught and remediated lost `CheckedActivation` value equality, then completed
   its scope, behavior, architecture, artifact-boundary, performance/security, and evidence axes with no findings. It
   changed no file during the final pass, triaged no finding, and is not canonical Verify or Human Review.
+- Canonical Verify passed Group 9 at exact SHA `a60b00a7f3a633e9d1c3ee6180ed991b2b0e9d0e`. The next independent
+  review confirmed the JVM-private construction repair but found that Group 9 copied current-main content without
+  recording `05a8af0ff836b846247c082901ac3baea3d0c169` as an ancestor; GitHub still reported PR #27 conflicting. Human
+  Review rejected that implementation and required the merge-ancestry repair.
+- Topology commit `1383bc64d113394d289e23288285f437fca0a08c` records parents
+  `a60b00a7f3a633e9d1c3ee6180ed991b2b0e9d0e` and `05a8af0ff836b846247c082901ac3baea3d0c169`
+  using the already integrated Group 9 tree `15a6b4fd213365539d44aba8b8033bd5ace9c080`. Successor run
+  `run-064db6bc-938e-4619-b87f-abc218cb0564` carries Groups 1–9 and admits Repair Task Group 10 from planning baseline
+  `f8b486c3d170567a1b031b284e39f483795b89a6`; current `main` is now an ancestor and GitHub reports the draft PR
+  mergeable.
+- The guarded claim adapter rejects repair successors because its phase allowlist omits an existing Run Contract in
+  `planning_ready`. Admission, pilot authority, branch, and worktree were checked through the adapter; canonical Apply
+  then started Group 10 directly and its four-field token was retained in the ignored adapter handoff.
+- The ancestry-corrected clean gate again passes 815 tests: 601 quantities, 13 reference-data, 9 application, 18
+  runtime, 13 instrument-economics, 7 order-model, 8 execution-scenario, 10 downstream economics, and 136 packaged
+  adversarial tests, plus explicit JMH compilation. Formatting, strict OpenSpec validation, deterministic Corgi
+  readiness, and the read-only semantic readiness review pass at planning revision
+  `sha256:ab75044e5a7307760a64dfa8fec283cc2e4e5bb60f031401e1a5323c6a8660bc`.
+- The automated Task Group 10 review checked scope/topology, unchanged Group 9 behavior, RFC/AC alignment, completed-JAR
+  construction authority, architecture, performance/security, test evidence, and planning integrity with no findings.
+  It changed no file, triaged no finding, and is not canonical Verify or Human Review.
 
 ## Promotion Queue
 - Review agent-configuration constraints before promoting any item to `memory/MEMORY.md`.
