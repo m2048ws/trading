@@ -57,7 +57,7 @@ boundary codecs remain future-owned.
 Current dependency coordinates include Scala `3.8.4`, independent
 `catsVersion = 2.13.0` and `algebraVersion = 2.13.0` coordinates,
 `discipline-munit` `2.0.0`, MUnit `1.3.4`, ScalaCheck `1.19.0`, and
-`munit-scalacheck` `1.0.0`. The minimum build/runtime JDK is documented as 17.
+`munit-scalacheck` `1.0.0`. The minimum build/runtime JDK is documented as 25,
 with no resolved dependency upgrade from the Proposal 0 baseline.
 
 ## Primary ownership and target dependency audit

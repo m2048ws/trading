@@ -53,7 +53,7 @@ For every nontrivial proposal or implementation:
 - represent expected absence, invalidity, conflict, and failure in public mathematical/domain result types; quarantine unavoidable partiality behind checked invariants;
 - keep pure mathematical, domain, and economic code free of live catalogs, codecs, concrete effects, and runtime state;
 - use effect-polymorphic application ports only for genuine external variation and confine concrete effects, concurrency, resources, streams, clients, and telemetry to runtime interpreters;
-- admit dependencies for a named mechanism in the narrowest owning layer, keep independently released version coordinates separate, and preserve the JDK 17 minimum unless an explicit compatibility change says otherwise;
+- admit dependencies for a named mechanism in the narrowest owning layer, keep independently released version coordinates separate, and preserve the JDK 25 minimum unless an explicit compatibility change says otherwise;
 - require advanced Scala and functional abstractions to protect semantics while keeping common public calls domain-readable;
 - verify laws, downstream compiler boundaries, interpreter contracts, concurrency, complexity, and hot-path performance in proportion to the claim.
 

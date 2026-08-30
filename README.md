@@ -2,7 +2,7 @@
 
 `trading` is a Scala 3 multi-module SBT foundation for exact, dimension-safe trading systems. The root project is a
 non-published aggregator: production code belongs to independently named modules rather than the repository root. The
-minimum build and runtime JDK is 17.
+minimum build and runtime JDK is 25.
 
 The current implementation has five production modules. `trading-quantities` provides exact quantities, anonymous
 uniform-grid arithmetic and projection, checked refinements, domain-neutral runtime dimension identity, and optional

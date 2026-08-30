@@ -9,8 +9,8 @@ created: 2026-08-29
 
 ## Project Identity
 - **Name**: trading
-- **Purpose**: `trading` is a Scala 3 multi-module SBT foundation for exact, dimension-safe trading systems. The root project is a non-published aggregator: production code belongs to independently named modules rather than the repository root. The minimum build and runtime JDK is 17. (source: `README.md` or project metadata)
-- **Stack**: Scala 3.8.x, multi-module SBT, Cats/Algebra where admitted by the owning module, and JDK 17 minimum. (source: `build.sbt`, `project/build.properties`, `docs/design-principles.md`)
+- **Purpose**: `trading` is a Scala 3 multi-module SBT foundation for exact, dimension-safe trading systems. The root project is a non-published aggregator: production code belongs to independently named modules rather than the repository root. The minimum build and runtime JDK is 25. (source: `README.md` or project metadata)
+- **Stack**: Scala 3.8.x, multi-module SBT, Cats/Algebra where admitted by the owning module, and JDK 25 minimum. (source: `build.sbt`, `project/build.properties`, `docs/design-principles.md`)
 
 ## Permanent Constraints
 
