@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 3,
+  "groupId": "4",
+  "checks": [
+    {
+      "name": "single atomic snapshot read and immutable historical snapshot behavior",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:runtime%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fruntime%2FInMemoryLiveCatalog.scala#sha256:9c5f20e319ee0b51d54a89453a400b32a374b5d7e44fa225f8918a845ece7076",
+        "file:runtime%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fruntime%2FInMemoryLiveCatalogAtomicSuite.scala#sha256:36bf701fef43ea4962a0d150de5136f61e41634850e3025b556916a357525e41"
+      ]
+    },
+    {
+      "name": "pure atomic commit transition with retained failed and unchanged state",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:runtime%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fruntime%2FInMemoryLiveCatalog.scala#sha256:9c5f20e319ee0b51d54a89453a400b32a374b5d7e44fa225f8918a845ece7076",
+        "file:runtime%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fruntime%2FInMemoryLiveCatalogAtomicSuite.scala#sha256:36bf701fef43ea4962a0d150de5136f61e41634850e3025b556916a357525e41"
+      ]
+    },
+    {
+      "name": "sequential publication, immutable conflict, ordered accumulated errors, revision/delta conservation, and handle reconciliation",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:runtime%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fruntime%2FInMemoryLiveCatalogAtomicSuite.scala#sha256:36bf701fef43ea4962a0d150de5136f61e41634850e3025b556916a357525e41",
+        "file:runtime%2FREADME.md#sha256:d4e70e54f5be8896c265542bb252f81196582427db0831159ed87d361c64ea71"
+      ]
+    }
+  ],
+  "automatedReview": {
+    "verdict": "pass",
+    "findings": []
+  },
+  "artifacts": [
+    "file:runtime%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fruntime%2FInMemoryLiveCatalog.scala#sha256:9c5f20e319ee0b51d54a89453a400b32a374b5d7e44fa225f8918a845ece7076",
+    "file:runtime%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fruntime%2FInMemoryLiveCatalogAtomicSuite.scala#sha256:36bf701fef43ea4962a0d150de5136f61e41634850e3025b556916a357525e41",
+    "file:runtime%2FREADME.md#sha256:d4e70e54f5be8896c265542bb252f81196582427db0831159ed87d361c64ea71",
+    "file:memory%2Fsession-bridge.md#sha256:8428a19c2800e291152d74af6a83fbd312ba6cda14c432682d8323ddc8da8d0e"
+  ],
+  "summary": "Proved coherent snapshot capture and pure atomic commit interpretation across publication, idempotence, typed conflict, accumulated errors, revision/delta conservation, historical stability, and canonical handle relationships. Automated review inspected the retryable function for effects, callbacks, telemetry, allocation, publication, and resource work and found none; it changed no file, triaged no finding, and is not canonical Verify or Human Review."
+}

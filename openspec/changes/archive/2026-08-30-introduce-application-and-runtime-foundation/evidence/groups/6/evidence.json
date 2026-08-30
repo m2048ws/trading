@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 3,
+  "groupId": "6",
+  "checks": [
+    {
+      "name": "framework-neutral effectful shared conformance harness",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:application%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fapplication%2FLiveCatalogContract.scala#sha256:ed8efc7fad7b49ab202d20aa9d9f255a64c579842bea46d939670a5befa97bb2",
+        "file:application%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fapplication%2FLiveCatalogContractSuite.scala#sha256:54c165c1cb87d1a7263eb21f260f291cda3e8911dd69844e54f8b34c45991601"
+      ]
+    },
+    {
+      "name": "in-memory IO interpreter observable conformance",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:runtime%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fruntime%2FInMemoryLiveCatalogContractSuite.scala#sha256:8cb03496c738c672e73bcbd85a820da56b0853dd02ec5473d90397d82978a039"
+      ]
+    },
+    {
+      "name": "structural equivalence and distinct independent lineages",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:application%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fapplication%2FLiveCatalogContract.scala#sha256:ed8efc7fad7b49ab202d20aa9d9f255a64c579842bea46d939670a5befa97bb2",
+        "file:runtime%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fruntime%2FInMemoryLiveCatalogContractSuite.scala#sha256:8cb03496c738c672e73bcbd85a820da56b0853dd02ec5473d90397d82978a039"
+      ]
+    },
+    {
+      "name": "shared observable versus interpreter-specific coverage documentation",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:application%2FREADME.md#sha256:6c2c1be703c09a80f376965fff1467971631393679c44de3e38cbbed99dec094",
+        "file:runtime%2FREADME.md#sha256:6fc66b607d8194b756a680da3200eb681e1cdeb428c854b11d0f4ec486cc8bea"
+      ]
+    }
+  ],
+  "automatedReview": {
+    "verdict": "pass",
+    "findings": []
+  },
+  "artifacts": [
+    "file:application%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fapplication%2FLiveCatalogContract.scala#sha256:ed8efc7fad7b49ab202d20aa9d9f255a64c579842bea46d939670a5befa97bb2",
+    "file:application%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fapplication%2FLiveCatalogContractSuite.scala#sha256:54c165c1cb87d1a7263eb21f260f291cda3e8911dd69844e54f8b34c45991601",
+    "file:runtime%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fruntime%2FInMemoryLiveCatalogContractSuite.scala#sha256:8cb03496c738c672e73bcbd85a820da56b0853dd02ec5473d90397d82978a039",
+    "file:application%2FREADME.md#sha256:6c2c1be703c09a80f376965fff1467971631393679c44de3e38cbbed99dec094",
+    "file:runtime%2FREADME.md#sha256:6fc66b607d8194b756a680da3200eb681e1cdeb428c854b11d0f4ec486cc8bea",
+    "file:memory%2Fsession-bridge.md#sha256:88969a8d95c991bdac370aab5d2624ccbf204793ee03fe0508833806e9c26a03"
+  ],
+  "summary": "Generalized the application test-source contract into effectful framework-neutral cases and instantiated the same observable suite for both the deterministic thunk interpreter and the Cats Effect in-memory interpreter without unsafe execution. The cases compare bootstrap, lookups, publication, idempotence, conflicts, ordered errors, revisions, deltas, coherent snapshots, within-lineage relationships, and structurally equal but non-reconciling independent lineages. Automated review found no remaining runtime leakage, partial extraction, unsafe execution, or lineage-model issue and is not canonical Verify or Human Review."
+}

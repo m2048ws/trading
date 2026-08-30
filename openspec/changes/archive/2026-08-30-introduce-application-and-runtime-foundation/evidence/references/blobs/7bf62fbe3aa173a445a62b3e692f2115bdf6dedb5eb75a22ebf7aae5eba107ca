@@ -14,24 +14,20 @@ updated: 2026-08-30
 - **Issue**: 6 https://github.com/m2048ws/trading/issues/6
 - **Change**: introduce-application-and-runtime-foundation
 - **Worktree**: /Users/m/src/money/.worktrees/introduce-application-and-runtime-foundation
-- **Phase at Checkpoint**: archiving
-- **Task Group at Checkpoint**: none
-- **Observed Run Revision**: 7
-- **Last Verified HEAD**: 6c0d35bb652d75668ba6550dd8155f33dce0f58b
-
-The phase and revision above are the required next checkpoint carried by the Task Group commit. Live Run Contract
-authority remains `applying` at revision 1 until Corgi acknowledges that commit.
+- **Phase at Checkpoint**: awaiting_verify
+- **Task Group at Checkpoint**: 8
+- **Observed Run Revision**: 9
+- **Last Verified HEAD**: 391c5e6641d2b9333bc931926bd84f3fa0f93ef9
 
 ## Next Action
-- Consult Run Contract v3: resume tracker closeout for `introduce-application-and-runtime-foundation` only if pending; otherwise select the next accepted Slice. Local delivery: `wiki/deliveries/RFC-0002-architecture-portfolio-S-01-application-runtime-foundation.md`.
-  Verify remains a separate gate.
+- Commit and acknowledge Task Group 8, synchronize the draft PR, and stop Apply at `awaiting_verify`; canonical Verify
+  remains a separate gate.
 
 ## Blockers
 - none
 
 ## Uncommitted Work
-- The JVM construction-boundary repair, shared multi-error commit contract, genuine-publication contention benchmark,
-  current-`main` reconciliation, and this Task Group 9 verification/handoff checkpoint.
+- The final S-05 owner-label reconciliation and this Task Group 8 verification/handoff checkpoint.
 
 ## Discoveries
 - Baseline inventory found `LiveCatalog[F]`, `CatalogModel`, completed-JAR compiler fixtures, and the non-published
@@ -57,26 +53,14 @@ authority remains `applying` at revision 1 until Corgi acknowledges that commit.
   future ports, effect-wrapped pure facades, and runtime concurrency/stream vocabulary.
 - RFC-0002 S-01 is now documented as the implemented runtime and port-admission foundation, with wall versus monotonic
   time, business atomicity versus scoped transactions, and telemetry versus durable audit explicitly separated.
-- The final clean dependency-ordered gate passes 802 tests: 601 quantities, 13 reference-data, 9 application, 18
-  runtime, 40 economics, and 121 packaged adversarial tests; formatting and explicit JMH compilation also pass.
+- The final clean dependency-ordered gate passes 799 tests: 601 quantities, 13 reference-data, 8 application, 17
+  runtime, 40 economics, and 120 packaged adversarial tests; formatting and explicit JMH compilation also pass.
 - A focused JDK 26.0.2 JMH rerun completed all four runtime paths with the recorded one-fork, three-warmup,
   five-measurement configuration and preserved the intended one-capture high-volume lookup shape.
 - Production dependency reports place Cats Effect only in runtime; the completed application API contains only
   `LiveCatalog.snapshot` and `LiveCatalog.commit`, while Scala compiler evidence rejects the private Ref-backed class.
-- The Ref-backed implementation is a private nested JVM class with a private constructor behind a non-public bridge;
-  the bridge binds the actual `InMemoryLiveCatalog` factory class and code source, while the constructor independently
-  rejects reflective and private-method-handle callers. Package-spoofing Scala and Java fixtures reject the actual
-  nested type, and artifact checks prove private modifiers, no `Ref`/`Sync` fields or constructor parameters, and JDK
-  17 classfile version 61.
-- The shared `LiveCatalogContract` now requires failed commits to return both stable ordered violations while retaining
-  the complete predecessor and reconcilable handles; both interpreters run it, and a targeted lineage-corrupting
-  negative control proves that exact shared case rejects structurally similar replacement state.
-- The four-thread contention benchmark now submits unique valid batches, rejects any non-publication, resets its shared
-  interpreter per iteration, and recorded 3,659.590 ±69.860 aggregate ops/s on the documented JDK 26.0.2 run.
-- The repair group incorporates current `main`'s removal of the retired steward/worker workflow and reconciles the only
-  overlapping architecture audit without entering Issues #7–#10.
 - Strict readiness passes with planning revision
-  `sha256:24744edcf2e6291c9487647650d576e233e604c1fa42e9cb14f73554d7dd748f`, current RFC ancestry, source provenance,
+  `sha256:ad1efb276d324572b823d389ec597e17b6d5555019065b8b5f0bed4aef2e0da1`, current RFC ancestry, source provenance,
   and complete AC traceability.
 
 ## Promotion Queue

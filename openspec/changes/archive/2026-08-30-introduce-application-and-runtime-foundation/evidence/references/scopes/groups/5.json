@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 3,
+  "scope": "group-5",
+  "runId": "run-43d94c8c-c8d7-4d5b-9070-eed9ed95311a",
+  "references": [
+    {
+      "reference": "file:benchmarks%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fbenchmark%2FLiveCatalogRuntimeBenchmark.scala#sha256:a3b8d029eb367c63ddcae45fb03a6a6fec69543d1aa6b6e346b26c1424b5eaef",
+      "sourcePath": "benchmarks/src/main/scala/trading/benchmark/LiveCatalogRuntimeBenchmark.scala",
+      "digest": "sha256:a3b8d029eb367c63ddcae45fb03a6a6fec69543d1aa6b6e346b26c1424b5eaef",
+      "archivePath": "references/blobs/a3b8d029eb367c63ddcae45fb03a6a6fec69543d1aa6b6e346b26c1424b5eaef"
+    },
+    {
+      "reference": "file:build.sbt#sha256:0b4c0c9493d7abde9f8c68e633edbcc6dd4fba0ffeea4a3f6503f2198e1cc8b6",
+      "sourcePath": "build.sbt",
+      "digest": "sha256:0b4c0c9493d7abde9f8c68e633edbcc6dd4fba0ffeea4a3f6503f2198e1cc8b6",
+      "archivePath": "references/blobs/0b4c0c9493d7abde9f8c68e633edbcc6dd4fba0ffeea4a3f6503f2198e1cc8b6"
+    },
+    {
+      "reference": "file:docs%2Fcatalog-benchmark.md#sha256:8a48a60d3226860ee2110089d899d9269efbbfe562b17b06fa26a41960e4a3b9",
+      "sourcePath": "docs/catalog-benchmark.md",
+      "digest": "sha256:8a48a60d3226860ee2110089d899d9269efbbfe562b17b06fa26a41960e4a3b9",
+      "archivePath": "references/blobs/8a48a60d3226860ee2110089d899d9269efbbfe562b17b06fa26a41960e4a3b9"
+    },
+    {
+      "reference": "file:memory%2Fsession-bridge.md#sha256:5da1fa7f8365e67774f3f158d33b3f1e343bf984eee6aed267b81b40beec8f7c",
+      "sourcePath": "memory/session-bridge.md",
+      "digest": "sha256:5da1fa7f8365e67774f3f158d33b3f1e343bf984eee6aed267b81b40beec8f7c",
+      "archivePath": "references/blobs/5da1fa7f8365e67774f3f158d33b3f1e343bf984eee6aed267b81b40beec8f7c"
+    },
+    {
+      "reference": "file:runtime%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fruntime%2FInMemoryLiveCatalogConcurrencySuite.scala#sha256:1583e04a7a73cc0f1f59f0583ca82c0c6c45ec9cf30045038795b94ce74ebf99",
+      "sourcePath": "runtime/src/test/scala/trading/runtime/InMemoryLiveCatalogConcurrencySuite.scala",
+      "digest": "sha256:1583e04a7a73cc0f1f59f0583ca82c0c6c45ec9cf30045038795b94ce74ebf99",
+      "archivePath": "references/blobs/1583e04a7a73cc0f1f59f0583ca82c0c6c45ec9cf30045038795b94ce74ebf99"
+    }
+  ]
+}

@@ -14,16 +14,16 @@ updated: 2026-08-30
 - **Issue**: 6 https://github.com/m2048ws/trading/issues/6
 - **Change**: introduce-application-and-runtime-foundation
 - **Worktree**: /Users/m/src/money/.worktrees/introduce-application-and-runtime-foundation
-- **Phase at Checkpoint**: archiving
-- **Task Group at Checkpoint**: none
-- **Observed Run Revision**: 7
-- **Last Verified HEAD**: 6c0d35bb652d75668ba6550dd8155f33dce0f58b
+- **Phase at Checkpoint**: awaiting_verify
+- **Task Group at Checkpoint**: 9
+- **Observed Run Revision**: 2
+- **Last Verified HEAD**: 27fe6b25b114dd2803c963c69bdeec828b3a04c4
 
 The phase and revision above are the required next checkpoint carried by the Task Group commit. Live Run Contract
 authority remains `applying` at revision 1 until Corgi acknowledges that commit.
 
 ## Next Action
-- Consult Run Contract v3: resume tracker closeout for `introduce-application-and-runtime-foundation` only if pending; otherwise select the next accepted Slice. Local delivery: `wiki/deliveries/RFC-0002-architecture-portfolio-S-01-application-runtime-foundation.md`.
+- Commit and acknowledge repair Task Group 9, synchronize draft PR #16, and stop Apply at `awaiting_verify`; canonical
   Verify remains a separate gate.
 
 ## Blockers

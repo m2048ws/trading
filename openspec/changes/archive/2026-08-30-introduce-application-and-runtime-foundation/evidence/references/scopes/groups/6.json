@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 3,
+  "scope": "group-6",
+  "runId": "run-43d94c8c-c8d7-4d5b-9070-eed9ed95311a",
+  "references": [
+    {
+      "reference": "file:application%2FREADME.md#sha256:6c2c1be703c09a80f376965fff1467971631393679c44de3e38cbbed99dec094",
+      "sourcePath": "application/README.md",
+      "digest": "sha256:6c2c1be703c09a80f376965fff1467971631393679c44de3e38cbbed99dec094",
+      "archivePath": "references/blobs/6c2c1be703c09a80f376965fff1467971631393679c44de3e38cbbed99dec094"
+    },
+    {
+      "reference": "file:application%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fapplication%2FLiveCatalogContract.scala#sha256:ed8efc7fad7b49ab202d20aa9d9f255a64c579842bea46d939670a5befa97bb2",
+      "sourcePath": "application/src/test/scala/trading/application/LiveCatalogContract.scala",
+      "digest": "sha256:ed8efc7fad7b49ab202d20aa9d9f255a64c579842bea46d939670a5befa97bb2",
+      "archivePath": "references/blobs/ed8efc7fad7b49ab202d20aa9d9f255a64c579842bea46d939670a5befa97bb2"
+    },
+    {
+      "reference": "file:application%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fapplication%2FLiveCatalogContractSuite.scala#sha256:54c165c1cb87d1a7263eb21f260f291cda3e8911dd69844e54f8b34c45991601",
+      "sourcePath": "application/src/test/scala/trading/application/LiveCatalogContractSuite.scala",
+      "digest": "sha256:54c165c1cb87d1a7263eb21f260f291cda3e8911dd69844e54f8b34c45991601",
+      "archivePath": "references/blobs/54c165c1cb87d1a7263eb21f260f291cda3e8911dd69844e54f8b34c45991601"
+    },
+    {
+      "reference": "file:memory%2Fsession-bridge.md#sha256:88969a8d95c991bdac370aab5d2624ccbf204793ee03fe0508833806e9c26a03",
+      "sourcePath": "memory/session-bridge.md",
+      "digest": "sha256:88969a8d95c991bdac370aab5d2624ccbf204793ee03fe0508833806e9c26a03",
+      "archivePath": "references/blobs/88969a8d95c991bdac370aab5d2624ccbf204793ee03fe0508833806e9c26a03"
+    },
+    {
+      "reference": "file:runtime%2FREADME.md#sha256:6fc66b607d8194b756a680da3200eb681e1cdeb428c854b11d0f4ec486cc8bea",
+      "sourcePath": "runtime/README.md",
+      "digest": "sha256:6fc66b607d8194b756a680da3200eb681e1cdeb428c854b11d0f4ec486cc8bea",
+      "archivePath": "references/blobs/6fc66b607d8194b756a680da3200eb681e1cdeb428c854b11d0f4ec486cc8bea"
+    },
+    {
+      "reference": "file:runtime%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fruntime%2FInMemoryLiveCatalogContractSuite.scala#sha256:8cb03496c738c672e73bcbd85a820da56b0853dd02ec5473d90397d82978a039",
+      "sourcePath": "runtime/src/test/scala/trading/runtime/InMemoryLiveCatalogContractSuite.scala",
+      "digest": "sha256:8cb03496c738c672e73bcbd85a820da56b0853dd02ec5473d90397d82978a039",
+      "archivePath": "references/blobs/8cb03496c738c672e73bcbd85a820da56b0853dd02ec5473d90397d82978a039"
+    }
+  ]
+}

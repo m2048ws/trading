@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 3,
+  "scope": "group-2",
+  "runId": "run-43d94c8c-c8d7-4d5b-9070-eed9ed95311a",
+  "references": [
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fapplication-runtime-boundary%2Fnegative%2FConcreteEffectLeak.scala#sha256:7fcf149ae983e78f582a019c000b239b477650ba0a7961c5ad8654eebe0f25f9",
+      "sourcePath": "adversarial-boundary/src/test/resources/application-runtime-boundary/negative/ConcreteEffectLeak.scala",
+      "digest": "sha256:7fcf149ae983e78f582a019c000b239b477650ba0a7961c5ad8654eebe0f25f9",
+      "archivePath": "references/blobs/7fcf149ae983e78f582a019c000b239b477650ba0a7961c5ad8654eebe0f25f9"
+    },
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fapplication-runtime-boundary%2Fpositive%2FRuntimeDependencyClient.scala#sha256:9314c51721fba63862c9fead806139cb4b238cd7e37824ca4e993285ac334c8f",
+      "sourcePath": "adversarial-boundary/src/test/resources/application-runtime-boundary/positive/RuntimeDependencyClient.scala",
+      "digest": "sha256:9314c51721fba63862c9fead806139cb4b238cd7e37824ca4e993285ac334c8f",
+      "archivePath": "references/blobs/9314c51721fba63862c9fead806139cb4b238cd7e37824ca4e993285ac334c8f"
+    },
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FApplicationRuntimeBoundarySuite.scala#sha256:d882437dd7500619abe5064f186dbfd1d31b433cc2d018da702c17a7241e4293",
+      "sourcePath": "adversarial-boundary/src/test/scala/external/ApplicationRuntimeBoundarySuite.scala",
+      "digest": "sha256:d882437dd7500619abe5064f186dbfd1d31b433cc2d018da702c17a7241e4293",
+      "archivePath": "references/blobs/d882437dd7500619abe5064f186dbfd1d31b433cc2d018da702c17a7241e4293"
+    },
+    {
+      "reference": "file:build.sbt#sha256:b94da7f050493db7b78b0cb4154104c6029cf09658116aa9e5cdb281686d0fca",
+      "sourcePath": "build.sbt",
+      "digest": "sha256:b94da7f050493db7b78b0cb4154104c6029cf09658116aa9e5cdb281686d0fca",
+      "archivePath": "references/blobs/b94da7f050493db7b78b0cb4154104c6029cf09658116aa9e5cdb281686d0fca"
+    },
+    {
+      "reference": "file:memory%2Fsession-bridge.md#sha256:facf58ba759b9116c8669394b2a5cd9f6c3fda29e40d3fea65d2784c870fcb4c",
+      "sourcePath": "memory/session-bridge.md",
+      "digest": "sha256:facf58ba759b9116c8669394b2a5cd9f6c3fda29e40d3fea65d2784c870fcb4c",
+      "archivePath": "references/blobs/facf58ba759b9116c8669394b2a5cd9f6c3fda29e40d3fea65d2784c870fcb4c"
+    },
+    {
+      "reference": "file:README.md#sha256:2bff7d0d9face49dfdcc1d9cf7aab5afd89d504a4c7b6e386b5da76360fb0424",
+      "sourcePath": "README.md",
+      "digest": "sha256:2bff7d0d9face49dfdcc1d9cf7aab5afd89d504a4c7b6e386b5da76360fb0424",
+      "archivePath": "references/blobs/2bff7d0d9face49dfdcc1d9cf7aab5afd89d504a4c7b6e386b5da76360fb0424"
+    },
+    {
+      "reference": "file:runtime%2FREADME.md#sha256:17c072365ae25fa06a012e20303a2174ec7298b54c0ee903b36dcce7e99af03d",
+      "sourcePath": "runtime/README.md",
+      "digest": "sha256:17c072365ae25fa06a012e20303a2174ec7298b54c0ee903b36dcce7e99af03d",
+      "archivePath": "references/blobs/17c072365ae25fa06a012e20303a2174ec7298b54c0ee903b36dcce7e99af03d"
+    },
+    {
+      "reference": "file:runtime%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fruntime%2Fpackage.scala#sha256:bf27f044abca4dc397f254b11ffeedb56f45869539ee0be4d03bde58546dae32",
+      "sourcePath": "runtime/src/main/scala/trading/runtime/package.scala",
+      "digest": "sha256:bf27f044abca4dc397f254b11ffeedb56f45869539ee0be4d03bde58546dae32",
+      "archivePath": "references/blobs/bf27f044abca4dc397f254b11ffeedb56f45869539ee0be4d03bde58546dae32"
+    }
+  ]
+}

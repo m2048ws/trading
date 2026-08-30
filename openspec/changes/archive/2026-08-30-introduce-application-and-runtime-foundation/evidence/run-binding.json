@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 3,
+  "changeName": "introduce-application-and-runtime-foundation",
+  "runId": "run-a9ba484a-5f6b-475a-9a5a-45c890af27ba",
+  "finalRevision": "6c0d35bb652d75668ba6550dd8155f33dce0f58b",
+  "planningRevision": "sha256:24744edcf2e6291c9487647650d576e233e604c1fa42e9cb14f73554d7dd748f",
+  "contract": {
+    "kind": "rfc-slice",
+    "deliveryRef": "RFC-0002-architecture-portfolio/S-01-application-runtime-foundation",
+    "rfcId": "RFC-0002-architecture-portfolio",
+    "rfcDigest": "sha256:a00c0cf1e3a4440bfce7dc828ad4ac119414f10d72e8d8c52c613403ef5977e2",
+    "acceptedCommit": "7b6f7a58f4dcbb8fb4bbdf3a8ba74ba66f222cce",
+    "sliceId": "S-01-application-runtime-foundation",
+    "sourcePath": "openspec/changes/introduce-application-and-runtime-foundation/corgi/source.yaml",
+    "sourceDigest": "sha256:b6456620959f0fc121106393b6a78980fe81c550cbfa0d157f1dcec29f172d87",
+    "traceabilityPath": "openspec/changes/introduce-application-and-runtime-foundation/corgi/traceability.yaml",
+    "traceabilityDigest": "sha256:6c7982a9f80036a1d6dd2e9fb27e15c3cb152ac3a01713a5bb4599a0eb0b15bc",
+    "acceptance": [
+      {
+        "id": "AC-001",
+        "evidence": "automated",
+        "taskGroups": [
+          "2",
+          "7"
+        ]
+      },
+      {
+        "id": "AC-002",
+        "evidence": "both",
+        "taskGroups": [
+          "3",
+          "4",
+          "5",
+          "6",
+          "9"
+        ]
+      },
+      {
+        "id": "AC-003",
+        "evidence": "human",
+        "taskGroups": [
+          "7"
+        ]
+      },
+      {
+        "id": "AC-004",
+        "evidence": "automated",
+        "taskGroups": [
+          "5",
+          "6",
+          "8",
+          "9"
+        ]
+      }
+    ],
+    "tracker": {
+      "provider": "github",
+      "idempotencyKey": "3cf00c5a7b86e1a408b67fba3aaf4a3cbd7e80e932f56cedf67f091a4fa024bc",
+      "issue": {
+        "id": "6",
+        "url": "https://github.com/m2048ws/trading/issues/6"
+      }
+    }
+  },
+  "archiveIntentId": "archive-aa0fde6f-ee24-4318-af8a-03dac3a399c2"
+}

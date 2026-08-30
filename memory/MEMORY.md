@@ -23,7 +23,7 @@ Add an entry only after a human accepts it or a verified delivery proves it. Eve
 
 ## Verified Deliveries
 <!-- corgi:managed:start verified-deliveries -->
-- none
+- [[wiki/deliveries/RFC-0002-architecture-portfolio-S-01-application-runtime-foundation|RFC-0002-architecture-portfolio/S-01-application-runtime-foundation]] — verified by sha256:4a4ee2d82d93b117f9e43689b2304cfa84221b2c8a3d23c66650e2ef6f0e4795
 <!-- corgi:managed:end verified-deliveries -->
 
 ## Working Preferences

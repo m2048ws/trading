@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 3,
+  "scope": "group-7",
+  "runId": "run-43d94c8c-c8d7-4d5b-9070-eed9ed95311a",
+  "references": [
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FApplicationRuntimeBoundarySuite.scala#sha256:9f2dd06bb5cb08c5c2ce9ac58dbf6abef602d30c4f578aeaf399ecb87f8454cb",
+      "sourcePath": "adversarial-boundary/src/test/scala/external/ApplicationRuntimeBoundarySuite.scala",
+      "digest": "sha256:9f2dd06bb5cb08c5c2ce9ac58dbf6abef602d30c4f578aeaf399ecb87f8454cb",
+      "archivePath": "references/blobs/9f2dd06bb5cb08c5c2ce9ac58dbf6abef602d30c4f578aeaf399ecb87f8454cb"
+    },
+    {
+      "reference": "file:docs%2Farchitecture-charter-audit.md#sha256:6320a35f300d73e9244773849bae4f7eb256cd06c81625b0fdb135bfdd19d36e",
+      "sourcePath": "docs/architecture-charter-audit.md",
+      "digest": "sha256:6320a35f300d73e9244773849bae4f7eb256cd06c81625b0fdb135bfdd19d36e",
+      "archivePath": "references/blobs/6320a35f300d73e9244773849bae4f7eb256cd06c81625b0fdb135bfdd19d36e"
+    },
+    {
+      "reference": "file:docs%2Fdesign-principles.md#sha256:5a8df5240904762c41d00f0672c37d9d48f22354970e2d9e57690726a4390b77",
+      "sourcePath": "docs/design-principles.md",
+      "digest": "sha256:5a8df5240904762c41d00f0672c37d9d48f22354970e2d9e57690726a4390b77",
+      "archivePath": "references/blobs/5a8df5240904762c41d00f0672c37d9d48f22354970e2d9e57690726a4390b77"
+    },
+    {
+      "reference": "file:memory%2Fsession-bridge.md#sha256:5c40aaa00dda7e9b44b61fbefca9e0921979952cca6c21c0ccd9b2f42cf5c229",
+      "sourcePath": "memory/session-bridge.md",
+      "digest": "sha256:5c40aaa00dda7e9b44b61fbefca9e0921979952cca6c21c0ccd9b2f42cf5c229",
+      "archivePath": "references/blobs/5c40aaa00dda7e9b44b61fbefca9e0921979952cca6c21c0ccd9b2f42cf5c229"
+    },
+    {
+      "reference": "file:README.md#sha256:4c39cd4c66b0fa7112727ad07902d58216679dee23820a894cdf844b560521e3",
+      "sourcePath": "README.md",
+      "digest": "sha256:4c39cd4c66b0fa7112727ad07902d58216679dee23820a894cdf844b560521e3",
+      "archivePath": "references/blobs/4c39cd4c66b0fa7112727ad07902d58216679dee23820a894cdf844b560521e3"
+    }
+  ]
+}
