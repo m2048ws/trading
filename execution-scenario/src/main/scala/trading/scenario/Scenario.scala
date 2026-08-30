@@ -257,6 +257,16 @@ final class OrderScenario[D <: Dim, B <: Dim, Q <: Dim, M] private[this] (
   val order: Order[D, B, Q]                    = assumptions.order
   val matchedSlices: MatchedSlices[Lots[D], M] = assumptions.matchedSlices
   val instrumentId: InstrumentId               = order.instrumentId
+
+  override def equals(other: Any): Boolean =
+    other match
+      case that: OrderScenario[?, ?, ?, ?] =>
+        assumptions == that.assumptions && checkedActivation == that.checkedActivation &&
+        effectivePricing == that.effectivePricing && positionChange == that.positionChange
+      case _ => false
+
+  override def hashCode: Int =
+    (assumptions, checkedActivation, effectivePricing, positionChange).hashCode
 end OrderScenario
 
 private[scenario] final case class LocatedIdentity(
@@ -534,7 +544,17 @@ final class RoundTripScenario[D <: Dim, B <: Dim, Q <: Dim, M] private[this] (
   val instrumentId: InstrumentId,
   val entry: OrderScenario[D, B, Q, M],
   val exit: OrderScenario[D, B, Q, M],
-  val heldPosition: PositionLots[D])
+  val heldPosition: PositionLots[D]):
+
+  override def equals(other: Any): Boolean =
+    other match
+      case that: RoundTripScenario[?, ?, ?, ?] =>
+        instrumentId == that.instrumentId && entry == that.entry && exit == that.exit &&
+        heldPosition == that.heldPosition
+      case _ => false
+
+  override def hashCode: Int = (instrumentId, entry, exit, heldPosition).hashCode
+end RoundTripScenario
 
 object RoundTripScenario:
   private val constructor =

@@ -62,6 +62,37 @@ final class OrderScenarioSuite extends FunSuite:
     assertEquals(evaluated.effectivePricing, EffectivePricing.Limited(price100))
     assertEquals(evaluated.positionChange, order.intent.positionChange)
 
+  test("checked scenarios and round trips retain structural equality and matching hashes"):
+    val order       = Order.market(instrument)(Side.Buy, lots10).toOption.get
+    val assumptions = ScenarioAssumptions.one(order)(
+      order.activation.evidence,
+      order.execution.resolution,
+      slice(lots10, Rational(99), LiquidityRole.Taker)
+    ).toOption.get
+    val first  = OrderScenario.evaluate(instrument)(assumptions).toOption.get
+    val second = OrderScenario.evaluate(instrument)(assumptions).toOption.get
+    val third  = OrderScenario.evaluate(instrument)(assumptions).toOption.get
+
+    assertEquals(first, second)
+    assertEquals(second, third)
+    assertEquals(first, third)
+    assertEquals(first.hashCode, second.hashCode)
+    assert(Set(first).contains(second))
+
+    val different = marketScenario(Side.Buy, lots10, Rational(100))
+    assertNotEquals(first, different)
+
+    val exit       = marketScenario(Side.Sell, lots10, Rational(100))
+    val firstTrip  = RoundTripScenario.create(instrument)(first, exit).toOption.get
+    val secondTrip = RoundTripScenario.create(instrument)(second, exit).toOption.get
+
+    assertEquals(firstTrip, secondTrip)
+    assertEquals(firstTrip.hashCode, secondTrip.hashCode)
+    assert(Set(firstTrip).contains(secondTrip))
+
+    val differentTrip = RoundTripScenario.create(instrument)(different, exit).toOption.get
+    assertNotEquals(firstTrip, differentTrip)
+
   test("activation failure does not suppress independent lot-total and market-role diagnostics"):
     val activation         = FixedActivation(PriceReference.Mark, TriggerComparison.AtOrAbove, price100)
     val order              = Order.stopMarket(instrument)(Side.Buy, lots10, activation).toOption.get

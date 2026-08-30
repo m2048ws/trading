@@ -14,25 +14,24 @@ updated: 2026-08-30
 - **Issue**: 7 https://github.com/m2048ws/trading/issues/7
 - **Change**: separate-order-and-execution-scenario-modules
 - **Worktree**: /Users/m/src/money/.worktrees/separate-order-and-execution-scenario-modules
-- **Phase at Checkpoint**: planning_ready
+- **Phase at Checkpoint**: awaiting_verify
 - **Task Group at Checkpoint**: 12
-- **Observed Run Revision**: none
-- **Last Verified HEAD**: 5a74678a78a27ff01c258ef4883a8a3d80d3bdc9
+- **Observed Run Revision**: 2
+- **Last Verified HEAD**: aafbf0edcddcf664ace65a8cf8dc400531070e71
 
 The phase and revision above are the required next checkpoint carried by the Repair Task Group commit. Live Run
 Contract authority remains `applying` at revision 1 until Corgi acknowledges that commit.
 
 ## Next Action
-- Start Apply for `separate-order-and-execution-scenario-modules` Task Group 12.
-  synchronize draft PR #27, and run canonical Verify. Human Review remains a separate gate.
+- Acknowledge Task Group 12's dedicated commit, synchronize draft PR #27, and run canonical Verify. Human Review
+  remains a separate gate.
 
 ## Blockers
 - none
 
 ## Uncommitted Work
-- JVM-closed order/activation/execution/pricing/visibility construction, genuinely private concrete order and matched
-  slice constructors, typed erased assumptions construction, completed-JAR Java adversarial fixtures, and this Task
-  Group 11 validation/evidence checkpoint.
+- Structural `equals` and `hashCode` for checked order-scenario and round-trip results, focused repeated-construction
+  value laws, and this Task Group 12 validation/evidence checkpoint.
 
 ## Discoveries
 - The archived `establish-pure-instrument-economics` boundary was reconciled from commit `86613ee` before S-02
@@ -113,6 +112,24 @@ Contract authority remains `applying` at revision 1 until Corgi acknowledges tha
 - The Task Group 11 clean matrix passes 819 tests: 601 quantities, 13 reference-data, 9 application, 18 runtime, 13
   instrument-economics, 7 order-model, 9 execution-scenario, 10 downstream economics, and 139 packaged adversarial
   tests. Explicit JMH compilation and the focused exact completed-JAR constructor/implementation probes also pass.
+- Canonical Verify passed Group 11 at exact SHA `5a74678a78a27ff01c258ef4883a8a3d80d3bdc9`. Independent review closed
+  `S02-JVM-AUTHORITY-001`, then identified `S02-VALUE-SEMANTICS-001`: the JVM-private checked result classes had lost
+  the structural equality and hashing previously supplied by their case-class representations. Human Review rejected
+  that implementation and successor run `run-245638d2-ba14-4eda-8fbd-98151b33c1d0` carries Groups 1–11 into Repair
+  Task Group 12 at planning revision
+  `sha256:d7a7a6b522f5dbf7a15892d6043b1f757f3ea2fd5e3724ea205a1360cc285951`.
+- `OrderScenario` now compares and hashes its retained assumptions, checked activation, effective pricing, and position
+  change. `RoundTripScenario` now compares and hashes its instrument identity, entry, exit, and held position. Repeated
+  checked construction satisfies reflexive/symmetric/transitive equality, equal hashes, and hashed-collection lookup;
+  semantically different scenarios and round trips remain unequal.
+- `javap -p` confirms both checked result constructors remain JVM-private and exposes only the intended public
+  observations plus `equals` and `hashCode`; completed-JAR Scala and Java constructor/copy probes continue to pass.
+- The Task Group 12 clean matrix passes 820 tests: 601 quantities, 13 reference-data, 9 application, 18 runtime, 13
+  instrument-economics, 7 order-model, 10 execution-scenario, 10 downstream economics, and 139 packaged adversarial
+  tests. Formatting, JMH compilation, strict OpenSpec validation, and deterministic Corgi readiness also pass.
+- The automated Task Group 12 review checked scope, AC-008 behavioral equivalence, equality/hash laws, constructor
+  authority, architecture, downstream compatibility, performance/security, and validation evidence with no findings.
+  It changed no file, triaged no finding, and is not canonical Verify or Human Review.
 
 ## Promotion Queue
 - Review agent-configuration constraints before promoting any item to `memory/MEMORY.md`.
