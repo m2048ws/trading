@@ -100,3 +100,21 @@
   implementation drift before the final Task Group checkpoint.
 - [ ] 8.6 Prepare the final acknowledged Task Group commit and evidence for separate canonical Verify, human review,
   human QA, and Archive; do not begin the fee-policy Slice in this delivery.
+
+## 9. Independent Review Repair
+
+- [ ] 9.1 Integrate the current `main` tree into the repair commit without rewriting the acknowledged Task Group prefix,
+  preserving the delivered instrument-economics and application/runtime boundaries while resolving all S-02 module,
+  compiler-fixture, downstream economics, documentation, and delivery-state conflicts.
+- [ ] 9.2 Replace package-qualified order/scenario construction authority with JVM-enforced private or otherwise
+  unforgeable representations while retaining the checked factories, associated evidence relationships, immutable
+  public observations, and domain-readable call sites required by AC-006 and AC-007.
+- [ ] 9.3 Add completed-JAR negative fixtures for same-package Scala and Java construction/copy attempts covering order
+  intent, trigger and peg evidence, liquidity slices, assumptions, checked scenarios, and round trips; retain nearby
+  positive fixtures for every supported checked construction path.
+- [ ] 9.4 Run formatting, clean compilation, unit/property suites, completed-JAR compiler boundaries, downstream
+  fee/risk behavioral-equivalence tests, adversarial tests, strict OpenSpec validation, and deterministic Corgi
+  readiness on the integrated tree.
+- [ ] 9.5 Record the repair rationale, conflict dispositions, API inspection, exact validation counts, and independent
+  review findings addressed; prepare one dedicated Repair Task Group commit for acknowledgement, fresh canonical
+  Verify, human review, and exact-SHA independent review.

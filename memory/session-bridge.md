@@ -14,13 +14,13 @@ updated: 2026-08-30
 - **Issue**: 7 https://github.com/m2048ws/trading/issues/7
 - **Change**: separate-order-and-execution-scenario-modules
 - **Worktree**: /Users/m/src/money/.worktrees/separate-order-and-execution-scenario-modules
-- **Phase at Checkpoint**: awaiting_verify
-- **Task Group at Checkpoint**: 8
-- **Observed Run Revision**: 9
-- **Last Verified HEAD**: 79d099b117706a31e44c076fdc28c68a945de30f
+- **Phase at Checkpoint**: planning_ready
+- **Task Group at Checkpoint**: 9
+- **Observed Run Revision**: none
+- **Last Verified HEAD**: 5726eb8918778c026700963f0a48f91b062d1d70
 
 ## Next Action
-- Run canonical Corgi Verify after Task Group 8 acknowledgement; keep human Review, Human QA, and Archive separate.
+- Start Apply for `separate-order-and-execution-scenario-modules` Task Group 9.
 
 ## Blockers
 - none
