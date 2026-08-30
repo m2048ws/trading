@@ -237,8 +237,8 @@ objects, generic mapping models, validation containers, runtime references, and
 similar implementation representations remain confined unless deliberately
 made part of an owning public contract.
 
-The current minimum build and runtime JDK is 17 while the project uses Scala
-3.8.x. Raising that floor or selecting a dependency major that requires a higher
+The current minimum build and runtime JDK is 25 while the project uses Scala
+3.8.x. Changing that floor or selecting a dependency major that requires a higher
 floor is an explicit compatibility decision. Independently released libraries
 use independently named version coordinates even if their current version
 strings match. Proposal 1 owns splitting the current shared Cats/Algebra

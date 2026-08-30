@@ -26,37 +26,40 @@ materially unresolved planning artifact blocks Proposal 0.
 
 ## Current physical implementation
 
-Proposal 1 and the staged implementation of active Proposal 2 have now established the first dependent physical
-boundaries. This table describes the implemented SBT projects and must not be confused with the remaining proposed
-target.
+Delivered slices have established the current dependent physical boundaries. This table describes the implemented SBT
+projects and must not be confused with the remaining proposed target.
 
 | State | SBT project | Artifact/directory | Production dependency |
 | --- | --- | --- | --- |
-| Current | root `trading` | unpublished aggregate | aggregates quantities, reference data, application, economics, adversarial boundary |
+| Current | root `trading` | unpublished aggregate | aggregates quantities, reference data, application, runtime, instrument economics, economics, adversarial boundary |
 | Current | `quantities` | `trading-quantities` / `quantities/` | external mathematical libraries only |
 | Current | `referenceData` | `trading-reference-data` / `reference-data/` | quantities |
 | Current | `application` | `trading-application` / `application/` | reference data |
-| Current | `economics` | `trading-economics` / `economics/` | quantities and reference data |
-| Current test-only | `adversarialBoundary` | unpublished / `adversarial-boundary/` | packaged quantities, reference data, application, and economics artifacts |
-| Current benchmark-only | `benchmarks` | unpublished / `benchmarks/` | reference data; outside root aggregation |
+| Current | `runtime` | `trading-runtime` / `runtime/` | application and reference data |
+| Current | `instrumentEconomics` | `trading-instrument-economics` / `instrument-economics/` | quantities and reference data |
+| Transitional current | `economics` | `trading-economics` / `economics/` | instrument economics |
+| Current test-only | `adversarialBoundary` | unpublished / `adversarial-boundary/` | all packaged production artifacts |
+| Current benchmark-only | `benchmarks` | unpublished / `benchmarks/` | reference data, application, and runtime; outside root aggregation |
 
 The current graph is acyclic:
 
 ```text
-quantities <- referenceData <- application
-     ^             ^              |
-     |             +-- economics  |
-     +-----------------------------+-- adversarialBoundary (test-only)
+quantities <- referenceData <- application <- runtime
+     ^             ^
+     |             +-- instrumentEconomics <- economics
+     +------------------------^
+
+all completed production artifacts -> adversarialBoundary (test-only)
 ```
 
-The test-only boundary consumes each completed production artifact directly. Concrete runtime interpretation and
-boundary codecs remain future-owned.
+The test-only boundary consumes each completed production artifact directly. The first live-catalog runtime
+interpreter is concrete; boundary codecs remain future-owned.
 
 Current dependency coordinates include Scala `3.8.4`, independent
 `catsVersion = 2.13.0` and `algebraVersion = 2.13.0` coordinates,
-`discipline-munit` `2.0.0`, MUnit `1.3.4`, ScalaCheck `1.19.0`, and
-`munit-scalacheck` `1.0.0`. The minimum build/runtime JDK is documented as 17.
-with no resolved dependency upgrade from the Proposal 0 baseline.
+`discipline-munit` `2.0.0`, MUnit `1.3.5`, ScalaCheck `1.20.0`, and
+`munit-scalacheck` `1.3.0`. Runtime-scoped Cats Effect is `3.7.0` and MUnit Cats Effect is `2.2.0`. The minimum
+build/runtime JDK is 25.
 
 ## Primary ownership and target dependency audit
 
@@ -137,11 +140,8 @@ the first deliberate durable compatibility contract.
 | Current exception | Why it is transitional | Migration owner |
 | --- | --- | --- |
 | Quantity-owned packing has been removed, leaving a deliberate durable-codec gap | Stable records require snapshots and an explicit schema owner | Proposal 9 adds versioned codecs |
-| `trading-economics` owns instruments, orders, scenarios, fee policy, P&L, and sizing | Current aggregate predates responsibility split | Proposals 3–7, with Proposal 7 removing the empty aggregate |
-| Instrument assembly and downstream economics temporarily share `trading-economics` | Proposal 3 now owns the focused pure snapshot trust transition; physical narrowing follows | Proposal 4 |
-| Order/scenario/fee/risk capabilities are discoverable through `Instrument` | Instrument currently acts as a service locator | Proposals 4–7 |
-| Root documentation previously listed only quantities | Documentation lagged the implemented economics module | Proposal 0 documentation update |
-| Runtime and codec target modules do not exist | Their physical boundaries require real implementation/dependency bodies | Proposals 8 and 9 |
+| `trading-economics` temporarily owns order, scenario, fee-policy, and risk packages | Their final artifacts are owned by later proposals | Proposals 5–7, with Proposal 7 removing the empty aggregate |
+| The boundary-codec target module does not exist | Its physical boundary requires a real implementation and dependency body | Proposal 9 |
 
 These exceptions describe current implementation facts, not accepted permanent
 architecture. No proposed module or API is presented as available today.
@@ -189,9 +189,10 @@ This refresh supersedes the historical current-state statements above. RFC-0002 
 `S-01-application-runtime-foundation` now physically adds `trading-application` and `trading-runtime`: application owns
 the narrow runtime-neutral `LiveCatalog[F]` port, runtime owns its Cats Effect in-memory interpreter, the completed-JAR
 adversarial boundary consumes both artifacts, and the non-published JMH project measures snapshot and publication
-paths. The resulting graph remains acyclic: `quantities <- referenceData <- application <- runtime`; economics depends
-on quantities and reference data, while adversarial and benchmark projects remain non-production consumers.
+paths. The resulting graph remains acyclic: `quantities <- referenceData <- application <- runtime`, while
+instrument economics depends on quantities and reference data and downstream economics depends one-way on instrument
+economics. Adversarial and benchmark projects remain non-production consumers.
 
 S-01 is the implemented runtime and future-port admission foundation. It intentionally does not claim delivery of
 market-data, persistence, business-time, execution, transaction, telemetry, or codec ports; versioned codecs remain
-owned by RFC-0002 Slice S-05. Runtime-scoped Cats Effect is `3.7.0`, and the minimum build/runtime JDK remains 17.
+owned by RFC-0002 Slice S-05. Runtime-scoped Cats Effect is `3.7.0`, and the minimum build/runtime JDK is 25.

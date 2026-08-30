@@ -4,6 +4,7 @@ val algebraVersion         = "2.13.0"
 val disciplineMunitVersion = "2.0.0"
 val catsEffectVersion      = "3.7.0"
 val munitCatsEffectVersion = "2.2.0"
+val jdkRelease             = "25"
 
 val staticDimensionCompilerClasspath =
   taskKey[Seq[File]]("Immutable classpath for real-source static-dimension compiler fixtures")
@@ -11,9 +12,13 @@ val applicationBoundaryClasspath =
   taskKey[Seq[File]]("Completed application artifact classpath without runtime dependencies")
 val runtimeBoundaryClasspath =
   taskKey[Seq[File]]("Completed runtime artifact classpath with its concrete effect dependencies")
+val instrumentEconomicsCompilerClasspath =
+  taskKey[Seq[File]]("Immutable classpath for completed-JAR instrument-economics compiler fixtures")
 
 ThisBuild / scalaVersion := scala3Version
 ThisBuild / version      := "0.1.0-SNAPSHOT"
+ThisBuild / javacOptions ++= Seq("--release", jdkRelease)
+ThisBuild / scalacOptions ++= Seq("-release", jdkRelease)
 
 lazy val root =
   project
@@ -23,6 +28,7 @@ lazy val root =
       referenceData,
       application,
       runtime,
+      instrumentEconomics,
       economics,
       adversarialBoundary
     )
@@ -40,6 +46,7 @@ lazy val root =
             referenceData / Test / test,
             application / Test / test,
             runtime / Test / test,
+            instrumentEconomics / Test / test,
             economics / Test / test,
             adversarialBoundary / Test / test
           )
@@ -68,9 +75,9 @@ lazy val quantities =
         "org.typelevel"  %% "algebra-laws"     % algebraVersion         % Test,
         "org.typelevel"  %% "cats-laws"        % catsVersion            % Test,
         "org.typelevel"  %% "discipline-munit" % disciplineMunitVersion % Test,
-        "org.scalameta"  %% "munit"            % "1.3.4"                % Test,
-        "org.scalacheck" %% "scalacheck"       % "1.19.0"               % Test,
-        "org.scalameta"  %% "munit-scalacheck" % "1.0.0"                % Test
+        "org.scalameta"  %% "munit"            % "1.3.5"                % Test,
+        "org.scalacheck" %% "scalacheck"       % "1.20.0"               % Test,
+        "org.scalameta"  %% "munit-scalacheck" % "1.3.0"                % Test
       )
     )
 
@@ -83,21 +90,20 @@ lazy val referenceData =
       moduleName := "trading-reference-data",
 
       Compile / exportJars := true,
-      Compile / javacOptions ++= Seq("--release", "17"),
 
       Test / classLoaderLayeringStrategy := ClassLoaderLayeringStrategy.Flat,
 
       libraryDependencies ++= Seq(
-        "org.scalameta"  %% "munit"            % "1.3.4"  % Test,
-        "org.scalacheck" %% "scalacheck"       % "1.19.0" % Test,
-        "org.scalameta"  %% "munit-scalacheck" % "1.0.0"  % Test
+        "org.scalameta"  %% "munit"            % "1.3.5"  % Test,
+        "org.scalacheck" %% "scalacheck"       % "1.20.0" % Test,
+        "org.scalameta"  %% "munit-scalacheck" % "1.3.0"  % Test
       )
     )
 
 lazy val economics =
   project
     .in(file("economics"))
-    .dependsOn(quantities, referenceData)
+    .dependsOn(instrumentEconomics)
     .settings(
       name       := "trading-economics",
       moduleName := "trading-economics",
@@ -112,9 +118,30 @@ lazy val economics =
 
       libraryDependencies ++= Seq(
         "org.typelevel"  %% "cats-core"        % catsVersion,
-        "org.scalameta"  %% "munit"            % "1.3.4"  % Test,
-        "org.scalacheck" %% "scalacheck"       % "1.19.0" % Test,
-        "org.scalameta"  %% "munit-scalacheck" % "1.0.0"  % Test
+        "org.scalameta"  %% "munit"            % "1.3.5"  % Test,
+        "org.scalacheck" %% "scalacheck"       % "1.20.0" % Test,
+        "org.scalameta"  %% "munit-scalacheck" % "1.3.0"  % Test
+      )
+    )
+
+lazy val instrumentEconomics =
+  project
+    .in(file("instrument-economics"))
+    .dependsOn(quantities, referenceData)
+    .settings(
+      name       := "trading-instrument-economics",
+      moduleName := "trading-instrument-economics",
+
+      Compile / exportJars := true,
+
+      Test / classLoaderLayeringStrategy := ClassLoaderLayeringStrategy.Flat,
+      Test / fork                        := true,
+
+      libraryDependencies ++= Seq(
+        "org.typelevel"  %% "cats-core"        % catsVersion,
+        "org.scalameta"  %% "munit"            % "1.3.5"  % Test,
+        "org.scalacheck" %% "scalacheck"       % "1.20.0" % Test,
+        "org.scalameta"  %% "munit-scalacheck" % "1.3.0"  % Test
       )
     )
 
@@ -133,7 +160,7 @@ lazy val application =
       // it always loads that completed dependency generation instead of an in-process classloader cached earlier.
       Test / fork := true,
 
-      libraryDependencies += "org.scalameta" %% "munit" % "1.3.4" % Test
+      libraryDependencies += "org.scalameta" %% "munit" % "1.3.5" % Test
     )
 
 lazy val runtime =
@@ -148,7 +175,7 @@ lazy val runtime =
       // Compile the JVM-privacy bridge before its Scala factory instead of relying on Scala metadata that emits a
       // public implementation class. Target the repository's minimum JDK explicitly for this Java-owned boundary.
       Compile / compileOrder := CompileOrder.JavaThenScala,
-      Compile / javacOptions ++= Seq("--release", "17"),
+      Compile / javacOptions ++= Seq("--release", jdkRelease),
 
       Test / classLoaderLayeringStrategy := ClassLoaderLayeringStrategy.Flat,
       Test / fork                        := true,
@@ -174,7 +201,7 @@ lazy val benchmarks =
 lazy val adversarialBoundary =
   project
     .in(file("adversarial-boundary"))
-    .dependsOn(quantities, referenceData, application, runtime, economics)
+    .dependsOn(quantities, referenceData, application, runtime, instrumentEconomics, economics)
     .settings(
       name           := "trading-quantities-adversarial-boundary",
       publish / skip := true,
@@ -187,15 +214,17 @@ lazy val adversarialBoundary =
           (referenceData / Compile / exportedProducts).value.files ++
           (application / Compile / exportedProducts).value.files ++
           (runtime / Compile / exportedProducts).value.files ++
+          (instrumentEconomics / Compile / exportedProducts).value.files ++
           (economics / Compile / exportedProducts).value.files
         val quantitiesDependencies    = (quantities / Compile / externalDependencyClasspath).value.files
         val referenceDataDependencies = (referenceData / Compile / externalDependencyClasspath).value.files
         val applicationDependencies   = (application / Compile / externalDependencyClasspath).value.files
         val runtimeDependencies       = (runtime / Compile / externalDependencyClasspath).value.files
+        val instrumentDependencies    = (instrumentEconomics / Compile / externalDependencyClasspath).value.files
         val economicsDependencies     = (economics / Compile / externalDependencyClasspath).value.files
         val compilerDependencies      = (Test / externalDependencyClasspath).value.files
         (moduleProducts ++ quantitiesDependencies ++ referenceDataDependencies ++ applicationDependencies ++
-          runtimeDependencies ++ economicsDependencies ++ compilerDependencies).distinct
+          runtimeDependencies ++ instrumentDependencies ++ economicsDependencies ++ compilerDependencies).distinct
       },
       applicationBoundaryClasspath := {
         val products =
@@ -224,6 +253,17 @@ lazy val adversarialBoundary =
         val dependencies = (runtime / Compile / externalDependencyClasspath).value.files
         (products ++ dependencies).distinct
       },
+      instrumentEconomicsCompilerClasspath := {
+        val moduleProducts = (quantities / Compile / exportedProducts).value.files ++
+          (referenceData / Compile / exportedProducts).value.files ++
+          (instrumentEconomics / Compile / exportedProducts).value.files
+        val quantitiesDependencies = (quantities / Compile / externalDependencyClasspath).value.files
+        val referenceDependencies  = (referenceData / Compile / externalDependencyClasspath).value.files
+        val instrumentDependencies = (instrumentEconomics / Compile / externalDependencyClasspath).value.files
+        val compilerDependencies   = (Test / externalDependencyClasspath).value.files
+        (moduleProducts ++ quantitiesDependencies ++ referenceDependencies ++ instrumentDependencies ++
+          compilerDependencies).distinct
+      },
       Test / resourceGenerators += Def.task {
         val directory = (Test / resourceManaged).value
         val outputs = Seq(
@@ -236,8 +276,15 @@ lazy val adversarialBoundary =
         }
         outputs.map(_._1)
       }.taskValue,
+      Test / resourceGenerators += Def.task {
+        val output    = (Test / resourceManaged).value / "instrument-economics-compiler.classpath"
+        val classpath =
+          instrumentEconomicsCompilerClasspath.value.map(_.getAbsolutePath).mkString(java.io.File.pathSeparator)
+        IO.write(output, classpath)
+        Seq(output)
+      }.taskValue,
       libraryDependencies ++= Seq(
         "org.scala-lang" %% "scala3-compiler" % scala3Version % Test,
-        "org.scalameta"  %% "munit"           % "1.3.4"       % Test
+        "org.scalameta"  %% "munit"           % "1.3.5"       % Test
       )
     )

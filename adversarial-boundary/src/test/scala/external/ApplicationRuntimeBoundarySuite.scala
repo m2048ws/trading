@@ -81,8 +81,8 @@ final class ApplicationRuntimeBoundarySuite extends FunSuite:
       assert(classEntries.contains(implementationEntry), classEntries.mkString("\n"))
       assert(!classEntries.exists(_.contains("InMemoryLiveCatalog$$anon$")), classEntries.mkString("\n"))
 
-      assertEquals(classFileMajor(jar, bridgeEntry), 61)
-      assertEquals(classFileMajor(jar, implementationEntry), 61)
+      assertEquals(classFileMajor(jar, bridgeEntry), 69)
+      assertEquals(classFileMajor(jar, implementationEntry), 69)
 
       val bridge = Class.forName(bridgeEntry.stripSuffix(".class").replace('/', '.'))
       assert(!Modifier.isPublic(bridge.getModifiers), bridge.toString)
@@ -239,7 +239,7 @@ final class ApplicationRuntimeBoundarySuite extends FunSuite:
       val units   = files.getJavaFileObjectsFromFiles(List(source.toFile).asJava)
       val options = List(
         "--release",
-        "17",
+        "25",
         "-proc:none",
         "-classpath",
         compilationClasspath,

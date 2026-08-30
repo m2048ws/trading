@@ -16,10 +16,14 @@ context: |
       Directory: application
       Artifact: trading-application
       Primary package: trading.application
+    - SBT ID: instrumentEconomics
+      Directory: instrument-economics
+      Artifact: trading-instrument-economics
+      Primary package: trading.economics.instrument
     - SBT ID: economics
       Directory: economics
       Artifact: trading-economics
-      Primary package: trading.economics.instrument
+      Primary packages: trading.order, trading.scenario, trading.fee.policy, trading.risk
 
   Current test-only boundary:
     SBT ID: adversarialBoundary
@@ -33,15 +37,21 @@ context: |
     trading.reference
     trading.application
     trading.economics.instrument
+    trading.order
+    trading.scenario
+    trading.fee.policy
+    trading.risk
 
   Current scope includes exact dimension-safe quantities, anonymous uniform-grid
   arithmetic and projection, checked refinements, runtime quantity identity,
-  stable reference-data handles, optional exact algebra, and the transitional
-  aggregate instrument/order/scenario/fee/P&L/risk economics surface.
+  stable reference-data handles, optional exact algebra, pure instrument
+  economics, and transitional downstream order/scenario/fee-policy/risk behavior.
 
   Reference data owns pure immutable catalog transitions and coherent snapshots;
   application currently owns only the two-method effect-polymorphic LiveCatalog
-  port. Concrete runtime interpretation and boundary codecs remain future-owned.
+  port. Instrument economics owns assembly, static instruments, prices, market
+  state, fee values, valuation, and PnL. Concrete runtime interpretation and
+  boundary codecs remain future-owned.
   Quantity-owned logical packing is absent until the boundary-codec change
   restores durable reconstruction against immutable reference-data state.
 
