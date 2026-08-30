@@ -91,7 +91,7 @@ class ReferenceDataJavaBoundarySuite extends FunSuite:
       val units   = files.getJavaFileObjectsFromFiles(sources.map(_.toFile).asJava)
       val options = List(
         "--release",
-        "17",
+        "25",
         "-proc:none",
         "-classpath",
         compileClasspath,

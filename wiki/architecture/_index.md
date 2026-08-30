@@ -9,8 +9,9 @@ updated: 2026-08-29
 
 ## Pages
 - [[wiki/architecture/implicit-contracts|Implicit Contracts]]
+- [[wiki/architecture/project-foundations|Project Foundations]]
 
 ## Verified Delivery Sources
 <!-- corgi:managed:start architecture-deliveries -->
-- none
+- [[wiki/deliveries/RFC-0002-architecture-portfolio-S-01-application-runtime-foundation|RFC-0002-architecture-portfolio/S-01-application-runtime-foundation]]
 <!-- corgi:managed:end architecture-deliveries -->

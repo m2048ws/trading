@@ -14,16 +14,21 @@ updated: 2026-08-30
 - **Issue**: 7 https://github.com/m2048ws/trading/issues/7
 - **Change**: separate-order-and-execution-scenario-modules
 - **Worktree**: /Users/m/src/money/.worktrees/separate-order-and-execution-scenario-modules
-- **Phase at Checkpoint**: planning_ready
+- **Phase at Checkpoint**: awaiting_verify
 - **Task Group at Checkpoint**: 9
-- **Observed Run Revision**: none
-- **Last Verified HEAD**: 5726eb8918778c026700963f0a48f91b062d1d70
+- **Observed Run Revision**: 2
+- **Last Verified HEAD**: 48f40f4c5462684ec58b7f5279e45d9a4f43b708
+
+The phase and revision above are the required next checkpoint carried by the Repair Task Group commit. Live Run
+Contract authority remains `applying` at revision 1 until Corgi acknowledges that commit.
 
 ## Next Action
-- Start Apply for `separate-order-and-execution-scenario-modules` Task Group 9.
+- Commit and acknowledge Repair Task Group 9, synchronize draft PR #27, and stop Apply at `awaiting_verify`; canonical
+  Verify remains a separate gate.
 
 ## Blockers
-- none
+- The current-main integration, JVM construction-boundary repair, completed-JAR Scala/Java fixtures, documentation,
+  validation evidence, and this Task Group 9 checkpoint.
 
 ## Uncommitted Work
 - none
@@ -50,6 +55,25 @@ updated: 2026-08-30
 - Task Group 8 completed dependency-order compilation, baseline fixture comparison, packaged API/import inspection,
   strict planning/source/traceability validation, and order/scenario property laws; the final clean matrix passed 785
   tests and the remediated automated Task Group review returned no findings.
+- The rejected predecessor run's independent review identified JVM-public Scala package-private constructors and a
+  19-path conflict with current `main`; successor run `run-416e6504-0ba5-4cf9-9978-962b120ecb7f` carries Groups 1–8
+  and admits Repair Task Group 9 without rewriting their acknowledged commits.
+- Repair Group 9 squash-integrates current `main` at `05a8af0ff836b846247c082901ac3baea3d0c169`, preserving S-01's
+  application/runtime, JDK 25, dependency, workflow-retirement, and archived-delivery changes while retaining S-02's
+  order/scenario modules and migrated fee/risk consumers; all 19 conflicts were resolved by responsibility owner.
+- `OrderIntent`, checked activation and trigger/peg evidence, `LiquiditySlice`, `ScenarioAssumptions`, `OrderScenario`,
+  and `RoundTripScenario` now have JVM-private constructors. Their typed factories retain construction authority via
+  cached private method handles, and value semantics remain explicit where case-class generation was removed.
+- Completed-order/scenario-JAR fixtures reject same-package Scala and Java constructor/copy bypasses while the existing
+  positive instruction, assumptions, scenario, round-trip, fee, and risk paths continue to compile and execute.
+- The final clean dependency-ordered gate passes 815 tests: 601 quantities, 13 reference-data, 9 application, 18
+  runtime, 13 instrument-economics, 7 order-model, 8 execution-scenario, 10 downstream economics, and 136 packaged
+  adversarial tests. Explicit JMH compilation, formatting, strict OpenSpec validation, and deterministic Corgi
+  readiness at planning revision `sha256:316fa4786876ba4cb9a506ebd3bdf711f938bdee3ee87ac4c6a1f7efbb4e97b6`
+  also pass.
+- The automated Repair Task Group review caught and remediated lost `CheckedActivation` value equality, then completed
+  its scope, behavior, architecture, artifact-boundary, performance/security, and evidence axes with no findings. It
+  changed no file during the final pass, triaged no finding, and is not canonical Verify or Human Review.
 
 ## Promotion Queue
 - Review agent-configuration constraints before promoting any item to `memory/MEMORY.md`.

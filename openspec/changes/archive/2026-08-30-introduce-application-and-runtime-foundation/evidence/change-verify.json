@@ -1,0 +1,97 @@
+{
+  "verdict": "pass",
+  "finalRevision": "6c0d35bb652d75668ba6550dd8155f33dce0f58b",
+  "planningRevision": "sha256:24744edcf2e6291c9487647650d576e233e604c1fa42e9cb14f73554d7dd748f",
+  "sourceDigest": "sha256:b6456620959f0fc121106393b6a78980fe81c550cbfa0d157f1dcec29f172d87",
+  "traceabilityDigest": "sha256:6c7982a9f80036a1d6dd2e9fb27e15c3cb152ac3a01713a5bb4599a0eb0b15bc",
+  "reportHash": "sha256:ee97403a78ecbaa251a41bedb94fbe93f1c64b418d8f9d333f30ef64828ae628",
+  "checks": [
+    {
+      "name": "sbt -batch clean test: complete repository suite passed (802 tests)",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:build.sbt#sha256:59d08475dcd49da4af7e5b280d785e7289a7bfa510c38f32d963265c21780ac5",
+        "file:application%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fapplication%2FLiveCatalogContract.scala#sha256:19d70e09a0452b2e14bf57db69a6318b40656cefb843afd48f051797436fffd0",
+        "file:runtime%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fruntime%2FInMemoryLiveCatalogConstructionSuite.scala#sha256:e5f85399b20636daaa9db6c934899ce9d092f6308c686b0c4ced200cfcfa0987",
+        "file:runtime%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fruntime%2FInMemoryLiveCatalogAtomicSuite.scala#sha256:36bf701fef43ea4962a0d150de5136f61e41634850e3025b556916a357525e41",
+        "file:runtime%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fruntime%2FInMemoryLiveCatalogConcurrencySuite.scala#sha256:1583e04a7a73cc0f1f59f0583ca82c0c6c45ec9cf30045038795b94ce74ebf99",
+        "file:runtime%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fruntime%2FInMemoryLiveCatalogContractSuite.scala#sha256:80178bda163b07a7f76d81d857ce81be67bfe2a76feaa7f89eaeef3430397392",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FApplicationRuntimeBoundarySuite.scala#sha256:16deebec9a010b22ff2108ea07b7ee78ca5299dcae92dda32eceac51c5bd4b30"
+      ]
+    },
+    {
+      "name": "sbt -batch scalafmtCheckAll benchmarks/Jmh/compile: formatting and benchmark compilation passed",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:.scalafmt.conf#sha256:efecb2eaad5b314fc053f173f899c8c87f9a468432c8444593c0dcb386a3207f",
+        "file:build.sbt#sha256:59d08475dcd49da4af7e5b280d785e7289a7bfa510c38f32d963265c21780ac5",
+        "file:benchmarks%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fbenchmark%2FLiveCatalogRuntimeBenchmark.scala#sha256:47f88c9aa2fa53339f71067750a21c631fa84b324ee7ff9b228170aded125056",
+        "file:docs%2Fcatalog-benchmark.md#sha256:b1d095ee685033695be5276ae26da97182699b9654071929e1627f476730ac31"
+      ]
+    },
+    {
+      "name": "corgispec ready --strict: planning, RFC provenance, and exact AC traceability passed",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:openspec%2Fchanges%2Fintroduce-application-and-runtime-foundation%2Fcorgi%2Fsource.yaml#sha256:b6456620959f0fc121106393b6a78980fe81c550cbfa0d157f1dcec29f172d87",
+        "file:openspec%2Fchanges%2Fintroduce-application-and-runtime-foundation%2Fcorgi%2Ftraceability.yaml#sha256:6c7982a9f80036a1d6dd2e9fb27e15c3cb152ac3a01713a5bb4599a0eb0b15bc",
+        "file:openspec%2Fchanges%2Fintroduce-application-and-runtime-foundation%2Ftasks.md#sha256:cce79bda43acde55c6c2a2975fe0a00106085fd2b2aaeaedd4b27f595a8807d3",
+        "file:rfcs%2FRFC-0002-architecture-portfolio%2Frfc.md#sha256:a00c0cf1e3a4440bfce7dc828ad4ac119414f10d72e8d8c52c613403ef5977e2"
+      ]
+    },
+    {
+      "name": "final JVM construction and application/runtime dependency boundaries passed",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:runtime%2Fsrc%2Fmain%2Fjava%2Ftrading%2Fruntime%2FLiveCatalogBridge.java#sha256:e86ccffa4292dacbd80f3b219f738549bccbd660bd0a6cdd7b5f83cbdf42f68c",
+        "file:runtime%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fruntime%2FInMemoryLiveCatalog.scala#sha256:47a5465a4d3af8ac7286e52b2af04b0e8802ebd473d3ab6e2beb7ce895766eb3",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FApplicationRuntimeBoundarySuite.scala#sha256:16deebec9a010b22ff2108ea07b7ee78ca5299dcae92dda32eceac51c5bd4b30",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fapplication-runtime-boundary%2Fnegative%2FRuntimeInternalsUnavailable.java#sha256:1ac899ad1b5977eabff8129da50e542bfe869346e8131a71117dcee3015a84d3",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fapplication-runtime-boundary%2Fnegative%2FRuntimeInternalsUnavailable.scala#sha256:bc3453e16916dac17f547f1c5de09f616bccc790f41f673835a2141e8999aaac"
+      ]
+    }
+  ],
+  "acceptance": [
+    {
+      "id": "AC-001",
+      "automated": "pass",
+      "evidenceRefs": [
+        "file:application%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fapplication%2FLiveCatalog.scala#sha256:b584ba2a0cdc46c1bb088ade2f1ea2daab33cd5e9f8f270f522caa50282d1aa3",
+        "file:runtime%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fruntime%2FInMemoryLiveCatalog.scala#sha256:47a5465a4d3af8ac7286e52b2af04b0e8802ebd473d3ab6e2beb7ce895766eb3",
+        "file:build.sbt#sha256:59d08475dcd49da4af7e5b280d785e7289a7bfa510c38f32d963265c21780ac5",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FApplicationRuntimeBoundarySuite.scala#sha256:16deebec9a010b22ff2108ea07b7ee78ca5299dcae92dda32eceac51c5bd4b30",
+        "file:docs%2Farchitecture-charter-audit.md#sha256:a336a9b5f03253dbd21db3fdeb3e8e3ede9f3aad0dafe38161bc41eaa182da9d"
+      ]
+    },
+    {
+      "id": "AC-002",
+      "automated": "pass",
+      "evidenceRefs": [
+        "file:runtime%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fruntime%2FInMemoryLiveCatalog.scala#sha256:47a5465a4d3af8ac7286e52b2af04b0e8802ebd473d3ab6e2beb7ce895766eb3",
+        "file:runtime%2Fsrc%2Fmain%2Fjava%2Ftrading%2Fruntime%2FLiveCatalogBridge.java#sha256:e86ccffa4292dacbd80f3b219f738549bccbd660bd0a6cdd7b5f83cbdf42f68c",
+        "file:runtime%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fruntime%2FInMemoryLiveCatalogConstructionSuite.scala#sha256:e5f85399b20636daaa9db6c934899ce9d092f6308c686b0c4ced200cfcfa0987",
+        "file:runtime%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fruntime%2FInMemoryLiveCatalogAtomicSuite.scala#sha256:36bf701fef43ea4962a0d150de5136f61e41634850e3025b556916a357525e41",
+        "file:runtime%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fruntime%2FInMemoryLiveCatalogConcurrencySuite.scala#sha256:1583e04a7a73cc0f1f59f0583ca82c0c6c45ec9cf30045038795b94ce74ebf99",
+        "file:runtime%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fruntime%2FInMemoryLiveCatalogContractSuite.scala#sha256:80178bda163b07a7f76d81d857ce81be67bfe2a76feaa7f89eaeef3430397392"
+      ]
+    },
+    {
+      "id": "AC-003",
+      "automated": "not_applicable",
+      "evidenceRefs": []
+    },
+    {
+      "id": "AC-004",
+      "automated": "pass",
+      "evidenceRefs": [
+        "file:application%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fapplication%2FLiveCatalogContract.scala#sha256:19d70e09a0452b2e14bf57db69a6318b40656cefb843afd48f051797436fffd0",
+        "file:application%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fapplication%2FLiveCatalogContractSuite.scala#sha256:4185f37756d0301c8e40f9e43ab3962a484e4438faa847643af11174e762e1df",
+        "file:runtime%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fruntime%2FInMemoryLiveCatalogContractSuite.scala#sha256:80178bda163b07a7f76d81d857ce81be67bfe2a76feaa7f89eaeef3430397392",
+        "file:runtime%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fruntime%2FInMemoryLiveCatalogConcurrencySuite.scala#sha256:1583e04a7a73cc0f1f59f0583ca82c0c6c45ec9cf30045038795b94ce74ebf99",
+        "file:benchmarks%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fbenchmark%2FLiveCatalogRuntimeBenchmark.scala#sha256:47f88c9aa2fa53339f71067750a21c631fa84b324ee7ff9b228170aded125056",
+        "file:docs%2Fcatalog-benchmark.md#sha256:b1d095ee685033695be5276ae26da97182699b9654071929e1627f476730ac31"
+      ]
+    }
+  ],
+  "verifiedAt": "2026-08-30T01:30:21.618Z"
+}

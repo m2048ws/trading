@@ -6,7 +6,11 @@ import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
+import java.util.Locale
 import java.util.jar.JarFile
+import javax.tools.DiagnosticCollector
+import javax.tools.JavaFileObject
+import javax.tools.ToolProvider
 import scala.jdk.CollectionConverters.*
 
 import dotty.tools.dotc.Main
@@ -26,6 +30,8 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
 
   private val fixturesRoot         = Paths.get(getClass.getResource("/economics-compiler").toURI)
   private val orderFixturesRoot    = Paths.get(getClass.getResource("/order-model-compiler").toURI)
+  private val scenarioFixturesRoot = Paths.get(getClass.getResource("/execution-scenario-compiler").toURI)
+  private val javaFixturesRoot     = Paths.get(getClass.getResource("/order-scenario-java").toURI)
   private val sharedFixture        = fixturesRoot.resolve("SharedEconomicsSetup.scala")
   private val compilationClasspath =
     val resource = Option(getClass.getResourceAsStream("/static-dimension-compiler.classpath")).getOrElse:
@@ -250,6 +256,16 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
     assert(rejected.rendered.contains("Required:"), rejected.rendered)
     economicsForbiddenDiagnostics.foreach(fragment => assert(!rejected.rendered.contains(fragment), rejected.rendered))
 
+  test("completed order-model JAR rejects same-package Scala construction bypasses"):
+    val source  = orderFixturesRoot.resolve("negative/PackageSpoofOrderConstruction.scala")
+    val prelude = compileFilteredPrelude(source, compileOrder)
+    assert(prelude.succeeded, s"fixture prelude must compile independently:\n${prelude.rendered}")
+    val rejected = compileOrder(source)
+    assert(rejected.errors.size >= 6, rejected.rendered)
+    assert(rejected.rendered.contains("cannot be accessed"), rejected.rendered)
+    assert(rejected.rendered.contains("value copy is not a member"), rejected.rendered)
+    economicsForbiddenDiagnostics.foreach(fragment => assert(!rejected.rendered.contains(fragment), rejected.rendered))
+
   test("completed execution-scenario classpath cannot compile downstream concerns or mutation"):
     val source = Paths.get(
       getClass
@@ -264,6 +280,41 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
     assert(rejected.rendered.toLowerCase.contains("reassignment to val"), rejected.rendered)
     assert(rejected.rendered.contains("cannot be accessed"), rejected.rendered)
     economicsForbiddenDiagnostics.foreach(fragment => assert(!rejected.rendered.contains(fragment), rejected.rendered))
+
+  test("completed execution-scenario JAR rejects same-package Scala construction bypasses"):
+    val source  = scenarioFixturesRoot.resolve("negative/PackageSpoofScenarioConstruction.scala")
+    val prelude = compileFilteredPrelude(source, compileScenario)
+    assert(prelude.succeeded, s"fixture prelude must compile independently:\n${prelude.rendered}")
+    val rejected = compileScenario(source)
+    assert(rejected.errors.size >= 5, rejected.rendered)
+    assert(rejected.rendered.contains("cannot be accessed"), rejected.rendered)
+    assert(rejected.rendered.contains("value copy is not a member"), rejected.rendered)
+    economicsForbiddenDiagnostics.foreach(fragment => assert(!rejected.rendered.contains(fragment), rejected.rendered))
+
+  test("completed order and scenario JARs reject same-package Java constructor bypasses"):
+    val cases = List(
+      (
+        javaFixturesRoot.resolve("negative/PackageSpoofOrderConstruction.java"),
+        orderCompilationClasspath,
+        List(
+          "CheckedActivation",
+          "FixedTriggerEvidence",
+          "TrailingTriggerEvidence",
+          "PegResolution",
+          "OrderIntent"
+        )
+      ),
+      (
+        javaFixturesRoot.resolve("negative/PackageSpoofScenarioConstruction.java"),
+        scenarioCompilationClasspath,
+        List("LiquiditySlice", "ScenarioAssumptions", "OrderScenario", "RoundTripScenario")
+      )
+    )
+    cases.foreach: (source, classpath, protectedRepresentations) =>
+      val result = compileJava(source, classpath)
+      assert(!result.succeeded, s"expected ${source.getFileName} to fail Java compilation")
+      assert(result.diagnostics.contains("private access"), result.diagnostics)
+      protectedRepresentations.foreach(fragment => assert(result.diagnostics.contains(fragment), result.diagnostics))
 
   test("positive downstream economics fixture compiles without warnings and runs"):
     val result = compile(fixturesRoot.resolve("positive/CompleteEconomicsClient.scala"))
@@ -357,6 +408,33 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
     val arguments = baseArguments ++ shared.toVector.map(_.toString) :+ source.toString
     val _         = Main.process(arguments, reporter)
     Compilation(output, reporter.allErrors.map(_.message), reporter.allWarnings.map(_.message))
+
+  private final case class JavaCompilation(succeeded: Boolean, diagnostics: String)
+
+  private def compileJava(source: Path, classpath: String): JavaCompilation =
+    val compiler = Option(ToolProvider.getSystemJavaCompiler).getOrElse:
+      throw new IllegalStateException("a full JDK is required for Java boundary fixtures")
+    val diagnostics = new DiagnosticCollector[JavaFileObject]
+    val files       = compiler.getStandardFileManager(diagnostics, Locale.ROOT, StandardCharsets.UTF_8)
+    val output      = Files.createTempDirectory("order-scenario-java-")
+    try
+      val units   = files.getJavaFileObjects(source.toFile)
+      val options = List(
+        "--release",
+        "25",
+        "-proc:none",
+        "-classpath",
+        classpath,
+        "-d",
+        output.toString
+      )
+      val succeeded = compiler.getTask(null, files, diagnostics, options.asJava, null, units).call()
+      val rendered  = diagnostics.getDiagnostics.asScala
+        .map(diagnostic => diagnostic.getMessage(Locale.ROOT))
+        .mkString("\n")
+      JavaCompilation(succeeded, rendered)
+    finally files.close()
+  end compileJava
 
   private def packagedEconomicsJar: Path =
     compilationClasspath

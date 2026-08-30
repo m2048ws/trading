@@ -1,0 +1,103 @@
+{
+  "schemaVersion": 3,
+  "scope": "group-8",
+  "runId": "run-43d94c8c-c8d7-4d5b-9070-eed9ed95311a",
+  "references": [
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FApplicationRuntimeBoundarySuite.scala#sha256:9f2dd06bb5cb08c5c2ce9ac58dbf6abef602d30c4f578aeaf399ecb87f8454cb",
+      "sourcePath": "adversarial-boundary/src/test/scala/external/ApplicationRuntimeBoundarySuite.scala",
+      "digest": "sha256:9f2dd06bb5cb08c5c2ce9ac58dbf6abef602d30c4f578aeaf399ecb87f8454cb",
+      "archivePath": "references/blobs/9f2dd06bb5cb08c5c2ce9ac58dbf6abef602d30c4f578aeaf399ecb87f8454cb"
+    },
+    {
+      "reference": "file:application%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fapplication%2FLiveCatalog.scala#sha256:b584ba2a0cdc46c1bb088ade2f1ea2daab33cd5e9f8f270f522caa50282d1aa3",
+      "sourcePath": "application/src/main/scala/trading/application/LiveCatalog.scala",
+      "digest": "sha256:b584ba2a0cdc46c1bb088ade2f1ea2daab33cd5e9f8f270f522caa50282d1aa3",
+      "archivePath": "references/blobs/b584ba2a0cdc46c1bb088ade2f1ea2daab33cd5e9f8f270f522caa50282d1aa3"
+    },
+    {
+      "reference": "file:application%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fapplication%2FLiveCatalogContractSuite.scala#sha256:54c165c1cb87d1a7263eb21f260f291cda3e8911dd69844e54f8b34c45991601",
+      "sourcePath": "application/src/test/scala/trading/application/LiveCatalogContractSuite.scala",
+      "digest": "sha256:54c165c1cb87d1a7263eb21f260f291cda3e8911dd69844e54f8b34c45991601",
+      "archivePath": "references/blobs/54c165c1cb87d1a7263eb21f260f291cda3e8911dd69844e54f8b34c45991601"
+    },
+    {
+      "reference": "file:benchmarks%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fbenchmark%2FLiveCatalogRuntimeBenchmark.scala#sha256:a3b8d029eb367c63ddcae45fb03a6a6fec69543d1aa6b6e346b26c1424b5eaef",
+      "sourcePath": "benchmarks/src/main/scala/trading/benchmark/LiveCatalogRuntimeBenchmark.scala",
+      "digest": "sha256:a3b8d029eb367c63ddcae45fb03a6a6fec69543d1aa6b6e346b26c1424b5eaef",
+      "archivePath": "references/blobs/a3b8d029eb367c63ddcae45fb03a6a6fec69543d1aa6b6e346b26c1424b5eaef"
+    },
+    {
+      "reference": "file:build.sbt#sha256:0b4c0c9493d7abde9f8c68e633edbcc6dd4fba0ffeea4a3f6503f2198e1cc8b6",
+      "sourcePath": "build.sbt",
+      "digest": "sha256:0b4c0c9493d7abde9f8c68e633edbcc6dd4fba0ffeea4a3f6503f2198e1cc8b6",
+      "archivePath": "references/blobs/0b4c0c9493d7abde9f8c68e633edbcc6dd4fba0ffeea4a3f6503f2198e1cc8b6"
+    },
+    {
+      "reference": "file:docs%2Farchitecture-charter-audit.md#sha256:a2f833961798c7eb19f315d55be5d2c22531516110245a3456eabade2c06c75a",
+      "sourcePath": "docs/architecture-charter-audit.md",
+      "digest": "sha256:a2f833961798c7eb19f315d55be5d2c22531516110245a3456eabade2c06c75a",
+      "archivePath": "references/blobs/a2f833961798c7eb19f315d55be5d2c22531516110245a3456eabade2c06c75a"
+    },
+    {
+      "reference": "file:docs%2Fcatalog-benchmark.md#sha256:8a48a60d3226860ee2110089d899d9269efbbfe562b17b06fa26a41960e4a3b9",
+      "sourcePath": "docs/catalog-benchmark.md",
+      "digest": "sha256:8a48a60d3226860ee2110089d899d9269efbbfe562b17b06fa26a41960e4a3b9",
+      "archivePath": "references/blobs/8a48a60d3226860ee2110089d899d9269efbbfe562b17b06fa26a41960e4a3b9"
+    },
+    {
+      "reference": "file:memory%2Fsession-bridge.md#sha256:7bf62fbe3aa173a445a62b3e692f2115bdf6dedb5eb75a22ebf7aae5eba107ca",
+      "sourcePath": "memory/session-bridge.md",
+      "digest": "sha256:7bf62fbe3aa173a445a62b3e692f2115bdf6dedb5eb75a22ebf7aae5eba107ca",
+      "archivePath": "references/blobs/7bf62fbe3aa173a445a62b3e692f2115bdf6dedb5eb75a22ebf7aae5eba107ca"
+    },
+    {
+      "reference": "file:openspec%2Fchanges%2Fintroduce-application-and-runtime-foundation%2Fcorgi%2Fsource.yaml#sha256:b6456620959f0fc121106393b6a78980fe81c550cbfa0d157f1dcec29f172d87",
+      "sourcePath": "openspec/changes/introduce-application-and-runtime-foundation/corgi/source.yaml",
+      "digest": "sha256:b6456620959f0fc121106393b6a78980fe81c550cbfa0d157f1dcec29f172d87",
+      "archivePath": "references/blobs/b6456620959f0fc121106393b6a78980fe81c550cbfa0d157f1dcec29f172d87"
+    },
+    {
+      "reference": "file:openspec%2Fchanges%2Fintroduce-application-and-runtime-foundation%2Fcorgi%2Ftraceability.yaml#sha256:df957f7a6c2111196622d2626a647dc532546073ad0579b610b9087e9551152e",
+      "sourcePath": "openspec/changes/introduce-application-and-runtime-foundation/corgi/traceability.yaml",
+      "digest": "sha256:df957f7a6c2111196622d2626a647dc532546073ad0579b610b9087e9551152e",
+      "archivePath": "references/blobs/df957f7a6c2111196622d2626a647dc532546073ad0579b610b9087e9551152e"
+    },
+    {
+      "reference": "file:openspec%2Fchanges%2Fintroduce-application-and-runtime-foundation%2Fdesign.md#sha256:da3ce25343673c5cd1d1b7449efae5f596a59841e29c3184b8e15aa3954a5c09",
+      "sourcePath": "openspec/changes/introduce-application-and-runtime-foundation/design.md",
+      "digest": "sha256:da3ce25343673c5cd1d1b7449efae5f596a59841e29c3184b8e15aa3954a5c09",
+      "archivePath": "references/blobs/da3ce25343673c5cd1d1b7449efae5f596a59841e29c3184b8e15aa3954a5c09"
+    },
+    {
+      "reference": "file:openspec%2Fchanges%2Fintroduce-application-and-runtime-foundation%2Fproposal.md#sha256:fcf6c89218be6269546c7afa4f17f3c490727f5040d3f007c1091cfc9877263c",
+      "sourcePath": "openspec/changes/introduce-application-and-runtime-foundation/proposal.md",
+      "digest": "sha256:fcf6c89218be6269546c7afa4f17f3c490727f5040d3f007c1091cfc9877263c",
+      "archivePath": "references/blobs/fcf6c89218be6269546c7afa4f17f3c490727f5040d3f007c1091cfc9877263c"
+    },
+    {
+      "reference": "file:openspec%2Fchanges%2Fintroduce-application-and-runtime-foundation%2Ftasks.md#sha256:bd8c39f837bd824c3506393600e038f79e343d9eae81b1f546a31652f84df12b",
+      "sourcePath": "openspec/changes/introduce-application-and-runtime-foundation/tasks.md",
+      "digest": "sha256:bd8c39f837bd824c3506393600e038f79e343d9eae81b1f546a31652f84df12b",
+      "archivePath": "references/blobs/bd8c39f837bd824c3506393600e038f79e343d9eae81b1f546a31652f84df12b"
+    },
+    {
+      "reference": "file:runtime%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fruntime%2FInMemoryLiveCatalog.scala#sha256:9c5f20e319ee0b51d54a89453a400b32a374b5d7e44fa225f8918a845ece7076",
+      "sourcePath": "runtime/src/main/scala/trading/runtime/InMemoryLiveCatalog.scala",
+      "digest": "sha256:9c5f20e319ee0b51d54a89453a400b32a374b5d7e44fa225f8918a845ece7076",
+      "archivePath": "references/blobs/9c5f20e319ee0b51d54a89453a400b32a374b5d7e44fa225f8918a845ece7076"
+    },
+    {
+      "reference": "file:runtime%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fruntime%2FInMemoryLiveCatalogConcurrencySuite.scala#sha256:1583e04a7a73cc0f1f59f0583ca82c0c6c45ec9cf30045038795b94ce74ebf99",
+      "sourcePath": "runtime/src/test/scala/trading/runtime/InMemoryLiveCatalogConcurrencySuite.scala",
+      "digest": "sha256:1583e04a7a73cc0f1f59f0583ca82c0c6c45ec9cf30045038795b94ce74ebf99",
+      "archivePath": "references/blobs/1583e04a7a73cc0f1f59f0583ca82c0c6c45ec9cf30045038795b94ce74ebf99"
+    },
+    {
+      "reference": "file:runtime%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fruntime%2FInMemoryLiveCatalogContractSuite.scala#sha256:8cb03496c738c672e73bcbd85a820da56b0853dd02ec5473d90397d82978a039",
+      "sourcePath": "runtime/src/test/scala/trading/runtime/InMemoryLiveCatalogContractSuite.scala",
+      "digest": "sha256:8cb03496c738c672e73bcbd85a820da56b0853dd02ec5473d90397d82978a039",
+      "archivePath": "references/blobs/8cb03496c738c672e73bcbd85a820da56b0853dd02ec5473d90397d82978a039"
+    }
+  ]
+}

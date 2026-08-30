@@ -1,5 +1,9 @@
 package trading.order
 
+import java.lang.invoke.MethodHandles
+import java.lang.invoke.MethodType
+import scala.annotation.nowarn
+
 import trading.economics.instrument.*
 import trading.quantity.*
 import trading.quantity.refinement.PositiveWhole
@@ -44,8 +48,66 @@ enum PriceReference:
 enum TriggerComparison:
   case AtOrAbove, AtOrBelow
 
-final case class CheckedActivation[B <: Dim, Q <: Dim] private[order] (
-  observations: Vector[(ActivationObservation, Price[B, Q])])
+@nowarn("msg=Ignoring.*qualifier")
+final class CheckedActivation[B <: Dim, Q <: Dim] private[this] (
+  val observations: Vector[(ActivationObservation, Price[B, Q])]):
+
+  override def equals(other: Any): Boolean =
+    other match
+      case that: CheckedActivation[?, ?] => observations == that.observations
+      case _                             => false
+
+  override def hashCode: Int = observations.hashCode
+
+  override def toString: String = s"CheckedActivation($observations)"
+end CheckedActivation
+
+object CheckedActivation:
+  private val constructor =
+    val owner = classOf[CheckedActivation[?, ?]]
+    MethodHandles
+      .privateLookupIn(owner, MethodHandles.lookup())
+      .findConstructor(owner, MethodType.methodType(java.lang.Void.TYPE, classOf[Vector[?]]))
+
+  private def construct[B <: Dim, Q <: Dim](
+    observations: Vector[(ActivationObservation, Price[B, Q])]
+  ): CheckedActivation[B, Q] =
+    constructor.invoke(observations).asInstanceOf[CheckedActivation[B, Q]]
+
+  private[order] def immediate[B <: Dim, Q <: Dim]: CheckedActivation[B, Q] =
+    construct(Vector.empty)
+
+  private[order] def fixed[B <: Dim, Q <: Dim](
+    activation: FixedActivation[B, Q],
+    evidence: FixedTriggerEvidence[B, Q]
+  ): Either[ActivationViolation, CheckedActivation[B, Q]] =
+    if
+      evidence.reference != activation.reference || evidence.comparison != activation.comparison ||
+      evidence.triggerPrice != activation.triggerPrice
+    then Left(ActivationViolation.FixedEvidenceMismatch)
+    else
+      Right(
+        construct(Vector(ActivationObservation.Observed -> evidence.observedPrice))
+      )
+
+  private[order] def trailing[B <: Dim, Q <: Dim](
+    activation: TrailingActivation[B, Q],
+    evidence: TrailingTriggerEvidence[B, Q]
+  ): Either[ActivationViolation, CheckedActivation[B, Q]] =
+    if
+      evidence.reference != activation.reference || evidence.comparison != activation.comparison ||
+      evidence.offsetTicks != activation.offsetTicks
+    then Left(ActivationViolation.TrailingEvidenceMismatch)
+    else
+      Right(
+        construct(
+          Vector(
+            ActivationObservation.FavorableExtreme -> evidence.favorableExtreme,
+            ActivationObservation.Observed         -> evidence.observedPrice
+          )
+        )
+      )
+end CheckedActivation
 
 enum ActivationObservation:
   case Observed, FavorableExtreme
@@ -61,13 +123,13 @@ sealed trait OrderActivation[B <: Dim, Q <: Dim]:
 
 sealed trait TriggerActivation[B <: Dim, Q <: Dim] extends OrderActivation[B, Q]
 
-final class ImmediateActivation[B <: Dim, Q <: Dim] private[order] extends OrderActivation[B, Q]:
+final class ImmediateActivation[B <: Dim, Q <: Dim] private extends OrderActivation[B, Q]:
   type Evidence = ImmediateActivation.Evidence.type
 
   val evidence: Evidence = ImmediateActivation.Evidence
 
   def verify(evidence: Evidence): Either[ActivationViolation, CheckedActivation[B, Q]] =
-    Right(CheckedActivation(Vector.empty))
+    Right(CheckedActivation.immediate)
 
   private[trading] def observations(
     evidence: Evidence
@@ -88,21 +150,10 @@ final case class FixedActivation[B <: Dim, Q <: Dim](
   type Evidence = FixedTriggerEvidence[B, Q]
 
   def evidence(observedPrice: Price[B, Q]): Either[ActivationViolation, Evidence] =
-    if
-      OrderActivation.comparisonSatisfied(
-        comparison,
-        observedPrice.ticks.unrefined,
-        triggerPrice.ticks.unrefined
-      )
-    then
-      Right(new FixedTriggerEvidence(reference, comparison, triggerPrice, observedPrice))
-    else Left(ActivationViolation.FixedTriggerUnsatisfied)
+    FixedTriggerEvidence.create(this, observedPrice)
 
   def verify(evidence: Evidence): Either[ActivationViolation, CheckedActivation[B, Q]] =
-    if
-      evidence.reference != reference || evidence.comparison != comparison || evidence.triggerPrice != triggerPrice
-    then Left(ActivationViolation.FixedEvidenceMismatch)
-    else Right(CheckedActivation(Vector(ActivationObservation.Observed -> evidence.observedPrice)))
+    CheckedActivation.fixed(this, evidence)
 
   private[trading] def observations(
     evidence: Evidence
@@ -122,28 +173,10 @@ final case class TrailingActivation[B <: Dim, Q <: Dim] private (
     favorableExtreme: Price[B, Q],
     observedPrice: Price[B, Q]
   ): Either[ActivationViolation, Evidence] =
-    val extreme   = favorableExtreme.ticks.unrefined
-    val threshold = comparison match
-      case TriggerComparison.AtOrAbove => extreme + offsetTicks.unrefined
-      case TriggerComparison.AtOrBelow => extreme - offsetTicks.unrefined
-    if threshold.signum <= 0 then Left(ActivationViolation.TrailingThresholdNonPositive)
-    else if OrderActivation.comparisonSatisfied(comparison, observedPrice.ticks.unrefined, threshold) then
-      Right(new TrailingTriggerEvidence(reference, comparison, offsetTicks, favorableExtreme, observedPrice))
-    else Left(ActivationViolation.TrailingTriggerUnsatisfied)
+    TrailingTriggerEvidence.create(this, favorableExtreme, observedPrice)
 
   def verify(evidence: Evidence): Either[ActivationViolation, CheckedActivation[B, Q]] =
-    if
-      evidence.reference != reference || evidence.comparison != comparison || evidence.offsetTicks != offsetTicks
-    then Left(ActivationViolation.TrailingEvidenceMismatch)
-    else
-      Right(
-        CheckedActivation(
-          Vector(
-            ActivationObservation.FavorableExtreme -> evidence.favorableExtreme,
-            ActivationObservation.Observed         -> evidence.observedPrice
-          )
-        )
-      )
+    CheckedActivation.trailing(this, evidence)
 
   private[trading] def observations(
     evidence: Evidence
@@ -175,18 +208,117 @@ object OrderActivation:
       case TriggerComparison.AtOrAbove => observed >= threshold
       case TriggerComparison.AtOrBelow => observed <= threshold
 
-final class FixedTriggerEvidence[B <: Dim, Q <: Dim] private[order] (
+@nowarn("msg=Ignoring.*qualifier")
+final class FixedTriggerEvidence[B <: Dim, Q <: Dim] private[this] (
   val reference: PriceReference,
   private[order] val comparison: TriggerComparison,
   private[order] val triggerPrice: Price[B, Q],
   val observedPrice: Price[B, Q])
 
-final class TrailingTriggerEvidence[B <: Dim, Q <: Dim] private[order] (
+object FixedTriggerEvidence:
+  private val constructor =
+    val owner = classOf[FixedTriggerEvidence[?, ?]]
+    MethodHandles
+      .privateLookupIn(owner, MethodHandles.lookup())
+      .findConstructor(
+        owner,
+        MethodType.methodType(
+          java.lang.Void.TYPE,
+          classOf[PriceReference],
+          classOf[TriggerComparison],
+          classOf[Price[?, ?]],
+          classOf[Price[?, ?]]
+        )
+      )
+
+  private def construct[B <: Dim, Q <: Dim](
+    activation: FixedActivation[B, Q],
+    observedPrice: Price[B, Q]
+  ): FixedTriggerEvidence[B, Q] =
+    constructor
+      .invoke(
+        activation.reference,
+        activation.comparison,
+        activation.triggerPrice,
+        observedPrice
+      )
+      .asInstanceOf[FixedTriggerEvidence[B, Q]]
+
+  private[order] def create[B <: Dim, Q <: Dim](
+    activation: FixedActivation[B, Q],
+    observedPrice: Price[B, Q]
+  ): Either[ActivationViolation, FixedTriggerEvidence[B, Q]] =
+    if
+      OrderActivation.comparisonSatisfied(
+        activation.comparison,
+        observedPrice.ticks.unrefined,
+        activation.triggerPrice.ticks.unrefined
+      )
+    then
+      Right(construct(activation, observedPrice))
+    else Left(ActivationViolation.FixedTriggerUnsatisfied)
+end FixedTriggerEvidence
+
+@nowarn("msg=Ignoring.*qualifier")
+final class TrailingTriggerEvidence[B <: Dim, Q <: Dim] private[this] (
   val reference: PriceReference,
   private[order] val comparison: TriggerComparison,
   private[order] val offsetTicks: PositiveWhole,
   val favorableExtreme: Price[B, Q],
   val observedPrice: Price[B, Q])
+
+object TrailingTriggerEvidence:
+  private val constructor =
+    val owner = classOf[TrailingTriggerEvidence[?, ?]]
+    MethodHandles
+      .privateLookupIn(owner, MethodHandles.lookup())
+      .findConstructor(
+        owner,
+        MethodType.methodType(
+          java.lang.Void.TYPE,
+          classOf[PriceReference],
+          classOf[TriggerComparison],
+          classOf[BigInt],
+          classOf[Price[?, ?]],
+          classOf[Price[?, ?]]
+        )
+      )
+
+  private def construct[B <: Dim, Q <: Dim](
+    activation: TrailingActivation[B, Q],
+    favorableExtreme: Price[B, Q],
+    observedPrice: Price[B, Q]
+  ): TrailingTriggerEvidence[B, Q] =
+    constructor
+      .invoke(
+        activation.reference,
+        activation.comparison,
+        activation.offsetTicks.unrefined,
+        favorableExtreme,
+        observedPrice
+      )
+      .asInstanceOf[TrailingTriggerEvidence[B, Q]]
+
+  private[order] def create[B <: Dim, Q <: Dim](
+    activation: TrailingActivation[B, Q],
+    favorableExtreme: Price[B, Q],
+    observedPrice: Price[B, Q]
+  ): Either[ActivationViolation, TrailingTriggerEvidence[B, Q]] =
+    val extreme   = favorableExtreme.ticks.unrefined
+    val threshold = activation.comparison match
+      case TriggerComparison.AtOrAbove => extreme + activation.offsetTicks.unrefined
+      case TriggerComparison.AtOrBelow => extreme - activation.offsetTicks.unrefined
+    if threshold.signum <= 0 then Left(ActivationViolation.TrailingThresholdNonPositive)
+    else if
+      OrderActivation.comparisonSatisfied(
+        activation.comparison,
+        observedPrice.ticks.unrefined,
+        threshold
+      )
+    then
+      Right(construct(activation, favorableExtreme, observedPrice))
+    else Left(ActivationViolation.TrailingTriggerUnsatisfied)
+end TrailingTriggerEvidence
 
 sealed trait EffectivePricing[B <: Dim, Q <: Dim]
 
@@ -196,11 +328,48 @@ object EffectivePricing:
 
 case object DirectPricingResolution
 
-final class PegResolution[B <: Dim, Q <: Dim] private[order] (
+@nowarn("msg=Ignoring.*qualifier")
+final class PegResolution[B <: Dim, Q <: Dim] private[this] (
   val reference: PriceReference,
   private[order] val offsetTicks: BigInt,
   val referencePrice: Price[B, Q],
   val resolvedLimit: Price[B, Q])
+
+object PegResolution:
+  private val constructor =
+    val owner = classOf[PegResolution[?, ?]]
+    MethodHandles
+      .privateLookupIn(owner, MethodHandles.lookup())
+      .findConstructor(
+        owner,
+        MethodType.methodType(
+          java.lang.Void.TYPE,
+          classOf[PriceReference],
+          classOf[BigInt],
+          classOf[Price[?, ?]],
+          classOf[Price[?, ?]]
+        )
+      )
+
+  private def construct[B <: Dim, Q <: Dim](
+    pricing: PeggedPricing[B, Q],
+    referencePrice: Price[B, Q],
+    resolvedLimit: Price[B, Q]
+  ): PegResolution[B, Q] =
+    constructor
+      .invoke(pricing.reference, pricing.offsetTicks, referencePrice, resolvedLimit)
+      .asInstanceOf[PegResolution[B, Q]]
+
+  private[order] def create[B <: Dim, Q <: Dim](
+    pricing: PeggedPricing[B, Q],
+    referencePrice: Price[B, Q],
+    resolvedLimit: Price[B, Q]
+  ): Either[PricingViolation, PegResolution[B, Q]] =
+    val suppliedOffset = resolvedLimit.ticks.unrefined - referencePrice.ticks.unrefined
+    if suppliedOffset == pricing.offsetTicks then
+      Right(construct(pricing, referencePrice, resolvedLimit))
+    else Left(PricingViolation.PegOffsetMismatch(pricing.offsetTicks, suppliedOffset))
+end PegResolution
 
 sealed trait OrderPricing[B <: Dim, Q <: Dim]:
   type Resolution
@@ -228,10 +397,7 @@ final case class PeggedPricing[B <: Dim, Q <: Dim](reference: PriceReference, of
     referencePrice: Price[B, Q],
     resolvedLimit: Price[B, Q]
   ): Either[PricingViolation, Resolution] =
-    val suppliedOffset = resolvedLimit.ticks.unrefined - referencePrice.ticks.unrefined
-    if suppliedOffset == offsetTicks then
-      Right(new PegResolution(reference, offsetTicks, referencePrice, resolvedLimit))
-    else Left(PricingViolation.PegOffsetMismatch(offsetTicks, suppliedOffset))
+    PegResolution.create(this, referencePrice, resolvedLimit)
 
   def resolve(resolution: Resolution): Either[PricingViolation, EffectivePricing[B, Q]] =
     if resolution.reference != reference || resolution.offsetTicks != offsetTicks then
@@ -293,7 +459,8 @@ final case class PricedExecution[D <: Dim, B <: Dim, Q <: Dim, PR <: OrderPricin
   ): Vector[(PricingObservation, Price[B, Q])] =
     pricing.observations(resolution)
 
-final class OrderIntent[D <: Dim] private[order] (
+@nowarn("msg=Ignoring.*qualifier")
+final class OrderIntent[D <: Dim] private[this] (
   val instrumentId: InstrumentId,
   val side: Side,
   val lots: Lots[D],
@@ -315,6 +482,33 @@ final class OrderIntent[D <: Dim] private[order] (
 end OrderIntent
 
 object OrderIntent:
+  private val constructor =
+    val owner = classOf[OrderIntent[?]]
+    MethodHandles
+      .privateLookupIn(owner, MethodHandles.lookup())
+      .findConstructor(
+        owner,
+        MethodType.methodType(
+          java.lang.Void.TYPE,
+          classOf[InstrumentId],
+          classOf[Side],
+          classOf[Lots[?]],
+          classOf[PositionEffect],
+          classOf[PositionLots[?]]
+        )
+      )
+
+  private def construct[D <: Dim](
+    instrumentId: InstrumentId,
+    side: Side,
+    lots: Lots[D],
+    positionEffect: PositionEffect,
+    positionChange: PositionLots[D]
+  ): OrderIntent[D] =
+    constructor
+      .invoke(instrumentId, side, lots, positionEffect, positionChange)
+      .asInstanceOf[OrderIntent[D]]
+
   def create[I <: Instrument](
     instrument: I
   )(
@@ -327,7 +521,7 @@ object OrderIntent:
       Left(OrderViolation.InstrumentMismatch(OrderComponent.Lots, expected, lots.instrumentId))
     else
       Right(
-        new OrderIntent(
+        construct(
           expected,
           side,
           lots,
@@ -337,7 +531,7 @@ object OrderIntent:
       )
 end OrderIntent
 
-sealed abstract class Order[D <: Dim, B <: Dim, Q <: Dim] private[order]:
+sealed abstract class Order[D <: Dim, B <: Dim, Q <: Dim] private ():
   type Activation <: OrderActivation[B, Q]
   type Execution <: OrderExecution[D, B, Q]
 
@@ -346,22 +540,22 @@ sealed abstract class Order[D <: Dim, B <: Dim, Q <: Dim] private[order]:
   val activation: Activation
   val execution: Execution
 
-private final class ConstructedOrder[
-  D <: Dim,
-  B <: Dim,
-  Q <: Dim,
-  A <: OrderActivation[B, Q],
-  E <: OrderExecution[D, B, Q]
-](
-  val instrumentId: InstrumentId,
-  val intent: OrderIntent[D],
-  val activation: A,
-  val execution: E)
-  extends Order[D, B, Q]:
-  type Activation = A
-  type Execution  = E
-
 object Order:
+  private final class ConstructedOrder[
+    D <: Dim,
+    B <: Dim,
+    Q <: Dim,
+    A <: OrderActivation[B, Q],
+    E <: OrderExecution[D, B, Q]
+  ](
+    val instrumentId: InstrumentId,
+    val intent: OrderIntent[D],
+    val activation: A,
+    val execution: E)
+    extends Order[D, B, Q]():
+    type Activation = A
+    type Execution  = E
+
   type Aux[
     D <: Dim,
     B <: Dim,

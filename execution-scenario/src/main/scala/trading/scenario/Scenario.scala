@@ -1,5 +1,9 @@
 package trading.scenario
 
+import java.lang.invoke.MethodHandles
+import java.lang.invoke.MethodType
+import scala.annotation.nowarn
+
 import trading.economics.instrument.*
 import trading.order.*
 import trading.quantity.*
@@ -12,13 +16,51 @@ enum LiquidityRole:
 enum ScenarioLeg:
   case Entry, Exit
 
-final case class LiquiditySlice[L, M] private[scenario] (
-  instrumentId: InstrumentId,
-  lots: L,
-  market: M,
-  role: LiquidityRole)
+@nowarn("msg=Ignoring.*qualifier")
+final class LiquiditySlice[L, M] private[this] (
+  val instrumentId: InstrumentId,
+  val lots: L,
+  val market: M,
+  val role: LiquidityRole):
+
+  override def equals(other: Any): Boolean =
+    other match
+      case that: LiquiditySlice[?, ?] =>
+        instrumentId == that.instrumentId && lots == that.lots && market == that.market &&
+        role == that.role
+      case _ => false
+
+  override def hashCode: Int = (instrumentId, lots, market, role).hashCode
+
+  override def toString: String = s"LiquiditySlice($instrumentId,$lots,$market,$role)"
+end LiquiditySlice
 
 object LiquiditySlice:
+  private val constructor =
+    val owner = classOf[LiquiditySlice[?, ?]]
+    MethodHandles
+      .privateLookupIn(owner, MethodHandles.lookup())
+      .findConstructor(
+        owner,
+        MethodType.methodType(
+          java.lang.Void.TYPE,
+          classOf[InstrumentId],
+          classOf[Object],
+          classOf[Object],
+          classOf[LiquidityRole]
+        )
+      )
+
+  private def construct[L, M](
+    instrumentId: InstrumentId,
+    lots: L,
+    market: M,
+    role: LiquidityRole
+  ): LiquiditySlice[L, M] =
+    constructor
+      .invoke(instrumentId, lots.asInstanceOf[Object], market.asInstanceOf[Object], role)
+      .asInstanceOf[LiquiditySlice[L, M]]
+
   def create[I <: Instrument](
     instrument: I
   )(
@@ -52,7 +94,7 @@ object LiquiditySlice:
     ).flatten
     ScenarioViolations.from(violations) match
       case Some(errors) => Left(errors)
-      case None         => Right(LiquiditySlice(expected, lots, market, role))
+      case None         => Right(construct(expected, lots, market, role))
   end create
 
   def createFirst[I <: Instrument](
@@ -101,7 +143,8 @@ object MatchedSlices:
 end MatchedSlices
 
 /** Cohesive evidence and non-empty matched liquidity for one stable order value. */
-final class ScenarioAssumptions[D <: Dim, B <: Dim, Q <: Dim, M] private[scenario] (
+@nowarn("msg=Ignoring.*qualifier")
+final class ScenarioAssumptions[D <: Dim, B <: Dim, Q <: Dim, M] private[this] (
   val order: Order[D, B, Q]
 )(
   val activationEvidence: order.activation.Evidence,
@@ -109,6 +152,37 @@ final class ScenarioAssumptions[D <: Dim, B <: Dim, Q <: Dim, M] private[scenari
   val matchedSlices: MatchedSlices[Lots[D], M])
 
 object ScenarioAssumptions:
+  private val constructor =
+    val owner = classOf[ScenarioAssumptions[?, ?, ?, ?]]
+    MethodHandles
+      .privateLookupIn(owner, MethodHandles.lookup())
+      .findConstructor(
+        owner,
+        MethodType.methodType(
+          java.lang.Void.TYPE,
+          classOf[Order[?, ?, ?]],
+          classOf[Object],
+          classOf[Object],
+          classOf[MatchedSlices[?, ?]]
+        )
+      )
+
+  private def construct[D <: Dim, B <: Dim, Q <: Dim, M, O <: Order[D, B, Q]](
+    order: O
+  )(
+    activationEvidence: order.activation.Evidence,
+    pricingResolution: order.execution.Resolution,
+    matchedSlices: MatchedSlices[Lots[D], M]
+  ): ScenarioAssumptions[D, B, Q, M] =
+    constructor
+      .invoke(
+        order,
+        activationEvidence.asInstanceOf[Object],
+        pricingResolution.asInstanceOf[Object],
+        matchedSlices
+      )
+      .asInstanceOf[ScenarioAssumptions[D, B, Q, M]]
+
   def create[D <: Dim, B <: Dim, Q <: Dim, M, O <: Order[D, B, Q]](
     order: O
   )(
@@ -116,7 +190,7 @@ object ScenarioAssumptions:
     pricingResolution: order.execution.Resolution,
     matchedSlices: MatchedSlices[Lots[D], M]
   ): ScenarioAssumptions[D, B, Q, M] =
-    new ScenarioAssumptions(order)(activationEvidence, pricingResolution, matchedSlices)
+    construct(order)(activationEvidence, pricingResolution, matchedSlices)
 
   def one[D <: Dim, B <: Dim, Q <: Dim, M, O <: Order[D, B, Q]](
     order: O
@@ -149,7 +223,8 @@ object ScenarioAssumptions:
       .map(create(order)(activationEvidence, pricingResolution, _))
 end ScenarioAssumptions
 
-final class OrderScenario[D <: Dim, B <: Dim, Q <: Dim, M] private[scenario] (
+@nowarn("msg=Ignoring.*qualifier")
+final class OrderScenario[D <: Dim, B <: Dim, Q <: Dim, M] private[this] (
   val assumptions: ScenarioAssumptions[D, B, Q, M],
   val checkedActivation: CheckedActivation[B, Q],
   val effectivePricing: EffectivePricing[B, Q],
@@ -184,6 +259,31 @@ private[scenario] object ValidationBranch:
     val reported: Option[ScenarioViolation]    = None
 
 object OrderScenario:
+  private val constructor =
+    val owner = classOf[OrderScenario[?, ?, ?, ?]]
+    MethodHandles
+      .privateLookupIn(owner, MethodHandles.lookup())
+      .findConstructor(
+        owner,
+        MethodType.methodType(
+          java.lang.Void.TYPE,
+          classOf[ScenarioAssumptions[?, ?, ?, ?]],
+          classOf[CheckedActivation[?, ?]],
+          classOf[EffectivePricing[?, ?]],
+          classOf[PositionLots[?]]
+        )
+      )
+
+  private def construct[D <: Dim, B <: Dim, Q <: Dim, M](
+    assumptions: ScenarioAssumptions[D, B, Q, M],
+    checkedActivation: CheckedActivation[B, Q],
+    effectivePricing: EffectivePricing[B, Q],
+    positionChange: PositionLots[D]
+  ): OrderScenario[D, B, Q, M] =
+    constructor
+      .invoke(assumptions, checkedActivation, effectivePricing, positionChange)
+      .asInstanceOf[OrderScenario[D, B, Q, M]]
+
   def evaluate[I <: Instrument](
     instrument: I
   )(
@@ -379,7 +479,7 @@ object OrderScenario:
         (for
           checked   <- activation.toEither
           effective <- pricing.toEither
-        yield new OrderScenario(assumptions, checked, effective, order.intent.positionChange))
+        yield construct(assumptions, checked, effective, order.intent.positionChange))
           .left
           .map(ScenarioViolations.one)
   end evaluate
@@ -405,13 +505,39 @@ object OrderScenario:
     evaluate(instrument)(assumptions).left.map(_.head)
 end OrderScenario
 
-final class RoundTripScenario[D <: Dim, B <: Dim, Q <: Dim, M] private[scenario] (
+@nowarn("msg=Ignoring.*qualifier")
+final class RoundTripScenario[D <: Dim, B <: Dim, Q <: Dim, M] private[this] (
   val instrumentId: InstrumentId,
   val entry: OrderScenario[D, B, Q, M],
   val exit: OrderScenario[D, B, Q, M],
   val heldPosition: PositionLots[D])
 
 object RoundTripScenario:
+  private val constructor =
+    val owner = classOf[RoundTripScenario[?, ?, ?, ?]]
+    MethodHandles
+      .privateLookupIn(owner, MethodHandles.lookup())
+      .findConstructor(
+        owner,
+        MethodType.methodType(
+          java.lang.Void.TYPE,
+          classOf[InstrumentId],
+          classOf[OrderScenario[?, ?, ?, ?]],
+          classOf[OrderScenario[?, ?, ?, ?]],
+          classOf[PositionLots[?]]
+        )
+      )
+
+  private def construct[D <: Dim, B <: Dim, Q <: Dim, M](
+    instrumentId: InstrumentId,
+    entry: OrderScenario[D, B, Q, M],
+    exit: OrderScenario[D, B, Q, M],
+    heldPosition: PositionLots[D]
+  ): RoundTripScenario[D, B, Q, M] =
+    constructor
+      .invoke(instrumentId, entry, exit, heldPosition)
+      .asInstanceOf[RoundTripScenario[D, B, Q, M]]
+
   def create[I <: Instrument](
     instrument: I
   )(
@@ -465,7 +591,7 @@ object RoundTripScenario:
               )
           .flatMap: combined =>
             if combined == PositionLots.flat(instrument) then
-              Right(new RoundTripScenario(expected, entry, exit, entry.positionChange))
+              Right(construct(expected, entry, exit, entry.positionChange))
             else
               Left(
                 RoundTripViolation.PositionNotFlat(

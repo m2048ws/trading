@@ -1,0 +1,45 @@
+schemaVersion: 1
+sourceDigest: sha256:b6456620959f0fc121106393b6a78980fe81c550cbfa0d157f1dcec29f172d87
+acceptance:
+  - id: AC-001
+    evidence: automated
+    planningRefs:
+      - path: specs/application-runtime-foundation/spec.md
+        anchor: requirement-application-and-runtime-are-distinct-dependency-boundaries
+    taskGroups:
+      - '2'
+      - '7'
+  - id: AC-002
+    evidence: both
+    planningRefs:
+      - path: specs/live-catalog-capability/spec.md
+        anchor: requirement-effect-scoped-concurrent-live-catalog-interpreter
+      - path: specs/live-catalog-capability/spec.md
+        anchor: requirement-live-catalog-interpreters-share-the-pure-conformance-suite
+    taskGroups:
+      - '3'
+      - '4'
+      - '5'
+      - '6'
+  - id: AC-003
+    evidence: human
+    planningRefs:
+      - path: specs/application-runtime-foundation/spec.md
+        anchor: requirement-only-genuine-external-variation-becomes-an-effect-polymorphic-port
+      - path: specs/application-runtime-foundation/spec.md
+        anchor: requirement-commands-queries-events-and-expected-outcomes-remain-explicit-data
+      - path: specs/application-runtime-foundation/spec.md
+        anchor: requirement-transaction-boundaries-express-business-atomicity
+    taskGroups:
+      - '7'
+  - id: AC-004
+    evidence: automated
+    planningRefs:
+      - path: specs/application-runtime-foundation/spec.md
+        anchor: requirement-multiple-interpreters-share-observable-contract-tests
+      - path: specs/live-catalog-capability/spec.md
+        anchor: requirement-live-catalog-interpreters-share-the-pure-conformance-suite
+    taskGroups:
+      - '5'
+      - '6'
+      - '8'

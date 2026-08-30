@@ -436,6 +436,62 @@ class CorgiPrTest(unittest.TestCase):
             self.assertIn("[redacted from PR projection]", body)
             corgi_pr.assert_safe_projection(body, root)
 
+    def test_corgi_review_report_accepts_ready_and_actionable_blocked_shapes(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory).resolve()
+            report_path = root / "review.json"
+            ready = {
+                "schemaVersion": 1,
+                "verdict": "ready",
+                "summary": "No actionable findings.",
+                "findings": [],
+                "repository_unchanged": True,
+            }
+            report_path.write_text(json.dumps(ready))
+            self.assertEqual(
+                corgi_pr.load_review_report(report_path, root)["verdict"], "ready"
+            )
+
+            blocked = {
+                "schemaVersion": 1,
+                "verdict": "blocked",
+                "summary": "One correctness finding.",
+                "findings": [
+                    {
+                        "id": "R1",
+                        "severity": "high",
+                        "title": "Lost update",
+                        "location": "runtime/Catalog.scala:42",
+                        "evidence": "The concurrent test loses one commit.",
+                        "smallest_remediation": "Use one atomic state transition.",
+                    }
+                ],
+                "repository_unchanged": True,
+            }
+            report_path.write_text(json.dumps(blocked))
+            self.assertEqual(
+                corgi_pr.load_review_report(report_path, root)["verdict"], "blocked"
+            )
+
+    def test_corgi_review_report_rejects_legacy_worker_shape(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory).resolve()
+            report_path = root / "review.json"
+            report_path.write_text(
+                json.dumps(
+                    {
+                        "verdict": "ready",
+                        "summary": "Legacy report.",
+                        "findings": [],
+                        "repository_unchanged": True,
+                        "openspec": {},
+                    }
+                )
+            )
+            with self.assertRaises(corgi_pr.PilotError) as caught:
+                corgi_pr.load_review_report(report_path, root)
+            self.assertEqual(caught.exception.code, "review_report_invalid")
+
     def test_merge_gate_requires_exact_head_approval_and_green_checks(self):
         detail = {
             "headRefOid": HEAD,

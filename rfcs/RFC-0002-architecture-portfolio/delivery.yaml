@@ -1,9 +1,21 @@
 schemaVersion: 1
 rfcId: RFC-0002-architecture-portfolio
-revision: 2
+revision: 4
 slices:
   S-01-application-runtime-foundation:
-    status: unbound
+    status: archived
+    binding:
+      change: introduce-application-and-runtime-foundation
+      sourceDigest: sha256:b6456620959f0fc121106393b6a78980fe81c550cbfa0d157f1dcec29f172d87
+      plannedAt: '2026-08-29T20:08:56.944Z'
+      issue:
+        provider: github
+        id: '6'
+        url: https://github.com/m2048ws/trading/issues/6
+    archive:
+      archivedAt: '2026-08-30T01:51:22.663Z'
+      commit: 6c0d35bb652d75668ba6550dd8155f33dce0f58b
+      evidenceManifest: sha256:4a4ee2d82d93b117f9e43689b2304cfa84221b2c8a3d23c66650e2ef6f0e4795
   S-02-order-execution-scenarios:
     status: planned
     binding:

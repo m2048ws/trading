@@ -111,25 +111,38 @@ final class OrderScenarioSuite extends FunSuite:
 
     assertEquals(OrderScenario.evaluate(instrument)(assumptions).left.map(_.violations), Left(expected))
 
-  test("foreign slice identity uses a closed location and suppresses only dependent slice branches"):
-    val order       = Order.market(instrument)(Side.Buy, lots10).toOption.get
-    val valid       = slice(lots10, Rational(100), LiquidityRole.Maker)
-    val foreignId   = fixture.foreignIdentity.identity.id
-    val foreign     = LiquiditySlice(foreignId, valid.lots, valid.market, valid.role)
+  test("foreign slices use closed locations and suppress only dependent slice branches"):
+    val order             = Order.market(instrument)(Side.Buy, lots10).toOption.get
+    val foreignInstrument = fixture.foreignIdentity
+    val foreignLots       = fixture.lots(foreignInstrument, 10)
+    val foreignMarket     = fixture.quoteState(foreignInstrument, Rational(100))
+    val foreignId         = foreignInstrument.identity.id
+    val foreign           = LiquiditySlice
+      .create(foreignInstrument)(foreignLots, foreignMarket, LiquidityRole.Maker)
+      .toOption
+      .get
+      .asInstanceOf[LiquiditySlice[instrument.Lots, instrument.MarketState]]
     val assumptions = ScenarioAssumptions.one(order)(
       order.activation.evidence,
       order.execution.resolution,
       foreign
     )
-    val expected = ScenarioViolation.Identity(
-      ScenarioLocation.Slice(0, ScenarioSliceComponent.Identity),
-      instrument.identity.id,
-      foreignId
+    val expected = Vector(
+      ScenarioSliceComponent.Identity,
+      ScenarioSliceComponent.Lots,
+      ScenarioSliceComponent.Market,
+      ScenarioSliceComponent.Price
+    ).map(component =>
+      ScenarioViolation.Identity(
+        ScenarioLocation.Slice(0, component),
+        instrument.identity.id,
+        foreignId
+      )
     )
 
     assertEquals(
       OrderScenario.evaluate(instrument)(assumptions).left.map(_.violations),
-      Left(Vector(expected))
+      Left(expected)
     )
 
   test("round trips preserve complete long and short legs and the entry's retained position"):
@@ -162,7 +175,7 @@ final class OrderScenarioSuite extends FunSuite:
       Left(RoundTripViolation.PositionNotFlat(BigInt(10), BigInt(-9)))
     )
 
-  test("round trips reject foreign legs and retained positions with typed components"):
+  test("round trips reject foreign legs with typed components"):
     val foreign      = fixture.foreignIdentity
     val foreignLots  = fixture.lots(foreign, 10)
     val foreignOrder = Order.market(foreign)(Side.Buy, foreignLots).toOption.get
@@ -197,25 +210,4 @@ final class OrderScenarioSuite extends FunSuite:
       )
     )
 
-    val entry           = marketScenario(Side.Buy, lots10, Rational(99))
-    val foreignPosition = fixture
-      .position(foreign, 10)
-      .asInstanceOf[PositionLots[D]]
-    val forgedEntry = new OrderScenario(
-      entry.assumptions,
-      entry.checkedActivation,
-      entry.effectivePricing,
-      foreignPosition
-    )
-
-    assertEquals(
-      RoundTripScenario.create(instrument)(forgedEntry, exit),
-      Left(
-        RoundTripViolation.InstrumentMismatch(
-          RoundTripComponent.EntryPositionChange,
-          instrument.identity.id,
-          foreign.identity.id
-        )
-      )
-    )
 end OrderScenarioSuite
