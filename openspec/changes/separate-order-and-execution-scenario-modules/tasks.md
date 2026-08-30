@@ -151,3 +151,20 @@
 - [ ] 11.5 Record the exact remediation, API/bytecode evidence, validation counts, and review disposition in the
   session checkpoint; prepare one dedicated Repair Task Group commit for acknowledgement, PR synchronization,
   canonical Verify, human review, and a fresh independent exact-SHA whole-change review.
+
+## 12. Checked Scenario Structural Value Semantics Repair
+
+- [ ] 12.1 Restore structural `equals` and `hashCode` for `OrderScenario` over its retained assumptions, checked
+  activation, effective pricing, and position change, preserving the JVM-private constructor and exposing no unchecked
+  `copy`, constructor, or product-based construction path.
+- [ ] 12.2 Restore structural `equals` and `hashCode` for `RoundTripScenario` over its instrument identity, entry, exit,
+  and held position, preserving the JVM-private constructor and checked round-trip creation boundary.
+- [ ] 12.3 Add focused laws proving repeated checked evaluation and repeated checked round-trip construction yield equal
+  values with equal hashes, while meaningfully different semantic fields remain unequal and completed-JAR construction
+  boundaries stay closed.
+- [ ] 12.4 Run formatting, the clean full repository test matrix, JMH compilation, completed-JAR Scala and Java boundary
+  probes, downstream fee/risk behavioral-equivalence coverage, strict OpenSpec validation, deterministic Corgi
+  readiness, and the automated Task Group review loop.
+- [ ] 12.5 Record the exact remediation, validation counts, and review disposition in the session checkpoint; prepare
+  one dedicated Repair Task Group commit for acknowledgement, PR synchronization, canonical Verify, human review, and
+  a fresh independent exact-SHA whole-change review.
