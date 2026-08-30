@@ -14,16 +14,16 @@ updated: 2026-08-30
 - **Issue**: 7 https://github.com/m2048ws/trading/issues/7
 - **Change**: separate-order-and-execution-scenario-modules
 - **Worktree**: /Users/m/src/money/.worktrees/separate-order-and-execution-scenario-modules
-- **Phase at Checkpoint**: awaiting_verify
-- **Task Group at Checkpoint**: 9
-- **Observed Run Revision**: 2
-- **Last Verified HEAD**: 48f40f4c5462684ec58b7f5279e45d9a4f43b708
+- **Phase at Checkpoint**: planning_ready
+- **Task Group at Checkpoint**: 10
+- **Observed Run Revision**: none
+- **Last Verified HEAD**: 1383bc64d113394d289e23288285f437fca0a08c
 
 The phase and revision above are the required next checkpoint carried by the Repair Task Group commit. Live Run
 Contract authority remains `applying` at revision 1 until Corgi acknowledges that commit.
 
 ## Next Action
-- Commit and acknowledge Repair Task Group 9, synchronize draft PR #27, and stop Apply at `awaiting_verify`; canonical
+- Start Apply for `separate-order-and-execution-scenario-modules` Task Group 10.
   Verify remains a separate gate.
 
 ## Blockers

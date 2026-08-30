@@ -118,3 +118,18 @@
 - [ ] 9.5 Record the repair rationale, conflict dispositions, API inspection, exact validation counts, and independent
   review findings addressed; prepare one dedicated Repair Task Group commit for acknowledgement, fresh canonical
   Verify, human review, and exact-SHA independent review.
+
+## 10. Merge-Ancestry Verification Repair
+
+- [ ] 10.1 Verify that the repair baseline records `05a8af0ff836b846247c082901ac3baea3d0c169` as an actual ancestor
+  without changing the already reviewed Group 9 tree, preserves the acknowledged Task Group prefix, and removes the
+  draft PR's integration conflict.
+- [ ] 10.2 Rerun formatting, the clean full repository test matrix, JMH compilation, completed-JAR Scala and Java
+  construction boundaries, downstream fee/risk behavioral-equivalence coverage, and Git topology/workspace checks on
+  the ancestry-corrected history.
+- [ ] 10.3 Run strict OpenSpec validation, deterministic Corgi readiness, and the automated Task Group review loop;
+  record the rejection reason, topology proof, exact validation counts, remaining risks, and resulting checkpoint in
+  the session bridge.
+- [ ] 10.4 Prepare one dedicated atomic Repair Task Group commit containing the validation/evidence checkpoint,
+  acknowledge it through Corgi, synchronize draft PR #27, rerun canonical Verify, and request a fresh exact-SHA
+  independent whole-change review.
