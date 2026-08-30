@@ -133,3 +133,21 @@
 - [ ] 10.4 Prepare one dedicated atomic Repair Task Group commit containing the validation/evidence checkpoint,
   acknowledge it through Corgi, synchronize draft PR #27, rerun canonical Verify, and request a fresh exact-SHA
   independent whole-change review.
+
+## 11. Completed-JAR JVM Construction Authority Repair
+
+- [ ] 11.1 Close the completed `trading-order-model` JAR against external Java subclassing of `Order`, external
+  implementation of activation/execution alternatives, and direct construction of concrete order representations,
+  while preserving the checked Scala API and exhaustive domain matching required by AC-006.
+- [ ] 11.2 Close `MatchedSlices` construction at the JVM boundary and remove, hide, or dynamically validate erased
+  `ScenarioAssumptions` entry points so arbitrary Java `Object` evidence and pricing-resolution values produce typed
+  rejection rather than forge assumptions accepted by evaluation.
+- [ ] 11.3 Extend completed-JAR Java adversarial fixtures to reject every demonstrated subclass, implementation,
+  constructor, and erased-factory bypass; retain positive Java/Scala fixtures for the supported checked construction
+  paths and inspect emitted class flags and signatures with `javap`.
+- [ ] 11.4 Run formatting, clean full repository tests, JMH compilation, completed-JAR compiler boundaries,
+  downstream fee/risk behavioral-equivalence tests, strict OpenSpec validation, deterministic Corgi readiness, and
+  the automated Task Group review loop.
+- [ ] 11.5 Record the exact remediation, API/bytecode evidence, validation counts, and review disposition in the
+  session checkpoint; prepare one dedicated Repair Task Group commit for acknowledgement, PR synchronization,
+  canonical Verify, human review, and a fresh independent exact-SHA whole-change review.
