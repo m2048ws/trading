@@ -77,7 +77,7 @@ final class FeePolicy[I <: Instrument] private[policy] (val instrument: I):
     sourceSliceIndex: Int,
     fee: Fee[FD]
   ): Either[FeePolicyError, FeeLine[FD, Market]] =
-    val slices = scenario.assumptions.matchedSlices.toVector
+    val slices = scenario.matchedSlices.toVector
     if sourceSliceIndex < 0 || sourceSliceIndex >= slices.size then
       Left(InvalidFeeAttribution(sourceSliceIndex, slices.size))
     else
@@ -147,7 +147,7 @@ final class FeePolicy[I <: Instrument] private[policy] (val instrument: I):
   private def scenarioSignedValue(
     scenario: Scenario
   ): Either[FeePolicyError, Quantity[instrument.roles.settle.D]] =
-    scenario.assumptions.matchedSlices.toVector
+    scenario.matchedSlices.toVector
       .traverse: slice =>
         val coordinate = scenario.order.intent.side.sign * slice.lots.count.unrefined
         val position   = PositionLots.fromCoordinate(instrument)(coordinate)
@@ -179,7 +179,7 @@ final class FeePolicy[I <: Instrument] private[policy] (val instrument: I):
                )*
              )
         _ <-
-          val slices = scenario.assumptions.matchedSlices.toVector
+          val slices = scenario.matchedSlices.toVector
           lines.collectFirst:
             case line if line.sourceSliceIndex < 0 || line.sourceSliceIndex >= slices.size =>
               InvalidFeeAttribution(line.sourceSliceIndex, slices.size)

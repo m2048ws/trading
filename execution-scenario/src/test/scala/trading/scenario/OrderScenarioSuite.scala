@@ -30,6 +30,19 @@ final class OrderScenarioSuite extends FunSuite:
       .toOption
       .get
 
+  private def marketScenario(
+    side: Side,
+    lots: instrument.Lots,
+    price: Rational
+  ): OrderScenario[D, B, Q, instrument.MarketState] =
+    val order       = Order.market(instrument)(side, lots).toOption.get
+    val assumptions = ScenarioAssumptions.one(order)(
+      order.activation.evidence,
+      order.execution.resolution,
+      slice(lots, price, LiquidityRole.Taker)
+    )
+    OrderScenario.evaluate(instrument)(assumptions).toOption.get
+
   test("successful evaluation retains one order, verified results, slices, and intent position change"):
     val order       = Order.limit(instrument)(Side.Buy, lots10, price100).toOption.get
     val first       = slice(lots5, Rational(99), LiquidityRole.Maker)
@@ -117,5 +130,92 @@ final class OrderScenarioSuite extends FunSuite:
     assertEquals(
       OrderScenario.evaluate(instrument)(assumptions).left.map(_.violations),
       Left(Vector(expected))
+    )
+
+  test("round trips preserve complete long and short legs and the entry's retained position"):
+    val longEntry = marketScenario(Side.Buy, lots10, Rational(99))
+    val longExit  = marketScenario(Side.Sell, lots10, Rational(100))
+    val longTrip  = RoundTripScenario.create(instrument)(longEntry, longExit).toOption.get
+
+    assertEquals(longTrip.entry, longEntry)
+    assertEquals(longTrip.exit, longExit)
+    assertEquals(longTrip.entry.assumptions, longEntry.assumptions)
+    assertEquals(longTrip.exit.assumptions, longExit.assumptions)
+    assertEquals(longTrip.heldPosition, longEntry.positionChange)
+    assertEquals(longTrip.heldPosition.coordinate, BigInt(10))
+
+    val shortEntry = marketScenario(Side.Sell, lots10, Rational(100))
+    val shortExit  = marketScenario(Side.Buy, lots10, Rational(99))
+    val shortTrip  = RoundTripScenario.create(instrument)(shortEntry, shortExit).toOption.get
+
+    assertEquals(shortTrip.entry, shortEntry)
+    assertEquals(shortTrip.exit, shortExit)
+    assertEquals(shortTrip.heldPosition, shortEntry.positionChange)
+    assertEquals(shortTrip.heldPosition.coordinate, BigInt(-10))
+
+  test("round trips reject non-flat checked position combinations with both signed coordinates"):
+    val entry = marketScenario(Side.Buy, lots10, Rational(99))
+    val exit  = marketScenario(Side.Sell, lots9, Rational(100))
+
+    assertEquals(
+      RoundTripScenario.create(instrument)(entry, exit),
+      Left(RoundTripViolation.PositionNotFlat(BigInt(10), BigInt(-9)))
+    )
+
+  test("round trips reject foreign legs and retained positions with typed components"):
+    val foreign      = fixture.foreignIdentity
+    val foreignLots  = fixture.lots(foreign, 10)
+    val foreignOrder = Order.market(foreign)(Side.Buy, foreignLots).toOption.get
+    val foreignSlice = LiquiditySlice
+      .create(foreign)(
+        foreignLots,
+        fixture.quoteState(foreign, Rational(99)),
+        LiquidityRole.Taker
+      )
+      .toOption
+      .get
+    val foreignAssumptions = ScenarioAssumptions.one(foreignOrder)(
+      foreignOrder.activation.evidence,
+      foreignOrder.execution.resolution,
+      foreignSlice
+    )
+    val foreignEntry = OrderScenario
+      .evaluate(foreign)(foreignAssumptions)
+      .toOption
+      .get
+      .asInstanceOf[OrderScenario[D, B, Q, instrument.MarketState]]
+    val exit = marketScenario(Side.Sell, lots10, Rational(100))
+
+    assertEquals(
+      RoundTripScenario.create(instrument)(foreignEntry, exit),
+      Left(
+        RoundTripViolation.InstrumentMismatch(
+          RoundTripComponent.Entry,
+          instrument.identity.id,
+          foreign.identity.id
+        )
+      )
+    )
+
+    val entry           = marketScenario(Side.Buy, lots10, Rational(99))
+    val foreignPosition = fixture
+      .position(foreign, 10)
+      .asInstanceOf[PositionLots[D]]
+    val forgedEntry = new OrderScenario(
+      entry.assumptions,
+      entry.checkedActivation,
+      entry.effectivePricing,
+      foreignPosition
+    )
+
+    assertEquals(
+      RoundTripScenario.create(instrument)(forgedEntry, exit),
+      Left(
+        RoundTripViolation.InstrumentMismatch(
+          RoundTripComponent.EntryPositionChange,
+          instrument.identity.id,
+          foreign.identity.id
+        )
+      )
     )
 end OrderScenarioSuite

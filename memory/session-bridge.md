@@ -15,12 +15,12 @@ updated: 2026-08-30
 - **Change**: separate-order-and-execution-scenario-modules
 - **Worktree**: /Users/m/src/money/.worktrees/separate-order-and-execution-scenario-modules
 - **Phase at Checkpoint**: applying
-- **Task Group at Checkpoint**: 6
-- **Observed Run Revision**: 7
-- **Last Verified HEAD**: 0db021bc40848a72cc54c180178027979b799e32
+- **Task Group at Checkpoint**: 7
+- **Observed Run Revision**: 8
+- **Last Verified HEAD**: 97bec2609af7e330739bc3d14c0c966d5a00c765
 
 ## Next Action
-- Apply Task Group 7 (`Round Trips and Downstream Consumers`) after Task Group 6 acknowledgement.
+- Apply Task Group 8 (`Verification Evidence and Corgi Handoff`) after Task Group 7 acknowledgement.
 
 ## Blockers
 - none
@@ -44,6 +44,9 @@ updated: 2026-08-30
 - Task Group 6 replaced the scenario service with one-order branch-sensitive evaluation, closed deterministic
   diagnostics, and retained verified results; the clean matrix passed 778 tests including independent-branch,
   suppression, closed-location, stable-order, and removed-API coverage.
+- Task Group 7 implemented checked exact-flat round trips over retained signed positions and completed transitional
+  fee/risk consumption; the clean matrix passed 781 tests including long/short closure, unequal signed coordinates,
+  cross-instrument legs/positions, downstream equivalence, completed-JAR ownership, and compiler boundaries.
 
 ## Promotion Queue
 - Review agent-configuration constraints before promoting any item to `memory/MEMORY.md`.

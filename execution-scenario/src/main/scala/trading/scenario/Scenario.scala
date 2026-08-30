@@ -439,9 +439,7 @@ object RoundTripScenario:
     val expected   = instrument.identity.id
     val identities = Vector(
       (RoundTripComponent.Entry, entry.instrumentId),
-      (RoundTripComponent.EntryPositionChange, entry.positionChange.instrumentId),
-      (RoundTripComponent.Exit, exit.instrumentId),
-      (RoundTripComponent.ExitPositionChange, exit.positionChange.instrumentId)
+      (RoundTripComponent.Exit, exit.instrumentId)
     )
     identities.collectFirst:
       case (component, supplied) if supplied != expected =>
@@ -449,10 +447,32 @@ object RoundTripScenario:
     match
       case Some(violation) => Left(violation)
       case None            =>
-        val entryChange = entry.positionChange.coordinate
-        val exitChange  = exit.positionChange.coordinate
-        if entryChange + exitChange != 0 then
-          Left(RoundTripViolation.PositionNotFlat(entryChange, exitChange))
-        else Right(new RoundTripScenario(expected, entry, exit, entry.positionChange))
+        PositionLots
+          .combine(instrument)(entry.positionChange, exit.positionChange)
+          .left
+          .map:
+            case PositionInstrumentMismatch("left", mismatchExpected, supplied) =>
+              RoundTripViolation.InstrumentMismatch(
+                RoundTripComponent.EntryPositionChange,
+                mismatchExpected,
+                supplied
+              )
+            case PositionInstrumentMismatch(_, mismatchExpected, supplied) =>
+              RoundTripViolation.InstrumentMismatch(
+                RoundTripComponent.ExitPositionChange,
+                mismatchExpected,
+                supplied
+              )
+          .flatMap: combined =>
+            if combined == PositionLots.flat(instrument) then
+              Right(new RoundTripScenario(expected, entry, exit, entry.positionChange))
+            else
+              Left(
+                RoundTripViolation.PositionNotFlat(
+                  entry.positionChange.coordinate,
+                  exit.positionChange.coordinate
+                )
+              )
+    end match
   end create
 end RoundTripScenario
