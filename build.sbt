@@ -2,6 +2,7 @@ val scala3Version          = "3.8.4"
 val catsVersion            = "2.13.0"
 val algebraVersion         = "2.13.0"
 val disciplineMunitVersion = "2.0.0"
+val jdkRelease             = "25"
 
 val staticDimensionCompilerClasspath =
   taskKey[Seq[File]]("Immutable classpath for real-source static-dimension compiler fixtures")
@@ -10,6 +11,8 @@ val instrumentEconomicsCompilerClasspath =
 
 ThisBuild / scalaVersion := scala3Version
 ThisBuild / version      := "0.1.0-SNAPSHOT"
+ThisBuild / javacOptions ++= Seq("--release", jdkRelease)
+ThisBuild / scalacOptions ++= Seq("-release", jdkRelease)
 
 lazy val root =
   project
@@ -79,7 +82,6 @@ lazy val referenceData =
       moduleName := "trading-reference-data",
 
       Compile / exportJars := true,
-      Compile / javacOptions ++= Seq("--release", "17"),
 
       Test / classLoaderLayeringStrategy := ClassLoaderLayeringStrategy.Flat,
 
