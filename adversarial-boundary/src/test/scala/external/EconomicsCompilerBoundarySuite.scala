@@ -36,6 +36,16 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
       throw new IllegalStateException("missing generated instrument-economics compiler classpath")
     try new String(resource.readAllBytes(), StandardCharsets.UTF_8).trim
     finally resource.close()
+  private val orderCompilationClasspath =
+    val resource = Option(getClass.getResourceAsStream("/order-model-compiler.classpath")).getOrElse:
+      throw new IllegalStateException("missing generated order-model compiler classpath")
+    try new String(resource.readAllBytes(), StandardCharsets.UTF_8).trim
+    finally resource.close()
+  private val scenarioCompilationClasspath =
+    val resource = Option(getClass.getResourceAsStream("/execution-scenario-compiler.classpath")).getOrElse:
+      throw new IllegalStateException("missing generated execution-scenario compiler classpath")
+    try new String(resource.readAllBytes(), StandardCharsets.UTF_8).trim
+    finally resource.close()
 
   test("completed pure JAR compiles and runs a concrete core-only client with generic helpers"):
     val entries = coreCompilationClasspath.split(File.pathSeparator).map(Paths.get(_)).map(_.getFileName.toString)
@@ -111,15 +121,21 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
       instrumentArchive.close()
     end try
 
-  test("pure and transitional JARs expose their one-way owned classes"):
+  test("pure order, scenario, and transitional JARs expose only their one-way owned classes"):
     val instrumentJar = packagedInstrumentEconomicsJar
+    val orderJar      = packagedOrderModelJar
+    val scenarioJar   = packagedExecutionScenarioJar
     val economicsJar  = packagedEconomicsJar
     val core          = new JarFile(instrumentJar.toFile)
-    val downstream    = new JarFile(economicsJar.toFile)
+    val order         = new JarFile(orderJar.toFile)
+    val scenario      = new JarFile(scenarioJar.toFile)
+    val transitional  = new JarFile(economicsJar.toFile)
     try
-      val coreEntries       = core.entries().asScala.map(_.getName).toSet
-      val downstreamEntries = downstream.entries().asScala.map(_.getName).toSet
-      val expectedCore      = List(
+      val coreEntries      = core.entries().asScala.map(_.getName).toSet
+      val orderEntries     = order.entries().asScala.map(_.getName).toSet
+      val scenarioEntries  = scenario.entries().asScala.map(_.getName).toSet
+      val economicsEntries = transitional.entries().asScala.map(_.getName).toSet
+      val expectedCore     = List(
         "InstrumentDefinition.class",
         "InstrumentAssembler.class",
         "InstrumentSpec.class",
@@ -137,13 +153,37 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
         "Valuation.class"
       ).map(name => s"trading/economics/instrument/$name")
       expectedCore.foreach(entry => assert(coreEntries.contains(entry), s"missing $entry from $instrumentJar"))
-      assert(!downstreamEntries.exists(_.startsWith("trading/economics/instrument/")))
       List(
+        "trading/order/Order.class",
         "trading/order/Orders.class",
-        "trading/scenario/Scenarios.class",
-        "trading/fee/policy/FeePolicy.class",
-        "trading/risk/Risk.class"
-      ).foreach(entry => assert(downstreamEntries.contains(entry), s"missing $entry from $economicsJar"))
+        "trading/order/Side.class"
+      ).foreach(entry => assert(orderEntries.contains(entry), s"missing $entry from $orderJar"))
+      List(
+        "trading/scenario/LiquiditySlice.class",
+        "trading/scenario/OrderScenario.class",
+        "trading/scenario/Scenarios.class"
+      ).foreach(entry => assert(scenarioEntries.contains(entry), s"missing $entry from $scenarioJar"))
+      List("trading/fee/policy/FeePolicy.class", "trading/risk/Risk.class")
+        .foreach(entry => assert(economicsEntries.contains(entry), s"missing $entry from $economicsJar"))
+
+      List(
+        "trading/economics/instrument/MarketState.class",
+        "trading/scenario/",
+        "trading/fee/policy/",
+        "trading/risk/",
+        "trading/application/",
+        "trading/runtime/"
+      ).foreach(entry => assert(!orderEntries.exists(_.startsWith(entry)), s"order JAR retained $entry"))
+      List(
+        "trading/economics/instrument/",
+        "trading/order/",
+        "trading/fee/policy/",
+        "trading/risk/",
+        "trading/application/",
+        "trading/runtime/"
+      ).foreach(entry => assert(!scenarioEntries.exists(_.startsWith(entry)), s"scenario JAR retained $entry"))
+      List("trading/economics/instrument/", "trading/order/", "trading/scenario/")
+        .foreach(entry => assert(!economicsEntries.exists(_.startsWith(entry)), s"economics JAR retained $entry"))
 
       val staleCore = List(
         "trading/economics/instrument/Prices.class",
@@ -156,8 +196,33 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
       staleCore.foreach(entry => assert(!coreEntries.contains(entry), s"stale $entry remains in $instrumentJar"))
     finally
       core.close()
-      downstream.close()
+      order.close()
+      scenario.close()
+      transitional.close()
     end try
+
+  test("completed order-model classpath cannot compile downstream concerns"):
+    val source  = Paths.get(getClass.getResource("/order-model-compiler/OrderModelHasNoDownstream.scala").toURI)
+    val prelude = compileFilteredPrelude(source, compileOrder)
+    assert(prelude.succeeded, s"fixture prelude must compile independently:\n${prelude.rendered}")
+    val rejected = compileOrder(source)
+    assert(rejected.errors.size >= 6, rejected.rendered)
+    assert(rejected.rendered.contains("is not a member"), rejected.rendered)
+    economicsForbiddenDiagnostics.foreach(fragment => assert(!rejected.rendered.contains(fragment), rejected.rendered))
+
+  test("completed execution-scenario classpath cannot compile downstream concerns or mutation"):
+    val source = Paths.get(
+      getClass
+        .getResource("/execution-scenario-compiler/ExecutionScenarioHasNoUpstreamMutationOrDownstream.scala")
+        .toURI
+    )
+    val prelude = compileFilteredPrelude(source, compileScenario)
+    assert(prelude.succeeded, s"fixture prelude must compile independently:\n${prelude.rendered}")
+    val rejected = compileScenario(source)
+    assert(rejected.errors.size >= 5, rejected.rendered)
+    assert(rejected.rendered.contains("is not a member"), rejected.rendered)
+    assert(rejected.rendered.toLowerCase.contains("reassignment to val"), rejected.rendered)
+    economicsForbiddenDiagnostics.foreach(fragment => assert(!rejected.rendered.contains(fragment), rejected.rendered))
 
   test("positive downstream economics fixture compiles without warnings and runs"):
     val result = compile(fixturesRoot.resolve("positive/CompleteEconomicsClient.scala"))
@@ -231,6 +296,12 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
   private def compileCore(source: Path): Compilation =
     compileWith(source, coreCompilationClasspath, None)
 
+  private def compileOrder(source: Path): Compilation =
+    compileWith(source, orderCompilationClasspath, None)
+
+  private def compileScenario(source: Path): Compilation =
+    compileWith(source, scenarioCompilationClasspath, None)
+
   private def compileWith(source: Path, classpath: String, shared: Option[Path]): Compilation =
     val output        = Files.createTempDirectory("economics-classes-")
     val reporter      = new StoreReporter()
@@ -259,6 +330,20 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
       .map(Paths.get(_))
       .find(_.getFileName.toString.startsWith("trading-instrument-economics_3-"))
       .getOrElse(fail("missing packaged instrument-economics artifact"))
+
+  private def packagedOrderModelJar: Path =
+    compilationClasspath
+      .split(File.pathSeparator)
+      .map(Paths.get(_))
+      .find(_.getFileName.toString.startsWith("trading-order-model_3-"))
+      .getOrElse(fail("missing packaged order-model artifact"))
+
+  private def packagedExecutionScenarioJar: Path =
+    compilationClasspath
+      .split(File.pathSeparator)
+      .map(Paths.get(_))
+      .find(_.getFileName.toString.startsWith("trading-execution-scenario_3-"))
+      .getOrElse(fail("missing packaged execution-scenario artifact"))
 
   private def initializeModule(output: Path, moduleClassName: String): Unit =
     val loader = new URLClassLoader(Array(output.toUri.toURL), getClass.getClassLoader)
