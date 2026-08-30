@@ -64,7 +64,7 @@ lazy val quantities =
         "org.typelevel"  %% "algebra-laws"     % algebraVersion         % Test,
         "org.typelevel"  %% "cats-laws"        % catsVersion            % Test,
         "org.typelevel"  %% "discipline-munit" % disciplineMunitVersion % Test,
-        "org.scalameta"  %% "munit"            % "1.3.4"                % Test,
+        "org.scalameta"  %% "munit"            % "1.3.5"                % Test,
         "org.scalacheck" %% "scalacheck"       % "1.19.0"               % Test,
         "org.scalameta"  %% "munit-scalacheck" % "1.0.0"                % Test
       )
@@ -84,7 +84,7 @@ lazy val referenceData =
       Test / classLoaderLayeringStrategy := ClassLoaderLayeringStrategy.Flat,
 
       libraryDependencies ++= Seq(
-        "org.scalameta"  %% "munit"            % "1.3.4"  % Test,
+        "org.scalameta"  %% "munit"            % "1.3.5"  % Test,
         "org.scalacheck" %% "scalacheck"       % "1.19.0" % Test,
         "org.scalameta"  %% "munit-scalacheck" % "1.0.0"  % Test
       )
@@ -108,7 +108,7 @@ lazy val economics =
 
       libraryDependencies ++= Seq(
         "org.typelevel"  %% "cats-core"        % catsVersion,
-        "org.scalameta"  %% "munit"            % "1.3.4"  % Test,
+        "org.scalameta"  %% "munit"            % "1.3.5"  % Test,
         "org.scalacheck" %% "scalacheck"       % "1.19.0" % Test,
         "org.scalameta"  %% "munit-scalacheck" % "1.0.0"  % Test
       )
@@ -128,7 +128,7 @@ lazy val instrumentEconomics =
       Test / fork                        := true,
 
       libraryDependencies ++= Seq(
-        "org.scalameta"  %% "munit"            % "1.3.4"  % Test,
+        "org.scalameta"  %% "munit"            % "1.3.5"  % Test,
         "org.scalacheck" %% "scalacheck"       % "1.19.0" % Test,
         "org.scalameta"  %% "munit-scalacheck" % "1.0.0"  % Test
       )
@@ -149,7 +149,7 @@ lazy val application =
       // it always loads that completed dependency generation instead of an in-process classloader cached earlier.
       Test / fork := true,
 
-      libraryDependencies += "org.scalameta" %% "munit" % "1.3.4" % Test
+      libraryDependencies += "org.scalameta" %% "munit" % "1.3.5" % Test
     )
 
 // Non-published performance evidence is compiled and run explicitly; it is intentionally outside root aggregation.
@@ -216,6 +216,6 @@ lazy val adversarialBoundary =
       }.taskValue,
       libraryDependencies ++= Seq(
         "org.scala-lang" %% "scala3-compiler" % scala3Version % Test,
-        "org.scalameta"  %% "munit"           % "1.3.4"       % Test
+        "org.scalameta"  %% "munit"           % "1.3.5"       % Test
       )
     )
