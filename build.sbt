@@ -181,9 +181,9 @@ lazy val runtime =
       Test / fork                        := true,
 
       libraryDependencies ++= Seq(
-        "org.typelevel" %% "cats-effect"          % catsEffectVersion,
-        "org.typelevel" %% "cats-effect-testkit"  % catsEffectVersion      % Test,
-        "org.typelevel" %% "munit-cats-effect"    % munitCatsEffectVersion % Test
+        "org.typelevel" %% "cats-effect"         % catsEffectVersion,
+        "org.typelevel" %% "cats-effect-testkit" % catsEffectVersion      % Test,
+        "org.typelevel" %% "munit-cats-effect"   % munitCatsEffectVersion % Test
       )
     )
 
@@ -227,23 +227,21 @@ lazy val adversarialBoundary =
           runtimeDependencies ++ instrumentDependencies ++ economicsDependencies ++ compilerDependencies).distinct
       },
       applicationBoundaryClasspath := {
-        val products =
-          (quantities / Compile / exportedProducts).value.files ++
-            (referenceData / Compile / exportedProducts).value.files ++
-            (application / Compile / exportedProducts).value.files
-        val dependencies =
-          (quantities / Compile / externalDependencyClasspath).value.files ++
-            (referenceData / Compile / externalDependencyClasspath).value.files ++
-            (application / Compile / externalDependencyClasspath).value.files ++
-            (Test / externalDependencyClasspath).value.files.filter { file =>
-              val name = file.getName
-              name.startsWith("scala3-compiler_3-") ||
-              name.startsWith("scala3-interfaces-") ||
-              name.startsWith("tasty-core_3-") ||
-              name.startsWith("scala-asm-") ||
-              name.startsWith("compiler-interface-") ||
-              name.startsWith("util-interface-")
-            }
+        val products = (quantities / Compile / exportedProducts).value.files ++
+          (referenceData / Compile / exportedProducts).value.files ++
+          (application / Compile / exportedProducts).value.files
+        val dependencies = (quantities / Compile / externalDependencyClasspath).value.files ++
+          (referenceData / Compile / externalDependencyClasspath).value.files ++
+          (application / Compile / externalDependencyClasspath).value.files ++
+          (Test / externalDependencyClasspath).value.files.filter { file =>
+            val name = file.getName
+            name.startsWith("scala3-compiler_3-") ||
+            name.startsWith("scala3-interfaces-") ||
+            name.startsWith("tasty-core_3-") ||
+            name.startsWith("scala-asm-") ||
+            name.startsWith("compiler-interface-") ||
+            name.startsWith("util-interface-")
+          }
         (products ++ dependencies).distinct
       },
       runtimeBoundaryClasspath := {
@@ -266,10 +264,10 @@ lazy val adversarialBoundary =
       },
       Test / resourceGenerators += Def.task {
         val directory = (Test / resourceManaged).value
-        val outputs = Seq(
+        val outputs   = Seq(
           directory / "static-dimension-compiler.classpath" -> staticDimensionCompilerClasspath.value,
-          directory / "application-boundary.classpath"     -> applicationBoundaryClasspath.value,
-          directory / "runtime-boundary.classpath"         -> runtimeBoundaryClasspath.value
+          directory / "application-boundary.classpath"      -> applicationBoundaryClasspath.value,
+          directory / "runtime-boundary.classpath"          -> runtimeBoundaryClasspath.value
         )
         outputs.foreach { case (output, classpath) =>
           IO.write(output, classpath.map(_.getAbsolutePath).mkString(java.io.File.pathSeparator))
