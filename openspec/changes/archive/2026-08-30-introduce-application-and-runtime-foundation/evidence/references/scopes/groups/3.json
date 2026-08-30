@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 3,
+  "scope": "group-3",
+  "runId": "run-43d94c8c-c8d7-4d5b-9070-eed9ed95311a",
+  "references": [
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fapplication-runtime-boundary%2Fnegative%2FRuntimeInternalsUnavailable.scala#sha256:e0f21dfb5d199fe59b48d1b57e64c154d65dd3be4f3961c1ae020cd6a0c69ab9",
+      "sourcePath": "adversarial-boundary/src/test/resources/application-runtime-boundary/negative/RuntimeInternalsUnavailable.scala",
+      "digest": "sha256:e0f21dfb5d199fe59b48d1b57e64c154d65dd3be4f3961c1ae020cd6a0c69ab9",
+      "archivePath": "references/blobs/e0f21dfb5d199fe59b48d1b57e64c154d65dd3be4f3961c1ae020cd6a0c69ab9"
+    },
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FApplicationRuntimeBoundarySuite.scala#sha256:7e8b7ede4aaf346367d0bf26842940b9fcf1ed690cc14306c2d5d5cf44522f7d",
+      "sourcePath": "adversarial-boundary/src/test/scala/external/ApplicationRuntimeBoundarySuite.scala",
+      "digest": "sha256:7e8b7ede4aaf346367d0bf26842940b9fcf1ed690cc14306c2d5d5cf44522f7d",
+      "archivePath": "references/blobs/7e8b7ede4aaf346367d0bf26842940b9fcf1ed690cc14306c2d5d5cf44522f7d"
+    },
+    {
+      "reference": "file:memory%2Fsession-bridge.md#sha256:fb3e5fcd216ee88b5b8982900fc790c665302b418426ed0de069a2c5abf850cc",
+      "sourcePath": "memory/session-bridge.md",
+      "digest": "sha256:fb3e5fcd216ee88b5b8982900fc790c665302b418426ed0de069a2c5abf850cc",
+      "archivePath": "references/blobs/fb3e5fcd216ee88b5b8982900fc790c665302b418426ed0de069a2c5abf850cc"
+    },
+    {
+      "reference": "file:runtime%2FREADME.md#sha256:4c525207cb687ce1426cb8720c87063ed759757681ebbb28f52f86d40dbb5859",
+      "sourcePath": "runtime/README.md",
+      "digest": "sha256:4c525207cb687ce1426cb8720c87063ed759757681ebbb28f52f86d40dbb5859",
+      "archivePath": "references/blobs/4c525207cb687ce1426cb8720c87063ed759757681ebbb28f52f86d40dbb5859"
+    },
+    {
+      "reference": "file:runtime%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fruntime%2FInMemoryLiveCatalog.scala#sha256:9c5f20e319ee0b51d54a89453a400b32a374b5d7e44fa225f8918a845ece7076",
+      "sourcePath": "runtime/src/main/scala/trading/runtime/InMemoryLiveCatalog.scala",
+      "digest": "sha256:9c5f20e319ee0b51d54a89453a400b32a374b5d7e44fa225f8918a845ece7076",
+      "archivePath": "references/blobs/9c5f20e319ee0b51d54a89453a400b32a374b5d7e44fa225f8918a845ece7076"
+    },
+    {
+      "reference": "file:runtime%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fruntime%2FInMemoryLiveCatalogConstructionSuite.scala#sha256:e5f85399b20636daaa9db6c934899ce9d092f6308c686b0c4ced200cfcfa0987",
+      "sourcePath": "runtime/src/test/scala/trading/runtime/InMemoryLiveCatalogConstructionSuite.scala",
+      "digest": "sha256:e5f85399b20636daaa9db6c934899ce9d092f6308c686b0c4ced200cfcfa0987",
+      "archivePath": "references/blobs/e5f85399b20636daaa9db6c934899ce9d092f6308c686b0c4ced200cfcfa0987"
+    }
+  ]
+}

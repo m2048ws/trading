@@ -13,5 +13,5 @@ updated: 2026-08-29
 
 ## Verified Delivery Sources
 <!-- corgi:managed:start architecture-deliveries -->
-- none
+- [[wiki/deliveries/RFC-0002-architecture-portfolio-S-01-application-runtime-foundation|RFC-0002-architecture-portfolio/S-01-application-runtime-foundation]]
 <!-- corgi:managed:end architecture-deliveries -->

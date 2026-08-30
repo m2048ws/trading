@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 3,
+  "scope": "group-1",
+  "runId": "run-43d94c8c-c8d7-4d5b-9070-eed9ed95311a",
+  "references": [
+    {
+      "reference": "file:application%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fapplication%2FLiveCatalog.scala#sha256:b584ba2a0cdc46c1bb088ade2f1ea2daab33cd5e9f8f270f522caa50282d1aa3",
+      "sourcePath": "application/src/main/scala/trading/application/LiveCatalog.scala",
+      "digest": "sha256:b584ba2a0cdc46c1bb088ade2f1ea2daab33cd5e9f8f270f522caa50282d1aa3",
+      "archivePath": "references/blobs/b584ba2a0cdc46c1bb088ade2f1ea2daab33cd5e9f8f270f522caa50282d1aa3"
+    },
+    {
+      "reference": "file:application%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fapplication%2FLiveCatalogContract.scala#sha256:bad75ebfde92deea9ccfd67cdcd8a847b7836d5c83c09c810647c7559b3a2b15",
+      "sourcePath": "application/src/test/scala/trading/application/LiveCatalogContract.scala",
+      "digest": "sha256:bad75ebfde92deea9ccfd67cdcd8a847b7836d5c83c09c810647c7559b3a2b15",
+      "archivePath": "references/blobs/bad75ebfde92deea9ccfd67cdcd8a847b7836d5c83c09c810647c7559b3a2b15"
+    },
+    {
+      "reference": "file:build.sbt#sha256:65f7a847cddcffbed64d20eef523f087c301c821c904dfa307dd2b97b1cf9814",
+      "sourcePath": "build.sbt",
+      "digest": "sha256:65f7a847cddcffbed64d20eef523f087c301c821c904dfa307dd2b97b1cf9814",
+      "archivePath": "references/blobs/65f7a847cddcffbed64d20eef523f087c301c821c904dfa307dd2b97b1cf9814"
+    },
+    {
+      "reference": "file:memory%2Fsession-bridge.md#sha256:0ee138122ba2525a6ab34f67633b3897659ec4d2edab6f5a7c2257495c61b99e",
+      "sourcePath": "memory/session-bridge.md",
+      "digest": "sha256:0ee138122ba2525a6ab34f67633b3897659ec4d2edab6f5a7c2257495c61b99e",
+      "archivePath": "references/blobs/0ee138122ba2525a6ab34f67633b3897659ec4d2edab6f5a7c2257495c61b99e"
+    },
+    {
+      "reference": "file:openspec%2Fchanges%2Fintroduce-application-and-runtime-foundation%2Fcorgi%2Fsource.yaml#sha256:b6456620959f0fc121106393b6a78980fe81c550cbfa0d157f1dcec29f172d87",
+      "sourcePath": "openspec/changes/introduce-application-and-runtime-foundation/corgi/source.yaml",
+      "digest": "sha256:b6456620959f0fc121106393b6a78980fe81c550cbfa0d157f1dcec29f172d87",
+      "archivePath": "references/blobs/b6456620959f0fc121106393b6a78980fe81c550cbfa0d157f1dcec29f172d87"
+    },
+    {
+      "reference": "file:openspec%2Fchanges%2Fintroduce-application-and-runtime-foundation%2Fcorgi%2Ftraceability.yaml#sha256:df957f7a6c2111196622d2626a647dc532546073ad0579b610b9087e9551152e",
+      "sourcePath": "openspec/changes/introduce-application-and-runtime-foundation/corgi/traceability.yaml",
+      "digest": "sha256:df957f7a6c2111196622d2626a647dc532546073ad0579b610b9087e9551152e",
+      "archivePath": "references/blobs/df957f7a6c2111196622d2626a647dc532546073ad0579b610b9087e9551152e"
+    },
+    {
+      "reference": "file:openspec%2Fchanges%2Fintroduce-application-and-runtime-foundation%2Ftasks.md#sha256:bd8c39f837bd824c3506393600e038f79e343d9eae81b1f546a31652f84df12b",
+      "sourcePath": "openspec/changes/introduce-application-and-runtime-foundation/tasks.md",
+      "digest": "sha256:bd8c39f837bd824c3506393600e038f79e343d9eae81b1f546a31652f84df12b",
+      "archivePath": "references/blobs/bd8c39f837bd824c3506393600e038f79e343d9eae81b1f546a31652f84df12b"
+    },
+    {
+      "reference": "file:reference-data%2Fsrc%2Fmain%2Fscala%2Ftrading%2Freference%2FCatalog.scala#sha256:9564b1ae116d4519f3175652343efb780536d37401c8ee43ba4de99c674fae3a",
+      "sourcePath": "reference-data/src/main/scala/trading/reference/Catalog.scala",
+      "digest": "sha256:9564b1ae116d4519f3175652343efb780536d37401c8ee43ba4de99c674fae3a",
+      "archivePath": "references/blobs/9564b1ae116d4519f3175652343efb780536d37401c8ee43ba4de99c674fae3a"
+    }
+  ]
+}
