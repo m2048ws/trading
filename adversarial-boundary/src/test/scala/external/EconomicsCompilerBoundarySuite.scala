@@ -162,12 +162,18 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
       ).foreach(entry => assert(orderEntries.contains(entry), s"missing $entry from $orderJar"))
       assert(!orderEntries.contains("trading/order/Orders.class"), s"order JAR retained removed Orders service")
       List(
+        "trading/scenario/LiquidityRole.class",
         "trading/scenario/LiquiditySlice.class",
         "trading/scenario/MatchedSlices.class",
         "trading/scenario/ScenarioAssumptions.class",
         "trading/scenario/OrderScenario.class",
+        "trading/scenario/ScenarioSliceComponent.class",
         "trading/scenario/ScenarioLocation.class",
-        "trading/scenario/ScenarioViolations.class"
+        "trading/scenario/ScenarioViolation.class",
+        "trading/scenario/ScenarioViolations.class",
+        "trading/scenario/RoundTripComponent.class",
+        "trading/scenario/RoundTripViolation.class",
+        "trading/scenario/RoundTripScenario.class"
       ).foreach(entry => assert(scenarioEntries.contains(entry), s"missing $entry from $scenarioJar"))
       assert(!scenarioEntries.contains("trading/scenario/Scenarios.class"), s"scenario JAR retained Scenarios service")
       List(

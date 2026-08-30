@@ -14,13 +14,13 @@ updated: 2026-08-30
 - **Issue**: 7 https://github.com/m2048ws/trading/issues/7
 - **Change**: separate-order-and-execution-scenario-modules
 - **Worktree**: /Users/m/src/money/.worktrees/separate-order-and-execution-scenario-modules
-- **Phase at Checkpoint**: applying
-- **Task Group at Checkpoint**: 7
-- **Observed Run Revision**: 8
-- **Last Verified HEAD**: 97bec2609af7e330739bc3d14c0c966d5a00c765
+- **Phase at Checkpoint**: awaiting_verify
+- **Task Group at Checkpoint**: 8
+- **Observed Run Revision**: 9
+- **Last Verified HEAD**: 79d099b117706a31e44c076fdc28c68a945de30f
 
 ## Next Action
-- Apply Task Group 8 (`Verification Evidence and Corgi Handoff`) after Task Group 7 acknowledgement.
+- Run canonical Corgi Verify after Task Group 8 acknowledgement; keep human Review, Human QA, and Archive separate.
 
 ## Blockers
 - none
@@ -47,6 +47,9 @@ updated: 2026-08-30
 - Task Group 7 implemented checked exact-flat round trips over retained signed positions and completed transitional
   fee/risk consumption; the clean matrix passed 781 tests including long/short closure, unequal signed coordinates,
   cross-instrument legs/positions, downstream equivalence, completed-JAR ownership, and compiler boundaries.
+- Task Group 8 completed dependency-order compilation, baseline fixture comparison, packaged API/import inspection,
+  strict planning/source/traceability validation, and order/scenario property laws; the final clean matrix passed 785
+  tests and the remediated automated Task Group review returned no findings.
 
 ## Promotion Queue
 - Review agent-configuration constraints before promoting any item to `memory/MEMORY.md`.

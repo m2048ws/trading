@@ -127,11 +127,22 @@ class DownstreamEconomicsSuite extends FunSuite:
       .denomination(fixture.usd)(fixture.usdCents, QuantizationPolicy.TowardZero)
       .toOption
       .get
-    val kind  = FeeKind.from("taker").toOption.get
-    val basis = Quantity(fixture.usd.dimension.ref, Rational(10))
-    val fee   = policy.percentage(denomination, kind, basis, FeeRate(Rational(1, 1000))).toOption.get
+    val kind   = FeeKind.from("taker").toOption.get
+    val basis  = Quantity(fixture.usd.dimension.ref, Rational(10))
+    val fee    = policy.percentage(denomination, kind, basis, FeeRate(Rational(1, 1000))).toOption.get
+    val rebate = policy
+      .percentage(
+        denomination,
+        FeeKind.from("maker").toOption.get,
+        basis,
+        FeeRate(Rational(-1, 1000))
+      )
+      .toOption
+      .get
     assertEquals(fee.amount.coefficient, Rational(-1, 100))
+    assertEquals(rebate.amount.coefficient, Rational(1, 100))
     assertEquals(fee.amount + fee.residual, fee.unrounded)
+    assertEquals(rebate.amount + rebate.residual, rebate.unrounded)
     assertEquals(
       policy
         .minimumCharge(
@@ -194,6 +205,41 @@ class DownstreamEconomicsSuite extends FunSuite:
     assertEquals(pnl.netPnl.coefficient, Rational(-10))
     assertEquals(risk.downsideRisk(pnl).map(_.unrefined.coefficient), Right(Rational(10)))
 
+  test("missing fee conversion retains its entry leg and source-slice attribution"):
+    val lots = Lots.fromCount(instrument)(1000).toOption.get
+    val trip = roundTrip(
+      lots,
+      fixture.state(instrument, Rational(100)),
+      fixture.state(instrument, Rational(90))
+    )
+    val denomination = policy
+      .denomination(fixture.token)(fixture.tokenMillis, QuantizationPolicy.TowardZero)
+      .toOption
+      .get
+    val fee = Fee
+      .create(instrument)(
+        denomination,
+        FeeKind.from("missing-token").toOption.get,
+        Quantity(fixture.token.dimension.ref, Rational(-1, 1000))
+      )
+      .toOption
+      .get
+    val schedule = new policy.Schedule:
+      val instrumentId: InstrumentId = instrument.identity.id
+      def assess(value: policy.Scenario): Either[FeePolicyError, Vector[FeeLine[? <: Dim, policy.Market]]] =
+        policy.line(value, 0, fee).map(Vector(_))
+
+    assertEquals(
+      policy.pnl(trip, schedule),
+      Left(
+        FeeContributionFailure(
+          ScenarioLeg.Entry,
+          0,
+          ContributionConversionFailure(MissingConversion(fixture.token.id))
+        )
+      )
+    )
+
   test("risk sizing selects the greatest exact discrete candidate and includes fee-inclusive PnL"):
     val risk     = Risk.create(instrument)(policy).toOption.get
     val cap      = PositiveWhole(4).toOption.get
@@ -207,6 +253,75 @@ class DownstreamEconomicsSuite extends FunSuite:
         )
       )
     assertEquals(selected.map(_.map(_.count.unrefined)), Right(Some(BigInt(3))))
+
+  test("risk sizing preserves exhaustive traversal, non-monotone selection, failures, and flat fees"):
+    val risk     = Risk.create(instrument)(policy).toOption.get
+    val cap      = PositiveWhole(4).toOption.get
+    val budget   = Quantity(instrument.roles.settle.dimension.ref, Rational(3, 100))
+    val visited  = scala.collection.mutable.ArrayBuffer.empty[BigInt]
+    val selected = risk.maxLots(budget, cap, policy.none): candidate =>
+      visited += candidate.count.unrefined
+      Right(
+        roundTrip(
+          candidate,
+          fixture.state(instrument, Rational(100)),
+          fixture.state(instrument, Rational(90))
+        )
+      )
+    assertEquals(visited.toVector, Vector(1, 2, 3, 4).map(BigInt(_)))
+    assertEquals(selected.map(_.map(_.count.unrefined)), Right(Some(BigInt(3))))
+
+    val nonlinear = risk.maxLots(budget, cap, policy.none): candidate =>
+      val exit =
+        if candidate.count.unrefined == 2 then Rational(90)
+        else Rational(101)
+      Right(
+        roundTrip(
+          candidate,
+          fixture.state(instrument, Rational(100)),
+          fixture.state(instrument, exit)
+        )
+      )
+    assertEquals(nonlinear.map(_.map(_.count.unrefined)), Right(Some(BigInt(4))))
+
+    val failure = RoundTripViolation.PositionNotFlat(BigInt(2), BigInt(-1))
+    val failed  = risk.maxLots(budget, cap, policy.none): candidate =>
+      if candidate.count.unrefined == 2 then Left(failure)
+      else
+        Right(
+          roundTrip(
+            candidate,
+            fixture.state(instrument, Rational(100)),
+            fixture.state(instrument, Rational(90))
+          )
+        )
+    assertEquals(failed, Left(RiskScenarioFailure(failure)))
+
+    val denomination = policy
+      .denomination(fixture.usd)(fixture.usdCents, QuantizationPolicy.TowardZero)
+      .toOption
+      .get
+    val flatFee = Fee
+      .create(instrument)(
+        denomination,
+        FeeKind.from("flat").toOption.get,
+        Quantity(fixture.usd.dimension.ref, Rational(-1, 100))
+      )
+      .toOption
+      .get
+    val schedule = new policy.Schedule:
+      val instrumentId: InstrumentId = instrument.identity.id
+      def assess(value: policy.Scenario): Either[FeePolicyError, Vector[FeeLine[? <: Dim, policy.Market]]] =
+        policy.line(value, 0, flatFee).map(Vector(_))
+    val withFees = risk.maxLots(budget, cap, schedule): candidate =>
+      Right(
+        roundTrip(
+          candidate,
+          fixture.state(instrument, Rational(100)),
+          fixture.state(instrument, Rational(90))
+        )
+      )
+    assertEquals(withFees.map(_.map(_.count.unrefined)), Right(Some(BigInt(1))))
 
   test("policy composition preserves zero and ordered many schedules"):
     val lots      = Lots.fromCount(instrument)(1000).toOption.get
@@ -240,4 +355,17 @@ class DownstreamEconomicsSuite extends FunSuite:
       combined.assess(evaluated).map(_.map(_.fee.amount.coefficient)),
       Right(Vector(Rational(-1, 100), Rational(1, 100)))
     )
+
+    val otherScenario = scenario(Side.Buy, lots, fixture.state(instrument, Rational(100)))
+    val foreignLines  = component("foreign", Rational(-1, 100)).assess(otherScenario).toOption.get
+    val invalid       = new policy.Schedule:
+      val instrumentId: InstrumentId = instrument.identity.id
+      def assess(value: policy.Scenario): Either[FeePolicyError, Vector[FeeLine[? <: Dim, policy.Market]]] =
+        Right(foreignLines)
+    val trip = roundTrip(
+      lots,
+      fixture.state(instrument, Rational(100)),
+      fixture.state(instrument, Rational(90))
+    )
+    assertEquals(policy.pnl(trip, invalid), Left(ForeignScenarioLine(0)))
 end DownstreamEconomicsSuite
