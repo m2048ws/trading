@@ -66,7 +66,7 @@ lazy val quantities =
         "org.typelevel"  %% "discipline-munit" % disciplineMunitVersion % Test,
         "org.scalameta"  %% "munit"            % "1.3.4"                % Test,
         "org.scalacheck" %% "scalacheck"       % "1.19.0"               % Test,
-        "org.scalameta"  %% "munit-scalacheck" % "1.0.0"                % Test
+        "org.scalameta"  %% "munit-scalacheck" % "1.3.0"                % Test
       )
     )
 
@@ -86,7 +86,7 @@ lazy val referenceData =
       libraryDependencies ++= Seq(
         "org.scalameta"  %% "munit"            % "1.3.4"  % Test,
         "org.scalacheck" %% "scalacheck"       % "1.19.0" % Test,
-        "org.scalameta"  %% "munit-scalacheck" % "1.0.0"  % Test
+        "org.scalameta"  %% "munit-scalacheck" % "1.3.0"  % Test
       )
     )
 
@@ -110,7 +110,7 @@ lazy val economics =
         "org.typelevel"  %% "cats-core"        % catsVersion,
         "org.scalameta"  %% "munit"            % "1.3.4"  % Test,
         "org.scalacheck" %% "scalacheck"       % "1.19.0" % Test,
-        "org.scalameta"  %% "munit-scalacheck" % "1.0.0"  % Test
+        "org.scalameta"  %% "munit-scalacheck" % "1.3.0"  % Test
       )
     )
 
@@ -130,7 +130,7 @@ lazy val instrumentEconomics =
       libraryDependencies ++= Seq(
         "org.scalameta"  %% "munit"            % "1.3.4"  % Test,
         "org.scalacheck" %% "scalacheck"       % "1.19.0" % Test,
-        "org.scalameta"  %% "munit-scalacheck" % "1.0.0"  % Test
+        "org.scalameta"  %% "munit-scalacheck" % "1.3.0"  % Test
       )
     )
 
