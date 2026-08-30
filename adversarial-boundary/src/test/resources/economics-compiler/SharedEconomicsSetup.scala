@@ -64,7 +64,6 @@ object SharedEconomicsSetup:
   val price99     = Price.exact(instrument)(Rational(99)).toOption.get
   val price100    = Price.exact(instrument)(Rational(100)).toOption.get
   val state       = MarketState.quoteSettled(instrument)(price100).toOption.get
-  val scenarios   = Scenarios(instrument)
   val feePolicy   = FeePolicy(instrument)
   val marketOrder = Order.market(instrument)(Side.Buy, lots).toOption.get
   val slice       = LiquiditySlice.create(instrument)(lots, state, LiquidityRole.Taker).toOption.get

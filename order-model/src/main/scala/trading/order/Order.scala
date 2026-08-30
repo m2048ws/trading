@@ -45,13 +45,19 @@ enum TriggerComparison:
   case AtOrAbove, AtOrBelow
 
 final case class CheckedActivation[B <: Dim, Q <: Dim] private[order] (
-  observations: Vector[(String, Price[B, Q])])
+  observations: Vector[(ActivationObservation, Price[B, Q])])
+
+enum ActivationObservation:
+  case Observed, FavorableExtreme
+
+enum PricingObservation:
+  case ReferencePrice, ResolvedLimit
 
 sealed trait OrderActivation[B <: Dim, Q <: Dim]:
   type Evidence
 
   def verify(evidence: Evidence): Either[ActivationViolation, CheckedActivation[B, Q]]
-  private[trading] def observations(evidence: Evidence): Vector[(String, Price[B, Q])]
+  private[trading] def observations(evidence: Evidence): Vector[(ActivationObservation, Price[B, Q])]
 
 sealed trait TriggerActivation[B <: Dim, Q <: Dim] extends OrderActivation[B, Q]
 
@@ -63,7 +69,9 @@ final class ImmediateActivation[B <: Dim, Q <: Dim] private[order] extends Order
   def verify(evidence: Evidence): Either[ActivationViolation, CheckedActivation[B, Q]] =
     Right(CheckedActivation(Vector.empty))
 
-  private[trading] def observations(evidence: Evidence): Vector[(String, Price[B, Q])] = Vector.empty
+  private[trading] def observations(
+    evidence: Evidence
+  ): Vector[(ActivationObservation, Price[B, Q])] = Vector.empty
 
 object ImmediateActivation:
   case object Evidence
@@ -94,10 +102,12 @@ final case class FixedActivation[B <: Dim, Q <: Dim](
     if
       evidence.reference != reference || evidence.comparison != comparison || evidence.triggerPrice != triggerPrice
     then Left(ActivationViolation.FixedEvidenceMismatch)
-    else Right(CheckedActivation(Vector("activation.observed" -> evidence.observedPrice)))
+    else Right(CheckedActivation(Vector(ActivationObservation.Observed -> evidence.observedPrice)))
 
-  private[trading] def observations(evidence: Evidence): Vector[(String, Price[B, Q])] =
-    Vector("activation.observed" -> evidence.observedPrice)
+  private[trading] def observations(
+    evidence: Evidence
+  ): Vector[(ActivationObservation, Price[B, Q])] =
+    Vector(ActivationObservation.Observed -> evidence.observedPrice)
 end FixedActivation
 
 final case class TrailingActivation[B <: Dim, Q <: Dim] private (
@@ -129,16 +139,18 @@ final case class TrailingActivation[B <: Dim, Q <: Dim] private (
       Right(
         CheckedActivation(
           Vector(
-            "activation.extreme"  -> evidence.favorableExtreme,
-            "activation.observed" -> evidence.observedPrice
+            ActivationObservation.FavorableExtreme -> evidence.favorableExtreme,
+            ActivationObservation.Observed         -> evidence.observedPrice
           )
         )
       )
 
-  private[trading] def observations(evidence: Evidence): Vector[(String, Price[B, Q])] =
+  private[trading] def observations(
+    evidence: Evidence
+  ): Vector[(ActivationObservation, Price[B, Q])] =
     Vector(
-      "activation.extreme"  -> evidence.favorableExtreme,
-      "activation.observed" -> evidence.observedPrice
+      ActivationObservation.FavorableExtreme -> evidence.favorableExtreme,
+      ActivationObservation.Observed         -> evidence.observedPrice
     )
 end TrailingActivation
 
@@ -194,7 +206,7 @@ sealed trait OrderPricing[B <: Dim, Q <: Dim]:
   type Resolution
 
   def resolve(resolution: Resolution): Either[PricingViolation, EffectivePricing[B, Q]]
-  private[trading] def observations(resolution: Resolution): Vector[(String, Price[B, Q])]
+  private[trading] def observations(resolution: Resolution): Vector[(PricingObservation, Price[B, Q])]
 
 final case class LimitPricing[B <: Dim, Q <: Dim](limit: Price[B, Q]) extends OrderPricing[B, Q]:
   type Resolution = DirectPricingResolution.type
@@ -204,7 +216,9 @@ final case class LimitPricing[B <: Dim, Q <: Dim](limit: Price[B, Q]) extends Or
   def resolve(resolution: Resolution): Either[PricingViolation, EffectivePricing[B, Q]] =
     Right(EffectivePricing.Limited(limit))
 
-  private[trading] def observations(resolution: Resolution): Vector[(String, Price[B, Q])] = Vector.empty
+  private[trading] def observations(
+    resolution: Resolution
+  ): Vector[(PricingObservation, Price[B, Q])] = Vector.empty
 
 final case class PeggedPricing[B <: Dim, Q <: Dim](reference: PriceReference, offsetTicks: BigInt)
   extends OrderPricing[B, Q]:
@@ -224,10 +238,12 @@ final case class PeggedPricing[B <: Dim, Q <: Dim](reference: PriceReference, of
       Left(PricingViolation.PegResolutionMismatch)
     else Right(EffectivePricing.Limited(resolution.resolvedLimit))
 
-  private[trading] def observations(resolution: Resolution): Vector[(String, Price[B, Q])] =
+  private[trading] def observations(
+    resolution: Resolution
+  ): Vector[(PricingObservation, Price[B, Q])] =
     Vector(
-      "pricing.reference" -> resolution.referencePrice,
-      "pricing.resolved"  -> resolution.resolvedLimit
+      PricingObservation.ReferencePrice -> resolution.referencePrice,
+      PricingObservation.ResolvedLimit  -> resolution.resolvedLimit
     )
 end PeggedPricing
 
@@ -241,7 +257,7 @@ sealed trait OrderExecution[D <: Dim, B <: Dim, Q <: Dim]:
 
   def resolve(resolution: Resolution): Either[PricingViolation, EffectivePricing[B, Q]]
   private[trading] def requiresMaker: Boolean
-  private[trading] def observations(resolution: Resolution): Vector[(String, Price[B, Q])]
+  private[trading] def observations(resolution: Resolution): Vector[(PricingObservation, Price[B, Q])]
 
 final case class MarketExecution[D <: Dim, B <: Dim, Q <: Dim](timeInForce: NonRestingTimeInForce)
   extends OrderExecution[D, B, Q]:
@@ -254,7 +270,9 @@ final case class MarketExecution[D <: Dim, B <: Dim, Q <: Dim](timeInForce: NonR
 
   private[trading] val requiresMaker: Boolean = false
 
-  private[trading] def observations(resolution: Resolution): Vector[(String, Price[B, Q])] = Vector.empty
+  private[trading] def observations(
+    resolution: Resolution
+  ): Vector[(PricingObservation, Price[B, Q])] = Vector.empty
 
 final case class PricedExecution[D <: Dim, B <: Dim, Q <: Dim, PR <: OrderPricing[B, Q]](
   pricing: PR,
@@ -270,7 +288,9 @@ final case class PricedExecution[D <: Dim, B <: Dim, Q <: Dim, PR <: OrderPricin
 
   private[trading] def requiresMaker: Boolean = liquidityConstraint == LiquidityConstraint.MakerOnly
 
-  private[trading] def observations(resolution: Resolution): Vector[(String, Price[B, Q])] =
+  private[trading] def observations(
+    resolution: Resolution
+  ): Vector[(PricingObservation, Price[B, Q])] =
     pricing.observations(resolution)
 
 final class OrderIntent[D <: Dim] private[order] (

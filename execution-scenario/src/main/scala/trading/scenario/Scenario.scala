@@ -1,7 +1,5 @@
 package trading.scenario
 
-import cats.syntax.all.*
-
 import trading.economics.instrument.*
 import trading.order.*
 import trading.quantity.*
@@ -27,15 +25,45 @@ object LiquiditySlice:
     lots: instrument.Lots,
     market: instrument.MarketState,
     role: LiquidityRole
-  ): Either[ScenarioError, LiquiditySlice[instrument.Lots, instrument.MarketState]] =
-    ScenarioIdentityChecks
-      .check(
-        "scenario.slice",
-        instrument.identity.id,
-        "lots"   -> lots.instrumentId,
-        "market" -> market.instrumentId
+  ): Either[ScenarioViolations, LiquiditySlice[instrument.Lots, instrument.MarketState]] =
+    val expected   = instrument.identity.id
+    val violations = Vector(
+      Option.when(lots.instrumentId != expected)(
+        ScenarioViolation.Identity(
+          ScenarioLocation.SliceInput(ScenarioSliceComponent.Lots),
+          expected,
+          lots.instrumentId
+        )
+      ),
+      Option.when(market.instrumentId != expected)(
+        ScenarioViolation.Identity(
+          ScenarioLocation.SliceInput(ScenarioSliceComponent.Market),
+          expected,
+          market.instrumentId
+        )
+      ),
+      Option.when(market.price.instrumentId != expected)(
+        ScenarioViolation.Identity(
+          ScenarioLocation.SliceInput(ScenarioSliceComponent.Price),
+          expected,
+          market.price.instrumentId
+        )
       )
-      .map(_ => LiquiditySlice(instrument.identity.id, lots, market, role))
+    ).flatten
+    ScenarioViolations.from(violations) match
+      case Some(errors) => Left(errors)
+      case None         => Right(LiquiditySlice(expected, lots, market, role))
+  end create
+
+  def createFirst[I <: Instrument](
+    instrument: I
+  )(
+    lots: instrument.Lots,
+    market: instrument.MarketState,
+    role: LiquidityRole
+  ): Either[ScenarioViolation, LiquiditySlice[instrument.Lots, instrument.MarketState]] =
+    create(instrument)(lots, market, role).left.map(_.head)
+end LiquiditySlice
 
 /** Domain non-empty collection of matched liquidity. */
 final class MatchedSlices[L, M] private (
@@ -121,228 +149,310 @@ object ScenarioAssumptions:
       .map(create(order)(activationEvidence, pricingResolution, _))
 end ScenarioAssumptions
 
-final case class OrderScenario[D <: Dim, B <: Dim, Q <: Dim, M, Pos] private[scenario] (
-  instrumentId: InstrumentId,
-  order: Order[D, B, Q],
-  assumptions: ScenarioAssumptions[D, B, Q, M],
-  effectivePricing: EffectivePricing[B, Q],
-  positionChange: Pos)
+final class OrderScenario[D <: Dim, B <: Dim, Q <: Dim, M] private[scenario] (
+  val assumptions: ScenarioAssumptions[D, B, Q, M],
+  val checkedActivation: CheckedActivation[B, Q],
+  val effectivePricing: EffectivePricing[B, Q],
+  val positionChange: PositionLots[D]):
 
-final case class RoundTripScenario[D <: Dim, B <: Dim, Q <: Dim, M, Pos] private[scenario] (
-  instrumentId: InstrumentId,
-  entry: OrderScenario[D, B, Q, M, Pos],
-  exit: OrderScenario[D, B, Q, M, Pos],
-  heldPosition: Pos)
+  val order: Order[D, B, Q]                    = assumptions.order
+  val matchedSlices: MatchedSlices[Lots[D], M] = assumptions.matchedSlices
+  val instrumentId: InstrumentId               = order.instrumentId
+end OrderScenario
 
-final class Scenarios[I <: Instrument] private[scenario] (val instrument: I):
+private[scenario] final case class LocatedIdentity(
+  location: ScenarioLocation,
+  supplied: InstrumentId,
+  rule: Int,
+  index: Int = 0)
 
-  private val instrumentId = instrument.identity.id
+private[scenario] sealed trait ValidationBranch[+A]:
+  def toEither: Either[ScenarioViolation, A]
+  def reported: Option[ScenarioViolation]
 
-  type D        = instrument.roles.position.D
-  type B        = instrument.roles.base.D
-  type Q        = instrument.roles.quote.D
-  type Lots     = instrument.Lots
-  type Price    = instrument.Price
-  type Market   = instrument.MarketState
-  type Position = instrument.PositionLots
+private[scenario] object ValidationBranch:
+  final case class Skipped(blocking: ScenarioViolation) extends ValidationBranch[Nothing]:
+    val toEither: Either[ScenarioViolation, Nothing] = Left(blocking)
+    val reported: Option[ScenarioViolation]          = None
 
-  def slice(
-    lots: Lots,
-    market: Market,
-    role: LiquidityRole
-  ): Either[ScenarioError, LiquiditySlice[Lots, Market]] =
-    LiquiditySlice.create(instrument)(lots, market, role)
+  final case class Failed(violation: ScenarioViolation) extends ValidationBranch[Nothing]:
+    val toEither: Either[ScenarioViolation, Nothing] = Left(violation)
+    val reported: Option[ScenarioViolation]          = Some(violation)
 
-  def assumptions[O <: Order[D, B, Q]](
-    order: O
+  final case class Passed[A](value: A) extends ValidationBranch[A]:
+    val toEither: Either[ScenarioViolation, A] = Right(value)
+    val reported: Option[ScenarioViolation]    = None
+
+object OrderScenario:
+  def evaluate[I <: Instrument](
+    instrument: I
   )(
-    activationEvidence: order.activation.Evidence,
-    pricingResolution: order.execution.Resolution,
-    matchedSlices: MatchedSlices[Lots, Market]
-  ): ScenarioAssumptions[D, B, Q, Market] =
-    ScenarioAssumptions.create(order)(activationEvidence, pricingResolution, matchedSlices)
+    assumptions: ScenarioAssumptions[
+      instrument.roles.position.D,
+      instrument.roles.base.D,
+      instrument.roles.quote.D,
+      instrument.MarketState
+    ]
+  ): Either[
+    ScenarioViolations,
+    OrderScenario[
+      instrument.roles.position.D,
+      instrument.roles.base.D,
+      instrument.roles.quote.D,
+      instrument.MarketState
+    ]
+  ] =
+    val expected                      = instrument.identity.id
+    val order: assumptions.order.type = assumptions.order
+    val slices                        = assumptions.matchedSlices.toVector
 
-  def assumptionsOne[O <: Order[D, B, Q]](
-    order: O
-  )(
-    activationEvidence: order.activation.Evidence,
-    pricingResolution: order.execution.Resolution,
-    matchedSlice: LiquiditySlice[Lots, Market]
-  ): ScenarioAssumptions[D, B, Q, Market] =
-    ScenarioAssumptions.one(order)(activationEvidence, pricingResolution, matchedSlice)
+    val orderIdentities = Vector(
+      LocatedIdentity(ScenarioLocation.Order, order.instrumentId, 0),
+      LocatedIdentity(ScenarioLocation.OrderIntent, order.intent.instrumentId, 1),
+      LocatedIdentity(ScenarioLocation.OrderLots, order.intent.lots.instrumentId, 2),
+      LocatedIdentity(ScenarioLocation.OrderPositionChange, order.intent.positionChange.instrumentId, 3)
+    )
+    val triggerIdentities = order.activation match
+      case FixedActivation(_, _, triggerPrice) =>
+        Vector(LocatedIdentity(ScenarioLocation.TriggerPrice, triggerPrice.instrumentId, 4))
+      case _ => Vector.empty
+    val (pricingInstructionIdentities, visibilityIdentities) = order.execution match
+      case PricedExecution(pricing, _, _, visibility) =>
+        val pricingIdentity = pricing match
+          case LimitPricing(limit) =>
+            Vector(LocatedIdentity(ScenarioLocation.LimitPrice, limit.instrumentId, 5))
+          case _: PeggedPricing[?, ?] => Vector.empty
+        val visibilityIdentity = visibility match
+          case IcebergVisibility(displayedLots) =>
+            Vector(LocatedIdentity(ScenarioLocation.DisplayedLots, displayedLots.instrumentId, 6))
+          case _ => Vector.empty
+        pricingIdentity -> visibilityIdentity
+      case _ => Vector.empty -> Vector.empty
+    val activationEvidenceIdentities = order.activation
+      .observations(assumptions.activationEvidence)
+      .map:
+        case (ActivationObservation.FavorableExtreme, price) =>
+          LocatedIdentity(ScenarioLocation.TrailingExtreme, price.instrumentId, 7)
+        case (ActivationObservation.Observed, price) =>
+          LocatedIdentity(ScenarioLocation.ActivationObserved, price.instrumentId, 8)
+    val pricingEvidenceIdentities = order.execution
+      .observations(assumptions.pricingResolution)
+      .map:
+        case (PricingObservation.ReferencePrice, price) =>
+          LocatedIdentity(ScenarioLocation.PegReferencePrice, price.instrumentId, 9)
+        case (PricingObservation.ResolvedLimit, price) =>
+          LocatedIdentity(ScenarioLocation.PegResolvedLimit, price.instrumentId, 10)
+    val sliceIdentity = slices.zipWithIndex.map: (slice, index) =>
+      LocatedIdentity(
+        ScenarioLocation.Slice(index, ScenarioSliceComponent.Identity),
+        slice.instrumentId,
+        11,
+        index
+      )
+    val sliceLots = slices.zipWithIndex.map: (slice, index) =>
+      LocatedIdentity(
+        ScenarioLocation.Slice(index, ScenarioSliceComponent.Lots),
+        slice.lots.instrumentId,
+        12,
+        index
+      )
+    val sliceMarket = slices.zipWithIndex.map: (slice, index) =>
+      LocatedIdentity(
+        ScenarioLocation.Slice(index, ScenarioSliceComponent.Market),
+        slice.market.instrumentId,
+        13,
+        index
+      )
+    val slicePrice = slices.zipWithIndex.map: (slice, index) =>
+      LocatedIdentity(
+        ScenarioLocation.Slice(index, ScenarioSliceComponent.Price),
+        slice.market.price.instrumentId,
+        14,
+        index
+      )
 
-  def assumptionsMany[O <: Order[D, B, Q]](
-    order: O
-  )(
-    activationEvidence: order.activation.Evidence,
-    pricingResolution: order.execution.Resolution,
-    head: LiquiditySlice[Lots, Market],
-    tail: LiquiditySlice[Lots, Market]*
-  ): ScenarioAssumptions[D, B, Q, Market] =
-    ScenarioAssumptions.many(order)(activationEvidence, pricingResolution, head, tail*)
+    val allIdentities = orderIdentities ++ triggerIdentities ++ pricingInstructionIdentities ++
+      visibilityIdentities ++
+      activationEvidenceIdentities ++ pricingEvidenceIdentities ++ sliceIdentity ++ sliceLots ++ sliceMarket ++
+      slicePrice
+    val identityViolations = allIdentities.flatMap: candidate =>
+      Option.when(candidate.supplied != expected)(
+        Validation.violation(
+          0,
+          candidate.rule,
+          candidate.index,
+          ScenarioViolation.Identity(candidate.location, expected, candidate.supplied)
+        )
+      )
 
-  def assumptionsFromVector[O <: Order[D, B, Q]](
-    order: O
-  )(
-    activationEvidence: order.activation.Evidence,
-    pricingResolution: order.execution.Resolution,
-    matchedSlices: Vector[LiquiditySlice[Lots, Market]]
-  ): Either[InvalidScenarioDiagnostics, ScenarioAssumptions[D, B, Q, Market]] =
-    ScenarioAssumptions
-      .fromVector(order)(activationEvidence, pricingResolution, matchedSlices)
-      .left
-      .map(violation => InvalidScenarioDiagnostics(violation, Vector.empty))
+    val commonOrderIdentities = orderIdentities.take(2)
+    val lotIdentities         = commonOrderIdentities ++ orderIdentities.slice(2, 3) ++ sliceIdentity ++ sliceLots
+    val activationIdentities  = commonOrderIdentities ++ triggerIdentities ++ activationEvidenceIdentities
+    val pricingIdentities     = commonOrderIdentities ++ pricingInstructionIdentities ++ pricingEvidenceIdentities
 
-  /** Existing deterministic fail-fast complete-scenario boundary. */
-  def order(
-    order: Order[D, B, Q],
-    assumptions: ScenarioAssumptions[D, B, Q, Market]
-  ): Either[ScenarioError, OrderScenario[D, B, Q, Market, Position]] =
-    diagnose(order, assumptions)
-      .left
-      .map(error => ScenarioViolationMapping.scenario(error.head))
+    def coherent(values: Vector[LocatedIdentity]): Boolean =
+      values.forall(_.supplied == expected)
 
-  /** Accumulating diagnostic boundary derived from the same ordered validation stages. */
-  def diagnose(
-    order: Order[D, B, Q],
-    assumptions: ScenarioAssumptions[D, B, Q, Market]
-  ): Either[InvalidScenarioDiagnostics, OrderScenario[D, B, Q, Market, Position]] =
-    val evaluated =
-      for
-        _                <- validateIdentities(order, assumptions)
-        _                <- validateSliceTotals(order.intent.lots, assumptions.matchedSlices)
-        _                <- validateTarget(order, assumptions)
-        _                <- validateActivation(assumptions)
-        effectivePricing <- validatePricing(assumptions)
-        _                <- validateSlices(order, assumptions.matchedSlices, effectivePricing)
-      yield
-        val coordinate = order.intent.side.sign * order.intent.lots.count.unrefined
-        val change     = PositionLots.fromCoordinate(instrument)(coordinate)
-        OrderScenario(instrumentId, order, assumptions, effectivePricing, change)
+    def branch[A](
+      identities: Vector[LocatedIdentity]
+    )(
+      evaluate: => Either[ScenarioViolation, A]
+    ): ValidationBranch[A] =
+      identities.find(_.supplied != expected) match
+        case Some(blocking) =>
+          ValidationBranch.Skipped(
+            ScenarioViolation.Identity(blocking.location, expected, blocking.supplied)
+          )
+        case None =>
+          evaluate match
+            case Left(violation) => ValidationBranch.Failed(violation)
+            case Right(value)    => ValidationBranch.Passed(value)
 
-    evaluated.left.map(violations => InvalidScenarioDiagnostics(violations.head, violations.tail))
-  end diagnose
+    val activation = branch(activationIdentities)(
+      order.activation.verify(assumptions.activationEvidence).left.map(ScenarioViolation.Activation.apply)
+    )
+    val pricing = branch(pricingIdentities)(
+      order.execution.resolve(assumptions.pricingResolution).left.map(ScenarioViolation.Pricing.apply)
+    )
 
-  def roundTrip(
-    entry: OrderScenario[D, B, Q, Market, Position],
-    exit: OrderScenario[D, B, Q, Market, Position]
-  ): Either[ScenarioError, RoundTripScenario[D, B, Q, Market, Position]] =
-    for
-      _ <- ScenarioIdentityChecks.check(
-             "roundTrip",
-             instrumentId,
-             "entry"                -> entry.instrumentId,
-             "entry.positionChange" -> entry.positionChange.instrumentId,
-             "exit"                 -> exit.instrumentId,
-             "exit.positionChange"  -> exit.positionChange.instrumentId
-           )
-      result <-
-        val entryCount = entry.positionChange.coordinate
-        val exitCount  = exit.positionChange.coordinate
-        if entryCount + exitCount != 0 then Left(InvalidRoundTrip(entryCount, exitCount))
-        else Right(RoundTripScenario(instrumentId, entry, exit, entry.positionChange))
-    yield result
+    val semanticViolations = Vector.newBuilder[RankedViolation[ScenarioViolation]]
+    if coherent(lotIdentities) then
+      val supplied = slices.foldLeft(BigInt(0))((total, slice) => total + slice.lots.count.unrefined)
+      if supplied != order.intent.lots.count.unrefined then
+        semanticViolations += Validation.violation(
+          1,
+          0,
+          0,
+          ScenarioViolation.LotTotal(order.intent.lots.count.unrefined, supplied)
+        )
+    activation.reported.foreach: violation =>
+      semanticViolations += Validation.violation(1, 1, 0, violation)
+    pricing.reported.foreach: violation =>
+      semanticViolations += Validation.violation(1, 2, 0, violation)
 
-  private def validateIdentities(
-    order: Order[D, B, Q],
-    assumptions: ScenarioAssumptions[D, B, Q, Market]
-  ): Either[Vector[ScenarioViolation], Unit] =
-    val supplied =
-      Vector(
-        "order"             -> order.instrumentId,
-        "order.intent"      -> order.intent.instrumentId,
-        "order.intent.lots" -> order.intent.lots.instrumentId,
-        "assumptions.order" -> assumptions.order.instrumentId
-      ) ++
-        assumptions.order.activation
-          .observations(assumptions.activationEvidence)
-          .map((name, value) => name -> value.instrumentId) ++
-        assumptions.order.execution
-          .observations(assumptions.pricingResolution)
-          .map((name, value) => name -> value.instrumentId) ++
-        assumptions.matchedSlices.toVector.zipWithIndex.flatMap: (slice, index) =>
-          Vector(
-            s"slices[$index]"        -> slice.instrumentId,
-            s"slices[$index].lots"   -> slice.lots.instrumentId,
-            s"slices[$index].market" -> slice.market.instrumentId,
-            s"slices[$index].price"  -> slice.market.price.instrumentId
+    val effectivePricing = pricing.toEither.toOption
+
+    slices.zipWithIndex.foreach: (slice, index) =>
+      val roleIdentities = commonOrderIdentities :+ sliceIdentity(index)
+      if coherent(roleIdentities) then
+        effectivePricing.foreach:
+          case EffectivePricing.Market() if slice.role != LiquidityRole.Taker =>
+            semanticViolations += Validation.violation(
+              2,
+              0,
+              index,
+              ScenarioViolation.MarketSliceNotTaker(index)
+            )
+          case _ => ()
+        if order.execution.requiresMaker && slice.role != LiquidityRole.Maker then
+          semanticViolations += Validation.violation(
+            2,
+            1,
+            index,
+            ScenarioViolation.MakerOnlySliceNotMaker(index)
           )
 
-    val accumulated = Validation.indexed(supplied): (candidate, ordinal) =>
-      val (name, id) = candidate
-      Validation.ensure(ordinal, id == instrumentId)(
-        ScenarioViolation.Identity(s"scenario.$name", instrumentId, id)
-      )
-    Validation.ordered(accumulated)
-  end validateIdentities
-
-  private def validateSliceTotals(
-    expected: Lots,
-    slices: MatchedSlices[Lots, Market]
-  ): Either[Vector[ScenarioViolation], Unit] =
-    val supplied = slices.toVector.foldLeft(BigInt(0))((total, slice) => total + slice.lots.count.unrefined)
-    Validation.ordered(
-      Validation.ensure(0, supplied == expected.count.unrefined)(
-        ScenarioViolation.LotTotal(expected.count.unrefined, supplied)
-      )
-    )
-
-  private def validateTarget(
-    order: Order[D, B, Q],
-    assumptions: ScenarioAssumptions[D, B, Q, Market]
-  ): Either[Vector[ScenarioViolation], Unit] =
-    Validation.ordered(
-      Validation.ensure(0, assumptions.order.eq(order))(ScenarioViolation.OrderTargetMismatch)
-    )
-
-  private def validateActivation(
-    assumptions: ScenarioAssumptions[D, B, Q, Market]
-  ): Either[Vector[ScenarioViolation], CheckedActivation[B, Q]] =
-    assumptions.order.activation
-      .verify(assumptions.activationEvidence)
-      .left
-      .map(cause => Vector(ScenarioViolation.Activation(cause)))
-
-  private def validatePricing(
-    assumptions: ScenarioAssumptions[D, B, Q, Market]
-  ): Either[Vector[ScenarioViolation], EffectivePricing[B, Q]] =
-    assumptions.order.execution
-      .resolve(assumptions.pricingResolution)
-      .left
-      .map(cause => Vector(ScenarioViolation.Pricing(cause)))
-
-  private def validateSlices(
-    order: Order[D, B, Q],
-    slices: MatchedSlices[Lots, Market],
-    effectivePricing: EffectivePricing[B, Q]
-  ): Either[Vector[ScenarioViolation], Unit] =
-    val accumulated = Validation.indexed(slices.toVector): (slice, index) =>
-      val marketRole = Validation.ensure(
-        index * 3,
-        effectivePricing match
-          case EffectivePricing.Market() => slice.role == LiquidityRole.Taker
-          case _                         => true
-      )(ScenarioViolation.Slice(index, ScenarioFailureReason.MarketSliceNotTaker))
-      val makerRole = Validation.ensure(
-        index * 3 + 1,
-        !order.execution.requiresMaker || slice.role == LiquidityRole.Maker
-      )(ScenarioViolation.Slice(index, ScenarioFailureReason.MakerOnlySliceNotMaker))
-      val priceQuality = Validation.ensure(
-        index * 3 + 2,
-        effectivePricing match
-          case EffectivePricing.Market()       => true
-          case EffectivePricing.Limited(limit) =>
-            order.intent.side match
+      effectivePricing.foreach:
+        case EffectivePricing.Limited(limit) =>
+          val qualityIdentities = pricingIdentities ++ Vector(
+            sliceIdentity(index),
+            sliceMarket(index),
+            slicePrice(index)
+          )
+          if coherent(qualityIdentities) then
+            val acceptable = order.intent.side match
               case Side.Buy  => slice.market.price.ticks.unrefined <= limit.ticks.unrefined
               case Side.Sell => slice.market.price.ticks.unrefined >= limit.ticks.unrefined
-      )(ScenarioViolation.Slice(index, ScenarioFailureReason.SliceWorseThanLimit))
-      (marketRole, makerRole, priceQuality).mapN((_, _, _) => ())
+            if !acceptable then
+              semanticViolations += Validation.violation(
+                3,
+                0,
+                index,
+                ScenarioViolation.SliceWorseThanLimit(index)
+              )
+        case EffectivePricing.Market() => ()
 
-    Validation.ordered(accumulated)
-  end validateSlices
+    val violations = Validation.ordered(identityViolations ++ semanticViolations.result())
+    ScenarioViolations.from(violations) match
+      case Some(errors) => Left(errors)
+      case None         =>
+        (for
+          checked   <- activation.toEither
+          effective <- pricing.toEither
+        yield new OrderScenario(assumptions, checked, effective, order.intent.positionChange))
+          .left
+          .map(ScenarioViolations.one)
+  end evaluate
 
-end Scenarios
+  def evaluateFirst[I <: Instrument](
+    instrument: I
+  )(
+    assumptions: ScenarioAssumptions[
+      instrument.roles.position.D,
+      instrument.roles.base.D,
+      instrument.roles.quote.D,
+      instrument.MarketState
+    ]
+  ): Either[
+    ScenarioViolation,
+    OrderScenario[
+      instrument.roles.position.D,
+      instrument.roles.base.D,
+      instrument.roles.quote.D,
+      instrument.MarketState
+    ]
+  ] =
+    evaluate(instrument)(assumptions).left.map(_.head)
+end OrderScenario
 
-object Scenarios:
-  def apply[I <: Instrument](instrument: I): Scenarios[instrument.type] =
-    new Scenarios[instrument.type](instrument)
+final class RoundTripScenario[D <: Dim, B <: Dim, Q <: Dim, M] private[scenario] (
+  val instrumentId: InstrumentId,
+  val entry: OrderScenario[D, B, Q, M],
+  val exit: OrderScenario[D, B, Q, M],
+  val heldPosition: PositionLots[D])
+
+object RoundTripScenario:
+  def create[I <: Instrument](
+    instrument: I
+  )(
+    entry: OrderScenario[
+      instrument.roles.position.D,
+      instrument.roles.base.D,
+      instrument.roles.quote.D,
+      instrument.MarketState
+    ],
+    exit: OrderScenario[
+      instrument.roles.position.D,
+      instrument.roles.base.D,
+      instrument.roles.quote.D,
+      instrument.MarketState
+    ]
+  ): Either[
+    RoundTripViolation,
+    RoundTripScenario[
+      instrument.roles.position.D,
+      instrument.roles.base.D,
+      instrument.roles.quote.D,
+      instrument.MarketState
+    ]
+  ] =
+    val expected   = instrument.identity.id
+    val identities = Vector(
+      (RoundTripComponent.Entry, entry.instrumentId),
+      (RoundTripComponent.EntryPositionChange, entry.positionChange.instrumentId),
+      (RoundTripComponent.Exit, exit.instrumentId),
+      (RoundTripComponent.ExitPositionChange, exit.positionChange.instrumentId)
+    )
+    identities.collectFirst:
+      case (component, supplied) if supplied != expected =>
+        RoundTripViolation.InstrumentMismatch(component, expected, supplied)
+    match
+      case Some(violation) => Left(violation)
+      case None            =>
+        val entryChange = entry.positionChange.coordinate
+        val exitChange  = exit.positionChange.coordinate
+        if entryChange + exitChange != 0 then
+          Left(RoundTripViolation.PositionNotFlat(entryChange, exitChange))
+        else Right(new RoundTripScenario(expected, entry, exit, entry.positionChange))
+  end create
+end RoundTripScenario

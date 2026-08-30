@@ -166,7 +166,7 @@ lazy val orderModel =
 lazy val executionScenario =
   project
     .in(file("execution-scenario"))
-    .dependsOn(instrumentEconomics, orderModel)
+    .dependsOn(instrumentEconomics % "compile->compile;test->test", orderModel)
     .settings(
       name       := "trading-execution-scenario",
       moduleName := "trading-execution-scenario",

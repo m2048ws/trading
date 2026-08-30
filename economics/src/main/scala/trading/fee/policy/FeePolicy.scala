@@ -18,9 +18,9 @@ final case class FeeLine[D <: Dim, M] private[policy] (
   sourceSliceIndex: Int,
   sourceMarket: M)
 
-trait FeeSchedule[D <: Dim, B <: Dim, Q <: Dim, M, Pos]:
+trait FeeSchedule[D <: Dim, B <: Dim, Q <: Dim, M]:
   def instrumentId: InstrumentId
-  def assess(scenario: OrderScenario[D, B, Q, M, Pos]): Either[FeePolicyError, Vector[FeeLine[? <: Dim, M]]]
+  def assess(scenario: OrderScenario[D, B, Q, M]): Either[FeePolicyError, Vector[FeeLine[? <: Dim, M]]]
 
 /** Transitional downstream fee-policy and scenario orchestration boundary. */
 final class FeePolicy[I <: Instrument] private[policy] (val instrument: I):
@@ -34,9 +34,9 @@ final class FeePolicy[I <: Instrument] private[policy] (val instrument: I):
   type Price     = instrument.Price
   type Market    = instrument.MarketState
   type Position  = instrument.PositionLots
-  type Scenario  = _root_.trading.scenario.OrderScenario[D, B, Q, Market, Position]
-  type RoundTrip = _root_.trading.scenario.RoundTripScenario[D, B, Q, Market, Position]
-  type Schedule  = _root_.trading.fee.policy.FeeSchedule[D, B, Q, Market, Position]
+  type Scenario  = _root_.trading.scenario.OrderScenario[D, B, Q, Market]
+  type RoundTrip = _root_.trading.scenario.RoundTripScenario[D, B, Q, Market]
+  type Schedule  = _root_.trading.fee.policy.FeeSchedule[D, B, Q, Market]
 
   def denomination(
     asset: Asset

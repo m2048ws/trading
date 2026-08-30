@@ -15,7 +15,6 @@ import trading.support.DownstreamFixtures
 class DownstreamEconomicsSuite extends FunSuite:
   private val fixture    = new DownstreamFixtures
   private val instrument = fixture.linear
-  private val scenarios  = Scenarios(instrument)
   private val policy     = FeePolicy(instrument)
 
   private def scenario(
@@ -31,15 +30,15 @@ class DownstreamEconomicsSuite extends FunSuite:
       order.execution.resolution,
       slice
     )
-    scenarios.order(order, assumptions).toOption.get
+    OrderScenario.evaluate(instrument)(assumptions).toOption.get
 
   private def roundTrip(
     lots: instrument.Lots,
     entry: instrument.MarketState,
     exit: instrument.MarketState
   ): policy.RoundTrip =
-    scenarios
-      .roundTrip(
+    RoundTripScenario
+      .create(instrument)(
         scenario(Side.Buy, lots, entry),
         scenario(Side.Sell, lots, exit)
       )
@@ -57,13 +56,15 @@ class DownstreamEconomicsSuite extends FunSuite:
       order.execution.pricing.resolution,
       slice
     )
-    val errors = scenarios.diagnose(order, assumptions).swap.toOption.get
+    val errors = OrderScenario.evaluate(instrument)(assumptions).swap.toOption.get
     assertEquals(
       errors.violations,
-      Vector(ScenarioViolation.Slice(0, ScenarioFailureReason.SliceWorseThanLimit))
+      Vector(ScenarioViolation.SliceWorseThanLimit(0))
     )
-    assertEquals(scenarios.order(order, assumptions),
-      Left(InvalidScenario(ScenarioFailureReason.SliceWorseThanLimit, Some(0))))
+    assertEquals(
+      OrderScenario.evaluateFirst(instrument)(assumptions),
+      Left(ScenarioViolation.SliceWorseThanLimit(0))
+    )
     assertEquals(matched.head, slice)
     assertEquals(matched.tail, Vector.empty)
     assertEquals(matched.toVector, Vector(slice))
@@ -100,15 +101,15 @@ class DownstreamEconomicsSuite extends FunSuite:
       second
     )
     val expected = Vector(
-      ScenarioViolation.Slice(0, ScenarioFailureReason.MakerOnlySliceNotMaker),
-      ScenarioViolation.Slice(0, ScenarioFailureReason.SliceWorseThanLimit),
-      ScenarioViolation.Slice(1, ScenarioFailureReason.MakerOnlySliceNotMaker),
-      ScenarioViolation.Slice(1, ScenarioFailureReason.SliceWorseThanLimit)
+      ScenarioViolation.MakerOnlySliceNotMaker(0),
+      ScenarioViolation.MakerOnlySliceNotMaker(1),
+      ScenarioViolation.SliceWorseThanLimit(0),
+      ScenarioViolation.SliceWorseThanLimit(1)
     )
-    assertEquals(scenarios.diagnose(order, assumptions).left.map(_.violations), Left(expected))
+    assertEquals(OrderScenario.evaluate(instrument)(assumptions).left.map(_.violations), Left(expected))
     assertEquals(
-      scenarios.order(order, assumptions),
-      Left(InvalidScenario(ScenarioFailureReason.MakerOnlySliceNotMaker, Some(0)))
+      OrderScenario.evaluateFirst(instrument)(assumptions),
+      Left(ScenarioViolation.MakerOnlySliceNotMaker(0))
     )
 
   test("round trips require exact flat closure"):
@@ -117,8 +118,8 @@ class DownstreamEconomicsSuite extends FunSuite:
     val entry     = scenario(Side.Buy, entryLots, fixture.state(instrument, Rational(100)))
     val exit      = scenario(Side.Sell, exitLots, fixture.state(instrument, Rational(110)))
     assertEquals(
-      scenarios.roundTrip(entry, exit),
-      Left(InvalidRoundTrip(BigInt(1000), BigInt(-999)))
+      RoundTripScenario.create(instrument)(entry, exit),
+      Left(RoundTripViolation.PositionNotFlat(BigInt(1000), BigInt(-999)))
     )
 
   test("fee policy owns percentage and minimum logic while core owns exact fee construction"):

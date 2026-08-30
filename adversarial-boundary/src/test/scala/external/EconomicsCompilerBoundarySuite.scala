@@ -166,8 +166,16 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
         "trading/scenario/MatchedSlices.class",
         "trading/scenario/ScenarioAssumptions.class",
         "trading/scenario/OrderScenario.class",
-        "trading/scenario/Scenarios.class"
+        "trading/scenario/ScenarioLocation.class",
+        "trading/scenario/ScenarioViolations.class"
       ).foreach(entry => assert(scenarioEntries.contains(entry), s"missing $entry from $scenarioJar"))
+      assert(!scenarioEntries.contains("trading/scenario/Scenarios.class"), s"scenario JAR retained Scenarios service")
+      List(
+        "trading/scenario/ScenarioError.class",
+        "trading/scenario/ScenarioFailureReason.class",
+        "trading/scenario/InvalidScenario.class",
+        "trading/scenario/InvalidScenarioDiagnostics.class"
+      ).foreach(entry => assert(!scenarioEntries.contains(entry), s"scenario JAR retained obsolete $entry"))
       val assumptionsEntry = scenario.getJarEntry("trading/scenario/ScenarioAssumptions.class")
       val assumptionsBytes = scenario.getInputStream(assumptionsEntry).readAllBytes()
       assert(
@@ -245,7 +253,7 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
     val prelude = compileFilteredPrelude(source, compileScenario)
     assert(prelude.succeeded, s"fixture prelude must compile independently:\n${prelude.rendered}")
     val rejected = compileScenario(source)
-    assert(rejected.errors.size >= 7, rejected.rendered)
+    assert(rejected.errors.size >= 10, rejected.rendered)
     assert(rejected.rendered.contains("is not a member"), rejected.rendered)
     assert(rejected.rendered.toLowerCase.contains("reassignment to val"), rejected.rendered)
     assert(rejected.rendered.contains("cannot be accessed"), rejected.rendered)
@@ -272,7 +280,7 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
     NegativeFixture("AssociatedEvidenceShapes.scala", List("Found:", "Required:"), 8, Some(8)),
     NegativeFixture("RemovedCapabilityPaths.scala", List("is not a member"), 7, Some(7)),
     NegativeFixture("DeferredLifecycle.scala", List("is not a member"), 9, Some(9)),
-    NegativeFixture("RemovedFlatApi.scala", List("is not a member", "Not found"), 13, Some(13)),
+    NegativeFixture("RemovedFlatApi.scala", List("is not a member", "Not found", "Found:", "Required:"), 18, Some(18)),
     NegativeFixture("RemovedOwnerApi.scala", List("is not a member", "Not found"), 4, Some(4)),
     NegativeFixture("ReversedPriceRate.scala", List("Found:", "Required:"), 1, Some(1)),
     NegativeFixture("ReversedSettlementRate.scala", List("Found:", "Required:"), 1, Some(1)),

@@ -41,7 +41,7 @@ object CompleteEconomicsClient:
     marketOrder.execution.resolution,
     slice
   )
-  val entry     = scenarios.order(marketOrder, assumptions).toOption.get
+  val entry     = OrderScenario.evaluate(instrument)(assumptions).toOption.get
   val sell      = Order.market(instrument)(Side.Sell, lots).toOption.get
   val sellSlice = LiquiditySlice.create(instrument)(lots, state, LiquidityRole.Taker).toOption.get
   val sellAssumptions = ScenarioAssumptions.one(sell)(
@@ -49,8 +49,8 @@ object CompleteEconomicsClient:
     sell.execution.resolution,
     sellSlice
   )
-  val exit = scenarios.order(sell, sellAssumptions).toOption.get
-  val trip = scenarios.roundTrip(entry, exit).toOption.get
+  val exit = OrderScenario.evaluate(instrument)(sellAssumptions).toOption.get
+  val trip = RoundTripScenario.create(instrument)(entry, exit).toOption.get
   val denomination = feePolicy
     .denomination(quote)(quoteGrid, QuantizationPolicy.TowardZero)
     .toOption

@@ -32,7 +32,7 @@ final class Risk[I <: Instrument] private[risk] (val feePolicy: FeePolicy[I]):
     cap: PositiveWhole,
     schedule: feePolicy.Schedule
   )(
-    scenarioFor: instrument.Lots => Either[ScenarioError, feePolicy.RoundTrip]
+    scenarioFor: instrument.Lots => Either[RoundTripViolation, feePolicy.RoundTrip]
   ): Either[RiskError, Option[instrument.Lots]] =
     if riskBudget.coefficient.signum < 0 then Left(InvalidRiskBudget(riskBudget.coefficient))
     else

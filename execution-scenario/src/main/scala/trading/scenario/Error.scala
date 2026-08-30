@@ -1,79 +1,65 @@
 package trading.scenario
 
-import trading.economics.instrument.*
+import trading.economics.instrument.InstrumentId
 import trading.order.*
 
-enum ScenarioFailureReason:
-  case NoSlices
-  case AssumptionOrderMismatch
-  case SliceLotsMismatch(expected: BigInt, supplied: BigInt)
-  case FixedTriggerUnsatisfied
-  case FixedEvidenceMismatch
-  case TrailingThresholdNonPositive
-  case TrailingTriggerUnsatisfied
-  case TrailingEvidenceMismatch
-  case PegOffsetMismatch
-  case PegResolutionMismatch
-  case MarketSliceNotTaker
-  case MakerOnlySliceNotMaker
-  case SliceWorseThanLimit
+enum ScenarioSliceComponent:
+  case Identity, Lots, Market, Price
+
+enum ScenarioLocation:
+  case Order
+  case OrderIntent
+  case OrderLots
+  case OrderPositionChange
+  case TriggerPrice
+  case LimitPrice
+  case DisplayedLots
+  case ActivationObserved
+  case TrailingExtreme
+  case PegReferencePrice
+  case PegResolvedLimit
+  case SliceInput(component: ScenarioSliceComponent)
+  case Slice(index: Int, component: ScenarioSliceComponent)
 
 enum ScenarioViolation:
   case EmptySlices
-  case OrderTargetMismatch
-  case Identity(context: String, expected: InstrumentId, supplied: InstrumentId)
+  case Identity(location: ScenarioLocation, expected: InstrumentId, supplied: InstrumentId)
   case LotTotal(expected: BigInt, supplied: BigInt)
   case Activation(cause: ActivationViolation)
   case Pricing(cause: PricingViolation)
-  case Slice(index: Int, reason: ScenarioFailureReason)
+  case MarketSliceNotTaker(index: Int)
+  case MakerOnlySliceNotMaker(index: Int)
+  case SliceWorseThanLimit(index: Int)
 
-final case class InvalidScenarioDiagnostics(head: ScenarioViolation, tail: Vector[ScenarioViolation]):
-  def violations: Vector[ScenarioViolation] = head +: tail
+final class ScenarioViolations private (
+  val head: ScenarioViolation,
+  val tail: Vector[ScenarioViolation]):
 
-sealed abstract class ScenarioError extends Product with Serializable
-final case class ScenarioInstrumentMismatch(context: String, expected: InstrumentId, supplied: InstrumentId)
-  extends ScenarioError
-final case class InvalidScenario(reason: ScenarioFailureReason, sliceIndex: Option[Int] = None) extends ScenarioError
-final case class InvalidRoundTrip(entryChange: BigInt, exitChange: BigInt)                      extends ScenarioError
+  val violations: Vector[ScenarioViolation] = head +: tail
 
-private[scenario] object ScenarioIdentityChecks:
-  def check(
-    context: String,
-    expected: InstrumentId,
-    supplied: (String, InstrumentId)*
-  ): Either[ScenarioError, Unit] =
-    supplied.collectFirst:
-      case (name, id) if id != expected => ScenarioInstrumentMismatch(s"$context.$name", expected, id)
-    match
-      case Some(error) => Left(error)
-      case None        => Right(())
+  override def equals(other: Any): Boolean =
+    other match
+      case that: ScenarioViolations => violations == that.violations
+      case _                        => false
 
-private[scenario] object ScenarioViolationMapping:
-  def scenario(violation: ScenarioViolation): ScenarioError =
-    violation match
-      case ScenarioViolation.EmptySlices         => InvalidScenario(ScenarioFailureReason.NoSlices)
-      case ScenarioViolation.OrderTargetMismatch => InvalidScenario(ScenarioFailureReason.AssumptionOrderMismatch)
-      case ScenarioViolation.Identity(context, expected, supplied) =>
-        ScenarioInstrumentMismatch(context, expected, supplied)
-      case ScenarioViolation.LotTotal(expected, supplied) =>
-        InvalidScenario(ScenarioFailureReason.SliceLotsMismatch(expected, supplied))
-      case ScenarioViolation.Activation(cause) =>
-        cause match
-          case ActivationViolation.FixedTriggerUnsatisfied =>
-            InvalidScenario(ScenarioFailureReason.FixedTriggerUnsatisfied)
-          case ActivationViolation.FixedEvidenceMismatch =>
-            InvalidScenario(ScenarioFailureReason.FixedEvidenceMismatch)
-          case ActivationViolation.TrailingThresholdNonPositive =>
-            InvalidScenario(ScenarioFailureReason.TrailingThresholdNonPositive)
-          case ActivationViolation.TrailingTriggerUnsatisfied =>
-            InvalidScenario(ScenarioFailureReason.TrailingTriggerUnsatisfied)
-          case ActivationViolation.TrailingEvidenceMismatch =>
-            InvalidScenario(ScenarioFailureReason.TrailingEvidenceMismatch)
-      case ScenarioViolation.Pricing(cause) =>
-        cause match
-          case PricingViolation.PegOffsetMismatch(_, _) =>
-            InvalidScenario(ScenarioFailureReason.PegOffsetMismatch)
-          case PricingViolation.PegResolutionMismatch =>
-            InvalidScenario(ScenarioFailureReason.PegResolutionMismatch)
-      case ScenarioViolation.Slice(index, reason) => InvalidScenario(reason, Some(index))
-end ScenarioViolationMapping
+  override def hashCode: Int = violations.hashCode
+
+  override def toString: String = violations.mkString("ScenarioViolations(", ",", ")")
+end ScenarioViolations
+
+object ScenarioViolations:
+  def one(head: ScenarioViolation): ScenarioViolations =
+    new ScenarioViolations(head, Vector.empty)
+
+  def from(violations: Vector[ScenarioViolation]): Option[ScenarioViolations] =
+    violations match
+      case head +: tail => Some(new ScenarioViolations(head, tail))
+      case _            => None
+end ScenarioViolations
+
+enum RoundTripComponent:
+  case Entry, EntryPositionChange, Exit, ExitPositionChange
+
+enum RoundTripViolation:
+  case InstrumentMismatch(component: RoundTripComponent, expected: InstrumentId, supplied: InstrumentId)
+  case PositionNotFlat(entryChange: BigInt, exitChange: BigInt)

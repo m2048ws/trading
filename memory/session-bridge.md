@@ -15,12 +15,12 @@ updated: 2026-08-30
 - **Change**: separate-order-and-execution-scenario-modules
 - **Worktree**: /Users/m/src/money/.worktrees/separate-order-and-execution-scenario-modules
 - **Phase at Checkpoint**: applying
-- **Task Group at Checkpoint**: 5
-- **Observed Run Revision**: 6
-- **Last Verified HEAD**: 7d8604781c6ef810aa25c7d52b8100ee14474d84
+- **Task Group at Checkpoint**: 6
+- **Observed Run Revision**: 7
+- **Last Verified HEAD**: 0db021bc40848a72cc54c180178027979b799e32
 
 ## Next Action
-- Apply Task Group 6 (`Staged Scenario Evaluation`) after Task Group 5 acknowledgement.
+- Apply Task Group 7 (`Round Trips and Downstream Consumers`) after Task Group 6 acknowledgement.
 
 ## Blockers
 - none
@@ -41,6 +41,9 @@ updated: 2026-08-30
 - Task Group 5 established pure explicit slice construction, domain-owned non-empty matched slices, and one-order
   dependent assumptions; the clean matrix passed 774 tests including associated-shape, untyped-map, duplicate-field,
   empty-reconstruction, and public-signature boundary coverage.
+- Task Group 6 replaced the scenario service with one-order branch-sensitive evaluation, closed deterministic
+  diagnostics, and retained verified results; the clean matrix passed 778 tests including independent-branch,
+  suppression, closed-location, stable-order, and removed-API coverage.
 
 ## Promotion Queue
 - Review agent-configuration constraints before promoting any item to `memory/MEMORY.md`.
