@@ -1,14 +1,9 @@
 # Architecture Charter Portfolio Audit
 
-This began as the Proposal 0 coherence and traceability record for
-`establish-architecture-and-functional-design-charter`. It records the audit
-performed on 2026-08-28 and the implementation-state refresh performed on
-2026-08-30 by RFC-0002 Slice `S-01-application-runtime-foundation`.
-
-The numbered proposal names below remain useful historical planning labels.
-Accepted RFCs, delivery sidecars, Corgi planning packages, Run Contract v3
-state, and their single bound Issues now govern delivery; historical proposal
-order or retired worker/steward material is not execution authority.
+This began as the Proposal 0 coherence and traceability audit performed on
+2026-08-28. It now serves as a historical design map. Accepted RFCs, Corgi
+planning packages, and the current source tree supersede its old proposal and
+steward sequencing language when they differ.
 
 ## Portfolio completeness
 
@@ -31,44 +26,37 @@ materially unresolved planning artifact blocks Proposal 0.
 
 ## Current physical implementation
 
-The quantities/reference, application/runtime, and current economics boundaries
-are now physical. This table describes implemented SBT projects and must not be
-confused with the remaining RFC Slice targets.
+Proposal 1 and the staged implementation of active Proposal 2 have now established the first dependent physical
+boundaries. This table describes the implemented SBT projects and must not be confused with the remaining proposed
+target.
 
 | State | SBT project | Artifact/directory | Production dependency |
 | --- | --- | --- | --- |
-| Current | root `trading` | unpublished aggregate | aggregates quantities, reference data, application, runtime, economics, and adversarial boundary |
+| Current | root `trading` | unpublished aggregate | aggregates quantities, reference data, application, economics, adversarial boundary |
 | Current | `quantities` | `trading-quantities` / `quantities/` | external mathematical libraries only |
 | Current | `referenceData` | `trading-reference-data` / `reference-data/` | quantities |
 | Current | `application` | `trading-application` / `application/` | reference data |
-| Current | `runtime` | `trading-runtime` / `runtime/` | application and reference data; owns Cats Effect |
 | Current | `economics` | `trading-economics` / `economics/` | quantities and reference data |
-| Current test-only | `adversarialBoundary` | unpublished / `adversarial-boundary/` | packaged quantities, reference data, application, runtime, and economics artifacts |
-| Current benchmark-only | `benchmarks` | unpublished / `benchmarks/` | reference data, application, and runtime; outside root aggregation |
+| Current test-only | `adversarialBoundary` | unpublished / `adversarial-boundary/` | packaged quantities, reference data, application, and economics artifacts |
+| Current benchmark-only | `benchmarks` | unpublished / `benchmarks/` | reference data; outside root aggregation |
 
 The current graph is acyclic:
 
 ```text
-quantities <- referenceData <- application <- runtime
-     ^             ^
-     |             +-- economics
-
-quantities + referenceData + application + runtime + economics
-  <- adversarialBoundary (test-only)
-
-referenceData + application + runtime
-  <- benchmarks (benchmark-only)
+quantities <- referenceData <- application
+     ^             ^              |
+     |             +-- economics  |
+     +-----------------------------+-- adversarialBoundary (test-only)
 ```
 
-The test-only boundary consumes each completed production artifact directly.
-Runtime now supplies the first concrete in-memory live-catalog interpreter;
-versioned boundary codecs remain future-owned by RFC-0002 Slice S-05.
+The test-only boundary consumes each completed production artifact directly. Concrete runtime interpretation and
+boundary codecs remain future-owned.
 
 Current dependency coordinates include Scala `3.8.4`, independent
 `catsVersion = 2.13.0` and `algebraVersion = 2.13.0` coordinates,
 `discipline-munit` `2.0.0`, MUnit `1.3.4`, ScalaCheck `1.19.0`, and
-`munit-scalacheck` `1.0.0`, and runtime-scoped Cats Effect `3.7.0` with aligned
-test integrations. The minimum build/runtime JDK remains 17.
+`munit-scalacheck` `1.0.0`. The minimum build/runtime JDK is documented as 17.
+with no resolved dependency upgrade from the Proposal 0 baseline.
 
 ## Primary ownership and target dependency audit
 
@@ -114,43 +102,46 @@ API.
 
 ## Accepted implementation order and compatibility policy
 
-The historical proposal sequence established dependency intent. Remaining
-delivery is governed by accepted RFC Slices and their native `blockedBy`
-relationships. Each Slice uses CorgiSpec v4 and Run Contract v3 through Propose,
-one-Task-Group-at-a-time Apply, whole-change Verify, explicit human Review,
-Human QA when applicable, and Archive.
+The historical proposal ordering has been superseded by the accepted
+architecture-portfolio RFC and GitHub dependency graph. Application/runtime is
+independent; order/scenarios and risk wait for instrument economics; fee policy
+and codecs then wait for order/scenarios. Each admitted change uses the Corgi
+Run Contract gates for Apply, Verify, explicit Human Review, Human QA when
+applicable, and Archive.
 
 The important intermediate constraints are:
 
-- The pure catalog state/snapshot model and `LiveCatalog[F]` port are physical;
-  RFC-0002 S-01 supplies their first Cats Effect runtime interpreter.
+- Proposal 2 has replaced Proposal 1's temporary construction bridge with pure state/snapshots and the application
+  port; Proposal 8 supplies its first runtime interpreter.
 - Proposal 3 establishes snapshot-based assembly before Proposal 4 narrows the
   instrument economics artifact.
 - Proposal 4 leaves order/scenario, fee, and risk in a transitional aggregate;
   Proposals 5–7 move those concerns consecutively and Proposal 7 removes the
   empty aggregate.
-- RFC-0002 S-05 introduces the first explicitly versioned durable record families
+- Proposal 8 supplies concrete runtime interpretation only after the pure
+  application contract exists.
+- Proposal 9 introduces the first explicitly versioned durable record families
   after stable IDs, snapshots, assembly, and order/scenario constructors exist.
 - Every intermediate commit remains buildable, testable, reviewable, and
   revertible; no artifact is published and no release is declared until the
   complete sequence and final validation matrix pass.
 
-Affected APIs are unreleased. RFC Slices update callers directly and add no
+Affected APIs are unreleased. Proposals update callers directly and add no
 deprecated aliases, forwarding facades, or compatibility shims unless a later
-explicit RFC Amendment identifies a real external consumer. In-memory forms before
-S-05 carry no persistence promise. S-05's versioned records begin
+explicit proposal identifies a real external consumer. In-memory forms before
+Proposal 9 carry no persistence promise. Proposal 9's versioned records begin
 the first deliberate durable compatibility contract.
 
 ## Known transitional exceptions
 
 | Current exception | Why it is transitional | Migration owner |
 | --- | --- | --- |
-| Quantity-owned packing has been removed, leaving a deliberate durable-codec gap | Stable records require snapshots and an explicit schema owner | RFC-0002 S-05 adds versioned codecs |
+| Quantity-owned packing has been removed, leaving a deliberate durable-codec gap | Stable records require snapshots and an explicit schema owner | Proposal 9 adds versioned codecs |
 | `trading-economics` owns instruments, orders, scenarios, fee policy, P&L, and sizing | Current aggregate predates responsibility split | Proposals 3–7, with Proposal 7 removing the empty aggregate |
 | Instrument assembly and downstream economics temporarily share `trading-economics` | Proposal 3 now owns the focused pure snapshot trust transition; physical narrowing follows | Proposal 4 |
 | Order/scenario/fee/risk capabilities are discoverable through `Instrument` | Instrument currently acts as a service locator | Proposals 4–7 |
 | Root documentation previously listed only quantities | Documentation lagged the implemented economics module | Proposal 0 documentation update |
-| The versioned codec target module does not exist | Its physical boundary requires real schema and reconstruction behavior | RFC-0002 S-05 |
+| Runtime and codec target modules do not exist | Their physical boundaries require real implementation/dependency bodies | Proposals 8 and 9 |
 
 These exceptions describe current implementation facts, not accepted permanent
 architecture. No proposed module or API is presented as available today.
@@ -161,14 +152,14 @@ architecture. No proposed module or API is presented as available today.
 
 | Requirement | Guide | Stable context/decision | Review enforcement |
 | --- | --- | --- | --- |
-| Cohesive ownership and directed dependencies | Responsibility and dependency direction | `.agent/project.md`, architecture invariants, active charter decision | Charter ownership/dependency questions |
-| Target responsibility layers | Responsibility and dependency direction; layer profile | `.agent/project.md` target graph | Current/proposed state and scope review |
+| Cohesive ownership and directed dependencies | Responsibility and dependency direction | canonical architecture spec, accepted RFCs | Charter ownership/dependency questions |
+| Target responsibility layers | Responsibility and dependency direction; layer profile | architecture-portfolio RFC | Current/proposed state and scope review |
 | Mature mechanisms contained by responsibility | Dependency admission | dependency/platform invariants and active decision | Dependency-admission review |
 | Logical boundaries before physical modules | Responsibility and dependency direction | logical-before-physical invariant | Speculative module check |
 | Boundary data becomes trusted once | Preserve semantic information | trust-boundary invariant | Boundary/evidence review |
 | Pure core and explicit effect shell | Layer profile; effects | pure/effect and runtime-containment invariants | Effect-placement/interpreter review |
 | Control plane outside hot paths | Codecs, effects, and hot paths | hot-path invariant | Snapshot/coordination/performance review |
-| Architecture obligations reviewable | Proposal checklist | active charter decision | Corgi Apply Task Group review, whole-change Verify, and human Review gates |
+| Architecture obligations reviewable | Proposal checklist | active charter decision | steward and worker charter gates |
 
 ### `scala-functional-design`
 
@@ -177,7 +168,7 @@ architecture. No proposed module or API is presented as available today.
 | Algebra before control flow | Algebra before control flow | algebra-first invariant | Algebra/law review |
 | Semantic information remains in types | Preserve semantic information | semantic-preservation invariant | Trust/type-erasure review |
 | Independent vs dependent validation | Validation and errors | evidence-validation invariant | Validation-stage/error-order review |
-| Public APIs total | `docs/design-principles.md` validation/errors and proposal checklist | normative architecture specs and accepted RFCs | Corgi Apply/Verify/Review gates and `AGENTS.md` |
+| Public APIs total | `docs/design-principles.md` validation/errors and proposal checklist | canonical Scala functional-design spec | Corgi Task Group review, Verify, and Human Review gates |
 | Advanced Scala serves semantics | Advanced Scala and readable APIs | domain-readable ergonomics invariant | Concrete/generic ergonomics review |
 | Standard composition replaces plumbing | Algebra and validation sections | mature-mechanism and algebra invariants | Mechanism/abstraction review |
 | Effect polymorphism for genuine capabilities | Layer profile | pure/effect invariant | Port-admission review |
@@ -186,9 +177,21 @@ architecture. No proposed module or API is presented as available today.
 
 ## Audit conclusion
 
-The portfolio retains consistent ownership and adjacent boundaries, an acyclic
-combined dependency graph, buildable RFC Slice ordering, and an explicit
-pre-release compatibility policy. S-01 is the implemented runtime and future-
-port admission foundation; it intentionally does not claim that market-data,
-persistence, business-time, execution, transaction, telemetry, or codec ports
-have been delivered.
+The proposal portfolio has complete planning artifacts, consistent ownership
+and adjacent boundaries, an acyclic combined dependency graph, a buildable
+implementation order, and an explicit pre-release compatibility policy. No
+planning conflict requires edits to a dependent proposal before Proposal 0
+guidance is applied.
+
+## 2026-08-30 S-01 delivery refresh
+
+This refresh supersedes the historical current-state statements above. RFC-0002 Slice
+`S-01-application-runtime-foundation` now physically adds `trading-application` and `trading-runtime`: application owns
+the narrow runtime-neutral `LiveCatalog[F]` port, runtime owns its Cats Effect in-memory interpreter, the completed-JAR
+adversarial boundary consumes both artifacts, and the non-published JMH project measures snapshot and publication
+paths. The resulting graph remains acyclic: `quantities <- referenceData <- application <- runtime`; economics depends
+on quantities and reference data, while adversarial and benchmark projects remain non-production consumers.
+
+S-01 is the implemented runtime and future-port admission foundation. It intentionally does not claim delivery of
+market-data, persistence, business-time, execution, transaction, telemetry, or codec ports; versioned codecs remain
+owned by RFC-0002 Slice S-05. Runtime-scoped Cats Effect is `3.7.0`, and the minimum build/runtime JDK remains 17.

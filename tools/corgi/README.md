@@ -59,7 +59,7 @@ Delivery worktrees reuse the exact-version runtime installed under the primary w
 .agent/bin/corgi-pr open <change>
 .agent/bin/corgi-pr sync <change>
 
-# Publish a local independent report only while both local and PR head equal the reviewed SHA:
+# Publish an automated whole-change review only while both local and PR head equal the reviewed SHA:
 .agent/bin/corgi-pr review <change> --report <local-report.json> --reviewed-sha <full-sha>
 ```
 
@@ -76,9 +76,21 @@ The checked-in pilot grants neither ready nor merge authority. Merge rechecks th
 CI, review decision, and merge state. Finalize accepts a local token file only under ignored `.corgi/` and resumes
 tracker confirmation/Archive finish only after GitHub confirms the exact PR merged.
 
-For a Corgi independent review, add `REVIEW_REVISION` with the full PR-head commit id to the review worker context. The
-review launcher then uses a detached worktree of that exact commit; legacy reviews without the field retain the staged
-snapshot behavior. PR publication performs the second freshness check against GitHub.
+The optional PR review projection is separate from canonical Corgi Verify and Human Review. Its local JSON contract is:
+
+```json
+{
+  "schemaVersion": 1,
+  "verdict": "ready",
+  "summary": "No actionable findings.",
+  "findings": [],
+  "repository_unchanged": true
+}
+```
+
+A `blocked` verdict requires one or more findings with `id`, `severity`, `title`, `location`, `evidence`, and
+`smallest_remediation`. Publication validates the report internally, rechecks the exact local and GitHub PR head, and
+adds or updates a bounded PR comment. It does not make the human Corgi decision or transition Run Contract state.
 
 ## Rollback
 

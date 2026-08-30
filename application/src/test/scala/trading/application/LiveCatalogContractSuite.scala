@@ -112,6 +112,30 @@ private final class LineageResettingLiveCatalog(
           transition.outcome
 end LineageResettingLiveCatalog
 
+private final class FailedCommitLineageResettingLiveCatalog(
+  initial: CatalogState,
+  initialBatches: Vector[CatalogBatch])
+  extends AtomicTestLiveCatalog(initial):
+  private var successfulBatches = initialBatches
+
+  override def commit(batch: CatalogBatch): Thunk[Either[CatalogViolations, CatalogCommit]] =
+    () =>
+      synchronized:
+        CatalogModel.commit(current, batch) match
+          case Left(errors) =>
+            current = successfulBatches.foldLeft(CatalogRoot.create().initialState): (state, successful) =>
+              CatalogModel
+                .commit(state, successful)
+                .fold(replayErrors => throw new AssertionError(s"successful replay failed: $replayErrors"), _.state)
+            Left(errors)
+          case Right(transition) =>
+            transition.outcome match
+              case _: CatalogCommit.Published => successfulBatches = successfulBatches :+ batch
+              case _: CatalogCommit.Unchanged => ()
+            current = transition.state
+            Right(transition.outcome)
+end FailedCommitLineageResettingLiveCatalog
+
 private object ThunkCatalogContract extends ThunkLiveCatalogContract:
   protected def newCatalog(initial: CatalogState, successfulBatches: Vector[CatalogBatch]): LiveCatalog[Thunk] =
     new AtomicTestLiveCatalog(initial)
@@ -120,6 +144,7 @@ end ThunkCatalogContract
 final class LiveCatalogContractSuite extends FunSuite:
   test("bootstrap, ordered failures, commits, conflicts, and retries agree with the pure model"):
     ThunkCatalogContract.assertBootstrapAndOrderedErrors()()
+    ThunkCatalogContract.assertAccumulatedCommitErrors()()
     ThunkCatalogContract.assertSequentialModelEquivalence()()
 
   test("independent concurrent batches publish consecutive revisions without lost updates"):
@@ -158,5 +183,13 @@ final class LiveCatalogContractRejectionSuite extends FunSuite:
         new LineageResettingLiveCatalog(initial, successfulBatches)
 
     val failure = intercept[AssertionError](broken.assertSequentialModelEquivalence()())
+    assert(failure.getMessage.contains("reconcile"), failure.getMessage)
+
+  test("the accumulated-error contract rejects lineage replacement on a failed commit"):
+    val broken = new ThunkLiveCatalogContract:
+      protected def newCatalog(initial: CatalogState, successfulBatches: Vector[CatalogBatch]): LiveCatalog[Thunk] =
+        new FailedCommitLineageResettingLiveCatalog(initial, successfulBatches)
+
+    val failure = intercept[AssertionError](broken.assertAccumulatedCommitErrors()())
     assert(failure.getMessage.contains("reconcile"), failure.getMessage)
 end LiveCatalogContractRejectionSuite

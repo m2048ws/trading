@@ -28,6 +28,9 @@ final class InMemoryLiveCatalogContractSuite extends CatsEffectSuite:
   test("bootstrap and ordered failures agree with the pure model"):
     contract.assertBootstrapAndOrderedErrors()
 
+  test("failed commits accumulate stable ordered errors without publishing partial state"):
+    contract.assertAccumulatedCommitErrors()
+
   test("lookups, publications, conflicts, retries, revisions, deltas, and handles agree with the pure model"):
     contract.assertSequentialModelEquivalence()
 

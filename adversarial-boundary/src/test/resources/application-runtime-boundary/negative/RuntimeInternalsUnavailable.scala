@@ -1,13 +1,11 @@
-package external.application.negative
+package trading.runtime
 
 import cats.effect.IO
-
-import trading.runtime.InMemoryLiveCatalog
 
 object RuntimeInternalsUnavailable:
   val publicFactory = InMemoryLiveCatalog.create[IO](None)
 
   // OFFENDING-BEGIN
-  val internalClass = classOf[trading.runtime.RefBackedLiveCatalog[IO]]
+  val internalClass = classOf[LiveCatalogBridge.RefBackedLiveCatalog]
   // OFFENDING-END
 end RuntimeInternalsUnavailable

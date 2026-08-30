@@ -28,8 +28,12 @@ monitor; the values are not a portable service-level claim.
 `LiveCatalogRuntimeBenchmark` measures the runtime interpreter in four directions. `captureSnapshot` performs one live
 snapshot read. `captureOnceAndResolveAll` performs that read once and then resolves 1,024 assets from the immutable
 snapshot; it deliberately does not cross the live `Ref` boundary once per asset. `commitUncontended` publishes one asset
-into a fresh interpreter. `commitContended` uses four threads to exercise atomic retries against one shared interpreter
-and an idempotent 1,024-asset batch.
+into a fresh interpreter. `commitContended` uses four thread-local unique command sequences against one shared
+interpreter, requires every operation to publish, and therefore exercises competing atomic state transitions rather
+than repeatedly submitting an already-applied idempotent bootstrap. Its score includes command allocation and pure
+validation as well as coordinated publication. The shared interpreter is reset at each JMH iteration so warmup growth
+does not carry into measurement iterations; it still grows within each one-second iteration as every operation adds a
+definition, so the result is directional rather than a steady-state service threshold.
 
 The recorded directional run used OpenJDK 26.0.2 on the same Apple Silicon host, JMH throughput mode, one fork, three
 one-second warmups, and five one-second measurements. All cases used one thread except `commitContended`, which used
@@ -40,4 +44,4 @@ four. These machine-local results guide investigation and do not establish relea
 | Capture one snapshot | 1 | 171,617.667 ops/s | ±46,477.338 ops/s |
 | Capture once, resolve 1,024 assets | 1 | 24,257.954 ops/s | ±2,860.145 ops/s |
 | Publish uncontended | 1 | 118,339.245 ops/s | ±9,322.987 ops/s |
-| Retry under contention | 4 | 1,732.875 ops/s | ±95.431 ops/s |
+| Publish under contention | 4 | 3,659.590 ops/s | ±69.860 ops/s |

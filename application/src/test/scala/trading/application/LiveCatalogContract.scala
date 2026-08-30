@@ -313,6 +313,44 @@ abstract class LiveCatalogContract[F[_]]:
       contractAssertEquals(order, order.sorted)
   end assertBootstrapAndOrderedErrors
 
+  final def assertAccumulatedCommitErrors(): F[Unit] =
+    val registered  = definition("accumulated-commit", "contract:registered")
+    val conflict    = AssetDefinition(registered.id, AtomId("contract:conflict"))
+    val missingGrid = GridDefinition(
+      GridIdentity(
+        DimKey.atom(AtomId("contract:missing-commit-dimension")),
+        GridKey(required(GridId.from("contract-missing-commit-grid")), required(GridVersion.from(1)))
+      ),
+      required(PositiveRational.exact(1, 100))
+    )
+    val invalid = CatalogBatch.of(
+      CatalogCommand.RegisterAsset(conflict),
+      CatalogCommand.RegisterGrid(missingGrid)
+    )
+    val initial         = CatalogRoot.create().initialState
+    val afterRegistered = required(CatalogModel.commit(initial, batch(registered))).state
+    val expectedErrors  = requiredLeft(CatalogModel.commit(afterRegistered, invalid))
+
+    for
+      catalog      <- requiredCatalog(None)
+      publication  <- catalog.commit(batch(registered))
+      before       <- catalog.snapshot
+      actualResult <- catalog.commit(invalid)
+      after        <- catalog.snapshot
+    yield
+      contractAssert(publication.exists(_.isInstanceOf[CatalogCommit.Published]), publication)
+      val actualErrors = requiredLeft(actualResult)
+      contractAssertEquals(actualErrors, expectedErrors)
+      contractAssertEquals(actualErrors.violations.size, 2)
+      val order = actualErrors.violations.map(value => value.commandIndex -> value.ruleOrdinal)
+      contractAssertEquals(order, order.sorted)
+      assertSnapshotShape(before, afterRegistered.snapshot)
+      assertSnapshotShape(after, before)
+      assertAsset(after, registered)
+      assertAssetReconciles(before, after, registered.id)
+      contractAssert(after.resolveGrid(missingGrid.identity).isLeft, "rejected grid unexpectedly became visible")
+  end assertAccumulatedCommitErrors
+
   final def assertIndependentLineages(): F[Unit] =
     val additional = definition("lineage-additional")
     for

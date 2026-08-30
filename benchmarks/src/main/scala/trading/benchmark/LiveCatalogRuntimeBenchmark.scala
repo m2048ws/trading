@@ -6,6 +6,7 @@ import cats.effect.IO
 import cats.effect.unsafe.implicits.global
 import org.openjdk.jmh.annotations.*
 import org.openjdk.jmh.infra.Blackhole
+import org.openjdk.jmh.infra.ThreadParams
 
 import trading.application.LiveCatalog
 import trading.quantity.AtomId
@@ -14,7 +15,7 @@ import trading.runtime.InMemoryLiveCatalog
 
 @State(Scope.Benchmark)
 class SharedLiveCatalogState:
-  private var initialized: Option[(LiveCatalog[IO], Vector[AssetId], CatalogBatch)] = None
+  private var initialized: Option[(LiveCatalog[IO], Vector[AssetId])] = None
 
   @Setup(Level.Trial)
   def setup(): Unit =
@@ -28,13 +29,12 @@ class SharedLiveCatalogState:
       .create[IO](Some(bootstrap))
       .unsafeRunSync()
       .fold(errors => throw new IllegalStateException(errors.toString), identity)
-    initialized = Some((catalog, definitions.map(_.id), bootstrap))
+    initialized = Some(catalog -> definitions.map(_.id))
 
   def catalog: LiveCatalog[IO] = initializedValue._1
   def ids: Vector[AssetId]     = initializedValue._2
-  def idempotent: CatalogBatch = initializedValue._3
 
-  private def initializedValue: (LiveCatalog[IO], Vector[AssetId], CatalogBatch) =
+  private def initializedValue: (LiveCatalog[IO], Vector[AssetId]) =
     initialized.fold(throw new IllegalStateException("live benchmark state was not initialized"))(identity)
 
   private def required[E, A](value: Either[E, A]): A =
@@ -67,6 +67,46 @@ class UncontendedCommitState:
     value.fold(error => throw new IllegalArgumentException(error.toString), identity)
 end UncontendedCommitState
 
+@State(Scope.Benchmark)
+class ContendedLiveCatalogState:
+  private var initialized: Option[LiveCatalog[IO]] = None
+
+  @Setup(Level.Iteration)
+  def setup(): Unit =
+    initialized = Some(
+      InMemoryLiveCatalog
+        .create[IO](None)
+        .unsafeRunSync()
+        .fold(errors => throw new IllegalStateException(errors.toString), identity)
+    )
+
+  def catalog: LiveCatalog[IO] =
+    initialized.fold(throw new IllegalStateException("contended catalog state was not initialized"))(identity)
+end ContendedLiveCatalogState
+
+@State(Scope.Thread)
+class ContendedCommitState:
+  private var threadIndex = 0
+  private var sequence    = 0L
+
+  @Setup(Level.Iteration)
+  def setup(parameters: ThreadParams): Unit =
+    threadIndex = parameters.getThreadIndex
+    sequence = 0L
+
+  def nextBatch(): CatalogBatch =
+    sequence += 1L
+    val name = s"contended-publication-$threadIndex-$sequence"
+    val definition = AssetDefinition(
+      required(AssetId.from(name)),
+      AtomId(s"contended:publication:$threadIndex:$sequence")
+    )
+    CatalogBatch.one(CatalogCommand.RegisterAsset(definition))
+
+  private def required[E, A](value: Either[E, A]): A =
+    value.fold(error => throw new IllegalArgumentException(error.toString), identity)
+end ContendedCommitState
+
 @BenchmarkMode(Array(Mode.Throughput))
 @OutputTimeUnit(TimeUnit.SECONDS)
 @Fork(1)
@@ -88,6 +128,12 @@ class LiveCatalogRuntimeBenchmark:
 
   @Benchmark
   @Threads(4)
-  def commitContended(state: SharedLiveCatalogState, blackhole: Blackhole): Unit =
-    blackhole.consume(state.catalog.commit(state.idempotent).unsafeRunSync())
+  def commitContended(
+    state: ContendedLiveCatalogState,
+    commitState: ContendedCommitState,
+    blackhole: Blackhole
+  ): Unit =
+    state.catalog.commit(commitState.nextBatch()).unsafeRunSync() match
+      case published @ Right(_: CatalogCommit.Published) => blackhole.consume(published)
+      case other => throw new IllegalStateException(s"contended publication did not publish: $other")
 end LiveCatalogRuntimeBenchmark

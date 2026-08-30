@@ -36,6 +36,22 @@ REVIEW_MARKER_RE = re.compile(
     r"change=(?P<change>[a-z0-9][a-z0-9-]*) "
     r"sha=(?P<sha>[0-9a-f]{40,64}) -->"
 )
+REVIEW_REPORT_KEYS = {
+    "schemaVersion",
+    "verdict",
+    "summary",
+    "findings",
+    "repository_unchanged",
+}
+REVIEW_FINDING_KEYS = {
+    "id",
+    "severity",
+    "title",
+    "location",
+    "evidence",
+    "smallest_remediation",
+}
+REVIEW_SEVERITIES = {"critical", "high", "medium", "low"}
 CHANGE_RE = re.compile(r"[a-z0-9][a-z0-9-]{0,79}\Z")
 SHA_RE = re.compile(r"[0-9a-f]{40,64}\Z")
 SAFE_REF_RE = re.compile(r"[A-Za-z0-9][A-Za-z0-9._/-]{0,199}\Z")
@@ -511,7 +527,7 @@ class Adapter:
         if status.phase != "awaiting_human_review":
             raise PilotError(
                 "review_phase_invalid",
-                "Independent review publication requires awaiting_human_review",
+                "Automated review publication requires awaiting_human_review",
             )
         branch, head = self.git_identity(change)
         if head != reviewed_sha:
@@ -523,16 +539,6 @@ class Adapter:
             self.root,
             report_path if report_path.is_absolute() else self.root / report_path,
             "review report",
-        )
-        self.runner.run(
-            (
-                str(self.root / ".agent/bin/validate-worker-report"),
-                "review",
-                str(resolved_report),
-                str(self.root / ".agent/schemas/review.json"),
-                change,
-            ),
-            cwd=self.root,
         )
         report = load_review_report(resolved_report, self.root)
         body = render_review_comment(change, reviewed_sha, report, self.root)
@@ -1237,17 +1243,66 @@ def assert_safe_projection(body: str, root: pathlib.Path) -> None:
 def load_review_report(path: pathlib.Path, root: pathlib.Path) -> dict[str, Any]:
     resolved = inside(root, path if path.is_absolute() else root / path, "review report")
     try:
+        if resolved.stat().st_size > 256_000:
+            raise PilotError("review_report_invalid", "Review report is too large")
         raw = json.loads(resolved.read_text())
+    except PilotError:
+        raise
     except (OSError, json.JSONDecodeError) as exc:
         raise PilotError("review_report_invalid", f"Cannot read review report: {exc}")
-    report = mapping(raw, "review report")
+    if not isinstance(raw, dict):
+        raise PilotError("review_report_invalid", "Review report must be an object")
+    report = raw
+    if set(report) != REVIEW_REPORT_KEYS:
+        raise PilotError(
+            "review_report_invalid",
+            "Review report fields do not match the Corgi PR review contract",
+        )
+    if report.get("schemaVersion") != 1:
+        raise PilotError("review_report_invalid", "Review schemaVersion must be 1")
     if report.get("verdict") not in {"ready", "blocked"}:
         raise PilotError("review_report_invalid", "Review verdict is invalid")
+    summary = report.get("summary")
+    if not isinstance(summary, str) or not summary.strip() or len(summary) > 5_000:
+        raise PilotError("review_report_invalid", "Review summary is invalid")
     if report.get("repository_unchanged") is not True:
         raise PilotError("review_report_invalid", "Reviewer changed its worktree")
     findings = report.get("findings")
     if not isinstance(findings, list) or len(findings) > 100:
         raise PilotError("review_report_invalid", "Review findings are invalid")
+    if report["verdict"] == "ready" and findings:
+        raise PilotError("review_report_invalid", "Ready review must have no findings")
+    if report["verdict"] == "blocked" and not findings:
+        raise PilotError("review_report_invalid", "Blocked review requires findings")
+    seen_ids: set[str] = set()
+    for raw_finding in findings:
+        if not isinstance(raw_finding, dict) or set(raw_finding) != REVIEW_FINDING_KEYS:
+            raise PilotError(
+                "review_report_invalid",
+                "Review finding fields do not match the Corgi PR review contract",
+            )
+        finding_id = raw_finding.get("id")
+        if (
+            not isinstance(finding_id, str)
+            or not finding_id.strip()
+            or len(finding_id) > 80
+            or finding_id in seen_ids
+        ):
+            raise PilotError("review_report_invalid", "Review finding id is invalid")
+        seen_ids.add(finding_id)
+        if raw_finding.get("severity") not in REVIEW_SEVERITIES:
+            raise PilotError("review_report_invalid", "Review severity is invalid")
+        for field in (
+            "title",
+            "location",
+            "evidence",
+            "smallest_remediation",
+        ):
+            value = raw_finding.get(field)
+            if not isinstance(value, str) or not value.strip() or len(value) > 5_000:
+                raise PilotError(
+                    "review_report_invalid", f"Review finding {field} is invalid"
+                )
     return report
 
 
@@ -1265,7 +1320,7 @@ def render_review_comment(
 ) -> str:
     lines = [
         f"<!-- corgi-review:v{MARKER_VERSION} change={change} sha={reviewed_sha} -->",
-        "## Independent review",
+        "## Automated whole-change review",
         "",
         f"- Reviewed SHA: `{reviewed_sha}`",
         f"- Verdict: **{report['verdict']}**",
