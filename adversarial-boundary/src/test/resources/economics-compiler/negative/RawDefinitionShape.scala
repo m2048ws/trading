@@ -12,8 +12,7 @@ object RawDefinitionShape:
   val directUnderlying = new UnderlyingId("")
   val rawId: InstrumentId = "raw-instrument"
   val trustedHandle: AssetId = base
-  val snapshotListing: ListingDefinition = catalogSnapshot
+  val snapshotListing: ListingDefinition = snapshot
   val effectDefinition: InstrumentDefinition = () => definition
   // OFFENDING-END
-
 end RawDefinitionShape

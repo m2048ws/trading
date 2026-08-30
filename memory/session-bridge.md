@@ -14,22 +14,23 @@ updated: 2026-08-29
 - **Issue**: 7 https://github.com/m2048ws/trading/issues/7
 - **Change**: separate-order-and-execution-scenario-modules
 - **Worktree**: /Users/m/src/money/.worktrees/separate-order-and-execution-scenario-modules
-- **Phase at Checkpoint**: planning_ready
+- **Phase at Checkpoint**: applying
 - **Task Group at Checkpoint**: 1
-- **Observed Run Revision**: none
-- **Last Verified HEAD**: ff52468f5f0fa673476edc4b5e96d2a3e5120033
+- **Observed Run Revision**: 2
+- **Last Verified HEAD**: 9e126d1ccf930dab074ec421d5d37cae0a906d28
 
 ## Next Action
-- Start Apply for `separate-order-and-execution-scenario-modules` Task Group 1.
+- Apply Task Group 2 (`Module Boundaries`) after Task Group 1 acknowledgement.
 
 ## Blockers
-- Foundation RFC is not yet accepted and merged.
+- none
 
 ## Uncommitted Work
 - none
 
 ## Discoveries
-- none
+- The archived `establish-pure-instrument-economics` boundary was reconciled from commit `86613ee` before S-02
+  production edits; the clean baseline passed 768 tests plus formatting on OpenJDK 26.0.2.
 
 ## Promotion Queue
 - Review agent-configuration constraints before promoting any item to `memory/MEMORY.md`.

@@ -9,5 +9,4 @@ object ReversedPayoffEndpoint:
   // OFFENDING-BEGIN
   val reversed: Rate[spec.roles.base.D, spec.roles.position.D] = spec.basePerPosition
   // OFFENDING-END
-
 end ReversedPayoffEndpoint
