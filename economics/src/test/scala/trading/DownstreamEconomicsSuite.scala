@@ -25,8 +25,8 @@ class DownstreamEconomicsSuite extends FunSuite:
     role: LiquidityRole = LiquidityRole.Taker
   ): policy.Scenario =
     val order       = Order.market(instrument)(side, lots).toOption.get
-    val slice       = scenarios.slice(lots, state, role).toOption.get
-    val assumptions = scenarios.assumptionsOne(order)(
+    val slice       = LiquiditySlice.create(instrument)(lots, state, role).toOption.get
+    val assumptions = ScenarioAssumptions.one(order)(
       order.activation.evidence,
       order.execution.resolution,
       slice
@@ -50,8 +50,9 @@ class DownstreamEconomicsSuite extends FunSuite:
     val lots        = Lots.fromCount(instrument)(1000).toOption.get
     val order       = Order.limit(instrument)(Side.Buy, lots, fixture.price(instrument, Rational(100))).toOption.get
     val badPrice    = fixture.state(instrument, Rational(101))
-    val slice       = scenarios.slice(lots, badPrice, LiquidityRole.Maker).toOption.get
-    val assumptions = scenarios.assumptionsOne(order)(
+    val slice       = LiquiditySlice.create(instrument)(lots, badPrice, LiquidityRole.Maker).toOption.get
+    val matched     = MatchedSlices.one(slice)
+    val assumptions = ScenarioAssumptions.one(order)(
       order.activation.evidence,
       order.execution.pricing.resolution,
       slice
@@ -63,21 +64,26 @@ class DownstreamEconomicsSuite extends FunSuite:
     )
     assertEquals(scenarios.order(order, assumptions),
       Left(InvalidScenario(ScenarioFailureReason.SliceWorseThanLimit, Some(0))))
+    assertEquals(matched.head, slice)
+    assertEquals(matched.tail, Vector.empty)
+    assertEquals(matched.toVector, Vector(slice))
+    assertEquals(MatchedSlices.fromVector(Vector(slice)), Right(matched))
 
-    val empty = scenarios.assumptionsFromVector(order)(
+    val empty = ScenarioAssumptions.fromVector(order)(
       order.activation.evidence,
       order.execution.pricing.resolution,
       Vector.empty
     )
-    assertEquals(empty, Left(InvalidScenarioDiagnostics(ScenarioViolation.EmptySlices, Vector.empty)))
+    assertEquals(empty, Left(ScenarioViolation.EmptySlices))
+    assertEquals(MatchedSlices.fromVector(Vector.empty), Left(ScenarioViolation.EmptySlices))
 
   test("scenario diagnostics accumulate independent slice failures in stable order"):
     val total      = Lots.fromCount(instrument)(10).toOption.get
     val firstLots  = Lots.fromCount(instrument)(4).toOption.get
     val secondLots = Lots.fromCount(instrument)(6).toOption.get
     val badMarket  = fixture.state(instrument, Rational(101))
-    val first      = scenarios.slice(firstLots, badMarket, LiquidityRole.Taker).toOption.get
-    val second     = scenarios.slice(secondLots, badMarket, LiquidityRole.Taker).toOption.get
+    val first      = LiquiditySlice.create(instrument)(firstLots, badMarket, LiquidityRole.Taker).toOption.get
+    val second     = LiquiditySlice.create(instrument)(secondLots, badMarket, LiquidityRole.Taker).toOption.get
     val order      = Order
       .limit(instrument)(
         Side.Buy,
@@ -87,7 +93,7 @@ class DownstreamEconomicsSuite extends FunSuite:
       )
       .toOption
       .get
-    val assumptions = scenarios.assumptionsMany(order)(
+    val assumptions = ScenarioAssumptions.many(order)(
       order.activation.evidence,
       order.execution.pricing.resolution,
       first,

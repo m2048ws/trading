@@ -1,6 +1,5 @@
 package trading.scenario
 
-import cats.data.NonEmptyVector
 import cats.syntax.all.*
 
 import trading.economics.instrument.*
@@ -21,14 +20,106 @@ final case class LiquiditySlice[L, M] private[scenario] (
   market: M,
   role: LiquidityRole)
 
+object LiquiditySlice:
+  def create[I <: Instrument](
+    instrument: I
+  )(
+    lots: instrument.Lots,
+    market: instrument.MarketState,
+    role: LiquidityRole
+  ): Either[ScenarioError, LiquiditySlice[instrument.Lots, instrument.MarketState]] =
+    ScenarioIdentityChecks
+      .check(
+        "scenario.slice",
+        instrument.identity.id,
+        "lots"   -> lots.instrumentId,
+        "market" -> market.instrumentId
+      )
+      .map(_ => LiquiditySlice(instrument.identity.id, lots, market, role))
+
+/** Domain non-empty collection of matched liquidity. */
+final class MatchedSlices[L, M] private (
+  val head: LiquiditySlice[L, M],
+  val tail: Vector[LiquiditySlice[L, M]]):
+
+  val toVector: Vector[LiquiditySlice[L, M]] = head +: tail
+
+  override def equals(other: Any): Boolean =
+    other match
+      case that: MatchedSlices[?, ?] => toVector == that.toVector
+      case _                         => false
+
+  override def hashCode: Int = toVector.hashCode
+
+  override def toString: String = toVector.mkString("MatchedSlices(", ",", ")")
+end MatchedSlices
+
+object MatchedSlices:
+  def one[L, M](head: LiquiditySlice[L, M]): MatchedSlices[L, M] =
+    new MatchedSlices(head, Vector.empty)
+
+  def of[L, M](
+    head: LiquiditySlice[L, M],
+    tail: LiquiditySlice[L, M]*
+  ): MatchedSlices[L, M] =
+    new MatchedSlices(head, tail.toVector)
+
+  def fromVector[L, M](
+    values: Vector[LiquiditySlice[L, M]]
+  ): Either[ScenarioViolation, MatchedSlices[L, M]] =
+    values match
+      case head +: tail => Right(new MatchedSlices(head, tail))
+      case _            => Left(ScenarioViolation.EmptySlices)
+end MatchedSlices
+
 /** Cohesive evidence and non-empty matched liquidity for one stable order value. */
 final class ScenarioAssumptions[D <: Dim, B <: Dim, Q <: Dim, M] private[scenario] (
-  val instrumentId: InstrumentId,
-  val target: Order[D, B, Q]
+  val order: Order[D, B, Q]
 )(
-  val activationEvidence: target.activation.Evidence,
-  val pricingResolution: target.execution.Resolution,
-  val matchedSlices: NonEmptyVector[LiquiditySlice[Lots[D], M]])
+  val activationEvidence: order.activation.Evidence,
+  val pricingResolution: order.execution.Resolution,
+  val matchedSlices: MatchedSlices[Lots[D], M])
+
+object ScenarioAssumptions:
+  def create[D <: Dim, B <: Dim, Q <: Dim, M, O <: Order[D, B, Q]](
+    order: O
+  )(
+    activationEvidence: order.activation.Evidence,
+    pricingResolution: order.execution.Resolution,
+    matchedSlices: MatchedSlices[Lots[D], M]
+  ): ScenarioAssumptions[D, B, Q, M] =
+    new ScenarioAssumptions(order)(activationEvidence, pricingResolution, matchedSlices)
+
+  def one[D <: Dim, B <: Dim, Q <: Dim, M, O <: Order[D, B, Q]](
+    order: O
+  )(
+    activationEvidence: order.activation.Evidence,
+    pricingResolution: order.execution.Resolution,
+    matchedSlice: LiquiditySlice[Lots[D], M]
+  ): ScenarioAssumptions[D, B, Q, M] =
+    create(order)(activationEvidence, pricingResolution, MatchedSlices.one(matchedSlice))
+
+  def many[D <: Dim, B <: Dim, Q <: Dim, M, O <: Order[D, B, Q]](
+    order: O
+  )(
+    activationEvidence: order.activation.Evidence,
+    pricingResolution: order.execution.Resolution,
+    head: LiquiditySlice[Lots[D], M],
+    tail: LiquiditySlice[Lots[D], M]*
+  ): ScenarioAssumptions[D, B, Q, M] =
+    create(order)(activationEvidence, pricingResolution, MatchedSlices.of(head, tail*))
+
+  def fromVector[D <: Dim, B <: Dim, Q <: Dim, M, O <: Order[D, B, Q]](
+    order: O
+  )(
+    activationEvidence: order.activation.Evidence,
+    pricingResolution: order.execution.Resolution,
+    matchedSlices: Vector[LiquiditySlice[Lots[D], M]]
+  ): Either[ScenarioViolation, ScenarioAssumptions[D, B, Q, M]] =
+    MatchedSlices
+      .fromVector(matchedSlices)
+      .map(create(order)(activationEvidence, pricingResolution, _))
+end ScenarioAssumptions
 
 final case class OrderScenario[D <: Dim, B <: Dim, Q <: Dim, M, Pos] private[scenario] (
   instrumentId: InstrumentId,
@@ -60,18 +151,16 @@ final class Scenarios[I <: Instrument] private[scenario] (val instrument: I):
     market: Market,
     role: LiquidityRole
   ): Either[ScenarioError, LiquiditySlice[Lots, Market]] =
-    ScenarioIdentityChecks
-      .check("scenario.slice", instrumentId, "lots" -> lots.instrumentId, "market" -> market.instrumentId)
-      .map(_ => LiquiditySlice(instrumentId, lots, market, role))
+    LiquiditySlice.create(instrument)(lots, market, role)
 
   def assumptions[O <: Order[D, B, Q]](
     order: O
   )(
     activationEvidence: order.activation.Evidence,
     pricingResolution: order.execution.Resolution,
-    matchedSlices: NonEmptyVector[LiquiditySlice[Lots, Market]]
+    matchedSlices: MatchedSlices[Lots, Market]
   ): ScenarioAssumptions[D, B, Q, Market] =
-    new ScenarioAssumptions(instrumentId, order)(activationEvidence, pricingResolution, matchedSlices)
+    ScenarioAssumptions.create(order)(activationEvidence, pricingResolution, matchedSlices)
 
   def assumptionsOne[O <: Order[D, B, Q]](
     order: O
@@ -80,7 +169,7 @@ final class Scenarios[I <: Instrument] private[scenario] (val instrument: I):
     pricingResolution: order.execution.Resolution,
     matchedSlice: LiquiditySlice[Lots, Market]
   ): ScenarioAssumptions[D, B, Q, Market] =
-    assumptions(order)(activationEvidence, pricingResolution, NonEmptyVector.one(matchedSlice))
+    ScenarioAssumptions.one(order)(activationEvidence, pricingResolution, matchedSlice)
 
   def assumptionsMany[O <: Order[D, B, Q]](
     order: O
@@ -90,7 +179,7 @@ final class Scenarios[I <: Instrument] private[scenario] (val instrument: I):
     head: LiquiditySlice[Lots, Market],
     tail: LiquiditySlice[Lots, Market]*
   ): ScenarioAssumptions[D, B, Q, Market] =
-    assumptions(order)(activationEvidence, pricingResolution, NonEmptyVector(head, tail.toVector))
+    ScenarioAssumptions.many(order)(activationEvidence, pricingResolution, head, tail*)
 
   def assumptionsFromVector[O <: Order[D, B, Q]](
     order: O
@@ -99,10 +188,10 @@ final class Scenarios[I <: Instrument] private[scenario] (val instrument: I):
     pricingResolution: order.execution.Resolution,
     matchedSlices: Vector[LiquiditySlice[Lots, Market]]
   ): Either[InvalidScenarioDiagnostics, ScenarioAssumptions[D, B, Q, Market]] =
-    NonEmptyVector
-      .fromVector(matchedSlices)
-      .toRight(InvalidScenarioDiagnostics(ScenarioViolation.EmptySlices, Vector.empty))
-      .map(assumptions(order)(activationEvidence, pricingResolution, _))
+    ScenarioAssumptions
+      .fromVector(order)(activationEvidence, pricingResolution, matchedSlices)
+      .left
+      .map(violation => InvalidScenarioDiagnostics(violation, Vector.empty))
 
   /** Existing deterministic fail-fast complete-scenario boundary. */
   def order(
@@ -160,16 +249,15 @@ final class Scenarios[I <: Instrument] private[scenario] (val instrument: I):
   ): Either[Vector[ScenarioViolation], Unit] =
     val supplied =
       Vector(
-        "order"              -> order.instrumentId,
-        "order.intent"       -> order.intent.instrumentId,
-        "order.intent.lots"  -> order.intent.lots.instrumentId,
-        "assumptions"        -> assumptions.instrumentId,
-        "assumptions.target" -> assumptions.target.instrumentId
+        "order"             -> order.instrumentId,
+        "order.intent"      -> order.intent.instrumentId,
+        "order.intent.lots" -> order.intent.lots.instrumentId,
+        "assumptions.order" -> assumptions.order.instrumentId
       ) ++
-        assumptions.target.activation
+        assumptions.order.activation
           .observations(assumptions.activationEvidence)
           .map((name, value) => name -> value.instrumentId) ++
-        assumptions.target.execution
+        assumptions.order.execution
           .observations(assumptions.pricingResolution)
           .map((name, value) => name -> value.instrumentId) ++
         assumptions.matchedSlices.toVector.zipWithIndex.flatMap: (slice, index) =>
@@ -190,7 +278,7 @@ final class Scenarios[I <: Instrument] private[scenario] (val instrument: I):
 
   private def validateSliceTotals(
     expected: Lots,
-    slices: NonEmptyVector[LiquiditySlice[Lots, Market]]
+    slices: MatchedSlices[Lots, Market]
   ): Either[Vector[ScenarioViolation], Unit] =
     val supplied = slices.toVector.foldLeft(BigInt(0))((total, slice) => total + slice.lots.count.unrefined)
     Validation.ordered(
@@ -204,13 +292,13 @@ final class Scenarios[I <: Instrument] private[scenario] (val instrument: I):
     assumptions: ScenarioAssumptions[D, B, Q, Market]
   ): Either[Vector[ScenarioViolation], Unit] =
     Validation.ordered(
-      Validation.ensure(0, assumptions.target.eq(order))(ScenarioViolation.OrderTargetMismatch)
+      Validation.ensure(0, assumptions.order.eq(order))(ScenarioViolation.OrderTargetMismatch)
     )
 
   private def validateActivation(
     assumptions: ScenarioAssumptions[D, B, Q, Market]
   ): Either[Vector[ScenarioViolation], CheckedActivation[B, Q]] =
-    assumptions.target.activation
+    assumptions.order.activation
       .verify(assumptions.activationEvidence)
       .left
       .map(cause => Vector(ScenarioViolation.Activation(cause)))
@@ -218,14 +306,14 @@ final class Scenarios[I <: Instrument] private[scenario] (val instrument: I):
   private def validatePricing(
     assumptions: ScenarioAssumptions[D, B, Q, Market]
   ): Either[Vector[ScenarioViolation], EffectivePricing[B, Q]] =
-    assumptions.target.execution
+    assumptions.order.execution
       .resolve(assumptions.pricingResolution)
       .left
       .map(cause => Vector(ScenarioViolation.Pricing(cause)))
 
   private def validateSlices(
     order: Order[D, B, Q],
-    slices: NonEmptyVector[LiquiditySlice[Lots, Market]],
+    slices: MatchedSlices[Lots, Market],
     effectivePricing: EffectivePricing[B, Q]
   ): Either[Vector[ScenarioViolation], Unit] =
     val accumulated = Validation.indexed(slices.toVector): (slice, index) =>

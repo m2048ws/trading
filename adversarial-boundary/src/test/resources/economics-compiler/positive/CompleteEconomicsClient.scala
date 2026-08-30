@@ -36,15 +36,15 @@ object CompleteEconomicsClient:
     .positionValue(instrument)(PositionLots.fromCoordinate(instrument)(2), state)
     .toOption
     .get
-  val assumptions = scenarios.assumptionsOne(marketOrder)(
+  val assumptions = ScenarioAssumptions.one(marketOrder)(
     marketOrder.activation.evidence,
     marketOrder.execution.resolution,
     slice
   )
   val entry     = scenarios.order(marketOrder, assumptions).toOption.get
   val sell      = Order.market(instrument)(Side.Sell, lots).toOption.get
-  val sellSlice = scenarios.slice(lots, state, LiquidityRole.Taker).toOption.get
-  val sellAssumptions = scenarios.assumptionsOne(sell)(
+  val sellSlice = LiquiditySlice.create(instrument)(lots, state, LiquidityRole.Taker).toOption.get
+  val sellAssumptions = ScenarioAssumptions.one(sell)(
     sell.activation.evidence,
     sell.execution.resolution,
     sellSlice

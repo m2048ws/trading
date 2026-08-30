@@ -20,4 +20,6 @@ object ExecutionScenarioHasNoUpstreamMutationOrDownstream:
 
   def mutateSlice[L, M](slice: LiquiditySlice[L, M], replacement: L): Unit =
     slice.lots = replacement
+    val copied = slice.copy(lots = replacement)
+    val raw = new LiquiditySlice(slice.instrumentId, replacement, slice.market, slice.role)
   // OFFENDING-END

@@ -15,12 +15,12 @@ updated: 2026-08-30
 - **Change**: separate-order-and-execution-scenario-modules
 - **Worktree**: /Users/m/src/money/.worktrees/separate-order-and-execution-scenario-modules
 - **Phase at Checkpoint**: applying
-- **Task Group at Checkpoint**: 4
-- **Observed Run Revision**: 5
-- **Last Verified HEAD**: fb592df37a721c2cf6021df9eeaffc294a662b75
+- **Task Group at Checkpoint**: 5
+- **Observed Run Revision**: 6
+- **Last Verified HEAD**: 7d8604781c6ef810aa25c7d52b8100ee14474d84
 
 ## Next Action
-- Apply Task Group 5 (`Domain Scenario Inputs`) after Task Group 4 acknowledgement.
+- Apply Task Group 6 (`Staged Scenario Evaluation`) after Task Group 5 acknowledgement.
 
 ## Blockers
 - none
@@ -38,6 +38,9 @@ updated: 2026-08-30
 - Task Group 4 established canonical intent/order construction, non-empty ordered violations, staged accumulating
   validation, and value-oriented convenience constructors; the clean matrix passed 774 tests including intent-forgery
   compiler guards and deterministic accumulating/fail-fast validation coverage.
+- Task Group 5 established pure explicit slice construction, domain-owned non-empty matched slices, and one-order
+  dependent assumptions; the clean matrix passed 774 tests including associated-shape, untyped-map, duplicate-field,
+  empty-reconstruction, and public-signature boundary coverage.
 
 ## Promotion Queue
 - Review agent-configuration constraints before promoting any item to `memory/MEMORY.md`.

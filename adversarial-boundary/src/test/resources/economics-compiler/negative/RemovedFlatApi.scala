@@ -8,15 +8,15 @@ import trading.quantity.refinement.PositiveWhole
 import trading.scenario.*
 
 object RemovedFlatApi:
-  val buyAssumptions = scenarios.assumptionsOne(marketOrder)(
+  val buyAssumptions = ScenarioAssumptions.one(marketOrder)(
     marketOrder.activation.evidence,
     marketOrder.execution.resolution,
     slice
   )
   val entry     = scenarios.order(marketOrder, buyAssumptions).toOption.get
   val sell      = Order.market(instrument)(Side.Sell, lots).toOption.get
-  val sellSlice = scenarios.slice(lots, state, LiquidityRole.Taker).toOption.get
-  val sellAssumptions = scenarios.assumptionsOne(sell)(
+  val sellSlice = LiquiditySlice.create(instrument)(lots, state, LiquidityRole.Taker).toOption.get
+  val sellAssumptions = ScenarioAssumptions.one(sell)(
     sell.activation.evidence,
     sell.execution.resolution,
     sellSlice
@@ -40,6 +40,8 @@ object RemovedFlatApi:
   val lotCount = instrument.lotCount(lots)
   val kind = marketOrder.kind
   val activationEvidence = entry.activationEvidence
+  val duplicateAssumptionId = buyAssumptions.instrumentId
+  val duplicateTarget       = buyAssumptions.target
   val sized = instrument.sizePosition(
     Quantity(instrument.roles.settle.dimension.ref, Rational.one),
     PositiveWhole(1).toOption.get,

@@ -67,5 +67,5 @@ object SharedEconomicsSetup:
   val scenarios   = Scenarios(instrument)
   val feePolicy   = FeePolicy(instrument)
   val marketOrder = Order.market(instrument)(Side.Buy, lots).toOption.get
-  val slice       = scenarios.slice(lots, state, LiquidityRole.Taker).toOption.get
+  val slice       = LiquiditySlice.create(instrument)(lots, state, LiquidityRole.Taker).toOption.get
 end SharedEconomicsSetup
