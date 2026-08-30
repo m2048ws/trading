@@ -1,0 +1,102 @@
+## 1. Contract, Dependency, and Baseline Gates
+
+- [ ] 1.1 Confirm the effective RFC/source/traceability bindings, the externally owned instrument-economics prerequisite
+  is merged and archived, and this package has been reconciled against its delivered boundary before production edits.
+- [ ] 1.2 Refresh Git/source/build/Corgi state and record clean formatting, compilation, unit/property tests, and external-artifact
+  compiler checks as the behavioral baseline.
+- [ ] 1.3 Inventory every order/scenario type, instrument capability call, error case, test fixture, fee-policy consumer,
+  and risk consumer; map each to order model, execution scenario, or a later module.
+
+## 2. Module Boundaries
+
+- [ ] 2.1 Add `orderModel` in `order-model/` with artifact `trading-order-model`, package `trading.order`, and only the
+  direct quantities/instrument-economics plus agreed pure test/library dependencies.
+- [ ] 2.2 Add `executionScenario` in `execution-scenario/` with artifact `trading-execution-scenario`, package
+  `trading.scenario`, and only direct instrument-economics/order-model plus agreed pure test/library dependencies.
+- [ ] 2.3 Wire root aggregation, completed-JAR external-artifact tasks, adversarial/compiler-test classpaths, and the
+  transitional aggregate's downward dependencies.
+- [ ] 2.4 Add compiler guards proving order model cannot access market states/scenario/fee/risk/runtime and execution
+  scenario cannot access fee/risk/application/runtime or mutate foundational values.
+
+## 3. Algebraic Order Model
+
+- [ ] 3.1 Move `Side`, time-in-force refinements, liquidity constraint, position effect, price reference, comparison,
+  visibility, activation, pricing, execution, intent, and order types to `trading.order`.
+- [ ] 3.2 Preserve dimension-indexed `Lots`/`Price` relationships and associated `Evidence`/`Resolution` members without
+  `Any`, raw-scalar storage, kind-plus-option records, or public casts.
+- [ ] 3.3 Put local smart constructors on trailing activation, non-resting duration, and other refined order values with
+  focused order-model errors.
+- [ ] 3.4 Implement evidence and peg-resolution construction through the corresponding instruction values, deriving
+  owned semantic fields and checking same-shape replay without object identity tokens.
+- [ ] 3.5 Add compile-positive/exhaustiveness tests for every valid activation/execution composition and compile-negative
+  tests for impossible market/priced, trigger/evidence, peg/resolution, and visibility shapes.
+
+## 4. Intent and Order Validation
+
+- [ ] 4.1 Implement `OrderIntent` construction from an explicit instrument, side, positive lots, and position effect,
+  retaining the exact signed `PositionLots` produced by the core boundary.
+- [ ] 4.2 Add closed `OrderComponent`, `OrderViolation`, and non-empty ordered `OrderViolations` domain types; remove
+  free-form paths and universal economics-error mappings.
+- [ ] 4.3 Implement one staged accumulating final-order validator for runtime identity and independent iceberg constraints,
+  with deterministic ordinals and fail-fast head projection.
+- [ ] 4.4 Rebuild market, limit, stop-market, and stop-limit conveniences as composition into the canonical constructor,
+  and remove the `Orders` service class and instrument-owned path.
+- [ ] 4.5 Test long/short position changes, reduce-only retention without account enforcement, identity mismatch
+  locations, simultaneous iceberg violations, and deterministic accumulating/fail-fast agreement.
+
+## 5. Domain Scenario Inputs
+
+- [ ] 5.1 Move `LiquidityRole` and liquidity-slice types to `trading.scenario` and implement pure slice construction from
+  an explicit instrument, positive lots, market state, and role.
+- [ ] 5.2 Implement minimal domain-owned `MatchedSlices` with `one`, head/tail, vector projection, and typed vector
+  reconstruction that rejects empty input.
+- [ ] 5.3 Reshape `ScenarioAssumptions` so it owns one order and its path-dependent activation evidence, pricing
+  resolution, and matched slices; remove duplicated instrument ID and target-order claims.
+- [ ] 5.4 Provide adapter-friendly constructors for each legal associated evidence shape without accepting untyped maps,
+  duplicate references, or mismatched alternatives.
+- [ ] 5.5 Add compiler tests proving missing/extraneous and fixed/trailing or direct/pegged evidence pairings cannot use
+  the supported assumptions path.
+
+## 6. Staged Scenario Evaluation
+
+- [ ] 6.1 Add closed `ScenarioLocation`, `ScenarioViolation`, focused activation/pricing causes, and non-empty ordered
+  `ScenarioViolations`; delete string path diagnostics and target-reference mismatch errors.
+- [ ] 6.2 Implement the identity-validation stage across instrument, order components, evidence prices, and indexed slice
+  lots/market/price values.
+- [ ] 6.3 Implement branch-sensitive lot-total, activation, pricing, market/taker, and maker-only/maker validation with
+  explicit prerequisites and stable rule ordinals.
+- [ ] 6.4 Implement effective-price-dependent side/limit quality validation without suppressing independent branches or
+  running comparisons on foreign/missing evidence.
+- [ ] 6.5 Construct `OrderScenario` from the one assumptions value, retaining verified results and intent's signed
+  position change; expose accumulating and fail-fast head-projection APIs.
+- [ ] 6.6 Remove the `Scenarios` service, duplicate order parameter, `.eq` target comparison, scenario position-sign
+  recomputation, parallel scalar `View`, and obsolete universal error mappings.
+- [ ] 6.7 Test multi-price slices, non-empty reconstruction, complete lot conservation, activation/peg failures,
+  market/maker rules, limit quality, closed error locations, branch suppression, and stable diagnostic ordering.
+
+## 7. Round Trips and Downstream Consumers
+
+- [ ] 7.1 Implement round-trip construction from an explicit instrument and two complete scenarios using checked
+  `PositionLots` combination and exact flat identity.
+- [ ] 7.2 Preserve entry/exit assumptions and the entry's retained position as held position, with typed signed-coordinate
+  and cross-instrument failures and no side/count recomputation.
+- [ ] 7.3 Update transitional fee-policy code to consume the new scenario types and slice projections without changing
+  fee semantics.
+- [ ] 7.4 Update transitional risk/sizing code to consume new round trips without changing candidate traversal or risk
+  semantics.
+- [ ] 7.5 Remove order/scenario production source and related errors from the transitional `economics` artifact, with no
+  compatibility aliases or package forwarders.
+
+## 8. Verification Evidence and Corgi Handoff
+
+- [ ] 8.1 Format all affected Scala/SBT sources and run clean compilation in dependency order.
+- [ ] 8.2 Run order/scenario unit and property suites, dependent fee/risk suites, negative compilation, external-JAR
+  boundary tests, adversarial tests, and the full repository validation matrix.
+- [ ] 8.3 Compare all existing valid and invalid order/scenario fixtures against the new behavior, documenting intentional
+  differences from removed duplicate-target and universal-error paths.
+- [ ] 8.4 Inspect packaged APIs and production imports for forbidden dependencies, effect kinds, lifecycle state,
+  untyped optional encodings, object-identity checks, raw arithmetic detours, and old capability names.
+- [ ] 8.5 Confirm the current Slice still satisfies strict planning/source/traceability integrity and reconcile any
+  implementation drift before the final Task Group checkpoint.
+- [ ] 8.6 Prepare the final acknowledged Task Group commit and evidence for separate canonical Verify, human review,
+  human QA, and Archive; do not begin the fee-policy Slice in this delivery.

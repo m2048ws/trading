@@ -1,11 +1,19 @@
 schemaVersion: 1
 rfcId: RFC-0002-architecture-portfolio
-revision: 1
+revision: 2
 slices:
   S-01-application-runtime-foundation:
     status: unbound
   S-02-order-execution-scenarios:
-    status: unbound
+    status: planned
+    binding:
+      change: separate-order-and-execution-scenario-modules
+      issue:
+        provider: github
+        id: '7'
+        url: https://github.com/m2048ws/trading/issues/7
+      sourceDigest: sha256:5d573cd0d12bbcffacb9b047475ee4beb81069dedabd420018b5d3f32f7acdd0
+      plannedAt: '2026-08-29T20:09:17.582Z'
   S-03-pure-risk:
     status: unbound
   S-04-fee-policy:

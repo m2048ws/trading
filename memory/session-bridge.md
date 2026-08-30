@@ -8,19 +8,19 @@ updated: 2026-08-29
 > Durable checkpoint mirror. Read first at startup; `.corgi/loop` remains lifecycle authority. `corgispec archive --local` alone writes archive closeout fields.
 
 ## Delivery Pointer
-- **RFC**: none
-- **RFC Revision**: none
-- **Slice**: none
-- **Issue**: none
-- **Change**: none
-- **Worktree**: none
-- **Phase at Checkpoint**: none
-- **Task Group at Checkpoint**: none
+- **RFC**: RFC-0002-architecture-portfolio
+- **RFC Revision**: 7b6f7a58f4dcbb8fb4bbdf3a8ba74ba66f222cce
+- **Slice**: S-02-order-execution-scenarios
+- **Issue**: 7 https://github.com/m2048ws/trading/issues/7
+- **Change**: separate-order-and-execution-scenario-modules
+- **Worktree**: /Users/m/src/money/.worktrees/separate-order-and-execution-scenario-modules
+- **Phase at Checkpoint**: planning_ready
+- **Task Group at Checkpoint**: 1
 - **Observed Run Revision**: none
-- **Last Verified HEAD**: none
+- **Last Verified HEAD**: ff52468f5f0fa673476edc4b5e96d2a3e5120033
 
 ## Next Action
-- Review and accept `RFC-0001-project-foundation` before proposing delivery work.
+- Start Apply for `separate-order-and-execution-scenario-modules` Task Group 1.
 
 ## Blockers
 - Foundation RFC is not yet accepted and merged.
