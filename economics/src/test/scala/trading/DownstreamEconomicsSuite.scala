@@ -15,7 +15,6 @@ import trading.support.DownstreamFixtures
 class DownstreamEconomicsSuite extends FunSuite:
   private val fixture    = new DownstreamFixtures
   private val instrument = fixture.linear
-  private val orders     = Orders(instrument)
   private val scenarios  = Scenarios(instrument)
   private val policy     = FeePolicy(instrument)
 
@@ -25,7 +24,7 @@ class DownstreamEconomicsSuite extends FunSuite:
     state: instrument.MarketState,
     role: LiquidityRole = LiquidityRole.Taker
   ): policy.Scenario =
-    val order       = orders.market(side, lots).toOption.get
+    val order       = Order.market(instrument)(side, lots).toOption.get
     val slice       = scenarios.slice(lots, state, role).toOption.get
     val assumptions = scenarios.assumptionsOne(order)(
       order.activation.evidence,
@@ -47,102 +46,9 @@ class DownstreamEconomicsSuite extends FunSuite:
       .toOption
       .get
 
-  test("order side is downstream and derives an exact signed position change"):
-    val lots = Lots.fromCount(instrument)(1000).toOption.get
-    val buy  = orders.market(Side.Buy, lots).toOption.get
-    val sell = orders.market(Side.Sell, lots).toOption.get
-    assertEquals(buy.intent.positionChange.coordinate, BigInt(1000))
-    assertEquals(sell.intent.positionChange.coordinate, BigInt(-1000))
-    assertEquals(buy.instrumentId, instrument.identity.id)
-
-  test("final order construction rejects a copied position change that contradicts side and lots"):
-    val lots             = Lots.fromCount(instrument)(2).toOption.get
-    val canonical        = orders.intent(Side.Buy, lots)
-    val execution        = orders.marketExecution(NonRestingTimeInForce.ImmediateOrCancel)
-    val forgedCoordinate = canonical.copy(
-      positionChange = PositionLots.fromCoordinate(instrument)(-999)
-    )
-
-    assertEquals(
-      orders.create(forgedCoordinate, orders.immediate, execution),
-      Left(InvalidOrder(OrderFailureReason.PositionChangeMismatch(2, -999)))
-    )
-
-    assertEquals(
-      orders.create(canonical, orders.immediate, execution).map(_.intent.positionChange.coordinate),
-      Right(BigInt(2))
-    )
-
-  test("downstream order alternatives retain instruction-shape validation"):
-    val lots     = Lots.fromCount(instrument)(10).toOption.get
-    val limit    = fixture.price(instrument, Rational(100))
-    val fixed    = orders.fixedTrigger(PriceReference.Mark, TriggerComparison.AtOrAbove, limit)
-    val trailing = orders
-      .trailingTrigger(PriceReference.Last, TriggerComparison.AtOrBelow, 5)
-      .toOption
-      .get
-    assertEquals(fixed.triggerPrice.ticks.unrefined, BigInt(200))
-    assertEquals(trailing.offsetTicks.unrefined, BigInt(5))
-    assertEquals(
-      orders.trailingTrigger(PriceReference.Last, TriggerComparison.AtOrBelow, 0),
-      Left(InvalidTrailingOffset(0))
-    )
-
-    val oversized          = orders.iceberg(Lots.fromCount(instrument)(11).toOption.get)
-    val oversizedExecution = orders.pricedExecution(
-      orders.limitPricing(limit),
-      TimeInForce.Day,
-      LiquidityConstraint.Unrestricted,
-      oversized
-    )
-    assertEquals(
-      orders.create(orders.intent(Side.Buy, lots), orders.immediate, oversizedExecution),
-      Left(InvalidOrder(OrderFailureReason.IcebergExceedsOrder(11, 10)))
-    )
-
-    val nonResting = orders.pricedExecution(
-      orders.limitPricing(limit),
-      TimeInForce.ImmediateOrCancel,
-      LiquidityConstraint.Unrestricted,
-      orders.iceberg(Lots.fromCount(instrument)(2).toOption.get)
-    )
-    assertEquals(
-      orders.create(orders.intent(Side.Buy, lots), orders.immediate, nonResting),
-      Left(InvalidOrder(OrderFailureReason.NonRestingIceberg))
-    )
-    assert(NonRestingTimeInForce.from(TimeInForce.Day).isLeft)
-
-  test("downstream activation evidence and pricing resolutions retain their semantics"):
-    val lots        = Lots.fromCount(instrument)(10).toOption.get
-    val limit       = fixture.price(instrument, Rational(100))
-    val state       = fixture.state(instrument, Rational(100))
-    val taker       = scenarios.slice(lots, state, LiquidityRole.Taker).toOption.get
-    val fixed       = orders.fixedTrigger(PriceReference.Mark, TriggerComparison.AtOrAbove, limit)
-    val stop        = orders.stopMarket(Side.Buy, lots, fixed).toOption.get
-    val evidence    = orders.fixedEvidence(fixed)(limit).toOption.get
-    val assumptions = scenarios.assumptionsOne(stop)(evidence, stop.execution.resolution, taker)
-    assert(scenarios.order(stop, assumptions).isRight)
-    assertEquals(
-      orders.fixedEvidence(fixed)(fixture.price(instrument, Rational(99))),
-      Left(ActivationViolation.FixedTriggerUnsatisfied)
-    )
-
-    val changedFixed =
-      orders.fixedTrigger(PriceReference.Mark, TriggerComparison.AtOrAbove, fixture.price(instrument, Rational(101)))
-    assertEquals(changedFixed.verify(evidence), Left(ActivationViolation.FixedEvidenceMismatch))
-
-    val peg        = orders.peggedPricing(PriceReference.Mark, 2)
-    val reference  = fixture.price(instrument, Rational(99))
-    val resolution = orders.pegResolution(peg)(reference, limit).toOption.get
-    assertEquals(peg.resolve(resolution), Right(EffectivePricing.Limited(limit)))
-    assertEquals(
-      orders.peggedPricing(PriceReference.Mark, 3).resolve(resolution),
-      Left(PricingViolation.PegResolutionMismatch)
-    )
-
   test("scenario construction retains non-empty slices and deterministic accumulated diagnostics"):
     val lots        = Lots.fromCount(instrument)(1000).toOption.get
-    val order       = orders.limit(Side.Buy, lots, fixture.price(instrument, Rational(100))).toOption.get
+    val order       = Order.limit(instrument)(Side.Buy, lots, fixture.price(instrument, Rational(100))).toOption.get
     val badPrice    = fixture.state(instrument, Rational(101))
     val slice       = scenarios.slice(lots, badPrice, LiquidityRole.Maker).toOption.get
     val assumptions = scenarios.assumptionsOne(order)(
@@ -172,8 +78,8 @@ class DownstreamEconomicsSuite extends FunSuite:
     val badMarket  = fixture.state(instrument, Rational(101))
     val first      = scenarios.slice(firstLots, badMarket, LiquidityRole.Taker).toOption.get
     val second     = scenarios.slice(secondLots, badMarket, LiquidityRole.Taker).toOption.get
-    val order      = orders
-      .limit(
+    val order      = Order
+      .limit(instrument)(
         Side.Buy,
         total,
         fixture.price(instrument, Rational(100)),

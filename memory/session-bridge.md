@@ -1,6 +1,6 @@
 ---
 type: memory
-updated: 2026-08-29
+updated: 2026-08-30
 ---
 
 # Session Bridge
@@ -15,12 +15,12 @@ updated: 2026-08-29
 - **Change**: separate-order-and-execution-scenario-modules
 - **Worktree**: /Users/m/src/money/.worktrees/separate-order-and-execution-scenario-modules
 - **Phase at Checkpoint**: applying
-- **Task Group at Checkpoint**: 3
-- **Observed Run Revision**: 4
-- **Last Verified HEAD**: 6bdd74f30f1730746498124c097158aae3c7a3fe
+- **Task Group at Checkpoint**: 4
+- **Observed Run Revision**: 5
+- **Last Verified HEAD**: fb592df37a721c2cf6021df9eeaffc294a662b75
 
 ## Next Action
-- Apply Task Group 4 (`Intent and Order Validation`) after Task Group 3 acknowledgement.
+- Apply Task Group 5 (`Domain Scenario Inputs`) after Task Group 4 acknowledgement.
 
 ## Blockers
 - none
@@ -35,6 +35,9 @@ updated: 2026-08-29
   clean repository matrix passed 770 tests including isolated completed-JAR ownership and forbidden-import guards.
 - Task Group 3 established the dimension-indexed order instruction algebra and instruction-owned evidence/resolution
   constructors; the clean matrix passed 775 tests including exhaustive and impossible-shape compiler coverage.
+- Task Group 4 established canonical intent/order construction, non-empty ordered violations, staged accumulating
+  validation, and value-oriented convenience constructors; the clean matrix passed 774 tests including intent-forgery
+  compiler guards and deterministic accumulating/fail-fast validation coverage.
 
 ## Promotion Queue
 - Review agent-configuration constraints before promoting any item to `memory/MEMORY.md`.

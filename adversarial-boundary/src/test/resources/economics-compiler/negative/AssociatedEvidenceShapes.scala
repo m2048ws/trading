@@ -4,28 +4,32 @@ import external.economics.fixtures.SharedEconomicsSetup.*
 import trading.order.*
 
 object AssociatedEvidenceShapes:
-  val fixed = orders.fixedTrigger(PriceReference.Mark, TriggerComparison.AtOrAbove, price99)
-  val fixedOrder = orders.stopMarket(Side.Buy, lots, fixed).toOption.get
-  val fixedEvidence = orders.fixedEvidence(fixed)(price100).toOption.get
-  val trailing = orders
-    .trailingTrigger(PriceReference.Mark, TriggerComparison.AtOrBelow, 1)
+  val fixed         = FixedActivation(PriceReference.Mark, TriggerComparison.AtOrAbove, price99)
+  val fixedOrder    = Order.stopMarket(instrument)(Side.Buy, lots, fixed).toOption.get
+  val fixedEvidence = fixed.evidence(price100).toOption.get
+  val trailing = TrailingActivation
+    .create[B, Q](PriceReference.Mark, TriggerComparison.AtOrBelow, 1)
     .toOption
     .get
-  val trailingOrder = orders.stopMarket(Side.Buy, lots, trailing).toOption.get
-  val trailingEvidence = orders.trailingEvidence(trailing)(price100, price99).toOption.get
-  val directLimit = orders.limit(Side.Buy, lots, price100).toOption.get
-  val peg         = orders.peggedPricing(PriceReference.Mark, 1)
-  val peggedExecution = orders.pricedExecution(
+  val trailingOrder    = Order.stopMarket(instrument)(Side.Buy, lots, trailing).toOption.get
+  val trailingEvidence = trailing.evidence(price100, price99).toOption.get
+  val directLimit      = Order.limit(instrument)(Side.Buy, lots, price100).toOption.get
+  val peg              = PeggedPricing[B, Q](PriceReference.Mark, 1)
+  val peggedExecution = PricedExecution[D, B, Q, PeggedPricing[B, Q]](
     peg,
     TimeInForce.Day,
     LiquidityConstraint.Unrestricted,
-    orders.displayed
+    DisplayedVisibility
   )
-  val peggedOrder = orders
-    .create(orders.intent(Side.Buy, lots), orders.immediate, peggedExecution)
+  val peggedOrder = Order
+    .create(instrument)(
+      OrderIntent.create(instrument)(Side.Buy, lots).toOption.get,
+      ImmediateActivation[B, Q](),
+      peggedExecution
+    )
     .toOption
     .get
-  val pegResolution = orders.pegResolution(peg)(price99, price100).toOption.get
+  val pegResolution = peg.resolution(price99, price100).toOption.get
 
   // OFFENDING-BEGIN
   val fixedOnImmediate = scenarios.assumptionsOne(marketOrder)(
@@ -53,6 +57,11 @@ object AssociatedEvidenceShapes:
     directLimit.execution.pricing.resolution,
     slice
   )
-  val immediateStop = orders.stopMarket(Side.Buy, lots, orders.immediate, PositionEffect.Unrestricted)
+  val immediateStop = Order.stopMarket(instrument)(
+    Side.Buy,
+    lots,
+    ImmediateActivation[B, Q](),
+    PositionEffect.Unrestricted
+  )
   // OFFENDING-END
 end AssociatedEvidenceShapes

@@ -22,11 +22,11 @@ enum NonRestingTimeInForce:
   case ImmediateOrCancel, FillOrKill
 
 object NonRestingTimeInForce:
-  def from(value: TimeInForce): Either[InvalidMarketDuration, NonRestingTimeInForce] =
+  def from(value: TimeInForce): Either[OrderViolation, NonRestingTimeInForce] =
     value match
       case TimeInForce.ImmediateOrCancel => Right(NonRestingTimeInForce.ImmediateOrCancel)
       case TimeInForce.FillOrKill        => Right(NonRestingTimeInForce.FillOrKill)
-      case supplied                      => Left(InvalidMarketDuration(supplied))
+      case supplied                      => Left(OrderViolation.RestingMarketDuration(supplied))
 
 /** Whether a priced order may take liquidity or must remain passive. */
 enum LiquidityConstraint:
@@ -147,10 +147,10 @@ object TrailingActivation:
     reference: PriceReference,
     comparison: TriggerComparison,
     offsetTicks: BigInt
-  ): Either[InvalidTrailingOffset, TrailingActivation[B, Q]] =
+  ): Either[OrderViolation, TrailingActivation[B, Q]] =
     PositiveWhole(offsetTicks)
       .left
-      .map(_ => InvalidTrailingOffset(offsetTicks))
+      .map(_ => OrderViolation.InvalidTrailingOffset(offsetTicks))
       .map(new TrailingActivation(reference, comparison, _))
 
 object OrderActivation:
@@ -273,12 +273,49 @@ final case class PricedExecution[D <: Dim, B <: Dim, Q <: Dim, PR <: OrderPricin
   private[trading] def observations(resolution: Resolution): Vector[(String, Price[B, Q])] =
     pricing.observations(resolution)
 
-final case class OrderIntent[D <: Dim](
-  instrumentId: InstrumentId,
-  side: Side,
-  lots: Lots[D],
-  positionEffect: PositionEffect,
-  positionChange: PositionLots[D])
+final class OrderIntent[D <: Dim] private[order] (
+  val instrumentId: InstrumentId,
+  val side: Side,
+  val lots: Lots[D],
+  val positionEffect: PositionEffect,
+  val positionChange: PositionLots[D]):
+
+  override def equals(other: Any): Boolean =
+    other match
+      case that: OrderIntent[?] =>
+        instrumentId == that.instrumentId && side == that.side && lots == that.lots &&
+        positionEffect == that.positionEffect && positionChange == that.positionChange
+      case _ => false
+
+  override def hashCode: Int =
+    (instrumentId, side, lots, positionEffect, positionChange).hashCode
+
+  override def toString: String =
+    s"OrderIntent($instrumentId,$side,$lots,$positionEffect,$positionChange)"
+end OrderIntent
+
+object OrderIntent:
+  def create[I <: Instrument](
+    instrument: I
+  )(
+    side: Side,
+    lots: instrument.Lots,
+    positionEffect: PositionEffect = PositionEffect.Unrestricted
+  ): Either[OrderViolation, OrderIntent[instrument.roles.position.D]] =
+    val expected = instrument.identity.id
+    if lots.instrumentId != expected then
+      Left(OrderViolation.InstrumentMismatch(OrderComponent.Lots, expected, lots.instrumentId))
+    else
+      Right(
+        new OrderIntent(
+          expected,
+          side,
+          lots,
+          positionEffect,
+          PositionLots.fromCoordinate(instrument)(side.sign * lots.count.unrefined)
+        )
+      )
+end OrderIntent
 
 sealed abstract class Order[D <: Dim, B <: Dim, Q <: Dim] private[order]:
   type Activation <: OrderActivation[B, Q]
@@ -317,218 +354,250 @@ object Order:
       type Execution  = E
     }
 
-final class Orders[I <: Instrument] private[order] (val instrument: I):
-
-  private val instrumentId = instrument.identity.id
-
-  type D     = instrument.roles.position.D
-  type B     = instrument.roles.base.D
-  type Q     = instrument.roles.quote.D
-  type Lots  = instrument.Lots
-  type Price = instrument.Price
-
-  val immediate: ImmediateActivation[B, Q] = ImmediateActivation[B, Q]()
-  val displayed: PricedVisibility[D]       = DisplayedVisibility
-  val hidden: PricedVisibility[D]          = HiddenVisibility
-
-  def fixedTrigger(
-    reference: PriceReference,
-    comparison: TriggerComparison,
-    triggerPrice: Price
-  ): FixedActivation[B, Q] =
-    FixedActivation(reference, comparison, triggerPrice)
-
-  def trailingTrigger(
-    reference: PriceReference,
-    comparison: TriggerComparison,
-    offsetTicks: BigInt
-  ): Either[InvalidTrailingOffset, TrailingActivation[B, Q]] =
-    TrailingActivation.create[B, Q](reference, comparison, offsetTicks)
-
-  def limitPricing(limit: Price): LimitPricing[B, Q] = LimitPricing(limit)
-
-  def peggedPricing(reference: PriceReference, offsetTicks: BigInt): PeggedPricing[B, Q] =
-    PeggedPricing(reference, offsetTicks)
-
-  def fixedEvidence(
-    activation: FixedActivation[B, Q]
+  def create[
+    D <: Dim,
+    B <: Dim,
+    Q <: Dim,
+    A <: OrderActivation[B, Q],
+    E <: OrderExecution[D, B, Q]
+  ](
+    instrument: Instrument
   )(
-    observedPrice: Price
-  ): Either[ActivationViolation, activation.Evidence] =
-    activation.evidence(observedPrice)
-
-  def trailingEvidence(
-    activation: TrailingActivation[B, Q]
-  )(
-    favorableExtreme: Price,
-    observedPrice: Price
-  ): Either[ActivationViolation, activation.Evidence] =
-    activation.evidence(favorableExtreme, observedPrice)
-
-  def pegResolution(
-    pricing: PeggedPricing[B, Q]
-  )(
-    referencePrice: Price,
-    resolvedLimit: Price
-  ): Either[PricingViolation, pricing.Resolution] =
-    pricing.resolution(referencePrice, resolvedLimit)
-
-  def iceberg(displayedLots: Lots): IcebergVisibility[D] = IcebergVisibility(displayedLots)
-
-  def marketExecution(timeInForce: NonRestingTimeInForce): MarketExecution[D, B, Q] =
-    MarketExecution(timeInForce)
-
-  def pricedExecution[PR <: OrderPricing[B, Q]](
-    pricing: PR,
-    timeInForce: TimeInForce,
-    liquidityConstraint: LiquidityConstraint,
-    visibility: PricedVisibility[D]
-  ): PricedExecution[D, B, Q, PR] =
-    PricedExecution(pricing, timeInForce, liquidityConstraint, visibility)
-
-  def intent(
-    side: Side,
-    lots: Lots,
-    positionEffect: PositionEffect = PositionEffect.Unrestricted
-  ): OrderIntent[D] =
-    OrderIntent(
-      instrumentId,
-      side,
-      lots,
-      positionEffect,
-      PositionLots.fromCoordinate(instrument)(side.sign * lots.count.unrefined)
-    )
-
-  def create[A <: OrderActivation[B, Q], E <: OrderExecution[D, B, Q]](
     intent: OrderIntent[D],
     activation: A,
     execution: E
-  ): Either[OrderError, Order.Aux[D, B, Q, A, E]] =
-    for
-      _ <- validateIdentities(intent, activation, execution)
-      _ <- validatePositionChange(intent)
-      _ <- validateExecution(intent, execution)
-    yield new ConstructedOrder(instrumentId, intent, activation, execution)
+  ): Either[OrderViolations, Order.Aux[D, B, Q, A, E]] =
+    validate(instrument, intent, activation, execution).map: _ =>
+      new ConstructedOrder(instrument.identity.id, intent, activation, execution)
 
-  def market(
+  def createFirst[
+    D <: Dim,
+    B <: Dim,
+    Q <: Dim,
+    A <: OrderActivation[B, Q],
+    E <: OrderExecution[D, B, Q]
+  ](
+    instrument: Instrument
+  )(
+    intent: OrderIntent[D],
+    activation: A,
+    execution: E
+  ): Either[OrderViolation, Order.Aux[D, B, Q, A, E]] =
+    create(instrument)(intent, activation, execution).left.map(_.head)
+
+  def market[I <: Instrument](
+    instrument: I
+  )(
     side: Side,
-    lots: Lots,
+    lots: instrument.Lots,
     positionEffect: PositionEffect = PositionEffect.Unrestricted
   ): Either[
-    OrderError,
-    Order.Aux[D, B, Q, ImmediateActivation[B, Q], MarketExecution[D, B, Q]]
-  ] =
-    create(intent(side, lots, positionEffect), immediate, marketExecution(NonRestingTimeInForce.ImmediateOrCancel))
-
-  def limit(
-    side: Side,
-    lots: Lots,
-    limit: Price,
-    timeInForce: TimeInForce = TimeInForce.GoodTillCancelled,
-    liquidityConstraint: LiquidityConstraint = LiquidityConstraint.Unrestricted,
-    positionEffect: PositionEffect = PositionEffect.Unrestricted,
-    visibility: PricedVisibility[D] = DisplayedVisibility
-  ): Either[
-    OrderError,
+    OrderViolations,
     Order.Aux[
-      D,
-      B,
-      Q,
-      ImmediateActivation[B, Q],
-      PricedExecution[D, B, Q,
-        LimitPricing[B, Q]]
+      instrument.roles.position.D,
+      instrument.roles.base.D,
+      instrument.roles.quote.D,
+      ImmediateActivation[instrument.roles.base.D, instrument.roles.quote.D],
+      MarketExecution[
+        instrument.roles.position.D,
+        instrument.roles.base.D,
+        instrument.roles.quote.D
+      ]
     ]
   ] =
-    create(
-      intent(side, lots, positionEffect),
-      immediate,
-      pricedExecution(limitPricing(limit), timeInForce, liquidityConstraint, visibility)
-    )
+    for
+      intent <- OrderIntent.create(instrument)(side, lots, positionEffect).left.map(OrderViolations.one)
+      result <- create(instrument)(
+                  intent,
+                  ImmediateActivation[instrument.roles.base.D, instrument.roles.quote.D](),
+                  MarketExecution[
+                    instrument.roles.position.D,
+                    instrument.roles.base.D,
+                    instrument.roles.quote.D
+                  ](NonRestingTimeInForce.ImmediateOrCancel)
+                )
+    yield result
 
-  def stopMarket[A <: TriggerActivation[B, Q]](
+  def limit[I <: Instrument](
+    instrument: I
+  )(
     side: Side,
-    lots: Lots,
-    trigger: A,
-    positionEffect: PositionEffect = PositionEffect.Unrestricted
-  ): Either[OrderError, Order.Aux[D, B, Q, A, MarketExecution[D, B, Q]]] =
-    create(
-      intent(side, lots, positionEffect),
-      trigger,
-      marketExecution(NonRestingTimeInForce.ImmediateOrCancel)
-    )
-
-  def stopLimit[A <: TriggerActivation[B, Q]](
-    side: Side,
-    lots: Lots,
-    trigger: A,
-    limit: Price,
+    lots: instrument.Lots,
+    limit: instrument.Price,
     timeInForce: TimeInForce = TimeInForce.GoodTillCancelled,
     liquidityConstraint: LiquidityConstraint = LiquidityConstraint.Unrestricted,
     positionEffect: PositionEffect = PositionEffect.Unrestricted,
-    visibility: PricedVisibility[D] = DisplayedVisibility
+    visibility: PricedVisibility[instrument.roles.position.D] = DisplayedVisibility
   ): Either[
-    OrderError,
-    Order.Aux[D, B, Q, A, PricedExecution[D, B, Q, LimitPricing[B, Q]]]
+    OrderViolations,
+    Order.Aux[
+      instrument.roles.position.D,
+      instrument.roles.base.D,
+      instrument.roles.quote.D,
+      ImmediateActivation[instrument.roles.base.D, instrument.roles.quote.D],
+      PricedExecution[
+        instrument.roles.position.D,
+        instrument.roles.base.D,
+        instrument.roles.quote.D,
+        LimitPricing[instrument.roles.base.D, instrument.roles.quote.D]
+      ]
+    ]
   ] =
-    create(
-      intent(side, lots, positionEffect),
-      trigger,
-      pricedExecution(limitPricing(limit), timeInForce, liquidityConstraint, visibility)
-    )
+    for
+      intent <- OrderIntent.create(instrument)(side, lots, positionEffect).left.map(OrderViolations.one)
+      result <- create(instrument)(
+                  intent,
+                  ImmediateActivation[instrument.roles.base.D, instrument.roles.quote.D](),
+                  PricedExecution(
+                    LimitPricing(limit),
+                    timeInForce,
+                    liquidityConstraint,
+                    visibility
+                  )
+                )
+    yield result
 
-  private def validateIdentities(
+  def stopMarket[I <: Instrument](
+    instrument: I
+  )(
+    side: Side,
+    lots: instrument.Lots,
+    trigger: TriggerActivation[instrument.roles.base.D, instrument.roles.quote.D],
+    positionEffect: PositionEffect = PositionEffect.Unrestricted
+  ): Either[
+    OrderViolations,
+    Order.Aux[
+      instrument.roles.position.D,
+      instrument.roles.base.D,
+      instrument.roles.quote.D,
+      trigger.type,
+      MarketExecution[
+        instrument.roles.position.D,
+        instrument.roles.base.D,
+        instrument.roles.quote.D
+      ]
+    ]
+  ] =
+    for
+      intent <- OrderIntent.create(instrument)(side, lots, positionEffect).left.map(OrderViolations.one)
+      result <- create[
+                  instrument.roles.position.D,
+                  instrument.roles.base.D,
+                  instrument.roles.quote.D,
+                  trigger.type,
+                  MarketExecution[
+                    instrument.roles.position.D,
+                    instrument.roles.base.D,
+                    instrument.roles.quote.D
+                  ]
+                ](instrument)(
+                  intent,
+                  trigger: trigger.type,
+                  MarketExecution[
+                    instrument.roles.position.D,
+                    instrument.roles.base.D,
+                    instrument.roles.quote.D
+                  ](NonRestingTimeInForce.ImmediateOrCancel)
+                )
+    yield result
+
+  def stopLimit[I <: Instrument](
+    instrument: I
+  )(
+    side: Side,
+    lots: instrument.Lots,
+    trigger: TriggerActivation[instrument.roles.base.D, instrument.roles.quote.D],
+    limit: instrument.Price,
+    timeInForce: TimeInForce = TimeInForce.GoodTillCancelled,
+    liquidityConstraint: LiquidityConstraint = LiquidityConstraint.Unrestricted,
+    positionEffect: PositionEffect = PositionEffect.Unrestricted,
+    visibility: PricedVisibility[instrument.roles.position.D] = DisplayedVisibility
+  ): Either[
+    OrderViolations,
+    Order.Aux[
+      instrument.roles.position.D,
+      instrument.roles.base.D,
+      instrument.roles.quote.D,
+      trigger.type,
+      PricedExecution[
+        instrument.roles.position.D,
+        instrument.roles.base.D,
+        instrument.roles.quote.D,
+        LimitPricing[instrument.roles.base.D, instrument.roles.quote.D]
+      ]
+    ]
+  ] =
+    for
+      intent <- OrderIntent.create(instrument)(side, lots, positionEffect).left.map(OrderViolations.one)
+      result <- create[
+                  instrument.roles.position.D,
+                  instrument.roles.base.D,
+                  instrument.roles.quote.D,
+                  trigger.type,
+                  PricedExecution[
+                    instrument.roles.position.D,
+                    instrument.roles.base.D,
+                    instrument.roles.quote.D,
+                    LimitPricing[instrument.roles.base.D, instrument.roles.quote.D]
+                  ]
+                ](instrument)(
+                  intent,
+                  trigger: trigger.type,
+                  PricedExecution(
+                    LimitPricing(limit),
+                    timeInForce,
+                    liquidityConstraint,
+                    visibility
+                  )
+                )
+    yield result
+
+  private def validate[D <: Dim, B <: Dim, Q <: Dim](
+    instrument: Instrument,
     intent: OrderIntent[D],
     activation: OrderActivation[B, Q],
     execution: OrderExecution[D, B, Q]
-  ): Either[OrderError, Unit] =
-    val supplied = Vector.newBuilder[(String, InstrumentId)]
-    supplied += "intent"                -> intent.instrumentId
-    supplied += "intent.lots"           -> intent.lots.instrumentId
-    supplied += "intent.positionChange" -> intent.positionChange.instrumentId
+  ): Either[OrderViolations, Unit] =
+    val expected   = instrument.identity.id
+    val identities = Vector.newBuilder[(Int, OrderViolation)]
+    def identity(ordinal: Int, component: OrderComponent, supplied: InstrumentId): Unit =
+      if supplied != expected then
+        identities += ordinal -> OrderViolation.InstrumentMismatch(component, expected, supplied)
+
+    identity(0, OrderComponent.Intent, intent.instrumentId)
+    identity(1, OrderComponent.Lots, intent.lots.instrumentId)
     activation match
-      case FixedActivation(_, _, price) => supplied += "activation.triggerPrice" -> price.instrumentId
-      case _                            => ()
+      case FixedActivation(_, _, triggerPrice) =>
+        identity(2, OrderComponent.TriggerPrice, triggerPrice.instrumentId)
+      case _ => ()
     execution match
       case PricedExecution(pricing, _, _, visibility) =>
         pricing match
-          case LimitPricing(price)    => supplied += "execution.limit" -> price.instrumentId
-          case _: PeggedPricing[B, Q] => ()
+          case LimitPricing(limit)    => identity(3, OrderComponent.LimitPrice, limit.instrumentId)
+          case _: PeggedPricing[?, ?] => ()
         visibility match
-          case IcebergVisibility(lots) => supplied += "execution.iceberg" -> lots.instrumentId
-          case _                       => ()
-      case _: MarketExecution[D, B, Q] => ()
-    OrderIdentityChecks.check("order", instrumentId, supplied.result()*)
-  end validateIdentities
+          case IcebergVisibility(displayedLots) =>
+            identity(4, OrderComponent.DisplayedLots, displayedLots.instrumentId)
+          case _ => ()
+      case MarketExecution(_) => ()
 
-  private def validatePositionChange(intent: OrderIntent[D]): Either[OrderError, Unit] =
-    val expected = PositionLots.fromCoordinate(instrument)(intent.side.sign * intent.lots.count.unrefined)
-    Either.cond(
-      intent.positionChange == expected,
-      (),
-      InvalidOrder(
-        OrderFailureReason.PositionChangeMismatch(expected.coordinate, intent.positionChange.coordinate)
-      )
-    )
-
-  private def validateExecution(
-    intent: OrderIntent[D],
-    execution: OrderExecution[D, B, Q]
-  ): Either[OrderError, Unit] =
-    execution match
-      case PricedExecution(_, timeInForce, _, IcebergVisibility(displayedLots))
-        if displayedLots.count.unrefined > intent.lots.count.unrefined =>
-        Left(
-          InvalidOrder(
-            OrderFailureReason.IcebergExceedsOrder(displayedLots.count.unrefined, intent.lots.count.unrefined)
-          )
-        )
-      case PricedExecution(_, timeInForce, _, IcebergVisibility(_))
-        if timeInForce == TimeInForce.ImmediateOrCancel || timeInForce == TimeInForce.FillOrKill =>
-        Left(InvalidOrder(OrderFailureReason.NonRestingIceberg))
-      case _ => Right(())
-
-end Orders
-
-object Orders:
-  def apply[I <: Instrument](instrument: I): Orders[instrument.type] =
-    new Orders[instrument.type](instrument)
+    OrderViolations.from(identities.result().sortBy(_._1).map(_._2)) match
+      case Some(identityViolations) => Left(identityViolations)
+      case None                     =>
+        val executionViolations = execution match
+          case PricedExecution(_, timeInForce, _, IcebergVisibility(displayedLots)) =>
+            Vector(
+              Option.when(displayedLots.count.unrefined > intent.lots.count.unrefined)(
+                OrderViolation.IcebergExceedsOrder(
+                  displayedLots.count.unrefined,
+                  intent.lots.count.unrefined
+                )
+              ),
+              Option.when(
+                timeInForce == TimeInForce.ImmediateOrCancel || timeInForce == TimeInForce.FillOrKill
+              )(OrderViolation.NonRestingIceberg)
+            ).flatten
+          case _ => Vector.empty
+        OrderViolations.from(executionViolations).toLeft(())
+  end validate
+end Order

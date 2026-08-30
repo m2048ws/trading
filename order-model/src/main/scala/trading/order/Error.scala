@@ -1,19 +1,42 @@
 package trading.order
 
-import trading.economics.instrument.*
+import trading.economics.instrument.InstrumentId
 
-sealed abstract class OrderError extends Product with Serializable
+enum OrderComponent:
+  case Intent, Lots, TriggerPrice, LimitPrice, DisplayedLots
 
-enum OrderFailureReason:
+enum OrderViolation:
+  case InstrumentMismatch(component: OrderComponent, expected: InstrumentId, supplied: InstrumentId)
+  case RestingMarketDuration(value: TimeInForce)
   case NonRestingIceberg
   case IcebergExceedsOrder(displayed: BigInt, ordered: BigInt)
-  case PositionChangeMismatch(expected: BigInt, supplied: BigInt)
+  case InvalidTrailingOffset(value: BigInt)
 
-final case class InvalidMarketDuration(value: TimeInForce)  extends OrderError
-final case class InvalidTrailingOffset(offsetTicks: BigInt) extends OrderError
-final case class InvalidOrder(reason: OrderFailureReason)   extends OrderError
-final case class OrderInstrumentMismatch(context: String, expected: InstrumentId, supplied: InstrumentId)
-  extends OrderError
+final class OrderViolations private (
+  val head: OrderViolation,
+  val tail: Vector[OrderViolation]):
+
+  val violations: Vector[OrderViolation] = head +: tail
+
+  override def equals(other: Any): Boolean =
+    other match
+      case that: OrderViolations => violations == that.violations
+      case _                     => false
+
+  override def hashCode: Int = violations.hashCode
+
+  override def toString: String = violations.mkString("OrderViolations(", ",", ")")
+end OrderViolations
+
+object OrderViolations:
+  def one(head: OrderViolation): OrderViolations =
+    new OrderViolations(head, Vector.empty)
+
+  def from(violations: Vector[OrderViolation]): Option[OrderViolations] =
+    violations match
+      case head +: tail => Some(new OrderViolations(head, tail))
+      case _            => None
+end OrderViolations
 
 /** Semantic failures from correctly shaped activation evidence. */
 enum ActivationViolation:
@@ -27,15 +50,3 @@ enum ActivationViolation:
 enum PricingViolation:
   case PegOffsetMismatch(expectedOffset: BigInt, suppliedOffset: BigInt)
   case PegResolutionMismatch
-
-private[order] object OrderIdentityChecks:
-  def check(
-    context: String,
-    expected: InstrumentId,
-    supplied: (String, InstrumentId)*
-  ): Either[OrderError, Unit] =
-    supplied.collectFirst:
-      case (name, id) if id != expected => OrderInstrumentMismatch(s"$context.$name", expected, id)
-    match
-      case Some(error) => Left(error)
-      case None        => Right(())

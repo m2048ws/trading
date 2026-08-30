@@ -7,6 +7,7 @@ import trading.quantity.refinement.PositiveWhole
 
 object ImpossibleInstructionShapes:
   def rejected[D <: Dim, B <: Dim, Q <: Dim](
+    intent: OrderIntent[D],
     lots: Lots[D],
     price: Price[B, Q],
     observed: Price[B, Q]
@@ -39,6 +40,14 @@ object ImpossibleInstructionShapes:
     val directWithPegEvidence     = limit.resolve(pegEvidence)
     val pegWithDirectEvidence     = peg.resolve(DirectPricingResolution)
     val priceAsIcebergLots        = IcebergVisibility(price)
+    val forgedIntent              = intent.copy(positionChange = intent.positionChange)
+    val rawIntent = new OrderIntent[D](
+      intent.instrumentId,
+      intent.side,
+      intent.lots,
+      intent.positionEffect,
+      intent.positionChange
+    )
     // OFFENDING-END
     val _ = lots
 end ImpossibleInstructionShapes

@@ -25,11 +25,11 @@ object CompleteEconomicsClient:
   )
   val genericLotsResult  = genericLots(instrument)(2)
   val genericPriceResult = genericPrice(instrument)(typedRate)
-  val canonicalIntent    = orders.intent(Side.Buy, lots)
-  val marketExecution    = orders.marketExecution(NonRestingTimeInForce.ImmediateOrCancel)
-  val forgedCoordinateResult = orders.create(
-    canonicalIntent.copy(positionChange = PositionLots.fromCoordinate(instrument)(-999)),
-    orders.immediate,
+  val canonicalIntent = OrderIntent.create(instrument)(Side.Buy, lots).toOption.get
+  val marketExecution = MarketExecution[D, B, Q](NonRestingTimeInForce.ImmediateOrCancel)
+  val directOrder = Order.create(instrument)(
+    canonicalIntent,
+    ImmediateActivation[B, Q](),
     marketExecution
   )
   val positionValue = Valuation
@@ -42,7 +42,7 @@ object CompleteEconomicsClient:
     slice
   )
   val entry     = scenarios.order(marketOrder, assumptions).toOption.get
-  val sell      = orders.market(Side.Sell, lots).toOption.get
+  val sell      = Order.market(instrument)(Side.Sell, lots).toOption.get
   val sellSlice = scenarios.slice(lots, state, LiquidityRole.Taker).toOption.get
   val sellAssumptions = scenarios.assumptionsOne(sell)(
     sell.activation.evidence,
@@ -73,8 +73,7 @@ object CompleteEconomicsClient:
 
   assert(genericLotsResult.isRight)
   assert(genericPriceResult.isRight)
-  assert(forgedCoordinateResult.isLeft)
-  assert(orders.create(canonicalIntent, orders.immediate, marketExecution).isRight)
+  assert(directOrder.isRight)
   assert(positionValue.coefficient == Rational(200))
   assert(risk.unrefined.coefficient.compare(Rational.zero) >= 0)
 end CompleteEconomicsClient

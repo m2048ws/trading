@@ -14,7 +14,7 @@ object RemovedFlatApi:
     slice
   )
   val entry     = scenarios.order(marketOrder, buyAssumptions).toOption.get
-  val sell      = orders.market(Side.Sell, lots).toOption.get
+  val sell      = Order.market(instrument)(Side.Sell, lots).toOption.get
   val sellSlice = scenarios.slice(lots, state, LiquidityRole.Taker).toOption.get
   val sellAssumptions = scenarios.assumptionsOne(sell)(
     sell.activation.evidence,
@@ -26,10 +26,11 @@ object RemovedFlatApi:
   val currentPosition = PositionLots.fromCoordinate(instrument)(lots.count.unrefined)
 
   val _ = price100.ticks
-  val _ = orders.market(Side.Buy, lots)
+  val _ = Order.market(instrument)(Side.Buy, lots)
   val _ = feePolicy.pnl(roundTrip, feePolicy.none)
 
   // OFFENDING-BEGIN
+  val orders = Orders(instrument)
   val price = instrument.price(1)
   val exactPrice = instrument.priceExactly(price100.rate)
   val market = instrument.marketStateForQuote(price100)

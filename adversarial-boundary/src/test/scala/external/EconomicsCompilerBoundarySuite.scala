@@ -156,9 +156,11 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
       expectedCore.foreach(entry => assert(coreEntries.contains(entry), s"missing $entry from $instrumentJar"))
       List(
         "trading/order/Order.class",
-        "trading/order/Orders.class",
+        "trading/order/OrderIntent.class",
+        "trading/order/OrderViolations.class",
         "trading/order/Side.class"
       ).foreach(entry => assert(orderEntries.contains(entry), s"missing $entry from $orderJar"))
+      assert(!orderEntries.contains("trading/order/Orders.class"), s"order JAR retained removed Orders service")
       List(
         "trading/scenario/LiquiditySlice.class",
         "trading/scenario/OrderScenario.class",
@@ -261,7 +263,7 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
     NegativeFixture("AssociatedEvidenceShapes.scala", List("Found:", "Required:"), 6, Some(6)),
     NegativeFixture("RemovedCapabilityPaths.scala", List("is not a member"), 7, Some(7)),
     NegativeFixture("DeferredLifecycle.scala", List("is not a member"), 9, Some(9)),
-    NegativeFixture("RemovedFlatApi.scala", List("is not a member"), 10, Some(10)),
+    NegativeFixture("RemovedFlatApi.scala", List("is not a member", "Not found"), 11, Some(11)),
     NegativeFixture("RemovedOwnerApi.scala", List("is not a member", "Not found"), 4, Some(4)),
     NegativeFixture("ReversedPriceRate.scala", List("Found:", "Required:"), 1, Some(1)),
     NegativeFixture("ReversedSettlementRate.scala", List("Found:", "Required:"), 1, Some(1)),

@@ -27,11 +27,11 @@ final class OrderInstructionSuite extends FunSuite:
     assertEquals(NonRestingTimeInForce.from(TimeInForce.FillOrKill), Right(NonRestingTimeInForce.FillOrKill))
     assertEquals(
       NonRestingTimeInForce.from(TimeInForce.Day),
-      Left(InvalidMarketDuration(TimeInForce.Day))
+      Left(OrderViolation.RestingMarketDuration(TimeInForce.Day))
     )
     assertEquals(
       TrailingActivation.create[B, Q](PriceReference.Mark, TriggerComparison.AtOrAbove, 0),
-      Left(InvalidTrailingOffset(0))
+      Left(OrderViolation.InvalidTrailingOffset(0))
     )
     assert(
       TrailingActivation.create[B, Q](PriceReference.Mark, TriggerComparison.AtOrAbove, 5).isRight
@@ -117,4 +117,138 @@ final class OrderInstructionSuite extends FunSuite:
     assertEquals(executions.map(executionName).groupMapReduce(identity)(_ => 1)(_ + _),
       Map("market" -> 2, "limit" -> 24, "peg" -> 24))
     assertEquals(activations.flatMap(activation => executions.map(activation -> _)).size, 150)
+
+  test("canonical intent and convenience constructors retain signed position and reduce-only data"):
+    val buyIntent  = OrderIntent.create(instrument)(Side.Buy, lots).toOption.get
+    val sellIntent = OrderIntent
+      .create(instrument)(Side.Sell, lots, PositionEffect.ReduceOnly)
+      .toOption
+      .get
+    assertEquals(buyIntent.positionChange.coordinate, BigInt(10))
+    assertEquals(sellIntent.positionChange.coordinate, BigInt(-10))
+    assertEquals(sellIntent.positionEffect, PositionEffect.ReduceOnly)
+
+    val market     = Order.market(instrument)(Side.Buy, lots).toOption.get
+    val limit      = Order.limit(instrument)(Side.Sell, lots, price100).toOption.get
+    val fixed      = FixedActivation(PriceReference.Mark, TriggerComparison.AtOrAbove, price100)
+    val stopMarket = Order.stopMarket(instrument)(Side.Buy, lots, fixed).toOption.get
+    val stopLimit  = Order.stopLimit(instrument)(Side.Sell, lots, fixed, price100).toOption.get
+    assertEquals(market.intent.positionChange.coordinate, BigInt(10))
+    assertEquals(limit.intent.positionChange.coordinate, BigInt(-10))
+    assertEquals(stopMarket.activation, fixed)
+    assertEquals(stopLimit.activation, fixed)
+
+  test("canonical validation accumulates independent iceberg violations and fail-fast projects the head"):
+    val intent       = OrderIntent.create(instrument)(Side.Buy, lots).toOption.get
+    val oversized    = fixture.lots(instrument, 11)
+    val immediate    = ImmediateActivation[B, Q]()
+    val badExecution = PricedExecution[D, B, Q, LimitPricing[B, Q]](
+      LimitPricing(price100),
+      TimeInForce.ImmediateOrCancel,
+      LiquidityConstraint.Unrestricted,
+      IcebergVisibility(oversized)
+    )
+    val expected = Vector(
+      OrderViolation.IcebergExceedsOrder(11, 10),
+      OrderViolation.NonRestingIceberg
+    )
+    assertEquals(
+      Order.create(instrument)(intent, immediate, badExecution).left.map(_.violations),
+      Left(expected)
+    )
+    assertEquals(
+      Order.createFirst(instrument)(intent, immediate, badExecution),
+      Left(OrderViolation.IcebergExceedsOrder(11, 10))
+    )
+
+  test("identity validation uses closed locations, stable order, and suppresses dependent iceberg rules"):
+    val foreign       = fixture.foreignIdentity
+    val foreignLots   = fixture.lots(foreign, 12)
+    val foreignIntent = OrderIntent
+      .create(foreign)(Side.Buy, foreignLots)
+      .toOption
+      .get
+    type FD = foreign.roles.position.D
+    type FB = foreign.roles.base.D
+    type FQ = foreign.roles.quote.D
+
+    val foreignIntentResult = Order.create(instrument)(
+      foreignIntent,
+      ImmediateActivation[B, Q](),
+      MarketExecution[FD, B, Q](NonRestingTimeInForce.ImmediateOrCancel)
+    )
+    assertEquals(
+      foreignIntentResult.left.map(_.violations),
+      Left(
+        Vector(
+          OrderViolation.InstrumentMismatch(
+            OrderComponent.Intent,
+            instrument.identity.id,
+            foreign.identity.id
+          ),
+          OrderViolation.InstrumentMismatch(
+            OrderComponent.Lots,
+            instrument.identity.id,
+            foreign.identity.id
+          )
+        )
+      )
+    )
+
+    val foreignPrice   = fixture.price(foreign, Rational(100))
+    val targetIntent   = OrderIntent.create(instrument)(Side.Buy, lots).toOption.get
+    val foreignTrigger = FixedActivation(PriceReference.Mark, TriggerComparison.AtOrAbove, foreignPrice)
+    val triggerResult  = Order.create(instrument)(
+      targetIntent,
+      foreignTrigger,
+      MarketExecution[D, FB, FQ](NonRestingTimeInForce.ImmediateOrCancel)
+    )
+    assertEquals(
+      triggerResult.left.map(_.violations),
+      Left(
+        Vector(
+          OrderViolation.InstrumentMismatch(
+            OrderComponent.TriggerPrice,
+            instrument.identity.id,
+            foreign.identity.id
+          )
+        )
+      )
+    )
+
+    val foreignDisplayedExecution = PricedExecution[FD, B, Q, LimitPricing[B, Q]](
+      LimitPricing(price100),
+      TimeInForce.ImmediateOrCancel,
+      LiquidityConstraint.Unrestricted,
+      IcebergVisibility(foreignLots)
+    )
+    assertEquals(
+      Order
+        .create(instrument)(
+          foreignIntent,
+          ImmediateActivation[B, Q](),
+          foreignDisplayedExecution
+        )
+        .left
+        .map(_.violations),
+      Left(
+        Vector(
+          OrderViolation.InstrumentMismatch(
+            OrderComponent.Intent,
+            instrument.identity.id,
+            foreign.identity.id
+          ),
+          OrderViolation.InstrumentMismatch(
+            OrderComponent.Lots,
+            instrument.identity.id,
+            foreign.identity.id
+          ),
+          OrderViolation.InstrumentMismatch(
+            OrderComponent.DisplayedLots,
+            instrument.identity.id,
+            foreign.identity.id
+          )
+        )
+      )
+    )
 end OrderInstructionSuite
