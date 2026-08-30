@@ -32,21 +32,6 @@ object CompleteEconomicsClient:
     orders.immediate,
     marketExecution
   )
-  val foreignDefinition = definition.copy(
-    identity = InstrumentIdentity(
-      InstrumentId.from("foreign-client-instrument").toOption.get,
-      UnderlyingId.from("foreign-client-underlying").toOption.get
-    )
-  )
-  val foreignInstrument = Instrument.fromSpec(
-    InstrumentAssembler.assemble(foreignDefinition, snapshot).toOption.get
-  )
-  val foreignPosition = PositionLots.fromCoordinate(foreignInstrument)(lots.count.unrefined)
-  val foreignPositionResult = orders.create(
-    canonicalIntent.copy(positionChange = foreignPosition),
-    orders.immediate,
-    marketExecution
-  )
   val positionValue = Valuation
     .positionValue(instrument)(PositionLots.fromCoordinate(instrument)(2), state)
     .toOption
@@ -89,7 +74,6 @@ object CompleteEconomicsClient:
   assert(genericLotsResult.isRight)
   assert(genericPriceResult.isRight)
   assert(forgedCoordinateResult.isLeft)
-  assert(foreignPositionResult.isLeft)
   assert(orders.create(canonicalIntent, orders.immediate, marketExecution).isRight)
   assert(positionValue.coefficient == Rational(200))
   assert(risk.unrefined.coefficient.compare(Rational.zero) >= 0)

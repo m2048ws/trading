@@ -55,7 +55,7 @@ class DownstreamEconomicsSuite extends FunSuite:
     assertEquals(sell.intent.positionChange.coordinate, BigInt(-1000))
     assertEquals(buy.instrumentId, instrument.identity.id)
 
-  test("final order construction rejects copied position changes that contradict side, lots, or instrument"):
+  test("final order construction rejects a copied position change that contradicts side and lots"):
     val lots             = Lots.fromCount(instrument)(2).toOption.get
     val canonical        = orders.intent(Side.Buy, lots)
     val execution        = orders.marketExecution(NonRestingTimeInForce.ImmediateOrCancel)
@@ -66,18 +66,6 @@ class DownstreamEconomicsSuite extends FunSuite:
     assertEquals(
       orders.create(forgedCoordinate, orders.immediate, execution),
       Left(InvalidOrder(OrderFailureReason.PositionChangeMismatch(2, -999)))
-    )
-
-    val foreignPosition = PositionLots.fromCoordinate(fixture.foreign)(2)
-    assertEquals(
-      orders.create(canonical.copy(positionChange = foreignPosition), orders.immediate, execution),
-      Left(
-        OrderInstrumentMismatch(
-          "order.intent.positionChange",
-          instrument.identity.id,
-          fixture.foreign.identity.id
-        )
-      )
     )
 
     assertEquals(
@@ -141,7 +129,7 @@ class DownstreamEconomicsSuite extends FunSuite:
 
     val changedFixed =
       orders.fixedTrigger(PriceReference.Mark, TriggerComparison.AtOrAbove, fixture.price(instrument, Rational(101)))
-    assertEquals(changedFixed.validate(evidence), Left(ActivationViolation.FixedEvidenceMismatch))
+    assertEquals(changedFixed.verify(evidence), Left(ActivationViolation.FixedEvidenceMismatch))
 
     val peg        = orders.peggedPricing(PriceReference.Mark, 2)
     val reference  = fixture.price(instrument, Rational(99))

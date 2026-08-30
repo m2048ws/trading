@@ -6,9 +6,9 @@ import trading.quantity.Dim
 import trading.scenario.*
 
 object DeferredLifecycle:
-  def rejectDeferredState[D <: Dim, S <: Dim, L, P, M, Pos](
-    order: Order[L, P],
-    scenario: OrderScenario[L, P, M, Pos],
+  def rejectDeferredState[D <: Dim, B <: Dim, Q <: Dim, S <: Dim, M, Pos](
+    order: Order[D, B, Q],
+    scenario: OrderScenario[D, B, Q, M, Pos],
     fee: Fee[D],
     pnl: Pnl[S]
   ): Unit =

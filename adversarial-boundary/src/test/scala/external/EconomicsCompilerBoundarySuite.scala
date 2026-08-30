@@ -25,6 +25,7 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
     exactErrors: Option[Int] = None)
 
   private val fixturesRoot         = Paths.get(getClass.getResource("/economics-compiler").toURI)
+  private val orderFixturesRoot    = Paths.get(getClass.getResource("/order-model-compiler").toURI)
   private val sharedFixture        = fixturesRoot.resolve("SharedEconomicsSetup.scala")
   private val compilationClasspath =
     val resource = Option(getClass.getResourceAsStream("/static-dimension-compiler.classpath")).getOrElse:
@@ -208,6 +209,21 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
     val rejected = compileOrder(source)
     assert(rejected.errors.size >= 6, rejected.rendered)
     assert(rejected.rendered.contains("is not a member"), rejected.rendered)
+    economicsForbiddenDiagnostics.foreach(fragment => assert(!rejected.rendered.contains(fragment), rejected.rendered))
+
+  test("completed order-model classpath compiles every supported instruction shape exhaustively"):
+    val source = orderFixturesRoot.resolve("positive/InstructionAlgebra.scala")
+    val result = compileOrder(source)
+    assert(result.succeeded, result.rendered)
+
+  test("completed order-model classpath rejects impossible instruction and evidence shapes"):
+    val source  = orderFixturesRoot.resolve("negative/ImpossibleInstructionShapes.scala")
+    val prelude = compileFilteredPrelude(source, compileOrder)
+    assert(prelude.succeeded, s"fixture prelude must compile independently:\n${prelude.rendered}")
+    val rejected = compileOrder(source)
+    assert(rejected.errors.size >= 8, rejected.rendered)
+    assert(rejected.rendered.contains("Found:"), rejected.rendered)
+    assert(rejected.rendered.contains("Required:"), rejected.rendered)
     economicsForbiddenDiagnostics.foreach(fragment => assert(!rejected.rendered.contains(fragment), rejected.rendered))
 
   test("completed execution-scenario classpath cannot compile downstream concerns or mutation"):

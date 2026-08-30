@@ -15,12 +15,12 @@ updated: 2026-08-29
 - **Change**: separate-order-and-execution-scenario-modules
 - **Worktree**: /Users/m/src/money/.worktrees/separate-order-and-execution-scenario-modules
 - **Phase at Checkpoint**: applying
-- **Task Group at Checkpoint**: 2
-- **Observed Run Revision**: 3
-- **Last Verified HEAD**: 073f9340a4e64e781aea85b48f46f49c020cbea8
+- **Task Group at Checkpoint**: 3
+- **Observed Run Revision**: 4
+- **Last Verified HEAD**: 6bdd74f30f1730746498124c097158aae3c7a3fe
 
 ## Next Action
-- Apply Task Group 3 (`Algebraic Order Model`) after Task Group 2 acknowledgement.
+- Apply Task Group 4 (`Intent and Order Validation`) after Task Group 3 acknowledgement.
 
 ## Blockers
 - none
@@ -33,6 +33,8 @@ updated: 2026-08-29
   production edits; the clean baseline passed 768 tests plus formatting on OpenJDK 26.0.2.
 - Task Group 2 established the physical `trading-order-model` and `trading-execution-scenario` JAR boundaries; the
   clean repository matrix passed 770 tests including isolated completed-JAR ownership and forbidden-import guards.
+- Task Group 3 established the dimension-indexed order instruction algebra and instruction-owned evidence/resolution
+  constructors; the clean matrix passed 775 tests including exhaustive and impossible-shape compiler coverage.
 
 ## Promotion Queue
 - Review agent-configuration constraints before promoting any item to `memory/MEMORY.md`.

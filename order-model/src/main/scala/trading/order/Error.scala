@@ -5,11 +5,11 @@ import trading.economics.instrument.*
 sealed abstract class OrderError extends Product with Serializable
 
 enum OrderFailureReason:
-  case RestingMarketDuration(value: TimeInForce)
   case NonRestingIceberg
   case IcebergExceedsOrder(displayed: BigInt, ordered: BigInt)
   case PositionChangeMismatch(expected: BigInt, supplied: BigInt)
 
+final case class InvalidMarketDuration(value: TimeInForce)  extends OrderError
 final case class InvalidTrailingOffset(offsetTicks: BigInt) extends OrderError
 final case class InvalidOrder(reason: OrderFailureReason)   extends OrderError
 final case class OrderInstrumentMismatch(context: String, expected: InstrumentId, supplied: InstrumentId)

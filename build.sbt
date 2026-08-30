@@ -145,7 +145,7 @@ lazy val instrumentEconomics =
 lazy val orderModel =
   project
     .in(file("order-model"))
-    .dependsOn(quantities, instrumentEconomics)
+    .dependsOn(quantities, instrumentEconomics % "compile->compile;test->test")
     .settings(
       name       := "trading-order-model",
       moduleName := "trading-order-model",
