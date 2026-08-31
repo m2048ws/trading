@@ -14,23 +14,23 @@ updated: 2026-08-31
 - **Issue**: 9 https://github.com/m2048ws/trading/issues/9
 - **Change**: introduce-pure-fee-policy-module
 - **Worktree**: /Users/m/src/money/.worktrees/introduce-pure-fee-policy-module
-- **Phase at Checkpoint**: planning_ready
+- **Phase at Checkpoint**: awaiting_verify
 - **Task Group at Checkpoint**: 10
-- **Observed Run Revision**: none
-- **Last Verified HEAD**: a293b9980b2220ca816b3911a655cdd4722b1d32
+- **Observed Run Revision**: 2
+- **Last Verified HEAD**: 2b8b58f49587885778f5c41bbf207c01281433e4
 
-The phase and revision above are the required next checkpoint carried by Task Group 9. Live Run Contract authority
-remains `applying` at revision 9 until Corgi acknowledges that commit.
+The phase and revision above are the required post-acknowledgement checkpoint for successor Run Contract
+`run-fe0e73ca-02b9-4f73-a9c9-5b8c5e5f8171`. Live Run Contract state remains execution authority.
 
 ## Next Action
-- Start Apply for `introduce-pure-fee-policy-module` Task Group 10.
-  `awaiting_verify`. Canonical Verify, Human Review, Human QA, and Archive remain separate gates.
+- Commit and acknowledge Repair Task Group 10, synchronize draft PR #32, then rerun canonical Verify. Human Review,
+  Human QA, and Archive remain separate gates.
 
 ## Blockers
 - none
 
 ## Uncommitted Work
-- Task Group 9's final build/test/package/planning evidence, implementation note, and `awaiting_verify` checkpoint.
+- none
 
 ## Discoveries
 - The archived `establish-pure-instrument-economics` boundary was reconciled from commit `86613ee` before S-02
@@ -229,6 +229,25 @@ remains `applying` at revision 9 until Corgi acknowledges that commit.
 - The automated Task Group 10 review checked scope, canonical scenario preservation, RFC/AC alignment, planning
   integrity, architecture, and performance/security applicability with no findings. It changed no file, triaged no
   finding, and is not canonical Verify or Human Review.
+- The first S-04 local Archive attempt failed before moving the Change because three `MODIFIED` fee-inclusive-PnL
+  requirements omitted 13 canonical scenario headings. OpenSpec treats each modified requirement as a complete
+  replacement, while the former strict validation and readiness path validated the delta only in isolation.
+- The guarded project-local recovery runtime removed only generated untracked Change evidence and the pending
+  pre-closeout journal, recorded `failedPhase: archive`, and moved predecessor run
+  `run-f72899aa-a667-4f01-8c8c-22d2fc1d784a` to `repair_required`. Successor run
+  `run-fe0e73ca-02b9-4f73-a9c9-5b8c5e5f8171` carries acknowledged Groups 1–9 unchanged and admits only Repair Group
+  10 from planning baseline `2b8b58f49587885778f5c41bbf207c01281433e4`.
+- Repair Group 10 restores all 13 canonical scenario identities across signed fees, exact fee-inclusive PnL, and
+  explicit PnL scope while retaining the stronger S-04 policy, attribution, conversion, and error-accumulation
+  semantics. Strict OpenSpec validation and deterministic Corgi readiness pass at planning revision
+  `sha256:96b5b08c7943f4116de55100e56efd0ca8e65d7e707a1b74c3e51bc7480c7234`.
+- A disposable exact-diff OpenSpec Archive at `/private/tmp/s04-archive-rehearsal.UifirS/project` succeeds with three
+  added, four modified, and one removed requirement; all 14 resulting canonical specs validate strictly and all 13
+  repaired scenario identities remain present. Production Scala, tests, and build configuration are unchanged.
+- The automated Repair Group 10 review checked scope, canonical scenario preservation, RFC/source/traceability
+  stability, planning-prefix immutability, Archive recovery safety, architecture, performance/security applicability,
+  validation evidence, and gate separation with no findings. It changed no file and is not canonical Verify or Human
+  Review.
 - S-04 Propose was reconciled against delivered S-02/S-03 and current `main` before production edits. It remains
   strict-ready at planning revision `sha256:b2226bdaf8f713cf48bb49f599da6b5cd84462cb96d8f028a6263caed76c4158`
   with source digest `sha256:d7face4865eb2e8e69abb4f305d67720842e19f9d1d4fa3b760b744fb8f06443`, traceability
