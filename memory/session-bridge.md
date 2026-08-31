@@ -14,23 +14,23 @@ updated: 2026-08-31
 - **Issue**: 8 https://github.com/m2048ws/trading/issues/8
 - **Change**: introduce-pure-risk-module
 - **Worktree**: /Users/m/src/money/.worktrees/introduce-pure-risk-module
-- **Phase at Checkpoint**: planning_ready
+- **Phase at Checkpoint**: awaiting_verify
 - **Task Group at Checkpoint**: 10
-- **Observed Run Revision**: none
-- **Last Verified HEAD**: d7fe800147f0cba6b8dca5ef523015ec9424f1b9
+- **Observed Run Revision**: 2
+- **Last Verified HEAD**: 43db8d83c57fe6f2d2d3bd1c09f3d3b6d5ee1e78
 
-The phase and revision above are the required next checkpoint carried by Task Group 9. Live Run Contract authority
-remains `applying` at revision 9 until Corgi acknowledges that commit.
+The phase and revision above are the required post-acknowledgement checkpoint for successor Run Contract
+`run-133327d8-35ce-46a2-9c8e-c82ab46f82c9`. Live Run Contract state remains execution authority.
 
 ## Next Action
-- Start Apply for `introduce-pure-risk-module` Task Group 10.
-  whole-change Verify gate. Human Review, Human QA, and Archive remain later separate gates.
+- Sync draft PR #28, then rerun the separate canonical whole-change Verify gate. Human Review, Human QA, and Archive
+  remain later separate gates.
 
 ## Blockers
 - none
 
 ## Uncommitted Work
-- Task Group 9's whole-delivery pre-Verify evidence, implementation note, and this checkpoint.
+- none
 
 ## Discoveries
 - The archived `establish-pure-instrument-economics` boundary was reconciled from commit `86613ee` before S-02
@@ -209,6 +209,26 @@ remains `applying` at revision 9 until Corgi acknowledges that commit.
 - The automated Task Group 9 review checked scope, RFC/AC coverage, validation evidence, packaged boundaries,
   architecture, performance/security applicability, planning integrity, and gate separation with no findings. It
   changed no file during the final pass, human-triaged no finding, and is not canonical Verify or Human Review.
+- The first strong local Archive attempt failed because OpenSpec treats a `MODIFIED` requirement as a complete
+  replacement and identifies scenarios by heading; renamed and omitted canonical headings therefore appeared to be
+  scenario deletions even though the delivered runtime behavior was unchanged. The original strict validation and
+  readiness checks validated the delta in isolation and did not simulate its eventual merge into canonical specs.
+- The tested rc2 `archive --request-repair` transition removed only the untracked generated evidence and pending
+  archive journal, recorded `failedPhase: archive`, and moved predecessor run
+  `run-a29691ac-e873-47ae-aa50-f27dff8c0381` to `repair_required`. Its three recovery-specific tests pass; the retained
+  pre-recovery loop backup is `/private/tmp/s03-archive-recovery.UMXbFk/introduce-pure-risk-module-loop`.
+- Successor run `run-133327d8-35ce-46a2-9c8e-c82ab46f82c9` carries acknowledged Groups 1–9 unchanged and admits only
+  Repair Task Group 10 from planning baseline `43db8d83c57fe6f2d2d3bd1c09f3d3b6d5ee1e78`. The accepted RFC source digest
+  remains `sha256:1a8cca449f8fdfc009f8ccbe87989a288ea92e7ff41ee58d38aa513a53ed4f2d` and traceability digest remains
+  `sha256:caaafeb6cd65026adcb4ea8f5f33d561ffce0ba8e6699d2301b57a5c510c4ab6`.
+- Repair Group 10 restores every canonical scenario identity across all three modified `position-risk-sizing`
+  requirements while retaining the delivered stronger typed/refined, explicit-failure, deterministic-traversal, and
+  bounded-scope semantics. Strict OpenSpec validation and deterministic Corgi readiness pass at planning revision
+  `sha256:39af122fd835f55b994cd903dd6dd402e45ddec5b28d8710f9134964e6fde5ae`; a disposable OpenSpec Archive rehearsal at
+  `/private/tmp/s03-archive-rehearsal.MqlZNn/repo` succeeds with four added, three modified, and two removed requirements.
+- The automated Task Group 10 review checked scope, canonical scenario preservation, RFC/AC alignment, planning
+  integrity, architecture, and performance/security applicability with no findings. It changed no file, triaged no
+  finding, and is not canonical Verify or Human Review.
 
 ## Promotion Queue
 - Review agent-configuration constraints before promoting any item to `memory/MEMORY.md`.
