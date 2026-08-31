@@ -2,10 +2,12 @@ package external.economics.positive
 
 import external.economics.fixtures.SharedEconomicsSetup.*
 import trading.economics.instrument.*
+import trading.fee.*
 import trading.fee.policy.*
 import trading.order.*
 import trading.quantity.*
 import trading.quantity.grid.QuantizationPolicy
+import trading.quantity.refinement.NonNegative
 import trading.risk.Risk
 import trading.scenario.*
 
@@ -59,7 +61,7 @@ object CompleteCompositionClient:
     .percentage(
       denomination,
       FeeKind.from("client").toOption.get,
-      Quantity(quote.dimension.ref, Rational(10)),
+      NonNegative(Quantity(quote.dimension.ref, Rational(10))).toOption.get,
       FeeRate(Rational(1, 1000))
     )
     .toOption

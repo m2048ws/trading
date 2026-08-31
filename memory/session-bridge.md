@@ -15,24 +15,24 @@ updated: 2026-08-31
 - **Change**: introduce-pure-fee-policy-module
 - **Worktree**: /Users/m/src/money/.worktrees/introduce-pure-fee-policy-module
 - **Phase at Checkpoint**: applying
-- **Task Group at Checkpoint**: 2
-- **Observed Run Revision**: 3
-- **Last Verified HEAD**: e085160202b88a9e2fa4f1589b29eb4260beae93
+- **Task Group at Checkpoint**: 3
+- **Observed Run Revision**: 4
+- **Last Verified HEAD**: d59b081b4c2fed6e2ee7d6e25fc7707803fa1773
 
-The phase and revision above are the required next checkpoint carried by Task Group 2. Live Run Contract authority
-remains `applying` at revision 2 until Corgi acknowledges that commit.
+The phase and revision above are the required next checkpoint carried by Task Group 3. Live Run Contract authority
+remains `applying` at revision 3 until Corgi acknowledges that commit.
 
 ## Next Action
-- Commit and acknowledge `introduce-pure-fee-policy-module` Task Group 2, synchronize draft PR #32, then implement Task
-  Group 3.
+- Commit and acknowledge `introduce-pure-fee-policy-module` Task Group 3, synchronize draft PR #32, then implement Task
+  Group 4.
   Verify, Human Review, Human QA, and Archive remain separate gates.
 
 ## Blockers
 - none
 
 ## Uncommitted Work
-- Task Group 2's build, completed-JAR compiler-boundary, fixture, documentation, implementation-note, and next-state
-  checkpoint changes; fee-policy production semantics are unchanged.
+- Task Group 3's nominal rate, refined typed formulas, provisional policy migration, focused example/property tests,
+  completed-JAR compiler/ownership guards, implementation note, and next-state checkpoint changes.
 
 ## Discoveries
 - The archived `establish-pure-instrument-economics` boundary was reconciled from commit `86613ee` before S-02
@@ -255,6 +255,19 @@ remains `applying` at revision 2 until Corgi acknowledges that commit.
   scenario cannot access fee policy. A fee-policy-only client compiles and runs without risk, application, runtime,
   effects, streams, codecs, persistence, telemetry, benchmarks, or the retired aggregate. The focused gate passes 11
   fee-policy tests and all 151 adversarial/compiler tests plus both formatting checks.
+- Task Group 2 is acknowledged at `d59b081b4c2fed6e2ee7d6e25fc7707803fa1773`; draft PR #32 is synchronized and Run
+  revision 3 admits only Group 3.
+- `trading.fee` now owns opaque nominal `FeeRate` and total exact `FeeCalculation` formulas over refined typed
+  quantities. Percentage scales the existing `NonNegative[Quantity[D]]`; minimum adjustment preserves rebates, zero,
+  and sufficient charges while returning a typed negative minimum only for smaller charges. Core denomination
+  construction remains the sole per-component quantization boundary.
+- The focused Group 3 gate passes 17 fee-policy example/property/integration tests and all 152 completed-JAR/compiler/
+  adversarial tests. External compilation rejects raw bases and raw rates, lower-layer JAR checks reject the full
+  `trading.fee` root, and the per-component control preserves exact amount-plus-residual conservation.
+- The automated Group 3 review tightened the negative compiler assertion to bind the second rejection explicitly to
+  nominal `FeeRate`, then completed scope, behavior, refinement, dimension, architecture, packaged-boundary,
+  performance/security, evidence, and checkpoint axes with no findings. It changed no file during the final pass,
+  triaged no finding, and is not canonical Verify or Human Review.
 
 ## Promotion Queue
 - Review agent-configuration constraints before promoting any item to `memory/MEMORY.md`.

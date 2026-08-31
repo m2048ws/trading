@@ -3,6 +3,7 @@ package trading
 import munit.FunSuite
 
 import trading.economics.instrument.*
+import trading.fee.*
 import trading.fee.policy.*
 import trading.order.*
 import trading.quantity.*
@@ -129,7 +130,7 @@ class FeePolicyIntegrationSuite extends FunSuite:
       .toOption
       .get
     val kind   = FeeKind.from("taker").toOption.get
-    val basis  = Quantity(fixture.usd.dimension.ref, Rational(10))
+    val basis  = NonNegative(Quantity(fixture.usd.dimension.ref, Rational(10))).toOption.get
     val fee    = policy.percentage(denomination, kind, basis, FeeRate(Rational(1, 1000))).toOption.get
     val rebate = policy
       .percentage(
@@ -148,11 +149,10 @@ class FeePolicyIntegrationSuite extends FunSuite:
       policy
         .minimumCharge(
           Quantity(fixture.usd.dimension.ref, Rational(-1, 1000)),
-          Quantity(fixture.usd.dimension.ref, Rational(1, 100)),
-          fixture.usd.id
+          NonNegative(Quantity(fixture.usd.dimension.ref, Rational(1, 100))).toOption.get
         )
-        .map(_.coefficient),
-      Right(Rational(-1, 100))
+        .coefficient,
+      Rational(-1, 100)
     )
 
   test("downstream orchestration converts each fee at its selected state and retains contribution order"):

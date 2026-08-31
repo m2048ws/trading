@@ -70,7 +70,7 @@ class RiskCompilerBoundarySuite extends FunSuite:
       List(
         "trading/order/",
         "trading/scenario/",
-        "trading/fee/policy/",
+        "trading/fee/",
         "trading/application/",
         "trading/runtime/",
         "cats/effect/",

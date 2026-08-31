@@ -3,13 +3,12 @@ package trading.fee.policy
 import cats.syntax.all.*
 
 import trading.economics.instrument.*
+import trading.fee.*
 import trading.quantity.*
 import trading.quantity.grid.QuantizationPolicy
+import trading.quantity.refinement.NonNegative
 import trading.reference.*
 import trading.scenario.*
-
-/** Quoted fee-policy sign: positive is a charge and negative is a rebate. */
-final case class FeeRate(coefficient: Rational)
 
 /** Downstream attribution of one exact fee to one scenario market state. */
 final case class FeeLine[D <: Dim, M] private[policy] (
@@ -49,28 +48,19 @@ final class FeePolicy[I <: Instrument] private[policy] (val instrument: I):
   def percentage[FD <: Dim](
     denomination: FeeDenomination[FD],
     kind: FeeKind,
-    nonnegativeBasis: Quantity[FD],
+    basis: NonNegative[Quantity[FD]],
     rate: FeeRate
   ): Either[FeePolicyError, Fee[FD]] =
-    if nonnegativeBasis.coefficient.signum < 0 then
-      Left(InvalidFeeBasis(denomination.asset.id, nonnegativeBasis.coefficient))
-    else
-      Fee
-        .create(instrument)(denomination, kind, nonnegativeBasis * -rate.coefficient)
-        .left
-        .map(FeeValueFailure(_))
+    Fee
+      .create(instrument)(denomination, kind, FeeCalculation.percentage(basis, rate))
+      .left
+      .map(FeeValueFailure(_))
 
   def minimumCharge[FD <: Dim](
     contribution: Quantity[FD],
-    nonnegativeMinimum: Quantity[FD],
-    asset: AssetId
-  ): Either[FeePolicyError, Quantity[FD]] =
-    if nonnegativeMinimum.coefficient.signum < 0 then
-      Left(InvalidFeeBasis(asset, nonnegativeMinimum.coefficient))
-    else if contribution.coefficient.signum < 0 &&
-      contribution.coefficient.abs.compare(nonnegativeMinimum.coefficient) < 0
-    then Right(nonnegativeMinimum * Rational(-1))
-    else Right(contribution)
+    minimum: NonNegative[Quantity[FD]]
+  ): Quantity[FD] =
+    FeeCalculation.minimumCharge(contribution, minimum)
 
   def line[FD <: Dim](
     scenario: Scenario,

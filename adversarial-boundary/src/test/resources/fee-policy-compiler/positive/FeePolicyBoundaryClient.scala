@@ -2,9 +2,11 @@ package external.fee.positive
 
 import external.economics.fixtures.SharedEconomicsSetup.*
 import trading.economics.instrument.*
+import trading.fee.*
 import trading.fee.policy.*
 import trading.quantity.*
 import trading.quantity.grid.QuantizationPolicy
+import trading.quantity.refinement.NonNegative
 import trading.scenario.*
 
 object FeePolicyBoundaryClient:
@@ -16,7 +18,7 @@ object FeePolicyBoundaryClient:
     .percentage(
       denomination,
       FeeKind.from("completed-jar").toOption.get,
-      Quantity(quote.dimension.ref, Rational(10)),
+      NonNegative(Quantity(quote.dimension.ref, Rational(10))).toOption.get,
       FeeRate(Rational(1, 1000))
     )
     .toOption

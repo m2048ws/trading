@@ -131,7 +131,7 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
       assert(!referenceEntries.exists(_.startsWith("trading/economics/")))
       assert(!referenceEntries.exists(_.startsWith("trading/risk/")))
       assert(instrumentEntries.exists(_ == "trading/economics/instrument/Instrument.class"))
-      List("trading/order/", "trading/scenario/", "trading/fee/policy/", "trading/risk/", "trading/application/")
+      List("trading/order/", "trading/scenario/", "trading/fee/", "trading/risk/", "trading/application/")
         .foreach(prefix => assert(!instrumentEntries.exists(_.startsWith(prefix)), s"pure JAR retained $prefix"))
     finally
       quantitiesArchive.close()
@@ -214,7 +214,11 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
         !new String(assumptionsBytes, StandardCharsets.ISO_8859_1).contains("cats/data/NonEmptyVector"),
         s"scenario assumptions leaked Cats NonEmptyVector in $scenarioJar"
       )
-      assert(feePolicyEntries.contains("trading/fee/policy/FeePolicy.class"), s"missing fee policy from $feePolicyJar")
+      List(
+        "trading/fee/FeeCalculation$package.tasty",
+        "trading/fee/FeeCalculation$.class",
+        "trading/fee/policy/FeePolicy.class"
+      ).foreach(entry => assert(feePolicyEntries.contains(entry), s"missing $entry from $feePolicyJar"))
       List(
         "trading/risk/Risk.class",
         "trading/risk/MonotoneLotRisk.class",
@@ -225,7 +229,7 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
       List(
         "trading/economics/instrument/MarketState.class",
         "trading/scenario/",
-        "trading/fee/policy/",
+        "trading/fee/",
         "trading/risk/",
         "trading/application/",
         "trading/runtime/"
@@ -233,14 +237,14 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
       List(
         "trading/economics/instrument/",
         "trading/order/",
-        "trading/fee/policy/",
+        "trading/fee/",
         "trading/risk/",
         "trading/application/",
         "trading/runtime/"
       ).foreach(entry => assert(!scenarioEntries.exists(_.startsWith(entry)), s"scenario JAR retained $entry"))
       List("trading/economics/instrument/", "trading/order/", "trading/scenario/", "trading/risk/")
         .foreach(entry => assert(!feePolicyEntries.exists(_.startsWith(entry)), s"fee-policy JAR retained $entry"))
-      List("trading/order/", "trading/scenario/", "trading/fee/policy/")
+      List("trading/order/", "trading/scenario/", "trading/fee/")
         .foreach(entry => assert(!riskEntries.exists(_.startsWith(entry)), s"risk JAR retained $entry"))
 
       val staleCore = List(
@@ -302,6 +306,17 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
     val result = compileFeePolicy(source)
     assert(result.succeeded, result.rendered)
     initializeModule(result.output, "external.fee.positive.FeePolicyBoundaryClient$")
+
+  test("completed fee-policy formulas require a refined basis and nominal rate"):
+    val source  = feePolicyFixturesRoot.resolve("negative/RawFeeBasis.scala")
+    val prelude = compileFilteredPrelude(source, compileFeePolicy)
+    assert(prelude.succeeded, s"fixture prelude must compile independently:\n${prelude.rendered}")
+    val rejected = compileFeePolicy(source)
+    assert(rejected.errors.size >= 2, rejected.rendered)
+    assert(rejected.rendered.contains("Found:"), rejected.rendered)
+    assert(rejected.rendered.contains("Required:"), rejected.rendered)
+    assert(rejected.rendered.contains("NonNegative"), rejected.rendered)
+    assert(rejected.rendered.contains("FeeRate"), rejected.rendered)
 
   test("completed fee-policy classpath cannot access downstream or effect concerns"):
     val source  = feePolicyFixturesRoot.resolve("negative/FeePolicyHasNoDownstream.scala")
