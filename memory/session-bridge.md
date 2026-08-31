@@ -14,20 +14,23 @@ updated: 2026-08-31
 - **Issue**: 9 https://github.com/m2048ws/trading/issues/9
 - **Change**: introduce-pure-fee-policy-module
 - **Worktree**: /Users/m/src/money/.worktrees/introduce-pure-fee-policy-module
-- **Phase at Checkpoint**: planning_ready
+- **Phase at Checkpoint**: applying
 - **Task Group at Checkpoint**: 1
-- **Observed Run Revision**: none
-- **Last Verified HEAD**: 0b7cc676054f8b9680174fce84f280d863e1a409
+- **Observed Run Revision**: 2
+- **Last Verified HEAD**: cb1b7109257e7ddf3fa29fb0051862971352f2fd
+
+The phase and revision above are the required next checkpoint carried by Task Group 1. Live Run Contract authority
+remains `applying` at revision 1 until Corgi acknowledges that commit.
 
 ## Next Action
-- Start Apply for `introduce-pure-fee-policy-module` Task Group 1.
-  reconciled S-02/S-03 baseline.
+- Commit and acknowledge `introduce-pure-fee-policy-module` Task Group 1, open its draft PR, then implement Task Group 2.
+  Verify, Human Review, Human QA, and Archive remain separate gates.
 
 ## Blockers
 - none
 
 ## Uncommitted Work
-- none
+- Task Group 1's authority/baseline/inventory note and this next-state checkpoint; production code is unchanged.
 
 ## Discoveries
 - The archived `establish-pure-instrument-economics` boundary was reconciled from commit `86613ee` before S-02
@@ -226,6 +229,22 @@ updated: 2026-08-31
 - The automated Task Group 10 review checked scope, canonical scenario preservation, RFC/AC alignment, planning
   integrity, architecture, and performance/security applicability with no findings. It changed no file, triaged no
   finding, and is not canonical Verify or Human Review.
+- S-04 Propose was reconciled against delivered S-02/S-03 and current `main` before production edits. It remains
+  strict-ready at planning revision `sha256:b2226bdaf8f713cf48bb49f599da6b5cd84462cb96d8f028a6263caed76c4158`
+  with source digest `sha256:d7face4865eb2e8e69abb4f305d67720842e19f9d1d4fa3b760b744fb8f06443`, traceability
+  digest `sha256:8ef137a161b86ab60b78dadf55c70e91b8727572212054d1d344ec878057f064`, and authoritative
+  GitHub Issue #9. The accidental duplicate Issue #31 is tombstoned and closed; named recovery stashes and
+  `/private/tmp/corgi-s04-propose-recovery.YHbbq3` remain retained until delivery closeout makes removal safe.
+- Fresh Run `run-f72899aa-a667-4f01-8c8c-22d2fc1d784a` uses planning baseline
+  `cb1b7109257e7ddf3fa29fb0051862971352f2fd`, whose sole parent is current `origin/main`
+  `0b7cc676054f8b9680174fce84f280d863e1a409`. The guarded adapter confirmed the closed native prerequisite graph,
+  expected branch, registered worktree, and enabled local-commit/draft-PR authority.
+- The reconciled fee-policy baseline passes both formatting gates, clean dependency-order compilation, all 869 tests,
+  147 completed-JAR/adversarial boundary tests, and explicit JMH compilation on OpenJDK 26.0.2, SBT 1.12.15, and
+  Scala 3.8.4.
+- The current inventory keeps fee values and core PnL in instrument economics, moves fee-independent scenario price
+  normalization to execution scenario, finalizes policy/directive/assessment/fee-inclusive orchestration in fee policy,
+  and leaves pure risk unchanged. No application/runtime fee call site or live policy concern exists.
 
 ## Promotion Queue
 - Review agent-configuration constraints before promoting any item to `memory/MEMORY.md`.
