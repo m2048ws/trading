@@ -19,6 +19,11 @@ changes; checks the Codex skill target; checks GitHub CLI authentication; and re
 admission switch is enabled. In a sandbox that cannot read the macOS credential store, run GitHub-dependent checks in
 the normal user shell.
 
+The current `4.0.0-rc2` pin is a repository-local recovery build documented under `vendor/`. It adds deterministic
+canonical Archive-delta compatibility to readiness and a guarded pre-closeout `archive --request-repair` transition.
+Keep the local version and integrity qualification until an upstream release contains both behaviors; do not silently
+replace it with the registry tarball carrying the same version string.
+
 ## Activation evidence
 
 Bootstrap cleared its zero-active-change migration gate, installed the RFC/Memory/Wiki foundation, preserved hook
@@ -59,6 +64,10 @@ Delivery worktrees reuse the exact-version runtime installed under the primary w
 .agent/bin/corgi-pr open <change>
 .agent/bin/corgi-pr sync <change>
 
+# After `corgispec archive --local`, synchronize the dedicated archive
+# closeout commit before any ready/merge/finalize operation:
+.agent/bin/corgi-pr sync <change>
+
 # Publish an automated whole-change review only while both local and PR head equal the reviewed SHA:
 .agent/bin/corgi-pr review <change> --report <local-report.json> --reviewed-sha <full-sha>
 ```
@@ -67,9 +76,23 @@ Delivery worktrees reuse the exact-version runtime installed under the primary w
 worktree, branch mismatch, remote divergence, ambiguous PR, stale head, marker mismatch, missing Corgi issue, or missing
 Apply checkpoint.
 
+For tracked deliveries, local Archive is not finalization. Keep the Run in `archiving` and the worktree registered,
+synchronize the archive closeout commit, then obtain the separately controlled ready/merge decisions. Only
+`finalize` may confirm tracker closeout and finish Archive after GitHub proves the exact archive commit merged.
+`sync-archived` is a fail-closed recovery command for a historical premature finalization: it accepts only a preserved
+local branch whose exact closeout commit is a direct child of the verified revision and whose immutable archived run
+binding, evidence manifest, closed Issue, and draft PR identities all agree. It can fast-forward that draft PR and
+refresh its bounded status; it cannot reopen lifecycle state, mark ready, merge, or delete anything. After explicit
+merge authority is enabled, `merge-archived --authorize-merge` additionally requires the synchronized exact head,
+non-draft PR, green checks, clean merge state, closed dependencies, and immutable canonical Human Review approval. It
+uses a merge commit and does not delete the remote branch.
+
 `claim` writes only the current four-field CAS handoff under ignored `.corgi/adapter/`; it is not an independent
 lifecycle database. Corgi's Run Contract remains authoritative. The token file is mode `0600` and is never projected to
 GitHub.
+
+Claim also accepts an existing `planning_ready` repair successor created by `corgispec change repair`. That phase is
+admitted only in claim's explicit planning mode; publication and finalization continue to reject it until Apply starts.
 
 `ready`, `merge`, and `finalize` exist but require both an explicit command flag and enabled authority in `pilot.json`.
 The checked-in pilot grants neither ready nor merge authority. Merge rechecks the exact head, native issue dependencies,

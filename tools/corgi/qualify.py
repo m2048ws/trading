@@ -16,7 +16,7 @@ sys.dont_write_bytecode = True
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 TOOL_ROOT = ROOT / "tools" / "corgi"
 EXPECTED_VERSION = "4.0.0-rc2"
-EXPECTED_INTEGRITY = "sha512-J+i7s4BthgIDvnMFTq/o/moRmnELa9EZ7So/a+3x+0CcUvzgASt/mESHX+/aTd3KuETk5onEkXZqZUhV/RX+ZQ=="
+EXPECTED_INTEGRITY = "sha512-0SbgGzIODXVQ79EI3kKLyazZT96BkidIMtda/dJM+Y/TltKOPQVvUnlmyEX/JkSDHWA2xCS1ucSXfTiwyqtPlg=="
 
 
 def run(args: Sequence[str]) -> subprocess.CompletedProcess[str]:
