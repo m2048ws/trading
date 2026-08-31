@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 3,
+  "groupId": "4",
+  "checks": [
+    {
+      "name": "canonical signed intent construction and retained reduce-only instruction",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:order-model%2Fsrc%2Fmain%2Fscala%2Ftrading%2Forder%2FOrder.scala#sha256:d50f103756d8db7e4e299b9aa4504bf811e22559a7b79fd7a54e6a31c1102ea0",
+        "file:order-model%2Fsrc%2Ftest%2Fscala%2Ftrading%2Forder%2FOrderInstructionSuite.scala#sha256:2b613fb749ef221b0e9b0438f2d64c3443b87fc4a01717f5452ab8f5ca1081a3",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Forder-model-compiler%2Fnegative%2FImpossibleInstructionShapes.scala#sha256:37a08bc5fc24509435dab54898e4d502105e19b55b641c3b33a92290cdd359e8"
+      ]
+    },
+    {
+      "name": "closed order violations and staged deterministic accumulating validation",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:order-model%2Fsrc%2Fmain%2Fscala%2Ftrading%2Forder%2FError.scala#sha256:c3227bbdf4d0710d4b1acf6c7e58e5d600395aa7353b7b4516bb1a7cffd8f66c",
+        "file:order-model%2Fsrc%2Fmain%2Fscala%2Ftrading%2Forder%2FOrder.scala#sha256:d50f103756d8db7e4e299b9aa4504bf811e22559a7b79fd7a54e6a31c1102ea0",
+        "file:order-model%2Fsrc%2Ftest%2Fscala%2Ftrading%2Forder%2FOrderInstructionSuite.scala#sha256:2b613fb749ef221b0e9b0438f2d64c3443b87fc4a01717f5452ab8f5ca1081a3"
+      ]
+    },
+    {
+      "name": "value-oriented market, limit, stop-market, and stop-limit construction with removed Orders service",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:order-model%2Fsrc%2Fmain%2Fscala%2Ftrading%2Forder%2FOrder.scala#sha256:d50f103756d8db7e4e299b9aa4504bf811e22559a7b79fd7a54e6a31c1102ea0",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Feconomics-compiler%2Fnegative%2FRemovedFlatApi.scala#sha256:c37fed480e2f6574f3e1ff91bbcaa7fe6b166cfa3c9592c409d8f6f72594c098",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FEconomicsCompilerBoundarySuite.scala#sha256:6ac49df35b273674c006666a44fa545e6907b15fa87d22405a44190ccc4d0cc3"
+      ]
+    },
+    {
+      "name": "formatting, focused suites, compiler boundaries, and clean full repository matrix",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:openspec%2Fchanges%2Fseparate-order-and-execution-scenario-modules%2Fimplementation-notes%2Ftask-group-4.md#sha256:2db81318c53c20533f5a2607ee68dcbc4d3a62c2146632c99d3bb606aab2506f"
+      ]
+    }
+  ],
+  "automatedReview": {
+    "verdict": "pass",
+    "findings": []
+  },
+  "artifacts": [
+    "file:openspec%2Fchanges%2Fseparate-order-and-execution-scenario-modules%2Fimplementation-notes%2Ftask-group-4.md#sha256:2db81318c53c20533f5a2607ee68dcbc4d3a62c2146632c99d3bb606aab2506f",
+    "file:memory%2Fsession-bridge.md#sha256:afbdfe01e93acf84d2a5219057c2e1ab7dade072f5998383941293ca6b4f5e25"
+  ],
+  "summary": "Established sole smart construction for signed OrderIntent values, closed non-empty order violations, staged identity and iceberg accumulation with fail-fast head projection, and canonical value-oriented convenience constructors while removing the Orders service. The clean 774-test repository matrix passed. Automated Task Group review covered contract scope, behavior, architecture, ordinary runtime identity, deterministic diagnostics, downstream compatibility, compiler boundaries, and test sufficiency with no findings; it changed no file, triaged no finding, and is not canonical whole-change Verify or Human Review."
+}

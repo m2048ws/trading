@@ -197,4 +197,3 @@ and commit paths separately; snapshot lookup SHALL remain pure and require no ca
 #### Scenario: Measure the data-plane path
 - **WHEN** a high-volume decode or replay benchmark uses the live interpreter
 - **THEN** it captures one snapshot and measures pure snapshot lookup separately from rare coordinated publication
-

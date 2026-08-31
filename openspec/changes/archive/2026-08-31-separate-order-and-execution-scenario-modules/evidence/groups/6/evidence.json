@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 3,
+  "groupId": "6",
+  "checks": [
+    {
+      "name": "closed scenario locations, violations, and non-empty deterministic diagnostics",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:execution-scenario%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fscenario%2FError.scala#sha256:c19a6ab0aa62f29d9dfac9f563881ae4f80668ec1625f0f3d3cfe7684c2af56a",
+        "file:execution-scenario%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fscenario%2FValidation.scala#sha256:75cee9b7493a965d00d5dc8b8abf797a907f38db6ac46eb0917f135acb2e2033",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Feconomics-compiler%2Fnegative%2FRemovedFlatApi.scala#sha256:3c6d02b65705c27c12e61ed2968a4a80b4553ee9d558ae3d7e03224b33c08e9d"
+      ]
+    },
+    {
+      "name": "branch-sensitive identity, lot, activation, pricing, role, and quality evaluation",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:execution-scenario%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fscenario%2FScenario.scala#sha256:5746b3d2ab68925dddf966bbbb4993604be17da2205b7b7816139226d84426d9",
+        "file:execution-scenario%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fscenario%2FOrderScenarioSuite.scala#sha256:cfd9ccd02f1b45d332a4b73762888abd66725fe1a3ca958d9753af14ab9e7d07",
+        "file:economics%2Fsrc%2Ftest%2Fscala%2Ftrading%2FDownstreamEconomicsSuite.scala#sha256:21029b22fc9798007feed188e83c7db73c49f5ebb135edd95055a5b80582edd3"
+      ]
+    },
+    {
+      "name": "one-assumptions evaluation, retained verified results, and removed Scenarios service",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:execution-scenario%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fscenario%2FScenario.scala#sha256:5746b3d2ab68925dddf966bbbb4993604be17da2205b7b7816139226d84426d9",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Feconomics-compiler%2Fpositive%2FCompleteEconomicsClient.scala#sha256:4a7daf29f7495ce30937e62bfd989944b1e16f3f57f239bc14e7af2ac2b5217f",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fexecution-scenario-compiler%2FExecutionScenarioHasNoUpstreamMutationOrDownstream.scala#sha256:e518bb05d05ae530875f28e07ac148262c18ee9bfd1654cd851b3afc7d342396",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FEconomicsCompilerBoundarySuite.scala#sha256:be5245355b24bf1ab5d1e64ac3335da481e41af462c5dc0d28e47f3798bc7bfc"
+      ]
+    },
+    {
+      "name": "formatting, focused suites, compiler boundaries, and clean full repository matrix",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:openspec%2Fchanges%2Fseparate-order-and-execution-scenario-modules%2Fimplementation-notes%2Ftask-group-6.md#sha256:257181e99cc8253a5e933635425c963811b82c3c335db241e34b58d583d3658f"
+      ]
+    }
+  ],
+  "automatedReview": {
+    "verdict": "pass",
+    "findings": []
+  },
+  "artifacts": [
+    "file:openspec%2Fchanges%2Fseparate-order-and-execution-scenario-modules%2Fimplementation-notes%2Ftask-group-6.md#sha256:257181e99cc8253a5e933635425c963811b82c3c335db241e34b58d583d3658f",
+    "file:memory%2Fsession-bridge.md#sha256:d28819ddb45edadfb67c17afca45be8ba3a379ca438684fd726d119cf8452006"
+  ],
+  "summary": "Replaced the Scenarios service and universal diagnostics with one-assumptions OrderScenario evaluation, closed non-empty violations, explicit stable ranking, and branch-sensitive prerequisites. Successful output retains verified activation, effective pricing, slices, and intent's signed position; compiler guards reject second-order evaluation, free-form locations, obsolete errors, and scenario forgery. The clean 778-test matrix passed. Automated Task Group review covered requirements, code quality, dependency direction, identity branches, failure suppression, deterministic order, immutability, consumer compatibility, and test sufficiency with no open findings; it changed no file itself, triaged no finding, and is not canonical whole-change Verify or Human Review."
+}

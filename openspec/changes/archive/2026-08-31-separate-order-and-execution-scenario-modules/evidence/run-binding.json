@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 3,
+  "changeName": "separate-order-and-execution-scenario-modules",
+  "runId": "run-e912075b-0579-49ba-8fbe-530c8b138a6b",
+  "finalRevision": "7ca2e135632a275562d46a0e6c5b08b3a3771639",
+  "planningRevision": "sha256:dfda7d3d6ddedf107afdbd3fb8820c55d9d89ec610e1fbe1a5894b4d7ff0d3e9",
+  "contract": {
+    "kind": "rfc-slice",
+    "deliveryRef": "RFC-0002-architecture-portfolio/S-02-order-execution-scenarios",
+    "rfcId": "RFC-0002-architecture-portfolio",
+    "rfcDigest": "sha256:a00c0cf1e3a4440bfce7dc828ad4ac119414f10d72e8d8c52c613403ef5977e2",
+    "acceptedCommit": "7b6f7a58f4dcbb8fb4bbdf3a8ba74ba66f222cce",
+    "sliceId": "S-02-order-execution-scenarios",
+    "sourcePath": "openspec/changes/separate-order-and-execution-scenario-modules/corgi/source.yaml",
+    "sourceDigest": "sha256:5d573cd0d12bbcffacb9b047475ee4beb81069dedabd420018b5d3f32f7acdd0",
+    "traceabilityPath": "openspec/changes/separate-order-and-execution-scenario-modules/corgi/traceability.yaml",
+    "traceabilityDigest": "sha256:a265f9092baad966ec7ef5f731ab1a889dc3542f8bd9a5e893b1f8338af6de5f",
+    "acceptance": [
+      {
+        "id": "AC-005",
+        "evidence": "automated",
+        "taskGroups": [
+          "2",
+          "7"
+        ]
+      },
+      {
+        "id": "AC-006",
+        "evidence": "both",
+        "taskGroups": [
+          "3",
+          "4",
+          "5"
+        ]
+      },
+      {
+        "id": "AC-007",
+        "evidence": "automated",
+        "taskGroups": [
+          "5",
+          "6"
+        ]
+      },
+      {
+        "id": "AC-008",
+        "evidence": "both",
+        "taskGroups": [
+          "7",
+          "8"
+        ]
+      }
+    ],
+    "tracker": {
+      "provider": "github",
+      "idempotencyKey": "b6050dd64a83ec73bbbdfe51650a5554afa7efd70abc8a0946f9fa8c4abbe8f3",
+      "issue": {
+        "id": "7",
+        "url": "https://github.com/m2048ws/trading/issues/7"
+      }
+    }
+  },
+  "archiveIntentId": "archive-45785492-a6be-4900-88ec-4bcfb93cfe46"
+}

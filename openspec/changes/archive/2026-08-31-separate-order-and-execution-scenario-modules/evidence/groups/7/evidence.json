@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 3,
+  "groupId": "7",
+  "checks": [
+    {
+      "name": "Focused round-trip and scenario suite",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:execution-scenario%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fscenario%2FOrderScenarioSuite.scala#sha256:5067a2000b1f739ef719215b3f316e70da5081d975973fc7433e0b0335e333b9"
+      ]
+    },
+    {
+      "name": "Focused downstream fee and risk suite",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:economics%2Fsrc%2Ftest%2Fscala%2Ftrading%2FDownstreamEconomicsSuite.scala#sha256:21029b22fc9798007feed188e83c7db73c49f5ebb135edd95055a5b80582edd3"
+      ]
+    },
+    {
+      "name": "Clean full repository validation matrix after review remediation",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:openspec%2Fchanges%2Fseparate-order-and-execution-scenario-modules%2Fimplementation-notes%2Ftask-group-7.md#sha256:270a5b3b371fb3a5a9c78f2cde4afdf0b477808ff65713aa144e37595cc8cfe2"
+      ]
+    },
+    {
+      "name": "Git whitespace validation",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:openspec%2Fchanges%2Fseparate-order-and-execution-scenario-modules%2Fimplementation-notes%2Ftask-group-7.md#sha256:270a5b3b371fb3a5a9c78f2cde4afdf0b477808ff65713aa144e37595cc8cfe2"
+      ]
+    }
+  ],
+  "automatedReview": {
+    "verdict": "pass",
+    "findings": []
+  },
+  "artifacts": [
+    "file:execution-scenario%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fscenario%2FScenario.scala#sha256:ecb6e90079e15bfef7b9fa8d94fa3485f4df184d45daacbaf42ff1ff9ed3e5bc",
+    "file:execution-scenario%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fscenario%2FOrderScenarioSuite.scala#sha256:5067a2000b1f739ef719215b3f316e70da5081d975973fc7433e0b0335e333b9",
+    "file:economics%2Fsrc%2Fmain%2Fscala%2Ftrading%2Ffee%2Fpolicy%2FFeePolicy.scala#sha256:04fe60d1880d8c0a755e123405aa35c5c592abb65caee666e81b7c740abc5fea",
+    "file:openspec%2Fchanges%2Fseparate-order-and-execution-scenario-modules%2Fimplementation-notes%2Ftask-group-7.md#sha256:270a5b3b371fb3a5a9c78f2cde4afdf0b477808ff65713aa144e37595cc8cfe2"
+  ],
+  "summary": "TG7 uses checked PositionLots combination and exact flat identity for round trips, preserves signed positions and complete legs, adapts transitional fee/risk consumers without policy changes, removes no-longer-owned economics sources, and passes the remediated 781-test matrix with a clean automated review."
+}

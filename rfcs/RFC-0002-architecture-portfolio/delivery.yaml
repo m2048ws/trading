@@ -1,6 +1,6 @@
 schemaVersion: 1
 rfcId: RFC-0002-architecture-portfolio
-revision: 3
+revision: 5
 slices:
   S-01-application-runtime-foundation:
     status: archived
@@ -17,7 +17,19 @@ slices:
       commit: 6c0d35bb652d75668ba6550dd8155f33dce0f58b
       evidenceManifest: sha256:4a4ee2d82d93b117f9e43689b2304cfa84221b2c8a3d23c66650e2ef6f0e4795
   S-02-order-execution-scenarios:
-    status: unbound
+    status: archived
+    binding:
+      change: separate-order-and-execution-scenario-modules
+      sourceDigest: sha256:5d573cd0d12bbcffacb9b047475ee4beb81069dedabd420018b5d3f32f7acdd0
+      plannedAt: '2026-08-29T20:09:17.582Z'
+      issue:
+        provider: github
+        id: '7'
+        url: https://github.com/m2048ws/trading/issues/7
+    archive:
+      archivedAt: '2026-08-31T07:05:33.455Z'
+      commit: 7ca2e135632a275562d46a0e6c5b08b3a3771639
+      evidenceManifest: sha256:cf55e7a63baf6f69f82624c3dda1f4cf8b2ca1ca742c6465fea71b43c28f7a03
   S-03-pure-risk:
     status: unbound
   S-04-fee-policy:

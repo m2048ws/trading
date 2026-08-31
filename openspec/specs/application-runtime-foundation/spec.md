@@ -221,4 +221,3 @@ or concrete configuration; code polymorphic in the base port SHALL rely solely o
 - **WHEN** a database interpreter guarantees durable restart recovery beyond an in-memory interpreter
 - **THEN** generic callers assume only the shared semantics and durability-aware callers use the explicitly stronger
   capability or configuration contract
-

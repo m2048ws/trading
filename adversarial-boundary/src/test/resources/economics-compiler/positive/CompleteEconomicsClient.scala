@@ -25,47 +25,32 @@ object CompleteEconomicsClient:
   )
   val genericLotsResult  = genericLots(instrument)(2)
   val genericPriceResult = genericPrice(instrument)(typedRate)
-  val canonicalIntent    = orders.intent(Side.Buy, lots)
-  val marketExecution    = orders.marketExecution(NonRestingTimeInForce.ImmediateOrCancel)
-  val forgedCoordinateResult = orders.create(
-    canonicalIntent.copy(positionChange = PositionLots.fromCoordinate(instrument)(-999)),
-    orders.immediate,
-    marketExecution
-  )
-  val foreignDefinition = definition.copy(
-    identity = InstrumentIdentity(
-      InstrumentId.from("foreign-client-instrument").toOption.get,
-      UnderlyingId.from("foreign-client-underlying").toOption.get
-    )
-  )
-  val foreignInstrument = Instrument.fromSpec(
-    InstrumentAssembler.assemble(foreignDefinition, snapshot).toOption.get
-  )
-  val foreignPosition = PositionLots.fromCoordinate(foreignInstrument)(lots.count.unrefined)
-  val foreignPositionResult = orders.create(
-    canonicalIntent.copy(positionChange = foreignPosition),
-    orders.immediate,
+  val canonicalIntent = OrderIntent.create(instrument)(Side.Buy, lots).toOption.get
+  val marketExecution = MarketExecution[D, B, Q](NonRestingTimeInForce.ImmediateOrCancel)
+  val directOrder = Order.create(instrument)(
+    canonicalIntent,
+    ImmediateActivation[B, Q](),
     marketExecution
   )
   val positionValue = Valuation
     .positionValue(instrument)(PositionLots.fromCoordinate(instrument)(2), state)
     .toOption
     .get
-  val assumptions = scenarios.assumptionsOne(marketOrder)(
+  val assumptions = ScenarioAssumptions.one(marketOrder)(
     marketOrder.activation.evidence,
     marketOrder.execution.resolution,
     slice
-  )
-  val entry     = scenarios.order(marketOrder, assumptions).toOption.get
-  val sell      = orders.market(Side.Sell, lots).toOption.get
-  val sellSlice = scenarios.slice(lots, state, LiquidityRole.Taker).toOption.get
-  val sellAssumptions = scenarios.assumptionsOne(sell)(
+  ).toOption.get
+  val entry     = OrderScenario.evaluate(instrument)(assumptions).toOption.get
+  val sell      = Order.market(instrument)(Side.Sell, lots).toOption.get
+  val sellSlice = LiquiditySlice.create(instrument)(lots, state, LiquidityRole.Taker).toOption.get
+  val sellAssumptions = ScenarioAssumptions.one(sell)(
     sell.activation.evidence,
     sell.execution.resolution,
     sellSlice
-  )
-  val exit = scenarios.order(sell, sellAssumptions).toOption.get
-  val trip = scenarios.roundTrip(entry, exit).toOption.get
+  ).toOption.get
+  val exit = OrderScenario.evaluate(instrument)(sellAssumptions).toOption.get
+  val trip = RoundTripScenario.create(instrument)(entry, exit).toOption.get
   val denomination = feePolicy
     .denomination(quote)(quoteGrid, QuantizationPolicy.TowardZero)
     .toOption
@@ -88,9 +73,7 @@ object CompleteEconomicsClient:
 
   assert(genericLotsResult.isRight)
   assert(genericPriceResult.isRight)
-  assert(forgedCoordinateResult.isLeft)
-  assert(foreignPositionResult.isLeft)
-  assert(orders.create(canonicalIntent, orders.immediate, marketExecution).isRight)
+  assert(directOrder.isRight)
   assert(positionValue.coefficient == Rational(200))
   assert(risk.unrefined.coefficient.compare(Rational.zero) >= 0)
 end CompleteEconomicsClient

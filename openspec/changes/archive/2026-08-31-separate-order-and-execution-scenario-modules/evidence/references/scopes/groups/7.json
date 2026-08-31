@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 3,
+  "scope": "group-7",
+  "runId": "run-a0f11aa6-d868-45bc-bfcd-872a4a5b6e49",
+  "references": [
+    {
+      "reference": "file:economics%2Fsrc%2Fmain%2Fscala%2Ftrading%2Ffee%2Fpolicy%2FFeePolicy.scala#sha256:04fe60d1880d8c0a755e123405aa35c5c592abb65caee666e81b7c740abc5fea",
+      "sourcePath": "economics/src/main/scala/trading/fee/policy/FeePolicy.scala",
+      "digest": "sha256:04fe60d1880d8c0a755e123405aa35c5c592abb65caee666e81b7c740abc5fea",
+      "archivePath": "references/blobs/04fe60d1880d8c0a755e123405aa35c5c592abb65caee666e81b7c740abc5fea"
+    },
+    {
+      "reference": "file:economics%2Fsrc%2Ftest%2Fscala%2Ftrading%2FDownstreamEconomicsSuite.scala#sha256:21029b22fc9798007feed188e83c7db73c49f5ebb135edd95055a5b80582edd3",
+      "sourcePath": "economics/src/test/scala/trading/DownstreamEconomicsSuite.scala",
+      "digest": "sha256:21029b22fc9798007feed188e83c7db73c49f5ebb135edd95055a5b80582edd3",
+      "archivePath": "references/blobs/21029b22fc9798007feed188e83c7db73c49f5ebb135edd95055a5b80582edd3"
+    },
+    {
+      "reference": "file:execution-scenario%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fscenario%2FScenario.scala#sha256:ecb6e90079e15bfef7b9fa8d94fa3485f4df184d45daacbaf42ff1ff9ed3e5bc",
+      "sourcePath": "execution-scenario/src/main/scala/trading/scenario/Scenario.scala",
+      "digest": "sha256:ecb6e90079e15bfef7b9fa8d94fa3485f4df184d45daacbaf42ff1ff9ed3e5bc",
+      "archivePath": "references/blobs/ecb6e90079e15bfef7b9fa8d94fa3485f4df184d45daacbaf42ff1ff9ed3e5bc"
+    },
+    {
+      "reference": "file:execution-scenario%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fscenario%2FOrderScenarioSuite.scala#sha256:5067a2000b1f739ef719215b3f316e70da5081d975973fc7433e0b0335e333b9",
+      "sourcePath": "execution-scenario/src/test/scala/trading/scenario/OrderScenarioSuite.scala",
+      "digest": "sha256:5067a2000b1f739ef719215b3f316e70da5081d975973fc7433e0b0335e333b9",
+      "archivePath": "references/blobs/5067a2000b1f739ef719215b3f316e70da5081d975973fc7433e0b0335e333b9"
+    },
+    {
+      "reference": "file:openspec%2Fchanges%2Fseparate-order-and-execution-scenario-modules%2Fimplementation-notes%2Ftask-group-7.md#sha256:270a5b3b371fb3a5a9c78f2cde4afdf0b477808ff65713aa144e37595cc8cfe2",
+      "sourcePath": "openspec/changes/separate-order-and-execution-scenario-modules/implementation-notes/task-group-7.md",
+      "digest": "sha256:270a5b3b371fb3a5a9c78f2cde4afdf0b477808ff65713aa144e37595cc8cfe2",
+      "archivePath": "references/blobs/270a5b3b371fb3a5a9c78f2cde4afdf0b477808ff65713aa144e37595cc8cfe2"
+    }
+  ]
+}

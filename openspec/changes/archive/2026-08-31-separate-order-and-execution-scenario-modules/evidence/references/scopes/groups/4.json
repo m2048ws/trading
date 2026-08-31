@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 3,
+  "scope": "group-4",
+  "runId": "run-a0f11aa6-d868-45bc-bfcd-872a4a5b6e49",
+  "references": [
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Feconomics-compiler%2Fnegative%2FRemovedFlatApi.scala#sha256:c37fed480e2f6574f3e1ff91bbcaa7fe6b166cfa3c9592c409d8f6f72594c098",
+      "sourcePath": "adversarial-boundary/src/test/resources/economics-compiler/negative/RemovedFlatApi.scala",
+      "digest": "sha256:c37fed480e2f6574f3e1ff91bbcaa7fe6b166cfa3c9592c409d8f6f72594c098",
+      "archivePath": "references/blobs/c37fed480e2f6574f3e1ff91bbcaa7fe6b166cfa3c9592c409d8f6f72594c098"
+    },
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Forder-model-compiler%2Fnegative%2FImpossibleInstructionShapes.scala#sha256:37a08bc5fc24509435dab54898e4d502105e19b55b641c3b33a92290cdd359e8",
+      "sourcePath": "adversarial-boundary/src/test/resources/order-model-compiler/negative/ImpossibleInstructionShapes.scala",
+      "digest": "sha256:37a08bc5fc24509435dab54898e4d502105e19b55b641c3b33a92290cdd359e8",
+      "archivePath": "references/blobs/37a08bc5fc24509435dab54898e4d502105e19b55b641c3b33a92290cdd359e8"
+    },
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FEconomicsCompilerBoundarySuite.scala#sha256:6ac49df35b273674c006666a44fa545e6907b15fa87d22405a44190ccc4d0cc3",
+      "sourcePath": "adversarial-boundary/src/test/scala/external/EconomicsCompilerBoundarySuite.scala",
+      "digest": "sha256:6ac49df35b273674c006666a44fa545e6907b15fa87d22405a44190ccc4d0cc3",
+      "archivePath": "references/blobs/6ac49df35b273674c006666a44fa545e6907b15fa87d22405a44190ccc4d0cc3"
+    },
+    {
+      "reference": "file:memory%2Fsession-bridge.md#sha256:afbdfe01e93acf84d2a5219057c2e1ab7dade072f5998383941293ca6b4f5e25",
+      "sourcePath": "memory/session-bridge.md",
+      "digest": "sha256:afbdfe01e93acf84d2a5219057c2e1ab7dade072f5998383941293ca6b4f5e25",
+      "archivePath": "references/blobs/afbdfe01e93acf84d2a5219057c2e1ab7dade072f5998383941293ca6b4f5e25"
+    },
+    {
+      "reference": "file:openspec%2Fchanges%2Fseparate-order-and-execution-scenario-modules%2Fimplementation-notes%2Ftask-group-4.md#sha256:2db81318c53c20533f5a2607ee68dcbc4d3a62c2146632c99d3bb606aab2506f",
+      "sourcePath": "openspec/changes/separate-order-and-execution-scenario-modules/implementation-notes/task-group-4.md",
+      "digest": "sha256:2db81318c53c20533f5a2607ee68dcbc4d3a62c2146632c99d3bb606aab2506f",
+      "archivePath": "references/blobs/2db81318c53c20533f5a2607ee68dcbc4d3a62c2146632c99d3bb606aab2506f"
+    },
+    {
+      "reference": "file:order-model%2Fsrc%2Fmain%2Fscala%2Ftrading%2Forder%2FError.scala#sha256:c3227bbdf4d0710d4b1acf6c7e58e5d600395aa7353b7b4516bb1a7cffd8f66c",
+      "sourcePath": "order-model/src/main/scala/trading/order/Error.scala",
+      "digest": "sha256:c3227bbdf4d0710d4b1acf6c7e58e5d600395aa7353b7b4516bb1a7cffd8f66c",
+      "archivePath": "references/blobs/c3227bbdf4d0710d4b1acf6c7e58e5d600395aa7353b7b4516bb1a7cffd8f66c"
+    },
+    {
+      "reference": "file:order-model%2Fsrc%2Fmain%2Fscala%2Ftrading%2Forder%2FOrder.scala#sha256:d50f103756d8db7e4e299b9aa4504bf811e22559a7b79fd7a54e6a31c1102ea0",
+      "sourcePath": "order-model/src/main/scala/trading/order/Order.scala",
+      "digest": "sha256:d50f103756d8db7e4e299b9aa4504bf811e22559a7b79fd7a54e6a31c1102ea0",
+      "archivePath": "references/blobs/d50f103756d8db7e4e299b9aa4504bf811e22559a7b79fd7a54e6a31c1102ea0"
+    },
+    {
+      "reference": "file:order-model%2Fsrc%2Ftest%2Fscala%2Ftrading%2Forder%2FOrderInstructionSuite.scala#sha256:2b613fb749ef221b0e9b0438f2d64c3443b87fc4a01717f5452ab8f5ca1081a3",
+      "sourcePath": "order-model/src/test/scala/trading/order/OrderInstructionSuite.scala",
+      "digest": "sha256:2b613fb749ef221b0e9b0438f2d64c3443b87fc4a01717f5452ab8f5ca1081a3",
+      "archivePath": "references/blobs/2b613fb749ef221b0e9b0438f2d64c3443b87fc4a01717f5452ab8f5ca1081a3"
+    }
+  ]
+}

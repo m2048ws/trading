@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 3,
+  "scope": "group-1",
+  "runId": "run-a0f11aa6-d868-45bc-bfcd-872a4a5b6e49",
+  "references": [
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FEconomicsCompilerBoundarySuite.scala#sha256:1ee0e62ace18e9576d003df35e75b807518794f7eee08e7ef6e85845d53d5156",
+      "sourcePath": "adversarial-boundary/src/test/scala/external/EconomicsCompilerBoundarySuite.scala",
+      "digest": "sha256:1ee0e62ace18e9576d003df35e75b807518794f7eee08e7ef6e85845d53d5156",
+      "archivePath": "references/blobs/1ee0e62ace18e9576d003df35e75b807518794f7eee08e7ef6e85845d53d5156"
+    },
+    {
+      "reference": "file:build.sbt#sha256:ea7e946d7565b9a2ea9f1206fc89a064b824bcbe370c53870ffa40421f0d5e92",
+      "sourcePath": "build.sbt",
+      "digest": "sha256:ea7e946d7565b9a2ea9f1206fc89a064b824bcbe370c53870ffa40421f0d5e92",
+      "archivePath": "references/blobs/ea7e946d7565b9a2ea9f1206fc89a064b824bcbe370c53870ffa40421f0d5e92"
+    },
+    {
+      "reference": "file:economics%2Fsrc%2Fmain%2Fscala%2Ftrading%2Ffee%2Fpolicy%2FFeePolicy.scala#sha256:c2939df19f14bb4c0a2feaa6fe10425b8fb5248a5b54f1f47a576a85cdbacc2c",
+      "sourcePath": "economics/src/main/scala/trading/fee/policy/FeePolicy.scala",
+      "digest": "sha256:c2939df19f14bb4c0a2feaa6fe10425b8fb5248a5b54f1f47a576a85cdbacc2c",
+      "archivePath": "references/blobs/c2939df19f14bb4c0a2feaa6fe10425b8fb5248a5b54f1f47a576a85cdbacc2c"
+    },
+    {
+      "reference": "file:economics%2Fsrc%2Fmain%2Fscala%2Ftrading%2Forder%2FError.scala#sha256:aed476e3da31ba325e32f298d8a58b40fb13ef1862ca8642b423668f9e115b3a",
+      "sourcePath": "economics/src/main/scala/trading/order/Error.scala",
+      "digest": "sha256:aed476e3da31ba325e32f298d8a58b40fb13ef1862ca8642b423668f9e115b3a",
+      "archivePath": "references/blobs/aed476e3da31ba325e32f298d8a58b40fb13ef1862ca8642b423668f9e115b3a"
+    },
+    {
+      "reference": "file:economics%2Fsrc%2Fmain%2Fscala%2Ftrading%2Forder%2FOrder.scala#sha256:1993d491f829d483a1144d24a6bfd2b5aac6a18cd506220010dac7a7a81cf0e6",
+      "sourcePath": "economics/src/main/scala/trading/order/Order.scala",
+      "digest": "sha256:1993d491f829d483a1144d24a6bfd2b5aac6a18cd506220010dac7a7a81cf0e6",
+      "archivePath": "references/blobs/1993d491f829d483a1144d24a6bfd2b5aac6a18cd506220010dac7a7a81cf0e6"
+    },
+    {
+      "reference": "file:economics%2Fsrc%2Fmain%2Fscala%2Ftrading%2Frisk%2FRisk.scala#sha256:bcc5dcd8ec1dc81e77d31210b1c40be7a9e5dc692b3a463f520e47512cb129de",
+      "sourcePath": "economics/src/main/scala/trading/risk/Risk.scala",
+      "digest": "sha256:bcc5dcd8ec1dc81e77d31210b1c40be7a9e5dc692b3a463f520e47512cb129de",
+      "archivePath": "references/blobs/bcc5dcd8ec1dc81e77d31210b1c40be7a9e5dc692b3a463f520e47512cb129de"
+    },
+    {
+      "reference": "file:economics%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fscenario%2FError.scala#sha256:27870e362550d781308ddadf1fbe98a7fb1437d68d46fbf350140629ab22a540",
+      "sourcePath": "economics/src/main/scala/trading/scenario/Error.scala",
+      "digest": "sha256:27870e362550d781308ddadf1fbe98a7fb1437d68d46fbf350140629ab22a540",
+      "archivePath": "references/blobs/27870e362550d781308ddadf1fbe98a7fb1437d68d46fbf350140629ab22a540"
+    },
+    {
+      "reference": "file:economics%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fscenario%2FScenario.scala#sha256:66f283339407ec816e08b70827fbbfe2661284cc2dee7f624567fec1526c5529",
+      "sourcePath": "economics/src/main/scala/trading/scenario/Scenario.scala",
+      "digest": "sha256:66f283339407ec816e08b70827fbbfe2661284cc2dee7f624567fec1526c5529",
+      "archivePath": "references/blobs/66f283339407ec816e08b70827fbbfe2661284cc2dee7f624567fec1526c5529"
+    },
+    {
+      "reference": "file:economics%2Fsrc%2Ftest%2Fscala%2Ftrading%2FDownstreamEconomicsSuite.scala#sha256:08513cceaf25907befbffd223f3cf1071399ac4311d3cd2fed9345d2eabd2982",
+      "sourcePath": "economics/src/test/scala/trading/DownstreamEconomicsSuite.scala",
+      "digest": "sha256:08513cceaf25907befbffd223f3cf1071399ac4311d3cd2fed9345d2eabd2982",
+      "archivePath": "references/blobs/08513cceaf25907befbffd223f3cf1071399ac4311d3cd2fed9345d2eabd2982"
+    },
+    {
+      "reference": "file:memory%2Fsession-bridge.md#sha256:cf5491917afda16b36f827cacf8a1064a1ce7f4559e30671478fbb95e7103156",
+      "sourcePath": "memory/session-bridge.md",
+      "digest": "sha256:cf5491917afda16b36f827cacf8a1064a1ce7f4559e30671478fbb95e7103156",
+      "archivePath": "references/blobs/cf5491917afda16b36f827cacf8a1064a1ce7f4559e30671478fbb95e7103156"
+    },
+    {
+      "reference": "file:openspec%2Fchanges%2Fseparate-order-and-execution-scenario-modules%2Fcorgi%2Fsource.yaml#sha256:5d573cd0d12bbcffacb9b047475ee4beb81069dedabd420018b5d3f32f7acdd0",
+      "sourcePath": "openspec/changes/separate-order-and-execution-scenario-modules/corgi/source.yaml",
+      "digest": "sha256:5d573cd0d12bbcffacb9b047475ee4beb81069dedabd420018b5d3f32f7acdd0",
+      "archivePath": "references/blobs/5d573cd0d12bbcffacb9b047475ee4beb81069dedabd420018b5d3f32f7acdd0"
+    },
+    {
+      "reference": "file:openspec%2Fchanges%2Fseparate-order-and-execution-scenario-modules%2Fcorgi%2Ftraceability.yaml#sha256:a265f9092baad966ec7ef5f731ab1a889dc3542f8bd9a5e893b1f8338af6de5f",
+      "sourcePath": "openspec/changes/separate-order-and-execution-scenario-modules/corgi/traceability.yaml",
+      "digest": "sha256:a265f9092baad966ec7ef5f731ab1a889dc3542f8bd9a5e893b1f8338af6de5f",
+      "archivePath": "references/blobs/a265f9092baad966ec7ef5f731ab1a889dc3542f8bd9a5e893b1f8338af6de5f"
+    },
+    {
+      "reference": "file:openspec%2Fchanges%2Fseparate-order-and-execution-scenario-modules%2Fimplementation-notes%2Ftask-group-1.md#sha256:839537706dfda418a71ade0a5f37eaed2346e46776a77557aa3022b6649520c0",
+      "sourcePath": "openspec/changes/separate-order-and-execution-scenario-modules/implementation-notes/task-group-1.md",
+      "digest": "sha256:839537706dfda418a71ade0a5f37eaed2346e46776a77557aa3022b6649520c0",
+      "archivePath": "references/blobs/839537706dfda418a71ade0a5f37eaed2346e46776a77557aa3022b6649520c0"
+    }
+  ]
+}

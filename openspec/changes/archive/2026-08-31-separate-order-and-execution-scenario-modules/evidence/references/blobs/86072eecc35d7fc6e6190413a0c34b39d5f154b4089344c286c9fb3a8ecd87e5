@@ -1,0 +1,30 @@
+S-02 canonical Verify execution summary
+Date: 2026-08-31
+Final HEAD: 7ca2e135632a275562d46a0e6c5b08b3a3771639
+Planning revision: sha256:dfda7d3d6ddedf107afdbd3fb8820c55d9d89ec610e1fbe1a5894b4d7ff0d3e9
+
+Command:
+  sbt -batch scalafmtCheckAll scalafmtSbtCheck clean test benchmarks/Jmh/compile
+Result: PASS
+
+Module test totals:
+- quantities: 601 passed, 0 failed, 0 errors
+- reference-data: 13 passed, 0 failed, 0 errors
+- application: 9 passed, 0 failed, 0 errors
+- runtime: 18 passed, 0 failed, 0 errors
+- instrument-economics: 13 passed, 0 failed, 0 errors
+- order-model: 7 passed, 0 failed, 0 errors
+- execution-scenario: 10 passed, 0 failed, 0 errors
+- economics downstream: 10 passed, 0 failed, 0 errors
+- adversarial-boundary: 139 passed, 0 failed, 0 errors
+- total: 820 passed, 0 failed, 0 errors
+
+Additional gates in the same command:
+- scalafmtCheckAll: PASS
+- scalafmtSbtCheck: PASS
+- clean compilation: PASS
+- completed-JAR/compiler/adversarial boundaries: PASS
+- benchmarks/Jmh/compile: PASS
+
+The only emitted warnings were the existing JDK 26 warnings for the terminally deprecated sun.misc.Unsafe method used by
+the Scala 3.8.4 runtime. No production, build, planning, or tracked file changed during Verify.

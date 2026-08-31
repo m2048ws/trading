@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 3,
+  "groupId": "2",
+  "checks": [
+    {
+      "name": "physical order-model and execution-scenario artifact boundaries",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:build.sbt#sha256:30c3fe3e1034803d300575001639e49e40e0bc6fa6f9a8ecbba2271eeaf2c063",
+        "file:order-model%2FREADME.md#sha256:190e8c48b1e40dfaf4b56415a373c31d23fa18cdddaace0a4eba33bd7903a156",
+        "file:order-model%2Fsrc%2Fmain%2Fscala%2Ftrading%2Forder%2FOrder.scala#sha256:1993d491f829d483a1144d24a6bfd2b5aac6a18cd506220010dac7a7a81cf0e6",
+        "file:execution-scenario%2FREADME.md#sha256:ad4fdd33443362273df33b346640b486576fde852e0a35a582788fb3c7ecb98a",
+        "file:execution-scenario%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fscenario%2FScenario.scala#sha256:66f283339407ec816e08b70827fbbfe2661284cc2dee7f624567fec1526c5529",
+        "file:openspec%2Fchanges%2Fseparate-order-and-execution-scenario-modules%2Fimplementation-notes%2Ftask-group-2.md#sha256:3ab37a87672b115ce78ce815c0afd7c3586e3171a70bf3e8b642415aad5984e7"
+      ]
+    },
+    {
+      "name": "completed-JAR ownership and isolated forbidden-dependency compiler guards",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FEconomicsCompilerBoundarySuite.scala#sha256:a77f799348889bd9a0efd22fc83f053a1f67674792dbc22fe844f36e58e8586f",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Forder-model-compiler%2FOrderModelHasNoDownstream.scala#sha256:9259801d41163f57f66b228c8c5c0c19fc625b05612c61ac1fabedcfa0805f21",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fexecution-scenario-compiler%2FExecutionScenarioHasNoUpstreamMutationOrDownstream.scala#sha256:d1c14fd9db2f1e96db120cc034eebe513718d0b210517b88554c8a4406abcfe8",
+        "file:openspec%2Fchanges%2Fseparate-order-and-execution-scenario-modules%2Fimplementation-notes%2Ftask-group-2.md#sha256:3ab37a87672b115ce78ce815c0afd7c3586e3171a70bf3e8b642415aad5984e7"
+      ]
+    },
+    {
+      "name": "formatting, dependency-order compilation, and clean full repository matrix",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:build.sbt#sha256:30c3fe3e1034803d300575001639e49e40e0bc6fa6f9a8ecbba2271eeaf2c063",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FEconomicsCompilerBoundarySuite.scala#sha256:a77f799348889bd9a0efd22fc83f053a1f67674792dbc22fe844f36e58e8586f",
+        "file:openspec%2Fchanges%2Fseparate-order-and-execution-scenario-modules%2Fimplementation-notes%2Ftask-group-2.md#sha256:3ab37a87672b115ce78ce815c0afd7c3586e3171a70bf3e8b642415aad5984e7"
+      ]
+    }
+  ],
+  "automatedReview": {
+    "verdict": "pass",
+    "findings": []
+  },
+  "artifacts": [
+    "file:openspec%2Fchanges%2Fseparate-order-and-execution-scenario-modules%2Fimplementation-notes%2Ftask-group-2.md#sha256:3ab37a87672b115ce78ce815c0afd7c3586e3171a70bf3e8b642415aad5984e7",
+    "file:memory%2Fsession-bridge.md#sha256:7720ae7c34496f45b2b1a30fce33bdec85e10c318f7f84058f7380db136177c5"
+  ],
+  "summary": "Established real trading-order-model and trading-execution-scenario JAR owners, wired their one-way build and completed-JAR compiler classpaths, and preserved the transitional implementation while all 770 clean-matrix tests passed. Automated Task Group review covered scope, module ownership, dependency direction, immutable boundaries, compiler guards, and evidence integrity with no findings; it changed no file, triaged no finding, and is not canonical whole-change Verify or Human Review."
+}

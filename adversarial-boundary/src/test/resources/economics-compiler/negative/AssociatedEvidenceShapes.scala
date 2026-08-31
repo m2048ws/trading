@@ -2,57 +2,88 @@ package external.economics.negative
 
 import external.economics.fixtures.SharedEconomicsSetup.*
 import trading.order.*
+import trading.scenario.*
 
 object AssociatedEvidenceShapes:
-  val fixed = orders.fixedTrigger(PriceReference.Mark, TriggerComparison.AtOrAbove, price99)
-  val fixedOrder = orders.stopMarket(Side.Buy, lots, fixed).toOption.get
-  val fixedEvidence = orders.fixedEvidence(fixed)(price100).toOption.get
-  val trailing = orders
-    .trailingTrigger(PriceReference.Mark, TriggerComparison.AtOrBelow, 1)
+  val fixed         = FixedActivation(PriceReference.Mark, TriggerComparison.AtOrAbove, price99)
+  val fixedOrder    = Order.stopMarket(instrument)(Side.Buy, lots, fixed).toOption.get
+  val fixedEvidence = fixed.evidence(price100).toOption.get
+  val trailing = TrailingActivation
+    .create[B, Q](PriceReference.Mark, TriggerComparison.AtOrBelow, 1)
     .toOption
     .get
-  val trailingOrder = orders.stopMarket(Side.Buy, lots, trailing).toOption.get
-  val trailingEvidence = orders.trailingEvidence(trailing)(price100, price99).toOption.get
-  val directLimit = orders.limit(Side.Buy, lots, price100).toOption.get
-  val peg         = orders.peggedPricing(PriceReference.Mark, 1)
-  val peggedExecution = orders.pricedExecution(
+  val trailingOrder    = Order.stopMarket(instrument)(Side.Buy, lots, trailing).toOption.get
+  val trailingEvidence = trailing.evidence(price100, price99).toOption.get
+  val directLimit      = Order.limit(instrument)(Side.Buy, lots, price100).toOption.get
+  val peg              = PeggedPricing[B, Q](PriceReference.Mark, 1)
+  val peggedExecution = PricedExecution[D, B, Q, PeggedPricing[B, Q]](
     peg,
     TimeInForce.Day,
     LiquidityConstraint.Unrestricted,
-    orders.displayed
+    DisplayedVisibility
   )
-  val peggedOrder = orders
-    .create(orders.intent(Side.Buy, lots), orders.immediate, peggedExecution)
+  val peggedOrder = Order
+    .create(instrument)(
+      OrderIntent.create(instrument)(Side.Buy, lots).toOption.get,
+      ImmediateActivation[B, Q](),
+      peggedExecution
+    )
     .toOption
     .get
-  val pegResolution = orders.pegResolution(peg)(price99, price100).toOption.get
+  val pegResolution = peg.resolution(price99, price100).toOption.get
+
+  val fixedAssumptions = ScenarioAssumptions.one(fixedOrder)(
+    fixedEvidence,
+    fixedOrder.execution.resolution,
+    slice
+  ).toOption.get
+  val trailingAssumptions = ScenarioAssumptions.one(trailingOrder)(
+    trailingEvidence,
+    trailingOrder.execution.resolution,
+    slice
+  ).toOption.get
+  val peggedAssumptions = ScenarioAssumptions.one(peggedOrder)(
+    peggedOrder.activation.evidence,
+    pegResolution,
+    slice
+  ).toOption.get
 
   // OFFENDING-BEGIN
-  val fixedOnImmediate = scenarios.assumptionsOne(marketOrder)(
+  val fixedOnImmediate = ScenarioAssumptions.one(marketOrder)(
     fixedEvidence,
     marketOrder.execution.resolution,
     slice
   )
-  val missingFixed = scenarios.assumptionsOne(fixedOrder)(
+  val missingFixed = ScenarioAssumptions.one(fixedOrder)(
     marketOrder.activation.evidence,
     fixedOrder.execution.resolution,
     slice
   )
-  val trailingOnFixed = scenarios.assumptionsOne(fixedOrder)(
+  val trailingOnFixed = ScenarioAssumptions.one(fixedOrder)(
     trailingEvidence,
     fixedOrder.execution.resolution,
     slice
   )
-  val pegOnDirect = scenarios.assumptionsOne(directLimit)(
+  val pegOnDirect = ScenarioAssumptions.one(directLimit)(
     directLimit.activation.evidence,
     pegResolution,
     slice
   )
-  val directOnPegged = scenarios.assumptionsOne(peggedOrder)(
+  val directOnPegged = ScenarioAssumptions.one(peggedOrder)(
     peggedOrder.activation.evidence,
     directLimit.execution.pricing.resolution,
     slice
   )
-  val immediateStop = orders.stopMarket(Side.Buy, lots, orders.immediate, PositionEffect.Unrestricted)
+  val immediateStop = Order.stopMarket(instrument)(
+    Side.Buy,
+    lots,
+    ImmediateActivation[B, Q](),
+    PositionEffect.Unrestricted
+  )
+  val untypedMaps = ScenarioAssumptions.one(marketOrder)(
+    Map.empty[String, BigInt],
+    Map.empty[String, BigInt],
+    slice
+  )
   // OFFENDING-END
 end AssociatedEvidenceShapes

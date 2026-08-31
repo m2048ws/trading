@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 3,
+  "scope": "group-3",
+  "runId": "run-a0f11aa6-d868-45bc-bfcd-872a4a5b6e49",
+  "references": [
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Feconomics-compiler%2Fpositive%2FSameShapeReplayClient.scala#sha256:1c64af78246ac26419f5d017341d8be65b101347ebcdfa3760d0a7824a061058",
+      "sourcePath": "adversarial-boundary/src/test/resources/economics-compiler/positive/SameShapeReplayClient.scala",
+      "digest": "sha256:1c64af78246ac26419f5d017341d8be65b101347ebcdfa3760d0a7824a061058",
+      "archivePath": "references/blobs/1c64af78246ac26419f5d017341d8be65b101347ebcdfa3760d0a7824a061058"
+    },
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Forder-model-compiler%2Fnegative%2FImpossibleInstructionShapes.scala#sha256:4911eff85c17d36e9d9568b5b786de849d7528445ba27701e2f7629d9e02f914",
+      "sourcePath": "adversarial-boundary/src/test/resources/order-model-compiler/negative/ImpossibleInstructionShapes.scala",
+      "digest": "sha256:4911eff85c17d36e9d9568b5b786de849d7528445ba27701e2f7629d9e02f914",
+      "archivePath": "references/blobs/4911eff85c17d36e9d9568b5b786de849d7528445ba27701e2f7629d9e02f914"
+    },
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Forder-model-compiler%2Fpositive%2FInstructionAlgebra.scala#sha256:0b0468bbdd6a3aa3d02187648bbe587a5fd18139472ab65f1cfa7fa7144b524f",
+      "sourcePath": "adversarial-boundary/src/test/resources/order-model-compiler/positive/InstructionAlgebra.scala",
+      "digest": "sha256:0b0468bbdd6a3aa3d02187648bbe587a5fd18139472ab65f1cfa7fa7144b524f",
+      "archivePath": "references/blobs/0b0468bbdd6a3aa3d02187648bbe587a5fd18139472ab65f1cfa7fa7144b524f"
+    },
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FEconomicsCompilerBoundarySuite.scala#sha256:a8e9d275e015359d405e3f86aaa5f8df5a9d72593774e6e8846f25cbac667996",
+      "sourcePath": "adversarial-boundary/src/test/scala/external/EconomicsCompilerBoundarySuite.scala",
+      "digest": "sha256:a8e9d275e015359d405e3f86aaa5f8df5a9d72593774e6e8846f25cbac667996",
+      "archivePath": "references/blobs/a8e9d275e015359d405e3f86aaa5f8df5a9d72593774e6e8846f25cbac667996"
+    },
+    {
+      "reference": "file:build.sbt#sha256:3b16691609a78cfb36b4db7feba67b61911b1ecd24ae594f4bbc7bc226f3058e",
+      "sourcePath": "build.sbt",
+      "digest": "sha256:3b16691609a78cfb36b4db7feba67b61911b1ecd24ae594f4bbc7bc226f3058e",
+      "archivePath": "references/blobs/3b16691609a78cfb36b4db7feba67b61911b1ecd24ae594f4bbc7bc226f3058e"
+    },
+    {
+      "reference": "file:memory%2Fsession-bridge.md#sha256:c522413916bec9e8e1fd6f3d225993fa3dcbfd515822e14c2b0e373e6157ab01",
+      "sourcePath": "memory/session-bridge.md",
+      "digest": "sha256:c522413916bec9e8e1fd6f3d225993fa3dcbfd515822e14c2b0e373e6157ab01",
+      "archivePath": "references/blobs/c522413916bec9e8e1fd6f3d225993fa3dcbfd515822e14c2b0e373e6157ab01"
+    },
+    {
+      "reference": "file:openspec%2Fchanges%2Fseparate-order-and-execution-scenario-modules%2Fimplementation-notes%2Ftask-group-3.md#sha256:d66fbe46c8d141ec497a5819e143c7a2d7cfbd1b4239f91328149de687c5d2c6",
+      "sourcePath": "openspec/changes/separate-order-and-execution-scenario-modules/implementation-notes/task-group-3.md",
+      "digest": "sha256:d66fbe46c8d141ec497a5819e143c7a2d7cfbd1b4239f91328149de687c5d2c6",
+      "archivePath": "references/blobs/d66fbe46c8d141ec497a5819e143c7a2d7cfbd1b4239f91328149de687c5d2c6"
+    },
+    {
+      "reference": "file:order-model%2Fsrc%2Fmain%2Fscala%2Ftrading%2Forder%2FError.scala#sha256:4304ae048d6feb86cafd71c3a49b5a70c3c60ec39894ae9433084cfa8987ac72",
+      "sourcePath": "order-model/src/main/scala/trading/order/Error.scala",
+      "digest": "sha256:4304ae048d6feb86cafd71c3a49b5a70c3c60ec39894ae9433084cfa8987ac72",
+      "archivePath": "references/blobs/4304ae048d6feb86cafd71c3a49b5a70c3c60ec39894ae9433084cfa8987ac72"
+    },
+    {
+      "reference": "file:order-model%2Fsrc%2Fmain%2Fscala%2Ftrading%2Forder%2FOrder.scala#sha256:3aa25d1f5cfe1ae0c1ab06aa1b247e09e1ca139c4a5cd974c356b4ff715c147e",
+      "sourcePath": "order-model/src/main/scala/trading/order/Order.scala",
+      "digest": "sha256:3aa25d1f5cfe1ae0c1ab06aa1b247e09e1ca139c4a5cd974c356b4ff715c147e",
+      "archivePath": "references/blobs/3aa25d1f5cfe1ae0c1ab06aa1b247e09e1ca139c4a5cd974c356b4ff715c147e"
+    },
+    {
+      "reference": "file:order-model%2Fsrc%2Ftest%2Fscala%2Ftrading%2Forder%2FOrderInstructionSuite.scala#sha256:4b9f1b0bedcec031b7b2c48c6302f7349026f84c83c554b89cc1b0395bd719ba",
+      "sourcePath": "order-model/src/test/scala/trading/order/OrderInstructionSuite.scala",
+      "digest": "sha256:4b9f1b0bedcec031b7b2c48c6302f7349026f84c83c554b89cc1b0395bd719ba",
+      "archivePath": "references/blobs/4b9f1b0bedcec031b7b2c48c6302f7349026f84c83c554b89cc1b0395bd719ba"
+    }
+  ]
+}

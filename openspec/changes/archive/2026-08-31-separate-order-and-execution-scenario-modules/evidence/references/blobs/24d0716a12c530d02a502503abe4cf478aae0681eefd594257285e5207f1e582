@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "enabled": true,
+  "blockedReason": null,
+  "corgi": {
+    "version": "4.0.0-rc2",
+    "binary": "tools/corgi/node_modules/.bin/corgispec",
+    "npmIntegrity": "sha512-J+i7s4BthgIDvnMFTq/o/moRmnELa9EZ7So/a+3x+0CcUvzgASt/mESHX+/aTd3KuETk5onEkXZqZUhV/RX+ZQ=="
+  },
+  "github": {
+    "repository": "m2048ws/trading",
+    "remote": "origin",
+    "baseBranch": "main",
+    "branchPrefix": "corgi/"
+  },
+  "worktrees": {
+    "root": ".worktrees"
+  },
+  "admittedChanges": [
+    "introduce-application-and-runtime-foundation",
+    "separate-order-and-execution-scenario-modules",
+    "introduce-pure-risk-module",
+    "introduce-pure-fee-policy-module",
+    "introduce-versioned-boundary-codecs"
+  ],
+  "authority": {
+    "localCorgiCommits": true,
+    "fastForwardWipPush": true,
+    "draftPrCreateOrUpdate": true,
+    "readyForReview": false,
+    "requestReviewers": false,
+    "merge": false,
+    "remoteBranchDelete": false,
+    "tag": false,
+    "publish": false,
+    "release": false
+  }
+}

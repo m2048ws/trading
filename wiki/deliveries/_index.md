@@ -10,4 +10,5 @@ updated: 2026-08-29
 ## Deliveries
 <!-- corgi:managed:start deliveries -->
 - [[wiki/deliveries/RFC-0002-architecture-portfolio-S-01-application-runtime-foundation|RFC-0002-architecture-portfolio/S-01-application-runtime-foundation]]
+- [[wiki/deliveries/RFC-0002-architecture-portfolio-S-02-order-execution-scenarios|RFC-0002-architecture-portfolio/S-02-order-execution-scenarios]]
 <!-- corgi:managed:end deliveries -->

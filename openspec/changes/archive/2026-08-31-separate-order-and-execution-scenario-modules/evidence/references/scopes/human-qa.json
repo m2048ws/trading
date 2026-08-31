@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 3,
+  "scope": "human-qa",
+  "runId": "run-e912075b-0579-49ba-8fbe-530c8b138a6b",
+  "references": [
+    {
+      "reference": "file:target%2Fs02-tg13-archive-rehearsal.log#sha256:e4506977f6f30a712a623fb8c2dc822bfff5204d69ec28e6a22b409c3edf44dd",
+      "sourcePath": "target/s02-tg13-archive-rehearsal.log",
+      "digest": "sha256:e4506977f6f30a712a623fb8c2dc822bfff5204d69ec28e6a22b409c3edf44dd",
+      "archivePath": "references/blobs/e4506977f6f30a712a623fb8c2dc822bfff5204d69ec28e6a22b409c3edf44dd"
+    },
+    {
+      "reference": "file:target%2Fs02-tg13-canonical-verify.log#sha256:86072eecc35d7fc6e6190413a0c34b39d5f154b4089344c286c9fb3a8ecd87e5",
+      "sourcePath": "target/s02-tg13-canonical-verify.log",
+      "digest": "sha256:86072eecc35d7fc6e6190413a0c34b39d5f154b4089344c286c9fb3a8ecd87e5",
+      "archivePath": "references/blobs/86072eecc35d7fc6e6190413a0c34b39d5f154b4089344c286c9fb3a8ecd87e5"
+    },
+    {
+      "reference": "file:target%2Fs02-tg13-human-qa-carry-forward.log#sha256:eee2c2ebf937b2f16459d0a6e7c4219c2c773508f92aa5b386d5db1f27144d6b",
+      "sourcePath": "target/s02-tg13-human-qa-carry-forward.log",
+      "digest": "sha256:eee2c2ebf937b2f16459d0a6e7c4219c2c773508f92aa5b386d5db1f27144d6b",
+      "archivePath": "references/blobs/eee2c2ebf937b2f16459d0a6e7c4219c2c773508f92aa5b386d5db1f27144d6b"
+    }
+  ]
+}
