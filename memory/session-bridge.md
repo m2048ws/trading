@@ -14,16 +14,16 @@ updated: 2026-08-31
 - **Issue**: 9 https://github.com/m2048ws/trading/issues/9
 - **Change**: introduce-pure-fee-policy-module
 - **Worktree**: /Users/m/src/money/.worktrees/introduce-pure-fee-policy-module
-- **Phase at Checkpoint**: awaiting_verify
-- **Task Group at Checkpoint**: 9
-- **Observed Run Revision**: 10
-- **Last Verified HEAD**: 3a8fd512d036462e50c27cd3aad3d10f0e77cd73
+- **Phase at Checkpoint**: planning_ready
+- **Task Group at Checkpoint**: 10
+- **Observed Run Revision**: none
+- **Last Verified HEAD**: a293b9980b2220ca816b3911a655cdd4722b1d32
 
 The phase and revision above are the required next checkpoint carried by Task Group 9. Live Run Contract authority
 remains `applying` at revision 9 until Corgi acknowledges that commit.
 
 ## Next Action
-- Commit and acknowledge `introduce-pure-fee-policy-module` Task Group 9, synchronize draft PR #32, and stop Apply at
+- Start Apply for `introduce-pure-fee-policy-module` Task Group 10.
   `awaiting_verify`. Canonical Verify, Human Review, Human QA, and Archive remain separate gates.
 
 ## Blockers

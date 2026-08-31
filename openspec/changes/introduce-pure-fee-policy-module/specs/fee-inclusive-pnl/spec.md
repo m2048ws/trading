@@ -126,6 +126,33 @@ instrument settlement, reconstruct typed quantities from raw arithmetic, or move
 - **WHEN** policy uses a denomination in an asset other than base, quote, or settle
 - **THEN** the calculated fee retains that asset and grid and later requires an explicit market-state conversion
 
+#### Scenario: Calculate a taker charge
+- **WHEN** fee policy supplies an exact negative amount through a validated denomination
+- **THEN** the resulting fee retains a negative grid amount and the exact signed residual in that asset
+
+#### Scenario: Calculate a maker rebate
+- **WHEN** fee policy supplies an exact positive amount through a validated denomination
+- **THEN** the resulting fee retains a positive grid amount and the exact signed residual in that asset
+
+#### Scenario: Preserve fee rounding residual
+- **WHEN** an exact fee amount is not representable on the denomination grid
+- **THEN** the fee exposes quantized amount, residual, and unrounded amount satisfying exact typed conservation
+
+#### Scenario: Distinguish irreconcilable fee denominations
+- **WHEN** two otherwise identical fees retain the same stable grid identity under different coherent issuer lineage
+  or retain different immutable quanta or quantization policy
+- **THEN** they do not compare equal, while repeated values from one complete denomination compare equal with equal
+  hash codes
+
+#### Scenario: Keep denomination ownership coherent
+- **WHEN** fee construction receives an explicit instrument and denomination carrying different `InstrumentId` values
+- **THEN** it returns a typed instrument-mismatch failure before quantization
+
+#### Scenario: Keep fee policy out of the pure artifact
+- **WHEN** downstream Scala depends only on instrument economics
+- **THEN** it can construct exact fee values but has no fee-rate, schedule-selection, maker/taker, tier, minimum, or
+  account-policy API
+
 ### Requirement: Exact fee-inclusive PnL breakdown
 Fee-inclusive round-trip evaluation SHALL consume one explicit instrument, a complete checked round-trip scenario, and
 an explicit entry/exit fee-policy product. The two policies MAY be different so account tier, venue terms, or policy
@@ -195,6 +222,33 @@ calculate the kernel in raw `Rational` values.
 - **WHEN** the same invalid fee-inclusive request is evaluated repeatedly
 - **THEN** its non-empty ordered error collection is identical by leg, component, directive, and conversion position
 
+#### Scenario: Compose no fees
+- **WHEN** a caller constructs PnL from price PnL and an empty contribution vector
+- **THEN** fee PnL is exact zero in settlement and net PnL equals price PnL
+
+#### Scenario: Convert fees at their corresponding states
+- **WHEN** two fees share an asset but downstream orchestration supplies market states with different retained
+  settle-targeted rates
+- **THEN** each contribution preserves the exact conversion from its explicitly selected state before PnL summation
+
+#### Scenario: Reject a missing fee conversion
+- **WHEN** a fee's original asset has no settle-targeted conversion in the supplied market state
+- **THEN** contribution construction fails and preserves the missing asset identity for diagnosis
+
+#### Scenario: Reject foreign valuation inputs
+- **WHEN** price PnL or any settled fee contribution carries a different instrument or settlement identity
+- **THEN** PnL construction returns a typed mismatch rather than combining the quantities
+
+#### Scenario: Preserve component visibility
+- **WHEN** a caller inspects a PnL result
+- **THEN** price PnL, original fees, converted contributions, total fee PnL, and net PnL remain separately observable
+
+#### Scenario: Preserve retained contribution distinctions in PnL equality
+- **WHEN** two numerically identical contributions or PnL values retain irreconcilable settlement assets or original
+  fee denominations
+- **THEN** they do not compare equal, while repeated values from the same coherent inputs compare equal with equal hash
+  codes
+
 ### Requirement: Scenario context carries epistemic status
 `Fee`, assessed fee, settled contribution, and `Pnl` SHALL be deterministic exact values for the immutable policy,
 scenario, market, conversion, and rounding inputs supplied to their pure boundaries. They SHALL not be named estimated
@@ -222,6 +276,10 @@ adjustments SHALL enter through separately specified explicit contribution types
 #### Scenario: Exclude absent adjustments
 - **WHEN** no separately modeled funding, liquidation, or account contribution is supplied
 - **THEN** PnL contains normalized scenario price and assessed trading fees only
+
+#### Scenario: Exclude funding from trading-fee PnL
+- **WHEN** no funding, liquidation, or other separately modeled contribution is supplied
+- **THEN** PnL contains price and supplied trading-fee components only
 
 #### Scenario: Preserve component visibility
 - **WHEN** a caller inspects the final core PnL
