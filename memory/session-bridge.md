@@ -15,22 +15,22 @@ updated: 2026-08-31
 - **Change**: introduce-pure-risk-module
 - **Worktree**: /Users/m/src/money/.worktrees/introduce-pure-risk-module
 - **Phase at Checkpoint**: applying
-- **Task Group at Checkpoint**: 5
-- **Observed Run Revision**: 6
-- **Last Verified HEAD**: 755eb071c94ea0465427d158a104c6be8a6e6446
+- **Task Group at Checkpoint**: 6
+- **Observed Run Revision**: 7
+- **Last Verified HEAD**: 253efcb01197f17946478a5c59571efcd2c177b6
 
-The phase and revision above are the required next checkpoint carried by Task Group 5. Live Run Contract authority
-remains `applying` at revision 5 until Corgi acknowledges that commit.
+The phase and revision above are the required next checkpoint carried by Task Group 6. Live Run Contract authority
+remains `applying` at revision 6 until Corgi acknowledges that commit.
 
 ## Next Action
-- Commit and acknowledge `introduce-pure-risk-module` Task Group 5, sync draft PR #28, then implement Task Group 6.
+- Commit and acknowledge `introduce-pure-risk-module` Task Group 6, sync draft PR #28, then implement Task Group 7.
   Verify, Human Review, Human QA, and Archive remain separate gates.
 
 ## Blockers
 - none
 
 ## Uncommitted Work
-- Task Group 5's exact curve algebra, table validator, laws/boundaries, construction-cost evidence, and this checkpoint.
+- Task Group 6's primary sizing decision/search, probe laws, JMH evidence, and this checkpoint.
 
 ## Discoveries
 - The archived `establish-pure-instrument-economics` boundary was reconciled from commit `86613ee` before S-02
@@ -180,6 +180,11 @@ remains `applying` at revision 5 until Corgi acknowledges that commit.
 - Retained construction instrumentation proves algebraic work follows expression nodes and explicit breakpoints rather
   than the declared cap: an exact composed model with cap `10^100` records three nodes, no breakpoints, and no table
   rows. The focused Group 5 gate passes 23 risk tests, 7 completed-JAR/compiler tests, and repository formatting.
+- Boundary-certified primary sizing now returns a closed no-affordable/selected decision with retained one-lot,
+  selected, cap/next-unaffordable, and complete distinct probe evidence. Generated exhaustive comparison, cap-one,
+  plateau, inverse-shaped, and `10^100`-cap tests pass within `2 + ceil(log2(cap))` observations.
+- The non-published JMH run at cap 1,024 on JDK 26.0.2 measured roughly 5.02M direct lookups/s, 368K boundary searches/s,
+  and 3.75K benchmark-local exhaustive evaluations/s with one fork, three warmups, and five measurements.
 
 ## Promotion Queue
 - Review agent-configuration constraints before promoting any item to `memory/MEMORY.md`.

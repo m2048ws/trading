@@ -20,5 +20,15 @@ explicit breakpoints independently of the declared lot cap. The table route alon
 construction derives downside as exact `max(0, signedLoss)` and exposes neither the formula nor its total internal
 observer.
 
-Subsequent S-03 Task Groups add boundary-certified maximum sizing and the explicitly linear arbitrary fallback before
-the transitional `trading-economics` artifact is retired.
+`MaxAffordableLots.select(model)(budget)` performs exact boundary-certified binary search. Its closed result is either
+`NoAffordable(first)` or `Selected(best, AtCap/NextUnaffordable)`. The result retains every distinct assessment probed
+in order, observes no coordinate twice, and stays within `2 + ceil(log2(cap))` observations. Model construction owns
+validation, so primary selection is total and has no per-probe error branch, zero/fractional sentinel, or discarded
+scalar-only result.
+
+The non-published JMH project measures direct curve lookup, boundary-certified maximum sizing, and a benchmark-local
+exhaustive reference. The production risk artifact still exposes neither its internal observer nor an implicit
+exhaustive path.
+
+Subsequent S-03 Task Groups add the explicitly linear arbitrary fallback before the transitional `trading-economics`
+artifact is retired.

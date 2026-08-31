@@ -7,7 +7,11 @@ import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
+import java.util.Locale
 import java.util.jar.JarFile
+import javax.tools.DiagnosticCollector
+import javax.tools.JavaFileObject
+import javax.tools.ToolProvider
 import scala.jdk.CollectionConverters.*
 
 import dotty.tools.dotc.Main
@@ -19,8 +23,9 @@ class RiskCompilerBoundarySuite extends FunSuite:
     def succeeded: Boolean = errors.isEmpty && warnings.isEmpty
     def rendered: String   = (errors ++ warnings).mkString("\n")
 
-  private val fixturesRoot = Paths.get(getClass.getResource("/risk-compiler").toURI)
-  private val classpath    =
+  private val fixturesRoot     = Paths.get(getClass.getResource("/risk-compiler").toURI)
+  private val javaFixturesRoot = Paths.get(getClass.getResource("/risk-java").toURI)
+  private val classpath        =
     val resource = Option(getClass.getResourceAsStream("/risk-compiler.classpath")).getOrElse:
       throw new IllegalStateException("missing generated risk compiler classpath")
     try new String(resource.readAllBytes(), StandardCharsets.UTF_8).trim
@@ -136,6 +141,18 @@ class RiskCompilerBoundarySuite extends FunSuite:
       "model exposes a public arbitrary-function certification path"
     )
 
+  test("completed risk JAR rejects unknown Java decision alternatives at construction"):
+    val result = compileJava(javaFixturesRoot.resolve("negative/RejectedRiskDecisionImplementations.java"))
+    assert(result.succeeded, result.diagnostics)
+    val loader = new URLClassLoader(Array(result.output.toUri.toURL), getClass.getClassLoader)
+    try
+      val fixture = Class.forName("external.risk.negative.RejectedRiskDecisionImplementations", true, loader)
+      assertEquals(
+        fixture.getMethod("guardsRejectUnknownAlternatives").invoke(null),
+        java.lang.Boolean.TRUE
+      )
+    finally loader.close()
+
   private def compilePrelude(source: Path): Compilation =
     val lines    = Files.readAllLines(source, StandardCharsets.UTF_8)
     val filtered = new java.util.ArrayList[String]()
@@ -158,6 +175,33 @@ class RiskCompilerBoundarySuite extends FunSuite:
       reporter
     )
     Compilation(output, reporter.allErrors.map(_.message), reporter.allWarnings.map(_.message))
+
+  private final case class JavaCompilation(output: Path, succeeded: Boolean, diagnostics: String)
+
+  private def compileJava(source: Path): JavaCompilation =
+    val compiler = Option(ToolProvider.getSystemJavaCompiler).getOrElse:
+      throw new IllegalStateException("a full JDK is required for Java boundary fixtures")
+    val diagnostics = new DiagnosticCollector[JavaFileObject]
+    val files       = compiler.getStandardFileManager(diagnostics, Locale.ROOT, StandardCharsets.UTF_8)
+    val output      = Files.createTempDirectory("risk-java-")
+    try
+      val units   = files.getJavaFileObjects(source.toFile)
+      val options = List(
+        "--release",
+        "25",
+        "-proc:none",
+        "-classpath",
+        classpath,
+        "-d",
+        output.toString
+      )
+      val succeeded = compiler.getTask(null, files, diagnostics, options.asJava, null, units).call()
+      val rendered  = diagnostics.getDiagnostics.asScala
+        .map(diagnostic => diagnostic.getMessage(Locale.ROOT))
+        .mkString("\n")
+      JavaCompilation(output, succeeded, rendered)
+    finally files.close()
+  end compileJava
 
   private def packagedRiskJar: Path =
     classpath

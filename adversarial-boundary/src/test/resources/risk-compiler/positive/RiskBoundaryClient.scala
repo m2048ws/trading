@@ -36,6 +36,12 @@ object RiskBoundaryClient:
   ) =
     MonotoneLotRisk.piecewise(instrument)(cap, segments)
 
+  def maximum[D <: Dim, S <: Dim](
+    model: MonotoneLotRisk[D, S],
+    budget: NonNegative[Quantity[S]]
+  ): MaxAffordableLots[D, S] =
+    MaxAffordableLots.select(model)(budget)
+
   def run(): Unit =
     assert(mismatch == DownsideInstrumentMismatch(expected, supplied))
 end RiskBoundaryClient
