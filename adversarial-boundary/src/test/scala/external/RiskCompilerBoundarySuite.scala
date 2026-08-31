@@ -94,12 +94,12 @@ class RiskCompilerBoundarySuite extends FunSuite:
     assert(rejected.rendered.contains("is not a member") || rejected.rendered.contains("Not found"), rejected.rendered)
     forbiddenDiagnostics.foreach(fragment => assert(!rejected.rendered.contains(fragment), rejected.rendered))
 
-  test("completed risk API rejects raw budget quantities and settlement-dimension mismatches"):
+  test("completed risk API rejects raw refinements, dimension mismatches, and arbitrary monotonicity promises"):
     val source  = fixturesRoot.resolve("negative/InvalidRiskInputs.scala")
     val prelude = compilePrelude(source)
     assert(prelude.succeeded, s"fixture prelude must compile independently:\n${prelude.rendered}")
     val rejected = compile(source)
-    assert(rejected.errors.size >= 2, rejected.rendered)
+    assert(rejected.errors.size >= 4, rejected.rendered)
     assert(rejected.rendered.contains("Found:"), rejected.rendered)
     assert(rejected.rendered.contains("Required:"), rejected.rendered)
     forbiddenDiagnostics.foreach(fragment => assert(!rejected.rendered.contains(fragment), rejected.rendered))
@@ -128,6 +128,13 @@ class RiskCompilerBoundarySuite extends FunSuite:
       )
     val model = Class.forName("trading.risk.MonotoneLotRisk")
     assert(!model.getMethods.exists(_.getName == "assess"), "model exposes its refined internal observer to Java")
+    assert(!model.getMethods.exists(_.getName == "lossAt"), "model exposes its closed signed-loss observer to Java")
+    assert(!model.getMethods.exists(_.getName == "formula"), "model exposes its closed formula representation to Java")
+    assert(!model.getMethods.exists(_.getName == "makeLots"), "model exposes its total lot constructor to Java")
+    assert(
+      !model.getMethods.exists(_.getParameterTypes.contains(classOf[Function1[?, ?]])),
+      "model exposes a public arbitrary-function certification path"
+    )
 
   private def compilePrelude(source: Path): Compilation =
     val lines    = Files.readAllLines(source, StandardCharsets.UTF_8)

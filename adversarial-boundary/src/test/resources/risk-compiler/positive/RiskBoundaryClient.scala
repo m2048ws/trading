@@ -19,6 +19,23 @@ object RiskBoundaryClient:
 
   def acceptsBudget[D <: Dim](budget: NonNegative[Quantity[D]]): NonNegative[Quantity[D]] = budget
 
+  def affine(
+    instrument: Instrument
+  )(
+    cap: PositiveWhole,
+    first: Quantity[instrument.roles.settle.D],
+    marginal: NonNegative[Quantity[instrument.roles.settle.D]]
+  ): MonotoneLotRisk[instrument.roles.position.D, instrument.roles.settle.D] =
+    MonotoneLotRisk.affine(instrument)(cap, first, marginal)
+
+  def piecewise(
+    instrument: Instrument
+  )(
+    cap: PositiveWhole,
+    segments: Vector[LossSegment[instrument.roles.settle.D]]
+  ) =
+    MonotoneLotRisk.piecewise(instrument)(cap, segments)
+
   def run(): Unit =
     assert(mismatch == DownsideInstrumentMismatch(expected, supplied))
 end RiskBoundaryClient

@@ -15,22 +15,22 @@ updated: 2026-08-31
 - **Change**: introduce-pure-risk-module
 - **Worktree**: /Users/m/src/money/.worktrees/introduce-pure-risk-module
 - **Phase at Checkpoint**: applying
-- **Task Group at Checkpoint**: 4
-- **Observed Run Revision**: 5
-- **Last Verified HEAD**: 8bf1ad6da61fd3f91f81aae85ecc543a8603e4a1
+- **Task Group at Checkpoint**: 5
+- **Observed Run Revision**: 6
+- **Last Verified HEAD**: 755eb071c94ea0465427d158a104c6be8a6e6446
 
-The phase and revision above are the required next checkpoint carried by Task Group 4. Live Run Contract authority
-remains `applying` at revision 4 until Corgi acknowledges that commit.
+The phase and revision above are the required next checkpoint carried by Task Group 5. Live Run Contract authority
+remains `applying` at revision 5 until Corgi acknowledges that commit.
 
 ## Next Action
-- Commit and acknowledge `introduce-pure-risk-module` Task Group 4, sync draft PR #28, then implement Task Group 5.
+- Commit and acknowledge `introduce-pure-risk-module` Task Group 5, sync draft PR #28, then implement Task Group 6.
   Verify, Human Review, Human QA, and Archive remain separate gates.
 
 ## Blockers
 - none
 
 ## Uncommitted Work
-- Task Group 4's checked assessment/model boundary, non-empty violations, authority tests, and this checkpoint.
+- Task Group 5's exact curve algebra, table validator, laws/boundaries, construction-cost evidence, and this checkpoint.
 
 ## Discoveries
 - The archived `establish-pure-instrument-economics` boundary was reconciled from commit `86613ee` before S-02
@@ -174,6 +174,12 @@ remains `applying` at revision 4 until Corgi acknowledges that commit.
   composition failures have domain-owned typed variants and accumulate through `ValidatedNec` into a deterministic
   non-empty public collection. Assessment, model, and violation-collection constructors are JVM-private via cached
   private method handles; the focused gate passes 9 risk and 7 completed-JAR/spoof tests.
+- Affine, checked piecewise, compatible addition/minimum/maximum, floor/ceiling quantization, and complete-table
+  construction now produce compact exact monotone models. Generated laws cover totality, exactness, identity, and each
+  monotone closure; table validation checks every row and adjacent risk in explicit `O(cap)` work.
+- Retained construction instrumentation proves algebraic work follows expression nodes and explicit breakpoints rather
+  than the declared cap: an exact composed model with cap `10^100` records three nodes, no breakpoints, and no table
+  rows. The focused Group 5 gate passes 23 risk tests, 7 completed-JAR/compiler tests, and repository formatting.
 
 ## Promotion Queue
 - Review agent-configuration constraints before promoting any item to `memory/MEMORY.md`.

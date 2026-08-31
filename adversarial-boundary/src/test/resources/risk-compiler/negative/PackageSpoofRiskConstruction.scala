@@ -29,6 +29,18 @@ object PackageSpoofRiskConstruction:
   def forgeEmptyViolations[S <: Dim]: ModelViolations[S] =
     new ModelViolations(Vector.empty)
 
+  def exposeAssessment[D <: Dim, S <: Dim](
+    model: MonotoneLotRisk[D, S],
+    count: PositiveWhole
+  ): LotRiskAssessment[D, S] =
+    model.assess(count)
+
+  def exposeSignedLoss[D <: Dim, S <: Dim](
+    model: MonotoneLotRisk[D, S],
+    count: PositiveWhole
+  ): Quantity[S] =
+    model.lossAt(count)
+
   final class ForgedModel[D <: Dim, S <: Dim](
     instrumentId: InstrumentId,
     position: DimRef[D],
