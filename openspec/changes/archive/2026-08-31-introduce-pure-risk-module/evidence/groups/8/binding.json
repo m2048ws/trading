@@ -1,0 +1,13 @@
+{
+  "id": "8",
+  "ordinal": 8,
+  "fingerprint": "sha256:1478576371e0e0276627312587338bf76ff8c24340491a4bbe5026e0b1bec2c6",
+  "status": "completed",
+  "commitRevision": "c01b94c496f51dd3ce15b4d389fc6e01486d99b2",
+  "commitTree": "13da3a214a0998554ab656b7bae31eb394d8f055",
+  "workspaceFingerprint": "sha256:a604732ea274722fb0058023eb3b43dbadbecd99b221bbee4eda99e210c27133",
+  "evidenceHash": "sha256:54c06bfcded322dbe1842cb5b7ad1c63822b5de61e4f8c592025d7bce6776a59",
+  "trackerCheckpoint": "<!-- corgispec:checkpoint:v3 run=run-a29691ac-e873-47ae-aa50-f27dff8c0381 group=8 key=a012cd650c71133068518c9a48bea46a479baabdb664caae3043bb380d7338ec -->",
+  "completedAt": "2026-08-31T10:34:09.814Z",
+  "carriedFromRunId": "run-a29691ac-e873-47ae-aa50-f27dff8c0381"
+}

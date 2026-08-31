@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 3,
+  "scope": "group-7",
+  "runId": "run-a29691ac-e873-47ae-aa50-f27dff8c0381",
+  "references": [
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Frisk-compiler%2Fpositive%2FRiskBoundaryClient.scala#sha256:a9aebdf27ab76409b3628fe5cbfeaf2e367d3a499562b620af8c87b2b3d332b8",
+      "sourcePath": "adversarial-boundary/src/test/resources/risk-compiler/positive/RiskBoundaryClient.scala",
+      "digest": "sha256:a9aebdf27ab76409b3628fe5cbfeaf2e367d3a499562b620af8c87b2b3d332b8",
+      "archivePath": "references/blobs/a9aebdf27ab76409b3628fe5cbfeaf2e367d3a499562b620af8c87b2b3d332b8"
+    },
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Frisk-java%2Fnegative%2FRejectedRiskDecisionImplementations.java#sha256:33c2844757f67e79c7cdbbc8e5691a67d39760ef0ad79581c111235a633eead8",
+      "sourcePath": "adversarial-boundary/src/test/resources/risk-java/negative/RejectedRiskDecisionImplementations.java",
+      "digest": "sha256:33c2844757f67e79c7cdbbc8e5691a67d39760ef0ad79581c111235a633eead8",
+      "archivePath": "references/blobs/33c2844757f67e79c7cdbbc8e5691a67d39760ef0ad79581c111235a633eead8"
+    },
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FRiskCompilerBoundarySuite.scala#sha256:cabc381362e7fea2058b4f571db47999bec3a93d372d587d0c76e65c9131530e",
+      "sourcePath": "adversarial-boundary/src/test/scala/external/RiskCompilerBoundarySuite.scala",
+      "digest": "sha256:cabc381362e7fea2058b4f571db47999bec3a93d372d587d0c76e65c9131530e",
+      "archivePath": "references/blobs/cabc381362e7fea2058b4f571db47999bec3a93d372d587d0c76e65c9131530e"
+    },
+    {
+      "reference": "file:economics%2Fsrc%2Ftest%2Fscala%2Ftrading%2FDownstreamEconomicsSuite.scala#sha256:72829dbdb8e16ed91d70299915e4c395d6395a4c78b59fb9e58fd313c76a9193",
+      "sourcePath": "economics/src/test/scala/trading/DownstreamEconomicsSuite.scala",
+      "digest": "sha256:72829dbdb8e16ed91d70299915e4c395d6395a4c78b59fb9e58fd313c76a9193",
+      "archivePath": "references/blobs/72829dbdb8e16ed91d70299915e4c395d6395a4c78b59fb9e58fd313c76a9193"
+    },
+    {
+      "reference": "file:memory%2Fsession-bridge.md#sha256:282de1989ea4b9c6af6f59123d0ecca0c45f7b79dd3dd68094e75080882343c7",
+      "sourcePath": "memory/session-bridge.md",
+      "digest": "sha256:282de1989ea4b9c6af6f59123d0ecca0c45f7b79dd3dd68094e75080882343c7",
+      "archivePath": "references/blobs/282de1989ea4b9c6af6f59123d0ecca0c45f7b79dd3dd68094e75080882343c7"
+    },
+    {
+      "reference": "file:openspec%2Fchanges%2Fintroduce-pure-risk-module%2Fimplementation-notes%2Ftask-group-7.md#sha256:6e2af1c32585fade1072636f15c10ba5400b3c169925001a622f4a3995e46d07",
+      "sourcePath": "openspec/changes/introduce-pure-risk-module/implementation-notes/task-group-7.md",
+      "digest": "sha256:6e2af1c32585fade1072636f15c10ba5400b3c169925001a622f4a3995e46d07",
+      "archivePath": "references/blobs/6e2af1c32585fade1072636f15c10ba5400b3c169925001a622f4a3995e46d07"
+    },
+    {
+      "reference": "file:risk%2FREADME.md#sha256:3bf9452b48e4687fc43c449db29b0860bcd2739449c420dd66178b3119f04ac5",
+      "sourcePath": "risk/README.md",
+      "digest": "sha256:3bf9452b48e4687fc43c449db29b0860bcd2739449c420dd66178b3119f04ac5",
+      "archivePath": "references/blobs/3bf9452b48e4687fc43c449db29b0860bcd2739449c420dd66178b3119f04ac5"
+    },
+    {
+      "reference": "file:risk%2Fsrc%2Fmain%2Fscala%2Ftrading%2Frisk%2FExhaustiveSizing.scala#sha256:c150730232ad6b08cee443ec3374cc7a6126775c0e2a7e7569e3ce20d149be63",
+      "sourcePath": "risk/src/main/scala/trading/risk/ExhaustiveSizing.scala",
+      "digest": "sha256:c150730232ad6b08cee443ec3374cc7a6126775c0e2a7e7569e3ce20d149be63",
+      "archivePath": "references/blobs/c150730232ad6b08cee443ec3374cc7a6126775c0e2a7e7569e3ce20d149be63"
+    },
+    {
+      "reference": "file:risk%2Fsrc%2Ftest%2Fscala%2Ftrading%2Frisk%2FExhaustiveLotSizingSuite.scala#sha256:47e53b78d4628f9db0e24f8a19195752b0779eb5c01f1ac248532543b723e878",
+      "sourcePath": "risk/src/test/scala/trading/risk/ExhaustiveLotSizingSuite.scala",
+      "digest": "sha256:47e53b78d4628f9db0e24f8a19195752b0779eb5c01f1ac248532543b723e878",
+      "archivePath": "references/blobs/47e53b78d4628f9db0e24f8a19195752b0779eb5c01f1ac248532543b723e878"
+    }
+  ]
+}

@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 3,
+  "scope": "group-1",
+  "runId": "run-a29691ac-e873-47ae-aa50-f27dff8c0381",
+  "references": [
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FEconomicsCompilerBoundarySuite.scala#sha256:7e5db82154d5754e1c1b8bc76e03f76e90fd42046ca21078ba3e00b32ce294cf",
+      "sourcePath": "adversarial-boundary/src/test/scala/external/EconomicsCompilerBoundarySuite.scala",
+      "digest": "sha256:7e5db82154d5754e1c1b8bc76e03f76e90fd42046ca21078ba3e00b32ce294cf",
+      "archivePath": "references/blobs/7e5db82154d5754e1c1b8bc76e03f76e90fd42046ca21078ba3e00b32ce294cf"
+    },
+    {
+      "reference": "file:build.sbt#sha256:efb082cc63779899e258cbf9a3e51b71b4c4259bc73670ada206f916120d08a1",
+      "sourcePath": "build.sbt",
+      "digest": "sha256:efb082cc63779899e258cbf9a3e51b71b4c4259bc73670ada206f916120d08a1",
+      "archivePath": "references/blobs/efb082cc63779899e258cbf9a3e51b71b4c4259bc73670ada206f916120d08a1"
+    },
+    {
+      "reference": "file:economics%2Fsrc%2Fmain%2Fscala%2Ftrading%2Frisk%2FError.scala#sha256:c6d89a9d6780b909eef06d15b005c52773f51648f002fdffb004510cd927d071",
+      "sourcePath": "economics/src/main/scala/trading/risk/Error.scala",
+      "digest": "sha256:c6d89a9d6780b909eef06d15b005c52773f51648f002fdffb004510cd927d071",
+      "archivePath": "references/blobs/c6d89a9d6780b909eef06d15b005c52773f51648f002fdffb004510cd927d071"
+    },
+    {
+      "reference": "file:economics%2Fsrc%2Fmain%2Fscala%2Ftrading%2Frisk%2FRisk.scala#sha256:a06d301f060b601f31d332893741385e4b6540705a24872467f111968c24a9ff",
+      "sourcePath": "economics/src/main/scala/trading/risk/Risk.scala",
+      "digest": "sha256:a06d301f060b601f31d332893741385e4b6540705a24872467f111968c24a9ff",
+      "archivePath": "references/blobs/a06d301f060b601f31d332893741385e4b6540705a24872467f111968c24a9ff"
+    },
+    {
+      "reference": "file:economics%2Fsrc%2Ftest%2Fscala%2Ftrading%2FDownstreamEconomicsSuite.scala#sha256:7f16fb88e3879c39bff684677079d1c4d7f1617ea0d9810701f8d8decec8f1cf",
+      "sourcePath": "economics/src/test/scala/trading/DownstreamEconomicsSuite.scala",
+      "digest": "sha256:7f16fb88e3879c39bff684677079d1c4d7f1617ea0d9810701f8d8decec8f1cf",
+      "archivePath": "references/blobs/7f16fb88e3879c39bff684677079d1c4d7f1617ea0d9810701f8d8decec8f1cf"
+    },
+    {
+      "reference": "file:memory%2Fsession-bridge.md#sha256:4eb4b0cbbb3bcdfa3e71b3dad20a1c71b8f0c0da8adb131230f1808639a5d49a",
+      "sourcePath": "memory/session-bridge.md",
+      "digest": "sha256:4eb4b0cbbb3bcdfa3e71b3dad20a1c71b8f0c0da8adb131230f1808639a5d49a",
+      "archivePath": "references/blobs/4eb4b0cbbb3bcdfa3e71b3dad20a1c71b8f0c0da8adb131230f1808639a5d49a"
+    },
+    {
+      "reference": "file:openspec%2Fchanges%2Fintroduce-pure-risk-module%2Fcorgi%2Fsource.yaml#sha256:1a8cca449f8fdfc009f8ccbe87989a288ea92e7ff41ee58d38aa513a53ed4f2d",
+      "sourcePath": "openspec/changes/introduce-pure-risk-module/corgi/source.yaml",
+      "digest": "sha256:1a8cca449f8fdfc009f8ccbe87989a288ea92e7ff41ee58d38aa513a53ed4f2d",
+      "archivePath": "references/blobs/1a8cca449f8fdfc009f8ccbe87989a288ea92e7ff41ee58d38aa513a53ed4f2d"
+    },
+    {
+      "reference": "file:openspec%2Fchanges%2Fintroduce-pure-risk-module%2Fcorgi%2Ftraceability.yaml#sha256:caaafeb6cd65026adcb4ea8f5f33d561ffce0ba8e6699d2301b57a5c510c4ab6",
+      "sourcePath": "openspec/changes/introduce-pure-risk-module/corgi/traceability.yaml",
+      "digest": "sha256:caaafeb6cd65026adcb4ea8f5f33d561ffce0ba8e6699d2301b57a5c510c4ab6",
+      "archivePath": "references/blobs/caaafeb6cd65026adcb4ea8f5f33d561ffce0ba8e6699d2301b57a5c510c4ab6"
+    },
+    {
+      "reference": "file:openspec%2Fchanges%2Fintroduce-pure-risk-module%2Fimplementation-notes%2Ftask-group-1.md#sha256:56261c4799c5d9316f66a5c21154b2ab1feb171a62e77549e3ea33e62770b508",
+      "sourcePath": "openspec/changes/introduce-pure-risk-module/implementation-notes/task-group-1.md",
+      "digest": "sha256:56261c4799c5d9316f66a5c21154b2ab1feb171a62e77549e3ea33e62770b508",
+      "archivePath": "references/blobs/56261c4799c5d9316f66a5c21154b2ab1feb171a62e77549e3ea33e62770b508"
+    }
+  ]
+}

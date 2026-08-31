@@ -1,0 +1,27 @@
+schemaVersion: 1
+kind: rfc-slice
+deliveryRef: RFC-0002-architecture-portfolio/S-03-pure-risk
+rfc:
+  id: RFC-0002-architecture-portfolio
+  path: rfcs/RFC-0002-architecture-portfolio
+  acceptedCommit: 7b6f7a58f4dcbb8fb4bbdf3a8ba74ba66f222cce
+  digest: sha256:a00c0cf1e3a4440bfce7dc828ad4ac119414f10d72e8d8c52c613403ef5977e2
+slice:
+  id: S-03-pure-risk
+  digest: sha256:a05a238a13d5991d4eb04551f5cb715ed07201a025fc67bba882929dbcc7aaac
+acceptance:
+  - id: AC-009
+    evidence: automated
+  - id: AC-010
+    evidence: both
+  - id: AC-011
+    evidence: automated
+  - id: AC-012
+    evidence: both
+deliveryBindingDigest: sha256:5c48aa48f340b070f622ac26dbaac00f7a57a1c8850d6b4dd5e7cc15b058ecc7
+tracker:
+  provider: github
+  idempotencyKey: b3a2e9f5c2a20973a10ce27835fa531a83713c77b1ada5522f26865b2981fd44
+  issue:
+    id: '8'
+    url: https://github.com/m2048ws/trading/issues/8

@@ -14,16 +14,16 @@ updated: 2026-08-31
 - **Issue**: 8 https://github.com/m2048ws/trading/issues/8
 - **Change**: introduce-pure-risk-module
 - **Worktree**: /Users/m/src/money/.worktrees/introduce-pure-risk-module
-- **Phase at Checkpoint**: awaiting_verify
-- **Task Group at Checkpoint**: 10
-- **Observed Run Revision**: 2
-- **Last Verified HEAD**: 43db8d83c57fe6f2d2d3bd1c09f3d3b6d5ee1e78
+- **Phase at Checkpoint**: archiving
+- **Task Group at Checkpoint**: none
+- **Observed Run Revision**: 7
+- **Last Verified HEAD**: 02d15a1cf37f236a15f40f7a88179387caaa3e81
 
 The phase and revision above are the required post-acknowledgement checkpoint for successor Run Contract
 `run-133327d8-35ce-46a2-9c8e-c82ab46f82c9`. Live Run Contract state remains execution authority.
 
 ## Next Action
-- Sync draft PR #28, then rerun the separate canonical whole-change Verify gate. Human Review, Human QA, and Archive
+- Consult Run Contract v3: resume tracker closeout for `introduce-pure-risk-module` only if pending; otherwise select the next accepted Slice. Local delivery: `wiki/deliveries/RFC-0002-architecture-portfolio-S-03-pure-risk.md`.
   remain later separate gates.
 
 ## Blockers
