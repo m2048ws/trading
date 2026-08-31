@@ -38,7 +38,7 @@ lazy val root =
       risk,
       orderModel,
       executionScenario,
-      economics,
+      feePolicy,
       adversarialBoundary
     )
     .settings(
@@ -59,7 +59,7 @@ lazy val root =
             risk / Test / test,
             orderModel / Test / test,
             executionScenario / Test / test,
-            economics / Test / test,
+            feePolicy / Test / test,
             adversarialBoundary / Test / test
           )
           .value
@@ -112,20 +112,19 @@ lazy val referenceData =
       )
     )
 
-lazy val economics =
+lazy val feePolicy =
   project
-    .in(file("economics"))
-    .dependsOn(instrumentEconomics, risk, executionScenario)
+    .in(file("fee-policy"))
+    .dependsOn(instrumentEconomics, orderModel, executionScenario, risk % "test->compile")
     .settings(
-      name       := "trading-economics",
-      moduleName := "trading-economics",
+      name       := "trading-fee-policy",
+      moduleName := "trading-fee-policy",
 
       Compile / exportJars := true,
 
       Test / classLoaderLayeringStrategy := ClassLoaderLayeringStrategy.Flat,
-      // The root clean gate rebuilds reference-data between sequential module test tasks. Isolate this downstream test
-      // runner so it observes one completed dependency classpath instead of an in-process loader cached across
-      // rebuilds.
+      // The root clean gate rebuilds upstream artifacts between sequential module test tasks. Isolate this downstream
+      // runner so it observes one completed dependency classpath instead of an in-process loader cached across builds.
       Test / fork := true,
 
       libraryDependencies ++= Seq(
@@ -285,7 +284,7 @@ lazy val adversarialBoundary =
       risk,
       orderModel,
       executionScenario,
-      economics
+      feePolicy
     )
     .settings(
       name           := "trading-quantities-adversarial-boundary",
@@ -303,7 +302,7 @@ lazy val adversarialBoundary =
           (risk / Compile / exportedProducts).value.files ++
           (orderModel / Compile / exportedProducts).value.files ++
           (executionScenario / Compile / exportedProducts).value.files ++
-          (economics / Compile / exportedProducts).value.files
+          (feePolicy / Compile / exportedProducts).value.files
         val quantitiesDependencies    = (quantities / Compile / externalDependencyClasspath).value.files
         val referenceDataDependencies = (referenceData / Compile / externalDependencyClasspath).value.files
         val applicationDependencies   = (application / Compile / externalDependencyClasspath).value.files
@@ -312,11 +311,11 @@ lazy val adversarialBoundary =
         val riskDependencies          = (risk / Compile / externalDependencyClasspath).value.files
         val orderDependencies         = (orderModel / Compile / externalDependencyClasspath).value.files
         val scenarioDependencies      = (executionScenario / Compile / externalDependencyClasspath).value.files
-        val economicsDependencies     = (economics / Compile / externalDependencyClasspath).value.files
+        val feePolicyDependencies     = (feePolicy / Compile / externalDependencyClasspath).value.files
         val compilerDependencies      = (Test / externalDependencyClasspath).value.files
         (moduleProducts ++ quantitiesDependencies ++ referenceDataDependencies ++ applicationDependencies ++
           runtimeDependencies ++ instrumentDependencies ++ orderDependencies ++ scenarioDependencies ++
-          riskDependencies ++ economicsDependencies ++ compilerDependencies).distinct
+          riskDependencies ++ feePolicyDependencies ++ compilerDependencies).distinct
       },
       applicationBoundaryClasspath := {
         val products = (quantities / Compile / exportedProducts).value.files ++

@@ -58,7 +58,8 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
   test("completed pure JAR compiles and runs a concrete core-only client with generic helpers"):
     val entries = coreCompilationClasspath.split(File.pathSeparator).map(Paths.get(_)).map(_.getFileName.toString)
     assert(entries.exists(_.startsWith("trading-instrument-economics_3-")))
-    assert(!entries.exists(_.startsWith("trading-economics_3-")))
+    assert(!entries.exists(_.startsWith("trading-fee-policy_3-")))
+    assert(!entries.exists(_.startsWith("trading-risk_3-")))
     assert(!entries.exists(_.startsWith("trading-application_3-")))
     val result = compileCore(Paths.get(getClass.getResource("/economics-core-compiler/PureCoreClient.scala").toURI))
     assert(result.succeeded, result.rendered)
@@ -131,20 +132,29 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
       instrumentArchive.close()
     end try
 
-  test("pure order, scenario, and transitional JARs expose only their one-way owned classes"):
+  test("pure order, scenario, fee-policy, and risk JARs expose only their one-way owned classes"):
+    assert(
+      !compilationClasspath
+        .split(File.pathSeparator)
+        .exists(entry => Paths.get(entry).getFileName.toString.startsWith("trading-economics_3-")),
+      "retired trading-economics artifact remains on the completed-product classpath"
+    )
     val instrumentJar = packagedInstrumentEconomicsJar
     val orderJar      = packagedOrderModelJar
     val scenarioJar   = packagedExecutionScenarioJar
-    val economicsJar  = packagedEconomicsJar
+    val feePolicyJar  = packagedFeePolicyJar
+    val riskJar       = packagedRiskJar
     val core          = new JarFile(instrumentJar.toFile)
     val order         = new JarFile(orderJar.toFile)
     val scenario      = new JarFile(scenarioJar.toFile)
-    val transitional  = new JarFile(economicsJar.toFile)
+    val feePolicy     = new JarFile(feePolicyJar.toFile)
+    val risk          = new JarFile(riskJar.toFile)
     try
       val coreEntries      = core.entries().asScala.map(_.getName).toSet
       val orderEntries     = order.entries().asScala.map(_.getName).toSet
       val scenarioEntries  = scenario.entries().asScala.map(_.getName).toSet
-      val economicsEntries = transitional.entries().asScala.map(_.getName).toSet
+      val feePolicyEntries = feePolicy.entries().asScala.map(_.getName).toSet
+      val riskEntries      = risk.entries().asScala.map(_.getName).toSet
       val expectedCore     = List(
         "InstrumentDefinition.class",
         "InstrumentAssembler.class",
@@ -197,8 +207,13 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
         !new String(assumptionsBytes, StandardCharsets.ISO_8859_1).contains("cats/data/NonEmptyVector"),
         s"scenario assumptions leaked Cats NonEmptyVector in $scenarioJar"
       )
-      List("trading/fee/policy/FeePolicy.class", "trading/risk/TransitionalRisk.class")
-        .foreach(entry => assert(economicsEntries.contains(entry), s"missing $entry from $economicsJar"))
+      assert(feePolicyEntries.contains("trading/fee/policy/FeePolicy.class"), s"missing fee policy from $feePolicyJar")
+      List(
+        "trading/risk/Risk.class",
+        "trading/risk/MonotoneLotRisk.class",
+        "trading/risk/MaxAffordableLots.class",
+        "trading/risk/ExhaustiveLotSizing.class"
+      ).foreach(entry => assert(riskEntries.contains(entry), s"missing $entry from $riskJar"))
 
       List(
         "trading/economics/instrument/MarketState.class",
@@ -216,8 +231,10 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
         "trading/application/",
         "trading/runtime/"
       ).foreach(entry => assert(!scenarioEntries.exists(_.startsWith(entry)), s"scenario JAR retained $entry"))
-      List("trading/economics/instrument/", "trading/order/", "trading/scenario/")
-        .foreach(entry => assert(!economicsEntries.exists(_.startsWith(entry)), s"economics JAR retained $entry"))
+      List("trading/economics/instrument/", "trading/order/", "trading/scenario/", "trading/risk/")
+        .foreach(entry => assert(!feePolicyEntries.exists(_.startsWith(entry)), s"fee-policy JAR retained $entry"))
+      List("trading/order/", "trading/scenario/", "trading/fee/policy/")
+        .foreach(entry => assert(!riskEntries.exists(_.startsWith(entry)), s"risk JAR retained $entry"))
 
       val staleCore = List(
         "trading/economics/instrument/Prices.class",
@@ -232,7 +249,8 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
       core.close()
       order.close()
       scenario.close()
-      transitional.close()
+      feePolicy.close()
+      risk.close()
     end try
 
   test("completed order-model classpath cannot compile downstream concerns"):
@@ -343,10 +361,10 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
     assert(slicesClass.getDeclaredConstructors.nonEmpty)
     assert(slicesClass.getDeclaredConstructors.forall(constructor => Modifier.isPrivate(constructor.getModifiers)))
 
-  test("positive downstream economics fixture compiles without warnings and runs"):
-    val result = compile(fixturesRoot.resolve("positive/CompleteEconomicsClient.scala"))
+  test("positive downstream composition fixture compiles without warnings and runs"):
+    val result = compile(fixturesRoot.resolve("positive/CompleteCompositionClient.scala"))
     assert(result.succeeded, result.rendered)
-    initializeModule(result.output, "external.economics.positive.CompleteEconomicsClient$")
+    initializeModule(result.output, "external.economics.positive.CompleteCompositionClient$")
 
   test("same-shape replay fixture compiles against immutable JARs and enforces captured semantics"):
     val result = compile(fixturesRoot.resolve("positive/SameShapeReplayClient.scala"))
@@ -478,12 +496,19 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
         fail(s"compiled Java fixture $className.$methodName could not be linked: $error")
     finally loader.close()
 
-  private def packagedEconomicsJar: Path =
+  private def packagedFeePolicyJar: Path =
     compilationClasspath
       .split(File.pathSeparator)
       .map(Paths.get(_))
-      .find(_.getFileName.toString.startsWith("trading-economics_3-"))
-      .getOrElse(fail("missing packaged economics artifact"))
+      .find(_.getFileName.toString.startsWith("trading-fee-policy_3-"))
+      .getOrElse(fail("missing packaged fee-policy artifact"))
+
+  private def packagedRiskJar: Path =
+    compilationClasspath
+      .split(File.pathSeparator)
+      .map(Paths.get(_))
+      .find(_.getFileName.toString.startsWith("trading-risk_3-"))
+      .getOrElse(fail("missing packaged risk artifact"))
 
   private def packagedInstrumentEconomicsJar: Path =
     compilationClasspath

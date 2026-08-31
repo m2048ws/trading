@@ -37,5 +37,6 @@ failure preserves the exact coordinate plus caller, lot-construction, or risk-as
 decision. Its successful decision proves complete traversal through the cap; it exposes neither monotone adjacency nor
 a conversion into `MonotoneLotRisk`.
 
-Subsequent S-03 Task Groups migrate downstream call sites before the transitional `trading-economics` artifact is
-retired.
+Downstream integration deliberately selects one of those two routes. The obsolete policy-owned sizing wrapper and
+transitional `trading-economics` artifact have been retired; fee-policy/scenario production remains in its own
+downstream artifact and risk retains no dependency on it.

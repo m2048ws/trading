@@ -29,7 +29,7 @@ class QuantityArtifactBoundarySuite extends FunSuite:
         val name = Paths.get(entry).getFileName.toString
         name.startsWith("trading-reference-data_3-") ||
         name.startsWith("trading-risk_3-") ||
-        name.startsWith("trading-economics_3-")
+        name.startsWith("trading-fee-policy_3-")
       .mkString(File.pathSeparator)
 
   test("real downstream source compiles against the completed quantities JAR without reference data"):

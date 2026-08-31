@@ -31,7 +31,7 @@ projects and must not be confused with the remaining proposed target.
 
 | State | SBT project | Artifact/directory | Production dependency |
 | --- | --- | --- | --- |
-| Current | root `trading` | unpublished aggregate | aggregates quantities, reference data, application, runtime, instrument economics, order model, execution scenario, economics, adversarial boundary |
+| Current | root `trading` | unpublished aggregate | aggregates quantities, reference data, application, runtime, instrument economics, order model, execution scenario, fee policy, risk, adversarial boundary |
 | Current | `quantities` | `trading-quantities` / `quantities/` | external mathematical libraries only |
 | Current | `referenceData` | `trading-reference-data` / `reference-data/` | quantities |
 | Current | `application` | `trading-application` / `application/` | reference data |
@@ -39,9 +39,10 @@ projects and must not be confused with the remaining proposed target.
 | Current | `instrumentEconomics` | `trading-instrument-economics` / `instrument-economics/` | quantities and reference data |
 | Current | `orderModel` | `trading-order-model` / `order-model/` | quantities and instrument economics |
 | Current | `executionScenario` | `trading-execution-scenario` / `execution-scenario/` | instrument economics and order model |
-| Transitional current | `economics` | `trading-economics` / `economics/` | instrument economics and execution scenario |
+| Current | `feePolicy` | `trading-fee-policy` / `fee-policy/` | instrument economics, order model, execution scenario; risk in tests only |
+| Current | `risk` | `trading-risk` / `risk/` | quantities and instrument economics |
 | Current test-only | `adversarialBoundary` | unpublished / `adversarial-boundary/` | all packaged production artifacts |
-| Current benchmark-only | `benchmarks` | unpublished / `benchmarks/` | reference data, application, and runtime; outside root aggregation |
+| Current benchmark-only | `benchmarks` | unpublished / `benchmarks/` | reference data, application, runtime, and risk; outside root aggregation |
 
 The current graph is acyclic:
 
@@ -53,8 +54,10 @@ quantities <- orderModel
 instrumentEconomics <- orderModel
 instrumentEconomics <- executionScenario
 orderModel <- executionScenario
-instrumentEconomics <- economics
-executionScenario <- economics
+instrumentEconomics <- feePolicy
+orderModel <- feePolicy
+executionScenario <- feePolicy
+instrumentEconomics <- risk
 
 all completed production artifacts -> adversarialBoundary (test-only)
 ```
@@ -147,7 +150,6 @@ the first deliberate durable compatibility contract.
 | Current exception | Why it is transitional | Migration owner |
 | --- | --- | --- |
 | Quantity-owned packing has been removed, leaving a deliberate durable-codec gap | Stable records require snapshots and an explicit schema owner | Proposal 9 adds versioned codecs |
-| `trading-economics` temporarily owns fee-policy and risk packages | Their final artifacts are owned by later proposals | Proposals 6–7, with Proposal 7 removing the empty aggregate |
 | The boundary-codec target module does not exist | Its physical boundary requires a real implementation and dependency body | Proposal 9 |
 
 These exceptions describe current implementation facts, not accepted permanent
@@ -219,3 +221,17 @@ paths succeed through a private JDK method handle. The completed order/scenario 
 Scala and Java negative fixtures, which
 also confirm that removed case-class `copy`/`apply` paths cannot recreate those values. Domain-readable checked factory
 calls and the associated evidence/resolution relationships remain unchanged.
+
+## 2026-08-31 S-03 delivery refresh
+
+RFC-0002 Slice `S-03-pure-risk` physically adds `trading-risk`, moves the unchanged downstream fee-policy implementation
+into `trading-fee-policy`, and retires the broad `trading-economics` aggregate after deleting its obsolete policy-owned
+risk wrapper. Risk depends only on quantities and instrument economics; fee policy depends on instrument economics,
+order model, and execution scenario, with risk present only on its test integration classpath. The later S-04 Slice
+still owns semantic redesign of fee policy rather than this ownership-only move.
+
+Risk owns exact refined downside, checked compact monotone loss models, logarithmic boundary-certified primary sizing,
+and a separately named linear exhaustive fallback with typed located failures. Scenario and fee-policy construction,
+current positions, account/portfolio offsets, margin, liquidation, funding, market acquisition, concurrency,
+persistence, tracing, and audit envelopes remain outside the risk capability. The production graph stays acyclic and
+the minimum build/runtime JDK remains 25.

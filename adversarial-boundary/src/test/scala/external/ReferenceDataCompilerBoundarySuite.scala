@@ -36,18 +36,18 @@ class ReferenceDataCompilerBoundarySuite extends FunSuite:
     val quantities    = entries.filter(_.getFileName.toString.startsWith("trading-quantities_3-"))
     val referenceData = entries.filter(_.getFileName.toString.startsWith("trading-reference-data_3-"))
     val application   = entries.filter(_.getFileName.toString.startsWith("trading-application_3-"))
-    val economics     = entries.filter(_.getFileName.toString.startsWith("trading-economics_3-"))
+    val feePolicy     = entries.filter(_.getFileName.toString.startsWith("trading-fee-policy_3-"))
 
     assertEquals(quantities.size, 1)
     assertEquals(referenceData.size, 1)
     assertEquals(application.size, 1)
-    assertEquals(economics.size, 1)
+    assertEquals(feePolicy.size, 1)
     assert(entries.forall(Files.isRegularFile(_)), entries.mkString("\n"))
     assert(quantities.head.getFileName.toString.endsWith(".jar"))
     assert(referenceData.head.getFileName.toString.endsWith(".jar"))
     assert(application.head.getFileName.toString.endsWith(".jar"))
 
-    (quantities ++ referenceData ++ economics).foreach: artifact =>
+    (quantities ++ referenceData ++ feePolicy).foreach: artifact =>
       val jar = new JarFile(artifact.toFile)
       try
         val names = jar.entries().asScala.map(_.getName).toVector

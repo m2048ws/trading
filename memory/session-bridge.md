@@ -15,22 +15,23 @@ updated: 2026-08-31
 - **Change**: introduce-pure-risk-module
 - **Worktree**: /Users/m/src/money/.worktrees/introduce-pure-risk-module
 - **Phase at Checkpoint**: applying
-- **Task Group at Checkpoint**: 7
-- **Observed Run Revision**: 8
-- **Last Verified HEAD**: 65915625e0783aa51e599dcbd8d11b4339e6c7e6
+- **Task Group at Checkpoint**: 8
+- **Observed Run Revision**: 9
+- **Last Verified HEAD**: 176654ae34e44b9414aec61824345f5596417587
 
-The phase and revision above are the required next checkpoint carried by Task Group 7. Live Run Contract authority
-remains `applying` at revision 7 until Corgi acknowledges that commit.
+The phase and revision above are the required next checkpoint carried by Task Group 8. Live Run Contract authority
+remains `applying` at revision 8 until Corgi acknowledges that commit.
 
 ## Next Action
-- Commit and acknowledge `introduce-pure-risk-module` Task Group 7, sync draft PR #28, then implement Task Group 8.
+- Commit and acknowledge `introduce-pure-risk-module` Task Group 8, sync draft PR #28, then complete Task Group 9's
+  whole-delivery pre-Verify evidence and handoff.
   Verify, Human Review, Human QA, and Archive remain separate gates.
 
 ## Blockers
 - none
 
 ## Uncommitted Work
-- Task Group 7's explicit arbitrary exhaustive fallback, located failures, linear traversal tests, and this checkpoint.
+- Task Group 8's downstream migration, aggregate retirement, artifact graph updates, and this checkpoint.
 
 ## Discoveries
 - The archived `establish-pure-instrument-economics` boundary was reconciled from commit `86613ee` before S-02
@@ -190,6 +191,13 @@ remains `applying` at revision 7 until Corgi acknowledges that commit.
   retains constant successful state, preserves the exact first failed coordinate and typed cause, and exposes a
   complete-range decision shape with no monotone adjacency or model conversion. The focused Group 7 gate passes 40
   risk tests and 8 completed-JAR/compiler-boundary tests, including unknown Java alternative rejection.
+- Task Group 7 is acknowledged at `176654ae34e44b9414aec61824345f5596417587`; draft PR #28 is synchronized.
+- The obsolete policy-owned risk wrapper and universal sizing errors are deleted. Fixed fee-inclusive inputs now earn
+  checked monotone tables before primary sizing, while arbitrary/non-monotone scenario evaluation deliberately uses
+  the located exhaustive fallback. Fee policy moves unchanged to `trading-fee-policy`, risk stays independent, and the
+  retired `economics/` directory/artifact is absent. The focused migration gate passes 40 risk, 11 fee-policy
+  integration, and 106 completed-JAR/compiler tests plus JMH compilation; the full repository aggregate passes 869
+  tests including all 147 adversarial boundary tests.
 
 ## Promotion Queue
 - Review agent-configuration constraints before promoting any item to `memory/MEMORY.md`.

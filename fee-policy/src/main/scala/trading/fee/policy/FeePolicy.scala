@@ -22,7 +22,7 @@ trait FeeSchedule[D <: Dim, B <: Dim, Q <: Dim, M]:
   def instrumentId: InstrumentId
   def assess(scenario: OrderScenario[D, B, Q, M]): Either[FeePolicyError, Vector[FeeLine[? <: Dim, M]]]
 
-/** Transitional downstream fee-policy and scenario orchestration boundary. */
+/** Pure downstream fee-policy and scenario orchestration boundary. */
 final class FeePolicy[I <: Instrument] private[policy] (val instrument: I):
 
   private val instrumentId = instrument.identity.id

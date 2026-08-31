@@ -42,7 +42,7 @@ class RiskCompilerBoundarySuite extends FunSuite:
     List(
       "trading-order-model_3-",
       "trading-execution-scenario_3-",
-      "trading-economics_3-",
+      "trading-fee-policy_3-",
       "trading-application_3-",
       "trading-runtime_3-",
       "cats-effect_3-",

@@ -4,7 +4,7 @@
 non-published aggregator: production code belongs to independently named modules rather than the repository root. The
 minimum build and runtime JDK is 25.
 
-The current implementation has eight production modules. `trading-quantities` provides exact quantities, anonymous
+The current implementation has nine production modules. `trading-quantities` provides exact quantities, anonymous
 uniform-grid arithmetic and projection, checked refinements, domain-neutral runtime dimension identity, and optional
 Typelevel Algebra integration. `trading-reference-data` owns stable asset/grid identity, immutable catalog transitions,
 trusted handles, and coherent snapshots. `trading-application` owns the minimal interpreter-neutral `LiveCatalog[F]`
@@ -13,8 +13,9 @@ interpreters; its public in-memory factory constructs a fresh atomic live catalo
 remains private. No speculative market-data, persistence, clock, execution, transaction, stream, or telemetry port is
 part of this foundation. `trading-instrument-economics` owns assembled instruments and the pure exact valuation,
 fee-value, and PnL kernel. `trading-order-model` owns immutable order intent and instruction evidence, while
-`trading-execution-scenario` owns checked hypothetical matched outcomes and depends one-way on the order model. The
-transitional `trading-economics` artifact now contains only downstream fee-policy and risk packages.
+`trading-execution-scenario` owns checked hypothetical matched outcomes and depends one-way on the order model.
+`trading-fee-policy` owns the existing pure downstream fee/scenario composition, while `trading-risk` owns exact
+downside, constructive monotone models, boundary-certified maximum sizing, and the explicit exhaustive fallback.
 
 | Module | Directory | SBT ID | Artifact | Package |
 | --- | --- | --- | --- | --- |
@@ -25,12 +26,13 @@ transitional `trading-economics` artifact now contains only downstream fee-polic
 | trading-instrument-economics | `instrument-economics` | `instrumentEconomics` | `trading-instrument-economics` | `trading.economics.instrument` |
 | trading-order-model | `order-model` | `orderModel` | `trading-order-model` | `trading.order` |
 | trading-execution-scenario | `execution-scenario` | `executionScenario` | `trading-execution-scenario` | `trading.scenario` |
-| trading-economics | `economics` | `economics` | `trading-economics` | `trading.fee.policy`, `trading.risk` |
+| trading-fee-policy | `fee-policy` | `feePolicy` | `trading-fee-policy` | `trading.fee.policy` |
+| trading-risk | `risk` | `risk` | `trading-risk` | `trading.risk` |
 
 See the [quantity module guide](quantities/README.md), [reference-data module guide](reference-data/README.md),
 [application module guide](application/README.md), [runtime module guide](runtime/README.md),
 [instrument economics guide](instrument-economics/README.md),
-[economics module guide](economics/README.md),
+[fee-policy module guide](fee-policy/README.md), [risk module guide](risk/README.md),
 [catalog benchmark evidence](docs/catalog-benchmark.md), and [quantity performance notes](quantities/docs/performance.md).
 
 ## Architecture charter
@@ -42,8 +44,9 @@ separation, dependency admission, Scala API ergonomics, and claim-proportional v
 the proposed target architecture separately.
 
 The catalog, snapshot, application-port, runtime-interpreter, instrument-economics, and shared benchmark
-responsibilities now have concrete owners. Order intent and execution-scenario interpretation are separate physical
-pure boundaries. The final fee-policy, risk, and boundary-codec artifacts remain owned by later RFC Slices. RFC-0002
+responsibilities now have concrete owners. Order intent, execution-scenario interpretation, fee-policy composition,
+and risk are separate physical pure boundaries. The fee-policy API's semantic redesign and the boundary-codec artifact
+remain owned by later RFC Slices. RFC-0002
 S-01 delivered the runtime and future-port admission foundation and its first live-catalog interpreter; S-05 owns the
 removed packing capability's durable replacement. Every current module owns a concrete responsibility rather than
 existing solely to match the target diagram.
@@ -58,7 +61,8 @@ sbt runtime/test
 sbt instrumentEconomics/test
 sbt orderModel/test
 sbt executionScenario/test
-sbt economics/test
+sbt feePolicy/test
+sbt risk/test
 sbt benchmarks/Jmh/compile
 sbt quantities/doc
 sbt adversarialBoundary/test

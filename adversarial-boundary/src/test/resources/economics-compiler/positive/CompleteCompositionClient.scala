@@ -9,7 +9,7 @@ import trading.quantity.grid.QuantizationPolicy
 import trading.risk.Risk
 import trading.scenario.*
 
-object CompleteEconomicsClient:
+object CompleteCompositionClient:
   def genericLots[I <: Instrument](instrument: I)(count: BigInt): Either[LotError, instrument.Lots] =
     Lots.fromCount(instrument)(count)
 
@@ -76,4 +76,4 @@ object CompleteEconomicsClient:
   assert(directOrder.isRight)
   assert(positionValue.coefficient == Rational(200))
   assert(risk.unrefined.coefficient.compare(Rational.zero) >= 0)
-end CompleteEconomicsClient
+end CompleteCompositionClient

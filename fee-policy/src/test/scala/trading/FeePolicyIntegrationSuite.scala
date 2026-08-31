@@ -13,7 +13,7 @@ import trading.risk.*
 import trading.scenario.*
 import trading.support.DownstreamFixtures
 
-class DownstreamEconomicsSuite extends FunSuite:
+class FeePolicyIntegrationSuite extends FunSuite:
   private val fixture    = new DownstreamFixtures
   private val instrument = fixture.linear
   private val policy     = FeePolicy(instrument)
@@ -240,63 +240,96 @@ class DownstreamEconomicsSuite extends FunSuite:
       )
     )
 
-  test("risk sizing selects the greatest exact discrete candidate and includes fee-inclusive PnL"):
-    val risk     = TransitionalRisk.create(instrument)(policy).toOption.get
-    val cap      = PositiveWhole(4).toOption.get
-    val budget   = NonNegative(Quantity(instrument.roles.settle.dimension.ref, Rational(3, 100))).toOption.get
-    val selected = risk.maxLots(budget, cap, policy.none): candidate =>
-      Right(
-        roundTrip(
-          candidate,
-          fixture.state(instrument, Rational(100)),
-          fixture.state(instrument, Rational(90))
+  test("a fixed adverse-exit table earns a monotone model before primary sizing"):
+    val cap          = PositiveWhole(4).toOption.get
+    val budget       = NonNegative(Quantity(instrument.roles.settle.dimension.ref, Rational(3, 100))).toOption.get
+    val observations = 1.to(4).toVector.map: count =>
+      val lots = Lots.fromCount(instrument)(count).toOption.get
+      val pnl  = policy
+        .pnl(
+          roundTrip(
+            lots,
+            fixture.state(instrument, Rational(100)),
+            fixture.state(instrument, Rational(90))
+          ),
+          policy.none
         )
-      )
-    assertEquals(selected.map(_.map(_.count.unrefined)), Right(Some(BigInt(3))))
+        .toOption
+        .get
+      lots -> pnl
+    val model    = MonotoneLotRisk.fromCompleteTable(instrument)(cap, observations).toOption.get
+    val selected = MaxAffordableLots.select(model)(budget)
 
-  test("risk sizing preserves exhaustive traversal, non-monotone selection, failures, and flat fees"):
-    val risk     = TransitionalRisk.create(instrument)(policy).toOption.get
+    selected match
+      case MaxAffordableLots.Selected(best, AffordableUpperBoundary.NextUnaffordable(next), _) =>
+        assertEquals(best.lots.count.unrefined, BigInt(3))
+        assertEquals(next.lots.count.unrefined, BigInt(4))
+      case other => fail(s"expected checked-table interior selection, received $other")
+
+  test("arbitrary scenario evaluation uses the explicit exhaustive fallback with located failures"):
     val cap      = PositiveWhole(4).toOption.get
     val budget   = NonNegative(Quantity(instrument.roles.settle.dimension.ref, Rational(3, 100))).toOption.get
     val visited  = scala.collection.mutable.ArrayBuffer.empty[BigInt]
-    val selected = risk.maxLots(budget, cap, policy.none): candidate =>
-      visited += candidate.count.unrefined
-      Right(
+    val selected = ExhaustiveLotSizing.select(instrument)(budget, cap): lots =>
+      visited += lots.count.unrefined
+      policy.pnl(
         roundTrip(
-          candidate,
+          lots,
           fixture.state(instrument, Rational(100)),
           fixture.state(instrument, Rational(90))
-        )
+        ),
+        policy.none
       )
     assertEquals(visited.toVector, Vector(1, 2, 3, 4).map(BigInt(_)))
-    assertEquals(selected.map(_.map(_.count.unrefined)), Right(Some(BigInt(3))))
+    assertEquals(
+      selected.map:
+        case ExhaustiveLotDecision.Selected(best, _)  => best.lots.count.unrefined
+        case ExhaustiveLotDecision.NoAffordable(_, _) => BigInt(0),
+      Right(BigInt(3))
+    )
 
-    val nonlinear = risk.maxLots(budget, cap, policy.none): candidate =>
-      val exit =
-        if candidate.count.unrefined == 2 then Rational(90)
-        else Rational(101)
-      Right(
+    val nonlinear = ExhaustiveLotSizing.select(instrument)(budget, cap): lots =>
+      val exit = if lots.count.unrefined == 2 then Rational(90) else Rational(101)
+      policy.pnl(
         roundTrip(
-          candidate,
+          lots,
           fixture.state(instrument, Rational(100)),
           fixture.state(instrument, exit)
-        )
+        ),
+        policy.none
       )
-    assertEquals(nonlinear.map(_.map(_.count.unrefined)), Right(Some(BigInt(4))))
+    assertEquals(
+      nonlinear.map:
+        case ExhaustiveLotDecision.Selected(best, _)  => best.lots.count.unrefined
+        case ExhaustiveLotDecision.NoAffordable(_, _) => BigInt(0),
+      Right(BigInt(4))
+    )
 
     val failure = RoundTripViolation.PositionNotFlat(BigInt(2), BigInt(-1))
-    val failed  = risk.maxLots(budget, cap, policy.none): candidate =>
-      if candidate.count.unrefined == 2 then Left(failure)
+    val failed  = ExhaustiveLotSizing.select(instrument)(budget, cap): lots =>
+      if lots.count.unrefined == 2 then Left(failure)
       else
         Right(
-          roundTrip(
-            candidate,
-            fixture.state(instrument, Rational(100)),
-            fixture.state(instrument, Rational(90))
-          )
+          policy
+            .pnl(
+              roundTrip(
+                lots,
+                fixture.state(instrument, Rational(100)),
+                fixture.state(instrument, Rational(90))
+              ),
+              policy.none
+            )
+            .toOption
+            .get
         )
-    assertEquals(failed, Left(RiskScenarioFailure(failure)))
+    assertEquals(
+      failed.left.map(value => (value.coordinate.unrefined, value.cause)),
+      Left((BigInt(2), ExhaustiveLotEvaluationCause.CallerEvaluation(failure)))
+    )
 
+  test("a fixed flat-fee table earns a monotone model without moving fee policy into risk"):
+    val cap          = PositiveWhole(4).toOption.get
+    val budget       = NonNegative(Quantity(instrument.roles.settle.dimension.ref, Rational(3, 100))).toOption.get
     val denomination = policy
       .denomination(fixture.usd)(fixture.usdCents, QuantizationPolicy.TowardZero)
       .toOption
@@ -313,15 +346,28 @@ class DownstreamEconomicsSuite extends FunSuite:
       val instrumentId: InstrumentId = instrument.identity.id
       def assess(value: policy.Scenario): Either[FeePolicyError, Vector[FeeLine[? <: Dim, policy.Market]]] =
         policy.line(value, 0, flatFee).map(Vector(_))
-    val withFees = risk.maxLots(budget, cap, schedule): candidate =>
-      Right(
-        roundTrip(
-          candidate,
-          fixture.state(instrument, Rational(100)),
-          fixture.state(instrument, Rational(90))
+    val observations = 1.to(4).toVector.map: count =>
+      val lots = Lots.fromCount(instrument)(count).toOption.get
+      val pnl  = policy
+        .pnl(
+          roundTrip(
+            lots,
+            fixture.state(instrument, Rational(100)),
+            fixture.state(instrument, Rational(90))
+          ),
+          schedule
         )
-      )
-    assertEquals(withFees.map(_.map(_.count.unrefined)), Right(Some(BigInt(1))))
+        .toOption
+        .get
+      lots -> pnl
+    val model    = MonotoneLotRisk.fromCompleteTable(instrument)(cap, observations).toOption.get
+    val withFees = MaxAffordableLots.select(model)(budget)
+    assertEquals(
+      withFees match
+        case MaxAffordableLots.Selected(best, _, _) => Some(best.lots.count.unrefined)
+        case MaxAffordableLots.NoAffordable(_, _)   => None,
+      Some(BigInt(1))
+    )
 
   test("policy composition preserves zero and ordered many schedules"):
     val lots      = Lots.fromCount(instrument)(1000).toOption.get
@@ -368,4 +414,4 @@ class DownstreamEconomicsSuite extends FunSuite:
       fixture.state(instrument, Rational(90))
     )
     assertEquals(policy.pnl(trip, invalid), Left(ForeignScenarioLine(0)))
-end DownstreamEconomicsSuite
+end FeePolicyIntegrationSuite
