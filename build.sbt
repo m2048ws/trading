@@ -12,6 +12,8 @@ val applicationBoundaryClasspath =
   taskKey[Seq[File]]("Completed application artifact classpath without runtime dependencies")
 val runtimeBoundaryClasspath =
   taskKey[Seq[File]]("Completed runtime artifact classpath with its concrete effect dependencies")
+val referenceDataCompilerClasspath =
+  taskKey[Seq[File]]("Immutable classpath for completed-JAR reference-data compiler fixtures")
 val instrumentEconomicsCompilerClasspath =
   taskKey[Seq[File]]("Immutable classpath for completed-JAR instrument-economics compiler fixtures")
 val riskCompilerClasspath =
@@ -20,6 +22,8 @@ val orderModelCompilerClasspath =
   taskKey[Seq[File]]("Immutable classpath for completed-JAR order-model compiler fixtures")
 val executionScenarioCompilerClasspath =
   taskKey[Seq[File]]("Immutable classpath for completed-JAR execution-scenario compiler fixtures")
+val feePolicyCompilerClasspath =
+  taskKey[Seq[File]]("Immutable classpath for completed-JAR fee-policy compiler fixtures")
 
 ThisBuild / scalaVersion := scala3Version
 ThisBuild / version      := "0.1.0-SNAPSHOT"
@@ -115,7 +119,7 @@ lazy val referenceData =
 lazy val feePolicy =
   project
     .in(file("fee-policy"))
-    .dependsOn(instrumentEconomics, orderModel, executionScenario, risk % "test->compile")
+    .dependsOn(quantities, instrumentEconomics, orderModel, executionScenario, risk % "test->compile")
     .settings(
       name       := "trading-fee-policy",
       moduleName := "trading-fee-policy",
@@ -342,6 +346,22 @@ lazy val adversarialBoundary =
         val dependencies = (runtime / Compile / externalDependencyClasspath).value.files
         (products ++ dependencies).distinct
       },
+      referenceDataCompilerClasspath := {
+        val moduleProducts = (quantities / Compile / exportedProducts).value.files ++
+          (referenceData / Compile / exportedProducts).value.files
+        val quantitiesDependencies = (quantities / Compile / externalDependencyClasspath).value.files
+        val referenceDependencies  = (referenceData / Compile / externalDependencyClasspath).value.files
+        val compilerDependencies   = (Test / externalDependencyClasspath).value.files.filter { file =>
+          val name = file.getName
+          name.startsWith("scala3-compiler_3-") ||
+          name.startsWith("scala3-interfaces-") ||
+          name.startsWith("tasty-core_3-") ||
+          name.startsWith("scala-asm-") ||
+          name.startsWith("compiler-interface-") ||
+          name.startsWith("util-interface-")
+        }
+        (moduleProducts ++ quantitiesDependencies ++ referenceDependencies ++ compilerDependencies).distinct
+      },
       instrumentEconomicsCompilerClasspath := {
         val moduleProducts = (quantities / Compile / exportedProducts).value.files ++
           (referenceData / Compile / exportedProducts).value.files ++
@@ -402,6 +422,31 @@ lazy val adversarialBoundary =
         (moduleProducts ++ quantitiesDependencies ++ referenceDependencies ++ instrumentDependencies ++
           orderDependencies ++ scenarioDependencies ++ compilerDependencies).distinct
       },
+      feePolicyCompilerClasspath := {
+        val moduleProducts = (quantities / Compile / exportedProducts).value.files ++
+          (referenceData / Compile / exportedProducts).value.files ++
+          (instrumentEconomics / Compile / exportedProducts).value.files ++
+          (orderModel / Compile / exportedProducts).value.files ++
+          (executionScenario / Compile / exportedProducts).value.files ++
+          (feePolicy / Compile / exportedProducts).value.files
+        val quantitiesDependencies = (quantities / Compile / externalDependencyClasspath).value.files
+        val referenceDependencies  = (referenceData / Compile / externalDependencyClasspath).value.files
+        val instrumentDependencies = (instrumentEconomics / Compile / externalDependencyClasspath).value.files
+        val orderDependencies      = (orderModel / Compile / externalDependencyClasspath).value.files
+        val scenarioDependencies   = (executionScenario / Compile / externalDependencyClasspath).value.files
+        val feePolicyDependencies  = (feePolicy / Compile / externalDependencyClasspath).value.files
+        val compilerDependencies   = (Test / externalDependencyClasspath).value.files.filter { file =>
+          val name = file.getName
+          name.startsWith("scala3-compiler_3-") ||
+          name.startsWith("scala3-interfaces-") ||
+          name.startsWith("tasty-core_3-") ||
+          name.startsWith("scala-asm-") ||
+          name.startsWith("compiler-interface-") ||
+          name.startsWith("util-interface-")
+        }
+        (moduleProducts ++ quantitiesDependencies ++ referenceDependencies ++ instrumentDependencies ++
+          orderDependencies ++ scenarioDependencies ++ feePolicyDependencies ++ compilerDependencies).distinct
+      },
       Test / resourceGenerators += Def.task {
         val directory = (Test / resourceManaged).value
         val outputs   = Seq(
@@ -422,6 +467,12 @@ lazy val adversarialBoundary =
         Seq(output)
       }.taskValue,
       Test / resourceGenerators += Def.task {
+        val output    = (Test / resourceManaged).value / "reference-data-compiler.classpath"
+        val classpath = referenceDataCompilerClasspath.value.map(_.getAbsolutePath).mkString(java.io.File.pathSeparator)
+        IO.write(output, classpath)
+        Seq(output)
+      }.taskValue,
+      Test / resourceGenerators += Def.task {
         val output    = (Test / resourceManaged).value / "order-model-compiler.classpath"
         val classpath = orderModelCompilerClasspath.value.map(_.getAbsolutePath).mkString(java.io.File.pathSeparator)
         IO.write(output, classpath)
@@ -437,6 +488,12 @@ lazy val adversarialBoundary =
         val output    = (Test / resourceManaged).value / "execution-scenario-compiler.classpath"
         val classpath =
           executionScenarioCompilerClasspath.value.map(_.getAbsolutePath).mkString(java.io.File.pathSeparator)
+        IO.write(output, classpath)
+        Seq(output)
+      }.taskValue,
+      Test / resourceGenerators += Def.task {
+        val output    = (Test / resourceManaged).value / "fee-policy-compiler.classpath"
+        val classpath = feePolicyCompilerClasspath.value.map(_.getAbsolutePath).mkString(java.io.File.pathSeparator)
         IO.write(output, classpath)
         Seq(output)
       }.taskValue,

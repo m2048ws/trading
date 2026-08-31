@@ -12,6 +12,7 @@ object StableIdentityUnavailable:
   val catalog = trading.reference.CatalogRoot.create()
   val packed = trading.quantity.runtime.PackedGridQuantity
   val risk: Class[trading.risk.RiskIdentityError] = classOf[trading.risk.RiskIdentityError]
+  val feePolicy: Class[trading.fee.policy.FeePolicy[?]] = classOf[trading.fee.policy.FeePolicy[?]]
   // OFFENDING-END
 
 end StableIdentityUnavailable

@@ -14,7 +14,8 @@ remains private. No speculative market-data, persistence, clock, execution, tran
 part of this foundation. `trading-instrument-economics` owns assembled instruments and the pure exact valuation,
 fee-value, and PnL kernel. `trading-order-model` owns immutable order intent and instruction evidence, while
 `trading-execution-scenario` owns checked hypothetical matched outcomes and depends one-way on the order model.
-`trading-fee-policy` owns the existing pure downstream fee/scenario composition, while `trading-risk` owns exact
+`trading-fee-policy` owns the existing pure downstream fee/scenario composition under the `trading.fee` package root,
+while `trading-risk` owns exact
 downside, constructive monotone models, boundary-certified maximum sizing, and the explicit exhaustive fallback.
 
 | Module | Directory | SBT ID | Artifact | Package |
@@ -26,7 +27,7 @@ downside, constructive monotone models, boundary-certified maximum sizing, and t
 | trading-instrument-economics | `instrument-economics` | `instrumentEconomics` | `trading-instrument-economics` | `trading.economics.instrument` |
 | trading-order-model | `order-model` | `orderModel` | `trading-order-model` | `trading.order` |
 | trading-execution-scenario | `execution-scenario` | `executionScenario` | `trading-execution-scenario` | `trading.scenario` |
-| trading-fee-policy | `fee-policy` | `feePolicy` | `trading-fee-policy` | `trading.fee.policy` |
+| trading-fee-policy | `fee-policy` | `feePolicy` | `trading-fee-policy` | `trading.fee` |
 | trading-risk | `risk` | `risk` | `trading-risk` | `trading.risk` |
 
 See the [quantity module guide](quantities/README.md), [reference-data module guide](reference-data/README.md),

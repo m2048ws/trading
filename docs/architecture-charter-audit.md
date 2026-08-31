@@ -39,7 +39,7 @@ projects and must not be confused with the remaining proposed target.
 | Current | `instrumentEconomics` | `trading-instrument-economics` / `instrument-economics/` | quantities and reference data |
 | Current | `orderModel` | `trading-order-model` / `order-model/` | quantities and instrument economics |
 | Current | `executionScenario` | `trading-execution-scenario` / `execution-scenario/` | instrument economics and order model |
-| Current | `feePolicy` | `trading-fee-policy` / `fee-policy/` | instrument economics, order model, execution scenario; risk in tests only |
+| Current | `feePolicy` | `trading-fee-policy` / `fee-policy/` | quantities, instrument economics, order model, execution scenario; risk in tests only |
 | Current | `risk` | `trading-risk` / `risk/` | quantities and instrument economics |
 | Current test-only | `adversarialBoundary` | unpublished / `adversarial-boundary/` | all packaged production artifacts |
 | Current benchmark-only | `benchmarks` | unpublished / `benchmarks/` | reference data, application, runtime, and risk; outside root aggregation |
@@ -54,6 +54,7 @@ quantities <- orderModel
 instrumentEconomics <- orderModel
 instrumentEconomics <- executionScenario
 orderModel <- executionScenario
+quantities <- feePolicy
 instrumentEconomics <- feePolicy
 orderModel <- feePolicy
 executionScenario <- feePolicy

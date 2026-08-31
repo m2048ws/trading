@@ -30,6 +30,11 @@ class ReferenceDataCompilerBoundarySuite extends FunSuite:
       throw new IllegalStateException("missing generated reference-data compiler classpath")
     try new String(resource.readAllBytes(), StandardCharsets.UTF_8).trim
     finally resource.close()
+  private val referenceDataOnlyClasspath =
+    val resource = Option(getClass.getResourceAsStream("/reference-data-compiler.classpath")).getOrElse:
+      throw new IllegalStateException("missing generated reference-data-only compiler classpath")
+    try new String(resource.readAllBytes(), StandardCharsets.UTF_8).trim
+    finally resource.close()
 
   test("reference-data fixtures consume completed immutable public artifacts"):
     val entries       = compilationClasspath.split(File.pathSeparator).toList.map(Paths.get(_))
@@ -63,6 +68,22 @@ class ReferenceDataCompilerBoundarySuite extends FunSuite:
         Set("trading/application/LiveCatalog.class")
       )
     finally applicationJar.close()
+
+  test("the completed reference-data classpath cannot access fee policy"):
+    val entries = referenceDataOnlyClasspath.split(File.pathSeparator).toList.map(Paths.get(_))
+    assertEquals(entries.count(_.getFileName.toString.startsWith("trading-quantities_3-")), 1)
+    assertEquals(entries.count(_.getFileName.toString.startsWith("trading-reference-data_3-")), 1)
+    assert(!entries.exists(_.getFileName.toString.startsWith("trading-fee-policy_3-")), entries.mkString("\n"))
+
+    val source  = fixturesRoot.resolve("negative/FeePolicyUnavailable.scala")
+    val prelude = compileFilteredPrelude(source, compileReferenceDataOnly)
+    assert(prelude.succeeded, s"fixture prelude must compile independently:\n${prelude.rendered}")
+    val rejected = compileReferenceDataOnly(source)
+    assert(rejected.errors.nonEmpty, rejected.rendered)
+    assert(rejected.rendered.contains("fee is not a member of trading"), rejected.rendered)
+    referenceDataForbiddenDiagnostics.foreach(fragment =>
+      assert(!rejected.rendered.contains(fragment), rejected.rendered)
+    )
 
   private val positiveFixtures = List(
     "ConcreteReferenceDataClient.scala"          -> "external.reference.positive.ConcreteReferenceDataClient$",
@@ -157,6 +178,9 @@ class ReferenceDataCompilerBoundarySuite extends FunSuite:
         )
 
   private def compilePrelude(source: Path): Compilation =
+    compileFilteredPrelude(source, compile)
+
+  private def compileFilteredPrelude(source: Path, compileFile: Path => Compilation): Compilation =
     val lines    = Files.readAllLines(source, StandardCharsets.UTF_8)
     val filtered = new java.util.ArrayList[String]()
     var dropping = false
@@ -170,24 +194,28 @@ class ReferenceDataCompilerBoundarySuite extends FunSuite:
     val directory = Files.createTempDirectory("reference-data-prelude-")
     val copy      = directory.resolve(source.getFileName)
     val _         = Files.write(copy, filtered, StandardCharsets.UTF_8)
-    compile(copy)
+    compileFile(copy)
 
   private def compile(source: Path): Compilation =
-    val output   = Files.createTempDirectory("reference-data-classes-")
-    val reporter = new StoreReporter()
-    val _        = Main.process(
-      Array(
-        "-classpath",
-        compilationClasspath,
-        "-d",
-        output.toString,
-        "-Werror",
-        "-source:future",
-        sharedFixture.toString,
-        source.toString
-      ),
-      reporter
+    compileWith(source, compilationClasspath, includeSharedFixture = true)
+
+  private def compileReferenceDataOnly(source: Path): Compilation =
+    compileWith(source, referenceDataOnlyClasspath, includeSharedFixture = false)
+
+  private def compileWith(source: Path, classpath: String, includeSharedFixture: Boolean): Compilation =
+    val output        = Files.createTempDirectory("reference-data-classes-")
+    val reporter      = new StoreReporter()
+    val baseArguments = Array(
+      "-classpath",
+      classpath,
+      "-d",
+      output.toString,
+      "-Werror",
+      "-source:future"
     )
+    val arguments = baseArguments ++ Option.when(includeSharedFixture)(sharedFixture.toString).toVector :+
+      source.toString
+    val _ = Main.process(arguments, reporter)
     Compilation(output, reporter.allErrors.map(_.message), reporter.allWarnings.map(_.message))
 
   private def initializeModule(output: Path, moduleClassName: String): Unit =

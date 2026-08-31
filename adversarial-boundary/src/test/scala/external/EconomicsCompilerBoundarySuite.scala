@@ -29,12 +29,13 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
     minimumErrors: Int,
     exactErrors: Option[Int] = None)
 
-  private val fixturesRoot         = Paths.get(getClass.getResource("/economics-compiler").toURI)
-  private val orderFixturesRoot    = Paths.get(getClass.getResource("/order-model-compiler").toURI)
-  private val scenarioFixturesRoot = Paths.get(getClass.getResource("/execution-scenario-compiler").toURI)
-  private val javaFixturesRoot     = Paths.get(getClass.getResource("/order-scenario-java").toURI)
-  private val sharedFixture        = fixturesRoot.resolve("SharedEconomicsSetup.scala")
-  private val compilationClasspath =
+  private val fixturesRoot          = Paths.get(getClass.getResource("/economics-compiler").toURI)
+  private val orderFixturesRoot     = Paths.get(getClass.getResource("/order-model-compiler").toURI)
+  private val scenarioFixturesRoot  = Paths.get(getClass.getResource("/execution-scenario-compiler").toURI)
+  private val feePolicyFixturesRoot = Paths.get(getClass.getResource("/fee-policy-compiler").toURI)
+  private val javaFixturesRoot      = Paths.get(getClass.getResource("/order-scenario-java").toURI)
+  private val sharedFixture         = fixturesRoot.resolve("SharedEconomicsSetup.scala")
+  private val compilationClasspath  =
     val resource = Option(getClass.getResourceAsStream("/static-dimension-compiler.classpath")).getOrElse:
       throw new IllegalStateException("missing generated external compiler classpath")
     try new String(resource.readAllBytes(), StandardCharsets.UTF_8).trim
@@ -52,6 +53,11 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
   private val scenarioCompilationClasspath =
     val resource = Option(getClass.getResourceAsStream("/execution-scenario-compiler.classpath")).getOrElse:
       throw new IllegalStateException("missing generated execution-scenario compiler classpath")
+    try new String(resource.readAllBytes(), StandardCharsets.UTF_8).trim
+    finally resource.close()
+  private val feePolicyCompilationClasspath =
+    val resource = Option(getClass.getResourceAsStream("/fee-policy-compiler.classpath")).getOrElse:
+      throw new IllegalStateException("missing generated fee-policy compiler classpath")
     try new String(resource.readAllBytes(), StandardCharsets.UTF_8).trim
     finally resource.close()
 
@@ -79,6 +85,7 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
     val rejected = compileCore(source)
     assert(rejected.errors.size >= 4, rejected.rendered)
     assert(rejected.rendered.contains("is not a member"), rejected.rendered)
+    assert(rejected.rendered.contains("fee is not a member of trading"), rejected.rendered)
     economicsForbiddenDiagnostics.foreach(fragment => assert(!rejected.rendered.contains(fragment), rejected.rendered))
 
   test("packaged artifacts preserve quantities, reference-data, and pure instrument-economics boundaries"):
@@ -260,6 +267,49 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
     val rejected = compileOrder(source)
     assert(rejected.errors.size >= 6, rejected.rendered)
     assert(rejected.rendered.contains("is not a member"), rejected.rendered)
+    assert(rejected.rendered.contains("fee is not a member of trading"), rejected.rendered)
+    economicsForbiddenDiagnostics.foreach(fragment => assert(!rejected.rendered.contains(fragment), rejected.rendered))
+
+  test("completed fee-policy classpath contains exactly its pure one-way production graph"):
+    val entries = feePolicyCompilationClasspath.split(File.pathSeparator).toList.map(Paths.get(_))
+    List(
+      "trading-quantities_3-",
+      "trading-reference-data_3-",
+      "trading-instrument-economics_3-",
+      "trading-order-model_3-",
+      "trading-execution-scenario_3-",
+      "trading-fee-policy_3-"
+    ).foreach: prefix =>
+      assertEquals(entries.count(_.getFileName.toString.startsWith(prefix)), 1, entries.mkString("\n"))
+
+    List(
+      "trading-risk_3-",
+      "trading-application_3-",
+      "trading-runtime_3-",
+      "trading-economics_3-",
+      "cats-effect_3-",
+      "fs2-core_3-",
+      "circe-core_3-",
+      "doobie-core_3-",
+      "opentelemetry-api-",
+      "jmh-core-"
+    ).foreach: prefix =>
+      assert(!entries.exists(_.getFileName.toString.startsWith(prefix)), s"fee-policy classpath retained $prefix")
+    assert(entries.forall(Files.isRegularFile(_)), entries.mkString("\n"))
+
+  test("completed fee-policy classpath compiles and runs a policy-only client"):
+    val source = feePolicyFixturesRoot.resolve("positive/FeePolicyBoundaryClient.scala")
+    val result = compileFeePolicy(source)
+    assert(result.succeeded, result.rendered)
+    initializeModule(result.output, "external.fee.positive.FeePolicyBoundaryClient$")
+
+  test("completed fee-policy classpath cannot access downstream or effect concerns"):
+    val source  = feePolicyFixturesRoot.resolve("negative/FeePolicyHasNoDownstream.scala")
+    val prelude = compileFilteredPrelude(source, compileFeePolicy)
+    assert(prelude.succeeded, s"fixture prelude must compile independently:\n${prelude.rendered}")
+    val rejected = compileFeePolicy(source)
+    assert(rejected.errors.size >= 9, rejected.rendered)
+    assert(rejected.rendered.contains("is not a member"), rejected.rendered)
     economicsForbiddenDiagnostics.foreach(fragment => assert(!rejected.rendered.contains(fragment), rejected.rendered))
 
   test("completed order-model classpath compiles every supported instruction shape exhaustively"):
@@ -298,6 +348,7 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
     val rejected = compileScenario(source)
     assert(rejected.errors.size >= 10, rejected.rendered)
     assert(rejected.rendered.contains("is not a member"), rejected.rendered)
+    assert(rejected.rendered.contains("fee is not a member of trading"), rejected.rendered)
     assert(rejected.rendered.toLowerCase.contains("reassignment to val"), rejected.rendered)
     assert(rejected.rendered.contains("cannot be accessed"), rejected.rendered)
     economicsForbiddenDiagnostics.foreach(fragment => assert(!rejected.rendered.contains(fragment), rejected.rendered))
@@ -438,6 +489,9 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
 
   private def compileScenario(source: Path): Compilation =
     compileWith(source, scenarioCompilationClasspath, None)
+
+  private def compileFeePolicy(source: Path): Compilation =
+    compileWith(source, feePolicyCompilationClasspath, Some(sharedFixture))
 
   private def compileWith(source: Path, classpath: String, shared: Option[Path]): Compilation =
     val output        = Files.createTempDirectory("economics-classes-")

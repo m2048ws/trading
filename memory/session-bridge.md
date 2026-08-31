@@ -15,22 +15,24 @@ updated: 2026-08-31
 - **Change**: introduce-pure-fee-policy-module
 - **Worktree**: /Users/m/src/money/.worktrees/introduce-pure-fee-policy-module
 - **Phase at Checkpoint**: applying
-- **Task Group at Checkpoint**: 1
-- **Observed Run Revision**: 2
-- **Last Verified HEAD**: cb1b7109257e7ddf3fa29fb0051862971352f2fd
+- **Task Group at Checkpoint**: 2
+- **Observed Run Revision**: 3
+- **Last Verified HEAD**: e085160202b88a9e2fa4f1589b29eb4260beae93
 
-The phase and revision above are the required next checkpoint carried by Task Group 1. Live Run Contract authority
-remains `applying` at revision 1 until Corgi acknowledges that commit.
+The phase and revision above are the required next checkpoint carried by Task Group 2. Live Run Contract authority
+remains `applying` at revision 2 until Corgi acknowledges that commit.
 
 ## Next Action
-- Commit and acknowledge `introduce-pure-fee-policy-module` Task Group 1, open its draft PR, then implement Task Group 2.
+- Commit and acknowledge `introduce-pure-fee-policy-module` Task Group 2, synchronize draft PR #32, then implement Task
+  Group 3.
   Verify, Human Review, Human QA, and Archive remain separate gates.
 
 ## Blockers
 - none
 
 ## Uncommitted Work
-- Task Group 1's authority/baseline/inventory note and this next-state checkpoint; production code is unchanged.
+- Task Group 2's build, completed-JAR compiler-boundary, fixture, documentation, implementation-note, and next-state
+  checkpoint changes; fee-policy production semantics are unchanged.
 
 ## Discoveries
 - The archived `establish-pure-instrument-economics` boundary was reconciled from commit `86613ee` before S-02
@@ -245,6 +247,14 @@ remains `applying` at revision 1 until Corgi acknowledges that commit.
 - The current inventory keeps fee values and core PnL in instrument economics, moves fee-independent scenario price
   normalization to execution scenario, finalizes policy/directive/assessment/fee-inclusive orchestration in fee policy,
   and leaves pure risk unchanged. No application/runtime fee call site or live policy concern exists.
+- Task Group 1 is acknowledged at `e085160202b88a9e2fa4f1589b29eb4260beae93`; draft PR #32 tracks the WIP branch.
+- The retained `feePolicy` project now has the accepted explicit quantities, instrument-economics, order-model, and
+  execution-scenario production edges; only its tests see risk. Its package root is `trading.fee`, with the provisional
+  `trading.fee.policy` API intentionally unchanged until the semantic Task Groups.
+- Dedicated completed-JAR classpaths prove quantities, reference data, instrument economics, order model, and execution
+  scenario cannot access fee policy. A fee-policy-only client compiles and runs without risk, application, runtime,
+  effects, streams, codecs, persistence, telemetry, benchmarks, or the retired aggregate. The focused gate passes 11
+  fee-policy tests and all 151 adversarial/compiler tests plus both formatting checks.
 
 ## Promotion Queue
 - Review agent-configuration constraints before promoting any item to `memory/MEMORY.md`.

@@ -42,9 +42,10 @@ class QuantityArtifactBoundarySuite extends FunSuite:
     assert(prelude.succeeded, s"negative fixture prelude failed independently:\n${prelude.rendered}")
 
     val rejected = compile(source)
-    assert(rejected.errors.size >= 6, rejected.rendered)
+    assert(rejected.errors.size >= 7, rejected.rendered)
     assert(rejected.rendered.contains("reference is not a member of trading"), rejected.rendered)
     assert(rejected.rendered.contains("risk is not a member of trading"), rejected.rendered)
+    assert(rejected.rendered.contains("fee is not a member of trading"), rejected.rendered)
     assert(rejected.rendered.contains("runtime is not a member of trading.quantity"), rejected.rendered)
     artifactForbiddenDiagnostics.foreach(fragment => assert(!rejected.rendered.contains(fragment), rejected.rendered))
 
