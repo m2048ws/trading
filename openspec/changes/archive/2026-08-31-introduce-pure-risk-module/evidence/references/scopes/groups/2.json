@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 3,
+  "scope": "group-2",
+  "runId": "run-a29691ac-e873-47ae-aa50-f27dff8c0381",
+  "references": [
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Feconomics-core-compiler%2FCoreHasNoDownstream.scala#sha256:d57836c6344c9b992cb35e3f0060fc3445bdfcc984fd6f690666ba15f607e06b",
+      "sourcePath": "adversarial-boundary/src/test/resources/economics-core-compiler/CoreHasNoDownstream.scala",
+      "digest": "sha256:d57836c6344c9b992cb35e3f0060fc3445bdfcc984fd6f690666ba15f607e06b",
+      "archivePath": "references/blobs/d57836c6344c9b992cb35e3f0060fc3445bdfcc984fd6f690666ba15f607e06b"
+    },
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fquantity-artifact-boundary%2Fnegative%2FStableIdentityUnavailable.scala#sha256:2af6f68825b24b440adc602a08ced1db24c1d1321aa28bc3db6f23c144e1461a",
+      "sourcePath": "adversarial-boundary/src/test/resources/quantity-artifact-boundary/negative/StableIdentityUnavailable.scala",
+      "digest": "sha256:2af6f68825b24b440adc602a08ced1db24c1d1321aa28bc3db6f23c144e1461a",
+      "archivePath": "references/blobs/2af6f68825b24b440adc602a08ced1db24c1d1321aa28bc3db6f23c144e1461a"
+    },
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Frisk-compiler%2Fnegative%2FRiskHasNoDownstream.scala#sha256:18eee8b646b35a0b195e8cf23a763648fa72a9322ab5b1bea3e8aee14ba1b9cc",
+      "sourcePath": "adversarial-boundary/src/test/resources/risk-compiler/negative/RiskHasNoDownstream.scala",
+      "digest": "sha256:18eee8b646b35a0b195e8cf23a763648fa72a9322ab5b1bea3e8aee14ba1b9cc",
+      "archivePath": "references/blobs/18eee8b646b35a0b195e8cf23a763648fa72a9322ab5b1bea3e8aee14ba1b9cc"
+    },
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Frisk-compiler%2Fpositive%2FRiskBoundaryClient.scala#sha256:4bd2891193a782cc457c6901e1856a86a4bc1181cc0b5fdf17e7b3eb27ef0200",
+      "sourcePath": "adversarial-boundary/src/test/resources/risk-compiler/positive/RiskBoundaryClient.scala",
+      "digest": "sha256:4bd2891193a782cc457c6901e1856a86a4bc1181cc0b5fdf17e7b3eb27ef0200",
+      "archivePath": "references/blobs/4bd2891193a782cc457c6901e1856a86a4bc1181cc0b5fdf17e7b3eb27ef0200"
+    },
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FEconomicsCompilerBoundarySuite.scala#sha256:84317662510b43d18f472143c752754a27c49b38421248d51c96954ba7f3adc6",
+      "sourcePath": "adversarial-boundary/src/test/scala/external/EconomicsCompilerBoundarySuite.scala",
+      "digest": "sha256:84317662510b43d18f472143c752754a27c49b38421248d51c96954ba7f3adc6",
+      "archivePath": "references/blobs/84317662510b43d18f472143c752754a27c49b38421248d51c96954ba7f3adc6"
+    },
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FQuantityArtifactBoundarySuite.scala#sha256:267bac82fbdffe6ac27b880a3ad0c114e87d5b8d7754a73d672a948793e9d7b5",
+      "sourcePath": "adversarial-boundary/src/test/scala/external/QuantityArtifactBoundarySuite.scala",
+      "digest": "sha256:267bac82fbdffe6ac27b880a3ad0c114e87d5b8d7754a73d672a948793e9d7b5",
+      "archivePath": "references/blobs/267bac82fbdffe6ac27b880a3ad0c114e87d5b8d7754a73d672a948793e9d7b5"
+    },
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FRiskCompilerBoundarySuite.scala#sha256:15f266fb809d79412a80d3e8e06da5819004b2783bb79f9a04bc30ac4c5d1fb9",
+      "sourcePath": "adversarial-boundary/src/test/scala/external/RiskCompilerBoundarySuite.scala",
+      "digest": "sha256:15f266fb809d79412a80d3e8e06da5819004b2783bb79f9a04bc30ac4c5d1fb9",
+      "archivePath": "references/blobs/15f266fb809d79412a80d3e8e06da5819004b2783bb79f9a04bc30ac4c5d1fb9"
+    },
+    {
+      "reference": "file:build.sbt#sha256:5cd4a7ad4be26338b6902b8602387437640570c87f53a7683e0310d30ad6abfa",
+      "sourcePath": "build.sbt",
+      "digest": "sha256:5cd4a7ad4be26338b6902b8602387437640570c87f53a7683e0310d30ad6abfa",
+      "archivePath": "references/blobs/5cd4a7ad4be26338b6902b8602387437640570c87f53a7683e0310d30ad6abfa"
+    },
+    {
+      "reference": "file:memory%2Fsession-bridge.md#sha256:5a9cecb986fc4a30b5a007ea522dd45068cf868acbff968f75df36b36500aee5",
+      "sourcePath": "memory/session-bridge.md",
+      "digest": "sha256:5a9cecb986fc4a30b5a007ea522dd45068cf868acbff968f75df36b36500aee5",
+      "archivePath": "references/blobs/5a9cecb986fc4a30b5a007ea522dd45068cf868acbff968f75df36b36500aee5"
+    },
+    {
+      "reference": "file:openspec%2Fchanges%2Fintroduce-pure-risk-module%2Fimplementation-notes%2Ftask-group-2.md#sha256:1f9dd641f63b68e1e622c4a3b03a41fcb1aa343d2ac905051de24bf827adfda2",
+      "sourcePath": "openspec/changes/introduce-pure-risk-module/implementation-notes/task-group-2.md",
+      "digest": "sha256:1f9dd641f63b68e1e622c4a3b03a41fcb1aa343d2ac905051de24bf827adfda2",
+      "archivePath": "references/blobs/1f9dd641f63b68e1e622c4a3b03a41fcb1aa343d2ac905051de24bf827adfda2"
+    },
+    {
+      "reference": "file:risk%2FREADME.md#sha256:465beab3d842b8725350dd03ad92425d43acb8db33c8d0dad16977f44949849d",
+      "sourcePath": "risk/README.md",
+      "digest": "sha256:465beab3d842b8725350dd03ad92425d43acb8db33c8d0dad16977f44949849d",
+      "archivePath": "references/blobs/465beab3d842b8725350dd03ad92425d43acb8db33c8d0dad16977f44949849d"
+    },
+    {
+      "reference": "file:risk%2Fsrc%2Fmain%2Fscala%2Ftrading%2Frisk%2FError.scala#sha256:ad5bfb681a8c9378927954a9cf56c90de6991c284f85dab09179d41d34739f3f",
+      "sourcePath": "risk/src/main/scala/trading/risk/Error.scala",
+      "digest": "sha256:ad5bfb681a8c9378927954a9cf56c90de6991c284f85dab09179d41d34739f3f",
+      "archivePath": "references/blobs/ad5bfb681a8c9378927954a9cf56c90de6991c284f85dab09179d41d34739f3f"
+    }
+  ]
+}

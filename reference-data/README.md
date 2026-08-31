@@ -14,10 +14,12 @@ Null is rejected before a result is returned.
 The dependency is one way:
 
 ```text
-trading-quantities <- trading-reference-data <- trading-application
+trading-quantities <- trading-reference-data <- trading-application <- trading-runtime
         ^                    ^
-        |                    |
-        +---- trading-economics
+         \                  /
+          trading-instrument-economics <- trading-risk
+                         ^
+                         +-- trading-order-model <- trading-execution-scenario <- trading-fee-policy
 ```
 
 Application contains only the effect-polymorphic live-catalog port. Concrete runtime interpretation and boundary codecs

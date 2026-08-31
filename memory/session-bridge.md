@@ -10,27 +10,27 @@ updated: 2026-08-31
 ## Delivery Pointer
 - **RFC**: RFC-0002-architecture-portfolio
 - **RFC Revision**: 7b6f7a58f4dcbb8fb4bbdf3a8ba74ba66f222cce
-- **Slice**: S-02-order-execution-scenarios
-- **Issue**: 7 https://github.com/m2048ws/trading/issues/7
-- **Change**: separate-order-and-execution-scenario-modules
-- **Worktree**: /Users/m/src/money/.worktrees/separate-order-and-execution-scenario-modules
+- **Slice**: S-03-pure-risk
+- **Issue**: 8 https://github.com/m2048ws/trading/issues/8
+- **Change**: introduce-pure-risk-module
+- **Worktree**: /Users/m/src/money/.worktrees/introduce-pure-risk-module
 - **Phase at Checkpoint**: archiving
 - **Task Group at Checkpoint**: none
 - **Observed Run Revision**: 7
-- **Last Verified HEAD**: 7ca2e135632a275562d46a0e6c5b08b3a3771639
+- **Last Verified HEAD**: 02d15a1cf37f236a15f40f7a88179387caaa3e81
 
-The phase and revision above are the required next checkpoint carried by the Repair Task Group commit. Live Run
-Contract authority remains `applying` at revision 1 until Corgi acknowledges that commit.
+The phase and revision above are the required post-acknowledgement checkpoint for successor Run Contract
+`run-133327d8-35ce-46a2-9c8e-c82ab46f82c9`. Live Run Contract state remains execution authority.
 
 ## Next Action
-- Consult Run Contract v3: resume tracker closeout for `separate-order-and-execution-scenario-modules` only if pending; otherwise select the next accepted Slice. Local delivery: `wiki/deliveries/RFC-0002-architecture-portfolio-S-02-order-execution-scenarios.md`.
-  Review, Human QA, and Archive remain separate gates.
+- Consult Run Contract v3: resume tracker closeout for `introduce-pure-risk-module` only if pending; otherwise select the next accepted Slice. Local delivery: `wiki/deliveries/RFC-0002-architecture-portfolio-S-03-pure-risk.md`.
+  remain later separate gates.
 
 ## Blockers
 - none
 
 ## Uncommitted Work
-- Task Group 13's archive-delta completeness evidence and this next-state checkpoint; production code is unchanged.
+- none
 
 ## Discoveries
 - The archived `establish-pure-instrument-economics` boundary was reconciled from commit `86613ee` before S-02
@@ -142,6 +142,93 @@ Contract authority remains `applying` at revision 1 until Corgi acknowledges tha
 - The automated Task Group 13 review checked scope, canonical scenario preservation, RFC/source/traceability stability,
   archive recovery safety, planning-only Git boundaries, validation evidence, and performance/security applicability
   with no findings. It changed no file, triaged no finding, and is not canonical Verify or Human Review.
+- S-03 Propose remains strict-ready at planning revision
+  `sha256:7d49085118e7b0083c8262dd38e09f1e796325df9e738cbe2b5513f352ed33c1`; Issue #8, accepted RFC revision,
+  source digest, traceability digest, and the archived instrument-economics prerequisite are current.
+- Fresh Run `run-a29691ac-e873-47ae-aa50-f27dff8c0381` uses planning baseline
+  `9d9b370f1c55fe8fe8ca2a1eab60a8a423323a1a`, whose sole parent is current `origin/main`
+  `cf210964f62f10602be0551682abda3ce7d24fae`. The discarded unacknowledged Run remains recoverable under
+  `/private/tmp/s03-run-restart.TLy1JE`.
+- The reconciled baseline passes formatting, clean compilation and 820 tests, completed-JAR/adversarial boundaries,
+  and explicit JMH compilation on OpenJDK 26.0.2, SBT 1.12.15, and Scala 3.8.4.
+- Existing sizing uses divide into fixed affine models, a deliberately non-monotone exhaustive case, and a located
+  callback-failure case. No arbitrary callback or fee/scenario builder is eligible for implicit monotone certification.
+- Task Group 1 is acknowledged at `a2ad478de1353312bfe56c91a3f16bae9a272ee0`; draft PR #28 tracks the WIP branch.
+- The non-empty `trading-risk` artifact now owns focused PnL identity failures and depends only on quantities,
+  instrument economics, and pure Cats Core. Its completed-JAR classpath rejects order/scenario/policy/runtime, effects,
+  streams, codecs, persistence, telemetry, and JMH; lower-layer classpaths reject risk imports.
+- The focused Group 2 gate passes risk compilation and 41 completed-JAR/reverse-dependency tests. Transitional
+  `trading-economics` remains until Group 8 moves every production/test surface to an intentional owner.
+- Task Group 2 is acknowledged at `d01129c30691a0d978beb36eefe71bd7b9fcb623` and draft PR #28 is synchronized.
+- `Risk.downside` validates ordinary instrument identity before typed PnL inspection, then uses exact quantity order,
+  zero, subtraction, and nonnegative refinement. Negative fractional, zero, positive, foreign-identity, and static
+  dimension-mismatch coverage passes without quantization or floating-point conversion.
+- The temporary policy/scenario service is explicitly `TransitionalRisk`; it accepts only refined nonnegative budgets,
+  delegates downside to the pure artifact, and no longer exposes `InvalidRiskBudget` or raw sign validation. The focused
+  Group 3 gate passes 4 risk, 10 downstream economics, and 40 completed-JAR/compiler tests.
+- Task Group 3 is acknowledged at `8bf1ad6da61fd3f91f81aae85ecc543a8603e4a1` and draft PR #28 is synchronized.
+- `LotRiskAssessment` derives downside from coherent instrument/lots/PnL inputs, while `MonotoneLotRisk` captures one
+  identity, position/settlement dimensions, positive cap, and library-owned total domain evaluator. The initial lawful
+  constructor admits only one checked coordinate; Group 5 adds closed curve constructors.
+- Independent model identity, dimension, coverage, duplicate/missing coordinate, breakpoint, marginal, boundary, and
+  composition failures have domain-owned typed variants and accumulate through `ValidatedNec` into a deterministic
+  non-empty public collection. Assessment, model, and violation-collection constructors are JVM-private via cached
+  private method handles; the focused gate passes 9 risk and 7 completed-JAR/spoof tests.
+- Affine, checked piecewise, compatible addition/minimum/maximum, floor/ceiling quantization, and complete-table
+  construction now produce compact exact monotone models. Generated laws cover totality, exactness, identity, and each
+  monotone closure; table validation checks every row and adjacent risk in explicit `O(cap)` work.
+- Retained construction instrumentation proves algebraic work follows expression nodes and explicit breakpoints rather
+  than the declared cap: an exact composed model with cap `10^100` records three nodes, no breakpoints, and no table
+  rows. The focused Group 5 gate passes 23 risk tests, 7 completed-JAR/compiler tests, and repository formatting.
+- Boundary-certified primary sizing now returns a closed no-affordable/selected decision with retained one-lot,
+  selected, cap/next-unaffordable, and complete distinct probe evidence. Generated exhaustive comparison, cap-one,
+  plateau, inverse-shaped, and `10^100`-cap tests pass within `2 + ceil(log2(cap))` observations.
+- The non-published JMH run at cap 1,024 on JDK 26.0.2 measured roughly 5.02M direct lookups/s, 368K boundary searches/s,
+  and 3.75K benchmark-local exhaustive evaluations/s with one fork, three warmups, and five measurements.
+- Task Group 6 is acknowledged at `65915625e0783aa51e599dcbd8d11b4339e6c7e6`; draft PR #28 is synchronized.
+- The explicitly named exhaustive fallback now traverses arbitrary pure lot-to-PnL evaluations in ascending order,
+  retains constant successful state, preserves the exact first failed coordinate and typed cause, and exposes a
+  complete-range decision shape with no monotone adjacency or model conversion. The focused Group 7 gate passes 40
+  risk tests and 8 completed-JAR/compiler-boundary tests, including unknown Java alternative rejection.
+- Task Group 7 is acknowledged at `176654ae34e44b9414aec61824345f5596417587`; draft PR #28 is synchronized.
+- The obsolete policy-owned risk wrapper and universal sizing errors are deleted. Fixed fee-inclusive inputs now earn
+  checked monotone tables before primary sizing, while arbitrary/non-monotone scenario evaluation deliberately uses
+  the located exhaustive fallback. Fee policy moves unchanged to `trading-fee-policy`, risk stays independent, and the
+  retired `economics/` directory/artifact is absent. The focused migration gate passes 40 risk, 11 fee-policy
+  integration, and 106 completed-JAR/compiler tests plus JMH compilation; the full repository aggregate passes 869
+  tests including all 147 adversarial boundary tests.
+- Task Group 8 is acknowledged at `c01b94c496f51dd3ce15b4d389fc6e01486d99b2`; draft PR #28 is synchronized.
+- The final clean dependency-ordered matrix passes 869 tests: 601 quantities, 13 reference data, 9 application, 18
+  runtime, 13 instrument economics, 40 risk, 7 order model, 10 execution scenario, 11 fee-policy/integration, and 147
+  completed-JAR/compiler/adversarial tests. Formatting and explicit JMH compilation pass.
+- The focused cap-1,024 JMH run records roughly 5.76M direct lookups/s, 346K boundary-certified searches/s, and 3.36K
+  exhaustive reference evaluations/s. Packaged API, source import, retired-name, fallback, and dependency audits find
+  no boundary drift.
+- Strict deterministic Corgi readiness and the read-only cross-artifact semantic review pass with no findings at
+  planning revision `sha256:7d49085118e7b0083c8262dd38e09f1e796325df9e738cbe2b5513f352ed33c1`.
+- The automated Task Group 9 review checked scope, RFC/AC coverage, validation evidence, packaged boundaries,
+  architecture, performance/security applicability, planning integrity, and gate separation with no findings. It
+  changed no file during the final pass, human-triaged no finding, and is not canonical Verify or Human Review.
+- The first strong local Archive attempt failed because OpenSpec treats a `MODIFIED` requirement as a complete
+  replacement and identifies scenarios by heading; renamed and omitted canonical headings therefore appeared to be
+  scenario deletions even though the delivered runtime behavior was unchanged. The original strict validation and
+  readiness checks validated the delta in isolation and did not simulate its eventual merge into canonical specs.
+- The tested rc2 `archive --request-repair` transition removed only the untracked generated evidence and pending
+  archive journal, recorded `failedPhase: archive`, and moved predecessor run
+  `run-a29691ac-e873-47ae-aa50-f27dff8c0381` to `repair_required`. Its three recovery-specific tests pass; the retained
+  pre-recovery loop backup is `/private/tmp/s03-archive-recovery.UMXbFk/introduce-pure-risk-module-loop`.
+- Successor run `run-133327d8-35ce-46a2-9c8e-c82ab46f82c9` carries acknowledged Groups 1–9 unchanged and admits only
+  Repair Task Group 10 from planning baseline `43db8d83c57fe6f2d2d3bd1c09f3d3b6d5ee1e78`. The accepted RFC source digest
+  remains `sha256:1a8cca449f8fdfc009f8ccbe87989a288ea92e7ff41ee58d38aa513a53ed4f2d` and traceability digest remains
+  `sha256:caaafeb6cd65026adcb4ea8f5f33d561ffce0ba8e6699d2301b57a5c510c4ab6`.
+- Repair Group 10 restores every canonical scenario identity across all three modified `position-risk-sizing`
+  requirements while retaining the delivered stronger typed/refined, explicit-failure, deterministic-traversal, and
+  bounded-scope semantics. Strict OpenSpec validation and deterministic Corgi readiness pass at planning revision
+  `sha256:39af122fd835f55b994cd903dd6dd402e45ddec5b28d8710f9134964e6fde5ae`; a disposable OpenSpec Archive rehearsal at
+  `/private/tmp/s03-archive-rehearsal.MqlZNn/repo` succeeds with four added, three modified, and two removed requirements.
+- The automated Task Group 10 review checked scope, canonical scenario preservation, RFC/AC alignment, planning
+  integrity, architecture, and performance/security applicability with no findings. It changed no file, triaged no
+  finding, and is not canonical Verify or Human Review.
 
 ## Promotion Queue
 - Review agent-configuration constraints before promoting any item to `memory/MEMORY.md`.

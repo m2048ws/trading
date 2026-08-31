@@ -1,0 +1,187 @@
+{
+  "schemaVersion": 3,
+  "scope": "verify",
+  "runId": "run-133327d8-35ce-46a2-9c8e-c82ab46f82c9",
+  "references": [
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Frisk-compiler%2Fnegative%2FInvalidRiskInputs.scala#sha256:73410eba6294d7c85687daeb9f5503ba8b2246baf1f1a4963f82270e91397bdf",
+      "sourcePath": "adversarial-boundary/src/test/resources/risk-compiler/negative/InvalidRiskInputs.scala",
+      "digest": "sha256:73410eba6294d7c85687daeb9f5503ba8b2246baf1f1a4963f82270e91397bdf",
+      "archivePath": "references/blobs/73410eba6294d7c85687daeb9f5503ba8b2246baf1f1a4963f82270e91397bdf"
+    },
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Frisk-compiler%2Fnegative%2FPackageSpoofRiskConstruction.scala#sha256:69dda4d3aeb27fbab94ce6e6de78fd126db25b7e56b5191501bdb6d4fe034746",
+      "sourcePath": "adversarial-boundary/src/test/resources/risk-compiler/negative/PackageSpoofRiskConstruction.scala",
+      "digest": "sha256:69dda4d3aeb27fbab94ce6e6de78fd126db25b7e56b5191501bdb6d4fe034746",
+      "archivePath": "references/blobs/69dda4d3aeb27fbab94ce6e6de78fd126db25b7e56b5191501bdb6d4fe034746"
+    },
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Frisk-compiler%2Fnegative%2FRiskHasNoDownstream.scala#sha256:18eee8b646b35a0b195e8cf23a763648fa72a9322ab5b1bea3e8aee14ba1b9cc",
+      "sourcePath": "adversarial-boundary/src/test/resources/risk-compiler/negative/RiskHasNoDownstream.scala",
+      "digest": "sha256:18eee8b646b35a0b195e8cf23a763648fa72a9322ab5b1bea3e8aee14ba1b9cc",
+      "archivePath": "references/blobs/18eee8b646b35a0b195e8cf23a763648fa72a9322ab5b1bea3e8aee14ba1b9cc"
+    },
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Frisk-java%2Fnegative%2FRejectedRiskDecisionImplementations.java#sha256:33c2844757f67e79c7cdbbc8e5691a67d39760ef0ad79581c111235a633eead8",
+      "sourcePath": "adversarial-boundary/src/test/resources/risk-java/negative/RejectedRiskDecisionImplementations.java",
+      "digest": "sha256:33c2844757f67e79c7cdbbc8e5691a67d39760ef0ad79581c111235a633eead8",
+      "archivePath": "references/blobs/33c2844757f67e79c7cdbbc8e5691a67d39760ef0ad79581c111235a633eead8"
+    },
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FRiskCompilerBoundarySuite.scala#sha256:60692d4095821c1ad7438e053f2051231a40cfe4dc34482ba5a196281868fb5d",
+      "sourcePath": "adversarial-boundary/src/test/scala/external/RiskCompilerBoundarySuite.scala",
+      "digest": "sha256:60692d4095821c1ad7438e053f2051231a40cfe4dc34482ba5a196281868fb5d",
+      "archivePath": "references/blobs/60692d4095821c1ad7438e053f2051231a40cfe4dc34482ba5a196281868fb5d"
+    },
+    {
+      "reference": "file:benchmarks%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fbenchmark%2FRiskSizingBenchmark.scala#sha256:43655cf7cdde1bb984682ec8a5ea08bf676325ceddf219b31b776bcc58947a45",
+      "sourcePath": "benchmarks/src/main/scala/trading/benchmark/RiskSizingBenchmark.scala",
+      "digest": "sha256:43655cf7cdde1bb984682ec8a5ea08bf676325ceddf219b31b776bcc58947a45",
+      "archivePath": "references/blobs/43655cf7cdde1bb984682ec8a5ea08bf676325ceddf219b31b776bcc58947a45"
+    },
+    {
+      "reference": "file:build.sbt#sha256:67d40120a6e0e240e578caf3b00ed1cc1da415e2db083ea417181174ef03b526",
+      "sourcePath": "build.sbt",
+      "digest": "sha256:67d40120a6e0e240e578caf3b00ed1cc1da415e2db083ea417181174ef03b526",
+      "archivePath": "references/blobs/67d40120a6e0e240e578caf3b00ed1cc1da415e2db083ea417181174ef03b526"
+    },
+    {
+      "reference": "file:fee-policy%2Fsrc%2Ftest%2Fscala%2Ftrading%2FFeePolicyIntegrationSuite.scala#sha256:044191057573c26d06ae13402c42b7bfa3447ccae91cbb5ecc846a7458f2606a",
+      "sourcePath": "fee-policy/src/test/scala/trading/FeePolicyIntegrationSuite.scala",
+      "digest": "sha256:044191057573c26d06ae13402c42b7bfa3447ccae91cbb5ecc846a7458f2606a",
+      "archivePath": "references/blobs/044191057573c26d06ae13402c42b7bfa3447ccae91cbb5ecc846a7458f2606a"
+    },
+    {
+      "reference": "file:openspec%2Fchanges%2Fintroduce-pure-risk-module%2Fcorgi%2Fsource.yaml#sha256:1a8cca449f8fdfc009f8ccbe87989a288ea92e7ff41ee58d38aa513a53ed4f2d",
+      "sourcePath": "openspec/changes/introduce-pure-risk-module/corgi/source.yaml",
+      "digest": "sha256:1a8cca449f8fdfc009f8ccbe87989a288ea92e7ff41ee58d38aa513a53ed4f2d",
+      "archivePath": "references/blobs/1a8cca449f8fdfc009f8ccbe87989a288ea92e7ff41ee58d38aa513a53ed4f2d"
+    },
+    {
+      "reference": "file:openspec%2Fchanges%2Fintroduce-pure-risk-module%2Fcorgi%2Ftraceability.yaml#sha256:caaafeb6cd65026adcb4ea8f5f33d561ffce0ba8e6699d2301b57a5c510c4ab6",
+      "sourcePath": "openspec/changes/introduce-pure-risk-module/corgi/traceability.yaml",
+      "digest": "sha256:caaafeb6cd65026adcb4ea8f5f33d561ffce0ba8e6699d2301b57a5c510c4ab6",
+      "archivePath": "references/blobs/caaafeb6cd65026adcb4ea8f5f33d561ffce0ba8e6699d2301b57a5c510c4ab6"
+    },
+    {
+      "reference": "file:openspec%2Fchanges%2Fintroduce-pure-risk-module%2Fspecs%2Fposition-risk-sizing%2Fspec.md#sha256:26dfcd224ad4b79a35a90741329bbfe110acbab68909245a3af818f15bc4ab77",
+      "sourcePath": "openspec/changes/introduce-pure-risk-module/specs/position-risk-sizing/spec.md",
+      "digest": "sha256:26dfcd224ad4b79a35a90741329bbfe110acbab68909245a3af818f15bc4ab77",
+      "archivePath": "references/blobs/26dfcd224ad4b79a35a90741329bbfe110acbab68909245a3af818f15bc4ab77"
+    },
+    {
+      "reference": "file:openspec%2Fchanges%2Fintroduce-pure-risk-module%2Ftasks.md#sha256:1eb4c8235cedaa1fc141e2c4414fe1b474a0850e2d076616b29bfdfff3844c2a",
+      "sourcePath": "openspec/changes/introduce-pure-risk-module/tasks.md",
+      "digest": "sha256:1eb4c8235cedaa1fc141e2c4414fe1b474a0850e2d076616b29bfdfff3844c2a",
+      "archivePath": "references/blobs/1eb4c8235cedaa1fc141e2c4414fe1b474a0850e2d076616b29bfdfff3844c2a"
+    },
+    {
+      "reference": "file:risk%2Fsrc%2Fmain%2Fscala%2Ftrading%2Frisk%2FCurve.scala#sha256:e4730e8f143f5e5c71e45786aae2ef05ba42af8aea396aa3110514023f5de6a2",
+      "sourcePath": "risk/src/main/scala/trading/risk/Curve.scala",
+      "digest": "sha256:e4730e8f143f5e5c71e45786aae2ef05ba42af8aea396aa3110514023f5de6a2",
+      "archivePath": "references/blobs/e4730e8f143f5e5c71e45786aae2ef05ba42af8aea396aa3110514023f5de6a2"
+    },
+    {
+      "reference": "file:risk%2Fsrc%2Fmain%2Fscala%2Ftrading%2Frisk%2FError.scala#sha256:47aad4c338a15896400f8eee81195a1e340f7d0a5c210057f1147e14d07517b8",
+      "sourcePath": "risk/src/main/scala/trading/risk/Error.scala",
+      "digest": "sha256:47aad4c338a15896400f8eee81195a1e340f7d0a5c210057f1147e14d07517b8",
+      "archivePath": "references/blobs/47aad4c338a15896400f8eee81195a1e340f7d0a5c210057f1147e14d07517b8"
+    },
+    {
+      "reference": "file:risk%2Fsrc%2Fmain%2Fscala%2Ftrading%2Frisk%2FExhaustiveSizing.scala#sha256:c150730232ad6b08cee443ec3374cc7a6126775c0e2a7e7569e3ce20d149be63",
+      "sourcePath": "risk/src/main/scala/trading/risk/ExhaustiveSizing.scala",
+      "digest": "sha256:c150730232ad6b08cee443ec3374cc7a6126775c0e2a7e7569e3ce20d149be63",
+      "archivePath": "references/blobs/c150730232ad6b08cee443ec3374cc7a6126775c0e2a7e7569e3ce20d149be63"
+    },
+    {
+      "reference": "file:risk%2Fsrc%2Fmain%2Fscala%2Ftrading%2Frisk%2FModel.scala#sha256:cdd87e416dbb6ed363d0d197a1719eb802508f2b645a23ae4951f0a6f4e27fd0",
+      "sourcePath": "risk/src/main/scala/trading/risk/Model.scala",
+      "digest": "sha256:cdd87e416dbb6ed363d0d197a1719eb802508f2b645a23ae4951f0a6f4e27fd0",
+      "archivePath": "references/blobs/cdd87e416dbb6ed363d0d197a1719eb802508f2b645a23ae4951f0a6f4e27fd0"
+    },
+    {
+      "reference": "file:risk%2Fsrc%2Fmain%2Fscala%2Ftrading%2Frisk%2FRisk.scala#sha256:1d9ad8eb16566d5027e3edeecfb7c1566ac8ddd546a7cb1cfd0a0410d65b0b54",
+      "sourcePath": "risk/src/main/scala/trading/risk/Risk.scala",
+      "digest": "sha256:1d9ad8eb16566d5027e3edeecfb7c1566ac8ddd546a7cb1cfd0a0410d65b0b54",
+      "archivePath": "references/blobs/1d9ad8eb16566d5027e3edeecfb7c1566ac8ddd546a7cb1cfd0a0410d65b0b54"
+    },
+    {
+      "reference": "file:risk%2Fsrc%2Fmain%2Fscala%2Ftrading%2Frisk%2FSizing.scala#sha256:44dec3986befda23a1d9af356371d96fa299f967a00f4213b095ce14ccad12ac",
+      "sourcePath": "risk/src/main/scala/trading/risk/Sizing.scala",
+      "digest": "sha256:44dec3986befda23a1d9af356371d96fa299f967a00f4213b095ce14ccad12ac",
+      "archivePath": "references/blobs/44dec3986befda23a1d9af356371d96fa299f967a00f4213b095ce14ccad12ac"
+    },
+    {
+      "reference": "file:risk%2Fsrc%2Ftest%2Fscala%2Ftrading%2Frisk%2FExhaustiveLotSizingSuite.scala#sha256:47e53b78d4628f9db0e24f8a19195752b0779eb5c01f1ac248532543b723e878",
+      "sourcePath": "risk/src/test/scala/trading/risk/ExhaustiveLotSizingSuite.scala",
+      "digest": "sha256:47e53b78d4628f9db0e24f8a19195752b0779eb5c01f1ac248532543b723e878",
+      "archivePath": "references/blobs/47e53b78d4628f9db0e24f8a19195752b0779eb5c01f1ac248532543b723e878"
+    },
+    {
+      "reference": "file:risk%2Fsrc%2Ftest%2Fscala%2Ftrading%2Frisk%2FMaximumAffordablePropertiesSuite.scala#sha256:99ae4fdce8e0e3a7aade9d9fa32374d205064dc166d3016e586ec6491e9244f7",
+      "sourcePath": "risk/src/test/scala/trading/risk/MaximumAffordablePropertiesSuite.scala",
+      "digest": "sha256:99ae4fdce8e0e3a7aade9d9fa32374d205064dc166d3016e586ec6491e9244f7",
+      "archivePath": "references/blobs/99ae4fdce8e0e3a7aade9d9fa32374d205064dc166d3016e586ec6491e9244f7"
+    },
+    {
+      "reference": "file:risk%2Fsrc%2Ftest%2Fscala%2Ftrading%2Frisk%2FMaximumAffordableSuite.scala#sha256:e8cdeb2a45eabc38755e48c8b2b998d49a8b5d5a7724e773d8637294f39884d5",
+      "sourcePath": "risk/src/test/scala/trading/risk/MaximumAffordableSuite.scala",
+      "digest": "sha256:e8cdeb2a45eabc38755e48c8b2b998d49a8b5d5a7724e773d8637294f39884d5",
+      "archivePath": "references/blobs/e8cdeb2a45eabc38755e48c8b2b998d49a8b5d5a7724e773d8637294f39884d5"
+    },
+    {
+      "reference": "file:risk%2Fsrc%2Ftest%2Fscala%2Ftrading%2Frisk%2FRiskCurvePropertiesSuite.scala#sha256:6720707bd528182e6708d91cec760854f65562a985138b13fd8ac2a4d4b765fc",
+      "sourcePath": "risk/src/test/scala/trading/risk/RiskCurvePropertiesSuite.scala",
+      "digest": "sha256:6720707bd528182e6708d91cec760854f65562a985138b13fd8ac2a4d4b765fc",
+      "archivePath": "references/blobs/6720707bd528182e6708d91cec760854f65562a985138b13fd8ac2a4d4b765fc"
+    },
+    {
+      "reference": "file:risk%2Fsrc%2Ftest%2Fscala%2Ftrading%2Frisk%2FRiskCurveSuite.scala#sha256:6b698e3497521af0eaf5998aac7ec22db822570d8658c84a065e243c8f52aa62",
+      "sourcePath": "risk/src/test/scala/trading/risk/RiskCurveSuite.scala",
+      "digest": "sha256:6b698e3497521af0eaf5998aac7ec22db822570d8658c84a065e243c8f52aa62",
+      "archivePath": "references/blobs/6b698e3497521af0eaf5998aac7ec22db822570d8658c84a065e243c8f52aa62"
+    },
+    {
+      "reference": "file:risk%2Fsrc%2Ftest%2Fscala%2Ftrading%2Frisk%2FRiskDownsideSuite.scala#sha256:a781f696da156118f3c3843c172a4234956cfc48c2e14f508af847aee3d190c4",
+      "sourcePath": "risk/src/test/scala/trading/risk/RiskDownsideSuite.scala",
+      "digest": "sha256:a781f696da156118f3c3843c172a4234956cfc48c2e14f508af847aee3d190c4",
+      "archivePath": "references/blobs/a781f696da156118f3c3843c172a4234956cfc48c2e14f508af847aee3d190c4"
+    },
+    {
+      "reference": "file:risk%2Fsrc%2Ftest%2Fscala%2Ftrading%2Frisk%2FRiskModelBoundarySuite.scala#sha256:396534ec4ee44d893a5d4a2715bc24a1202410a41760c8a3158aa1a6f3382229",
+      "sourcePath": "risk/src/test/scala/trading/risk/RiskModelBoundarySuite.scala",
+      "digest": "sha256:396534ec4ee44d893a5d4a2715bc24a1202410a41760c8a3158aa1a6f3382229",
+      "archivePath": "references/blobs/396534ec4ee44d893a5d4a2715bc24a1202410a41760c8a3158aa1a6f3382229"
+    },
+    {
+      "reference": "file:target%2Fs03-tg10-archive-recovery.log#sha256:2782b715678c205bbc4108995eb02e1ce4405b5318013b1efd9cdc4b4589ff07",
+      "sourcePath": "target/s03-tg10-archive-recovery.log",
+      "digest": "sha256:2782b715678c205bbc4108995eb02e1ce4405b5318013b1efd9cdc4b4589ff07",
+      "archivePath": "references/blobs/2782b715678c205bbc4108995eb02e1ce4405b5318013b1efd9cdc4b4589ff07"
+    },
+    {
+      "reference": "file:target%2Fs03-tg10-canonical-verify.log#sha256:7b90343a6220180a57b572b1a2b3286dde13fcd4731c9f498de8c6137ac512d8",
+      "sourcePath": "target/s03-tg10-canonical-verify.log",
+      "digest": "sha256:7b90343a6220180a57b572b1a2b3286dde13fcd4731c9f498de8c6137ac512d8",
+      "archivePath": "references/blobs/7b90343a6220180a57b572b1a2b3286dde13fcd4731c9f498de8c6137ac512d8"
+    },
+    {
+      "reference": "file:target%2Fs03-tg10-jmh-verify.log#sha256:5153f29deff9bc972c1375b62bcdb713ac0ab3f9043d9b016f2fb37aef11e909",
+      "sourcePath": "target/s03-tg10-jmh-verify.log",
+      "digest": "sha256:5153f29deff9bc972c1375b62bcdb713ac0ab3f9043d9b016f2fb37aef11e909",
+      "archivePath": "references/blobs/5153f29deff9bc972c1375b62bcdb713ac0ab3f9043d9b016f2fb37aef11e909"
+    },
+    {
+      "reference": "file:target%2Fs03-tg10-openspec-verify.json#sha256:a6f0d8ee824aae166278f391391210536a6697868d1095b9852fbfe6a9baaa4b",
+      "sourcePath": "target/s03-tg10-openspec-verify.json",
+      "digest": "sha256:a6f0d8ee824aae166278f391391210536a6697868d1095b9852fbfe6a9baaa4b",
+      "archivePath": "references/blobs/a6f0d8ee824aae166278f391391210536a6697868d1095b9852fbfe6a9baaa4b"
+    },
+    {
+      "reference": "file:target%2Fs03-tg10-ready-verify.json#sha256:ef8a503994ad89796a85d7c402f2ae973274146ee6b732835be4c6d19a2041a0",
+      "sourcePath": "target/s03-tg10-ready-verify.json",
+      "digest": "sha256:ef8a503994ad89796a85d7c402f2ae973274146ee6b732835be4c6d19a2041a0",
+      "archivePath": "references/blobs/ef8a503994ad89796a85d7c402f2ae973274146ee6b732835be4c6d19a2041a0"
+    }
+  ]
+}

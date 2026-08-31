@@ -1,0 +1,21 @@
+Focused risk benchmark verification
+===================================
+Final HEAD: 02d15a1cf37f236a15f40f7a88179387caaa3e81
+
+$ sbt -batch "benchmarks/Jmh/run trading.benchmark.RiskSizingBenchmark"
+Exit code: 0
+JMH: 1.37
+JDK: 26.0.2
+Forks: 1
+Warmup: 3 iterations x 1 second
+Measurement: 5 iterations x 1 second
+Threads: 1
+Parameter: cap=1024
+
+Benchmark                                          Score        Error       Units
+boundaryCertifiedMaximum                         349394.542 +/- 2349.895  ops/s
+directCurveLookup                                5490533.466 +/- 56056.058 ops/s
+exhaustiveReferenceEvaluation                       3824.625 +/- 82.924    ops/s
+
+The benchmark completed successfully. Results are representative measurements, not a release-time performance claim.
+

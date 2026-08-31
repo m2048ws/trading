@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 3,
+  "changeName": "introduce-pure-risk-module",
+  "runId": "run-133327d8-35ce-46a2-9c8e-c82ab46f82c9",
+  "finalRevision": "02d15a1cf37f236a15f40f7a88179387caaa3e81",
+  "planningRevision": "sha256:39af122fd835f55b994cd903dd6dd402e45ddec5b28d8710f9134964e6fde5ae",
+  "contract": {
+    "kind": "rfc-slice",
+    "deliveryRef": "RFC-0002-architecture-portfolio/S-03-pure-risk",
+    "rfcId": "RFC-0002-architecture-portfolio",
+    "rfcDigest": "sha256:a00c0cf1e3a4440bfce7dc828ad4ac119414f10d72e8d8c52c613403ef5977e2",
+    "acceptedCommit": "7b6f7a58f4dcbb8fb4bbdf3a8ba74ba66f222cce",
+    "sliceId": "S-03-pure-risk",
+    "sourcePath": "openspec/changes/introduce-pure-risk-module/corgi/source.yaml",
+    "sourceDigest": "sha256:1a8cca449f8fdfc009f8ccbe87989a288ea92e7ff41ee58d38aa513a53ed4f2d",
+    "traceabilityPath": "openspec/changes/introduce-pure-risk-module/corgi/traceability.yaml",
+    "traceabilityDigest": "sha256:caaafeb6cd65026adcb4ea8f5f33d561ffce0ba8e6699d2301b57a5c510c4ab6",
+    "acceptance": [
+      {
+        "id": "AC-009",
+        "evidence": "automated",
+        "taskGroups": [
+          "2",
+          "3",
+          "8"
+        ]
+      },
+      {
+        "id": "AC-010",
+        "evidence": "both",
+        "taskGroups": [
+          "4",
+          "5"
+        ]
+      },
+      {
+        "id": "AC-011",
+        "evidence": "automated",
+        "taskGroups": [
+          "6"
+        ]
+      },
+      {
+        "id": "AC-012",
+        "evidence": "both",
+        "taskGroups": [
+          "5",
+          "7",
+          "9"
+        ]
+      }
+    ],
+    "tracker": {
+      "provider": "github",
+      "idempotencyKey": "b3a2e9f5c2a20973a10ce27835fa531a83713c77b1ada5522f26865b2981fd44",
+      "issue": {
+        "id": "8",
+        "url": "https://github.com/m2048ws/trading/issues/8"
+      }
+    }
+  },
+  "archiveIntentId": "archive-bd360d3d-2a02-4654-aea7-ccbbdc15cf69"
+}

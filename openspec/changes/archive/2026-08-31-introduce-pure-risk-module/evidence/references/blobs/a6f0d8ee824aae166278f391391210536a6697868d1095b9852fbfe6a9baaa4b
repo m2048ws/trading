@@ -1,0 +1,13 @@
+{
+  "command": "openspec validate introduce-pure-risk-module --strict --json",
+  "exitCode": 0,
+  "change": "introduce-pure-risk-module",
+  "valid": true,
+  "issues": [],
+  "summary": {
+    "items": 1,
+    "passed": 1,
+    "failed": 0
+  }
+}
+

@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 3,
+  "scope": "human-qa",
+  "runId": "run-133327d8-35ce-46a2-9c8e-c82ab46f82c9",
+  "references": [
+    {
+      "reference": "file:target%2Fs03-tg10-archive-recovery.log#sha256:2782b715678c205bbc4108995eb02e1ce4405b5318013b1efd9cdc4b4589ff07",
+      "sourcePath": "target/s03-tg10-archive-recovery.log",
+      "digest": "sha256:2782b715678c205bbc4108995eb02e1ce4405b5318013b1efd9cdc4b4589ff07",
+      "archivePath": "references/blobs/2782b715678c205bbc4108995eb02e1ce4405b5318013b1efd9cdc4b4589ff07"
+    },
+    {
+      "reference": "file:target%2Fs03-tg10-canonical-verify.log#sha256:7b90343a6220180a57b572b1a2b3286dde13fcd4731c9f498de8c6137ac512d8",
+      "sourcePath": "target/s03-tg10-canonical-verify.log",
+      "digest": "sha256:7b90343a6220180a57b572b1a2b3286dde13fcd4731c9f498de8c6137ac512d8",
+      "archivePath": "references/blobs/7b90343a6220180a57b572b1a2b3286dde13fcd4731c9f498de8c6137ac512d8"
+    },
+    {
+      "reference": "file:target%2Fs03-tg10-human-qa-carry-forward.log#sha256:2d28792a8f339abd8f58252fc138572bff3b2694de6bcae944466978cc89991d",
+      "sourcePath": "target/s03-tg10-human-qa-carry-forward.log",
+      "digest": "sha256:2d28792a8f339abd8f58252fc138572bff3b2694de6bcae944466978cc89991d",
+      "archivePath": "references/blobs/2d28792a8f339abd8f58252fc138572bff3b2694de6bcae944466978cc89991d"
+    },
+    {
+      "reference": "file:target%2Fs03-tg10-jmh-verify.log#sha256:5153f29deff9bc972c1375b62bcdb713ac0ab3f9043d9b016f2fb37aef11e909",
+      "sourcePath": "target/s03-tg10-jmh-verify.log",
+      "digest": "sha256:5153f29deff9bc972c1375b62bcdb713ac0ab3f9043d9b016f2fb37aef11e909",
+      "archivePath": "references/blobs/5153f29deff9bc972c1375b62bcdb713ac0ab3f9043d9b016f2fb37aef11e909"
+    }
+  ]
+}

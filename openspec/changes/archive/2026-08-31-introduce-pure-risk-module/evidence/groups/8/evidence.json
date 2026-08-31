@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 3,
+  "groupId": "8",
+  "summary": "Migrated fixed downstream sizing through checked complete-table monotone models and arbitrary/non-monotone scenario sizing through the explicit exhaustive fallback. Removed the obsolete policy-owned sizing wrapper and universal errors, moved unchanged fee-policy production/integration sources into trading-fee-policy, deleted the trading-economics project/artifact/directory, and reconciled build, artifact, context, and guide surfaces. Automated review remediated aggregate-era fixture naming and stale dependency descriptions; the final read-only pass had no findings and is not canonical Verify or Human Review.",
+  "checks": [
+    {
+      "name": "full repository formatting and test aggregate passed (869 tests)",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:build.sbt#sha256:67d40120a6e0e240e578caf3b00ed1cc1da415e2db083ea417181174ef03b526",
+        "file:fee-policy%2Fsrc%2Ftest%2Fscala%2Ftrading%2FFeePolicyIntegrationSuite.scala#sha256:044191057573c26d06ae13402c42b7bfa3447ccae91cbb5ecc846a7458f2606a"
+      ]
+    },
+    {
+      "name": "risk suites passed with no scenario or fee-policy production dependency (40 tests)",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:risk%2Fsrc%2Fmain%2Fscala%2Ftrading%2Frisk%2FSizing.scala#sha256:44dec3986befda23a1d9af356371d96fa299f967a00f4213b095ce14ccad12ac",
+        "file:risk%2Fsrc%2Fmain%2Fscala%2Ftrading%2Frisk%2FExhaustiveSizing.scala#sha256:c150730232ad6b08cee443ec3374cc7a6126775c0e2a7e7569e3ce20d149be63",
+        "file:risk%2Fsrc%2Ftest%2Fscala%2Ftrading%2Frisk%2FMaximumAffordableSuite.scala#sha256:e8cdeb2a45eabc38755e48c8b2b998d49a8b5d5a7724e773d8637294f39884d5",
+        "file:risk%2Fsrc%2Ftest%2Fscala%2Ftrading%2Frisk%2FExhaustiveLotSizingSuite.scala#sha256:47e53b78d4628f9db0e24f8a19195752b0779eb5c01f1ac248532543b723e878",
+        "file:risk%2FREADME.md#sha256:c92053fe859342cda009a610690b92052e71a7e9ffbfb923639cd4f3b0ba73b1"
+      ]
+    },
+    {
+      "name": "migrated fee-policy and risk integration passed fixed checked-table, exhaustive, located-failure, and unchanged fee behavior (11 tests)",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:fee-policy%2Fsrc%2Fmain%2Fscala%2Ftrading%2Ffee%2Fpolicy%2FFeePolicy.scala#sha256:bd1dc88b3b2887483a3c80b5293ca4b7acda5002abfd8d4cdf2a1a6b7d63dbf6",
+        "file:fee-policy%2Fsrc%2Ftest%2Fscala%2Ftrading%2FFeePolicyIntegrationSuite.scala#sha256:044191057573c26d06ae13402c42b7bfa3447ccae91cbb5ecc846a7458f2606a"
+      ]
+    },
+    {
+      "name": "all adversarial boundaries passed (147 tests), including 106 focused static, artifact, and risk/economics compiler tests",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FEconomicsCompilerBoundarySuite.scala#sha256:14d2123e9622b2db87d61ff0e7478971a824537c27edcfff960bac97bb5d4bfa",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FRiskCompilerBoundarySuite.scala#sha256:60692d4095821c1ad7438e053f2051231a40cfe4dc34482ba5a196281868fb5d",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Feconomics-compiler%2Fpositive%2FCompleteCompositionClient.scala#sha256:b5aad58376b981873b8ab9432e8aaff1a968fb45eded49400cb02a41367b5b43"
+      ]
+    },
+    {
+      "name": "resolved production classpaths and packaged JARs preserve the acyclic fee-policy/risk split; trading-economics artifact and directory are absent",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:build.sbt#sha256:67d40120a6e0e240e578caf3b00ed1cc1da415e2db083ea417181174ef03b526",
+        "file:fee-policy%2FREADME.md#sha256:dc7b4282a00488425514cccb13c2e4aa01af0c18bd93bca17081077bf8b3eecb",
+        "file:docs%2Farchitecture-charter-audit.md#sha256:92d870b7662570e8f12218cca5ab54eaa584681bdc8d3d98fe1c6ccc6607892d",
+        "file:openspec%2Fconfig.yaml#sha256:a02f22f9d0a853f25a6aee8617c4ce5774dc5fad24f8642af2b08cdc490f7ee2"
+      ]
+    },
+    {
+      "name": "non-published JMH project compiles against the post-aggregate graph",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:benchmarks%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fbenchmark%2FRiskSizingBenchmark.scala#sha256:43655cf7cdde1bb984682ec8a5ea08bf676325ceddf219b31b776bcc58947a45"
+      ]
+    }
+  ],
+  "automatedReview": {
+    "verdict": "pass",
+    "findings": []
+  },
+  "artifacts": [
+    "file:build.sbt#sha256:67d40120a6e0e240e578caf3b00ed1cc1da415e2db083ea417181174ef03b526",
+    "file:fee-policy%2Fsrc%2Fmain%2Fscala%2Ftrading%2Ffee%2Fpolicy%2FFeePolicy.scala#sha256:bd1dc88b3b2887483a3c80b5293ca4b7acda5002abfd8d4cdf2a1a6b7d63dbf6",
+    "file:fee-policy%2Fsrc%2Fmain%2Fscala%2Ftrading%2Ffee%2Fpolicy%2FError.scala#sha256:44f806b56e2f21e97fc0e0148fabb3934c68aa4cdedc5819cc2f935f46149f69",
+    "file:fee-policy%2Fsrc%2Ftest%2Fscala%2Ftrading%2FFeePolicyIntegrationSuite.scala#sha256:044191057573c26d06ae13402c42b7bfa3447ccae91cbb5ecc846a7458f2606a",
+    "file:fee-policy%2FREADME.md#sha256:dc7b4282a00488425514cccb13c2e4aa01af0c18bd93bca17081077bf8b3eecb",
+    "file:risk%2FREADME.md#sha256:c92053fe859342cda009a610690b92052e71a7e9ffbfb923639cd4f3b0ba73b1",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FEconomicsCompilerBoundarySuite.scala#sha256:14d2123e9622b2db87d61ff0e7478971a824537c27edcfff960bac97bb5d4bfa",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FRiskCompilerBoundarySuite.scala#sha256:60692d4095821c1ad7438e053f2051231a40cfe4dc34482ba5a196281868fb5d",
+    "file:README.md#sha256:b3c7e607cf662d83e0bc0f90db1702fe20a4d492aa936c9a607969265a860fd6",
+    "file:docs%2Farchitecture-charter-audit.md#sha256:92d870b7662570e8f12218cca5ab54eaa584681bdc8d3d98fe1c6ccc6607892d",
+    "file:openspec%2Fconfig.yaml#sha256:a02f22f9d0a853f25a6aee8617c4ce5774dc5fad24f8642af2b08cdc490f7ee2",
+    "file:openspec%2Fchanges%2Fintroduce-pure-risk-module%2Fimplementation-notes%2Ftask-group-8.md#sha256:59b6e701dd4d8834648dee60ebc97c5d0c6ca9ab1b1890af364377adc8f9a21d",
+    "file:memory%2Fsession-bridge.md#sha256:e9b6362209f2ebaba64b109db25c741b06246b05fc700701dffc358ca9b93147"
+  ]
+}

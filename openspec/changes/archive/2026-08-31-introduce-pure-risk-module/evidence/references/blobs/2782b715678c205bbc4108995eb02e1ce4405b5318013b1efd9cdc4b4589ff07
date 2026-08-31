@@ -1,0 +1,69 @@
+Task Group 10: Archive Delta Completeness Repair
+Run: run-133327d8-35ce-46a2-9c8e-c82ab46f82c9
+Planning revision: sha256:39af122fd835f55b994cd903dd6dd402e45ddec5b28d8710f9134964e6fde5ae
+Planning baseline: 43db8d83c57fe6f2d2d3bd1c09f3d3b6d5ee1e78
+Prior implementation revision: d7fe800147f0cba6b8dca5ef523015ec9424f1b9
+
+Recovery cause
+--------------
+The initial strong local Archive reached OpenSpec after Corgi had created untracked canonical evidence and a pending
+archive journal. OpenSpec rejected the delta because MODIFIED requirements are complete replacements and scenario
+headings are identities; renamed and omitted canonical headings were therefore interpreted as scenario deletions.
+
+Recovery transition
+-------------------
+The authorized tested rc2 archive --request-repair transition removed only the untracked generated evidence and
+pending journal, recorded failedPhase=archive, and moved predecessor run
+run-a29691ac-e873-47ae-aa50-f27dff8c0381 to repair_required. All three recovery-specific tests passed. Successor run
+run-133327d8-35ce-46a2-9c8e-c82ab46f82c9 carries acknowledged Groups 1-9 unchanged and admits only Group 10.
+
+Contract stability
+------------------
+source.yaml sha256:1a8cca449f8fdfc009f8ccbe87989a288ea92e7ff41ee58d38aa513a53ed4f2d
+traceability.yaml sha256:caaafeb6cd65026adcb4ea8f5f33d561ffce0ba8e6699d2301b57a5c510c4ab6
+Task Groups 1-9: unchanged and carried from the predecessor with their acknowledged commits.
+Git scope from d7fe800: memory/session-bridge.md, the position-risk-sizing delta spec, and tasks.md only.
+Production/build source changes: none.
+
+Strict validation
+-----------------
+$ openspec validate introduce-pure-risk-module --strict --no-interactive
+Change 'introduce-pure-risk-module' is valid
+
+Deterministic readiness
+-----------------------
+Status: ready
+Checks: ARTIFACTS_COMPLETE, OPENSPEC_STRICT_VALIDATION, TASK_ARTIFACT_CONFIGURED,
+TASK_ARTIFACT_UNIQUE, TASK_GROUP_STRUCTURE (10 stable unique groups), NO_PLACEHOLDERS, NO_OPEN_QUESTIONS,
+CAPABILITY_SPEC_PARITY, CHANGE_CONTRACT_PRESENT, TRACEABILITY_COMPLETE, SOURCE_PROVENANCE_CURRENT: all pass.
+
+Canonical scenario identity audit
+---------------------------------
+Downside risk from net PnL retains:
+- Measure a losing scenario
+- Clamp profitable risk to zero
+- Reject foreign PnL
+- Keep risk downstream
+
+Sizing failures are explicit retains:
+- Propagate a missing conversion
+- Propagate an invalid adverse exit
+- Reject a scenario for a different candidate count
+- Return the same maximum under equivalent traversal
+
+Position-sizing scope is bounded retains:
+- Treat maker-only PnL as conditional
+- Exclude liquidation mechanics
+
+The modified requirements also retain the delivered stronger typed/refined risk, explicit located failures,
+deterministic traversal, and bounded standalone-position semantics.
+
+Disposable Archive rehearsal
+----------------------------
+Copy: /private/tmp/s03-archive-rehearsal.MqlZNn/repo
+$ openspec archive introduce-pure-risk-module --yes --json
+Status: success
+Archived as: 2026-08-31-introduce-pure-risk-module
+Specs updated: true
+Totals: added=4 modified=3 removed=2 renamed=0
+No canonical scenario deletion or merge conflict was reported.

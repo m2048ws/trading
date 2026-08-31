@@ -1,0 +1,48 @@
+Human exploratory QA confirmation
+=================================
+Change: introduce-pure-risk-module
+Reviewer: m2048ws
+Verdict: pass
+Final HEAD: 02d15a1cf37f236a15f40f7a88179387caaa3e81
+Planning revision: sha256:39af122fd835f55b994cd903dd6dd402e45ddec5b28d8710f9134964e6fde5ae
+
+Surface classification
+----------------------
+This is a pure Scala library. It has no UI, HTTP API, end-user CLI, authentication, database, network, or live runtime
+interpreter surface. Backend QA was not applicable because there is no handler/service/repository call chain.
+Exploratory library QA used Business District, Intellectual, and Rained-Out tours over the public risk entry points.
+
+Human confirmation
+------------------
+Reviewer m2048ws explicitly confirmed QA PASS for AC-010 and AC-012 in the interactive Codex session after reviewing
+the charter, exact final SHA, and fresh whole-change evidence.
+
+AC-010 paths
+------------
+- Lawful exact affine, piecewise, table, and combinator construction produces opaque monotone risk models.
+- Invalid, incomplete, non-monotone, duplicate, or forged certification inputs remain typed construction failures.
+- Package-spoof and Java implementation attempts remain rejected at the completed-JAR boundary.
+Expected: callers cannot certify arbitrary functions or forge library-owned decisions.
+Actual: PASS in the 40-test risk suite and 147-test adversarial suite at the exact final SHA.
+
+AC-012 paths
+------------
+- Arbitrary and deliberately non-monotone finite evaluations use the explicitly named exhaustive operation.
+- Traversal is ascending and preserves the exact first failed lot coordinate and typed cause without a partial maximum.
+- Primary monotone sizing remains distinct, boundary-certified, and logarithmic; focused cap-1024 JMH evidence remains
+  representative and successful.
+Expected: exhaustive behavior is correct, explicit, failure-preserving, and bounded to O(cap).
+Actual: PASS in the exact/property/integration suites and focused benchmark at the exact final SHA.
+
+Carry-forward integrity
+-----------------------
+The earlier human QA passed as m2048ws at implementation SHA d7fe800147f0cba6b8dca5ef523015ec9424f1b9 with canonical
+report hash sha256:66b84e669efaf2fcb2ecd7c61924de0cf304235938acc4e2e092e59c6d7483f3. The approved final revision changes only
+the Archive delta, task plan, and session checkpoint. Production source, tests, build configuration, and compiler
+boundary fixtures are byte-identical. Fresh canonical Verify at the final revision passed 869 tests, strict planning,
+the Archive rehearsal, and the focused risk benchmark.
+
+Findings: none
+Stop conditions encountered: none
+Coverage confidence: high for the pure-library scope
+
