@@ -14,24 +14,23 @@ updated: 2026-08-31
 - **Issue**: 8 https://github.com/m2048ws/trading/issues/8
 - **Change**: introduce-pure-risk-module
 - **Worktree**: /Users/m/src/money/.worktrees/introduce-pure-risk-module
-- **Phase at Checkpoint**: applying
-- **Task Group at Checkpoint**: 8
-- **Observed Run Revision**: 9
-- **Last Verified HEAD**: 176654ae34e44b9414aec61824345f5596417587
+- **Phase at Checkpoint**: awaiting_verify
+- **Task Group at Checkpoint**: 9
+- **Observed Run Revision**: 10
+- **Last Verified HEAD**: c01b94c496f51dd3ce15b4d389fc6e01486d99b2
 
-The phase and revision above are the required next checkpoint carried by Task Group 8. Live Run Contract authority
-remains `applying` at revision 8 until Corgi acknowledges that commit.
+The phase and revision above are the required next checkpoint carried by Task Group 9. Live Run Contract authority
+remains `applying` at revision 9 until Corgi acknowledges that commit.
 
 ## Next Action
-- Commit and acknowledge `introduce-pure-risk-module` Task Group 8, sync draft PR #28, then complete Task Group 9's
-  whole-delivery pre-Verify evidence and handoff.
-  Verify, Human Review, Human QA, and Archive remain separate gates.
+- Commit and acknowledge `introduce-pure-risk-module` Task Group 9, sync draft PR #28, then run the separate canonical
+  whole-change Verify gate. Human Review, Human QA, and Archive remain later separate gates.
 
 ## Blockers
 - none
 
 ## Uncommitted Work
-- Task Group 8's downstream migration, aggregate retirement, artifact graph updates, and this checkpoint.
+- Task Group 9's whole-delivery pre-Verify evidence, implementation note, and this checkpoint.
 
 ## Discoveries
 - The archived `establish-pure-instrument-economics` boundary was reconciled from commit `86613ee` before S-02
@@ -198,6 +197,18 @@ remains `applying` at revision 8 until Corgi acknowledges that commit.
   retired `economics/` directory/artifact is absent. The focused migration gate passes 40 risk, 11 fee-policy
   integration, and 106 completed-JAR/compiler tests plus JMH compilation; the full repository aggregate passes 869
   tests including all 147 adversarial boundary tests.
+- Task Group 8 is acknowledged at `c01b94c496f51dd3ce15b4d389fc6e01486d99b2`; draft PR #28 is synchronized.
+- The final clean dependency-ordered matrix passes 869 tests: 601 quantities, 13 reference data, 9 application, 18
+  runtime, 13 instrument economics, 40 risk, 7 order model, 10 execution scenario, 11 fee-policy/integration, and 147
+  completed-JAR/compiler/adversarial tests. Formatting and explicit JMH compilation pass.
+- The focused cap-1,024 JMH run records roughly 5.76M direct lookups/s, 346K boundary-certified searches/s, and 3.36K
+  exhaustive reference evaluations/s. Packaged API, source import, retired-name, fallback, and dependency audits find
+  no boundary drift.
+- Strict deterministic Corgi readiness and the read-only cross-artifact semantic review pass with no findings at
+  planning revision `sha256:7d49085118e7b0083c8262dd38e09f1e796325df9e738cbe2b5513f352ed33c1`.
+- The automated Task Group 9 review checked scope, RFC/AC coverage, validation evidence, packaged boundaries,
+  architecture, performance/security applicability, planning integrity, and gate separation with no findings. It
+  changed no file during the final pass, human-triaged no finding, and is not canonical Verify or Human Review.
 
 ## Promotion Queue
 - Review agent-configuration constraints before promoting any item to `memory/MEMORY.md`.
