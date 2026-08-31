@@ -1,0 +1,27 @@
+schemaVersion: 1
+kind: rfc-slice
+deliveryRef: RFC-0002-architecture-portfolio/S-04-fee-policy
+rfc:
+  id: RFC-0002-architecture-portfolio
+  path: rfcs/RFC-0002-architecture-portfolio
+  acceptedCommit: 7b6f7a58f4dcbb8fb4bbdf3a8ba74ba66f222cce
+  digest: sha256:a00c0cf1e3a4440bfce7dc828ad4ac119414f10d72e8d8c52c613403ef5977e2
+slice:
+  id: S-04-fee-policy
+  digest: sha256:a5da36172c415c5d2634c723bf399560d503801421064344c6dc59235622d58a
+acceptance:
+  - id: AC-013
+    evidence: automated
+  - id: AC-014
+    evidence: both
+  - id: AC-015
+    evidence: automated
+  - id: AC-016
+    evidence: both
+deliveryBindingDigest: sha256:3dbeada1767bc2fb9a90bf2f505294f280fb348ddd25ba1acb397c7c5bf65647
+tracker:
+  provider: github
+  idempotencyKey: da13816e4f88e9035ba098d707cf15e4714a2cbe111becb38152d76700971673
+  issue:
+    id: '9'
+    url: https://github.com/m2048ws/trading/issues/9

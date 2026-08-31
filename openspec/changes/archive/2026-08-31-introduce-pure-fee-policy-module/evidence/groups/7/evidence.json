@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 3,
+  "groupId": "7",
+  "checks": [
+    {
+      "name": "explicit entry and exit policy product supports different typed policies and same-policy convenience",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:fee-policy%2Fsrc%2Fmain%2Fscala%2Ftrading%2Ffee%2FFeeInclusivePnl.scala#sha256:e8126e83a60dcdfcaedefd9eda661a3d9a00f3b939733d07e77b1cc1183bef5c",
+        "file:fee-policy%2Fsrc%2Ftest%2Fscala%2Ftrading%2Ffee%2FFeeInclusivePnlSuite.scala#sha256:f51e2771656830b59c62bba60388ae0e44d1110448ae96e6372017c7efc4e36b",
+        "file:openspec%2Fchanges%2Fintroduce-pure-fee-policy-module%2Fimplementation-notes%2Ftask-group-7.md#sha256:5529eae628c75e1d491e3bc4c93fd4366bbf333fd5f95149a26183bd4df8f287"
+      ]
+    },
+    {
+      "name": "initial identity stage accumulates closed round-trip and leg-policy locations and suppresses dependent work",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:fee-policy%2Fsrc%2Fmain%2Fscala%2Ftrading%2Ffee%2FFeeInclusivePnl.scala#sha256:e8126e83a60dcdfcaedefd9eda661a3d9a00f3b939733d07e77b1cc1183bef5c",
+        "file:fee-policy%2Fsrc%2Ftest%2Fscala%2Ftrading%2Ffee%2FFeeInclusivePnlSuite.scala#sha256:f51e2771656830b59c62bba60388ae0e44d1110448ae96e6372017c7efc4e36b"
+      ]
+    },
+    {
+      "name": "scenario price, entry assessment, exit assessment, and each successful conversion branch remain independently eligible",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:fee-policy%2Fsrc%2Fmain%2Fscala%2Ftrading%2Ffee%2FFeeInclusivePnl.scala#sha256:e8126e83a60dcdfcaedefd9eda661a3d9a00f3b939733d07e77b1cc1183bef5c",
+        "file:fee-policy%2Fsrc%2Ftest%2Fscala%2Ftrading%2Ffee%2FFeeInclusivePnlSuite.scala#sha256:f51e2771656830b59c62bba60388ae0e44d1110448ae96e6372017c7efc4e36b"
+      ]
+    },
+    {
+      "name": "selected-slice third-asset conversions and all missing conversions retain stable leg, directive, slice, and typed cause provenance",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:fee-policy%2Fsrc%2Fmain%2Fscala%2Ftrading%2Ffee%2FFeeInclusivePnl.scala#sha256:e8126e83a60dcdfcaedefd9eda661a3d9a00f3b939733d07e77b1cc1183bef5c",
+        "file:fee-policy%2Fsrc%2Ftest%2Fscala%2Ftrading%2Ffee%2FFeeInclusivePnlSuite.scala#sha256:f51e2771656830b59c62bba60388ae0e44d1110448ae96e6372017c7efc4e36b"
+      ]
+    },
+    {
+      "name": "scenario success retains both assessments and attributed contributions while core PnL solely owns exact price, fee, and net totals",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:fee-policy%2Fsrc%2Fmain%2Fscala%2Ftrading%2Ffee%2FFeeInclusivePnl.scala#sha256:e8126e83a60dcdfcaedefd9eda661a3d9a00f3b939733d07e77b1cc1183bef5c",
+        "file:fee-policy%2Fsrc%2Ftest%2Fscala%2Ftrading%2Ffee%2FFeeInclusivePnlSuite.scala#sha256:f51e2771656830b59c62bba60388ae0e44d1110448ae96e6372017c7efc4e36b",
+        "file:fee-policy%2FREADME.md#sha256:c547af234827f77765a52e07747de6d20f3497fab8e92bae09c138e399ba7654"
+      ]
+    },
+    {
+      "name": "completed-JAR client executes fee-inclusive PnL and JVM-private final constructors reject caller forgery",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Ffee-policy-compiler%2Fpositive%2FFeePolicyBoundaryClient.scala#sha256:abe6aab03ea032f62d94840c0b9fe2a9a0730c90cc3655430ef94694e5388b58",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Ffee-policy-compiler%2Fnegative%2FForgedAssessment.scala#sha256:842d85f78183c4d0ce42e36c91af7e4da369b55b61ca15879cb042f4b04bad3c",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FEconomicsCompilerBoundarySuite.scala#sha256:e2acbf9b7ab8ac1aa011809f9d64a2b97d6354f394e7e94d2e1fee2cd2707f2a"
+      ]
+    },
+    {
+      "name": "formatting, 38 fee-policy tests, 158 adversarial tests, source and bytecode audits, and clean automated review",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:fee-policy%2Fsrc%2Ftest%2Fscala%2Ftrading%2Ffee%2FFeeInclusivePnlSuite.scala#sha256:f51e2771656830b59c62bba60388ae0e44d1110448ae96e6372017c7efc4e36b",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FEconomicsCompilerBoundarySuite.scala#sha256:e2acbf9b7ab8ac1aa011809f9d64a2b97d6354f394e7e94d2e1fee2cd2707f2a",
+        "file:openspec%2Fchanges%2Fintroduce-pure-fee-policy-module%2Fimplementation-notes%2Ftask-group-7.md#sha256:5529eae628c75e1d491e3bc4c93fd4366bbf333fd5f95149a26183bd4df8f287",
+        "file:memory%2Fsession-bridge.md#sha256:beedbfe20372d0bb68cd3b54ec579c99ce7ff412295dc89c423af36077fce074"
+      ]
+    }
+  ],
+  "automatedReview": {
+    "verdict": "pass",
+    "findings": []
+  },
+  "artifacts": [
+    "file:fee-policy%2Fsrc%2Fmain%2Fscala%2Ftrading%2Ffee%2FFeeInclusivePnl.scala#sha256:e8126e83a60dcdfcaedefd9eda661a3d9a00f3b939733d07e77b1cc1183bef5c",
+    "file:fee-policy%2Fsrc%2Ftest%2Fscala%2Ftrading%2Ffee%2FFeeInclusivePnlSuite.scala#sha256:f51e2771656830b59c62bba60388ae0e44d1110448ae96e6372017c7efc4e36b",
+    "file:fee-policy%2FREADME.md#sha256:c547af234827f77765a52e07747de6d20f3497fab8e92bae09c138e399ba7654",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Ffee-policy-compiler%2Fpositive%2FFeePolicyBoundaryClient.scala#sha256:abe6aab03ea032f62d94840c0b9fe2a9a0730c90cc3655430ef94694e5388b58",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Ffee-policy-compiler%2Fnegative%2FForgedAssessment.scala#sha256:842d85f78183c4d0ce42e36c91af7e4da369b55b61ca15879cb042f4b04bad3c",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FEconomicsCompilerBoundarySuite.scala#sha256:e2acbf9b7ab8ac1aa011809f9d64a2b97d6354f394e7e94d2e1fee2cd2707f2a",
+    "file:openspec%2Fchanges%2Fintroduce-pure-fee-policy-module%2Fimplementation-notes%2Ftask-group-7.md#sha256:5529eae628c75e1d491e3bc4c93fd4366bbf333fd5f95149a26183bd4df8f287",
+    "file:memory%2Fsession-bridge.md#sha256:beedbfe20372d0bb68cd3b54ec579c99ce7ff412295dc89c423af36077fce074"
+  ],
+  "summary": "Introduced RoundTripFeePolicies as the explicit entry/exit policy product and FeeInclusivePnl as the pure staged scenario composition boundary. The initial identity gate accumulates round-trip and both policy mismatches before suppressing dependent work. Exact scenario price normalization and both assessment/conversion branches remain independently eligible; each successful assessment converts every fee through its centrally selected immutable slice market, and failures retain stable leg, directive, refined slice, and typed cause provenance. Successful results retain the round trip, both ScenarioFees values, and JVM-sealed attributed contributions while projecting all price, contribution, fee, and net totals from one core Pnl. Different policies, typed sum causes, no fees, charges, rebates, third assets, per-slice rates, multiple missing conversions, mixed policy/conversion failures, identity suppression, ordering, replay equality, and attribution visibility pass. Both formatting checks, all 38 fee-policy tests, and all 158 adversarial/compiler tests pass. The automated review completed scope, AC-016, staging, provenance, conversion, core ownership, JVM authority, dependency purity, complexity, security applicability, evidence, and checkpoint axes with no findings; its final pass changed no file, triaged no finding, and is not canonical whole-change Verify or Human Review."
+}

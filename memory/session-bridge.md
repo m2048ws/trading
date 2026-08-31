@@ -10,21 +10,21 @@ updated: 2026-08-31
 ## Delivery Pointer
 - **RFC**: RFC-0002-architecture-portfolio
 - **RFC Revision**: 7b6f7a58f4dcbb8fb4bbdf3a8ba74ba66f222cce
-- **Slice**: S-03-pure-risk
-- **Issue**: 8 https://github.com/m2048ws/trading/issues/8
-- **Change**: introduce-pure-risk-module
-- **Worktree**: /Users/m/src/money/.worktrees/introduce-pure-risk-module
+- **Slice**: S-04-fee-policy
+- **Issue**: 9 https://github.com/m2048ws/trading/issues/9
+- **Change**: introduce-pure-fee-policy-module
+- **Worktree**: /Users/m/src/money/.worktrees/introduce-pure-fee-policy-module
 - **Phase at Checkpoint**: archiving
 - **Task Group at Checkpoint**: none
 - **Observed Run Revision**: 7
-- **Last Verified HEAD**: 02d15a1cf37f236a15f40f7a88179387caaa3e81
+- **Last Verified HEAD**: 0eceeabf1d2eb1f8ad2b534f65f00552dc6f53dc
 
 The phase and revision above are the required post-acknowledgement checkpoint for successor Run Contract
-`run-133327d8-35ce-46a2-9c8e-c82ab46f82c9`. Live Run Contract state remains execution authority.
+`run-fe0e73ca-02b9-4f73-a9c9-5b8c5e5f8171`. Live Run Contract state remains execution authority.
 
 ## Next Action
-- Consult Run Contract v3: resume tracker closeout for `introduce-pure-risk-module` only if pending; otherwise select the next accepted Slice. Local delivery: `wiki/deliveries/RFC-0002-architecture-portfolio-S-03-pure-risk.md`.
-  remain later separate gates.
+- Consult Run Contract v3: resume tracker closeout for `introduce-pure-fee-policy-module` only if pending; otherwise select the next accepted Slice. Local delivery: `wiki/deliveries/RFC-0002-architecture-portfolio-S-04-fee-policy.md`.
+  Human QA, and Archive remain separate gates.
 
 ## Blockers
 - none
@@ -229,6 +229,156 @@ The phase and revision above are the required post-acknowledgement checkpoint fo
 - The automated Task Group 10 review checked scope, canonical scenario preservation, RFC/AC alignment, planning
   integrity, architecture, and performance/security applicability with no findings. It changed no file, triaged no
   finding, and is not canonical Verify or Human Review.
+- The first S-04 local Archive attempt failed before moving the Change because three `MODIFIED` fee-inclusive-PnL
+  requirements omitted 13 canonical scenario headings. OpenSpec treats each modified requirement as a complete
+  replacement, while the former strict validation and readiness path validated the delta only in isolation.
+- The guarded project-local recovery runtime removed only generated untracked Change evidence and the pending
+  pre-closeout journal, recorded `failedPhase: archive`, and moved predecessor run
+  `run-f72899aa-a667-4f01-8c8c-22d2fc1d784a` to `repair_required`. Successor run
+  `run-fe0e73ca-02b9-4f73-a9c9-5b8c5e5f8171` carries acknowledged Groups 1–9 unchanged and admits only Repair Group
+  10 from planning baseline `2b8b58f49587885778f5c41bbf207c01281433e4`.
+- Repair Group 10 restores all 13 canonical scenario identities across signed fees, exact fee-inclusive PnL, and
+  explicit PnL scope while retaining the stronger S-04 policy, attribution, conversion, and error-accumulation
+  semantics. Strict OpenSpec validation and deterministic Corgi readiness pass at planning revision
+  `sha256:96b5b08c7943f4116de55100e56efd0ca8e65d7e707a1b74c3e51bc7480c7234`.
+- A disposable exact-diff OpenSpec Archive at `/private/tmp/s04-archive-rehearsal.UifirS/project` succeeds with three
+  added, four modified, and one removed requirement; all 14 resulting canonical specs validate strictly and all 13
+  repaired scenario identities remain present. Production Scala, tests, and build configuration are unchanged.
+- The automated Repair Group 10 review checked scope, canonical scenario preservation, RFC/source/traceability
+  stability, planning-prefix immutability, Archive recovery safety, architecture, performance/security applicability,
+  validation evidence, and gate separation with no findings. It changed no file and is not canonical Verify or Human
+  Review.
+- S-04 Propose was reconciled against delivered S-02/S-03 and current `main` before production edits. It remains
+  strict-ready at planning revision `sha256:b2226bdaf8f713cf48bb49f599da6b5cd84462cb96d8f028a6263caed76c4158`
+  with source digest `sha256:d7face4865eb2e8e69abb4f305d67720842e19f9d1d4fa3b760b744fb8f06443`, traceability
+  digest `sha256:8ef137a161b86ab60b78dadf55c70e91b8727572212054d1d344ec878057f064`, and authoritative
+  GitHub Issue #9. The accidental duplicate Issue #31 is tombstoned and closed; named recovery stashes and
+  `/private/tmp/corgi-s04-propose-recovery.YHbbq3` remain retained until delivery closeout makes removal safe.
+- Fresh Run `run-f72899aa-a667-4f01-8c8c-22d2fc1d784a` uses planning baseline
+  `cb1b7109257e7ddf3fa29fb0051862971352f2fd`, whose sole parent is current `origin/main`
+  `0b7cc676054f8b9680174fce84f280d863e1a409`. The guarded adapter confirmed the closed native prerequisite graph,
+  expected branch, registered worktree, and enabled local-commit/draft-PR authority.
+- The reconciled fee-policy baseline passes both formatting gates, clean dependency-order compilation, all 869 tests,
+  147 completed-JAR/adversarial boundary tests, and explicit JMH compilation on OpenJDK 26.0.2, SBT 1.12.15, and
+  Scala 3.8.4.
+- The current inventory keeps fee values and core PnL in instrument economics, moves fee-independent scenario price
+  normalization to execution scenario, finalizes policy/directive/assessment/fee-inclusive orchestration in fee policy,
+  and leaves pure risk unchanged. No application/runtime fee call site or live policy concern exists.
+- Task Group 1 is acknowledged at `e085160202b88a9e2fa4f1589b29eb4260beae93`; draft PR #32 tracks the WIP branch.
+- The retained `feePolicy` project now has the accepted explicit quantities, instrument-economics, order-model, and
+  execution-scenario production edges; only its tests see risk. Its package root is `trading.fee`, with the provisional
+  `trading.fee.policy` API intentionally unchanged until the semantic Task Groups.
+- Dedicated completed-JAR classpaths prove quantities, reference data, instrument economics, order model, and execution
+  scenario cannot access fee policy. A fee-policy-only client compiles and runs without risk, application, runtime,
+  effects, streams, codecs, persistence, telemetry, benchmarks, or the retired aggregate. The focused gate passes 11
+  fee-policy tests and all 151 adversarial/compiler tests plus both formatting checks.
+- Task Group 2 is acknowledged at `d59b081b4c2fed6e2ee7d6e25fc7707803fa1773`; draft PR #32 is synchronized and Run
+  revision 3 admits only Group 3.
+- `trading.fee` now owns opaque nominal `FeeRate` and total exact `FeeCalculation` formulas over refined typed
+  quantities. Percentage scales the existing `NonNegative[Quantity[D]]`; minimum adjustment preserves rebates, zero,
+  and sufficient charges while returning a typed negative minimum only for smaller charges. Core denomination
+  construction remains the sole per-component quantization boundary.
+- The focused Group 3 gate passes 17 fee-policy example/property/integration tests and all 152 completed-JAR/compiler/
+  adversarial tests. External compilation rejects raw bases and raw rates, lower-layer JAR checks reject the full
+  `trading.fee` root, and the per-component control preserves exact amount-plus-residual conservation.
+- The automated Group 3 review tightened the negative compiler assertion to bind the second rejection explicitly to
+  nominal `FeeRate`, then completed scope, behavior, refinement, dimension, architecture, packaged-boundary,
+  performance/security, evidence, and checkpoint axes with no findings. It changed no file during the final pass,
+  triaged no finding, and is not canonical Verify or Human Review.
+- Task Group 3 is acknowledged at `958899c0b40eb3bac8b0d9e96b5d73e976e1f892`; draft PR #32 is synchronized and Run
+  revision 4 admits only Group 4.
+- The `trading.fee` root now exposes covariant pure `FeePolicy`, domain-owned non-empty `PolicyErrors`, nominal
+  nonnegative `SliceIndex`, and existential `FeeDirective`. Checked composition accumulates foreign identities and
+  policy failures stably, normalizes nested/no-fee components, and preserves caller-owned typed causes without a global
+  monoid, effect parameter, exception, or string erasure.
+- The focused Group 4 gate passes 24 fee-policy tests and all 153 completed-JAR/compiler/adversarial tests. Packaged
+  guards reject `FeeSchedule`, the old service class, unlawful algebra/effect/error-erasure calls, and arbitrary source
+  markets; public policy bytecode contains no validation-library, monoid, effect, stream, or clock reference.
+- The automated Group 4 review hardened every JVM-visible private policy implementation constructor and preserved flat
+  checked composition across error mapping, then repeated formatting, 24 fee-policy tests, all 153 adversarial tests,
+  source/package scans, and bytecode inspection with no remaining findings. The clean final pass changed no file,
+  triaged no finding, and is not canonical Verify or Human Review.
+- Task Group 4 is acknowledged at `031c233c756d77483286229ad9e7a7f6d9d58d57`; draft PR #32 is synchronized and Run
+  revision 5 admits only Group 5. The SSH hardware-backed key refused noninteractive signing during synchronization, so
+  the guarded adapter used the already-authorized GitHub CLI credential through invocation-local Git configuration;
+  no repository or global Git configuration changed.
+- Canonical `FeeAssessment` gates scenario/policy identity before evaluation, retains typed policy failures with stable
+  ordinals, and accumulates every directive fee, denomination, and index violation before constructing output.
+  `ScenarioFees` owns the target scenario once, and each existential `AssessedFee` retains the actual indexed immutable
+  slice selected centrally.
+- `ScenarioFees` and the concrete assessed-fee representation have JVM-private constructors. Equal-looking duplicate
+  slices retain exact coordinate-selected references, heterogeneous fee assets remain typed, and invalid input suppresses
+  policy execution. The provisional PnL bridge now consumes assessment; `FeeLine`, caller-selected markets, reference
+  equality reconciliation, and the universal `FeePolicyError` hierarchy are absent.
+- The focused Group 5 gate passes 31 fee-policy tests and all 155 completed-JAR/compiler/adversarial tests, including 42
+  economics/fee-policy boundary tests. Both formatting gates, source audits, and bytecode constructor inspection pass.
+- The automated Group 5 review checked scope, AC-015, staged suppression, stable accumulation, typed-cause provenance,
+  honest error products, exact scenario ownership, JVM construction authority, migration, architecture, complexity,
+  security applicability, evidence, and checkpoint integrity with no findings. It changed no file, triaged no finding,
+  and is not canonical Verify or Human Review.
+- Task Group 5 is acknowledged at `a02ef16497214ebb0dc4618be5e03c4078d5ca3d`; draft PR #32 is synchronized and Run
+  revision 6 admits only Group 6.
+- `ScenarioValuation` now owns fee-independent exact round-trip price normalization in execution scenario. It derives
+  typed slice positions through order intent, values every slice at its retained market state, and folds exact typed
+  settlement cashflows into core `PricePnl`; the fee-policy bridge delegates instead of duplicating the calculation.
+- `RoundTripLeg` closes entry/exit attribution and focused scenario-valuation failures retain leg, index, and typed core
+  causes. `Side` exposes no raw sign member to Scala or same-package Java completed-artifact consumers.
+- The focused Group 6 gate passes formatting, 7 order-model tests, 16 execution-scenario tests, 31 fee-policy tests, and
+  all 158 completed-JAR/compiler/adversarial tests. The 45-test economics boundary suite includes a standalone
+  scenario-normalization client plus Scala and same-package Java removed-API guards.
+- The automated Group 6 review expanded the packaged purity assertion across every generated scenario-valuation class
+  and case-insensitively rejects fee, quantization, catalog, effect, stream, average, and scalar-coefficient symbols.
+  The remediated final pass found no findings, changed no file, triaged no finding, and is not canonical Verify or Human
+  Review.
+- Task Group 6 is acknowledged at `0060e65f5bf4174fab0542a919007a825271d57f`; draft PR #32 is synchronized and Run
+  revision 7 admits only Group 7.
+- `RoundTripFeePolicies` now records explicit entry/exit policy selections, and `FeeInclusivePnl` owns the pure staged
+  identity, scenario price, assessment, selected-slice conversion, and core PnL composition boundary.
+- Generic non-empty fee-inclusive violations retain closed identity locations, scenario causes, per-leg assessment
+  causes, directive/slice conversion causes, and core causes. A successful leg converts independently beside another
+  leg's policy failure, so every eligible independent failure is retained deterministically.
+- Successful fee-inclusive results and attributed contribution values have JVM-private constructors. They retain the
+  round trip, both exact scenario assessments, entry/exit and slice provenance, original fees, core contributions, and
+  one core PnL whose price, fee, and net totals are projected rather than duplicated.
+- The focused Group 7 gate passes both formatting checks, 38 fee-policy tests, and all 158 completed-JAR/compiler/
+  adversarial tests. The 45-test economics boundary suite compiles and runs fee-inclusive PnL through only the pure
+  production graph and rejects caller construction of final attribution and scenario-level PnL.
+- The automated Group 7 review checked scope, AC-016, branch eligibility, stable accumulation, typed provenance,
+  selected-slice conversion, core-total ownership, replay equality, JVM authority, dependency purity, complexity,
+  security applicability, evidence, and checkpoint integrity. After recording the observed evidence matrix, the final
+  pass found no findings, changed no file, triaged no finding, and is not canonical Verify or Human Review.
+- Task Group 7 is acknowledged at `78146fd80b622f332af825619e5b7228efeb1434`; draft PR #32 is synchronized and Run
+  revision 8 admits only Group 8.
+- Unit, integration, and completed-JAR clients now call the canonical `trading.fee` surface directly. Risk receives
+  only a successful core `Pnl` projection at the caller-owned boundary, so its production API and dependency graph
+  remain unchanged.
+- The provisional `trading.fee.policy` implementation, `FeeOrchestration`, and universal orchestration errors are
+  deleted without aliases. Completed-JAR and negative compiler guards reject the old package plus `FeeSchedule`,
+  `FeeLine`, `FeePolicyError`, and `FeeOrchestration` root aliases.
+- Module guidance explicitly keeps policy acquisition, clocks, accounts, venue/tier/version selection, audit
+  envelopes, and execution reports in later application/runtime or boundary-codec ownership. The focused Group 8 gate
+  passes formatting, all 38 fee-policy tests, all 40 unchanged risk tests, and all 158 completed-JAR/compiler/
+  adversarial tests.
+- The automated Group 8 review checked AC-013/AC-016 scope, canonical migration, accumulated failure semantics, risk
+  independence, retired and deferred surfaces, artifact boundaries, code quality, linear behavior, security
+  applicability, and evidence with no findings. It changed no file, triaged no finding, and is not canonical Verify or
+  Human Review.
+- Task Group 8 is acknowledged at `3a8fd512d036462e50c27cd3aad3d10f0e77cd73`; draft PR #32 is synchronized and Run
+  revision 9 admits only Group 9.
+- Both formatting checks and clean dependency-order compilation pass. The full repository matrix passes 913 tests: 601
+  quantities, 13 reference data, 9 application, 18 runtime, 13 instrument economics, 40 risk, 7 order model, 16
+  execution scenario, 38 fee policy/integration, and 158 completed-JAR/compiler/adversarial tests. Explicit JMH
+  compilation also passes.
+- The completed fee-policy JAR has 132 entries and 90 classes, no provisional/retired/reverse package entry, and public
+  signatures limited to explicit pure domain inputs. Production scans find no reverse dependencies, effect kind,
+  source-market attachment, identity reconciliation, raw-scalar PnL kernel, unlawful policy monoid, or old capability.
+- Strict OpenSpec validation and all eleven deterministic Corgi readiness checks pass at planning revision
+  `sha256:b2226bdaf8f713cf48bb49f599da6b5cd84462cb96d8f028a6263caed76c4158`. The read-only cross-artifact semantic
+  readiness review found no error, warning, or informational drift and changed no file.
+- The automated Group 9 review checked Run/Group identity, AC-013 through AC-016 evidence, the full matrix, JMH and
+  package/source audits, deterministic and semantic readiness, architecture, performance/security applicability,
+  checkpoint integrity, and gate separation with no findings. It changed no file, triaged no finding, and is not
+  canonical Verify or Human Review.
 
 ## Promotion Queue
 - Review agent-configuration constraints before promoting any item to `memory/MEMORY.md`.

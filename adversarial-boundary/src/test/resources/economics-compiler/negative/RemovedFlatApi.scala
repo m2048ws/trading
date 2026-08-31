@@ -2,6 +2,7 @@ package external.economics.negative
 
 import external.economics.fixtures.SharedEconomicsSetup.*
 import trading.economics.instrument.*
+import trading.fee.*
 import trading.order.*
 import trading.quantity.*
 import trading.quantity.refinement.PositiveWhole
@@ -24,10 +25,11 @@ object RemovedFlatApi:
   val exit      = OrderScenario.evaluate(instrument)(sellAssumptions).toOption.get
   val roundTrip = RoundTripScenario.create(instrument)(entry, exit).toOption.get
   val currentPosition = PositionLots.fromCoordinate(instrument)(lots.count.unrefined)
+  val noFees          = FeePolicy.noFees(instrument)
 
   val _ = price100.ticks
   val _ = Order.market(instrument)(Side.Buy, lots)
-  val _ = feePolicy.pnl(roundTrip, feePolicy.none)
+  val _ = FeeInclusivePnl.evaluate(instrument)(roundTrip, RoundTripFeePolicies.same(noFees))
 
   // OFFENDING-BEGIN
   val orders = Orders(instrument)
@@ -37,7 +39,7 @@ object RemovedFlatApi:
   val market = instrument.marketStateForQuote(price100)
   val order = instrument.marketOrder(Side.Buy, lots)
   val positionValue = instrument.positionValue(currentPosition, state)
-  val pnl = instrument.calculatePnl(roundTrip, feePolicy.none)
+  val pnl = instrument.calculatePnl(roundTrip, noFees)
   val lotCount = instrument.lotCount(lots)
   val kind = marketOrder.kind
   val activationEvidence = entry.activationEvidence
@@ -53,7 +55,7 @@ object RemovedFlatApi:
   val sized = instrument.sizePosition(
     Quantity(instrument.roles.settle.dimension.ref, Rational.one),
     PositiveWhole(1).toOption.get,
-    feePolicy.none
+    noFees
   )(_ => Right(roundTrip))
   // OFFENDING-END
 end RemovedFlatApi

@@ -1,0 +1,12 @@
+{
+  "verdict": "skipped",
+  "reviewer": "m2048ws",
+  "reason": "Human-confirmed no runtime impact: the recovery changes only planning and session documentation; production, runtime, and build code are unchanged.",
+  "noRuntimeImpact": true,
+  "finalRevision": "0eceeabf1d2eb1f8ad2b534f65f00552dc6f53dc",
+  "planningRevision": "sha256:96b5b08c7943f4116de55100e56efd0ca8e65d7e707a1b74c3e51bc7480c7234",
+  "reportHash": "sha256:fc3e2294ae81a85ada392530332ba107ee3802b8f1ebd991717a32d616be9186",
+  "acceptance": [],
+  "evidenceRefs": [],
+  "reviewedAt": "2026-08-31T20:26:47.534Z"
+}

@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 3,
+  "groupId": "8",
+  "checks": [
+    {
+      "name": "unit, integration, and completed-JAR callers use only the canonical trading.fee package and direct refined construction/composition APIs",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:fee-policy%2Fsrc%2Ftest%2Fscala%2Ftrading%2FFeePolicyIntegrationSuite.scala#sha256:6ccbcd9d6a0a9f6cd4f253a0592489b5f95897fd36c3aa8ad7028c598f26bef1",
+        "file:fee-policy%2Fsrc%2Ftest%2Fscala%2Ftrading%2Ffee%2FFeeCalculationSuite.scala#sha256:1f0a406ff667f5b927d38a7043c4524239d26c3f60416db24889924fd173dcfe",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Ffee-policy-compiler%2Fpositive%2FFeePolicyBoundaryClient.scala#sha256:954787352b722221e93b423650eea340bbb57b387ff30975442f81a2f7d16c8c",
+        "file:openspec%2Fconfig.yaml#sha256:8c7ddc283b3730415e6f6c5bd8f6e24cc386c3f0b07a08c218bf3291a811c75a"
+      ]
+    },
+    {
+      "name": "downstream examples project successful fee-inclusive results into unchanged pure-risk inputs while preserving monotone and exhaustive search semantics",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:fee-policy%2Fsrc%2Ftest%2Fscala%2Ftrading%2FFeePolicyIntegrationSuite.scala#sha256:6ccbcd9d6a0a9f6cd4f253a0592489b5f95897fd36c3aa8ad7028c598f26bef1",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Feconomics-compiler%2Fpositive%2FCompleteCompositionClient.scala#sha256:b54b5a579bef83486e58241e2c08e2be82645def51cb6d91c9bad7b7cb189d3d",
+        "file:risk%2FREADME.md#sha256:c92053fe859342cda009a610690b92052e71a7e9ffbfb923639cd4f3b0ba73b1"
+      ]
+    },
+    {
+      "name": "completed artifacts contain neither the provisional package nor FeeSchedule, FeeLine, FeePolicyError, FeeOrchestration aliases",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Ffee-policy-compiler%2Fnegative%2FUnlawfulPolicyApi.scala#sha256:a905257ac66001d2d47013587b2f823628e6a02d7d018f07ed42469045ae4e8c",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FEconomicsCompilerBoundarySuite.scala#sha256:24fd860360730c4f82ba297d82260edd7abe569e1b25f34e7aa7c79f0832efe6",
+        "file:openspec%2Fchanges%2Fintroduce-pure-fee-policy-module%2Fimplementation-notes%2Ftask-group-8.md#sha256:c88ddf215483356bbeac6a8689f949b1dd239a3305391e7457a86fd22fc029c8"
+      ]
+    },
+    {
+      "name": "policy acquisition, clocks, account and venue-tier-version selection, audit envelopes, and execution reports remain absent and explicitly deferred",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:fee-policy%2FREADME.md#sha256:08adca205113ae9b4f2d45751e48cdd32f6ee86237b699acdc5725a3f660eb07",
+        "file:docs%2Farchitecture-charter-audit.md#sha256:2acafa1abc57270567f9e376600902d5a258299bc015f722b497d8f72d7f3fd5",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FEconomicsCompilerBoundarySuite.scala#sha256:24fd860360730c4f82ba297d82260edd7abe569e1b25f34e7aa7c79f0832efe6"
+      ]
+    },
+    {
+      "name": "formatting, 38 fee-policy tests, 40 risk tests, 158 adversarial tests, source and packaged-surface audits, and automated review pass",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:fee-policy%2Fsrc%2Ftest%2Fscala%2Ftrading%2FFeePolicyIntegrationSuite.scala#sha256:6ccbcd9d6a0a9f6cd4f253a0592489b5f95897fd36c3aa8ad7028c598f26bef1",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FEconomicsCompilerBoundarySuite.scala#sha256:24fd860360730c4f82ba297d82260edd7abe569e1b25f34e7aa7c79f0832efe6",
+        "file:openspec%2Fchanges%2Fintroduce-pure-fee-policy-module%2Fimplementation-notes%2Ftask-group-8.md#sha256:c88ddf215483356bbeac6a8689f949b1dd239a3305391e7457a86fd22fc029c8",
+        "file:memory%2Fsession-bridge.md#sha256:83ae0373d41316d90c3dc9908e71a6318eb627a46e904b3f28d5b9a8b92e3ab2"
+      ]
+    }
+  ],
+  "automatedReview": {
+    "verdict": "pass",
+    "findings": []
+  },
+  "artifacts": [
+    "file:fee-policy%2Fsrc%2Ftest%2Fscala%2Ftrading%2FFeePolicyIntegrationSuite.scala#sha256:6ccbcd9d6a0a9f6cd4f253a0592489b5f95897fd36c3aa8ad7028c598f26bef1",
+    "file:fee-policy%2Fsrc%2Ftest%2Fscala%2Ftrading%2Ffee%2FFeeCalculationSuite.scala#sha256:1f0a406ff667f5b927d38a7043c4524239d26c3f60416db24889924fd173dcfe",
+    "file:fee-policy%2FREADME.md#sha256:08adca205113ae9b4f2d45751e48cdd32f6ee86237b699acdc5725a3f660eb07",
+    "file:docs%2Farchitecture-charter-audit.md#sha256:2acafa1abc57270567f9e376600902d5a258299bc015f722b497d8f72d7f3fd5",
+    "file:openspec%2Fconfig.yaml#sha256:8c7ddc283b3730415e6f6c5bd8f6e24cc386c3f0b07a08c218bf3291a811c75a",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Feconomics-compiler%2FSharedEconomicsSetup.scala#sha256:ad3643e6acd92b04394c844191d761a63995b4c4333f1bf763c20e72967896ce",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Feconomics-compiler%2Fpositive%2FCompleteCompositionClient.scala#sha256:b54b5a579bef83486e58241e2c08e2be82645def51cb6d91c9bad7b7cb189d3d",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Ffee-policy-compiler%2Fpositive%2FFeePolicyBoundaryClient.scala#sha256:954787352b722221e93b423650eea340bbb57b387ff30975442f81a2f7d16c8c",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Ffee-policy-compiler%2Fnegative%2FUnlawfulPolicyApi.scala#sha256:a905257ac66001d2d47013587b2f823628e6a02d7d018f07ed42469045ae4e8c",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FEconomicsCompilerBoundarySuite.scala#sha256:24fd860360730c4f82ba297d82260edd7abe569e1b25f34e7aa7c79f0832efe6",
+    "file:openspec%2Fchanges%2Fintroduce-pure-fee-policy-module%2Fimplementation-notes%2Ftask-group-8.md#sha256:c88ddf215483356bbeac6a8689f949b1dd239a3305391e7457a86fd22fc029c8",
+    "file:memory%2Fsession-bridge.md#sha256:83ae0373d41316d90c3dc9908e71a6318eb627a46e904b3f28d5b9a8b92e3ab2"
+  ],
+  "summary": "Migrated all production-adjacent fee-policy tests, integration fixtures, and external clients from the provisional orchestration facade to the canonical trading.fee surface. Callers now use FeeDenomination, FeeCalculation and Fee.create, FeeAssessment, RoundTripFeePolicies, and FeeInclusivePnl directly. Successful scenario results project the sole core Pnl into the unchanged pure-risk API; canonical accumulated conversion failures replace the bridge's former first-error behavior. Deleted the entire provisional trading.fee.policy implementation without aliases. Completed-JAR and negative compiler checks reject the retired package, FeeSchedule, FeeLine, FeePolicyError, and FeeOrchestration, while docs and artifact guards keep policy acquisition, clocks, accounts, venue-tier-version selection, audit envelopes, and execution reports in later application/runtime or boundary-codec ownership. Both formatting checks, all 38 fee-policy tests, all 40 risk tests, and all 158 adversarial/compiler tests pass. Automated review covered AC-013 and AC-016, caller migration, error semantics, risk independence, removed and deferred surfaces, architecture, linear behavior, security applicability, and evidence with no findings; its final checkpoint changed no file, triaged no finding, and is not canonical whole-change Verify or Human Review."
+}

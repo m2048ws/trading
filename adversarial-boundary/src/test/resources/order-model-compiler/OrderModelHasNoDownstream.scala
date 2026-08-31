@@ -6,11 +6,20 @@ object OrderModelHasNoDownstream:
   val side: Side = Side.Buy
 
   // OFFENDING-BEGIN
-  import trading.scenario.*
-  import trading.fee.policy.*
-  import trading.risk.*
-  import trading.application.*
-  import trading.runtime.*
+  object MissingScenario:
+    import trading.scenario.*
 
-  val role: LiquidityRole = LiquidityRole.Maker
+  object MissingFeePolicy:
+    import trading.fee.*
+
+  object MissingRisk:
+    import trading.risk.*
+
+  object MissingApplication:
+    import trading.application.*
+
+  object MissingRuntime:
+    import trading.runtime.*
+
+  val role: trading.scenario.LiquidityRole = trading.scenario.LiquidityRole.Maker
   // OFFENDING-END

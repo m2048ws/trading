@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 3,
+  "groupId": "6",
+  "checks": [
+    {
+      "name": "execution-scenario owns exact fee-independent round-trip price normalization with closed located errors",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:execution-scenario%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fscenario%2FScenarioValuation.scala#sha256:15e788e3d2a0ec912ae084fd64efa235d12ee26dd085fe30586f266aba109b0b",
+        "file:execution-scenario%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fscenario%2FError.scala#sha256:0ccf3b41bd537ec85f968d61bc3b83d21fdfd1e51219c8466123867c161f77a6",
+        "file:execution-scenario%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fscenario%2FScenario.scala#sha256:31c981cb0dfc80d53602abd8ac87cc9e63fc3615b4ec5645bf64c994f083a6ea",
+        "file:execution-scenario%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fscenario%2FScenarioValuationSuite.scala#sha256:1c9175fc44a0ce0900a58a5035769d3ae2d5ef21e3cfae2b7c1fecb8447f9574"
+      ]
+    },
+    {
+      "name": "order intent derives typed side-directed slice positions without a public Scala or JVM sign surface",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:order-model%2Fsrc%2Fmain%2Fscala%2Ftrading%2Forder%2FOrder.scala#sha256:9269db0bb1ad97b163e324d180465230ca0eadcd91a7c9786161ed4916d566b3",
+        "file:order-model%2Fsrc%2Ftest%2Fscala%2Ftrading%2Forder%2FOrderPropertiesSuite.scala#sha256:cdb9b4691bb9bb1c0373737d636e7c01e3a34e3a71c36f8e7619059e4d3638b9",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fexecution-scenario-compiler%2Fnegative%2FRemovedScenarioValuationApi.scala#sha256:ec8f423d9c4f1506e036a68a64e71190ab808a7b7c30c2ff5a9e0f269b6065ba",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Forder-scenario-java%2Fnegative%2FRemovedSideSign.java#sha256:2c092b5c06b121cb9f3e662a187281620c1e316b563db907d559f8a4c4cf005c"
+      ]
+    },
+    {
+      "name": "one-slice core equivalence and multi-slice long, short, linear, inverse, quanto, third-settlement, and off-grid exactness",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:execution-scenario%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fscenario%2FScenarioValuationSuite.scala#sha256:1c9175fc44a0ce0900a58a5035769d3ae2d5ef21e3cfae2b7c1fecb8447f9574",
+        "file:openspec%2Fchanges%2Fintroduce-pure-fee-policy-module%2Fimplementation-notes%2Ftask-group-6.md#sha256:ccba185286e027b88b5428cc693283763c4cce5d8c324d1274267a522dc7e7f6"
+      ]
+    },
+    {
+      "name": "transitional fee-policy orchestration delegates price normalization and retains typed scenario failures",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:fee-policy%2Fsrc%2Fmain%2Fscala%2Ftrading%2Ffee%2Fpolicy%2FFeeOrchestration.scala#sha256:1d6e54fdb1696f739f4c8707741209c2a859062de9a6fdae191e07a4c8f26a28",
+        "file:fee-policy%2Fsrc%2Fmain%2Fscala%2Ftrading%2Ffee%2Fpolicy%2FError.scala#sha256:f86d315957cdd6a1f890388f209124d33e30cd8c115bb8a78beb4a43fd76d144",
+        "file:fee-policy%2Fsrc%2Ftest%2Fscala%2Ftrading%2FFeePolicyIntegrationSuite.scala#sha256:bcdf2263b658790cdf90d4edd9edb5c6eb3913600bb541cd90e87978d66e0077"
+      ]
+    },
+    {
+      "name": "completed scenario client runs without fee policy and packaged valuation bytecode rejects forbidden concerns and scalar shortcuts",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fexecution-scenario-compiler%2Fpositive%2FScenarioValuationClient.scala#sha256:d34873d7d5db43d4ca2603782c700df2a7fa4580f4b6b8d6a40e38ff563c3bc1",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FEconomicsCompilerBoundarySuite.scala#sha256:dbd0cd5c81ca3aaf6bfe29818357330215d0ef2f364d17eb32691eec4e5a80dd",
+        "file:execution-scenario%2FREADME.md#sha256:09b9cde9940fcafc980d7c5c7ab47b146aebdbb88fb9ada18b30c3583f383df5"
+      ]
+    },
+    {
+      "name": "formatting, 7 order tests, 16 scenario tests, 31 fee-policy tests, 158 adversarial tests, JVM inspection, and clean automated review",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:order-model%2Fsrc%2Ftest%2Fscala%2Ftrading%2Forder%2FOrderPropertiesSuite.scala#sha256:cdb9b4691bb9bb1c0373737d636e7c01e3a34e3a71c36f8e7619059e4d3638b9",
+        "file:execution-scenario%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fscenario%2FScenarioValuationSuite.scala#sha256:1c9175fc44a0ce0900a58a5035769d3ae2d5ef21e3cfae2b7c1fecb8447f9574",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FEconomicsCompilerBoundarySuite.scala#sha256:dbd0cd5c81ca3aaf6bfe29818357330215d0ef2f364d17eb32691eec4e5a80dd",
+        "file:openspec%2Fchanges%2Fintroduce-pure-fee-policy-module%2Fimplementation-notes%2Ftask-group-6.md#sha256:ccba185286e027b88b5428cc693283763c4cce5d8c324d1274267a522dc7e7f6",
+        "file:memory%2Fsession-bridge.md#sha256:14fcb3ea383b3f4a658da2ccfe5f8052e3d29171b9f4e84e054ac347eaf10b16"
+      ]
+    }
+  ],
+  "automatedReview": {
+    "verdict": "pass",
+    "findings": []
+  },
+  "artifacts": [
+    "file:README.md#sha256:f2561ee2a457ac7f41f2850d4207f948a07a4cdd5e44cab05f8d47c07b7c542e",
+    "file:order-model%2Fsrc%2Fmain%2Fscala%2Ftrading%2Forder%2FOrder.scala#sha256:9269db0bb1ad97b163e324d180465230ca0eadcd91a7c9786161ed4916d566b3",
+    "file:order-model%2Fsrc%2Ftest%2Fscala%2Ftrading%2Forder%2FOrderPropertiesSuite.scala#sha256:cdb9b4691bb9bb1c0373737d636e7c01e3a34e3a71c36f8e7619059e4d3638b9",
+    "file:execution-scenario%2FREADME.md#sha256:09b9cde9940fcafc980d7c5c7ab47b146aebdbb88fb9ada18b30c3583f383df5",
+    "file:execution-scenario%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fscenario%2FScenario.scala#sha256:31c981cb0dfc80d53602abd8ac87cc9e63fc3615b4ec5645bf64c994f083a6ea",
+    "file:execution-scenario%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fscenario%2FError.scala#sha256:0ccf3b41bd537ec85f968d61bc3b83d21fdfd1e51219c8466123867c161f77a6",
+    "file:execution-scenario%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fscenario%2FScenarioValuation.scala#sha256:15e788e3d2a0ec912ae084fd64efa235d12ee26dd085fe30586f266aba109b0b",
+    "file:execution-scenario%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fscenario%2FScenarioPropertiesSuite.scala#sha256:4adf72b9ff72bf77466aa1fb574791eb22493bcd928f176cac4c50a5eae14b96",
+    "file:execution-scenario%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fscenario%2FScenarioValuationSuite.scala#sha256:1c9175fc44a0ce0900a58a5035769d3ae2d5ef21e3cfae2b7c1fecb8447f9574",
+    "file:fee-policy%2Fsrc%2Fmain%2Fscala%2Ftrading%2Ffee%2Fpolicy%2FFeeOrchestration.scala#sha256:1d6e54fdb1696f739f4c8707741209c2a859062de9a6fdae191e07a4c8f26a28",
+    "file:fee-policy%2Fsrc%2Fmain%2Fscala%2Ftrading%2Ffee%2Fpolicy%2FError.scala#sha256:f86d315957cdd6a1f890388f209124d33e30cd8c115bb8a78beb4a43fd76d144",
+    "file:fee-policy%2Fsrc%2Ftest%2Fscala%2Ftrading%2FFeePolicyIntegrationSuite.scala#sha256:bcdf2263b658790cdf90d4edd9edb5c6eb3913600bb541cd90e87978d66e0077",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fexecution-scenario-compiler%2Fnegative%2FRemovedScenarioValuationApi.scala#sha256:ec8f423d9c4f1506e036a68a64e71190ab808a7b7c30c2ff5a9e0f269b6065ba",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fexecution-scenario-compiler%2Fpositive%2FScenarioValuationClient.scala#sha256:d34873d7d5db43d4ca2603782c700df2a7fa4580f4b6b8d6a40e38ff563c3bc1",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Forder-scenario-java%2Fnegative%2FRemovedSideSign.java#sha256:2c092b5c06b121cb9f3e662a187281620c1e316b563db907d559f8a4c4cf005c",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FEconomicsCompilerBoundarySuite.scala#sha256:dbd0cd5c81ca3aaf6bfe29818357330215d0ef2f364d17eb32691eec4e5a80dd",
+    "file:openspec%2Fchanges%2Fintroduce-pure-fee-policy-module%2Fimplementation-notes%2Ftask-group-6.md#sha256:ccba185286e027b88b5428cc693283763c4cce5d8c324d1274267a522dc7e7f6",
+    "file:memory%2Fsession-bridge.md#sha256:14fcb3ea383b3f4a658da2ccfe5f8052e3d29171b9f4e84e054ac347eaf10b16"
+  ],
+  "summary": "Moved exact round-trip price normalization into execution scenario, where each entry and exit slice is converted from positive lots and order side into typed PositionLots, valued at its own retained market, negated into cashflow, and folded as an exact settlement quantity into core PricePnl. RoundTripLeg and focused scenario-valuation errors retain closed locations and typed causes. Side exposes no raw sign in Scala or JVM APIs, and the provisional fee consumer now delegates to ScenarioValuation. One-slice and weighted multi-slice linear, inverse, quanto, long, short, third-asset, foreign-identity, and off-grid coverage passes. Both formatting checks, 7 order tests, 16 scenario tests, 31 fee-policy tests, and all 158 adversarial/compiler tests pass. The automated review strengthened the completed-bytecode purity scan across all generated valuation classes, then completed scope, AC-016, exactness, identity, architecture, complexity, security applicability, evidence, and checkpoint axes with no findings; its final pass changed no file, triaged no finding, and is not canonical whole-change Verify or Human Review."
+}

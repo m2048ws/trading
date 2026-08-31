@@ -1,0 +1,19 @@
+S-04 Repair Task Group 10 — disposable Archive rehearsal
+Date: 2026-08-31
+Final revision: 0eceeabf1d2eb1f8ad2b534f65f00552dc6f53dc
+Planning revision: sha256:96b5b08c7943f4116de55100e56efd0ca8e65d7e707a1b74c3e51bc7480c7234
+Rehearsal root: /private/tmp/s04-archive-rehearsal.UifirS/project
+
+PASS OpenSpec archive introduce-pure-fee-policy-module --yes --json
+Archived as: 2026-08-31-introduce-pure-fee-policy-module
+Specs updated: true
+Requirement operations: 3 added, 4 modified, 1 removed, 0 renamed
+
+PASS openspec validate --all --strict --json
+Canonical specs: 14 passed, 0 failed
+
+PASS canonical scenario identity check
+Expected repaired identities: 13
+Missing identities: 0
+
+The rehearsal applied only the exact committed S-04 spec/task planning delta to a disposable clone.

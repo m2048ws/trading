@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 3,
+  "scope": "group-10",
+  "runId": "run-fe0e73ca-02b9-4f73-a9c9-5b8c5e5f8171",
+  "references": [
+    {
+      "reference": "file:memory%2Fsession-bridge.md#sha256:518cb93cb4c8ee8c9487b3e68666d45c8a40857507f8f6e2e801c6d112e131ff",
+      "sourcePath": "memory/session-bridge.md",
+      "digest": "sha256:518cb93cb4c8ee8c9487b3e68666d45c8a40857507f8f6e2e801c6d112e131ff",
+      "archivePath": "references/blobs/518cb93cb4c8ee8c9487b3e68666d45c8a40857507f8f6e2e801c6d112e131ff"
+    },
+    {
+      "reference": "file:openspec%2Fchanges%2Fintroduce-pure-fee-policy-module%2Fcorgi%2Fsource.yaml#sha256:d7face4865eb2e8e69abb4f305d67720842e19f9d1d4fa3b760b744fb8f06443",
+      "sourcePath": "openspec/changes/introduce-pure-fee-policy-module/corgi/source.yaml",
+      "digest": "sha256:d7face4865eb2e8e69abb4f305d67720842e19f9d1d4fa3b760b744fb8f06443",
+      "archivePath": "references/blobs/d7face4865eb2e8e69abb4f305d67720842e19f9d1d4fa3b760b744fb8f06443"
+    },
+    {
+      "reference": "file:openspec%2Fchanges%2Fintroduce-pure-fee-policy-module%2Fcorgi%2Ftraceability.yaml#sha256:8ef137a161b86ab60b78dadf55c70e91b8727572212054d1d344ec878057f064",
+      "sourcePath": "openspec/changes/introduce-pure-fee-policy-module/corgi/traceability.yaml",
+      "digest": "sha256:8ef137a161b86ab60b78dadf55c70e91b8727572212054d1d344ec878057f064",
+      "archivePath": "references/blobs/8ef137a161b86ab60b78dadf55c70e91b8727572212054d1d344ec878057f064"
+    },
+    {
+      "reference": "file:openspec%2Fchanges%2Fintroduce-pure-fee-policy-module%2Fspecs%2Ffee-inclusive-pnl%2Fspec.md#sha256:82bbf43361703890390cda736f0f53ef9c53acae9046fdb76f6ee1f5f33009d1",
+      "sourcePath": "openspec/changes/introduce-pure-fee-policy-module/specs/fee-inclusive-pnl/spec.md",
+      "digest": "sha256:82bbf43361703890390cda736f0f53ef9c53acae9046fdb76f6ee1f5f33009d1",
+      "archivePath": "references/blobs/82bbf43361703890390cda736f0f53ef9c53acae9046fdb76f6ee1f5f33009d1"
+    },
+    {
+      "reference": "file:openspec%2Fchanges%2Fintroduce-pure-fee-policy-module%2Ftasks.md#sha256:3c7508e2493bf1d99933f3f9c14270a21d2f9e6ddd24f29cbab3d3136610695c",
+      "sourcePath": "openspec/changes/introduce-pure-fee-policy-module/tasks.md",
+      "digest": "sha256:3c7508e2493bf1d99933f3f9c14270a21d2f9e6ddd24f29cbab3d3136610695c",
+      "archivePath": "references/blobs/3c7508e2493bf1d99933f3f9c14270a21d2f9e6ddd24f29cbab3d3136610695c"
+    },
+    {
+      "reference": "file:target%2Fs04-tg10-archive-rehearsal.log#sha256:7168c63a0e6027fb9adb0dc4c15d75892e879610b6335497c99662f56683a19f",
+      "sourcePath": "target/s04-tg10-archive-rehearsal.log",
+      "digest": "sha256:7168c63a0e6027fb9adb0dc4c15d75892e879610b6335497c99662f56683a19f",
+      "archivePath": "references/blobs/7168c63a0e6027fb9adb0dc4c15d75892e879610b6335497c99662f56683a19f"
+    }
+  ]
+}
