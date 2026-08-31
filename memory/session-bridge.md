@@ -14,25 +14,23 @@ updated: 2026-08-31
 - **Issue**: 9 https://github.com/m2048ws/trading/issues/9
 - **Change**: introduce-pure-fee-policy-module
 - **Worktree**: /Users/m/src/money/.worktrees/introduce-pure-fee-policy-module
-- **Phase at Checkpoint**: applying
-- **Task Group at Checkpoint**: 8
-- **Observed Run Revision**: 9
-- **Last Verified HEAD**: 78146fd80b622f332af825619e5b7228efeb1434
+- **Phase at Checkpoint**: awaiting_verify
+- **Task Group at Checkpoint**: 9
+- **Observed Run Revision**: 10
+- **Last Verified HEAD**: 3a8fd512d036462e50c27cd3aad3d10f0e77cd73
 
-The phase and revision above are the required next checkpoint carried by Task Group 8. Live Run Contract authority
-remains `applying` at revision 8 until Corgi acknowledges that commit.
+The phase and revision above are the required next checkpoint carried by Task Group 9. Live Run Contract authority
+remains `applying` at revision 9 until Corgi acknowledges that commit.
 
 ## Next Action
-- Commit and acknowledge `introduce-pure-fee-policy-module` Task Group 8, synchronize draft PR #32, then implement Task
-  Group 9.
-  Verify, Human Review, Human QA, and Archive remain separate gates.
+- Commit and acknowledge `introduce-pure-fee-policy-module` Task Group 9, synchronize draft PR #32, and stop Apply at
+  `awaiting_verify`. Canonical Verify, Human Review, Human QA, and Archive remain separate gates.
 
 ## Blockers
 - none
 
 ## Uncommitted Work
-- Task Group 8's downstream canonical-API migration, provisional package and facade removal, completed-artifact guards,
-  deferred-capability documentation, implementation note, and next-state checkpoint.
+- Task Group 9's final build/test/package/planning evidence, implementation note, and `awaiting_verify` checkpoint.
 
 ## Discoveries
 - The archived `establish-pure-instrument-economics` boundary was reconciled from commit `86613ee` before S-02
@@ -346,6 +344,22 @@ remains `applying` at revision 8 until Corgi acknowledges that commit.
   independence, retired and deferred surfaces, artifact boundaries, code quality, linear behavior, security
   applicability, and evidence with no findings. It changed no file, triaged no finding, and is not canonical Verify or
   Human Review.
+- Task Group 8 is acknowledged at `3a8fd512d036462e50c27cd3aad3d10f0e77cd73`; draft PR #32 is synchronized and Run
+  revision 9 admits only Group 9.
+- Both formatting checks and clean dependency-order compilation pass. The full repository matrix passes 913 tests: 601
+  quantities, 13 reference data, 9 application, 18 runtime, 13 instrument economics, 40 risk, 7 order model, 16
+  execution scenario, 38 fee policy/integration, and 158 completed-JAR/compiler/adversarial tests. Explicit JMH
+  compilation also passes.
+- The completed fee-policy JAR has 132 entries and 90 classes, no provisional/retired/reverse package entry, and public
+  signatures limited to explicit pure domain inputs. Production scans find no reverse dependencies, effect kind,
+  source-market attachment, identity reconciliation, raw-scalar PnL kernel, unlawful policy monoid, or old capability.
+- Strict OpenSpec validation and all eleven deterministic Corgi readiness checks pass at planning revision
+  `sha256:b2226bdaf8f713cf48bb49f599da6b5cd84462cb96d8f028a6263caed76c4158`. The read-only cross-artifact semantic
+  readiness review found no error, warning, or informational drift and changed no file.
+- The automated Group 9 review checked Run/Group identity, AC-013 through AC-016 evidence, the full matrix, JMH and
+  package/source audits, deterministic and semantic readiness, architecture, performance/security applicability,
+  checkpoint integrity, and gate separation with no findings. It changed no file, triaged no finding, and is not
+  canonical Verify or Human Review.
 
 ## Promotion Queue
 - Review agent-configuration constraints before promoting any item to `memory/MEMORY.md`.
