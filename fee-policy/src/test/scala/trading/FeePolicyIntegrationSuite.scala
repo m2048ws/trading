@@ -180,9 +180,9 @@ class FeePolicyIntegrationSuite extends FunSuite:
       )
       .toOption
       .get
-    val feeStrategy = new policy.Policy[FeePolicyError]:
-      val instrumentId: InstrumentId = instrument.identity.id
-      def evaluate(value: policy.Scenario): Either[PolicyErrors[FeePolicyError], Vector[FeeDirective]] =
+    val feeStrategy = new policy.Policy[Nothing]:
+      val instrumentId: InstrumentId                                                            = instrument.identity.id
+      def evaluate(value: policy.Scenario): Either[PolicyErrors[Nothing], Vector[FeeDirective]] =
         Right(Vector(FeeDirective(fee, SliceIndex.zero)))
 
     val pnl = policy.pnl(trip, feeStrategy).toOption.get
@@ -224,17 +224,17 @@ class FeePolicyIntegrationSuite extends FunSuite:
       )
       .toOption
       .get
-    val feeStrategy = new policy.Policy[FeePolicyError]:
-      val instrumentId: InstrumentId = instrument.identity.id
-      def evaluate(value: policy.Scenario): Either[PolicyErrors[FeePolicyError], Vector[FeeDirective]] =
+    val feeStrategy = new policy.Policy[Nothing]:
+      val instrumentId: InstrumentId                                                            = instrument.identity.id
+      def evaluate(value: policy.Scenario): Either[PolicyErrors[Nothing], Vector[FeeDirective]] =
         Right(Vector(FeeDirective(fee, SliceIndex.zero)))
 
     assertEquals(
       policy.pnl(trip, feeStrategy),
       Left(
-        FeeContributionFailure(
+        FeeOrchestrationContributionFailure(
           ScenarioLeg.Entry,
-          0,
+          SliceIndex.zero,
           ContributionConversionFailure(MissingConversion(fixture.token.id))
         )
       )
@@ -342,9 +342,9 @@ class FeePolicyIntegrationSuite extends FunSuite:
       )
       .toOption
       .get
-    val feeStrategy = new policy.Policy[FeePolicyError]:
-      val instrumentId: InstrumentId = instrument.identity.id
-      def evaluate(value: policy.Scenario): Either[PolicyErrors[FeePolicyError], Vector[FeeDirective]] =
+    val feeStrategy = new policy.Policy[Nothing]:
+      val instrumentId: InstrumentId                                                            = instrument.identity.id
+      def evaluate(value: policy.Scenario): Either[PolicyErrors[Nothing], Vector[FeeDirective]] =
         Right(Vector(FeeDirective(flatFee, SliceIndex.zero)))
     val observations = 1.to(4).toVector.map: count =>
       val lots = Lots.fromCount(instrument)(count).toOption.get
@@ -378,18 +378,18 @@ class FeePolicyIntegrationSuite extends FunSuite:
       .denomination(fixture.usd)(fixture.usdCents, QuantizationPolicy.TowardZero)
       .toOption
       .get
-    def component(name: String, amount: Rational): policy.Policy[FeePolicyError] = new policy.Policy[FeePolicyError]:
-      val instrumentId: InstrumentId = instrument.identity.id
-      def evaluate(value: policy.Scenario): Either[PolicyErrors[FeePolicyError], Vector[FeeDirective]] =
-        Fee
+    def component(name: String, amount: Rational): policy.Policy[Nothing] = new policy.Policy[Nothing]:
+      val instrumentId: InstrumentId                                                            = instrument.identity.id
+      def evaluate(value: policy.Scenario): Either[PolicyErrors[Nothing], Vector[FeeDirective]] =
+        val fee = Fee
           .create(instrument)(
             denomination,
             FeeKind.from(name).toOption.get,
             Quantity(fixture.usd.dimension.ref, amount)
           )
-          .left
-          .map(cause => PolicyErrors.one(FeeValueFailure(cause)))
-          .map(fee => Vector(FeeDirective(fee, SliceIndex.zero)))
+          .toOption
+          .get
+        Right(Vector(FeeDirective(fee, SliceIndex.zero)))
 
     val combined = FeePolicy
       .combine(instrument)(Vector(component("one", Rational(-1, 100)), component("two", Rational(1, 100))))
@@ -400,9 +400,9 @@ class FeePolicyIntegrationSuite extends FunSuite:
       Right(Vector(Rational(-1, 100), Rational(1, 100)))
     )
 
-    val foreign = new policy.Policy[FeePolicyError]:
+    val foreign = new policy.Policy[Nothing]:
       val instrumentId: InstrumentId = fixture.foreign.identity.id
-      def evaluate(value: policy.Scenario): Either[PolicyErrors[FeePolicyError], Vector[FeeDirective]] =
+      def evaluate(value: policy.Scenario): Either[PolicyErrors[Nothing], Vector[FeeDirective]] =
         Right(Vector.empty)
     assertEquals(
       FeePolicy

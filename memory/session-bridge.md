@@ -15,24 +15,24 @@ updated: 2026-08-31
 - **Change**: introduce-pure-fee-policy-module
 - **Worktree**: /Users/m/src/money/.worktrees/introduce-pure-fee-policy-module
 - **Phase at Checkpoint**: applying
-- **Task Group at Checkpoint**: 4
-- **Observed Run Revision**: 5
-- **Last Verified HEAD**: 958899c0b40eb3bac8b0d9e96b5d73e976e1f892
+- **Task Group at Checkpoint**: 5
+- **Observed Run Revision**: 6
+- **Last Verified HEAD**: 031c233c756d77483286229ad9e7a7f6d9d58d57
 
-The phase and revision above are the required next checkpoint carried by Task Group 4. Live Run Contract authority
-remains `applying` at revision 4 until Corgi acknowledges that commit.
+The phase and revision above are the required next checkpoint carried by Task Group 5. Live Run Contract authority
+remains `applying` at revision 5 until Corgi acknowledges that commit.
 
 ## Next Action
-- Commit and acknowledge `introduce-pure-fee-policy-module` Task Group 4, synchronize draft PR #32, then implement Task
-  Group 5.
+- Commit and acknowledge `introduce-pure-fee-policy-module` Task Group 5, synchronize draft PR #32, then implement Task
+  Group 6.
   Verify, Human Review, Human QA, and Archive remain separate gates.
 
 ## Blockers
 - none
 
 ## Uncommitted Work
-- Task Group 4's typed strategy/error/directive algebra, checked composition, transitional directive-consumer
-  migration, contextual laws, completed-JAR API guards, documentation, implementation note, and next-state checkpoint.
+- Task Group 5's staged assessment, scenario-owned attribution, focused generic violations, transitional consumer
+  migration, final-constructor guards, documentation, implementation note, and next-state checkpoint.
 
 ## Discoveries
 - The archived `establish-pure-instrument-economics` boundary was reconciled from commit `86613ee` before S-02
@@ -281,6 +281,24 @@ remains `applying` at revision 4 until Corgi acknowledges that commit.
   checked composition across error mapping, then repeated formatting, 24 fee-policy tests, all 153 adversarial tests,
   source/package scans, and bytecode inspection with no remaining findings. The clean final pass changed no file,
   triaged no finding, and is not canonical Verify or Human Review.
+- Task Group 4 is acknowledged at `031c233c756d77483286229ad9e7a7f6d9d58d57`; draft PR #32 is synchronized and Run
+  revision 5 admits only Group 5. The SSH hardware-backed key refused noninteractive signing during synchronization, so
+  the guarded adapter used the already-authorized GitHub CLI credential through invocation-local Git configuration;
+  no repository or global Git configuration changed.
+- Canonical `FeeAssessment` gates scenario/policy identity before evaluation, retains typed policy failures with stable
+  ordinals, and accumulates every directive fee, denomination, and index violation before constructing output.
+  `ScenarioFees` owns the target scenario once, and each existential `AssessedFee` retains the actual indexed immutable
+  slice selected centrally.
+- `ScenarioFees` and the concrete assessed-fee representation have JVM-private constructors. Equal-looking duplicate
+  slices retain exact coordinate-selected references, heterogeneous fee assets remain typed, and invalid input suppresses
+  policy execution. The provisional PnL bridge now consumes assessment; `FeeLine`, caller-selected markets, reference
+  equality reconciliation, and the universal `FeePolicyError` hierarchy are absent.
+- The focused Group 5 gate passes 31 fee-policy tests and all 155 completed-JAR/compiler/adversarial tests, including 42
+  economics/fee-policy boundary tests. Both formatting gates, source audits, and bytecode constructor inspection pass.
+- The automated Group 5 review checked scope, AC-015, staged suppression, stable accumulation, typed-cause provenance,
+  honest error products, exact scenario ownership, JVM construction authority, migration, architecture, complexity,
+  security applicability, evidence, and checkpoint integrity with no findings. It changed no file, triaged no finding,
+  and is not canonical Verify or Human Review.
 
 ## Promotion Queue
 - Review agent-configuration constraints before promoting any item to `memory/MEMORY.md`.

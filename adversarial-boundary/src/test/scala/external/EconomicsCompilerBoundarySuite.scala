@@ -221,11 +221,26 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
         "trading/fee/SliceIndex.class",
         "trading/fee/FeeDirective.class",
         "trading/fee/FeePolicy.class",
+        "trading/fee/FeeAssessmentErrors.class",
+        "trading/fee/AssessedFee.class",
+        "trading/fee/ScenarioFees.class",
+        "trading/fee/FeeAssessment$.class",
         "trading/fee/policy/FeeOrchestration.class"
       ).foreach(entry => assert(feePolicyEntries.contains(entry), s"missing $entry from $feePolicyJar"))
-      List("trading/fee/policy/FeeSchedule.class", "trading/fee/policy/FeePolicy.class")
+      List(
+        "trading/fee/policy/FeeSchedule.class",
+        "trading/fee/policy/FeePolicy.class",
+        "trading/fee/policy/FeeLine.class",
+        "trading/fee/policy/FeePolicyError.class"
+      )
         .foreach(entry => assert(!feePolicyEntries.contains(entry), s"fee-policy JAR retained removed $entry"))
-      val publicPolicyBytes = List("trading/fee/FeePolicy.class", "trading/fee/FeeDirective.class")
+      val publicPolicyBytes = List(
+        "trading/fee/FeePolicy.class",
+        "trading/fee/FeeDirective.class",
+        "trading/fee/AssessedFee.class",
+        "trading/fee/ScenarioFees.class",
+        "trading/fee/FeeAssessment$.class"
+      )
         .map: entry =>
           val stream = feePolicy.getInputStream(feePolicy.getJarEntry(entry))
           try new String(stream.readAllBytes(), StandardCharsets.ISO_8859_1)
@@ -341,6 +356,17 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
     List("FeeSchedule", "Monoid", "Type argument", "Throwable", "String", "sourceMarket")
       .foreach(fragment => assert(rejected.rendered.contains(fragment), rejected.rendered))
 
+  test("completed fee-policy API rejects caller construction of final scenario attribution"):
+    val source  = feePolicyFixturesRoot.resolve("negative/ForgedAssessment.scala")
+    val prelude = compileFilteredPrelude(source, compileFeePolicy)
+    assert(prelude.succeeded, s"fixture prelude must compile independently:\n${prelude.rendered}")
+    val rejected = compileFeePolicy(source)
+    assert(rejected.errors.size >= 2, rejected.rendered)
+    assert(rejected.rendered.contains("cannot be accessed"), rejected.rendered)
+    List("ScenarioFees", "AssessedFeeValue").foreach(fragment =>
+      assert(rejected.rendered.contains(fragment), rejected.rendered)
+    )
+
   test("completed fee-policy classpath cannot access downstream or effect concerns"):
     val source  = feePolicyFixturesRoot.resolve("negative/FeePolicyHasNoDownstream.scala")
     val prelude = compileFilteredPrelude(source, compileFeePolicy)
@@ -449,6 +475,16 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
     val slicesClass = Class.forName("trading.scenario.MatchedSlices")
     assert(slicesClass.getDeclaredConstructors.nonEmpty)
     assert(slicesClass.getDeclaredConstructors.forall(constructor => Modifier.isPrivate(constructor.getModifiers)))
+
+  test("completed JAR assessed-fee and scenario-fees constructors are JVM-private"):
+    List("trading.fee.AssessedFeeValue", "trading.fee.ScenarioFees").foreach: name =>
+      val representation = Class.forName(name)
+      assert(Modifier.isFinal(representation.getModifiers), name)
+      assert(representation.getDeclaredConstructors.nonEmpty, name)
+      assert(
+        representation.getDeclaredConstructors.forall(constructor => Modifier.isPrivate(constructor.getModifiers)),
+        name
+      )
 
   test("positive downstream composition fixture compiles without warnings and runs"):
     val result = compile(fixturesRoot.resolve("positive/CompleteCompositionClient.scala"))

@@ -45,9 +45,9 @@ separation, dependency admission, Scala API ergonomics, and claim-proportional v
 the proposed target architecture separately.
 
 The catalog, snapshot, application-port, runtime-interpreter, instrument-economics, and shared benchmark
-responsibilities now have concrete owners. Order intent, execution-scenario interpretation, fee-policy composition,
-and risk are separate physical pure boundaries. The current RFC-0002 S-04 delivery owns the fee-policy API's semantic
-redesign, while the boundary-codec artifact remains owned by S-05. RFC-0002
+responsibilities now have concrete owners. Order intent, execution-scenario interpretation, fee-policy composition and
+scenario-owned attribution, and risk are separate physical pure boundaries. The current RFC-0002 S-04 delivery owns
+the fee-policy API's semantic redesign, while the boundary-codec artifact remains owned by S-05. RFC-0002
 S-01 delivered the runtime and future-port admission foundation and its first live-catalog interpreter; S-05 owns the
 removed packing capability's durable replacement. Every current module owns a concrete responsibility rather than
 existing solely to match the target diagram.

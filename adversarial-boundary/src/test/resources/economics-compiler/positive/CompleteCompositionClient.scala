@@ -66,9 +66,9 @@ object CompleteCompositionClient:
     )
     .toOption
     .get
-  val strategy = new FeePolicy[FeePolicyError, D, B, Q, S]:
+  val strategy = new FeePolicy[Nothing, D, B, Q, S]:
     val instrumentId: InstrumentId = instrument.identity.id
-    def evaluate(value: feePolicy.Scenario): Either[PolicyErrors[FeePolicyError], Vector[FeeDirective]] =
+    def evaluate(value: feePolicy.Scenario): Either[PolicyErrors[Nothing], Vector[FeeDirective]] =
       Right(Vector(FeeDirective(fee, SliceIndex.zero)))
   val pnl  = feePolicy.pnl(trip, strategy).toOption.get
   val risk = Risk.downside(instrument)(pnl).toOption.get
