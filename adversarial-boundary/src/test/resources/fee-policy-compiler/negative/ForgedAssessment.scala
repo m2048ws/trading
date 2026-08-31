@@ -30,5 +30,12 @@ object ForgedAssessment:
   // OFFENDING-BEGIN
   val forgedScenarioFees = new ScenarioFees[D, B, Q, S](scenario, Vector.empty)
   val forgedAssessedFee   = new AssessedFeeValue[Q, D, B, Q, S](fee, SliceIndex.zero, slice)
+  val forgedAttributed = new AttributedFeeContributionValue[Q, D, B, Q, S](
+    RoundTripLeg.Entry,
+    0,
+    ???,
+    ???
+  )
+  val forgedInclusive = new FeeInclusivePnl[D, B, Q, S](???, ???, ???, Vector.empty, ???)
   // OFFENDING-END
 end ForgedAssessment

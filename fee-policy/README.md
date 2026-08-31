@@ -7,10 +7,16 @@ public package root is `trading.fee`.
 The public root now owns exact `FeeRate`/`FeeCalculation` mathematics, non-empty typed `PolicyErrors`, refined
 `SliceIndex`, existential `FeeDirective`, and the open pure `FeePolicy` strategy with checked same-instrument
 composition. Canonical `FeeAssessment` now resolves directives against one exact scenario and returns JVM-sealed
-`ScenarioFees`/`AssessedFee` attribution with generic ordered violations. The
-`trading.fee.policy.FeeOrchestration` subpackage is only a provisional generic integration bridge for settlement
-conversion and fee-inclusive PnL paths that later S-04 Task Groups replace. The artifact contains no risk sizing, live
-policy acquisition, concrete effects, runtime state, I/O, persistence, telemetry, or codecs.
+`ScenarioFees`/`AssessedFee` attribution with generic ordered violations.
+
+`RoundTripFeePolicies` records explicit immutable entry and exit selections, while `FeeInclusivePnl.evaluate` stages
+identity, exact scenario price normalization, per-leg assessment, selected-slice conversion, and core PnL composition.
+Its non-empty generic violations retain every policy cause, leg, directive, slice, and core cause. Successful results
+retain the round trip, both assessments, attributed settled contributions, and one core `Pnl`; price, fee, and net
+totals are projections of that core value rather than recalculated fields. The `trading.fee.policy.FeeOrchestration`
+subpackage remains only as a provisional compatibility bridge until downstream migration removes it in the next Task
+Group. The artifact contains no risk sizing, live policy acquisition, concrete effects, runtime state, I/O,
+persistence, telemetry, or codecs.
 
 Risk is a test-only integration dependency. Downstream tests demonstrate three explicit composition routes without a
 production dependency from risk to fee policy:

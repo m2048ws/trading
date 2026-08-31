@@ -246,6 +246,12 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
         "trading/fee/AssessedFee.class",
         "trading/fee/ScenarioFees.class",
         "trading/fee/FeeAssessment$.class",
+        "trading/fee/RoundTripFeePolicies.class",
+        "trading/fee/FeeInclusivePnlViolation.class",
+        "trading/fee/FeeInclusivePnlErrors.class",
+        "trading/fee/AttributedFeeContribution.class",
+        "trading/fee/FeeInclusivePnl.class",
+        "trading/fee/FeeInclusivePnl$.class",
         "trading/fee/policy/FeeOrchestration.class"
       ).foreach(entry => assert(feePolicyEntries.contains(entry), s"missing $entry from $feePolicyJar"))
       List(
@@ -255,13 +261,18 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
         "trading/fee/policy/FeePolicyError.class"
       )
         .foreach(entry => assert(!feePolicyEntries.contains(entry), s"fee-policy JAR retained removed $entry"))
-      val publicPolicyBytes = List(
-        "trading/fee/FeePolicy.class",
-        "trading/fee/FeeDirective.class",
-        "trading/fee/AssessedFee.class",
-        "trading/fee/ScenarioFees.class",
-        "trading/fee/FeeAssessment$.class"
-      )
+      val publicPolicyEntries = feePolicyEntries.toList.sorted.filter: entry =>
+        List(
+          "trading/fee/FeePolicy",
+          "trading/fee/FeeDirective",
+          "trading/fee/AssessedFee",
+          "trading/fee/ScenarioFees",
+          "trading/fee/FeeAssessment",
+          "trading/fee/RoundTripFeePolicies",
+          "trading/fee/FeeInclusive",
+          "trading/fee/AttributedFeeContribution"
+        ).exists(entry.startsWith) && entry.endsWith(".class")
+      val publicPolicyBytes = publicPolicyEntries
         .map: entry =>
           val stream = feePolicy.getInputStream(feePolicy.getJarEntry(entry))
           try new String(stream.readAllBytes(), StandardCharsets.ISO_8859_1)
@@ -382,9 +393,9 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
     val prelude = compileFilteredPrelude(source, compileFeePolicy)
     assert(prelude.succeeded, s"fixture prelude must compile independently:\n${prelude.rendered}")
     val rejected = compileFeePolicy(source)
-    assert(rejected.errors.size >= 2, rejected.rendered)
+    assert(rejected.errors.size >= 4, rejected.rendered)
     assert(rejected.rendered.contains("cannot be accessed"), rejected.rendered)
-    List("ScenarioFees", "AssessedFeeValue").foreach(fragment =>
+    List("ScenarioFees", "AssessedFeeValue", "AttributedFeeContributionValue", "FeeInclusivePnl").foreach(fragment =>
       assert(rejected.rendered.contains(fragment), rejected.rendered)
     )
 
@@ -518,8 +529,13 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
     assert(slicesClass.getDeclaredConstructors.nonEmpty)
     assert(slicesClass.getDeclaredConstructors.forall(constructor => Modifier.isPrivate(constructor.getModifiers)))
 
-  test("completed JAR assessed-fee and scenario-fees constructors are JVM-private"):
-    List("trading.fee.AssessedFeeValue", "trading.fee.ScenarioFees").foreach: name =>
+  test("completed JAR final fee attribution and scenario-PnL constructors are JVM-private"):
+    List(
+      "trading.fee.AssessedFeeValue",
+      "trading.fee.ScenarioFees",
+      "trading.fee.AttributedFeeContributionValue",
+      "trading.fee.FeeInclusivePnl"
+    ).foreach: name =>
       val representation = Class.forName(name)
       assert(Modifier.isFinal(representation.getModifiers), name)
       assert(representation.getDeclaredConstructors.nonEmpty, name)

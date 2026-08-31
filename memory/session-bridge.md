@@ -15,25 +15,25 @@ updated: 2026-08-31
 - **Change**: introduce-pure-fee-policy-module
 - **Worktree**: /Users/m/src/money/.worktrees/introduce-pure-fee-policy-module
 - **Phase at Checkpoint**: applying
-- **Task Group at Checkpoint**: 6
-- **Observed Run Revision**: 7
-- **Last Verified HEAD**: a02ef16497214ebb0dc4618be5e03c4078d5ca3d
+- **Task Group at Checkpoint**: 7
+- **Observed Run Revision**: 8
+- **Last Verified HEAD**: 0060e65f5bf4174fab0542a919007a825271d57f
 
-The phase and revision above are the required next checkpoint carried by Task Group 6. Live Run Contract authority
-remains `applying` at revision 6 until Corgi acknowledges that commit.
+The phase and revision above are the required next checkpoint carried by Task Group 7. Live Run Contract authority
+remains `applying` at revision 7 until Corgi acknowledges that commit.
 
 ## Next Action
-- Commit and acknowledge `introduce-pure-fee-policy-module` Task Group 6, synchronize draft PR #32, then implement Task
-  Group 7.
+- Commit and acknowledge `introduce-pure-fee-policy-module` Task Group 7, synchronize draft PR #32, then implement Task
+  Group 8.
   Verify, Human Review, Human QA, and Archive remain separate gates.
 
 ## Blockers
 - none
 
 ## Uncommitted Work
-- Task Group 6's fee-independent exact scenario normalization, typed intent position operation, closed leg and focused
-  errors, transitional consumer migration, completed-artifact guards, documentation, implementation note, and
-  next-state checkpoint.
+- Task Group 7's explicit leg-policy product, staged fee-inclusive evaluation, generic non-empty violations,
+  scenario-level success and attributed contribution values, completed-artifact guards, documentation, implementation
+  note, and next-state checkpoint.
 
 ## Discoveries
 - The archived `establish-pure-instrument-economics` boundary was reconciled from commit `86613ee` before S-02
@@ -314,6 +314,23 @@ remains `applying` at revision 6 until Corgi acknowledges that commit.
   and case-insensitively rejects fee, quantization, catalog, effect, stream, average, and scalar-coefficient symbols.
   The remediated final pass found no findings, changed no file, triaged no finding, and is not canonical Verify or Human
   Review.
+- Task Group 6 is acknowledged at `0060e65f5bf4174fab0542a919007a825271d57f`; draft PR #32 is synchronized and Run
+  revision 7 admits only Group 7.
+- `RoundTripFeePolicies` now records explicit entry/exit policy selections, and `FeeInclusivePnl` owns the pure staged
+  identity, scenario price, assessment, selected-slice conversion, and core PnL composition boundary.
+- Generic non-empty fee-inclusive violations retain closed identity locations, scenario causes, per-leg assessment
+  causes, directive/slice conversion causes, and core causes. A successful leg converts independently beside another
+  leg's policy failure, so every eligible independent failure is retained deterministically.
+- Successful fee-inclusive results and attributed contribution values have JVM-private constructors. They retain the
+  round trip, both exact scenario assessments, entry/exit and slice provenance, original fees, core contributions, and
+  one core PnL whose price, fee, and net totals are projected rather than duplicated.
+- The focused Group 7 gate passes both formatting checks, 38 fee-policy tests, and all 158 completed-JAR/compiler/
+  adversarial tests. The 45-test economics boundary suite compiles and runs fee-inclusive PnL through only the pure
+  production graph and rejects caller construction of final attribution and scenario-level PnL.
+- The automated Group 7 review checked scope, AC-016, branch eligibility, stable accumulation, typed provenance,
+  selected-slice conversion, core-total ownership, replay equality, JVM authority, dependency purity, complexity,
+  security applicability, evidence, and checkpoint integrity. After recording the observed evidence matrix, the final
+  pass found no findings, changed no file, triaged no finding, and is not canonical Verify or Human Review.
 
 ## Promotion Queue
 - Review agent-configuration constraints before promoting any item to `memory/MEMORY.md`.
