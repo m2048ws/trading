@@ -1,6 +1,6 @@
 schemaVersion: 1
 rfcId: RFC-0002-architecture-portfolio
-revision: 7
+revision: 8
 slices:
   S-01-application-runtime-foundation:
     status: archived
@@ -45,6 +45,14 @@ slices:
       commit: 02d15a1cf37f236a15f40f7a88179387caaa3e81
       evidenceManifest: sha256:12efcb23d09389513848f9ff1dda4f7e03a0e9eb1eba0b2648d70af0e4a5442f
   S-04-fee-policy:
-    status: unbound
+    status: planned
+    binding:
+      change: introduce-pure-fee-policy-module
+      issue:
+        provider: github
+        id: '9'
+        url: https://github.com/m2048ws/trading/issues/9
+      sourceDigest: sha256:d7face4865eb2e8e69abb4f305d67720842e19f9d1d4fa3b760b744fb8f06443
+      plannedAt: '2026-08-29T20:09:35.458Z'
   S-05-versioned-boundary-codecs:
     status: unbound

@@ -10,21 +10,18 @@ updated: 2026-08-31
 ## Delivery Pointer
 - **RFC**: RFC-0002-architecture-portfolio
 - **RFC Revision**: 7b6f7a58f4dcbb8fb4bbdf3a8ba74ba66f222cce
-- **Slice**: S-03-pure-risk
-- **Issue**: 8 https://github.com/m2048ws/trading/issues/8
-- **Change**: introduce-pure-risk-module
-- **Worktree**: /Users/m/src/money/.worktrees/introduce-pure-risk-module
-- **Phase at Checkpoint**: archiving
-- **Task Group at Checkpoint**: none
-- **Observed Run Revision**: 7
-- **Last Verified HEAD**: 02d15a1cf37f236a15f40f7a88179387caaa3e81
-
-The phase and revision above are the required post-acknowledgement checkpoint for successor Run Contract
-`run-133327d8-35ce-46a2-9c8e-c82ab46f82c9`. Live Run Contract state remains execution authority.
+- **Slice**: S-04-fee-policy
+- **Issue**: 9 https://github.com/m2048ws/trading/issues/9
+- **Change**: introduce-pure-fee-policy-module
+- **Worktree**: /Users/m/src/money/.worktrees/introduce-pure-fee-policy-module
+- **Phase at Checkpoint**: planning_ready
+- **Task Group at Checkpoint**: 1
+- **Observed Run Revision**: none
+- **Last Verified HEAD**: 0b7cc676054f8b9680174fce84f280d863e1a409
 
 ## Next Action
-- Consult Run Contract v3: resume tracker closeout for `introduce-pure-risk-module` only if pending; otherwise select the next accepted Slice. Local delivery: `wiki/deliveries/RFC-0002-architecture-portfolio-S-03-pure-risk.md`.
-  remain later separate gates.
+- Start Apply for `introduce-pure-fee-policy-module` Task Group 1.
+  reconciled S-02/S-03 baseline.
 
 ## Blockers
 - none
