@@ -15,22 +15,22 @@ updated: 2026-08-31
 - **Change**: introduce-pure-risk-module
 - **Worktree**: /Users/m/src/money/.worktrees/introduce-pure-risk-module
 - **Phase at Checkpoint**: applying
-- **Task Group at Checkpoint**: 3
-- **Observed Run Revision**: 4
-- **Last Verified HEAD**: d01129c30691a0d978beb36eefe71bd7b9fcb623
+- **Task Group at Checkpoint**: 4
+- **Observed Run Revision**: 5
+- **Last Verified HEAD**: 8bf1ad6da61fd3f91f81aae85ecc543a8603e4a1
 
-The phase and revision above are the required next checkpoint carried by Task Group 3. Live Run Contract authority
-remains `applying` at revision 3 until Corgi acknowledges that commit.
+The phase and revision above are the required next checkpoint carried by Task Group 4. Live Run Contract authority
+remains `applying` at revision 4 until Corgi acknowledges that commit.
 
 ## Next Action
-- Commit and acknowledge `introduce-pure-risk-module` Task Group 3, sync draft PR #28, then implement Task Group 4.
+- Commit and acknowledge `introduce-pure-risk-module` Task Group 4, sync draft PR #28, then implement Task Group 5.
   Verify, Human Review, Human QA, and Archive remain separate gates.
 
 ## Blockers
 - none
 
 ## Uncommitted Work
-- Task Group 3's exact refined downside API, transitional refined-budget migration, tests, and this checkpoint.
+- Task Group 4's checked assessment/model boundary, non-empty violations, authority tests, and this checkpoint.
 
 ## Discoveries
 - The archived `establish-pure-instrument-economics` boundary was reconciled from commit `86613ee` before S-02
@@ -166,6 +166,14 @@ remains `applying` at revision 3 until Corgi acknowledges that commit.
 - The temporary policy/scenario service is explicitly `TransitionalRisk`; it accepts only refined nonnegative budgets,
   delegates downside to the pure artifact, and no longer exposes `InvalidRiskBudget` or raw sign validation. The focused
   Group 3 gate passes 4 risk, 10 downstream economics, and 40 completed-JAR/compiler tests.
+- Task Group 3 is acknowledged at `8bf1ad6da61fd3f91f81aae85ecc543a8603e4a1` and draft PR #28 is synchronized.
+- `LotRiskAssessment` derives downside from coherent instrument/lots/PnL inputs, while `MonotoneLotRisk` captures one
+  identity, position/settlement dimensions, positive cap, and library-owned total domain evaluator. The initial lawful
+  constructor admits only one checked coordinate; Group 5 adds closed curve constructors.
+- Independent model identity, dimension, coverage, duplicate/missing coordinate, breakpoint, marginal, boundary, and
+  composition failures have domain-owned typed variants and accumulate through `ValidatedNec` into a deterministic
+  non-empty public collection. Assessment, model, and violation-collection constructors are JVM-private via cached
+  private method handles; the focused gate passes 9 risk and 7 completed-JAR/spoof tests.
 
 ## Promotion Queue
 - Review agent-configuration constraints before promoting any item to `memory/MEMORY.md`.

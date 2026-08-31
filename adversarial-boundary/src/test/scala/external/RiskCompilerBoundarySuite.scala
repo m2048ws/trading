@@ -1,6 +1,7 @@
 package external
 
 import java.io.File
+import java.lang.reflect.Modifier
 import java.net.URLClassLoader
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
@@ -102,6 +103,31 @@ class RiskCompilerBoundarySuite extends FunSuite:
     assert(rejected.rendered.contains("Found:"), rejected.rendered)
     assert(rejected.rendered.contains("Required:"), rejected.rendered)
     forbiddenDiagnostics.foreach(fragment => assert(!rejected.rendered.contains(fragment), rejected.rendered))
+
+  test("completed risk JAR rejects same-package assessment/model construction and subtyping"):
+    val source  = fixturesRoot.resolve("negative/PackageSpoofRiskConstruction.scala")
+    val prelude = compilePrelude(source)
+    assert(prelude.succeeded, s"fixture prelude must compile independently:\n${prelude.rendered}")
+    val rejected = compile(source)
+    assert(rejected.errors.size >= 5, rejected.rendered)
+    assert(rejected.rendered.contains("cannot be accessed"), rejected.rendered)
+    assert(rejected.rendered.contains("value copy is not a member"), rejected.rendered)
+    forbiddenDiagnostics.foreach(fragment => assert(!rejected.rendered.contains(fragment), rejected.rendered))
+
+  test("assessment and model constructors are JVM-private and representations are final"):
+    List(
+      Class.forName("trading.risk.LotRiskAssessment"),
+      Class.forName("trading.risk.ModelViolations"),
+      Class.forName("trading.risk.MonotoneLotRisk")
+    ).foreach: representation =>
+      assert(Modifier.isFinal(representation.getModifiers), s"${representation.getName} is not final")
+      assert(representation.getDeclaredConstructors.nonEmpty)
+      assert(
+        representation.getDeclaredConstructors.forall(constructor => Modifier.isPrivate(constructor.getModifiers)),
+        s"${representation.getName} exposes a non-private JVM constructor"
+      )
+    val model = Class.forName("trading.risk.MonotoneLotRisk")
+    assert(!model.getMethods.exists(_.getName == "assess"), "model exposes its refined internal observer to Java")
 
   private def compilePrelude(source: Path): Compilation =
     val lines    = Files.readAllLines(source, StandardCharsets.UTF_8)

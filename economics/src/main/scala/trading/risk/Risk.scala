@@ -19,9 +19,8 @@ final class TransitionalRisk[I <: Instrument] private[risk] (val feePolicy: FeeP
   def downsideRisk(
     pnl: instrument.Pnl
   ): Either[RiskError, NonNegative[Quantity[instrument.roles.settle.D]]] =
-    Risk.downside(instrument)(pnl).left.map:
-      case DownsideInstrumentMismatch(expected, supplied) =>
-        RiskInstrumentMismatch("pnl", expected, supplied)
+    Risk.downside(instrument)(pnl).left.map: mismatch =>
+      RiskInstrumentMismatch("pnl", mismatch.expected, mismatch.supplied)
 
   def maxLots(
     riskBudget: NonNegative[Quantity[instrument.roles.settle.D]],
