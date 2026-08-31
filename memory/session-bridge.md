@@ -14,23 +14,23 @@ updated: 2026-08-31
 - **Issue**: 8 https://github.com/m2048ws/trading/issues/8
 - **Change**: introduce-pure-risk-module
 - **Worktree**: /Users/m/src/money/.worktrees/introduce-pure-risk-module
-- **Phase at Checkpoint**: planning_ready
+- **Phase at Checkpoint**: applying
 - **Task Group at Checkpoint**: 1
-- **Observed Run Revision**: none
-- **Last Verified HEAD**: cf210964f62f10602be0551682abda3ce7d24fae
+- **Observed Run Revision**: 2
+- **Last Verified HEAD**: 9d9b370f1c55fe8fe8ca2a1eab60a8a423323a1a
 
-The phase and revision above are the required next checkpoint carried by the Repair Task Group commit. Live Run
-Contract authority remains `applying` at revision 1 until Corgi acknowledges that commit.
+The phase and revision above are the required next checkpoint carried by Task Group 1. Live Run Contract authority
+remains `applying` at revision 1 until Corgi acknowledges that commit.
 
 ## Next Action
-- Start Apply for `introduce-pure-risk-module` Task Group 1.
-  Review, Human QA, and Archive remain separate gates.
+- Commit and acknowledge `introduce-pure-risk-module` Task Group 1, open its draft PR, then implement Task Group 2.
+  Verify, Human Review, Human QA, and Archive remain separate gates.
 
 ## Blockers
 - none
 
 ## Uncommitted Work
-- Task Group 13's archive-delta completeness evidence and this next-state checkpoint; production code is unchanged.
+- Task Group 1's authority/baseline/inventory note and this next-state checkpoint; production code is unchanged.
 
 ## Discoveries
 - The archived `establish-pure-instrument-economics` boundary was reconciled from commit `86613ee` before S-02
@@ -142,6 +142,17 @@ Contract authority remains `applying` at revision 1 until Corgi acknowledges tha
 - The automated Task Group 13 review checked scope, canonical scenario preservation, RFC/source/traceability stability,
   archive recovery safety, planning-only Git boundaries, validation evidence, and performance/security applicability
   with no findings. It changed no file, triaged no finding, and is not canonical Verify or Human Review.
+- S-03 Propose remains strict-ready at planning revision
+  `sha256:7d49085118e7b0083c8262dd38e09f1e796325df9e738cbe2b5513f352ed33c1`; Issue #8, accepted RFC revision,
+  source digest, traceability digest, and the archived instrument-economics prerequisite are current.
+- Fresh Run `run-a29691ac-e873-47ae-aa50-f27dff8c0381` uses planning baseline
+  `9d9b370f1c55fe8fe8ca2a1eab60a8a423323a1a`, whose sole parent is current `origin/main`
+  `cf210964f62f10602be0551682abda3ce7d24fae`. The discarded unacknowledged Run remains recoverable under
+  `/private/tmp/s03-run-restart.TLy1JE`.
+- The reconciled baseline passes formatting, clean compilation and 820 tests, completed-JAR/adversarial boundaries,
+  and explicit JMH compilation on OpenJDK 26.0.2, SBT 1.12.15, and Scala 3.8.4.
+- Existing sizing uses divide into fixed affine models, a deliberately non-monotone exhaustive case, and a located
+  callback-failure case. No arbitrary callback or fee/scenario builder is eligible for implicit monotone certification.
 
 ## Promotion Queue
 - Review agent-configuration constraints before promoting any item to `memory/MEMORY.md`.
