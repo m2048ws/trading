@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 3,
+  "changeName": "introduce-pure-fee-policy-module",
+  "runId": "run-fe0e73ca-02b9-4f73-a9c9-5b8c5e5f8171",
+  "finalRevision": "0eceeabf1d2eb1f8ad2b534f65f00552dc6f53dc",
+  "planningRevision": "sha256:96b5b08c7943f4116de55100e56efd0ca8e65d7e707a1b74c3e51bc7480c7234",
+  "contract": {
+    "kind": "rfc-slice",
+    "deliveryRef": "RFC-0002-architecture-portfolio/S-04-fee-policy",
+    "rfcId": "RFC-0002-architecture-portfolio",
+    "rfcDigest": "sha256:a00c0cf1e3a4440bfce7dc828ad4ac119414f10d72e8d8c52c613403ef5977e2",
+    "acceptedCommit": "7b6f7a58f4dcbb8fb4bbdf3a8ba74ba66f222cce",
+    "sliceId": "S-04-fee-policy",
+    "sourcePath": "openspec/changes/introduce-pure-fee-policy-module/corgi/source.yaml",
+    "sourceDigest": "sha256:d7face4865eb2e8e69abb4f305d67720842e19f9d1d4fa3b760b744fb8f06443",
+    "traceabilityPath": "openspec/changes/introduce-pure-fee-policy-module/corgi/traceability.yaml",
+    "traceabilityDigest": "sha256:8ef137a161b86ab60b78dadf55c70e91b8727572212054d1d344ec878057f064",
+    "acceptance": [
+      {
+        "id": "AC-013",
+        "evidence": "automated",
+        "taskGroups": [
+          "2",
+          "8"
+        ]
+      },
+      {
+        "id": "AC-014",
+        "evidence": "both",
+        "taskGroups": [
+          "3",
+          "4"
+        ]
+      },
+      {
+        "id": "AC-015",
+        "evidence": "automated",
+        "taskGroups": [
+          "5"
+        ]
+      },
+      {
+        "id": "AC-016",
+        "evidence": "both",
+        "taskGroups": [
+          "6",
+          "7",
+          "8",
+          "9"
+        ]
+      }
+    ],
+    "tracker": {
+      "provider": "github",
+      "idempotencyKey": "da13816e4f88e9035ba098d707cf15e4714a2cbe111becb38152d76700971673",
+      "issue": {
+        "id": "9",
+        "url": "https://github.com/m2048ws/trading/issues/9"
+      }
+    }
+  },
+  "archiveIntentId": "archive-eaef96fa-0b65-4e50-bf8a-0a3acad22f9d"
+}

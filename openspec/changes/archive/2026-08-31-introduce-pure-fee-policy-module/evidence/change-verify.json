@@ -1,0 +1,100 @@
+{
+  "verdict": "pass",
+  "finalRevision": "0eceeabf1d2eb1f8ad2b534f65f00552dc6f53dc",
+  "planningRevision": "sha256:96b5b08c7943f4116de55100e56efd0ca8e65d7e707a1b74c3e51bc7480c7234",
+  "sourceDigest": "sha256:d7face4865eb2e8e69abb4f305d67720842e19f9d1d4fa3b760b744fb8f06443",
+  "traceabilityDigest": "sha256:8ef137a161b86ab60b78dadf55c70e91b8727572212054d1d344ec878057f064",
+  "reportHash": "sha256:695679a757eba72a801d7e4885f387ff7413c16137e422d1e60554c1282b9195",
+  "checks": [
+    {
+      "name": "Canonical formatting, clean full repository test matrix, and JMH compilation passed at exact final HEAD (913 tests)",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:target%2Fs04-tg10-canonical-verify.log#sha256:b2af2022fc5349b21e1fbaf172794f60a67842a0f3381c05065af6d2ec75fb57",
+        "file:build.sbt#sha256:864bcc328b1c9517e1ab7f4c1412dfc1bd3c83d5b5039ece773f3bb577fa9f04"
+      ]
+    },
+    {
+      "name": "Strict OpenSpec validation, deterministic Corgi readiness, and canonical Archive compatibility passed",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:target%2Fs04-tg10-planning-verify.log#sha256:bb10291c09739a1f0d9205cc52e0d811aef043f41a00ce9cafc69a3b1c448b5a",
+        "file:openspec%2Fchanges%2Fintroduce-pure-fee-policy-module%2Fspecs%2Ffee-inclusive-pnl%2Fspec.md#sha256:82bbf43361703890390cda736f0f53ef9c53acae9046fdb76f6ee1f5f33009d1",
+        "file:openspec%2Fchanges%2Fintroduce-pure-fee-policy-module%2Ftasks.md#sha256:3c7508e2493bf1d99933f3f9c14270a21d2f9e6ddd24f29cbab3d3136610695c",
+        "file:openspec%2Fchanges%2Fintroduce-pure-fee-policy-module%2Fcorgi%2Fsource.yaml#sha256:d7face4865eb2e8e69abb4f305d67720842e19f9d1d4fa3b760b744fb8f06443",
+        "file:openspec%2Fchanges%2Fintroduce-pure-fee-policy-module%2Fcorgi%2Ftraceability.yaml#sha256:8ef137a161b86ab60b78dadf55c70e91b8727572212054d1d344ec878057f064"
+      ]
+    },
+    {
+      "name": "Disposable real Archive rehearsal updated canonical specs without dropping any of the 13 repaired scenario identities",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:target%2Fs04-tg10-archive-rehearsal.log#sha256:a00558f9cd23b820cb9b77860cc65c3fab509be7c3745d9e8b16cc11fbc9b07f",
+        "file:openspec%2Fchanges%2Fintroduce-pure-fee-policy-module%2Fspecs%2Ffee-inclusive-pnl%2Fspec.md#sha256:82bbf43361703890390cda736f0f53ef9c53acae9046fdb76f6ee1f5f33009d1"
+      ]
+    },
+    {
+      "name": "Completed-JAR compiler boundaries and production-scope audit passed with no runtime or build-source repair changes",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:target%2Fs04-tg10-canonical-verify.log#sha256:b2af2022fc5349b21e1fbaf172794f60a67842a0f3381c05065af6d2ec75fb57",
+        "file:target%2Fs04-tg10-planning-verify.log#sha256:bb10291c09739a1f0d9205cc52e0d811aef043f41a00ce9cafc69a3b1c448b5a",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FEconomicsCompilerBoundarySuite.scala#sha256:24fd860360730c4f82ba297d82260edd7abe569e1b25f34e7aa7c79f0832efe6",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Ffee-policy-compiler%2Fpositive%2FFeePolicyBoundaryClient.scala#sha256:954787352b722221e93b423650eea340bbb57b387ff30975442f81a2f7d16c8c",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Ffee-policy-compiler%2Fnegative%2FFeePolicyHasNoDownstream.scala#sha256:5470190d5ff6b7a12923afce59aa1b2a1568c183ff5165c4b9116bbf8121b9cc"
+      ]
+    }
+  ],
+  "acceptance": [
+    {
+      "id": "AC-013",
+      "automated": "pass",
+      "human": "not_applicable",
+      "evidenceRefs": [
+        "file:target%2Fs04-tg10-canonical-verify.log#sha256:b2af2022fc5349b21e1fbaf172794f60a67842a0f3381c05065af6d2ec75fb57",
+        "file:build.sbt#sha256:864bcc328b1c9517e1ab7f4c1412dfc1bd3c83d5b5039ece773f3bb577fa9f04",
+        "file:fee-policy%2FREADME.md#sha256:08adca205113ae9b4f2d45751e48cdd32f6ee86237b699acdc5725a3f660eb07",
+        "file:fee-policy%2Fsrc%2Fmain%2Fscala%2Ftrading%2Ffee%2FPolicy.scala#sha256:392d909334f5f67ca27a183b6436aa43bb5895b27f345769412ad7bce3d85c92",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Ffee-policy-compiler%2Fnegative%2FFeePolicyHasNoDownstream.scala#sha256:5470190d5ff6b7a12923afce59aa1b2a1568c183ff5165c4b9116bbf8121b9cc"
+      ]
+    },
+    {
+      "id": "AC-014",
+      "automated": "pass",
+      "human": "not_applicable",
+      "evidenceRefs": [
+        "file:target%2Fs04-tg10-canonical-verify.log#sha256:b2af2022fc5349b21e1fbaf172794f60a67842a0f3381c05065af6d2ec75fb57",
+        "file:fee-policy%2Fsrc%2Fmain%2Fscala%2Ftrading%2Ffee%2FFeeCalculation.scala#sha256:581074f6fb9b65c96f4c87f33901fdf9f427fb0f7f0c8c4d08bcddd8e407c2a4",
+        "file:fee-policy%2Fsrc%2Fmain%2Fscala%2Ftrading%2Ffee%2FPolicy.scala#sha256:392d909334f5f67ca27a183b6436aa43bb5895b27f345769412ad7bce3d85c92",
+        "file:fee-policy%2Fsrc%2Ftest%2Fscala%2Ftrading%2Ffee%2FFeeCalculationSuite.scala#sha256:1f0a406ff667f5b927d38a7043c4524239d26c3f60416db24889924fd173dcfe",
+        "file:fee-policy%2Fsrc%2Ftest%2Fscala%2Ftrading%2Ffee%2FFeePolicyStrategySuite.scala#sha256:7e8f82bb3a7d29682f73f9aaaedcd08d430c67c073f1979f12a3453938ceccd7"
+      ]
+    },
+    {
+      "id": "AC-015",
+      "automated": "pass",
+      "human": "not_applicable",
+      "evidenceRefs": [
+        "file:target%2Fs04-tg10-canonical-verify.log#sha256:b2af2022fc5349b21e1fbaf172794f60a67842a0f3381c05065af6d2ec75fb57",
+        "file:fee-policy%2Fsrc%2Fmain%2Fscala%2Ftrading%2Ffee%2FAssessment.scala#sha256:adf536e821cb043d367f9c497c2f7867045d1776c392811bc87851f6488bd892",
+        "file:fee-policy%2Fsrc%2Ftest%2Fscala%2Ftrading%2Ffee%2FFeeAssessmentSuite.scala#sha256:dc37e2391cf1a8a9ab979321cee9c3724a0dc1fd001253df1d0f5ec83d27e81b",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Ffee-policy-compiler%2Fnegative%2FForgedAssessment.scala#sha256:521e5b94a6adc49db5916c057a10bac2fc5ebaec49efec1f5fbc58da52379879"
+      ]
+    },
+    {
+      "id": "AC-016",
+      "automated": "pass",
+      "human": "not_applicable",
+      "evidenceRefs": [
+        "file:target%2Fs04-tg10-canonical-verify.log#sha256:b2af2022fc5349b21e1fbaf172794f60a67842a0f3381c05065af6d2ec75fb57",
+        "file:target%2Fs04-tg10-archive-rehearsal.log#sha256:a00558f9cd23b820cb9b77860cc65c3fab509be7c3745d9e8b16cc11fbc9b07f",
+        "file:execution-scenario%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fscenario%2FScenarioValuation.scala#sha256:15e788e3d2a0ec912ae084fd64efa235d12ee26dd085fe30586f266aba109b0b",
+        "file:execution-scenario%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fscenario%2FScenarioValuationSuite.scala#sha256:1c9175fc44a0ce0900a58a5035769d3ae2d5ef21e3cfae2b7c1fecb8447f9574",
+        "file:fee-policy%2Fsrc%2Fmain%2Fscala%2Ftrading%2Ffee%2FFeeInclusivePnl.scala#sha256:e8126e83a60dcdfcaedefd9eda661a3d9a00f3b939733d07e77b1cc1183bef5c",
+        "file:fee-policy%2Fsrc%2Ftest%2Fscala%2Ftrading%2Ffee%2FFeeInclusivePnlSuite.scala#sha256:f51e2771656830b59c62bba60388ae0e44d1110448ae96e6372017c7efc4e36b",
+        "file:fee-policy%2Fsrc%2Ftest%2Fscala%2Ftrading%2FFeePolicyIntegrationSuite.scala#sha256:6ccbcd9d6a0a9f6cd4f253a0592489b5f95897fd36c3aa8ad7028c598f26bef1"
+      ]
+    }
+  ],
+  "verifiedAt": "2026-08-31T20:06:02.627Z"
+}

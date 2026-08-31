@@ -14,16 +14,16 @@ updated: 2026-08-31
 - **Issue**: 9 https://github.com/m2048ws/trading/issues/9
 - **Change**: introduce-pure-fee-policy-module
 - **Worktree**: /Users/m/src/money/.worktrees/introduce-pure-fee-policy-module
-- **Phase at Checkpoint**: awaiting_verify
-- **Task Group at Checkpoint**: 10
-- **Observed Run Revision**: 2
-- **Last Verified HEAD**: 2b8b58f49587885778f5c41bbf207c01281433e4
+- **Phase at Checkpoint**: archiving
+- **Task Group at Checkpoint**: none
+- **Observed Run Revision**: 7
+- **Last Verified HEAD**: 0eceeabf1d2eb1f8ad2b534f65f00552dc6f53dc
 
 The phase and revision above are the required post-acknowledgement checkpoint for successor Run Contract
 `run-fe0e73ca-02b9-4f73-a9c9-5b8c5e5f8171`. Live Run Contract state remains execution authority.
 
 ## Next Action
-- Commit and acknowledge Repair Task Group 10, synchronize draft PR #32, then rerun canonical Verify. Human Review,
+- Consult Run Contract v3: resume tracker closeout for `introduce-pure-fee-policy-module` only if pending; otherwise select the next accepted Slice. Local delivery: `wiki/deliveries/RFC-0002-architecture-portfolio-S-04-fee-policy.md`.
   Human QA, and Archive remain separate gates.
 
 ## Blockers

@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 3,
+  "groupId": "4",
+  "checks": [
+    {
+      "name": "covariant pure fee-policy strategy and domain-owned non-empty typed error channel",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:fee-policy%2Fsrc%2Fmain%2Fscala%2Ftrading%2Ffee%2FPolicy.scala#sha256:392d909334f5f67ca27a183b6436aa43bb5895b27f345769412ad7bce3d85c92",
+        "file:fee-policy%2Fsrc%2Ftest%2Fscala%2Ftrading%2Ffee%2FFeePolicyStrategySuite.scala#sha256:7e8f82bb3a7d29682f73f9aaaedcd08d430c67c073f1979f12a3453938ceccd7",
+        "file:openspec%2Fchanges%2Fintroduce-pure-fee-policy-module%2Fimplementation-notes%2Ftask-group-4.md#sha256:70511e3b2bdfb62ae86fc33a66d5f848465adb7850a7f379bf577b49f8002e48"
+      ]
+    },
+    {
+      "name": "nominal nonnegative slice index and existential directive retain only typed fee plus requested coordinate",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:fee-policy%2Fsrc%2Fmain%2Fscala%2Ftrading%2Ffee%2FPolicy.scala#sha256:392d909334f5f67ca27a183b6436aa43bb5895b27f345769412ad7bce3d85c92",
+        "file:fee-policy%2Fsrc%2Ftest%2Fscala%2Ftrading%2Ffee%2FFeePolicyStrategySuite.scala#sha256:7e8f82bb3a7d29682f73f9aaaedcd08d430c67c073f1979f12a3453938ceccd7",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Ffee-policy-compiler%2Fnegative%2FUnlawfulPolicyApi.scala#sha256:e7915d244e373c31490c176e29ddbd7b9a9091ba83d20a8fd78e6127f4b833be"
+      ]
+    },
+    {
+      "name": "checked contextual composition normalizes identities and nesting while preserving stable directives and typed failures",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:fee-policy%2Fsrc%2Fmain%2Fscala%2Ftrading%2Ffee%2FPolicy.scala#sha256:392d909334f5f67ca27a183b6436aa43bb5895b27f345769412ad7bce3d85c92",
+        "file:fee-policy%2Fsrc%2Ftest%2Fscala%2Ftrading%2Ffee%2FFeePolicyStrategySuite.scala#sha256:7e8f82bb3a7d29682f73f9aaaedcd08d430c67c073f1979f12a3453938ceccd7",
+        "file:fee-policy%2Fsrc%2Ftest%2Fscala%2Ftrading%2FFeePolicyIntegrationSuite.scala#sha256:ca6eaa6ac47bcd7387a43b78a14b2be6bb9e19eda038b3fbfd46b3c57352954f"
+      ]
+    },
+    {
+      "name": "completed-JAR guards reject old services, global monoid, effects, erased errors, and caller-selected markets",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Ffee-policy-compiler%2Fnegative%2FUnlawfulPolicyApi.scala#sha256:e7915d244e373c31490c176e29ddbd7b9a9091ba83d20a8fd78e6127f4b833be",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Ffee-policy-compiler%2Fpositive%2FFeePolicyBoundaryClient.scala#sha256:2dc289b253ab9bbe98125d930bf2e5871c06b8d2d9f32375cc3608601db62a77",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FEconomicsCompilerBoundarySuite.scala#sha256:5705f25af1518e05bb83952bf2ce7a7f2610e9e64cfdc972619be9f83caae453"
+      ]
+    },
+    {
+      "name": "formatting, 24-test fee-policy gate, 153-test adversarial gate, bytecode audit, and clean automated review",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:fee-policy%2Fsrc%2Ftest%2Fscala%2Ftrading%2Ffee%2FFeePolicyStrategySuite.scala#sha256:7e8f82bb3a7d29682f73f9aaaedcd08d430c67c073f1979f12a3453938ceccd7",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FEconomicsCompilerBoundarySuite.scala#sha256:5705f25af1518e05bb83952bf2ce7a7f2610e9e64cfdc972619be9f83caae453",
+        "file:openspec%2Fchanges%2Fintroduce-pure-fee-policy-module%2Fimplementation-notes%2Ftask-group-4.md#sha256:70511e3b2bdfb62ae86fc33a66d5f848465adb7850a7f379bf577b49f8002e48",
+        "file:memory%2Fsession-bridge.md#sha256:ee67cfe393e2030818448d27d372caa5b1e532f683f0707251c2ed276f740f11"
+      ]
+    }
+  ],
+  "automatedReview": {
+    "verdict": "pass",
+    "findings": []
+  },
+  "artifacts": [
+    "file:fee-policy%2Fsrc%2Fmain%2Fscala%2Ftrading%2Ffee%2FPolicy.scala#sha256:392d909334f5f67ca27a183b6436aa43bb5895b27f345769412ad7bce3d85c92",
+    "file:fee-policy%2Fsrc%2Fmain%2Fscala%2Ftrading%2Ffee%2Fpolicy%2FFeeOrchestration.scala#sha256:e3af929760719f97ad933c53447e12d1e89282b0cb506f5400c860d3135f4775",
+    "file:fee-policy%2Fsrc%2Fmain%2Fscala%2Ftrading%2Ffee%2Fpolicy%2FError.scala#sha256:5924a73cf150c8200c38377696de1f62d0962eb26c55a2cadbff48b627ce7ace",
+    "file:fee-policy%2Fsrc%2Ftest%2Fscala%2Ftrading%2Ffee%2FFeePolicyStrategySuite.scala#sha256:7e8f82bb3a7d29682f73f9aaaedcd08d430c67c073f1979f12a3453938ceccd7",
+    "file:fee-policy%2Fsrc%2Ftest%2Fscala%2Ftrading%2FFeePolicyIntegrationSuite.scala#sha256:ca6eaa6ac47bcd7387a43b78a14b2be6bb9e19eda038b3fbfd46b3c57352954f",
+    "file:fee-policy%2Fsrc%2Ftest%2Fscala%2Ftrading%2Ffee%2FFeeCalculationSuite.scala#sha256:58721cbefd3354b0096e270767046864449ca794395f4c8901d00ba61d9936bf",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Ffee-policy-compiler%2Fnegative%2FUnlawfulPolicyApi.scala#sha256:e7915d244e373c31490c176e29ddbd7b9a9091ba83d20a8fd78e6127f4b833be",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Ffee-policy-compiler%2Fpositive%2FFeePolicyBoundaryClient.scala#sha256:2dc289b253ab9bbe98125d930bf2e5871c06b8d2d9f32375cc3608601db62a77",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FEconomicsCompilerBoundarySuite.scala#sha256:5705f25af1518e05bb83952bf2ce7a7f2610e9e64cfdc972619be9f83caae453",
+    "file:openspec%2Fchanges%2Fintroduce-pure-fee-policy-module%2Fimplementation-notes%2Ftask-group-4.md#sha256:70511e3b2bdfb62ae86fc33a66d5f848465adb7850a7f379bf577b49f8002e48",
+    "file:memory%2Fsession-bridge.md#sha256:ee67cfe393e2030818448d27d372caa5b1e532f683f0707251c2ed276f740f11"
+  ],
+  "summary": "Introduced the covariant pure FeePolicy strategy, public non-empty typed PolicyErrors, refined SliceIndex, and existential FeeDirective; implemented checked same-instrument composition with total no-fee identity, flattened nesting, stable directive/error order, and caller-owned sum widening; migrated the provisional consumer to directives; and strengthened completed-JAR/compiler boundaries against the removed services and unlawful algebra, effects, erasure, or source markets. Both formatting checks, 24 fee-policy tests, and all 153 adversarial/compiler tests pass. The automated review hardened JVM-visible implementation constructors and preserved flat composition through error mapping, then completed scope, RFC alignment, refinement, architecture, packaged boundaries, complexity, security applicability, evidence, and checkpoint axes with no remaining findings; its final pass changed no file, triaged no finding, and is not canonical whole-change Verify or Human Review."
+}

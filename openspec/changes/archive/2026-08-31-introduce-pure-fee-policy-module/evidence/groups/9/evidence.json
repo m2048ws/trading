@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 3,
+  "groupId": "9",
+  "checks": [
+    {
+      "name": "both formatting gates and clean dependency-ordered compilation pass for every production artifact and the adversarial test boundary",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:build.sbt#sha256:864bcc328b1c9517e1ab7f4c1412dfc1bd3c83d5b5039ece773f3bb577fa9f04",
+        "file:openspec%2Fchanges%2Fintroduce-pure-fee-policy-module%2Fimplementation-notes%2Ftask-group-9.md#sha256:9638777a386caa1bffe275d97949a78243a79f326e0caf9d22b99b17f152ab19",
+        "file:memory%2Fsession-bridge.md#sha256:aab0dc9dfd6d45b444eb3ad17bba3576350132b37499ccd45bacb6e8becbf4df"
+      ]
+    },
+    {
+      "name": "the full exact refinement unit property law scenario risk negative-compilation external-JAR and adversarial matrix passes 913 tests",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:fee-policy%2Fsrc%2Ftest%2Fscala%2Ftrading%2Ffee%2FFeeCalculationSuite.scala#sha256:1f0a406ff667f5b927d38a7043c4524239d26c3f60416db24889924fd173dcfe",
+        "file:fee-policy%2Fsrc%2Ftest%2Fscala%2Ftrading%2Ffee%2FFeePolicyStrategySuite.scala#sha256:7e8f82bb3a7d29682f73f9aaaedcd08d430c67c073f1979f12a3453938ceccd7",
+        "file:fee-policy%2Fsrc%2Ftest%2Fscala%2Ftrading%2Ffee%2FFeeAssessmentSuite.scala#sha256:dc37e2391cf1a8a9ab979321cee9c3724a0dc1fd001253df1d0f5ec83d27e81b",
+        "file:fee-policy%2Fsrc%2Ftest%2Fscala%2Ftrading%2Ffee%2FFeeInclusivePnlSuite.scala#sha256:f51e2771656830b59c62bba60388ae0e44d1110448ae96e6372017c7efc4e36b",
+        "file:fee-policy%2Fsrc%2Ftest%2Fscala%2Ftrading%2FFeePolicyIntegrationSuite.scala#sha256:6ccbcd9d6a0a9f6cd4f253a0592489b5f95897fd36c3aa8ad7028c598f26bef1",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FEconomicsCompilerBoundarySuite.scala#sha256:24fd860360730c4f82ba297d82260edd7abe569e1b25f34e7aa7c79f0832efe6",
+        "file:openspec%2Fchanges%2Fintroduce-pure-fee-policy-module%2Fimplementation-notes%2Ftask-group-9.md#sha256:9638777a386caa1bffe275d97949a78243a79f326e0caf9d22b99b17f152ab19"
+      ]
+    },
+    {
+      "name": "completed package and source audits reject reverse dependencies effects source markets identity reconciliation raw-scalar PnL kernels unlawful monoids and retired capabilities",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:fee-policy%2Fsrc%2Fmain%2Fscala%2Ftrading%2Ffee%2FFeeCalculation.scala#sha256:581074f6fb9b65c96f4c87f33901fdf9f427fb0f7f0c8c4d08bcddd8e407c2a4",
+        "file:fee-policy%2Fsrc%2Fmain%2Fscala%2Ftrading%2Ffee%2FPolicy.scala#sha256:392d909334f5f67ca27a183b6436aa43bb5895b27f345769412ad7bce3d85c92",
+        "file:fee-policy%2Fsrc%2Fmain%2Fscala%2Ftrading%2Ffee%2FAssessment.scala#sha256:adf536e821cb043d367f9c497c2f7867045d1776c392811bc87851f6488bd892",
+        "file:fee-policy%2Fsrc%2Fmain%2Fscala%2Ftrading%2Ffee%2FFeeInclusivePnl.scala#sha256:e8126e83a60dcdfcaedefd9eda661a3d9a00f3b939733d07e77b1cc1183bef5c",
+        "file:execution-scenario%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fscenario%2FScenarioValuation.scala#sha256:15e788e3d2a0ec912ae084fd64efa235d12ee26dd085fe30586f266aba109b0b",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FEconomicsCompilerBoundarySuite.scala#sha256:24fd860360730c4f82ba297d82260edd7abe569e1b25f34e7aa7c79f0832efe6",
+        "file:openspec%2Fchanges%2Fintroduce-pure-fee-policy-module%2Fimplementation-notes%2Ftask-group-9.md#sha256:9638777a386caa1bffe275d97949a78243a79f326e0caf9d22b99b17f152ab19"
+      ]
+    },
+    {
+      "name": "strict OpenSpec validation and all eleven deterministic Corgi readiness checks pass with no semantic planning drift",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:openspec%2Fchanges%2Fintroduce-pure-fee-policy-module%2Fproposal.md#sha256:f1ef3067ed6cf83d9b6e0106e03f72c10a5af910f707a7fb6e3450a7ddd89c05",
+        "file:openspec%2Fchanges%2Fintroduce-pure-fee-policy-module%2Fdesign.md#sha256:d7ebdf2a2d3a336dc27e006497c5c3341f9388cbb7cf3e067503503426d70321",
+        "file:openspec%2Fchanges%2Fintroduce-pure-fee-policy-module%2Fspecs%2Ffee-inclusive-pnl%2Fspec.md#sha256:de871d54c966afa0ddc86a65a5b09820c16376ec2b497521479be59104734c5e",
+        "file:openspec%2Fchanges%2Fintroduce-pure-fee-policy-module%2Fspecs%2Forder-scenarios%2Fspec.md#sha256:ee659c4a28c001fa926304bb831e1f6209cdfdf0ea11a7eafcc11fcd56ead371",
+        "file:openspec%2Fchanges%2Fintroduce-pure-fee-policy-module%2Ftasks.md#sha256:a3b0ff0b395b5c3f6fb3407b23bc1040b666582fbbc70fac7723e7fa511df730",
+        "file:openspec%2Fchanges%2Fintroduce-pure-fee-policy-module%2Fcorgi%2Fsource.yaml#sha256:d7face4865eb2e8e69abb4f305d67720842e19f9d1d4fa3b760b744fb8f06443",
+        "file:openspec%2Fchanges%2Fintroduce-pure-fee-policy-module%2Fcorgi%2Ftraceability.yaml#sha256:8ef137a161b86ab60b78dadf55c70e91b8727572212054d1d344ec878057f064",
+        "file:openspec%2Fchanges%2Fintroduce-pure-fee-policy-module%2Fimplementation-notes%2Ftask-group-9.md#sha256:9638777a386caa1bffe275d97949a78243a79f326e0caf9d22b99b17f152ab19"
+      ]
+    },
+    {
+      "name": "JMH compilation passes and the handoff preserves separate Verify Human Review Human QA and Archive gates without beginning boundary codecs",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:benchmarks%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fbenchmark%2FRiskSizingBenchmark.scala#sha256:43655cf7cdde1bb984682ec8a5ea08bf676325ceddf219b31b776bcc58947a45",
+        "file:openspec%2Fchanges%2Fintroduce-pure-fee-policy-module%2Fimplementation-notes%2Ftask-group-9.md#sha256:9638777a386caa1bffe275d97949a78243a79f326e0caf9d22b99b17f152ab19",
+        "file:memory%2Fsession-bridge.md#sha256:aab0dc9dfd6d45b444eb3ad17bba3576350132b37499ccd45bacb6e8becbf4df"
+      ]
+    }
+  ],
+  "automatedReview": {
+    "verdict": "pass",
+    "findings": []
+  },
+  "artifacts": [
+    "file:build.sbt#sha256:864bcc328b1c9517e1ab7f4c1412dfc1bd3c83d5b5039ece773f3bb577fa9f04",
+    "file:fee-policy%2Fsrc%2Fmain%2Fscala%2Ftrading%2Ffee%2FFeeCalculation.scala#sha256:581074f6fb9b65c96f4c87f33901fdf9f427fb0f7f0c8c4d08bcddd8e407c2a4",
+    "file:fee-policy%2Fsrc%2Fmain%2Fscala%2Ftrading%2Ffee%2FPolicy.scala#sha256:392d909334f5f67ca27a183b6436aa43bb5895b27f345769412ad7bce3d85c92",
+    "file:fee-policy%2Fsrc%2Fmain%2Fscala%2Ftrading%2Ffee%2FAssessment.scala#sha256:adf536e821cb043d367f9c497c2f7867045d1776c392811bc87851f6488bd892",
+    "file:fee-policy%2Fsrc%2Fmain%2Fscala%2Ftrading%2Ffee%2FFeeInclusivePnl.scala#sha256:e8126e83a60dcdfcaedefd9eda661a3d9a00f3b939733d07e77b1cc1183bef5c",
+    "file:execution-scenario%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fscenario%2FScenarioValuation.scala#sha256:15e788e3d2a0ec912ae084fd64efa235d12ee26dd085fe30586f266aba109b0b",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FEconomicsCompilerBoundarySuite.scala#sha256:24fd860360730c4f82ba297d82260edd7abe569e1b25f34e7aa7c79f0832efe6",
+    "file:openspec%2Fchanges%2Fintroduce-pure-fee-policy-module%2Fproposal.md#sha256:f1ef3067ed6cf83d9b6e0106e03f72c10a5af910f707a7fb6e3450a7ddd89c05",
+    "file:openspec%2Fchanges%2Fintroduce-pure-fee-policy-module%2Fdesign.md#sha256:d7ebdf2a2d3a336dc27e006497c5c3341f9388cbb7cf3e067503503426d70321",
+    "file:openspec%2Fchanges%2Fintroduce-pure-fee-policy-module%2Fspecs%2Ffee-inclusive-pnl%2Fspec.md#sha256:de871d54c966afa0ddc86a65a5b09820c16376ec2b497521479be59104734c5e",
+    "file:openspec%2Fchanges%2Fintroduce-pure-fee-policy-module%2Fspecs%2Forder-scenarios%2Fspec.md#sha256:ee659c4a28c001fa926304bb831e1f6209cdfdf0ea11a7eafcc11fcd56ead371",
+    "file:openspec%2Fchanges%2Fintroduce-pure-fee-policy-module%2Ftasks.md#sha256:a3b0ff0b395b5c3f6fb3407b23bc1040b666582fbbc70fac7723e7fa511df730",
+    "file:openspec%2Fchanges%2Fintroduce-pure-fee-policy-module%2Fcorgi%2Fsource.yaml#sha256:d7face4865eb2e8e69abb4f305d67720842e19f9d1d4fa3b760b744fb8f06443",
+    "file:openspec%2Fchanges%2Fintroduce-pure-fee-policy-module%2Fcorgi%2Ftraceability.yaml#sha256:8ef137a161b86ab60b78dadf55c70e91b8727572212054d1d344ec878057f064",
+    "file:openspec%2Fchanges%2Fintroduce-pure-fee-policy-module%2Fimplementation-notes%2Ftask-group-9.md#sha256:9638777a386caa1bffe275d97949a78243a79f326e0caf9d22b99b17f152ab19",
+    "file:memory%2Fsession-bridge.md#sha256:aab0dc9dfd6d45b444eb3ad17bba3576350132b37499ccd45bacb6e8becbf4df"
+  ],
+  "summary": "Completed the final Apply evidence gate for RFC-0002 S-04. Both formatting checks and clean dependency-order compilation pass. The repository matrix passes 913 tests: 601 quantities, 13 reference data, 9 application, 18 runtime, 13 instrument economics, 40 risk, 7 order model, 16 execution scenario, 38 fee policy and downstream integration, and 158 completed-JAR/compiler/adversarial tests. JMH compilation passes. The fee-policy JAR contains 132 entries and 90 canonical classes with no provisional package, retired capability, or reverse class entry; public javap and production scans confirm pure explicit inputs, no effects, no source-market attachment, no identity reconciliation, no unlawful monoid, and no raw-scalar PnL kernel. Strict OpenSpec validation, all eleven deterministic Corgi readiness checks, and the read-only cross-artifact semantic review pass at planning revision sha256:b2226bdaf8f713cf48bb49f599da6b5cd84462cb96d8f028a6263caed76c4158 with no drift. Automated Task Group review covered exact Run/Group identity, AC-013 through AC-016 evidence, validation, package/source audits, architecture, performance/security applicability, checkpoint integrity, and gate separation with no findings; its final checkpoint changed no file, triaged no finding, and is not canonical whole-change Verify or Human Review. The checkpoint transitions only to awaiting_verify and does not begin boundary codecs or later lifecycle gates."
+}

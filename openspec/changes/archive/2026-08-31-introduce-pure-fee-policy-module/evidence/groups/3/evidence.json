@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 3,
+  "groupId": "3",
+  "checks": [
+    {
+      "name": "opaque nominal fee rate and total exact percentage/minimum formulas over refined typed quantities",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:fee-policy%2Fsrc%2Fmain%2Fscala%2Ftrading%2Ffee%2FFeeCalculation.scala#sha256:581074f6fb9b65c96f4c87f33901fdf9f427fb0f7f0c8c4d08bcddd8e407c2a4",
+        "file:fee-policy%2Fsrc%2Ftest%2Fscala%2Ftrading%2Ffee%2FFeeCalculationSuite.scala#sha256:85c87544802ad5c8918c94eb6678e5a320384fcd29222e64b4741c0d0706fdec",
+        "file:openspec%2Fchanges%2Fintroduce-pure-fee-policy-module%2Fimplementation-notes%2Ftask-group-3.md#sha256:35a00f98e484c6494462ff8d981f084f10a4bf30c1d9033a5309e1b90998ba5d"
+      ]
+    },
+    {
+      "name": "provisional policy migration removes raw-sign validation and preserves separate core quantization",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:fee-policy%2Fsrc%2Fmain%2Fscala%2Ftrading%2Ffee%2Fpolicy%2FFeePolicy.scala#sha256:79a6bd94254c5831e5b8d394836d8a21d0db1d4a5fc1bcc503255a47918f58af",
+        "file:fee-policy%2Fsrc%2Fmain%2Fscala%2Ftrading%2Ffee%2Fpolicy%2FError.scala#sha256:81515fbe96f26c6f646407ff9224ba86a4439ab3137ca4fced5bd39ca4fc2110",
+        "file:instrument-economics%2Fsrc%2Fmain%2Fscala%2Ftrading%2Feconomics%2Finstrument%2FFee.scala#sha256:767f71be91c48bb1f0df462c3a46a69d09ca032ed9b0266849d31d546612266d",
+        "file:fee-policy%2Fsrc%2Ftest%2Fscala%2Ftrading%2Ffee%2FFeeCalculationSuite.scala#sha256:85c87544802ad5c8918c94eb6678e5a320384fcd29222e64b4741c0d0706fdec",
+        "file:fee-policy%2Fsrc%2Ftest%2Fscala%2Ftrading%2FFeePolicyIntegrationSuite.scala#sha256:a32ff1a39f3bbd15ef2fd57e8d60cce0a808d6d325538adba25e6a7b4baec3c9"
+      ]
+    },
+    {
+      "name": "completed-JAR nominal/refined input rejection and full trading.fee ownership direction",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Ffee-policy-compiler%2Fpositive%2FFeePolicyBoundaryClient.scala#sha256:9d3e7410ffd05e056f0c26886b0666d4fdaab8ec1081dff9f453fe7128ebcf07",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Ffee-policy-compiler%2Fnegative%2FRawFeeBasis.scala#sha256:05807dfcb50369cb49787c8a890f4e0007719702964f6efb05ce775f524119db",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FEconomicsCompilerBoundarySuite.scala#sha256:ac9371c49b5f2462eae1d20b5582838868589ab4a342e3158f88ebced0102228",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FRiskCompilerBoundarySuite.scala#sha256:97f88e9282fd2ef5af72354639eeeb59dc74e6e435f718b3a2cf774efb94439b"
+      ]
+    },
+    {
+      "name": "formatting, 17-test fee-policy gate, 152-test adversarial gate, and clean automated review",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:fee-policy%2Fsrc%2Ftest%2Fscala%2Ftrading%2Ffee%2FFeeCalculationSuite.scala#sha256:85c87544802ad5c8918c94eb6678e5a320384fcd29222e64b4741c0d0706fdec",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FEconomicsCompilerBoundarySuite.scala#sha256:ac9371c49b5f2462eae1d20b5582838868589ab4a342e3158f88ebced0102228",
+        "file:openspec%2Fchanges%2Fintroduce-pure-fee-policy-module%2Fimplementation-notes%2Ftask-group-3.md#sha256:35a00f98e484c6494462ff8d981f084f10a4bf30c1d9033a5309e1b90998ba5d",
+        "file:memory%2Fsession-bridge.md#sha256:7f3855ff74071594a53b0cb276fd42f0c3f95bff995fa320356cdc2ab0b6e2f9"
+      ]
+    }
+  ],
+  "automatedReview": {
+    "verdict": "pass",
+    "findings": []
+  },
+  "artifacts": [
+    "file:fee-policy%2Fsrc%2Fmain%2Fscala%2Ftrading%2Ffee%2FFeeCalculation.scala#sha256:581074f6fb9b65c96f4c87f33901fdf9f427fb0f7f0c8c4d08bcddd8e407c2a4",
+    "file:fee-policy%2Fsrc%2Fmain%2Fscala%2Ftrading%2Ffee%2Fpolicy%2FFeePolicy.scala#sha256:79a6bd94254c5831e5b8d394836d8a21d0db1d4a5fc1bcc503255a47918f58af",
+    "file:fee-policy%2Fsrc%2Fmain%2Fscala%2Ftrading%2Ffee%2Fpolicy%2FError.scala#sha256:81515fbe96f26c6f646407ff9224ba86a4439ab3137ca4fced5bd39ca4fc2110",
+    "file:fee-policy%2Fsrc%2Ftest%2Fscala%2Ftrading%2Ffee%2FFeeCalculationSuite.scala#sha256:85c87544802ad5c8918c94eb6678e5a320384fcd29222e64b4741c0d0706fdec",
+    "file:fee-policy%2Fsrc%2Ftest%2Fscala%2Ftrading%2FFeePolicyIntegrationSuite.scala#sha256:a32ff1a39f3bbd15ef2fd57e8d60cce0a808d6d325538adba25e6a7b4baec3c9",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Ffee-policy-compiler%2Fpositive%2FFeePolicyBoundaryClient.scala#sha256:9d3e7410ffd05e056f0c26886b0666d4fdaab8ec1081dff9f453fe7128ebcf07",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Ffee-policy-compiler%2Fnegative%2FRawFeeBasis.scala#sha256:05807dfcb50369cb49787c8a890f4e0007719702964f6efb05ce775f524119db",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FEconomicsCompilerBoundarySuite.scala#sha256:ac9371c49b5f2462eae1d20b5582838868589ab4a342e3158f88ebced0102228",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FRiskCompilerBoundarySuite.scala#sha256:97f88e9282fd2ef5af72354639eeeb59dc74e6e435f718b3a2cf774efb94439b",
+    "file:openspec%2Fchanges%2Fintroduce-pure-fee-policy-module%2Fimplementation-notes%2Ftask-group-3.md#sha256:35a00f98e484c6494462ff8d981f084f10a4bf30c1d9033a5309e1b90998ba5d",
+    "file:memory%2Fsession-bridge.md#sha256:7f3855ff74071594a53b0cb276fd42f0c3f95bff995fa320356cdc2ab0b6e2f9"
+  ],
+  "summary": "Introduced opaque nominal FeeRate and total exact percentage/minimum calculations over refined typed quantities; migrated provisional policy helpers away from raw-sign validation; preserved separate core FeeDenomination quantization and exact conservation; and strengthened completed-JAR input and ownership guards for the full trading.fee root. Both formatting checks, 17 fee-policy tests, and all 152 adversarial/compiler tests pass. The automated review remediated one diagnostic-specific evidence assertion, then completed scope, behavior, refinement, architecture, packaged-boundary, performance/security, evidence, and checkpoint axes with no findings; it changed no file during the final pass, triaged no finding, and is not canonical whole-change Verify or Human Review."
+}
