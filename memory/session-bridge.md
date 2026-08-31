@@ -14,16 +14,16 @@ updated: 2026-08-31
 - **Issue**: 7 https://github.com/m2048ws/trading/issues/7
 - **Change**: separate-order-and-execution-scenario-modules
 - **Worktree**: /Users/m/src/money/.worktrees/separate-order-and-execution-scenario-modules
-- **Phase at Checkpoint**: awaiting_verify
-- **Task Group at Checkpoint**: 13
-- **Observed Run Revision**: 2
-- **Last Verified HEAD**: f0120a94d1c640d19c7e7c60511c2b3872352885
+- **Phase at Checkpoint**: archiving
+- **Task Group at Checkpoint**: none
+- **Observed Run Revision**: 7
+- **Last Verified HEAD**: 7ca2e135632a275562d46a0e6c5b08b3a3771639
 
 The phase and revision above are the required next checkpoint carried by the Repair Task Group commit. Live Run
 Contract authority remains `applying` at revision 1 until Corgi acknowledges that commit.
 
 ## Next Action
-- Commit and acknowledge Task Group 13, synchronize draft PR #27, then rerun canonical Verify. Human whole-change
+- Consult Run Contract v3: resume tracker closeout for `separate-order-and-execution-scenario-modules` only if pending; otherwise select the next accepted Slice. Local delivery: `wiki/deliveries/RFC-0002-architecture-portfolio-S-02-order-execution-scenarios.md`.
   Review, Human QA, and Archive remain separate gates.
 
 ## Blockers

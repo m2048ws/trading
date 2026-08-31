@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 3,
+  "groupId": "5",
+  "checks": [
+    {
+      "name": "pure explicit-instrument liquidity slice construction",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:execution-scenario%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fscenario%2FScenario.scala#sha256:3af10d8c50cb1eb65c7226ada8b130c2bdd35cc94a0b5c2ed2c54dfc928f4f70",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fexecution-scenario-compiler%2FExecutionScenarioHasNoUpstreamMutationOrDownstream.scala#sha256:4d8cc8616bdb689c1cfbf53f7e4b39a8411ba319df957679d0231e57e8c18b84"
+      ]
+    },
+    {
+      "name": "domain-owned non-empty MatchedSlices with checked vector reconstruction",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:execution-scenario%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fscenario%2FScenario.scala#sha256:3af10d8c50cb1eb65c7226ada8b130c2bdd35cc94a0b5c2ed2c54dfc928f4f70",
+        "file:economics%2Fsrc%2Ftest%2Fscala%2Ftrading%2FDownstreamEconomicsSuite.scala#sha256:ef3099a22d5e087ee0d14a221946a6e434f85a6c8ecac5708ed9519780cc2a20",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FEconomicsCompilerBoundarySuite.scala#sha256:79a4c0c97d98c51b180ce72491fa7f540dda5e8be84260b0fccb0bca66980cbf"
+      ]
+    },
+    {
+      "name": "one-order dependent assumptions and legal adapter construction shapes",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:execution-scenario%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fscenario%2FScenario.scala#sha256:3af10d8c50cb1eb65c7226ada8b130c2bdd35cc94a0b5c2ed2c54dfc928f4f70",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Feconomics-compiler%2Fpositive%2FCompleteEconomicsClient.scala#sha256:e294cb2d835d39f051808fa9f553460f76532ad7d78f2de456e1a71622701934",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Feconomics-compiler%2Fnegative%2FAssociatedEvidenceShapes.scala#sha256:05a1c73381da421cc7f41315985e90c0be411916d77a3ef067bea3c67c8f647b",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Feconomics-compiler%2Fnegative%2FRemovedFlatApi.scala#sha256:345f6e6cc6256d94f323df205711a54904ad6189aefdfb041764dfa480db4823"
+      ]
+    },
+    {
+      "name": "formatting, focused suites, compiler boundaries, and clean full repository matrix",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:openspec%2Fchanges%2Fseparate-order-and-execution-scenario-modules%2Fimplementation-notes%2Ftask-group-5.md#sha256:550919329ac95a589fe2208b16c6bf47a4e7eddb66168fe73955f6b81d771350"
+      ]
+    }
+  ],
+  "automatedReview": {
+    "verdict": "pass",
+    "findings": []
+  },
+  "artifacts": [
+    "file:openspec%2Fchanges%2Fseparate-order-and-execution-scenario-modules%2Fimplementation-notes%2Ftask-group-5.md#sha256:550919329ac95a589fe2208b16c6bf47a4e7eddb66168fe73955f6b81d771350",
+    "file:memory%2Fsession-bridge.md#sha256:1cc94b32b45e4b8c720ba20c17c431476ab52d90d92948ae10d2803675157017"
+  ],
+  "summary": "Established pure explicit-instrument liquidity slices, domain-owned non-empty MatchedSlices, and dependent ScenarioAssumptions that own exactly one order. Legal direct, fixed, trailing, and pegged evidence shapes compile; empty collections, missing/extraneous or crossed evidence, untyped maps, duplicate assumption claims, raw slice construction, slice copy, and mutation are rejected. The clean 774-test matrix passed. Automated Task Group review initially identified slice-forgery coverage to harden, verified its compiler-boundary remediation, and finished with no open findings; it changed no file itself, triaged no finding, and is not canonical whole-change Verify or Human Review."
+}

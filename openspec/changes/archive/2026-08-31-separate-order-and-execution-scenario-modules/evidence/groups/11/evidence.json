@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 3,
+  "groupId": "11",
+  "checks": [
+    {
+      "name": "clean-full-repository-matrix",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:memory%2Fsession-bridge.md#sha256:40d349fe2da7250209cb2e9e9d2fe2d7845640708fa40683583362eb6b087a64"
+      ]
+    },
+    {
+      "name": "completed-jar-jvm-construction-boundaries",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:order-model%2Fsrc%2Fmain%2Fscala%2Ftrading%2Forder%2FOrder.scala#sha256:8c0a089c9921dccddd6549b3f3f32f752313561f80e655d575d4b8a95169b3a0",
+        "file:execution-scenario%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fscenario%2FScenario.scala#sha256:2a7b2f83c973d28d694246ff0286f9f4bc06e6fca7d8560d9eb7ce177d948038",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FEconomicsCompilerBoundarySuite.scala#sha256:7e5db82154d5754e1c1b8bc76e03f76e90fd42046ca21078ba3e00b32ce294cf"
+      ]
+    },
+    {
+      "name": "typed-erased-assumptions-boundary",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:execution-scenario%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fscenario%2FScenario.scala#sha256:2a7b2f83c973d28d694246ff0286f9f4bc06e6fca7d8560d9eb7ce177d948038",
+        "file:execution-scenario%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fscenario%2FOrderScenarioSuite.scala#sha256:1c68ecec666462c1bd07e3dfe3823a65257384dafd53baa0f3a87d4233751989",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Forder-scenario-java%2Fnegative%2FErasedScenarioAssumptions.java#sha256:caf53663ed593a2c064d229ae9c37ada295edf78c5089bb979fa710746d272a5"
+      ]
+    },
+    {
+      "name": "format-and-build-integrity",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:memory%2Fsession-bridge.md#sha256:40d349fe2da7250209cb2e9e9d2fe2d7845640708fa40683583362eb6b087a64",
+        "file:build.sbt#sha256:efb082cc63779899e258cbf9a3e51b71b4c4259bc73670ada206f916120d08a1"
+      ]
+    },
+    {
+      "name": "planning-and-contract-integrity",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:openspec%2Fchanges%2Fseparate-order-and-execution-scenario-modules%2Ftasks.md#sha256:2b24780ef951a4d09b7066ee8cd5e870d871957de18116f360af4bb5a329e1b7",
+        "file:memory%2Fsession-bridge.md#sha256:40d349fe2da7250209cb2e9e9d2fe2d7845640708fa40683583362eb6b087a64"
+      ]
+    }
+  ],
+  "automatedReview": {
+    "verdict": "pass",
+    "findings": []
+  },
+  "artifacts": [
+    "file:order-model%2Fsrc%2Fmain%2Fscala%2Ftrading%2Forder%2FOrder.scala#sha256:8c0a089c9921dccddd6549b3f3f32f752313561f80e655d575d4b8a95169b3a0",
+    "file:order-model%2Fsrc%2Fmain%2Fscala%2Ftrading%2Forder%2FError.scala#sha256:6e74215c46ae50ddebec0cdefd548d0a845c16173943b608517168aa469bd5a7",
+    "file:execution-scenario%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fscenario%2FScenario.scala#sha256:2a7b2f83c973d28d694246ff0286f9f4bc06e6fca7d8560d9eb7ce177d948038",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Forder-scenario-java%2Fnegative%2FRejectedAlgebraImplementations.java#sha256:74964606179030713936d10d755126ebaa70876f0455cd16a762224f769b623c",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Forder-scenario-java%2Fnegative%2FErasedScenarioAssumptions.java#sha256:caf53663ed593a2c064d229ae9c37ada295edf78c5089bb979fa710746d272a5",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FEconomicsCompilerBoundarySuite.scala#sha256:7e5db82154d5754e1c1b8bc76e03f76e90fd42046ca21078ba3e00b32ce294cf",
+    "file:execution-scenario%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fscenario%2FOrderScenarioSuite.scala#sha256:1c68ecec666462c1bd07e3dfe3823a65257384dafd53baa0f3a87d4233751989",
+    "file:memory%2Fsession-bridge.md#sha256:40d349fe2da7250209cb2e9e9d2fe2d7845640708fa40683583362eb6b087a64"
+  ],
+  "summary": "Task Group 11 closes every demonstrated ordinary-Java construction bypass with JVM constructor guards or bytecode-private constructors, changes erased ScenarioAssumptions factories to typed shape-checked results, and adds completed-JAR Java plus runtime evidence. The clean 819-test matrix, formatting, JMH compilation, strict planning gates, semantic readiness, and automated review all pass."
+}

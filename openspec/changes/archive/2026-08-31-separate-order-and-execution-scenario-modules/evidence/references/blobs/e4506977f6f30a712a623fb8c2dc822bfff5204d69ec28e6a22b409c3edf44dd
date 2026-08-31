@@ -1,0 +1,17 @@
+S-02 Group 13 exact-diff Archive rehearsal summary
+Date: 2026-08-31
+
+Method:
+- Created a disposable local clone at predecessor final SHA 7843e98eae2594c322f6b1fe7d0a88a82c6dd43f.
+- Applied only the Group 13 delta-spec and task planning changes.
+- Ran openspec archive separate-order-and-execution-scenario-modules --yes --json.
+
+Result: PASS
+- archivedAs: 2026-08-31-separate-order-and-execution-scenario-modules
+- specsUpdated: true
+- totals: added=1, modified=5, removed=0, renamed=0
+- No canonical scenario was dropped.
+
+Contract stability:
+- source digest: sha256:5d573cd0d12bbcffacb9b047475ee4beb81069dedabd420018b5d3f32f7acdd0
+- traceability digest: sha256:a265f9092baad966ec7ef5f731ab1a889dc3542f8bd9a5e893b1f8338af6de5f

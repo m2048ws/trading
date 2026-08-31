@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 3,
+  "groupId": "8",
+  "checks": [
+    {
+      "name": "Clean dependency-order compilation",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:openspec%2Fchanges%2Fseparate-order-and-execution-scenario-modules%2Fimplementation-notes%2Ftask-group-8.md#sha256:941a52cadbf48ecb911983a51124c09e9f80370d254813f9dfc4c2f004fb5b8c"
+      ]
+    },
+    {
+      "name": "Order and scenario unit and property suites",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:order-model%2Fsrc%2Ftest%2Fscala%2Ftrading%2Forder%2FOrderInstructionSuite.scala#sha256:2b613fb749ef221b0e9b0438f2d64c3443b87fc4a01717f5452ab8f5ca1081a3",
+        "file:order-model%2Fsrc%2Ftest%2Fscala%2Ftrading%2Forder%2FOrderPropertiesSuite.scala#sha256:4d3090d374bde4de9461a6e4bddad9e56f550a749795f9a3458f94b1f97783e5",
+        "file:execution-scenario%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fscenario%2FOrderScenarioSuite.scala#sha256:5067a2000b1f739ef719215b3f316e70da5081d975973fc7433e0b0335e333b9",
+        "file:execution-scenario%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fscenario%2FScenarioPropertiesSuite.scala#sha256:db3af8e869bde1ab87502e8b037c908d5e7610ab33a0d6101e588f50b9fd826b"
+      ]
+    },
+    {
+      "name": "Downstream behavioral equivalence",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:economics%2Fsrc%2Ftest%2Fscala%2Ftrading%2FDownstreamEconomicsSuite.scala#sha256:9b920d9e9be2989e000a1181d1425d27a4c67af17afb2187b343d60ed26523c2",
+        "file:openspec%2Fchanges%2Fseparate-order-and-execution-scenario-modules%2Fimplementation-notes%2Ftask-group-8.md#sha256:941a52cadbf48ecb911983a51124c09e9f80370d254813f9dfc4c2f004fb5b8c"
+      ]
+    },
+    {
+      "name": "Negative compilation, completed-JAR, and adversarial boundaries",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FEconomicsCompilerBoundarySuite.scala#sha256:e77471f4d7342fbfc23bf18e38b3d7b67234abc69b9c38557a53e0cbc85b641e"
+      ]
+    },
+    {
+      "name": "Final clean full repository validation matrix",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:openspec%2Fchanges%2Fseparate-order-and-execution-scenario-modules%2Fimplementation-notes%2Ftask-group-8.md#sha256:941a52cadbf48ecb911983a51124c09e9f80370d254813f9dfc4c2f004fb5b8c"
+      ]
+    },
+    {
+      "name": "Strict planning, source, and traceability integrity",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:openspec%2Fchanges%2Fseparate-order-and-execution-scenario-modules%2Fspecs%2Forder-scenarios%2Fspec.md#sha256:775fcec01c7b0d61336c5d207c6784b712ce7269b289f6f9c540cafccb1b975f",
+        "file:openspec%2Fchanges%2Fseparate-order-and-execution-scenario-modules%2Fcorgi%2Fsource.yaml#sha256:5d573cd0d12bbcffacb9b047475ee4beb81069dedabd420018b5d3f32f7acdd0",
+        "file:openspec%2Fchanges%2Fseparate-order-and-execution-scenario-modules%2Fcorgi%2Ftraceability.yaml#sha256:a265f9092baad966ec7ef5f731ab1a889dc3542f8bd9a5e893b1f8338af6de5f"
+      ]
+    },
+    {
+      "name": "Git whitespace validation",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:openspec%2Fchanges%2Fseparate-order-and-execution-scenario-modules%2Fimplementation-notes%2Ftask-group-8.md#sha256:941a52cadbf48ecb911983a51124c09e9f80370d254813f9dfc4c2f004fb5b8c"
+      ]
+    }
+  ],
+  "automatedReview": {
+    "verdict": "pass",
+    "findings": []
+  },
+  "artifacts": [
+    "file:order-model%2Fsrc%2Ftest%2Fscala%2Ftrading%2Forder%2FOrderPropertiesSuite.scala#sha256:4d3090d374bde4de9461a6e4bddad9e56f550a749795f9a3458f94b1f97783e5",
+    "file:execution-scenario%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fscenario%2FScenarioPropertiesSuite.scala#sha256:db3af8e869bde1ab87502e8b037c908d5e7610ab33a0d6101e588f50b9fd826b",
+    "file:economics%2Fsrc%2Ftest%2Fscala%2Ftrading%2FDownstreamEconomicsSuite.scala#sha256:9b920d9e9be2989e000a1181d1425d27a4c67af17afb2187b343d60ed26523c2",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FEconomicsCompilerBoundarySuite.scala#sha256:e77471f4d7342fbfc23bf18e38b3d7b67234abc69b9c38557a53e0cbc85b641e",
+    "file:openspec%2Fchanges%2Fseparate-order-and-execution-scenario-modules%2Fimplementation-notes%2Ftask-group-8.md#sha256:941a52cadbf48ecb911983a51124c09e9f80370d254813f9dfc4c2f004fb5b8c",
+    "file:memory%2Fsession-bridge.md#sha256:37356f44261b0293a97ecc7e990fd992ebbaa198e77842ed6e5abe6633e3aa81"
+  ],
+  "summary": "TG8 completes dependency-order compilation, unit/property/downstream/boundary coverage, baseline fixture comparison, packaged API and import audits, strict planning/source/traceability integrity, and the remediated 785-test full matrix, leaving Apply ready to transition to awaiting_verify."
+}
