@@ -60,11 +60,12 @@ object SharedEconomicsSetup:
   type D           = instrument.roles.position.D
   type B           = instrument.roles.base.D
   type Q           = instrument.roles.quote.D
+  type S           = instrument.roles.settle.D
   val lots        = Lots.fromCount(instrument)(2).toOption.get
   val price99     = Price.exact(instrument)(Rational(99)).toOption.get
   val price100    = Price.exact(instrument)(Rational(100)).toOption.get
   val state       = MarketState.quoteSettled(instrument)(price100).toOption.get
-  val feePolicy   = FeePolicy(instrument)
+  val feePolicy   = FeeOrchestration(instrument)
   val marketOrder = Order.market(instrument)(Side.Buy, lots).toOption.get
   val slice       = LiquiditySlice.create(instrument)(lots, state, LiquidityRole.Taker).toOption.get
 end SharedEconomicsSetup

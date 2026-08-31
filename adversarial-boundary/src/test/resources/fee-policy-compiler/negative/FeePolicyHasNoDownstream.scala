@@ -1,9 +1,9 @@
 package external.fee.negative
 
-import trading.fee.policy.FeePolicy
+import trading.fee.FeePolicy
 
 object FeePolicyHasNoDownstream:
-  val ownedType: Class[FeePolicy[?]] = classOf[FeePolicy[?]]
+  val ownedType: Class[FeePolicy[?, ?, ?, ?, ?]] = classOf[FeePolicy[?, ?, ?, ?, ?]]
 
   // OFFENDING-BEGIN
   object MissingRisk:

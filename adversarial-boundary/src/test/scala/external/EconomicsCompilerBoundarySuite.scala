@@ -217,8 +217,22 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
       List(
         "trading/fee/FeeCalculation$package.tasty",
         "trading/fee/FeeCalculation$.class",
-        "trading/fee/policy/FeePolicy.class"
+        "trading/fee/PolicyErrors.class",
+        "trading/fee/SliceIndex.class",
+        "trading/fee/FeeDirective.class",
+        "trading/fee/FeePolicy.class",
+        "trading/fee/policy/FeeOrchestration.class"
       ).foreach(entry => assert(feePolicyEntries.contains(entry), s"missing $entry from $feePolicyJar"))
+      List("trading/fee/policy/FeeSchedule.class", "trading/fee/policy/FeePolicy.class")
+        .foreach(entry => assert(!feePolicyEntries.contains(entry), s"fee-policy JAR retained removed $entry"))
+      val publicPolicyBytes = List("trading/fee/FeePolicy.class", "trading/fee/FeeDirective.class")
+        .map: entry =>
+          val stream = feePolicy.getInputStream(feePolicy.getJarEntry(entry))
+          try new String(stream.readAllBytes(), StandardCharsets.ISO_8859_1)
+          finally stream.close()
+        .mkString
+      List("cats/data/", "cats/kernel/Monoid", "cats/effect/", "fs2/", "java/time/Clock")
+        .foreach(fragment => assert(!publicPolicyBytes.contains(fragment), s"public fee policy leaked $fragment"))
       List(
         "trading/risk/Risk.class",
         "trading/risk/MonotoneLotRisk.class",
@@ -317,6 +331,15 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
     assert(rejected.rendered.contains("Required:"), rejected.rendered)
     assert(rejected.rendered.contains("NonNegative"), rejected.rendered)
     assert(rejected.rendered.contains("FeeRate"), rejected.rendered)
+
+  test("completed fee-policy API rejects old schedules, unlawful algebra, effects, error erasure, and source markets"):
+    val source  = feePolicyFixturesRoot.resolve("negative/UnlawfulPolicyApi.scala")
+    val prelude = compileFilteredPrelude(source, compileFeePolicy)
+    assert(prelude.succeeded, s"fixture prelude must compile independently:\n${prelude.rendered}")
+    val rejected = compileFeePolicy(source)
+    assert(rejected.errors.size >= 6, rejected.rendered)
+    List("FeeSchedule", "Monoid", "Type argument", "Throwable", "String", "sourceMarket")
+      .foreach(fragment => assert(rejected.rendered.contains(fragment), rejected.rendered))
 
   test("completed fee-policy classpath cannot access downstream or effect concerns"):
     val source  = feePolicyFixturesRoot.resolve("negative/FeePolicyHasNoDownstream.scala")

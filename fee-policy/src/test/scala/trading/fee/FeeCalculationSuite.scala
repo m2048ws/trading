@@ -4,7 +4,7 @@ import munit.ScalaCheckSuite
 import org.scalacheck.Prop.forAll
 
 import trading.economics.instrument.*
-import trading.fee.policy.FeePolicy
+import trading.fee.policy.FeeOrchestration
 import trading.quantity.*
 import trading.quantity.grid.QuantizationPolicy
 import trading.quantity.refinement.*
@@ -78,7 +78,7 @@ final class FeeCalculationSuite extends ScalaCheckSuite:
     }
 
   test("policy sends each exact component through core denomination quantization separately"):
-    val policy       = FeePolicy(instrument)
+    val policy       = FeeOrchestration(instrument)
     val denomination = policy
       .denomination(fixture.usd)(fixture.usdCents, QuantizationPolicy.TowardZero)
       .toOption

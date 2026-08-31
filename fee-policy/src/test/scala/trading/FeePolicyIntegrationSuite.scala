@@ -17,7 +17,7 @@ import trading.support.DownstreamFixtures
 class FeePolicyIntegrationSuite extends FunSuite:
   private val fixture    = new DownstreamFixtures
   private val instrument = fixture.linear
-  private val policy     = FeePolicy(instrument)
+  private val policy     = FeeOrchestration(instrument)
 
   private def scenario(
     side: Side,
@@ -180,12 +180,12 @@ class FeePolicyIntegrationSuite extends FunSuite:
       )
       .toOption
       .get
-    val schedule = new policy.Schedule:
+    val feeStrategy = new policy.Policy[FeePolicyError]:
       val instrumentId: InstrumentId = instrument.identity.id
-      def assess(value: policy.Scenario): Either[FeePolicyError, Vector[FeeLine[? <: Dim, policy.Market]]] =
-        policy.line(value, 0, fee).map(Vector(_))
+      def evaluate(value: policy.Scenario): Either[PolicyErrors[FeePolicyError], Vector[FeeDirective]] =
+        Right(Vector(FeeDirective(fee, SliceIndex.zero)))
 
-    val pnl = policy.pnl(trip, schedule).toOption.get
+    val pnl = policy.pnl(trip, feeStrategy).toOption.get
     assertEquals(pnl.pricePnl.quantity.coefficient, Rational(10))
     assertEquals(
       pnl.settledFeeContributions.map(_.quantity.coefficient),
@@ -201,7 +201,7 @@ class FeePolicyIntegrationSuite extends FunSuite:
       fixture.state(instrument, Rational(100)),
       fixture.state(instrument, Rational(90))
     )
-    val pnl = policy.pnl(trip, policy.none).toOption.get
+    val pnl = policy.pnl(trip, FeePolicy.noFees(instrument)).toOption.get
     assertEquals(pnl.netPnl.coefficient, Rational(-10))
     assertEquals(Risk.downside(instrument)(pnl).map(_.unrefined.coefficient), Right(Rational(10)))
 
@@ -224,13 +224,13 @@ class FeePolicyIntegrationSuite extends FunSuite:
       )
       .toOption
       .get
-    val schedule = new policy.Schedule:
+    val feeStrategy = new policy.Policy[FeePolicyError]:
       val instrumentId: InstrumentId = instrument.identity.id
-      def assess(value: policy.Scenario): Either[FeePolicyError, Vector[FeeLine[? <: Dim, policy.Market]]] =
-        policy.line(value, 0, fee).map(Vector(_))
+      def evaluate(value: policy.Scenario): Either[PolicyErrors[FeePolicyError], Vector[FeeDirective]] =
+        Right(Vector(FeeDirective(fee, SliceIndex.zero)))
 
     assertEquals(
-      policy.pnl(trip, schedule),
+      policy.pnl(trip, feeStrategy),
       Left(
         FeeContributionFailure(
           ScenarioLeg.Entry,
@@ -252,7 +252,7 @@ class FeePolicyIntegrationSuite extends FunSuite:
             fixture.state(instrument, Rational(100)),
             fixture.state(instrument, Rational(90))
           ),
-          policy.none
+          FeePolicy.noFees(instrument)
         )
         .toOption
         .get
@@ -278,7 +278,7 @@ class FeePolicyIntegrationSuite extends FunSuite:
           fixture.state(instrument, Rational(100)),
           fixture.state(instrument, Rational(90))
         ),
-        policy.none
+        FeePolicy.noFees(instrument)
       )
     assertEquals(visited.toVector, Vector(1, 2, 3, 4).map(BigInt(_)))
     assertEquals(
@@ -296,7 +296,7 @@ class FeePolicyIntegrationSuite extends FunSuite:
           fixture.state(instrument, Rational(100)),
           fixture.state(instrument, exit)
         ),
-        policy.none
+        FeePolicy.noFees(instrument)
       )
     assertEquals(
       nonlinear.map:
@@ -317,7 +317,7 @@ class FeePolicyIntegrationSuite extends FunSuite:
                 fixture.state(instrument, Rational(100)),
                 fixture.state(instrument, Rational(90))
               ),
-              policy.none
+              FeePolicy.noFees(instrument)
             )
             .toOption
             .get
@@ -342,10 +342,10 @@ class FeePolicyIntegrationSuite extends FunSuite:
       )
       .toOption
       .get
-    val schedule = new policy.Schedule:
+    val feeStrategy = new policy.Policy[FeePolicyError]:
       val instrumentId: InstrumentId = instrument.identity.id
-      def assess(value: policy.Scenario): Either[FeePolicyError, Vector[FeeLine[? <: Dim, policy.Market]]] =
-        policy.line(value, 0, flatFee).map(Vector(_))
+      def evaluate(value: policy.Scenario): Either[PolicyErrors[FeePolicyError], Vector[FeeDirective]] =
+        Right(Vector(FeeDirective(flatFee, SliceIndex.zero)))
     val observations = 1.to(4).toVector.map: count =>
       val lots = Lots.fromCount(instrument)(count).toOption.get
       val pnl  = policy
@@ -355,7 +355,7 @@ class FeePolicyIntegrationSuite extends FunSuite:
             fixture.state(instrument, Rational(100)),
             fixture.state(instrument, Rational(90))
           ),
-          schedule
+          feeStrategy
         )
         .toOption
         .get
@@ -369,49 +369,46 @@ class FeePolicyIntegrationSuite extends FunSuite:
       Some(BigInt(1))
     )
 
-  test("policy composition preserves zero and ordered many schedules"):
+  test("policy composition preserves zero and ordered directives while rejecting foreign components"):
     val lots      = Lots.fromCount(instrument)(1000).toOption.get
     val evaluated = scenario(Side.Buy, lots, fixture.state(instrument, Rational(100)))
-    assertEquals(policy.none.assess(evaluated), Right(Vector.empty))
+    assertEquals(FeePolicy.noFees(instrument).evaluate(evaluated), Right(Vector.empty))
 
     val denomination = policy
       .denomination(fixture.usd)(fixture.usdCents, QuantizationPolicy.TowardZero)
       .toOption
       .get
-    def component(name: String, amount: Rational): policy.Schedule = new policy.Schedule:
+    def component(name: String, amount: Rational): policy.Policy[FeePolicyError] = new policy.Policy[FeePolicyError]:
       val instrumentId: InstrumentId = instrument.identity.id
-      def assess(value: policy.Scenario): Either[FeePolicyError, Vector[FeeLine[? <: Dim, policy.Market]]] =
-        for
-          fee <- Fee
-                   .create(instrument)(
-                     denomination,
-                     FeeKind.from(name).toOption.get,
-                     Quantity(fixture.usd.dimension.ref, amount)
-                   )
-                   .left
-                   .map(FeeValueFailure(_))
-          line <- policy.line(value, 0, fee)
-        yield Vector(line)
+      def evaluate(value: policy.Scenario): Either[PolicyErrors[FeePolicyError], Vector[FeeDirective]] =
+        Fee
+          .create(instrument)(
+            denomination,
+            FeeKind.from(name).toOption.get,
+            Quantity(fixture.usd.dimension.ref, amount)
+          )
+          .left
+          .map(cause => PolicyErrors.one(FeeValueFailure(cause)))
+          .map(fee => Vector(FeeDirective(fee, SliceIndex.zero)))
 
-    val combined = policy
-      .combine(Vector(component("one", Rational(-1, 100)), component("two", Rational(1, 100))))
+    val combined = FeePolicy
+      .combine(instrument)(Vector(component("one", Rational(-1, 100)), component("two", Rational(1, 100))))
       .toOption
       .get
     assertEquals(
-      combined.assess(evaluated).map(_.map(_.fee.amount.coefficient)),
+      combined.evaluate(evaluated).map(_.map(_.fee.amount.coefficient)),
       Right(Vector(Rational(-1, 100), Rational(1, 100)))
     )
 
-    val otherScenario = scenario(Side.Buy, lots, fixture.state(instrument, Rational(100)))
-    val foreignLines  = component("foreign", Rational(-1, 100)).assess(otherScenario).toOption.get
-    val invalid       = new policy.Schedule:
-      val instrumentId: InstrumentId = instrument.identity.id
-      def assess(value: policy.Scenario): Either[FeePolicyError, Vector[FeeLine[? <: Dim, policy.Market]]] =
-        Right(foreignLines)
-    val trip = roundTrip(
-      lots,
-      fixture.state(instrument, Rational(100)),
-      fixture.state(instrument, Rational(90))
+    val foreign = new policy.Policy[FeePolicyError]:
+      val instrumentId: InstrumentId = fixture.foreign.identity.id
+      def evaluate(value: policy.Scenario): Either[PolicyErrors[FeePolicyError], Vector[FeeDirective]] =
+        Right(Vector.empty)
+    assertEquals(
+      FeePolicy
+        .combine(instrument)(Vector(component("local", Rational.zero), foreign))
+        .left
+        .map(_.toVector),
+      Left(Vector(ForeignPolicyInstrument(1, instrument.identity.id, fixture.foreign.identity.id)))
     )
-    assertEquals(policy.pnl(trip, invalid), Left(ForeignScenarioLine(0)))
 end FeePolicyIntegrationSuite

@@ -4,10 +4,11 @@ Pure downstream fee-policy and scenario composition over completed quantities, i
 execution-scenario artifacts. The SBT project is `feePolicy`, the published artifact is `trading-fee-policy`, and its
 public package root is `trading.fee`.
 
-The provisional API currently remains in the `trading.fee.policy` subpackage while S-04 replaces its semantics in later
-Task Groups. The artifact owns exact percentage/minimum logic, policy composition, validated fee attribution,
-settlement conversion, and fee-inclusive PnL orchestration. It contains no risk sizing, live policy acquisition,
-concrete effects, runtime state, I/O, persistence, telemetry, or codecs.
+The public root now owns exact `FeeRate`/`FeeCalculation` mathematics, non-empty typed `PolicyErrors`, refined
+`SliceIndex`, existential `FeeDirective`, and the open pure `FeePolicy` strategy with checked same-instrument
+composition. The `trading.fee.policy.FeeOrchestration` subpackage is a provisional integration bridge for assessment,
+settlement conversion, and fee-inclusive PnL paths that later S-04 Task Groups replace. The artifact contains no risk
+sizing, live policy acquisition, concrete effects, runtime state, I/O, persistence, telemetry, or codecs.
 
 Risk is a test-only integration dependency. Downstream tests demonstrate three explicit composition routes without a
 production dependency from risk to fee policy:

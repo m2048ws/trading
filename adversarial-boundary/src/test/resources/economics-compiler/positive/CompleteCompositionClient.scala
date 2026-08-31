@@ -66,11 +66,11 @@ object CompleteCompositionClient:
     )
     .toOption
     .get
-  val schedule = new feePolicy.Schedule:
+  val strategy = new FeePolicy[FeePolicyError, D, B, Q, S]:
     val instrumentId: InstrumentId = instrument.identity.id
-    def assess(value: feePolicy.Scenario): Either[FeePolicyError, Vector[FeeLine[? <: Dim, feePolicy.Market]]] =
-      feePolicy.line(value, 0, fee).map(Vector(_))
-  val pnl  = feePolicy.pnl(trip, schedule).toOption.get
+    def evaluate(value: feePolicy.Scenario): Either[PolicyErrors[FeePolicyError], Vector[FeeDirective]] =
+      Right(Vector(FeeDirective(fee, SliceIndex.zero)))
+  val pnl  = feePolicy.pnl(trip, strategy).toOption.get
   val risk = Risk.downside(instrument)(pnl).toOption.get
 
   assert(genericLotsResult.isRight)

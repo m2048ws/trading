@@ -29,9 +29,10 @@ object FeePolicyBoundaryClient:
     slice
   ).toOption.get
   val scenario = OrderScenario.evaluate(instrument)(assumptions).toOption.get
-  val line     = feePolicy.line(scenario, 0, fee).toOption.get
+  val directive = FeeDirective(fee, SliceIndex.zero)
+  val noFees    = FeePolicy.noFees(instrument)
 
-  assert(line.fee.amount.coefficient == Rational(-1, 100))
-  assert(line.sourceSliceIndex == 0)
-  assert(feePolicy.none.assess(scenario).contains(Vector.empty))
+  assert(directive.fee.amount.coefficient == Rational(-1, 100))
+  assert(directive.sourceSlice.value == 0)
+  assert(noFees.evaluate(scenario).contains(Vector.empty))
 end FeePolicyBoundaryClient

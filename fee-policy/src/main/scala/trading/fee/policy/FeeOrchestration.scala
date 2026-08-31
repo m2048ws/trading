@@ -17,25 +17,22 @@ final case class FeeLine[D <: Dim, M] private[policy] (
   sourceSliceIndex: Int,
   sourceMarket: M)
 
-trait FeeSchedule[D <: Dim, B <: Dim, Q <: Dim, M]:
-  def instrumentId: InstrumentId
-  def assess(scenario: OrderScenario[D, B, Q, M]): Either[FeePolicyError, Vector[FeeLine[? <: Dim, M]]]
-
-/** Pure downstream fee-policy and scenario orchestration boundary. */
-final class FeePolicy[I <: Instrument] private[policy] (val instrument: I):
+/** Provisional fee-inclusive orchestration retained until the dedicated assessment and PnL Task Groups replace it. */
+final class FeeOrchestration[I <: Instrument] private[policy] (val instrument: I):
 
   private val instrumentId = instrument.identity.id
 
-  type D         = instrument.roles.position.D
-  type B         = instrument.roles.base.D
-  type Q         = instrument.roles.quote.D
-  type Lots      = instrument.Lots
-  type Price     = instrument.Price
-  type Market    = instrument.MarketState
-  type Position  = instrument.PositionLots
-  type Scenario  = _root_.trading.scenario.OrderScenario[D, B, Q, Market]
-  type RoundTrip = _root_.trading.scenario.RoundTripScenario[D, B, Q, Market]
-  type Schedule  = _root_.trading.fee.policy.FeeSchedule[D, B, Q, Market]
+  type D          = instrument.roles.position.D
+  type B          = instrument.roles.base.D
+  type Q          = instrument.roles.quote.D
+  type S          = instrument.roles.settle.D
+  type Lots       = instrument.Lots
+  type Price      = instrument.Price
+  type Market     = instrument.MarketState
+  type Position   = instrument.PositionLots
+  type Scenario   = _root_.trading.scenario.OrderScenario[D, B, Q, Market]
+  type RoundTrip  = _root_.trading.scenario.RoundTripScenario[D, B, Q, Market]
+  type Policy[+E] = _root_.trading.fee.FeePolicy[E, D, B, Q, S]
 
   def denomination(
     asset: Asset
@@ -62,12 +59,13 @@ final class FeePolicy[I <: Instrument] private[policy] (val instrument: I):
   ): Quantity[FD] =
     FeeCalculation.minimumCharge(contribution, minimum)
 
-  def line[FD <: Dim](
+  private def line[FD <: Dim](
     scenario: Scenario,
-    sourceSliceIndex: Int,
+    sourceSlice: SliceIndex,
     fee: Fee[FD]
   ): Either[FeePolicyError, FeeLine[FD, Market]] =
-    val slices = scenario.matchedSlices.toVector
+    val sourceSliceIndex = sourceSlice.value
+    val slices           = scenario.matchedSlices.toVector
     if sourceSliceIndex < 0 || sourceSliceIndex >= slices.size then
       Left(InvalidFeeAttribution(sourceSliceIndex, slices.size))
     else
@@ -80,43 +78,15 @@ final class FeePolicy[I <: Instrument] private[policy] (val instrument: I):
         "market"       -> market.instrumentId
       ).map(_ => FeeLine(instrumentId, fee, sourceSliceIndex, market))
 
-  val none: Schedule = new Schedule:
-    val instrumentId: InstrumentId = FeePolicy.this.instrumentId
-    def assess(scenario: Scenario): Either[FeePolicyError, Vector[FeeLine[? <: Dim, Market]]] =
-      checkIdentities("none", "scenario" -> scenario.instrumentId).map(_ => Vector.empty)
-
-  def combine(componentSchedules: Vector[Schedule]): Either[FeePolicyError, Schedule] =
-    checkIdentities(
-      "combine",
-      componentSchedules.zipWithIndex.map((schedule, index) => s"schedules[$index]" -> schedule.instrumentId)*
-    ).map: _ =>
-      new Schedule:
-        val instrumentId: InstrumentId = FeePolicy.this.instrumentId
-        def assess(scenario: Scenario): Either[FeePolicyError, Vector[FeeLine[? <: Dim, Market]]] =
-          for
-            _     <- checkIdentities("assess", "scenario" -> scenario.instrumentId)
-            lines <- componentSchedules.traverse(_.assess(scenario)).map(_.flatten)
-            _     <- checkIdentities(
-                   "assess",
-                   lines.zipWithIndex.flatMap((line, index) =>
-                     Vector(
-                       s"lines[$index]"        -> line.instrumentId,
-                       s"lines[$index].fee"    -> line.fee.instrumentId,
-                       s"lines[$index].market" -> line.sourceMarket.instrumentId
-                     )
-                   )*
-                 )
-          yield lines
-
   /** Evaluate downstream scenario and policy inputs before invoking pure contribution/PnL composition. */
-  def pnl(roundTrip: RoundTrip, schedule: Schedule): Either[FeePolicyError, instrument.Pnl] =
+  def pnl(roundTrip: RoundTrip, policy: Policy[FeePolicyError]): Either[FeePolicyError, instrument.Pnl] =
     for
       _ <- checkIdentities(
              "pnl",
              "roundTrip" -> roundTrip.instrumentId,
              "entry"     -> roundTrip.entry.instrumentId,
              "exit"      -> roundTrip.exit.instrumentId,
-             "schedule"  -> schedule.instrumentId
+             "policy"    -> policy.instrumentId
            )
       entryValue <- scenarioSignedValue(roundTrip.entry)
       exitSigned <- scenarioSignedValue(roundTrip.exit)
@@ -124,8 +94,8 @@ final class FeePolicy[I <: Instrument] private[policy] (val instrument: I):
                     .fromValues(instrument)(roundTrip.heldPosition, entryValue, exitSigned * Rational(-1))
                     .left
                     .map(FeeValuationFailure(_))
-      entryLines         <- assessAndValidate(schedule, roundTrip.entry)
-      exitLines          <- assessAndValidate(schedule, roundTrip.exit)
+      entryLines         <- assessAndValidate(policy, roundTrip.entry)
+      exitLines          <- assessAndValidate(policy, roundTrip.exit)
       entryContributions <- entryLines.traverse(convertLine(ScenarioLeg.Entry, _))
       exitContributions  <- exitLines.traverse(convertLine(ScenarioLeg.Exit, _))
       result             <- Pnl
@@ -152,33 +122,14 @@ final class FeePolicy[I <: Instrument] private[policy] (val instrument: I):
       )
 
   private def assessAndValidate(
-    schedule: Schedule,
+    policy: Policy[FeePolicyError],
     scenario: Scenario
   ): Either[FeePolicyError, Vector[FeeLine[? <: Dim, Market]]] =
-    schedule.assess(scenario).flatMap: lines =>
-      for
-        _ <- checkIdentities(
-               "feeLines",
-               lines.zipWithIndex.flatMap((line, index) =>
-                 Vector(
-                   s"lines[$index]"              -> line.instrumentId,
-                   s"lines[$index].fee"          -> line.fee.instrumentId,
-                   s"lines[$index].denomination" -> line.fee.denomination.instrumentId,
-                   s"lines[$index].market"       -> line.sourceMarket.instrumentId
-                 )
-               )*
-             )
-        _ <-
-          val slices = scenario.matchedSlices.toVector
-          lines.collectFirst:
-            case line if line.sourceSliceIndex < 0 || line.sourceSliceIndex >= slices.size =>
-              InvalidFeeAttribution(line.sourceSliceIndex, slices.size)
-            case line if !line.sourceMarket.eq(slices(line.sourceSliceIndex).market) =>
-              ForeignScenarioLine(line.sourceSliceIndex)
-          match
-            case Some(error) => Left(error)
-            case None        => Right(())
-      yield lines
+    policy
+      .evaluate(scenario)
+      .left
+      .map(FeePolicyFailures(_))
+      .flatMap(_.traverse(directive => line(scenario, directive.sourceSlice, directive.fee)))
 
   private def convertLine(
     leg: ScenarioLeg,
@@ -205,8 +156,8 @@ final class FeePolicy[I <: Instrument] private[policy] (val instrument: I):
     match
       case Some(error) => Left(error)
       case None        => Right(())
-end FeePolicy
+end FeeOrchestration
 
-object FeePolicy:
-  def apply[I <: Instrument](instrument: I): FeePolicy[instrument.type] =
-    new FeePolicy[instrument.type](instrument)
+object FeeOrchestration:
+  def apply[I <: Instrument](instrument: I): FeeOrchestration[instrument.type] =
+    new FeeOrchestration[instrument.type](instrument)

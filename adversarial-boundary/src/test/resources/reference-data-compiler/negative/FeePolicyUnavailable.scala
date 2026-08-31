@@ -6,7 +6,7 @@ object FeePolicyUnavailable:
   val assetId = AssetId.from("reference-boundary")
 
   // OFFENDING-BEGIN
-  val feePolicy: Class[trading.fee.policy.FeePolicy[?]] = classOf[trading.fee.policy.FeePolicy[?]]
+  val feePolicy: Class[trading.fee.FeePolicy[?, ?, ?, ?, ?]] = classOf[trading.fee.FeePolicy[?, ?, ?, ?, ?]]
   // OFFENDING-END
 
 end FeePolicyUnavailable

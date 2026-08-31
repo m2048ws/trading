@@ -15,24 +15,24 @@ updated: 2026-08-31
 - **Change**: introduce-pure-fee-policy-module
 - **Worktree**: /Users/m/src/money/.worktrees/introduce-pure-fee-policy-module
 - **Phase at Checkpoint**: applying
-- **Task Group at Checkpoint**: 3
-- **Observed Run Revision**: 4
-- **Last Verified HEAD**: d59b081b4c2fed6e2ee7d6e25fc7707803fa1773
+- **Task Group at Checkpoint**: 4
+- **Observed Run Revision**: 5
+- **Last Verified HEAD**: 958899c0b40eb3bac8b0d9e96b5d73e976e1f892
 
-The phase and revision above are the required next checkpoint carried by Task Group 3. Live Run Contract authority
-remains `applying` at revision 3 until Corgi acknowledges that commit.
+The phase and revision above are the required next checkpoint carried by Task Group 4. Live Run Contract authority
+remains `applying` at revision 4 until Corgi acknowledges that commit.
 
 ## Next Action
-- Commit and acknowledge `introduce-pure-fee-policy-module` Task Group 3, synchronize draft PR #32, then implement Task
-  Group 4.
+- Commit and acknowledge `introduce-pure-fee-policy-module` Task Group 4, synchronize draft PR #32, then implement Task
+  Group 5.
   Verify, Human Review, Human QA, and Archive remain separate gates.
 
 ## Blockers
 - none
 
 ## Uncommitted Work
-- Task Group 3's nominal rate, refined typed formulas, provisional policy migration, focused example/property tests,
-  completed-JAR compiler/ownership guards, implementation note, and next-state checkpoint changes.
+- Task Group 4's typed strategy/error/directive algebra, checked composition, transitional directive-consumer
+  migration, contextual laws, completed-JAR API guards, documentation, implementation note, and next-state checkpoint.
 
 ## Discoveries
 - The archived `establish-pure-instrument-economics` boundary was reconciled from commit `86613ee` before S-02
@@ -267,6 +267,19 @@ remains `applying` at revision 3 until Corgi acknowledges that commit.
 - The automated Group 3 review tightened the negative compiler assertion to bind the second rejection explicitly to
   nominal `FeeRate`, then completed scope, behavior, refinement, dimension, architecture, packaged-boundary,
   performance/security, evidence, and checkpoint axes with no findings. It changed no file during the final pass,
+  triaged no finding, and is not canonical Verify or Human Review.
+- Task Group 3 is acknowledged at `958899c0b40eb3bac8b0d9e96b5d73e976e1f892`; draft PR #32 is synchronized and Run
+  revision 4 admits only Group 4.
+- The `trading.fee` root now exposes covariant pure `FeePolicy`, domain-owned non-empty `PolicyErrors`, nominal
+  nonnegative `SliceIndex`, and existential `FeeDirective`. Checked composition accumulates foreign identities and
+  policy failures stably, normalizes nested/no-fee components, and preserves caller-owned typed causes without a global
+  monoid, effect parameter, exception, or string erasure.
+- The focused Group 4 gate passes 24 fee-policy tests and all 153 completed-JAR/compiler/adversarial tests. Packaged
+  guards reject `FeeSchedule`, the old service class, unlawful algebra/effect/error-erasure calls, and arbitrary source
+  markets; public policy bytecode contains no validation-library, monoid, effect, stream, or clock reference.
+- The automated Group 4 review hardened every JVM-visible private policy implementation constructor and preserved flat
+  checked composition across error mapping, then repeated formatting, 24 fee-policy tests, all 153 adversarial tests,
+  source/package scans, and bytecode inspection with no remaining findings. The clean final pass changed no file,
   triaged no finding, and is not canonical Verify or Human Review.
 
 ## Promotion Queue
