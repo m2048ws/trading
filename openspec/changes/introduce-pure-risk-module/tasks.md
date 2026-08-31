@@ -137,3 +137,15 @@
   implementation drift before the final Task Group checkpoint.
 - [ ] 9.5 Prepare the final acknowledged Task Group commit and evidence for separate canonical Verify, human review,
   human QA, and Archive; do not begin the application/runtime Slice in this delivery.
+
+## 10. Archive Delta Completeness Repair
+
+- [ ] 10.1 Reconcile the modified downside-risk requirement so every scenario in the current canonical requirement
+  remains explicitly represented while retaining the delivered stronger typed/refined risk and downstream-ownership
+  behavior.
+- [ ] 10.2 Prove the repaired delta with strict OpenSpec validation and an isolated OpenSpec Archive rehearsal; confirm
+  the accepted RFC source contract, traceability digest, and immutable Task Group 1–9 prefix remain unchanged.
+- [ ] 10.3 Run deterministic Corgi readiness and the automated Task Group review loop, record the recovery rationale and
+  exact evidence in the session checkpoint, and prepare one dedicated repair commit for acknowledgement.
+- [ ] 10.4 Rerun canonical Verify, human whole-change Review, Human QA, and the strong Archive transaction against the
+  repaired planning revision; do not alter production behavior or begin a later RFC Slice.

@@ -155,17 +155,21 @@ The operation SHALL validate ordinary runtime instrument identity, use the exist
 preserve exact rational semantics, and perform no quantization, floating-point conversion, or raw-scalar reconstruction.
 `Instrument` SHALL NOT expose an owned sizing capability.
 
-#### Scenario: Measure a losing result
+#### Scenario: Measure a losing scenario
 - **WHEN** net PnL is exact `-17/3` in the supplied instrument's settlement dimension
 - **THEN** downside risk is refined nonnegative exact `17/3`
 
-#### Scenario: Clamp profitable risk to refined zero
+#### Scenario: Clamp profitable risk to zero
 - **WHEN** net PnL is zero or positive
 - **THEN** downside risk is the lawful refined zero in the same settlement dimension
 
 #### Scenario: Reject foreign PnL
 - **WHEN** instrument and PnL carry different runtime `InstrumentId` values
 - **THEN** risk evaluation returns a typed identity error before inspecting net PnL
+
+#### Scenario: Keep risk downstream
+- **WHEN** Scala depends only on instrument economics
+- **THEN** downside-risk and sizing operations are absent from that artifact and remain owned by the pure risk artifact
 
 #### Scenario: Preserve the refinement for later comparison
 - **WHEN** downside risk is compared with a nonnegative risk budget
@@ -194,6 +198,25 @@ thrown, converted to strings, skipped, treated as excessive risk, or replaced by
 - **WHEN** the explicit fallback evaluator returns a typed fee, conversion, scenario, or PnL cause at lot `n`
 - **THEN** sizing retains `n` and that cause and returns no partial maximum
 
+#### Scenario: Propagate a missing conversion
+- **WHEN** the explicit fallback evaluator reports a missing settlement conversion at lot `n`
+- **THEN** sizing returns a located failure retaining `n` and the typed missing-conversion cause rather than a smaller
+  affordability decision
+
+#### Scenario: Propagate an invalid adverse exit
+- **WHEN** upstream scenario evaluation reports that an adverse exit does not close the proposed position at lot `n`
+- **THEN** exhaustive sizing returns the located typed scenario cause and no partial maximum
+
+#### Scenario: Reject a scenario for a different candidate count
+- **WHEN** an evaluator requested for lot `n` returns a typed mismatch showing a different held-position coordinate
+- **THEN** exhaustive sizing stops at `n`, preserves the requested and observed coordinates in the caller-owned cause,
+  and does not evaluate a later lot
+
+#### Scenario: Return the same maximum under equivalent traversal
+- **WHEN** equivalent pure exhaustive evaluators produce the same successful assessment or typed failure at every
+  required lot coordinate
+- **THEN** deterministic ascending traversal returns the same greatest affordable lot or the same first located failure
+
 ### Requirement: Position-sizing scope is bounded
 Primary maximum-affordable sizing SHALL describe a standalone proposed position in one instrument from flat exposure
 under one immutable sizing context. Instrument identity, direction, valuation inputs, adverse-price assumptions, fee
@@ -211,7 +234,7 @@ a later explicit capability whose feasible set and objective are not mislabeled 
 - **THEN** both observations use the same instrument, direction, valuation state, adverse-price assumptions, fee inputs,
   and curve version
 
-#### Scenario: Treat execution assumptions as conditional
+#### Scenario: Treat maker-only PnL as conditional
 - **WHEN** an upstream model assumes completed maker-only, limit, or sliced execution
 - **THEN** sizing evaluates the resulting immutable conditional loss model without asserting that execution will occur
 
@@ -219,7 +242,7 @@ a later explicit capability whose feasible set and objective are not mislabeled 
 - **WHEN** an existing position could make an additional order reduce or hedge account risk
 - **THEN** that problem is outside standalone monotone sizing and requires an explicit account/portfolio capability
 
-#### Scenario: Exclude liquidation and margin
+#### Scenario: Exclude liquidation mechanics
 - **WHEN** no liquidation or margin model is present
 - **THEN** the decision expresses only the supplied exact downside-budget rule
 

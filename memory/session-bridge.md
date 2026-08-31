@@ -14,16 +14,16 @@ updated: 2026-08-31
 - **Issue**: 8 https://github.com/m2048ws/trading/issues/8
 - **Change**: introduce-pure-risk-module
 - **Worktree**: /Users/m/src/money/.worktrees/introduce-pure-risk-module
-- **Phase at Checkpoint**: awaiting_verify
-- **Task Group at Checkpoint**: 9
-- **Observed Run Revision**: 10
-- **Last Verified HEAD**: c01b94c496f51dd3ce15b4d389fc6e01486d99b2
+- **Phase at Checkpoint**: planning_ready
+- **Task Group at Checkpoint**: 10
+- **Observed Run Revision**: none
+- **Last Verified HEAD**: d7fe800147f0cba6b8dca5ef523015ec9424f1b9
 
 The phase and revision above are the required next checkpoint carried by Task Group 9. Live Run Contract authority
 remains `applying` at revision 9 until Corgi acknowledges that commit.
 
 ## Next Action
-- Commit and acknowledge `introduce-pure-risk-module` Task Group 9, sync draft PR #28, then run the separate canonical
+- Start Apply for `introduce-pure-risk-module` Task Group 10.
   whole-change Verify gate. Human Review, Human QA, and Archive remain later separate gates.
 
 ## Blockers
