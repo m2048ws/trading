@@ -53,7 +53,7 @@ class RiskCompilerBoundarySuite extends FunSuite:
       val entries = archive.entries().asScala.toList
       val names   = entries.map(_.getName).toSet
       assert(names.contains("trading/risk/RiskIdentityError.class"))
-      assert(names.contains("trading/risk/PnlInstrumentMismatch.class"))
+      assert(names.contains("trading/risk/DownsideInstrumentMismatch.class"))
       val classBytes = entries
         .filter(entry => !entry.isDirectory && entry.getName.endsWith(".class"))
         .map: entry =>
@@ -91,6 +91,16 @@ class RiskCompilerBoundarySuite extends FunSuite:
     val rejected = compile(source)
     assert(rejected.errors.size >= 11, rejected.rendered)
     assert(rejected.rendered.contains("is not a member") || rejected.rendered.contains("Not found"), rejected.rendered)
+    forbiddenDiagnostics.foreach(fragment => assert(!rejected.rendered.contains(fragment), rejected.rendered))
+
+  test("completed risk API rejects raw budget quantities and settlement-dimension mismatches"):
+    val source  = fixturesRoot.resolve("negative/InvalidRiskInputs.scala")
+    val prelude = compilePrelude(source)
+    assert(prelude.succeeded, s"fixture prelude must compile independently:\n${prelude.rendered}")
+    val rejected = compile(source)
+    assert(rejected.errors.size >= 2, rejected.rendered)
+    assert(rejected.rendered.contains("Found:"), rejected.rendered)
+    assert(rejected.rendered.contains("Required:"), rejected.rendered)
     forbiddenDiagnostics.foreach(fragment => assert(!rejected.rendered.contains(fragment), rejected.rendered))
 
   private def compilePrelude(source: Path): Compilation =

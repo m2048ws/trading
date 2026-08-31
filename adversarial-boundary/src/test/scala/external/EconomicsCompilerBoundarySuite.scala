@@ -197,7 +197,7 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
         !new String(assumptionsBytes, StandardCharsets.ISO_8859_1).contains("cats/data/NonEmptyVector"),
         s"scenario assumptions leaked Cats NonEmptyVector in $scenarioJar"
       )
-      List("trading/fee/policy/FeePolicy.class", "trading/risk/Risk.class")
+      List("trading/fee/policy/FeePolicy.class", "trading/risk/TransitionalRisk.class")
         .foreach(entry => assert(economicsEntries.contains(entry), s"missing $entry from $economicsJar"))
 
       List(

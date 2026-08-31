@@ -6,4 +6,4 @@ import trading.economics.instrument.InstrumentId
 sealed abstract class RiskIdentityError extends Product with Serializable
 
 /** The supplied PnL belongs to a different instrument from the requested risk measurement. */
-final case class PnlInstrumentMismatch(expected: InstrumentId, supplied: InstrumentId) extends RiskIdentityError
+final case class DownsideInstrumentMismatch(expected: InstrumentId, supplied: InstrumentId) extends RiskIdentityError

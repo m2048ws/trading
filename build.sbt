@@ -115,7 +115,7 @@ lazy val referenceData =
 lazy val economics =
   project
     .in(file("economics"))
-    .dependsOn(instrumentEconomics, executionScenario)
+    .dependsOn(instrumentEconomics, risk, executionScenario)
     .settings(
       name       := "trading-economics",
       moduleName := "trading-economics",

@@ -15,22 +15,22 @@ updated: 2026-08-31
 - **Change**: introduce-pure-risk-module
 - **Worktree**: /Users/m/src/money/.worktrees/introduce-pure-risk-module
 - **Phase at Checkpoint**: applying
-- **Task Group at Checkpoint**: 2
-- **Observed Run Revision**: 3
-- **Last Verified HEAD**: a2ad478de1353312bfe56c91a3f16bae9a272ee0
+- **Task Group at Checkpoint**: 3
+- **Observed Run Revision**: 4
+- **Last Verified HEAD**: d01129c30691a0d978beb36eefe71bd7b9fcb623
 
-The phase and revision above are the required next checkpoint carried by Task Group 2. Live Run Contract authority
-remains `applying` at revision 2 until Corgi acknowledges that commit.
+The phase and revision above are the required next checkpoint carried by Task Group 3. Live Run Contract authority
+remains `applying` at revision 3 until Corgi acknowledges that commit.
 
 ## Next Action
-- Commit and acknowledge `introduce-pure-risk-module` Task Group 2, sync draft PR #28, then implement Task Group 3.
+- Commit and acknowledge `introduce-pure-risk-module` Task Group 3, sync draft PR #28, then implement Task Group 4.
   Verify, Human Review, Human QA, and Archive remain separate gates.
 
 ## Blockers
 - none
 
 ## Uncommitted Work
-- Task Group 2's physical risk boundary, completed-JAR compiler guards, retirement plan, and this checkpoint.
+- Task Group 3's exact refined downside API, transitional refined-budget migration, tests, and this checkpoint.
 
 ## Discoveries
 - The archived `establish-pure-instrument-economics` boundary was reconciled from commit `86613ee` before S-02
@@ -159,6 +159,13 @@ remains `applying` at revision 2 until Corgi acknowledges that commit.
   streams, codecs, persistence, telemetry, and JMH; lower-layer classpaths reject risk imports.
 - The focused Group 2 gate passes risk compilation and 41 completed-JAR/reverse-dependency tests. Transitional
   `trading-economics` remains until Group 8 moves every production/test surface to an intentional owner.
+- Task Group 2 is acknowledged at `d01129c30691a0d978beb36eefe71bd7b9fcb623` and draft PR #28 is synchronized.
+- `Risk.downside` validates ordinary instrument identity before typed PnL inspection, then uses exact quantity order,
+  zero, subtraction, and nonnegative refinement. Negative fractional, zero, positive, foreign-identity, and static
+  dimension-mismatch coverage passes without quantization or floating-point conversion.
+- The temporary policy/scenario service is explicitly `TransitionalRisk`; it accepts only refined nonnegative budgets,
+  delegates downside to the pure artifact, and no longer exposes `InvalidRiskBudget` or raw sign validation. The focused
+  Group 3 gate passes 4 risk, 10 downstream economics, and 40 completed-JAR/compiler tests.
 
 ## Promotion Queue
 - Review agent-configuration constraints before promoting any item to `memory/MEMORY.md`.

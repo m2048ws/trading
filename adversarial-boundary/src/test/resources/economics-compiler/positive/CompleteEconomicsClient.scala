@@ -69,7 +69,7 @@ object CompleteEconomicsClient:
     def assess(value: feePolicy.Scenario): Either[FeePolicyError, Vector[FeeLine[? <: Dim, feePolicy.Market]]] =
       feePolicy.line(value, 0, fee).map(Vector(_))
   val pnl  = feePolicy.pnl(trip, schedule).toOption.get
-  val risk = Risk.create(instrument)(feePolicy).toOption.get.downsideRisk(pnl).toOption.get
+  val risk = Risk.downside(instrument)(pnl).toOption.get
 
   assert(genericLotsResult.isRight)
   assert(genericPriceResult.isRight)

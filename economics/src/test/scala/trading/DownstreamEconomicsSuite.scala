@@ -7,6 +7,7 @@ import trading.fee.policy.*
 import trading.order.*
 import trading.quantity.*
 import trading.quantity.grid.QuantizationPolicy
+import trading.quantity.refinement.NonNegative
 import trading.quantity.refinement.PositiveWhole
 import trading.risk.*
 import trading.scenario.*
@@ -200,10 +201,9 @@ class DownstreamEconomicsSuite extends FunSuite:
       fixture.state(instrument, Rational(100)),
       fixture.state(instrument, Rational(90))
     )
-    val pnl  = policy.pnl(trip, policy.none).toOption.get
-    val risk = Risk.create(instrument)(policy).toOption.get
+    val pnl = policy.pnl(trip, policy.none).toOption.get
     assertEquals(pnl.netPnl.coefficient, Rational(-10))
-    assertEquals(risk.downsideRisk(pnl).map(_.unrefined.coefficient), Right(Rational(10)))
+    assertEquals(Risk.downside(instrument)(pnl).map(_.unrefined.coefficient), Right(Rational(10)))
 
   test("missing fee conversion retains its entry leg and source-slice attribution"):
     val lots = Lots.fromCount(instrument)(1000).toOption.get
@@ -241,9 +241,9 @@ class DownstreamEconomicsSuite extends FunSuite:
     )
 
   test("risk sizing selects the greatest exact discrete candidate and includes fee-inclusive PnL"):
-    val risk     = Risk.create(instrument)(policy).toOption.get
+    val risk     = TransitionalRisk.create(instrument)(policy).toOption.get
     val cap      = PositiveWhole(4).toOption.get
-    val budget   = Quantity(instrument.roles.settle.dimension.ref, Rational(3, 100))
+    val budget   = NonNegative(Quantity(instrument.roles.settle.dimension.ref, Rational(3, 100))).toOption.get
     val selected = risk.maxLots(budget, cap, policy.none): candidate =>
       Right(
         roundTrip(
@@ -255,9 +255,9 @@ class DownstreamEconomicsSuite extends FunSuite:
     assertEquals(selected.map(_.map(_.count.unrefined)), Right(Some(BigInt(3))))
 
   test("risk sizing preserves exhaustive traversal, non-monotone selection, failures, and flat fees"):
-    val risk     = Risk.create(instrument)(policy).toOption.get
+    val risk     = TransitionalRisk.create(instrument)(policy).toOption.get
     val cap      = PositiveWhole(4).toOption.get
-    val budget   = Quantity(instrument.roles.settle.dimension.ref, Rational(3, 100))
+    val budget   = NonNegative(Quantity(instrument.roles.settle.dimension.ref, Rational(3, 100))).toOption.get
     val visited  = scala.collection.mutable.ArrayBuffer.empty[BigInt]
     val selected = risk.maxLots(budget, cap, policy.none): candidate =>
       visited += candidate.count.unrefined
