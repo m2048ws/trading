@@ -1,6 +1,6 @@
 schemaVersion: 1
 rfcId: RFC-0002-architecture-portfolio
-revision: 1
+revision: 2
 slices:
   S-01-application-runtime-foundation:
     status: unbound
@@ -11,4 +11,12 @@ slices:
   S-04-fee-policy:
     status: unbound
   S-05-versioned-boundary-codecs:
-    status: unbound
+    status: planned
+    binding:
+      change: introduce-versioned-boundary-codecs
+      issue:
+        provider: github
+        id: '10'
+        url: https://github.com/m2048ws/trading/issues/10
+      sourceDigest: sha256:625809aa552c0c3f4efd1a8e2d9982c76414f82ce405674ce6f91b475807cceb
+      plannedAt: '2026-08-29T20:09:43.533Z'
