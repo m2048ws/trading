@@ -168,3 +168,14 @@
 - [ ] 12.5 Record the exact remediation, validation counts, and review disposition in the session checkpoint; prepare
   one dedicated Repair Task Group commit for acknowledgement, PR synchronization, canonical Verify, human review, and
   a fresh independent exact-SHA whole-change review.
+
+## 13. Archive Delta Completeness Repair
+
+- [ ] 13.1 Reconcile the modified compositional-order requirement so every scenario in the current canonical requirement
+  remains explicitly represented while retaining the delivered stronger structural and accumulating-validation cases.
+- [ ] 13.2 Prove the repaired delta with strict OpenSpec validation and an isolated OpenSpec Archive rehearsal; confirm
+  the accepted RFC source contract and the immutable Task Group 1–12 prefix remain unchanged.
+- [ ] 13.3 Run deterministic Corgi readiness and the automated Task Group review loop, record the recovery rationale and
+  exact evidence in the session checkpoint, and prepare one dedicated repair commit for acknowledgement.
+- [ ] 13.4 Rerun canonical Verify, human whole-change Review, Human QA, and the strong Archive transaction against the
+  repaired planning revision; do not alter production behavior or begin a later RFC Slice.
