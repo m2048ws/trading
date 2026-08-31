@@ -13,10 +13,11 @@ composition. Canonical `FeeAssessment` now resolves directives against one exact
 identity, exact scenario price normalization, per-leg assessment, selected-slice conversion, and core PnL composition.
 Its non-empty generic violations retain every policy cause, leg, directive, slice, and core cause. Successful results
 retain the round trip, both assessments, attributed settled contributions, and one core `Pnl`; price, fee, and net
-totals are projections of that core value rather than recalculated fields. The `trading.fee.policy.FeeOrchestration`
-subpackage remains only as a provisional compatibility bridge until downstream migration removes it in the next Task
-Group. The artifact contains no risk sizing, live policy acquisition, concrete effects, runtime state, I/O,
-persistence, telemetry, or codecs.
+totals are projections of that core value rather than recalculated fields. There is no compatibility facade or
+secondary package: callers use the canonical `trading.fee` API directly. The artifact contains no risk sizing, live
+policy acquisition, clock or account access, venue/tier/version selection, audit envelopes, execution reports,
+concrete effects, runtime state, I/O, persistence, telemetry, or codecs. Applications select and acquire policies;
+runtime interpreters own clocks and external state; future boundary codecs own durable records and versions.
 
 Risk is a test-only integration dependency. Downstream tests demonstrate three explicit composition routes without a
 production dependency from risk to fee policy:

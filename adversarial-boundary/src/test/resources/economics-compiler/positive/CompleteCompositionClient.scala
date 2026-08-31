@@ -3,7 +3,6 @@ package external.economics.positive
 import external.economics.fixtures.SharedEconomicsSetup.*
 import trading.economics.instrument.*
 import trading.fee.*
-import trading.fee.policy.*
 import trading.order.*
 import trading.quantity.*
 import trading.quantity.grid.QuantizationPolicy
@@ -53,25 +52,33 @@ object CompleteCompositionClient:
   ).toOption.get
   val exit = OrderScenario.evaluate(instrument)(sellAssumptions).toOption.get
   val trip = RoundTripScenario.create(instrument)(entry, exit).toOption.get
-  val denomination = feePolicy
-    .denomination(quote)(quoteGrid, QuantizationPolicy.TowardZero)
+  val denomination = FeeDenomination
+    .create(instrument)(quote, quoteGrid, QuantizationPolicy.TowardZero)
     .toOption
     .get
-  val fee = feePolicy
-    .percentage(
+  val fee = Fee
+    .create(instrument)(
       denomination,
       FeeKind.from("client").toOption.get,
-      NonNegative(Quantity(quote.dimension.ref, Rational(10))).toOption.get,
-      FeeRate(Rational(1, 1000))
+      FeeCalculation.percentage(
+        NonNegative(Quantity(quote.dimension.ref, Rational(10))).toOption.get,
+        FeeRate(Rational(1, 1000))
+      )
     )
     .toOption
     .get
   val strategy = new FeePolicy[Nothing, D, B, Q, S]:
     val instrumentId: InstrumentId = instrument.identity.id
-    def evaluate(value: feePolicy.Scenario): Either[PolicyErrors[Nothing], Vector[FeeDirective]] =
+    def evaluate(value: OrderScenario[D, B, Q, MarketState[B, Q, S]]): Either[
+      PolicyErrors[Nothing],
+      Vector[FeeDirective]
+    ] =
       Right(Vector(FeeDirective(fee, SliceIndex.zero)))
-  val pnl  = feePolicy.pnl(trip, strategy).toOption.get
-  val risk = Risk.downside(instrument)(pnl).toOption.get
+  val inclusivePnl = FeeInclusivePnl
+    .evaluate(instrument)(trip, RoundTripFeePolicies.same(strategy))
+    .toOption
+    .get
+  val risk = Risk.downside(instrument)(inclusivePnl.pnl).toOption.get
 
   assert(genericLotsResult.isRight)
   assert(genericPriceResult.isRight)

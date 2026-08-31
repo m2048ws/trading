@@ -27,16 +27,18 @@ object UnlawfulPolicyApi:
     val instrumentId: InstrumentId = instrument.identity.id
     def evaluate(value: Scenario): Either[PolicyErrors[CustomPolicyFailure], Vector[FeeDirective]] =
       Left(PolicyErrors.one(CustomPolicyRejected))
-  val denomination = feePolicy
-    .denomination(quote)(quoteGrid, QuantizationPolicy.TowardZero)
+  val denomination = FeeDenomination
+    .create(instrument)(quote, quoteGrid, QuantizationPolicy.TowardZero)
     .toOption
     .get
-  val fee = feePolicy
-    .percentage(
+  val fee = Fee
+    .create(instrument)(
       denomination,
       FeeKind.from("negative-api").toOption.get,
-      trading.quantity.refinement.NonNegative(Quantity(quote.dimension.ref, Rational(10))).toOption.get,
-      FeeRate(Rational(1, 1000))
+      FeeCalculation.percentage(
+        trading.quantity.refinement.NonNegative(Quantity(quote.dimension.ref, Rational(10))).toOption.get,
+        FeeRate(Rational(1, 1000))
+      )
     )
     .toOption
     .get
@@ -44,8 +46,17 @@ object UnlawfulPolicyApi:
 
   // OFFENDING-BEGIN
   object RemovedSchedule:
-    val value: Class[trading.fee.policy.FeeSchedule[?, ?, ?, ?]] =
-      classOf[trading.fee.policy.FeeSchedule[?, ?, ?, ?]]
+    val value: Class[trading.fee.FeeSchedule[?, ?, ?, ?]] =
+      classOf[trading.fee.FeeSchedule[?, ?, ?, ?]]
+
+  object RemovedLine:
+    val value: Class[trading.fee.FeeLine[?]] = classOf[trading.fee.FeeLine[?]]
+
+  object RemovedOrchestration:
+    val value = trading.fee.FeeOrchestration(instrument)
+
+  object RemovedUniversalError:
+    val value: Class[trading.fee.FeePolicyError] = classOf[trading.fee.FeePolicyError]
 
   object UnconditionalMonoid:
     val value = summon[Monoid[Policy[Nothing]]]

@@ -1,7 +1,6 @@
 package external.economics.fixtures
 
 import trading.economics.instrument.*
-import trading.fee.policy.*
 import trading.order.*
 import trading.quantity.*
 import trading.quantity.refinement.*
@@ -65,7 +64,6 @@ object SharedEconomicsSetup:
   val price99     = Price.exact(instrument)(Rational(99)).toOption.get
   val price100    = Price.exact(instrument)(Rational(100)).toOption.get
   val state       = MarketState.quoteSettled(instrument)(price100).toOption.get
-  val feePolicy   = FeeOrchestration(instrument)
   val marketOrder = Order.market(instrument)(Side.Buy, lots).toOption.get
   val slice       = LiquiditySlice.create(instrument)(lots, state, LiquidityRole.Taker).toOption.get
 end SharedEconomicsSetup

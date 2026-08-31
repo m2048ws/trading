@@ -2,7 +2,7 @@ package external.economics.negative
 
 import external.economics.fixtures.SharedEconomicsSetup.*
 import trading.economics.instrument.*
-import trading.fee.FeePolicy
+import trading.fee.*
 import trading.order.*
 import trading.quantity.*
 import trading.quantity.refinement.PositiveWhole
@@ -29,7 +29,7 @@ object RemovedFlatApi:
 
   val _ = price100.ticks
   val _ = Order.market(instrument)(Side.Buy, lots)
-  val _ = feePolicy.pnl(roundTrip, noFees)
+  val _ = FeeInclusivePnl.evaluate(instrument)(roundTrip, RoundTripFeePolicies.same(noFees))
 
   // OFFENDING-BEGIN
   val orders = Orders(instrument)

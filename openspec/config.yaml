@@ -35,7 +35,7 @@ context: |
     - SBT ID: feePolicy
       Directory: fee-policy
       Artifact: trading-fee-policy
-      Primary package: trading.fee.policy
+      Primary package: trading.fee
     - SBT ID: risk
       Directory: risk
       Artifact: trading-risk
@@ -55,7 +55,7 @@ context: |
     trading.economics.instrument
     trading.order
     trading.scenario
-    trading.fee.policy
+    trading.fee
     trading.risk
 
   Current scope includes exact dimension-safe quantities, anonymous uniform-grid

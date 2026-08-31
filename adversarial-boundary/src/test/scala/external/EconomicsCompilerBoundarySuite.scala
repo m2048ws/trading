@@ -251,16 +251,31 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
         "trading/fee/FeeInclusivePnlErrors.class",
         "trading/fee/AttributedFeeContribution.class",
         "trading/fee/FeeInclusivePnl.class",
-        "trading/fee/FeeInclusivePnl$.class",
-        "trading/fee/policy/FeeOrchestration.class"
+        "trading/fee/FeeInclusivePnl$.class"
       ).foreach(entry => assert(feePolicyEntries.contains(entry), s"missing $entry from $feePolicyJar"))
       List(
-        "trading/fee/policy/FeeSchedule.class",
-        "trading/fee/policy/FeePolicy.class",
-        "trading/fee/policy/FeeLine.class",
-        "trading/fee/policy/FeePolicyError.class"
+        "trading/fee/FeeSchedule.class",
+        "trading/fee/FeeLine.class",
+        "trading/fee/FeePolicyError.class",
+        "trading/fee/FeeOrchestration.class"
       )
         .foreach(entry => assert(!feePolicyEntries.contains(entry), s"fee-policy JAR retained removed $entry"))
+      assert(
+        !feePolicyEntries.exists(_.startsWith("trading/fee/policy/")),
+        s"fee-policy JAR retained provisional policy subpackage"
+      )
+      List(
+        "trading/fee/FeePolicyAcquisition",
+        "trading/fee/FeePolicyProvider",
+        "trading/fee/FeePolicySelector",
+        "trading/fee/AccountFeePolicy",
+        "trading/fee/FeeTierSelection",
+        "trading/fee/FeePolicyVersion",
+        "trading/fee/FeeAuditEnvelope",
+        "trading/fee/FeeExecutionReport"
+      ).foreach(prefix =>
+        assert(!feePolicyEntries.exists(_.startsWith(prefix)), s"fee-policy JAR retained deferred $prefix")
+      )
       val publicPolicyEntries = feePolicyEntries.toList.sorted.filter: entry =>
         List(
           "trading/fee/FeePolicy",
@@ -379,13 +394,25 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
     assert(rejected.rendered.contains("NonNegative"), rejected.rendered)
     assert(rejected.rendered.contains("FeeRate"), rejected.rendered)
 
-  test("completed fee-policy API rejects old schedules, unlawful algebra, effects, error erasure, and source markets"):
+  test(
+    "completed fee-policy API rejects retired capabilities, unlawful algebra, effects, error erasure, and source markets"
+  ):
     val source  = feePolicyFixturesRoot.resolve("negative/UnlawfulPolicyApi.scala")
     val prelude = compileFilteredPrelude(source, compileFeePolicy)
     assert(prelude.succeeded, s"fixture prelude must compile independently:\n${prelude.rendered}")
     val rejected = compileFeePolicy(source)
-    assert(rejected.errors.size >= 6, rejected.rendered)
-    List("FeeSchedule", "Monoid", "Type argument", "Throwable", "String", "sourceMarket")
+    assert(rejected.errors.size >= 9, rejected.rendered)
+    List(
+      "FeeSchedule",
+      "FeeLine",
+      "FeeOrchestration",
+      "FeePolicyError",
+      "Monoid",
+      "Type argument",
+      "Throwable",
+      "String",
+      "sourceMarket"
+    )
       .foreach(fragment => assert(rejected.rendered.contains(fragment), rejected.rendered))
 
   test("completed fee-policy API rejects caller construction of final scenario attribution"):

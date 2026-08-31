@@ -10,7 +10,7 @@ object OrderModelHasNoDownstream:
     import trading.scenario.*
 
   object MissingFeePolicy:
-    import trading.fee.policy.*
+    import trading.fee.*
 
   object MissingRisk:
     import trading.risk.*

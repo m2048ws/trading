@@ -9,7 +9,7 @@ object ExecutionScenarioHasNoUpstreamMutationOrDownstream:
 
   // OFFENDING-BEGIN
   object MissingFeePolicy:
-    import trading.fee.policy.*
+    import trading.fee.*
 
   object MissingRisk:
     import trading.risk.*

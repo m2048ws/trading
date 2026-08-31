@@ -4,7 +4,6 @@ import munit.FunSuite
 
 import trading.economics.instrument.*
 import trading.fee.*
-import trading.fee.policy.*
 import trading.order.*
 import trading.quantity.*
 import trading.quantity.grid.QuantizationPolicy
@@ -17,14 +16,33 @@ import trading.support.DownstreamFixtures
 class FeePolicyIntegrationSuite extends FunSuite:
   private val fixture    = new DownstreamFixtures
   private val instrument = fixture.linear
-  private val policy     = FeeOrchestration(instrument)
+
+  private type Scenario = OrderScenario[
+    instrument.roles.position.D,
+    instrument.roles.base.D,
+    instrument.roles.quote.D,
+    instrument.MarketState
+  ]
+  private type RoundTrip = RoundTripScenario[
+    instrument.roles.position.D,
+    instrument.roles.base.D,
+    instrument.roles.quote.D,
+    instrument.MarketState
+  ]
+  private type Policy[+E] = FeePolicy[
+    E,
+    instrument.roles.position.D,
+    instrument.roles.base.D,
+    instrument.roles.quote.D,
+    instrument.roles.settle.D
+  ]
 
   private def scenario(
     side: Side,
     lots: instrument.Lots,
     state: instrument.MarketState,
     role: LiquidityRole = LiquidityRole.Taker
-  ): policy.Scenario =
+  ): Scenario =
     val order       = Order.market(instrument)(side, lots).toOption.get
     val slice       = LiquiditySlice.create(instrument)(lots, state, role).toOption.get
     val assumptions = ScenarioAssumptions.one(order)(
@@ -38,7 +56,7 @@ class FeePolicyIntegrationSuite extends FunSuite:
     lots: instrument.Lots,
     entry: instrument.MarketState,
     exit: instrument.MarketState
-  ): policy.RoundTrip =
+  ): RoundTrip =
     RoundTripScenario
       .create(instrument)(
         scenario(Side.Buy, lots, entry),
@@ -125,19 +143,25 @@ class FeePolicyIntegrationSuite extends FunSuite:
     )
 
   test("fee policy owns percentage and minimum logic while core owns exact fee construction"):
-    val denomination = policy
-      .denomination(fixture.usd)(fixture.usdCents, QuantizationPolicy.TowardZero)
+    val denomination = FeeDenomination
+      .create(instrument)(fixture.usd, fixture.usdCents, QuantizationPolicy.TowardZero)
       .toOption
       .get
-    val kind   = FeeKind.from("taker").toOption.get
-    val basis  = NonNegative(Quantity(fixture.usd.dimension.ref, Rational(10))).toOption.get
-    val fee    = policy.percentage(denomination, kind, basis, FeeRate(Rational(1, 1000))).toOption.get
-    val rebate = policy
-      .percentage(
+    val kind  = FeeKind.from("taker").toOption.get
+    val basis = NonNegative(Quantity(fixture.usd.dimension.ref, Rational(10))).toOption.get
+    val fee   = Fee
+      .create(instrument)(
+        denomination,
+        kind,
+        FeeCalculation.percentage(basis, FeeRate(Rational(1, 1000)))
+      )
+      .toOption
+      .get
+    val rebate = Fee
+      .create(instrument)(
         denomination,
         FeeKind.from("maker").toOption.get,
-        basis,
-        FeeRate(Rational(-1, 1000))
+        FeeCalculation.percentage(basis, FeeRate(Rational(-1, 1000)))
       )
       .toOption
       .get
@@ -146,7 +170,7 @@ class FeePolicyIntegrationSuite extends FunSuite:
     assertEquals(fee.amount + fee.residual, fee.unrounded)
     assertEquals(rebate.amount + rebate.residual, rebate.unrounded)
     assertEquals(
-      policy
+      FeeCalculation
         .minimumCharge(
           Quantity(fixture.usd.dimension.ref, Rational(-1, 1000)),
           NonNegative(Quantity(fixture.usd.dimension.ref, Rational(1, 100))).toOption.get
@@ -155,7 +179,7 @@ class FeePolicyIntegrationSuite extends FunSuite:
       Rational(-1, 100)
     )
 
-  test("downstream orchestration converts each fee at its selected state and retains contribution order"):
+  test("canonical composition converts each fee at its selected state and retains contribution order"):
     val lots             = Lots.fromCount(instrument)(1000).toOption.get
     val tokenConversion1 = SettlementConversion.exact(instrument)(fixture.token)(Rational(2)).toOption.get
     val tokenConversion2 = SettlementConversion.exact(instrument)(fixture.token)(Rational(3)).toOption.get
@@ -168,8 +192,8 @@ class FeePolicyIntegrationSuite extends FunSuite:
       .toOption
       .get
     val trip         = roundTrip(lots, entry, exit)
-    val denomination = policy
-      .denomination(fixture.token)(fixture.tokenMillis, QuantizationPolicy.TowardZero)
+    val denomination = FeeDenomination
+      .create(instrument)(fixture.token, fixture.tokenMillis, QuantizationPolicy.TowardZero)
       .toOption
       .get
     val fee = Fee
@@ -180,12 +204,15 @@ class FeePolicyIntegrationSuite extends FunSuite:
       )
       .toOption
       .get
-    val feeStrategy = new policy.Policy[Nothing]:
-      val instrumentId: InstrumentId                                                            = instrument.identity.id
-      def evaluate(value: policy.Scenario): Either[PolicyErrors[Nothing], Vector[FeeDirective]] =
+    val feeStrategy = new Policy[Nothing]:
+      val instrumentId: InstrumentId                                                     = instrument.identity.id
+      def evaluate(value: Scenario): Either[PolicyErrors[Nothing], Vector[FeeDirective]] =
         Right(Vector(FeeDirective(fee, SliceIndex.zero)))
 
-    val pnl = policy.pnl(trip, feeStrategy).toOption.get
+    val pnl = FeeInclusivePnl
+      .evaluate(instrument)(trip, RoundTripFeePolicies.same(feeStrategy))
+      .toOption
+      .get
     assertEquals(pnl.pricePnl.quantity.coefficient, Rational(10))
     assertEquals(
       pnl.settledFeeContributions.map(_.quantity.coefficient),
@@ -201,19 +228,22 @@ class FeePolicyIntegrationSuite extends FunSuite:
       fixture.state(instrument, Rational(100)),
       fixture.state(instrument, Rational(90))
     )
-    val pnl = policy.pnl(trip, FeePolicy.noFees(instrument)).toOption.get
+    val pnl = FeeInclusivePnl
+      .evaluate(instrument)(trip, RoundTripFeePolicies.same(FeePolicy.noFees(instrument)))
+      .toOption
+      .get
     assertEquals(pnl.netPnl.coefficient, Rational(-10))
-    assertEquals(Risk.downside(instrument)(pnl).map(_.unrefined.coefficient), Right(Rational(10)))
+    assertEquals(Risk.downside(instrument)(pnl.pnl).map(_.unrefined.coefficient), Right(Rational(10)))
 
-  test("missing fee conversion retains its entry leg and source-slice attribution"):
+  test("missing fee conversions retain both legs and source-slice attribution"):
     val lots = Lots.fromCount(instrument)(1000).toOption.get
     val trip = roundTrip(
       lots,
       fixture.state(instrument, Rational(100)),
       fixture.state(instrument, Rational(90))
     )
-    val denomination = policy
-      .denomination(fixture.token)(fixture.tokenMillis, QuantizationPolicy.TowardZero)
+    val denomination = FeeDenomination
+      .create(instrument)(fixture.token, fixture.tokenMillis, QuantizationPolicy.TowardZero)
       .toOption
       .get
     val fee = Fee
@@ -224,18 +254,27 @@ class FeePolicyIntegrationSuite extends FunSuite:
       )
       .toOption
       .get
-    val feeStrategy = new policy.Policy[Nothing]:
-      val instrumentId: InstrumentId                                                            = instrument.identity.id
-      def evaluate(value: policy.Scenario): Either[PolicyErrors[Nothing], Vector[FeeDirective]] =
+    val feeStrategy = new Policy[Nothing]:
+      val instrumentId: InstrumentId                                                     = instrument.identity.id
+      def evaluate(value: Scenario): Either[PolicyErrors[Nothing], Vector[FeeDirective]] =
         Right(Vector(FeeDirective(fee, SliceIndex.zero)))
 
     assertEquals(
-      policy.pnl(trip, feeStrategy),
+      FeeInclusivePnl.evaluate(instrument)(trip, RoundTripFeePolicies.same(feeStrategy)),
       Left(
-        FeeOrchestrationContributionFailure(
-          RoundTripLeg.Entry,
-          SliceIndex.zero,
-          ContributionConversionFailure(MissingConversion(fixture.token.id))
+        FeeInclusivePnlErrors.of(
+          FeeInclusiveConversionFailure(
+            RoundTripLeg.Entry,
+            0,
+            SliceIndex.zero,
+            ContributionConversionFailure(MissingConversion(fixture.token.id))
+          ),
+          FeeInclusiveConversionFailure(
+            RoundTripLeg.Exit,
+            0,
+            SliceIndex.zero,
+            ContributionConversionFailure(MissingConversion(fixture.token.id))
+          )
         )
       )
     )
@@ -245,18 +284,18 @@ class FeePolicyIntegrationSuite extends FunSuite:
     val budget       = NonNegative(Quantity(instrument.roles.settle.dimension.ref, Rational(3, 100))).toOption.get
     val observations = 1.to(4).toVector.map: count =>
       val lots = Lots.fromCount(instrument)(count).toOption.get
-      val pnl  = policy
-        .pnl(
+      val pnl  = FeeInclusivePnl
+        .evaluate(instrument)(
           roundTrip(
             lots,
             fixture.state(instrument, Rational(100)),
             fixture.state(instrument, Rational(90))
           ),
-          FeePolicy.noFees(instrument)
+          RoundTripFeePolicies.same(FeePolicy.noFees(instrument))
         )
         .toOption
         .get
-      lots -> pnl
+      lots -> pnl.pnl
     val model    = MonotoneLotRisk.fromCompleteTable(instrument)(cap, observations).toOption.get
     val selected = MaxAffordableLots.select(model)(budget)
 
@@ -272,14 +311,14 @@ class FeePolicyIntegrationSuite extends FunSuite:
     val visited  = scala.collection.mutable.ArrayBuffer.empty[BigInt]
     val selected = ExhaustiveLotSizing.select(instrument)(budget, cap): lots =>
       visited += lots.count.unrefined
-      policy.pnl(
+      FeeInclusivePnl.evaluate(instrument)(
         roundTrip(
           lots,
           fixture.state(instrument, Rational(100)),
           fixture.state(instrument, Rational(90))
         ),
-        FeePolicy.noFees(instrument)
-      )
+        RoundTripFeePolicies.same(FeePolicy.noFees(instrument))
+      ).map(_.pnl)
     assertEquals(visited.toVector, Vector(1, 2, 3, 4).map(BigInt(_)))
     assertEquals(
       selected.map:
@@ -290,14 +329,14 @@ class FeePolicyIntegrationSuite extends FunSuite:
 
     val nonlinear = ExhaustiveLotSizing.select(instrument)(budget, cap): lots =>
       val exit = if lots.count.unrefined == 2 then Rational(90) else Rational(101)
-      policy.pnl(
+      FeeInclusivePnl.evaluate(instrument)(
         roundTrip(
           lots,
           fixture.state(instrument, Rational(100)),
           fixture.state(instrument, exit)
         ),
-        FeePolicy.noFees(instrument)
-      )
+        RoundTripFeePolicies.same(FeePolicy.noFees(instrument))
+      ).map(_.pnl)
     assertEquals(
       nonlinear.map:
         case ExhaustiveLotDecision.Selected(best, _)  => best.lots.count.unrefined
@@ -310,15 +349,16 @@ class FeePolicyIntegrationSuite extends FunSuite:
       if lots.count.unrefined == 2 then Left(failure)
       else
         Right(
-          policy
-            .pnl(
+          FeeInclusivePnl
+            .evaluate(instrument)(
               roundTrip(
                 lots,
                 fixture.state(instrument, Rational(100)),
                 fixture.state(instrument, Rational(90))
               ),
-              FeePolicy.noFees(instrument)
+              RoundTripFeePolicies.same(FeePolicy.noFees(instrument))
             )
+            .map(_.pnl)
             .toOption
             .get
         )
@@ -330,8 +370,8 @@ class FeePolicyIntegrationSuite extends FunSuite:
   test("a fixed flat-fee table earns a monotone model without moving fee policy into risk"):
     val cap          = PositiveWhole(4).toOption.get
     val budget       = NonNegative(Quantity(instrument.roles.settle.dimension.ref, Rational(3, 100))).toOption.get
-    val denomination = policy
-      .denomination(fixture.usd)(fixture.usdCents, QuantizationPolicy.TowardZero)
+    val denomination = FeeDenomination
+      .create(instrument)(fixture.usd, fixture.usdCents, QuantizationPolicy.TowardZero)
       .toOption
       .get
     val flatFee = Fee
@@ -342,24 +382,24 @@ class FeePolicyIntegrationSuite extends FunSuite:
       )
       .toOption
       .get
-    val feeStrategy = new policy.Policy[Nothing]:
-      val instrumentId: InstrumentId                                                            = instrument.identity.id
-      def evaluate(value: policy.Scenario): Either[PolicyErrors[Nothing], Vector[FeeDirective]] =
+    val feeStrategy = new Policy[Nothing]:
+      val instrumentId: InstrumentId                                                     = instrument.identity.id
+      def evaluate(value: Scenario): Either[PolicyErrors[Nothing], Vector[FeeDirective]] =
         Right(Vector(FeeDirective(flatFee, SliceIndex.zero)))
     val observations = 1.to(4).toVector.map: count =>
       val lots = Lots.fromCount(instrument)(count).toOption.get
-      val pnl  = policy
-        .pnl(
+      val pnl  = FeeInclusivePnl
+        .evaluate(instrument)(
           roundTrip(
             lots,
             fixture.state(instrument, Rational(100)),
             fixture.state(instrument, Rational(90))
           ),
-          feeStrategy
+          RoundTripFeePolicies.same(feeStrategy)
         )
         .toOption
         .get
-      lots -> pnl
+      lots -> pnl.pnl
     val model    = MonotoneLotRisk.fromCompleteTable(instrument)(cap, observations).toOption.get
     val withFees = MaxAffordableLots.select(model)(budget)
     assertEquals(
@@ -374,13 +414,13 @@ class FeePolicyIntegrationSuite extends FunSuite:
     val evaluated = scenario(Side.Buy, lots, fixture.state(instrument, Rational(100)))
     assertEquals(FeePolicy.noFees(instrument).evaluate(evaluated), Right(Vector.empty))
 
-    val denomination = policy
-      .denomination(fixture.usd)(fixture.usdCents, QuantizationPolicy.TowardZero)
+    val denomination = FeeDenomination
+      .create(instrument)(fixture.usd, fixture.usdCents, QuantizationPolicy.TowardZero)
       .toOption
       .get
-    def component(name: String, amount: Rational): policy.Policy[Nothing] = new policy.Policy[Nothing]:
-      val instrumentId: InstrumentId                                                            = instrument.identity.id
-      def evaluate(value: policy.Scenario): Either[PolicyErrors[Nothing], Vector[FeeDirective]] =
+    def component(name: String, amount: Rational): Policy[Nothing] = new Policy[Nothing]:
+      val instrumentId: InstrumentId                                                     = instrument.identity.id
+      def evaluate(value: Scenario): Either[PolicyErrors[Nothing], Vector[FeeDirective]] =
         val fee = Fee
           .create(instrument)(
             denomination,
@@ -400,9 +440,9 @@ class FeePolicyIntegrationSuite extends FunSuite:
       Right(Vector(Rational(-1, 100), Rational(1, 100)))
     )
 
-    val foreign = new policy.Policy[Nothing]:
-      val instrumentId: InstrumentId = fixture.foreign.identity.id
-      def evaluate(value: policy.Scenario): Either[PolicyErrors[Nothing], Vector[FeeDirective]] =
+    val foreign = new Policy[Nothing]:
+      val instrumentId: InstrumentId                                                     = fixture.foreign.identity.id
+      def evaluate(value: Scenario): Either[PolicyErrors[Nothing], Vector[FeeDirective]] =
         Right(Vector.empty)
     assertEquals(
       FeePolicy

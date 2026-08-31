@@ -15,25 +15,24 @@ updated: 2026-08-31
 - **Change**: introduce-pure-fee-policy-module
 - **Worktree**: /Users/m/src/money/.worktrees/introduce-pure-fee-policy-module
 - **Phase at Checkpoint**: applying
-- **Task Group at Checkpoint**: 7
-- **Observed Run Revision**: 8
-- **Last Verified HEAD**: 0060e65f5bf4174fab0542a919007a825271d57f
+- **Task Group at Checkpoint**: 8
+- **Observed Run Revision**: 9
+- **Last Verified HEAD**: 78146fd80b622f332af825619e5b7228efeb1434
 
-The phase and revision above are the required next checkpoint carried by Task Group 7. Live Run Contract authority
-remains `applying` at revision 7 until Corgi acknowledges that commit.
+The phase and revision above are the required next checkpoint carried by Task Group 8. Live Run Contract authority
+remains `applying` at revision 8 until Corgi acknowledges that commit.
 
 ## Next Action
-- Commit and acknowledge `introduce-pure-fee-policy-module` Task Group 7, synchronize draft PR #32, then implement Task
-  Group 8.
+- Commit and acknowledge `introduce-pure-fee-policy-module` Task Group 8, synchronize draft PR #32, then implement Task
+  Group 9.
   Verify, Human Review, Human QA, and Archive remain separate gates.
 
 ## Blockers
 - none
 
 ## Uncommitted Work
-- Task Group 7's explicit leg-policy product, staged fee-inclusive evaluation, generic non-empty violations,
-  scenario-level success and attributed contribution values, completed-artifact guards, documentation, implementation
-  note, and next-state checkpoint.
+- Task Group 8's downstream canonical-API migration, provisional package and facade removal, completed-artifact guards,
+  deferred-capability documentation, implementation note, and next-state checkpoint.
 
 ## Discoveries
 - The archived `establish-pure-instrument-economics` boundary was reconciled from commit `86613ee` before S-02
@@ -331,6 +330,22 @@ remains `applying` at revision 7 until Corgi acknowledges that commit.
   selected-slice conversion, core-total ownership, replay equality, JVM authority, dependency purity, complexity,
   security applicability, evidence, and checkpoint integrity. After recording the observed evidence matrix, the final
   pass found no findings, changed no file, triaged no finding, and is not canonical Verify or Human Review.
+- Task Group 7 is acknowledged at `78146fd80b622f332af825619e5b7228efeb1434`; draft PR #32 is synchronized and Run
+  revision 8 admits only Group 8.
+- Unit, integration, and completed-JAR clients now call the canonical `trading.fee` surface directly. Risk receives
+  only a successful core `Pnl` projection at the caller-owned boundary, so its production API and dependency graph
+  remain unchanged.
+- The provisional `trading.fee.policy` implementation, `FeeOrchestration`, and universal orchestration errors are
+  deleted without aliases. Completed-JAR and negative compiler guards reject the old package plus `FeeSchedule`,
+  `FeeLine`, `FeePolicyError`, and `FeeOrchestration` root aliases.
+- Module guidance explicitly keeps policy acquisition, clocks, accounts, venue/tier/version selection, audit
+  envelopes, and execution reports in later application/runtime or boundary-codec ownership. The focused Group 8 gate
+  passes formatting, all 38 fee-policy tests, all 40 unchanged risk tests, and all 158 completed-JAR/compiler/
+  adversarial tests.
+- The automated Group 8 review checked AC-013/AC-016 scope, canonical migration, accumulated failure semantics, risk
+  independence, retired and deferred surfaces, artifact boundaries, code quality, linear behavior, security
+  applicability, and evidence with no findings. It changed no file, triaged no finding, and is not canonical Verify or
+  Human Review.
 
 ## Promotion Queue
 - Review agent-configuration constraints before promoting any item to `memory/MEMORY.md`.

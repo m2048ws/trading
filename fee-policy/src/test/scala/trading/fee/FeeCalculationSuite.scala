@@ -4,7 +4,6 @@ import munit.ScalaCheckSuite
 import org.scalacheck.Prop.forAll
 
 import trading.economics.instrument.*
-import trading.fee.policy.FeeOrchestration
 import trading.quantity.*
 import trading.quantity.grid.QuantizationPolicy
 import trading.quantity.refinement.*
@@ -78,19 +77,26 @@ final class FeeCalculationSuite extends ScalaCheckSuite:
     }
 
   test("policy sends each exact component through core denomination quantization separately"):
-    val policy       = FeeOrchestration(instrument)
-    val denomination = policy
-      .denomination(fixture.usd)(fixture.usdCents, QuantizationPolicy.TowardZero)
+    val denomination = FeeDenomination
+      .create(instrument)(fixture.usd, fixture.usdCents, QuantizationPolicy.TowardZero)
       .toOption
       .get
     val basis = nonnegative(Rational(6))
     val rate  = FeeRate(Rational(1, 1000))
-    val first = policy
-      .percentage(denomination, FeeKind.from("first").toOption.get, basis, rate)
+    val first = Fee
+      .create(instrument)(
+        denomination,
+        FeeKind.from("first").toOption.get,
+        FeeCalculation.percentage(basis, rate)
+      )
       .toOption
       .get
-    val second = policy
-      .percentage(denomination, FeeKind.from("second").toOption.get, basis, rate)
+    val second = Fee
+      .create(instrument)(
+        denomination,
+        FeeKind.from("second").toOption.get,
+        FeeCalculation.percentage(basis, rate)
+      )
       .toOption
       .get
 

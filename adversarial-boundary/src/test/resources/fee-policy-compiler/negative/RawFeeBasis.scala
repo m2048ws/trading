@@ -8,8 +8,8 @@ import trading.quantity.grid.QuantizationPolicy
 import trading.quantity.refinement.NonNegative
 
 object RawFeeBasis:
-  val denomination = feePolicy
-    .denomination(quote)(quoteGrid, QuantizationPolicy.TowardZero)
+  val denomination = FeeDenomination
+    .create(instrument)(quote, quoteGrid, QuantizationPolicy.TowardZero)
     .toOption
     .get
   val kind     = FeeKind.from("raw-basis").toOption.get
@@ -19,7 +19,7 @@ object RawFeeBasis:
   val rawRate  = Rational(1, 1000)
 
   // OFFENDING-BEGIN
-  val rejectedBasis = feePolicy.percentage(denomination, kind, rawBasis, rate)
+  val rejectedBasis = FeeCalculation.percentage(rawBasis, rate)
   val rejectedRate  = FeeCalculation.percentage(basis, rawRate)
   // OFFENDING-END
 end RawFeeBasis

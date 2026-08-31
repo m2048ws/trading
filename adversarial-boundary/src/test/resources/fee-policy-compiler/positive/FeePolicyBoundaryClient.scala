@@ -3,7 +3,6 @@ package external.fee.positive
 import external.economics.fixtures.SharedEconomicsSetup.*
 import trading.economics.instrument.*
 import trading.fee.*
-import trading.fee.policy.*
 import trading.order.*
 import trading.quantity.*
 import trading.quantity.grid.QuantizationPolicy
@@ -11,16 +10,18 @@ import trading.quantity.refinement.NonNegative
 import trading.scenario.*
 
 object FeePolicyBoundaryClient:
-  val denomination = feePolicy
-    .denomination(quote)(quoteGrid, QuantizationPolicy.TowardZero)
+  val denomination = FeeDenomination
+    .create(instrument)(quote, quoteGrid, QuantizationPolicy.TowardZero)
     .toOption
     .get
-  val fee = feePolicy
-    .percentage(
+  val fee = Fee
+    .create(instrument)(
       denomination,
       FeeKind.from("completed-jar").toOption.get,
-      NonNegative(Quantity(quote.dimension.ref, Rational(10))).toOption.get,
-      FeeRate(Rational(1, 1000))
+      FeeCalculation.percentage(
+        NonNegative(Quantity(quote.dimension.ref, Rational(10))).toOption.get,
+        FeeRate(Rational(1, 1000))
+      )
     )
     .toOption
     .get

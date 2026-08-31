@@ -14,8 +14,8 @@ object ForgedAssessment:
     slice
   ).toOption.get
   val scenario = OrderScenario.evaluate(instrument)(assumptions).toOption.get
-  val denomination = feePolicy
-    .denomination(quote)(quoteGrid, QuantizationPolicy.TowardZero)
+  val denomination = FeeDenomination
+    .create(instrument)(quote, quoteGrid, QuantizationPolicy.TowardZero)
     .toOption
     .get
   val fee = Fee
