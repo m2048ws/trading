@@ -8,14 +8,9 @@ import trading.economics.instrument.*
 import trading.quantity.*
 import trading.quantity.refinement.PositiveWhole
 
-/** Order direction and the corresponding account-position sign. */
+/** Order direction. */
 enum Side:
   case Buy, Sell
-
-  def sign: BigInt =
-    this match
-      case Buy  => BigInt(1)
-      case Sell => BigInt(-1)
 
 /** Duration instruction retained by a priced immutable order. */
 enum TimeInForce:
@@ -548,6 +543,26 @@ final class OrderIntent[D <: Dim] private[this] (
 
   override def toString: String =
     s"OrderIntent($instrumentId,$side,$lots,$positionEffect,$positionChange)"
+
+  /** Derive one slice's typed signed position change without exposing scalar sign arithmetic downstream. */
+  def positionChangeFor[I <: Instrument](
+    instrument: I
+  )(
+    sliceLots: instrument.Lots
+  ): Either[OrderViolation, instrument.PositionLots] =
+    val expected = instrument.identity.id
+    if instrumentId != expected then
+      Left(OrderViolation.InstrumentMismatch(OrderComponent.Intent, expected, instrumentId))
+    else if sliceLots.instrumentId != expected then
+      Left(OrderViolation.InstrumentMismatch(OrderComponent.Lots, expected, sliceLots.instrumentId))
+    else
+      val coordinate =
+        side match
+          case Side.Buy  => sliceLots.count.unrefined
+          case Side.Sell => -sliceLots.count.unrefined
+      Right(
+        PositionLots.fromCoordinate(instrument)(coordinate)
+      )
 end OrderIntent
 
 object OrderIntent:
@@ -589,15 +604,20 @@ object OrderIntent:
     if lots.instrumentId != expected then
       Left(OrderViolation.InstrumentMismatch(OrderComponent.Lots, expected, lots.instrumentId))
     else
+      val coordinate =
+        side match
+          case Side.Buy  => lots.count.unrefined
+          case Side.Sell => -lots.count.unrefined
       Right(
         construct(
           expected,
           side,
           lots,
           positionEffect,
-          PositionLots.fromCoordinate(instrument)(side.sign * lots.count.unrefined)
+          PositionLots.fromCoordinate(instrument)(coordinate)
         )
       )
+  end create
 end OrderIntent
 
 sealed abstract class Order[D <: Dim, B <: Dim, Q <: Dim] protected ():

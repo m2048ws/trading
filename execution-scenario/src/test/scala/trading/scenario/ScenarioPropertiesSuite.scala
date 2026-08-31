@@ -49,10 +49,13 @@ final class ScenarioPropertiesSuite extends ScalaCheckSuite:
 
       val unequalLots     = Lots.fromCount(instrument)(count + 1).toOption.get
       val unequalExit     = scenario(exitSide, unequalLots, Rational(100))
-      val expectedFailure = RoundTripViolation.PositionNotFlat(
-        entrySide.sign * count,
-        exitSide.sign * (count + 1)
-      )
+      val entryCoordinate = entrySide match
+        case Side.Buy  => count
+        case Side.Sell => -count
+      val exitCoordinate = exitSide match
+        case Side.Buy  => count + 1
+        case Side.Sell => -(count + 1)
+      val expectedFailure = RoundTripViolation.PositionNotFlat(entryCoordinate, exitCoordinate)
 
       closed.heldPosition == entry.positionChange &&
       closed.entry == entry &&

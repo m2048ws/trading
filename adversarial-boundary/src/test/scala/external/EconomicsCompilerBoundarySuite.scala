@@ -198,10 +198,14 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
         "trading/scenario/ScenarioViolation.class",
         "trading/scenario/ScenarioViolations.class",
         "trading/scenario/RoundTripComponent.class",
+        "trading/scenario/RoundTripLeg.class",
         "trading/scenario/RoundTripViolation.class",
-        "trading/scenario/RoundTripScenario.class"
+        "trading/scenario/RoundTripScenario.class",
+        "trading/scenario/ScenarioValuationError.class",
+        "trading/scenario/ScenarioValuation$.class"
       ).foreach(entry => assert(scenarioEntries.contains(entry), s"missing $entry from $scenarioJar"))
       assert(!scenarioEntries.contains("trading/scenario/Scenarios.class"), s"scenario JAR retained Scenarios service")
+      assert(!scenarioEntries.contains("trading/scenario/ScenarioLeg.class"), s"scenario JAR retained old ScenarioLeg")
       List(
         "trading/scenario/ScenarioError.class",
         "trading/scenario/ScenarioFailureReason.class",
@@ -214,6 +218,23 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
         !new String(assumptionsBytes, StandardCharsets.ISO_8859_1).contains("cats/data/NonEmptyVector"),
         s"scenario assumptions leaked Cats NonEmptyVector in $scenarioJar"
       )
+      val valuationEntries = scenarioEntries.toList.sorted.filter: entry =>
+        entry.startsWith("trading/scenario/ScenarioValuation") && entry.endsWith(".class")
+      val valuationBytes = valuationEntries.map: entry =>
+        val stream = scenario.getInputStream(scenario.getJarEntry(entry))
+        try new String(stream.readAllBytes(), StandardCharsets.ISO_8859_1)
+        finally stream.close()
+      .mkString
+        .toLowerCase(Locale.ROOT)
+      List(
+        "trading/fee/",
+        "quantiz",
+        "trading/reference/catalog",
+        "cats/effect/",
+        "fs2/",
+        "average",
+        "coefficient"
+      ).foreach(fragment => assert(!valuationBytes.contains(fragment), s"scenario valuation leaked $fragment"))
       List(
         "trading/fee/FeeCalculation$package.tasty",
         "trading/fee/FeeCalculation$.class",
@@ -416,6 +437,27 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
     assert(rejected.rendered.toLowerCase.contains("reassignment to val"), rejected.rendered)
     assert(rejected.rendered.contains("cannot be accessed"), rejected.rendered)
     economicsForbiddenDiagnostics.foreach(fragment => assert(!rejected.rendered.contains(fragment), rejected.rendered))
+
+  test("completed execution-scenario classpath calculates exact price PnL without fee policy"):
+    val source = scenarioFixturesRoot.resolve("positive/ScenarioValuationClient.scala")
+    val result = compileScenario(source)
+    assert(result.succeeded, result.rendered)
+    initializeModule(result.output, "external.scenario.positive.ScenarioValuationClient$")
+
+  test("completed scenario API hides raw side signs and removes the old leg name"):
+    val source  = scenarioFixturesRoot.resolve("negative/RemovedScenarioValuationApi.scala")
+    val prelude = compileFilteredPrelude(source, compileScenario)
+    assert(prelude.succeeded, s"fixture prelude must compile independently:\n${prelude.rendered}")
+    val rejected = compileScenario(source)
+    assert(rejected.errors.size >= 2, rejected.rendered)
+    assert(rejected.rendered.contains("is not a member"), rejected.rendered)
+    assert(rejected.rendered.contains("ScenarioLeg"), rejected.rendered)
+
+  test("completed order JAR exposes no raw side sign to same-package Java"):
+    val source = javaFixturesRoot.resolve("negative/RemovedSideSign.java")
+    val result = compileJava(source, orderCompilationClasspath)
+    assert(!result.succeeded, "same-package Java unexpectedly accessed a raw side sign")
+    assert(result.diagnostics.contains("sign"), result.diagnostics)
 
   test("completed execution-scenario JAR rejects same-package Scala construction bypasses"):
     val source  = scenarioFixturesRoot.resolve("negative/PackageSpoofScenarioConstruction.scala")

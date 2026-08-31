@@ -15,24 +15,25 @@ updated: 2026-08-31
 - **Change**: introduce-pure-fee-policy-module
 - **Worktree**: /Users/m/src/money/.worktrees/introduce-pure-fee-policy-module
 - **Phase at Checkpoint**: applying
-- **Task Group at Checkpoint**: 5
-- **Observed Run Revision**: 6
-- **Last Verified HEAD**: 031c233c756d77483286229ad9e7a7f6d9d58d57
+- **Task Group at Checkpoint**: 6
+- **Observed Run Revision**: 7
+- **Last Verified HEAD**: a02ef16497214ebb0dc4618be5e03c4078d5ca3d
 
-The phase and revision above are the required next checkpoint carried by Task Group 5. Live Run Contract authority
-remains `applying` at revision 5 until Corgi acknowledges that commit.
+The phase and revision above are the required next checkpoint carried by Task Group 6. Live Run Contract authority
+remains `applying` at revision 6 until Corgi acknowledges that commit.
 
 ## Next Action
-- Commit and acknowledge `introduce-pure-fee-policy-module` Task Group 5, synchronize draft PR #32, then implement Task
-  Group 6.
+- Commit and acknowledge `introduce-pure-fee-policy-module` Task Group 6, synchronize draft PR #32, then implement Task
+  Group 7.
   Verify, Human Review, Human QA, and Archive remain separate gates.
 
 ## Blockers
 - none
 
 ## Uncommitted Work
-- Task Group 5's staged assessment, scenario-owned attribution, focused generic violations, transitional consumer
-  migration, final-constructor guards, documentation, implementation note, and next-state checkpoint.
+- Task Group 6's fee-independent exact scenario normalization, typed intent position operation, closed leg and focused
+  errors, transitional consumer migration, completed-artifact guards, documentation, implementation note, and
+  next-state checkpoint.
 
 ## Discoveries
 - The archived `establish-pure-instrument-economics` boundary was reconciled from commit `86613ee` before S-02
@@ -299,6 +300,20 @@ remains `applying` at revision 5 until Corgi acknowledges that commit.
   honest error products, exact scenario ownership, JVM construction authority, migration, architecture, complexity,
   security applicability, evidence, and checkpoint integrity with no findings. It changed no file, triaged no finding,
   and is not canonical Verify or Human Review.
+- Task Group 5 is acknowledged at `a02ef16497214ebb0dc4618be5e03c4078d5ca3d`; draft PR #32 is synchronized and Run
+  revision 6 admits only Group 6.
+- `ScenarioValuation` now owns fee-independent exact round-trip price normalization in execution scenario. It derives
+  typed slice positions through order intent, values every slice at its retained market state, and folds exact typed
+  settlement cashflows into core `PricePnl`; the fee-policy bridge delegates instead of duplicating the calculation.
+- `RoundTripLeg` closes entry/exit attribution and focused scenario-valuation failures retain leg, index, and typed core
+  causes. `Side` exposes no raw sign member to Scala or same-package Java completed-artifact consumers.
+- The focused Group 6 gate passes formatting, 7 order-model tests, 16 execution-scenario tests, 31 fee-policy tests, and
+  all 158 completed-JAR/compiler/adversarial tests. The 45-test economics boundary suite includes a standalone
+  scenario-normalization client plus Scala and same-package Java removed-API guards.
+- The automated Group 6 review expanded the packaged purity assertion across every generated scenario-valuation class
+  and case-insensitively rejects fee, quantization, catalog, effect, stream, average, and scalar-coefficient symbols.
+  The remediated final pass found no findings, changed no file, triaged no finding, and is not canonical Verify or Human
+  Review.
 
 ## Promotion Queue
 - Review agent-configuration constraints before promoting any item to `memory/MEMORY.md`.

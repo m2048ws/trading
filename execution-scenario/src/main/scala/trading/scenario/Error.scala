@@ -1,7 +1,9 @@
 package trading.scenario
 
 import trading.economics.instrument.InstrumentId
+import trading.economics.instrument.ValuationError
 import trading.order.*
+import trading.quantity.JavaSerializationUnsupported
 
 enum ScenarioSliceComponent:
   case Identity, Lots, Market, Price
@@ -63,3 +65,10 @@ enum RoundTripComponent:
 enum RoundTripViolation:
   case InstrumentMismatch(component: RoundTripComponent, expected: InstrumentId, supplied: InstrumentId)
   case PositionNotFlat(entryChange: BigInt, exitChange: BigInt)
+
+/** Closed failures from exact fee-independent round-trip price normalization. */
+enum ScenarioValuationError extends JavaSerializationUnsupported:
+  case InstrumentMismatch(expected: InstrumentId, supplied: InstrumentId)
+  case SlicePosition(leg: RoundTripLeg, sliceIndex: Int, cause: OrderViolation)
+  case SliceValue(leg: RoundTripLeg, sliceIndex: Int, cause: ValuationError)
+  case PricePnlConstruction(cause: ValuationError)

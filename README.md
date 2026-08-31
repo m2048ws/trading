@@ -33,6 +33,7 @@ downside, constructive monotone models, boundary-certified maximum sizing, and t
 See the [quantity module guide](quantities/README.md), [reference-data module guide](reference-data/README.md),
 [application module guide](application/README.md), [runtime module guide](runtime/README.md),
 [instrument economics guide](instrument-economics/README.md),
+[order-model guide](order-model/README.md), [execution-scenario guide](execution-scenario/README.md),
 [fee-policy module guide](fee-policy/README.md), [risk module guide](risk/README.md),
 [catalog benchmark evidence](docs/catalog-benchmark.md), and [quantity performance notes](quantities/docs/performance.md).
 

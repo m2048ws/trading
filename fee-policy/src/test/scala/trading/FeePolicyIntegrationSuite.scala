@@ -233,7 +233,7 @@ class FeePolicyIntegrationSuite extends FunSuite:
       policy.pnl(trip, feeStrategy),
       Left(
         FeeOrchestrationContributionFailure(
-          ScenarioLeg.Entry,
+          RoundTripLeg.Entry,
           SliceIndex.zero,
           ContributionConversionFailure(MissingConversion(fixture.token.id))
         )

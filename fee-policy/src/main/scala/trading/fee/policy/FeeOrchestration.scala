@@ -22,7 +22,6 @@ final class FeeOrchestration[I <: Instrument] private[policy] (val instrument: I
   type Lots       = instrument.Lots
   type Price      = instrument.Price
   type Market     = instrument.MarketState
-  type Position   = instrument.PositionLots
   type Scenario   = _root_.trading.scenario.OrderScenario[D, B, Q, Market]
   type RoundTrip  = _root_.trading.scenario.RoundTripScenario[D, B, Q, Market]
   type Policy[+E] = _root_.trading.fee.FeePolicy[E, D, B, Q, S]
@@ -62,42 +61,23 @@ final class FeeOrchestration[I <: Instrument] private[policy] (val instrument: I
              FeeOrchestrationLocation.ExitScenario  -> roundTrip.exit.instrumentId,
              FeeOrchestrationLocation.Policy        -> policy.instrumentId
            )
-      entryValue <- scenarioSignedValue(roundTrip.entry)
-      exitSigned <- scenarioSignedValue(roundTrip.exit)
-      pricePnl   <- PricePnl
-                    .fromValues(instrument)(roundTrip.heldPosition, entryValue, exitSigned * Rational(-1))
+      pricePnl <- ScenarioValuation
+                    .pricePnl(instrument)(roundTrip)
                     .left
                     .map(FeeOrchestrationValuationFailure(_))
-      entryFees          <- assess(policy, ScenarioLeg.Entry, roundTrip.entry)
-      exitFees           <- assess(policy, ScenarioLeg.Exit, roundTrip.exit)
-      entryContributions <- entryFees.fees.traverse(convertAssessed(ScenarioLeg.Entry, _))
-      exitContributions  <- exitFees.fees.traverse(convertAssessed(ScenarioLeg.Exit, _))
+      entryFees          <- assess(policy, RoundTripLeg.Entry, roundTrip.entry)
+      exitFees           <- assess(policy, RoundTripLeg.Exit, roundTrip.exit)
+      entryContributions <- entryFees.fees.traverse(convertAssessed(RoundTripLeg.Entry, _))
+      exitContributions  <- exitFees.fees.traverse(convertAssessed(RoundTripLeg.Exit, _))
       result             <- Pnl
                   .create(instrument)(pricePnl, entryContributions ++ exitContributions)
                   .left
                   .map(FeeOrchestrationPnlFailure(_))
     yield result
 
-  private def scenarioSignedValue(
-    scenario: Scenario
-  ): Either[FeeOrchestrationError[Nothing], Quantity[instrument.roles.settle.D]] =
-    scenario.matchedSlices.toVector
-      .traverse: slice =>
-        val coordinate = scenario.order.intent.side.sign * slice.lots.count.unrefined
-        val position   = PositionLots.fromCoordinate(instrument)(coordinate)
-        Valuation
-          .positionValue(instrument)(position, slice.market)
-          .left
-          .map(FeeOrchestrationValuationFailure(_))
-      .map(
-        _.foldLeft(
-          Quantity.zero[instrument.roles.settle.D](using instrument.roles.settle.dimension.ref)
-        )(_ + _)
-      )
-
   private def assess[E](
     policy: Policy[E],
-    leg: ScenarioLeg,
+    leg: RoundTripLeg,
     scenario: Scenario
   ): Either[FeeOrchestrationError[E], ScenarioFees[D, B, Q, S]] =
     FeeAssessment
@@ -106,13 +86,13 @@ final class FeeOrchestration[I <: Instrument] private[policy] (val instrument: I
       .map(FeeOrchestrationAssessmentFailure(leg, _))
 
   private def convertAssessed(
-    leg: ScenarioLeg,
+    leg: RoundTripLeg,
     assessed: AssessedFee[D, B, Q, S]
   ): Either[FeeOrchestrationError[Nothing], SettledFeeContribution[instrument.roles.settle.D]] =
     convertCaptured(leg, assessed)
 
   private def convertCaptured[FD <: Dim](
-    leg: ScenarioLeg,
+    leg: RoundTripLeg,
     assessed: AssessedFee[D, B, Q, S] { type D = FD }
   ): Either[FeeOrchestrationError[Nothing], SettledFeeContribution[instrument.roles.settle.D]] =
     SettledFeeContribution

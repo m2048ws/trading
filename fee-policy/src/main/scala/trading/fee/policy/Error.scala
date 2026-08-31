@@ -3,7 +3,7 @@ package trading.fee.policy
 import trading.economics.instrument.*
 import trading.fee.*
 import trading.quantity.JavaSerializationUnsupported
-import trading.scenario.ScenarioLeg
+import trading.scenario.*
 
 /** Temporary integration locations retained only while fee-inclusive orchestration is migrated. */
 enum FeeOrchestrationLocation:
@@ -22,14 +22,14 @@ final case class FeeOrchestrationIdentity(
   extends FeeOrchestrationError[Nothing]
 
 final case class FeeOrchestrationAssessmentFailure[+E](
-  leg: ScenarioLeg,
+  leg: RoundTripLeg,
   causes: FeeAssessmentErrors[E])
   extends FeeOrchestrationError[E]
 
-final case class FeeOrchestrationValuationFailure(cause: ValuationError) extends FeeOrchestrationError[Nothing]
+final case class FeeOrchestrationValuationFailure(cause: ScenarioValuationError) extends FeeOrchestrationError[Nothing]
 
 final case class FeeOrchestrationContributionFailure(
-  leg: ScenarioLeg,
+  leg: RoundTripLeg,
   slice: SliceIndex,
   cause: ContributionError)
   extends FeeOrchestrationError[Nothing]

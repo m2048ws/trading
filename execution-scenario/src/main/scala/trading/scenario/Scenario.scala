@@ -12,8 +12,8 @@ import trading.quantity.*
 enum LiquidityRole:
   case Maker, Taker
 
-/** Entry or exit attribution retained on converted fee contributions. */
-enum ScenarioLeg:
+/** Closed entry/exit location shared by scenario valuation and downstream attribution. */
+enum RoundTripLeg:
   case Entry, Exit
 
 @nowarn("msg=Ignoring.*qualifier")

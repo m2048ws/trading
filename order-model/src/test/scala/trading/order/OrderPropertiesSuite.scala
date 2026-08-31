@@ -11,15 +11,19 @@ final class OrderPropertiesSuite extends ScalaCheckSuite:
 
   property("intent normalizes every positive lot count to the side-directed signed position"):
     forAll { (raw: Int, buy: Boolean, reduceOnly: Boolean) =>
-      val count  = BigInt(raw).abs + 1
-      val lots   = Lots.fromCount(instrument)(count).toOption.get
-      val side   = if buy then Side.Buy else Side.Sell
-      val effect = if reduceOnly then PositionEffect.ReduceOnly else PositionEffect.Unrestricted
-      val intent = OrderIntent.create(instrument)(side, lots, effect).toOption.get
+      val count              = BigInt(raw).abs + 1
+      val lots               = Lots.fromCount(instrument)(count).toOption.get
+      val side               = if buy then Side.Buy else Side.Sell
+      val effect             = if reduceOnly then PositionEffect.ReduceOnly else PositionEffect.Unrestricted
+      val intent             = OrderIntent.create(instrument)(side, lots, effect).toOption.get
+      val expectedCoordinate =
+        side match
+          case Side.Buy  => count
+          case Side.Sell => -count
 
       intent.instrumentId == instrument.identity.id &&
       intent.lots == lots &&
       intent.positionEffect == effect &&
-      intent.positionChange.coordinate == side.sign * count
+      intent.positionChange.coordinate == expectedCoordinate
     }
 end OrderPropertiesSuite
