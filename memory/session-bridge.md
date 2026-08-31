@@ -15,22 +15,22 @@ updated: 2026-08-31
 - **Change**: introduce-pure-risk-module
 - **Worktree**: /Users/m/src/money/.worktrees/introduce-pure-risk-module
 - **Phase at Checkpoint**: applying
-- **Task Group at Checkpoint**: 1
-- **Observed Run Revision**: 2
-- **Last Verified HEAD**: 9d9b370f1c55fe8fe8ca2a1eab60a8a423323a1a
+- **Task Group at Checkpoint**: 2
+- **Observed Run Revision**: 3
+- **Last Verified HEAD**: a2ad478de1353312bfe56c91a3f16bae9a272ee0
 
-The phase and revision above are the required next checkpoint carried by Task Group 1. Live Run Contract authority
-remains `applying` at revision 1 until Corgi acknowledges that commit.
+The phase and revision above are the required next checkpoint carried by Task Group 2. Live Run Contract authority
+remains `applying` at revision 2 until Corgi acknowledges that commit.
 
 ## Next Action
-- Commit and acknowledge `introduce-pure-risk-module` Task Group 1, open its draft PR, then implement Task Group 2.
+- Commit and acknowledge `introduce-pure-risk-module` Task Group 2, sync draft PR #28, then implement Task Group 3.
   Verify, Human Review, Human QA, and Archive remain separate gates.
 
 ## Blockers
 - none
 
 ## Uncommitted Work
-- Task Group 1's authority/baseline/inventory note and this next-state checkpoint; production code is unchanged.
+- Task Group 2's physical risk boundary, completed-JAR compiler guards, retirement plan, and this checkpoint.
 
 ## Discoveries
 - The archived `establish-pure-instrument-economics` boundary was reconciled from commit `86613ee` before S-02
@@ -153,6 +153,12 @@ remains `applying` at revision 1 until Corgi acknowledges that commit.
   and explicit JMH compilation on OpenJDK 26.0.2, SBT 1.12.15, and Scala 3.8.4.
 - Existing sizing uses divide into fixed affine models, a deliberately non-monotone exhaustive case, and a located
   callback-failure case. No arbitrary callback or fee/scenario builder is eligible for implicit monotone certification.
+- Task Group 1 is acknowledged at `a2ad478de1353312bfe56c91a3f16bae9a272ee0`; draft PR #28 tracks the WIP branch.
+- The non-empty `trading-risk` artifact now owns focused PnL identity failures and depends only on quantities,
+  instrument economics, and pure Cats Core. Its completed-JAR classpath rejects order/scenario/policy/runtime, effects,
+  streams, codecs, persistence, telemetry, and JMH; lower-layer classpaths reject risk imports.
+- The focused Group 2 gate passes risk compilation and 41 completed-JAR/reverse-dependency tests. Transitional
+  `trading-economics` remains until Group 8 moves every production/test surface to an intentional owner.
 
 ## Promotion Queue
 - Review agent-configuration constraints before promoting any item to `memory/MEMORY.md`.

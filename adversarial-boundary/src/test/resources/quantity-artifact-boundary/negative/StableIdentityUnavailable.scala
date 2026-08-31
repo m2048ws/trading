@@ -11,6 +11,7 @@ object StableIdentityUnavailable:
   val version = trading.reference.GridVersion.from(1)
   val catalog = trading.reference.CatalogRoot.create()
   val packed = trading.quantity.runtime.PackedGridQuantity
+  val risk: Class[trading.risk.RiskIdentityError] = classOf[trading.risk.RiskIdentityError]
   // OFFENDING-END
 
 end StableIdentityUnavailable

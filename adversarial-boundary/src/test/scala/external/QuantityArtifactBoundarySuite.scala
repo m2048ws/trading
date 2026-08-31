@@ -27,7 +27,9 @@ class QuantityArtifactBoundarySuite extends FunSuite:
       .split(File.pathSeparator)
       .filterNot: entry =>
         val name = Paths.get(entry).getFileName.toString
-        name.startsWith("trading-reference-data_3-") || name.startsWith("trading-economics_3-")
+        name.startsWith("trading-reference-data_3-") ||
+        name.startsWith("trading-risk_3-") ||
+        name.startsWith("trading-economics_3-")
       .mkString(File.pathSeparator)
 
   test("real downstream source compiles against the completed quantities JAR without reference data"):
@@ -40,8 +42,9 @@ class QuantityArtifactBoundarySuite extends FunSuite:
     assert(prelude.succeeded, s"negative fixture prelude failed independently:\n${prelude.rendered}")
 
     val rejected = compile(source)
-    assert(rejected.errors.size >= 5, rejected.rendered)
+    assert(rejected.errors.size >= 6, rejected.rendered)
     assert(rejected.rendered.contains("reference is not a member of trading"), rejected.rendered)
+    assert(rejected.rendered.contains("risk is not a member of trading"), rejected.rendered)
     assert(rejected.rendered.contains("runtime is not a member of trading.quantity"), rejected.rendered)
     artifactForbiddenDiagnostics.foreach(fragment => assert(!rejected.rendered.contains(fragment), rejected.rendered))
 

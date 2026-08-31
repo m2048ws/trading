@@ -101,6 +101,7 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
       val instrumentEntries = instrumentArchive.entries().asScala.map(_.getName).toSet
       assert(!quantityEntries.exists(_.startsWith("trading/reference/")))
       assert(!quantityEntries.exists(_.startsWith("trading/economics/")))
+      assert(!quantityEntries.exists(_.startsWith("trading/risk/")))
       List(
         "AssetId.class",
         "GridId.class",
@@ -120,6 +121,7 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
         assert(!quantityEntries.contains(s"trading/quantity/$name"), s"quantity JAR retained $name")
         assert(referenceEntries.contains(s"trading/reference/$name"), s"reference-data JAR is missing $name")
       assert(!referenceEntries.exists(_.startsWith("trading/economics/")))
+      assert(!referenceEntries.exists(_.startsWith("trading/risk/")))
       assert(instrumentEntries.exists(_ == "trading/economics/instrument/Instrument.class"))
       List("trading/order/", "trading/scenario/", "trading/fee/policy/", "trading/risk/", "trading/application/")
         .foreach(prefix => assert(!instrumentEntries.exists(_.startsWith(prefix)), s"pure JAR retained $prefix"))
