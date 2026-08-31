@@ -2,7 +2,10 @@ package external.risk.negative;
 
 import scala.collection.immutable.Vector;
 import trading.risk.AffordableUpperBoundary;
+import trading.risk.ExhaustiveLotDecision;
+import trading.risk.ExhaustiveLotEvaluationCause;
 import trading.risk.MaxAffordableLots;
+import scala.math.BigInt;
 
 public final class RejectedRiskDecisionImplementations {
   private interface Attempt {
@@ -19,7 +22,10 @@ public final class RejectedRiskDecisionImplementations {
   }
 
   public static boolean guardsRejectUnknownAlternatives() {
-    return rejected(ForgedDecision::new) && rejected(ForgedBoundary::new);
+    return rejected(ForgedDecision::new)
+        && rejected(ForgedBoundary::new)
+        && rejected(ForgedExhaustiveDecision::new)
+        && rejected(ForgedExhaustiveCause::new);
   }
 
   private static final class ForgedDecision extends MaxAffordableLots {
@@ -27,4 +33,10 @@ public final class RejectedRiskDecisionImplementations {
   }
 
   private static final class ForgedBoundary extends AffordableUpperBoundary {}
+
+  private static final class ForgedExhaustiveDecision extends ExhaustiveLotDecision {
+    @Override public BigInt evaluatedThrough() { return null; }
+  }
+
+  private static final class ForgedExhaustiveCause extends ExhaustiveLotEvaluationCause {}
 }

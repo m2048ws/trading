@@ -42,6 +42,19 @@ object RiskBoundaryClient:
   ): MaxAffordableLots[D, S] =
     MaxAffordableLots.select(model)(budget)
 
+  def exhaustive[E](
+    instrument: Instrument
+  )(
+    budget: NonNegative[Quantity[instrument.roles.settle.D]],
+    cap: PositiveWhole
+  )(
+    evaluate: instrument.Lots => Either[E, instrument.Pnl]
+  ): Either[
+    LocatedLotEvaluationFailure[E],
+    ExhaustiveLotDecision[instrument.roles.position.D, instrument.roles.settle.D]
+  ] =
+    ExhaustiveLotSizing.select(instrument)(budget, cap)(evaluate)
+
   def run(): Unit =
     assert(mismatch == DownsideInstrumentMismatch(expected, supplied))
 end RiskBoundaryClient

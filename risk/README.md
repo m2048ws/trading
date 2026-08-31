@@ -30,5 +30,12 @@ The non-published JMH project measures direct curve lookup, boundary-certified m
 exhaustive reference. The production risk artifact still exposes neither its internal observer nor an implicit
 exhaustive path.
 
-Subsequent S-03 Task Groups add the explicitly linear arbitrary fallback before the transitional `trading-economics`
-artifact is retired.
+`ExhaustiveLotSizing.select(instrument)(budget, cap)(evaluate)` is the deliberately separate escape hatch for a
+genuinely arbitrary deterministic pure `Lots => Either[E, Pnl]` evaluation. It observes every positive coordinate in
+ascending order, retains only constant successful state, and therefore has explicit `O(cap)` cost. Its closed located
+failure preserves the exact coordinate plus caller, lot-construction, or risk-assessment cause and returns no partial
+decision. Its successful decision proves complete traversal through the cap; it exposes neither monotone adjacency nor
+a conversion into `MonotoneLotRisk`.
+
+Subsequent S-03 Task Groups migrate downstream call sites before the transitional `trading-economics` artifact is
+retired.

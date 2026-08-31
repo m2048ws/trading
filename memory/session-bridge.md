@@ -15,22 +15,22 @@ updated: 2026-08-31
 - **Change**: introduce-pure-risk-module
 - **Worktree**: /Users/m/src/money/.worktrees/introduce-pure-risk-module
 - **Phase at Checkpoint**: applying
-- **Task Group at Checkpoint**: 6
-- **Observed Run Revision**: 7
-- **Last Verified HEAD**: 253efcb01197f17946478a5c59571efcd2c177b6
+- **Task Group at Checkpoint**: 7
+- **Observed Run Revision**: 8
+- **Last Verified HEAD**: 65915625e0783aa51e599dcbd8d11b4339e6c7e6
 
-The phase and revision above are the required next checkpoint carried by Task Group 6. Live Run Contract authority
-remains `applying` at revision 6 until Corgi acknowledges that commit.
+The phase and revision above are the required next checkpoint carried by Task Group 7. Live Run Contract authority
+remains `applying` at revision 7 until Corgi acknowledges that commit.
 
 ## Next Action
-- Commit and acknowledge `introduce-pure-risk-module` Task Group 6, sync draft PR #28, then implement Task Group 7.
+- Commit and acknowledge `introduce-pure-risk-module` Task Group 7, sync draft PR #28, then implement Task Group 8.
   Verify, Human Review, Human QA, and Archive remain separate gates.
 
 ## Blockers
 - none
 
 ## Uncommitted Work
-- Task Group 6's primary sizing decision/search, probe laws, JMH evidence, and this checkpoint.
+- Task Group 7's explicit arbitrary exhaustive fallback, located failures, linear traversal tests, and this checkpoint.
 
 ## Discoveries
 - The archived `establish-pure-instrument-economics` boundary was reconciled from commit `86613ee` before S-02
@@ -185,6 +185,11 @@ remains `applying` at revision 6 until Corgi acknowledges that commit.
   plateau, inverse-shaped, and `10^100`-cap tests pass within `2 + ceil(log2(cap))` observations.
 - The non-published JMH run at cap 1,024 on JDK 26.0.2 measured roughly 5.02M direct lookups/s, 368K boundary searches/s,
   and 3.75K benchmark-local exhaustive evaluations/s with one fork, three warmups, and five measurements.
+- Task Group 6 is acknowledged at `65915625e0783aa51e599dcbd8d11b4339e6c7e6`; draft PR #28 is synchronized.
+- The explicitly named exhaustive fallback now traverses arbitrary pure lot-to-PnL evaluations in ascending order,
+  retains constant successful state, preserves the exact first failed coordinate and typed cause, and exposes a
+  complete-range decision shape with no monotone adjacency or model conversion. The focused Group 7 gate passes 40
+  risk tests and 8 completed-JAR/compiler-boundary tests, including unknown Java alternative rejection.
 
 ## Promotion Queue
 - Review agent-configuration constraints before promoting any item to `memory/MEMORY.md`.
