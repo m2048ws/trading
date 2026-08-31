@@ -1,6 +1,6 @@
 schemaVersion: 1
 rfcId: RFC-0002-architecture-portfolio
-revision: 5
+revision: 6
 slices:
   S-01-application-runtime-foundation:
     status: archived
@@ -31,7 +31,15 @@ slices:
       commit: 7ca2e135632a275562d46a0e6c5b08b3a3771639
       evidenceManifest: sha256:cf55e7a63baf6f69f82624c3dda1f4cf8b2ca1ca742c6465fea71b43c28f7a03
   S-03-pure-risk:
-    status: unbound
+    status: planned
+    binding:
+      change: introduce-pure-risk-module
+      issue:
+        provider: github
+        id: '8'
+        url: https://github.com/m2048ws/trading/issues/8
+      sourceDigest: sha256:1a8cca449f8fdfc009f8ccbe87989a288ea92e7ff41ee58d38aa513a53ed4f2d
+      plannedAt: '2026-08-31T07:48:41.000Z'
   S-04-fee-policy:
     status: unbound
   S-05-versioned-boundary-codecs:

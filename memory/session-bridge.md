@@ -10,20 +10,20 @@ updated: 2026-08-31
 ## Delivery Pointer
 - **RFC**: RFC-0002-architecture-portfolio
 - **RFC Revision**: 7b6f7a58f4dcbb8fb4bbdf3a8ba74ba66f222cce
-- **Slice**: S-02-order-execution-scenarios
-- **Issue**: 7 https://github.com/m2048ws/trading/issues/7
-- **Change**: separate-order-and-execution-scenario-modules
-- **Worktree**: /Users/m/src/money/.worktrees/separate-order-and-execution-scenario-modules
-- **Phase at Checkpoint**: archiving
-- **Task Group at Checkpoint**: none
-- **Observed Run Revision**: 7
-- **Last Verified HEAD**: 7ca2e135632a275562d46a0e6c5b08b3a3771639
+- **Slice**: S-03-pure-risk
+- **Issue**: 8 https://github.com/m2048ws/trading/issues/8
+- **Change**: introduce-pure-risk-module
+- **Worktree**: /Users/m/src/money/.worktrees/introduce-pure-risk-module
+- **Phase at Checkpoint**: planning_ready
+- **Task Group at Checkpoint**: 1
+- **Observed Run Revision**: none
+- **Last Verified HEAD**: cf210964f62f10602be0551682abda3ce7d24fae
 
 The phase and revision above are the required next checkpoint carried by the Repair Task Group commit. Live Run
 Contract authority remains `applying` at revision 1 until Corgi acknowledges that commit.
 
 ## Next Action
-- Consult Run Contract v3: resume tracker closeout for `separate-order-and-execution-scenario-modules` only if pending; otherwise select the next accepted Slice. Local delivery: `wiki/deliveries/RFC-0002-architecture-portfolio-S-02-order-execution-scenarios.md`.
+- Start Apply for `introduce-pure-risk-module` Task Group 1.
   Review, Human QA, and Archive remain separate gates.
 
 ## Blockers
