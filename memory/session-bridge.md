@@ -1,6 +1,6 @@
 ---
 type: memory
-updated: 2026-08-30
+updated: 2026-08-31
 ---
 
 # Session Bridge
@@ -14,24 +14,23 @@ updated: 2026-08-30
 - **Issue**: 7 https://github.com/m2048ws/trading/issues/7
 - **Change**: separate-order-and-execution-scenario-modules
 - **Worktree**: /Users/m/src/money/.worktrees/separate-order-and-execution-scenario-modules
-- **Phase at Checkpoint**: planning_ready
+- **Phase at Checkpoint**: awaiting_verify
 - **Task Group at Checkpoint**: 13
-- **Observed Run Revision**: none
-- **Last Verified HEAD**: 7843e98eae2594c322f6b1fe7d0a88a82c6dd43f
+- **Observed Run Revision**: 2
+- **Last Verified HEAD**: f0120a94d1c640d19c7e7c60511c2b3872352885
 
 The phase and revision above are the required next checkpoint carried by the Repair Task Group commit. Live Run
 Contract authority remains `applying` at revision 1 until Corgi acknowledges that commit.
 
 ## Next Action
-- Start Apply for `separate-order-and-execution-scenario-modules` Task Group 13.
-  remains a separate gate.
+- Commit and acknowledge Task Group 13, synchronize draft PR #27, then rerun canonical Verify. Human whole-change
+  Review, Human QA, and Archive remain separate gates.
 
 ## Blockers
 - none
 
 ## Uncommitted Work
-- Structural `equals` and `hashCode` for checked order-scenario and round-trip results, focused repeated-construction
-  value laws, and this Task Group 12 validation/evidence checkpoint.
+- Task Group 13's archive-delta completeness evidence and this next-state checkpoint; production code is unchanged.
 
 ## Discoveries
 - The archived `establish-pure-instrument-economics` boundary was reconciled from commit `86613ee` before S-02
@@ -130,6 +129,19 @@ Contract authority remains `applying` at revision 1 until Corgi acknowledges tha
 - The automated Task Group 12 review checked scope, AC-008 behavioral equivalence, equality/hash laws, constructor
   authority, architecture, downstream compatibility, performance/security, and validation evidence with no findings.
   It changed no file, triaged no finding, and is not canonical Verify or Human Review.
+- The initial strong local Archive attempt failed before moving the Change because OpenSpec detected canonical scenario
+  headings omitted by renamed or strengthened scenarios in the modified `order-scenarios` delta. A tested rc2 recovery
+  transition removed only canonical untracked evidence and the pending closeout journal, recorded `failedPhase: archive`,
+  and created successor run `run-e912075b-0579-49ba-8fbe-530c8b138a6b` without changing the accepted RFC source or
+  traceability digests.
+- Repair Group 13 restores every canonical scenario identity across all five modified requirements while retaining the
+  delivered stronger accumulation, one-order assumptions, explicit epistemic status, and signed-position cases. Strict
+  OpenSpec validation and deterministic Corgi readiness pass at planning revision
+  `sha256:dfda7d3d6ddedf107afdbd3fb8820c55d9d89ec610e1fbe1a5894b4d7ff0d3e9`; a disposable exact-diff OpenSpec Archive
+  rehearsal succeeds with one added and five modified requirements and no dropped scenario.
+- The automated Task Group 13 review checked scope, canonical scenario preservation, RFC/source/traceability stability,
+  archive recovery safety, planning-only Git boundaries, validation evidence, and performance/security applicability
+  with no findings. It changed no file, triaged no finding, and is not canonical Verify or Human Review.
 
 ## Promotion Queue
 - Review agent-configuration constraints before promoting any item to `memory/MEMORY.md`.
