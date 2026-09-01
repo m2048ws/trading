@@ -2,7 +2,7 @@ val scala3Version          = "3.8.4"
 val catsVersion            = "2.13.0"
 val algebraVersion         = "2.13.0"
 val disciplineMunitVersion = "2.0.0"
-val catsEffectVersion      = "3.7.0"
+val catsEffectVersion      = "3.7.1"
 val munitCatsEffectVersion = "2.2.0"
 val jdkRelease             = "25"
 
