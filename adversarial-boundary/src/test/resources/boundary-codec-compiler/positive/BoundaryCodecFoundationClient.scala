@@ -21,3 +21,8 @@ object BoundaryCodecFoundationClient:
     )
   val root: WirePath = WirePath.root
   val syntaxRank: Int = WireStage.Syntax.rank
+  val recordType: Either[RecordTypeViolation, RecordType] = RecordType.from("trading.sample")
+  val schemaVersion: Either[NonPositiveSchemaVersion, SchemaVersion] = SchemaVersion.from(BigInt(1))
+  val exactProblem: ExactNumberProblem = ExactNumberProblem.NonCanonicalInteger("01")
+  val identifierProblem: StableIdentifierProblem = StableIdentifierProblem.Empty
+  val dimensionProblem: DimensionProblem = DimensionProblem.ZeroPower("usd")

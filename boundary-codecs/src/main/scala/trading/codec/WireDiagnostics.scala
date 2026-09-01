@@ -170,6 +170,45 @@ enum SyntaxProblem:
   case MalformedJson(detail: String)
 end SyntaxProblem
 
+/** Exact-number failures retain the wire spelling that was rejected. */
+enum ExactNumberProblem:
+  case NonCanonicalInteger(spelling: String)
+  case NonPositiveInteger(spelling: String)
+  case OutsideTargetRange(target: String, spelling: String)
+  case NonReducedRational(numerator: String, denominator: String)
+  case NonCanonicalZero(denominator: String)
+  case RationalProjectionMismatch(numerator: String, denominator: String)
+end ExactNumberProblem
+
+/** Stable identifier owner whose checked constructor rejected one exact source string. */
+enum StableIdentifierKind:
+  case Asset, Grid, Instrument, Underlying, DimensionAtom
+end StableIdentifierKind
+
+enum StableIdentifierProblem:
+  case Empty
+end StableIdentifierProblem
+
+/** Canonical dimension-array failures detected before the normalizing domain constructor is invoked. */
+enum DimensionProblem:
+  case ZeroPower(atom: String)
+  case DuplicateAtom(atom: String)
+  case AtomOutOfOrder(previous: String, supplied: String)
+  case NormalizationMismatch
+end DimensionProblem
+
+/** Failures owned by the exact record envelope and its type/version dispatch. */
+enum EnvelopeProblem:
+  case MissingPayload
+  case MissingRecordType
+  case MissingSchemaVersion
+  case InvalidRecordType(supplied: String, cause: RecordTypeViolation)
+  case InvalidSchemaVersion(supplied: String)
+  case UnknownRecordType(supplied: RecordType)
+  case RecordTypeMismatch(expected: RecordType, supplied: RecordType)
+  case UnsupportedSchemaVersion(recordType: RecordType, supplied: SchemaVersion)
+end EnvelopeProblem
+
 /** Expected encoding failures from codec-owned immutable values. */
 enum WireEncodeViolation:
   case MalformedUnicode(atPath: WirePath, characterIndex: Int)
@@ -205,43 +244,64 @@ enum WireDecodeViolation:
   case UnknownField(atPath: WirePath, name: String, atRecordIndex: Int)
   case NullRequired(atPath: WirePath, atRecordIndex: Int)
   case InvalidValue(atPath: WirePath, code: String, atRecordIndex: Int)
+  case ExactNumber(atPath: WirePath, problem: ExactNumberProblem, atRecordIndex: Int)
+  case InvalidStableIdentifier(
+    atPath: WirePath,
+    kind: StableIdentifierKind,
+    problem: StableIdentifierProblem,
+    supplied: String,
+    atRecordIndex: Int)
+  case InvalidDimension(atPath: WirePath, problem: DimensionProblem, atRecordIndex: Int)
+  case Envelope(atPath: WirePath, problem: EnvelopeProblem, atRecordIndex: Int)
   case UnknownAlternative(atPath: WirePath, tagField: String, supplied: String, atRecordIndex: Int)
 
   def stage: WireStage =
     this match
-      case Limit(_)                       => WireStage.InputLimit
-      case Syntax(_, _, _, _)             => WireStage.Syntax
-      case MalformedUnicode(_, _, _, _)   => WireStage.Syntax
-      case ExpectedType(_, _, _, _)       => WireStage.Structure
-      case MissingField(_, _, _)          => WireStage.Structure
-      case UnknownField(_, _, _)          => WireStage.Structure
-      case NullRequired(_, _)             => WireStage.Structure
-      case InvalidValue(_, _, _)          => WireStage.Refinement
-      case UnknownAlternative(_, _, _, _) => WireStage.Structure
+      case Limit(_)                               => WireStage.InputLimit
+      case Syntax(_, _, _, _)                     => WireStage.Syntax
+      case MalformedUnicode(_, _, _, _)           => WireStage.Syntax
+      case ExpectedType(_, _, _, _)               => WireStage.Structure
+      case MissingField(_, _, _)                  => WireStage.Structure
+      case UnknownField(_, _, _)                  => WireStage.Structure
+      case NullRequired(_, _)                     => WireStage.Structure
+      case InvalidValue(_, _, _)                  => WireStage.Refinement
+      case ExactNumber(_, _, _)                   => WireStage.Refinement
+      case InvalidStableIdentifier(_, _, _, _, _) => WireStage.Refinement
+      case InvalidDimension(_, _, _)              => WireStage.Refinement
+      case Envelope(_, _, _)                      => WireStage.Structure
+      case UnknownAlternative(_, _, _, _)         => WireStage.Structure
 
   def path: WirePath =
     this match
-      case Limit(value)                      => value.path
-      case Syntax(_, _, path, _)             => path
-      case MalformedUnicode(path, _, _, _)   => path
-      case ExpectedType(path, _, _, _)       => path
-      case MissingField(path, _, _)          => path
-      case UnknownField(path, _, _)          => path
-      case NullRequired(path, _)             => path
-      case InvalidValue(path, _, _)          => path
-      case UnknownAlternative(path, _, _, _) => path
+      case Limit(value)                              => value.path
+      case Syntax(_, _, path, _)                     => path
+      case MalformedUnicode(path, _, _, _)           => path
+      case ExpectedType(path, _, _, _)               => path
+      case MissingField(path, _, _)                  => path
+      case UnknownField(path, _, _)                  => path
+      case NullRequired(path, _)                     => path
+      case InvalidValue(path, _, _)                  => path
+      case ExactNumber(path, _, _)                   => path
+      case InvalidStableIdentifier(path, _, _, _, _) => path
+      case InvalidDimension(path, _, _)              => path
+      case Envelope(path, _, _)                      => path
+      case UnknownAlternative(path, _, _, _)         => path
 
   def recordIndex: Int =
     this match
-      case Limit(value)                       => value.recordIndex
-      case Syntax(_, _, _, recordIndex)       => recordIndex
-      case MalformedUnicode(_, _, _, index)   => index
-      case ExpectedType(_, _, _, index)       => index
-      case MissingField(_, _, index)          => index
-      case UnknownField(_, _, index)          => index
-      case NullRequired(_, index)             => index
-      case InvalidValue(_, _, index)          => index
-      case UnknownAlternative(_, _, _, index) => index
+      case Limit(value)                               => value.recordIndex
+      case Syntax(_, _, _, recordIndex)               => recordIndex
+      case MalformedUnicode(_, _, _, index)           => index
+      case ExpectedType(_, _, _, index)               => index
+      case MissingField(_, _, index)                  => index
+      case UnknownField(_, _, index)                  => index
+      case NullRequired(_, index)                     => index
+      case InvalidValue(_, _, index)                  => index
+      case ExactNumber(_, _, index)                   => index
+      case InvalidStableIdentifier(_, _, _, _, index) => index
+      case InvalidDimension(_, _, index)              => index
+      case Envelope(_, _, index)                      => index
+      case UnknownAlternative(_, _, _, index)         => index
 
   private[codec] def detailOrder: Int = ordinal
 end WireDecodeViolation

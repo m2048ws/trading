@@ -160,7 +160,13 @@ class WireSchemaLawsSuite extends ScalaCheckSuite:
       classOf[WireViolations[?]],
       classOf[WireDecodeViolation],
       classOf[WireEncodeViolation],
-      classOf[WireLimitViolation]
+      classOf[WireLimitViolation],
+      classOf[RecordType],
+      classOf[SchemaVersion],
+      classOf[ExactNumberProblem],
+      classOf[StableIdentifierProblem],
+      classOf[DimensionProblem],
+      classOf[EnvelopeProblem]
     )
     val forbidden  = Vector("cats.", "tools.jackson.", "com.networknt.", "org.erdtman.")
     val signatures = surface.flatMap: clazz =>

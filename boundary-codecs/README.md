@@ -13,14 +13,19 @@ NetworkNT JSON Schema Validator 3.x and the RFC 8785-listed Java JSON Canonicali
 independent checks. Schemas belong under `src/main/resources/trading/codec/schema`; canonical golden vectors belong
 under `src/test/resources/trading/codec/golden`.
 
-Task Group 3 adds the public domain-owned structured paths, syntax locations, stage/limit vocabulary, typed violations,
-non-empty aggregates, and validated immutable `DecodeLimits`. Its package-private kernel owns the immutable JSON AST,
-strict Jackson adapter, restricted RFC 8785-compatible renderer, invariant wire-schema algebra, and Draft 2020-12
-interpreter. Operational limits are intentionally absent from generated mathematical schemas.
+The public foundation owns structured paths, syntax locations, stage/limit vocabulary, typed violations, non-empty
+aggregates, validated immutable `DecodeLimits`, and checked `RecordType`/`SchemaVersion` values. Its package-private
+kernel owns the immutable JSON AST, strict Jackson adapter, restricted RFC 8785-compatible renderer, invariant
+wire-schema algebra, Draft 2020-12 interpreter, reusable exact integer/rational/stable-ID/dimension/grid-identity
+schemas, and family-specific envelope dispatch. Operational limits are intentionally absent from generated
+mathematical schemas.
 
-Concrete exact primitives, envelopes, record families, and public encode/parse/reconstruct operations remain owned by
-later Task Groups. Parser, Cats validation, JSON Schema validator, and JCS-oracle types do not appear in this artifact's
-public codec foundation.
+Exact integers use canonical decimal JSON strings, rationals use reduced numerator/positive-denominator string records,
+dimensions use unique nonzero factors in authoritative UTF-16 order, and full grid identity retains dimension, grid ID,
+and positive grid version. Every later record family is dispatched only by an explicit exact envelope type/version pair;
+schema version remains distinct from grid or catalog versions. Concrete record families and public
+encode/parse/reconstruct operations remain owned by later Task Groups. Parser, Cats validation, JSON Schema validator,
+and JCS-oracle types do not appear in the public codec foundation.
 
 Build the focused boundary with:
 

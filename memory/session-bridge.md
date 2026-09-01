@@ -15,23 +15,23 @@ updated: 2026-09-01
 - **Change**: introduce-versioned-boundary-codecs
 - **Worktree**: /Users/m/src/money/.worktrees/introduce-versioned-boundary-codecs
 - **Phase at Checkpoint**: applying
-- **Task Group at Checkpoint**: 3
-- **Observed Run Revision**: 4
-- **Last Verified HEAD**: a658d9006fb3eb8d4d46faa15b72df43fd24ab17
+- **Task Group at Checkpoint**: 4
+- **Observed Run Revision**: 5
+- **Last Verified HEAD**: 1c5769046148f4bd8b42a8bba9b07539bccddff2
 
-The phase and revision above are the required next checkpoint carried by Task Group 3. Live Run Contract authority
-remains `applying` at revision 3 until Corgi acknowledges that commit.
+The phase and revision above are the required next checkpoint carried by Task Group 4. Live Run Contract authority
+remains `applying` at revision 4 until Corgi acknowledges that commit.
 
 ## Next Action
-- Commit and acknowledge `introduce-versioned-boundary-codecs` Task Group 3, synchronize its draft PR, then implement
-  Task Group 4. Verify, Human Review, Human QA, and Archive remain separate gates.
+- Commit and acknowledge `introduce-versioned-boundary-codecs` Task Group 4, synchronize its draft PR, then implement
+  Task Group 5. Verify, Human Review, Human QA, and Archive remain separate gates.
 
 ## Blockers
 - none
 
 ## Uncommitted Work
-- Task Group 3's strict JSON/path/limit/schema-algebra implementation note and this next-state checkpoint, together
-  with its production foundation, law/unit/compiler-boundary tests, build dependencies, and documentation.
+- Task Group 4's exact primitive/envelope/version-dispatch implementation note and this next-state checkpoint, together
+  with its production kernel, property/unit/compiler-boundary tests, diagnostics, schemas, and documentation.
 
 ## Discoveries
 - The archived `establish-pure-instrument-economics` boundary was reconciled from commit `86613ee` before S-02
@@ -422,6 +422,20 @@ remains `applying` at revision 3 until Corgi acknowledges that commit.
   behavior, architecture, API isolation, parser security/limits, canonicalization, schema agreement, dependency scope,
   and evidence with no findings. It changed no file during the final pass, triaged no finding, and is not canonical
   Verify or Human Review.
+- The codec kernel now owns canonical signed/positive decimal strings, reduced rational records, exact stable-ID
+  reconstruction, canonical UTF-16-ordered `DimKey` factors, full `GridIdentity`, checked `RecordType`/`SchemaVersion`,
+  and family-specific explicit envelope dispatch. It rejects numeric/dimension normalization aliases, malformed
+  Unicode, unknown/mismatched type/version pairs, and Java serialization of the new public version values.
+- Reordered/whitespace input re-encodes to one canonical envelope, cross-alternative and closed-object fields remain
+  structural failures, generated Draft 2020-12 envelopes fix the type/version constants with local references only,
+  and `GridVersion` remains an exact payload string distinct from the literal envelope schema version.
+- The clean Group 4 matrix passes 962 tests: 601 quantities, 13 reference data, 9 application, 18 runtime, 13 instrument
+  economics, 40 risk, 7 order model, 16 execution scenario, 43 boundary codec, 38 fee policy/integration, and 164
+  completed-JAR/compiler/adversarial tests. Both formatting checks and all 12 strict readiness checks pass.
+- The automated Group 4 review checked Run/Group identity, AC-017 scope, exact-number/Unicode behavior, owning
+  constructors, normalization resistance, dimension/grid semantics, envelope dispatch, version separation, generated
+  schemas, API/dependency containment, bounded allocation, and evidence with no findings. It changed no file, triaged
+  no finding, and is not canonical Verify or Human Review.
 
 ## Promotion Queue
 - Review agent-configuration constraints before promoting any item to `memory/MEMORY.md`.
@@ -432,3 +446,6 @@ remains `applying` at revision 3 until Corgi acknowledges that commit.
 - Keep Group 3's strict JSON, diagnostic/limit, canonical-rendering, and shared schema-algebra foundation as delivery
   evidence until Archive proves the complete codec capability; no Group 3 discovery is independently eligible for
   permanent promotion.
+- Keep Group 4's exact primitive, stable-identity, canonical-dimension, and explicit envelope/version-dispatch kernel as
+  delivery evidence until Archive proves the complete codec capability; no Group 4 discovery is independently eligible
+  for permanent promotion.

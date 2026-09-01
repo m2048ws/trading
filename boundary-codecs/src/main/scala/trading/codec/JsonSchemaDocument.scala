@@ -25,9 +25,14 @@ private[codec] object JsonSchemaDocument:
 
   private def interpret(shape: SchemaShape): JsonNode =
     shape match
+      case SchemaShape.AnyValue            => obj()
       case SchemaShape.Text                => obj("type" -> JsonNode.string("string"))
-      case SchemaShape.BooleanValue        => obj("type" -> JsonNode.string("boolean"))
-      case SchemaShape.IntegerValue        => obj("type" -> JsonNode.string("integer"))
+      case SchemaShape.TextConstant(value) =>
+        obj("type" -> JsonNode.string("string"), "const" -> JsonNode.string(value))
+      case SchemaShape.BooleanValue           => obj("type" -> JsonNode.string("boolean"))
+      case SchemaShape.IntegerValue           => obj("type" -> JsonNode.string("integer"))
+      case SchemaShape.IntegerConstant(value) =>
+        obj("type" -> JsonNode.string("integer"), "const" -> JsonNode.number(value.toString))
       case SchemaShape.ArrayOf(element, _) =>
         obj("type" -> JsonNode.string("array"), "items" -> interpret(element))
       case SchemaShape.Record(fields)                 => record(fields)

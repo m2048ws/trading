@@ -16,9 +16,12 @@ private[codec] final case class SchemaFieldShape(name: String, shape: SchemaShap
 private[codec] final case class SchemaCaseShape(tag: String, fields: Vector[SchemaFieldShape])
 
 private[codec] enum SchemaShape:
+  case AnyValue
   case Text
+  case TextConstant(value: String)
   case BooleanValue
   case IntegerValue
+  case IntegerConstant(value: BigInt)
   case ArrayOf(element: SchemaShape, limit: DecodeLimit)
   case Record(fields: Vector[SchemaFieldShape])
   case Tagged(tagField: String, alternatives: Vector[SchemaCaseShape])
@@ -79,6 +82,17 @@ private[codec] final class WireSchema[A] private[codec] (
           forward(value, cursor.context) match
             case Right(refined) => refined.validNec
             case Left(error)    => error.invalidNec
+    )
+
+  def refineAccumulating[B](
+    forward: (A, DecodeContext) => DecodeValidation[B]
+  )(
+    backward: B => A
+  ): WireSchema[B] =
+    new WireSchema(
+      shape,
+      (value, path) => encodeValue(backward(value), path),
+      cursor => decodeValue(cursor).andThen(value => forward(value, cursor.context))
     )
 end WireSchema
 
@@ -149,6 +163,13 @@ private[codec] object WireRecord:
 end WireRecord
 
 private[codec] object WireSchema:
+  val node: WireSchema[JsonNode] =
+    new WireSchema(
+      SchemaShape.AnyValue,
+      (value, _) => value.validNec,
+      cursor => cursor.node.validNec
+    )
+
   val text: WireSchema[String] =
     new WireSchema(
       SchemaShape.Text,
@@ -208,15 +229,41 @@ private[codec] object WireSchema:
                 cursor.context
               ).invalidNec
             else if !raw.matches("(?:0|-[1-9][0-9]*|[1-9][0-9]*)") then
-              WireDecodeViolation.InvalidValue(
+              WireDecodeViolation.ExactNumber(
                 cursor.context.path,
-                "canonical-json-integer-literal",
+                ExactNumberProblem.NonCanonicalInteger(raw),
                 cursor.context.recordIndex
               ).invalidNec
             else BigInt(raw).validNec
           case JsonValue.JNull =>
             WireDecodeViolation.NullRequired(cursor.context.path, cursor.context.recordIndex).invalidNec
           case actual => expected(JsonKind.Number, actual.kind, cursor.context).invalidNec
+    )
+
+  def textConstant(value: String): WireSchema[Unit] =
+    new WireSchema(
+      SchemaShape.TextConstant(value),
+      (_, _) => JsonNode.string(value).validNec,
+      cursor =>
+        text.decodeAt(cursor).andThen: supplied =>
+          if supplied == value then ().validNec
+          else
+            WireDecodeViolation
+              .InvalidValue(cursor.context.path, s"expected-constant:$value", cursor.context.recordIndex)
+              .invalidNec
+    )
+
+  def integerConstant(value: BigInt): WireSchema[Unit] =
+    new WireSchema(
+      SchemaShape.IntegerConstant(value),
+      (_, _) => JsonNode.number(value.toString).validNec,
+      cursor =>
+        integerLiteral.decodeAt(cursor).andThen: supplied =>
+          if supplied == value then ().validNec
+          else
+            WireDecodeViolation
+              .InvalidValue(cursor.context.path, s"expected-integer-constant:$value", cursor.context.recordIndex)
+              .invalidNec
     )
 
   def constant(value: String): WireSchema[Unit] =

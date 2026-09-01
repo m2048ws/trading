@@ -99,7 +99,13 @@ class BoundaryCodecCompilerBoundarySuite extends FunSuite:
         "trading/codec/WireViolations.class",
         "trading/codec/WireDecodeViolation.class",
         "trading/codec/WireEncodeViolation.class",
-        "trading/codec/WireLimitViolation.class"
+        "trading/codec/WireLimitViolation.class",
+        "trading/codec/RecordType.class",
+        "trading/codec/SchemaVersion.class",
+        "trading/codec/ExactNumberProblem.class",
+        "trading/codec/StableIdentifierProblem.class",
+        "trading/codec/DimensionProblem.class",
+        "trading/codec/EnvelopeProblem.class"
       )
       intendedPublicSurface.foreach: entry =>
         val input = jar.getInputStream(jar.getJarEntry(entry))
@@ -114,8 +120,13 @@ class BoundaryCodecCompilerBoundarySuite extends FunSuite:
         val parserBytecode = new String(parserInput.readAllBytes(), StandardCharsets.ISO_8859_1)
         assert(parserBytecode.contains("tools/jackson/"), "strict adapter does not bind Jackson Core")
       finally parserInput.close()
-      List(classOf[trading.codec.DecodeLimits], classOf[trading.codec.WirePath],
-        classOf[trading.codec.WireViolations[?]])
+      List(
+        classOf[trading.codec.DecodeLimits],
+        classOf[trading.codec.WirePath],
+        classOf[trading.codec.WireViolations[?]],
+        classOf[trading.codec.RecordType],
+        classOf[trading.codec.SchemaVersion]
+      )
         .foreach: owner =>
           assert(owner.getDeclaredConstructors.forall(constructor => Modifier.isPrivate(constructor.getModifiers)))
       assert(!names.exists(_.startsWith("trading/fee/")))
@@ -151,9 +162,20 @@ class BoundaryCodecCompilerBoundarySuite extends FunSuite:
     assert(prelude.succeeded, s"fixture prelude must compile independently:\n${prelude.rendered}")
 
     val rejected = compile(source)
-    assert(rejected.errors.size >= 6, rejected.rendered)
-    List("StrictJson", "CanonicalJson", "JsonNode", "WireSchema", "JsonSchemaDocument", "DecodeContext").foreach:
-      fragment => assert(rejected.rendered.contains(fragment), s"missing '$fragment' rejection:\n${rejected.rendered}")
+    assert(rejected.errors.size >= 10, rejected.rendered)
+    List(
+      "StrictJson",
+      "CanonicalJson",
+      "JsonNode",
+      "WireSchema",
+      "JsonSchemaDocument",
+      "DecodeContext",
+      "ExactWire",
+      "EnvelopeCodec",
+      "EnvelopeHeader",
+      "CanonicalRationalRecord"
+    ).foreach: fragment =>
+      assert(rejected.rendered.contains(fragment), s"missing '$fragment' rejection:\n${rejected.rendered}")
     boundaryForbiddenDiagnostics.foreach(fragment => assert(!rejected.rendered.contains(fragment), rejected.rendered))
 
   private def exactlyOne(prefix: String): Path =
