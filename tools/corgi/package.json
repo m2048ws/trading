@@ -8,6 +8,6 @@
     "node": ">=20.19.0"
   },
   "dependencies": {
-    "corgispec": "file:vendor/corgispec-4.0.0-rc2-archive-recovery.tgz"
+    "corgispec": "file:vendor/corgispec-4.0.0-rc2-money.2.tgz"
   }
 }

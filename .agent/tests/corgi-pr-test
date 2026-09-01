@@ -123,6 +123,8 @@ class ScriptedRunner:
                 change="demo-change",
                 phase="awaiting_verify",
                 final_revision=None,
+                integration_revision=None,
+                review_approved=False,
                 issue_id=17,
                 issue_url="https://github.com/owner/repo/issues/17",
                 groups_complete=1,
@@ -205,11 +207,11 @@ class CorgiPrTest(unittest.TestCase):
             (SOURCE_ROOT / "tools/corgi/package-lock.json").read_text()
         )
         package = lock["packages"]["node_modules/corgispec"]
-        self.assertEqual(package["version"], "4.0.0-rc2")
+        self.assertEqual(package["version"], "4.0.0-rc2-money.2")
         self.assertEqual(package["license"], "MIT")
         self.assertEqual(
             package["integrity"],
-            "sha512-J+i7s4BthgIDvnMFTq/o/moRmnELa9EZ7So/a+3x+0CcUvzgASt/mESHX+/aTd3KuETk5onEkXZqZUhV/RX+ZQ==",
+            "sha512-Gs9kVgOg+rezg8sVojrgqZ85htTQTL/3gEqvAThwVpAYIFKkqJRyIbj0hfnplE0hsYiX22cEOqVAo8uVl1iOZg==",
         )
 
     def test_cas_handoff_is_local_bounded_and_owner_only(self):
@@ -389,6 +391,8 @@ class CorgiPrTest(unittest.TestCase):
                 change="demo-change",
                 phase="awaiting_verify",
                 final_revision=None,
+                integration_revision=None,
+                review_approved=False,
                 issue_id=17,
                 issue_url="https://github.com/owner/repo/issues/17",
                 groups_complete=1,

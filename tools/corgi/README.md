@@ -19,10 +19,11 @@ changes; checks the Codex skill target; checks GitHub CLI authentication; and re
 admission switch is enabled. In a sandbox that cannot read the macOS credential store, run GitHub-dependent checks in
 the normal user shell.
 
-The current `4.0.0-rc2` pin is a repository-local recovery build documented under `vendor/`. It adds deterministic
-canonical Archive-delta compatibility to readiness and a guarded pre-closeout `archive --request-repair` transition.
-Keep the local version and integrity qualification until an upstream release contains both behaviors; do not silently
-replace it with the registry tarball carrying the same version string.
+The current `4.0.0-rc2-money.2` pin is a repository-local recovery build documented under `vendor/`. It makes Apply
+accept ordinary integrated pre-Run HEAD advances automatically, admits an exact first-Task-Group integration-merge
+topology, adds deterministic canonical Archive-delta compatibility in readiness, and provides a guarded pre-closeout
+`archive --request-repair` transition. Keep the local version and integrity qualification until an upstream release
+contains these behaviors; do not silently replace it with a registry build.
 
 ## Activation evidence
 
@@ -90,6 +91,13 @@ uses a merge commit and does not delete the remote branch.
 `claim` writes only the current four-field CAS handoff under ignored `.corgi/adapter/`; it is not an independent
 lifecycle database. Corgi's Run Contract remains authoritative. The token file is mode `0600` and is never projected to
 GitHub.
+
+Apply start needs no recovery for an ordinary integrated HEAD advance: it automatically requires an unchanged completed
+handoff/source binding, strict readiness, old-to-current ancestry, and proof that current HEAD is on the configured
+governance branch. Non-integrated drift still fails closed, and the ignored Propose transaction is never hand-edited.
+After Apply creates the planning baseline, the first Task Group may integrate the exact configured branch with a
+two-parent merge whose first parent is that baseline; all later Task Groups retain the ordinary one-parent, one-commit
+rule.
 
 Claim also accepts an existing `planning_ready` repair successor created by `corgispec change repair`. That phase is
 admitted only in claim's explicit planning mode; publication and finalization continue to reject it until Apply starts.
