@@ -1,0 +1,154 @@
+package external
+
+import java.io.File
+import java.nio.charset.StandardCharsets
+import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.Paths
+import java.util.jar.JarFile
+import scala.jdk.CollectionConverters.*
+
+import dotty.tools.dotc.Main
+import dotty.tools.dotc.reporting.StoreReporter
+import munit.FunSuite
+
+class BoundaryCodecCompilerBoundarySuite extends FunSuite:
+  private final case class Compilation(errors: List[String], warnings: List[String]):
+    def succeeded: Boolean = errors.isEmpty && warnings.isEmpty
+    def rendered: String   = (errors ++ warnings).mkString("\n")
+
+  private val fixturesRoot         = Paths.get(getClass.getResource("/boundary-codec-compiler").toURI)
+  private val compilationClasspath =
+    val resource = Option(getClass.getResourceAsStream("/boundary-codec-compiler.classpath")).getOrElse:
+      throw new IllegalStateException("missing generated boundary-codec compiler classpath")
+    try new String(resource.readAllBytes(), StandardCharsets.UTF_8).trim
+    finally resource.close()
+
+  private val entries = compilationClasspath.split(File.pathSeparator).toList.map(Paths.get(_))
+
+  test("completed boundary-codec classpath contains exactly its one-way production graph"):
+    List(
+      "trading-quantities_3-",
+      "trading-reference-data_3-",
+      "trading-instrument-economics_3-",
+      "trading-order-model_3-",
+      "trading-execution-scenario_3-",
+      "trading-boundary-codecs_3-"
+    ).foreach: prefix =>
+      assertEquals(entries.count(_.getFileName.toString.startsWith(prefix)), 1, entries.mkString("\n"))
+
+    List(
+      "trading-fee-policy_3-",
+      "trading-risk_3-",
+      "trading-application_3-",
+      "trading-runtime_3-",
+      "cats-effect_3-",
+      "fs2-core_3-",
+      "circe-core_3-",
+      "doobie-core_3-",
+      "opentelemetry-api-",
+      "jackson-databind-",
+      "jackson-module-scala_3-",
+      "json-schema-validator-",
+      "java-json-canonicalization-",
+      "jmh-core-"
+    ).foreach: prefix =>
+      assert(!entries.exists(_.getFileName.toString.startsWith(prefix)), s"production classpath retained $prefix")
+
+    assert(entries.exists(_.getFileName.toString.startsWith("cats-core_3-")), entries.mkString("\n"))
+    assert(entries.exists(_.getFileName.toString.startsWith("jackson-core-3.")), entries.mkString("\n"))
+    assert(entries.forall(Files.isRegularFile(_)), entries.mkString("\n"))
+
+  test("completed boundary-codec JAR establishes only the owned package and schema resource root"):
+    val artifact = exactlyOne("trading-boundary-codecs_3-")
+    val jar      = new JarFile(artifact.toFile)
+    try
+      val names = jar.entries().asScala.map(_.getName).toSet
+      assert(names.contains("trading/codec/package.class"), names.toList.sorted.mkString("\n"))
+      assert(names.contains("trading/codec/schema/README.md"), names.toList.sorted.mkString("\n"))
+      val codecClasses = names.filter(name => name.startsWith("trading/codec/") && name.endsWith(".class"))
+      assertEquals(codecClasses, Set("trading/codec/package$.class", "trading/codec/package.class"))
+      val forbiddenApiFragments = List(
+        "tools/jackson/",
+        "com/networknt/",
+        "org/erdtman/",
+        "cats/effect/",
+        "fs2/",
+        "scala/deriving/Mirror",
+        "java/lang/reflect/"
+      )
+      codecClasses.foreach: entry =>
+        val input = jar.getInputStream(jar.getJarEntry(entry))
+        try
+          val bytecode = new String(input.readAllBytes(), StandardCharsets.ISO_8859_1)
+          forbiddenApiFragments.foreach(fragment => assert(!bytecode.contains(fragment), s"$entry exposes $fragment"))
+        finally input.close()
+      assert(!names.exists(_.startsWith("trading/fee/")))
+      assert(!names.exists(_.startsWith("trading/risk/")))
+      assert(!names.exists(_.startsWith("trading/application/")))
+      assert(!names.exists(_.startsWith("trading/runtime/")))
+    finally jar.close()
+    end try
+
+  test("completed boundary-codec classpath compiles a direct-domain and Jackson-Core client"):
+    val result = compile(fixturesRoot.resolve("positive/BoundaryCodecClasspathClient.scala"))
+    assert(result.succeeded, result.rendered)
+
+  test("completed boundary-codec classpath rejects downstream, effect, mapping, and test-oracle concerns"):
+    val source  = fixturesRoot.resolve("negative/CodecHasNoForbiddenDependencies.scala")
+    val prelude = compilePrelude(source)
+    assert(prelude.succeeded, s"fixture prelude must compile independently:\n${prelude.rendered}")
+
+    val rejected = compile(source)
+    assert(rejected.errors.size >= 13, rejected.rendered)
+    List("fee", "risk", "application", "runtime", "effect", "fs2", "doobie", "opentelemetry", "databind", "circe",
+      "networknt", "erdtman").foreach: fragment =>
+      assert(rejected.rendered.contains(fragment), s"missing '$fragment' rejection:\n${rejected.rendered}")
+    boundaryForbiddenDiagnostics.foreach(fragment => assert(!rejected.rendered.contains(fragment), rejected.rendered))
+
+  private def exactlyOne(prefix: String): Path =
+    entries.filter(_.getFileName.toString.startsWith(prefix)) match
+      case artifact :: Nil => artifact
+      case other           => fail(s"expected one $prefix artifact, found:\n${other.mkString("\n")}")
+
+  private def compilePrelude(source: Path): Compilation =
+    val lines    = Files.readAllLines(source, StandardCharsets.UTF_8)
+    val filtered = new java.util.ArrayList[String]()
+    var dropping = false
+    lines.forEach: line =>
+      if line.contains("OFFENDING-BEGIN") then dropping = true
+      else if line.contains("OFFENDING-END") then dropping = false
+      else if !dropping then
+        val _ = filtered.add(line)
+
+    val directory = Files.createTempDirectory("boundary-codec-prelude-")
+    val copy      = directory.resolve(source.getFileName)
+    val _         = Files.write(copy, filtered, StandardCharsets.UTF_8)
+    compile(copy)
+
+  private def compile(source: Path): Compilation =
+    val output   = Files.createTempDirectory("boundary-codec-classes-")
+    val reporter = new StoreReporter()
+    val _        = Main.process(
+      Array(
+        "-classpath",
+        compilationClasspath,
+        "-d",
+        output.toString,
+        "-Werror",
+        "-source:future",
+        source.toString
+      ),
+      reporter
+    )
+    Compilation(reporter.allErrors.map(_.message), reporter.allWarnings.map(_.message))
+
+end BoundaryCodecCompilerBoundarySuite
+
+private val boundaryForbiddenDiagnostics = List(
+  "Exception occurred while executing macro expansion",
+  "CyclicReference",
+  "illegal cyclic type reference",
+  "See full stack trace",
+  "at dotty.tools"
+)

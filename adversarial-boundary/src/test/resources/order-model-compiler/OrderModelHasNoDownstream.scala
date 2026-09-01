@@ -21,5 +21,8 @@ object OrderModelHasNoDownstream:
   object MissingRuntime:
     import trading.runtime.*
 
+  object MissingBoundaryCodecs:
+    import trading.codec.*
+
   val role: trading.scenario.LiquidityRole = trading.scenario.LiquidityRole.Maker
   // OFFENDING-END

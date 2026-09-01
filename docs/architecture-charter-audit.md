@@ -41,6 +41,7 @@ projects and must not be confused with the remaining proposed target.
 | Current | `executionScenario` | `trading-execution-scenario` / `execution-scenario/` | instrument economics and order model |
 | Current | `feePolicy` | `trading-fee-policy` / `fee-policy/` | quantities, instrument economics, order model, execution scenario; risk in tests only |
 | Current | `risk` | `trading-risk` / `risk/` | quantities and instrument economics |
+| Current | `boundaryCodecs` | `trading-boundary-codecs` / `boundary-codecs/` | quantities, reference data, instrument economics, order model, execution scenario; Cats Core and Jackson Core 3.x |
 | Current test-only | `adversarialBoundary` | unpublished / `adversarial-boundary/` | all packaged production artifacts |
 | Current benchmark-only | `benchmarks` | unpublished / `benchmarks/` | reference data, application, runtime, and risk; outside root aggregation |
 
@@ -59,18 +60,25 @@ instrumentEconomics <- feePolicy
 orderModel <- feePolicy
 executionScenario <- feePolicy
 instrumentEconomics <- risk
+quantities <- boundaryCodecs
+referenceData <- boundaryCodecs
+instrumentEconomics <- boundaryCodecs
+orderModel <- boundaryCodecs
+executionScenario <- boundaryCodecs
 
 all completed production artifacts -> adversarialBoundary (test-only)
 ```
 
 The test-only boundary consumes each completed production artifact directly. The first live-catalog runtime
-interpreter is concrete; boundary codecs remain future-owned.
+interpreter is concrete. The boundary-codec artifact and package root are current; its versioned record families remain
+owned by the active S-05 delivery rather than being claimed by this structural checkpoint.
 
 Current dependency coordinates include Scala `3.8.4`, independent
 `catsVersion = 2.13.0` and `algebraVersion = 2.13.0` coordinates,
 `discipline-munit` `2.0.0`, MUnit `1.3.5`, ScalaCheck `1.20.0`, and
-`munit-scalacheck` `1.3.0`. Runtime-scoped Cats Effect is `3.7.0` and MUnit Cats Effect is `2.2.0`. The minimum
-build/runtime JDK is 25.
+`munit-scalacheck` `1.3.0`. Runtime-scoped Cats Effect is `3.7.0` and MUnit Cats Effect is `2.2.0`. Boundary-codec
+production uses Jackson Core `3.2.2`; NetworkNT JSON Schema Validator `3.0.7` and Java JSON Canonicalization `1.1` are
+test-only independent mechanisms. The minimum build/runtime JDK is 25.
 
 ## Primary ownership and target dependency audit
 
@@ -151,7 +159,7 @@ the first deliberate durable compatibility contract.
 | Current exception | Why it is transitional | Migration owner |
 | --- | --- | --- |
 | Quantity-owned packing has been removed, leaving a deliberate durable-codec gap | Stable records require snapshots and an explicit schema owner | Proposal 9 adds versioned codecs |
-| The boundary-codec target module does not exist | Its physical boundary requires a real implementation and dependency body | Proposal 9 |
+| Boundary-codec record families are not yet implemented | The physical artifact/dependency boundary exists; later S-05 Task Groups own concrete V1 records and checked reconstruction | Proposal 9 |
 
 These exceptions describe current implementation facts, not accepted permanent
 architecture. No proposed module or API is presented as available today.

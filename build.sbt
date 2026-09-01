@@ -1,10 +1,13 @@
-val scala3Version          = "3.8.4"
-val catsVersion            = "2.13.0"
-val algebraVersion         = "2.13.0"
-val disciplineMunitVersion = "2.0.0"
-val catsEffectVersion      = "3.7.0"
-val munitCatsEffectVersion = "2.2.0"
-val jdkRelease             = "25"
+val scala3Version                   = "3.8.4"
+val catsVersion                     = "2.13.0"
+val algebraVersion                  = "2.13.0"
+val disciplineMunitVersion          = "2.0.0"
+val catsEffectVersion               = "3.7.0"
+val munitCatsEffectVersion          = "2.2.0"
+val jacksonCoreVersion              = "3.2.2"
+val jsonSchemaValidatorVersion      = "3.0.7"
+val javaJsonCanonicalizationVersion = "1.1"
+val jdkRelease                      = "25"
 
 val staticDimensionCompilerClasspath =
   taskKey[Seq[File]]("Immutable classpath for real-source static-dimension compiler fixtures")
@@ -24,6 +27,8 @@ val executionScenarioCompilerClasspath =
   taskKey[Seq[File]]("Immutable classpath for completed-JAR execution-scenario compiler fixtures")
 val feePolicyCompilerClasspath =
   taskKey[Seq[File]]("Immutable classpath for completed-JAR fee-policy compiler fixtures")
+val boundaryCodecCompilerClasspath =
+  taskKey[Seq[File]]("Immutable classpath for completed-JAR boundary-codec compiler fixtures")
 
 ThisBuild / scalaVersion := scala3Version
 ThisBuild / version      := "0.1.0-SNAPSHOT"
@@ -42,6 +47,7 @@ lazy val root =
       risk,
       orderModel,
       executionScenario,
+      boundaryCodecs,
       feePolicy,
       adversarialBoundary
     )
@@ -63,6 +69,7 @@ lazy val root =
             risk / Test / test,
             orderModel / Test / test,
             executionScenario / Test / test,
+            boundaryCodecs / Test / test,
             feePolicy / Test / test,
             adversarialBoundary / Test / test
           )
@@ -223,6 +230,28 @@ lazy val executionScenario =
       )
     )
 
+lazy val boundaryCodecs =
+  project
+    .in(file("boundary-codecs"))
+    .dependsOn(quantities, referenceData, instrumentEconomics, orderModel, executionScenario)
+    .settings(
+      name       := "trading-boundary-codecs",
+      moduleName := "trading-boundary-codecs",
+
+      Compile / exportJars := true,
+
+      Test / classLoaderLayeringStrategy := ClassLoaderLayeringStrategy.Flat,
+      Test / fork                        := true,
+
+      libraryDependencies ++= Seq(
+        "org.typelevel"     %% "cats-core"                  % catsVersion,
+        "tools.jackson.core" % "jackson-core"               % jacksonCoreVersion,
+        "com.networknt"      % "json-schema-validator"      % jsonSchemaValidatorVersion      % Test,
+        "io.github.erdtman"  % "java-json-canonicalization" % javaJsonCanonicalizationVersion % Test,
+        "org.scalameta"     %% "munit"                      % "1.3.5"                         % Test
+      )
+    )
+
 lazy val application =
   project
     .in(file("application"))
@@ -288,6 +317,7 @@ lazy val adversarialBoundary =
       risk,
       orderModel,
       executionScenario,
+      boundaryCodecs,
       feePolicy
     )
     .settings(
@@ -306,6 +336,7 @@ lazy val adversarialBoundary =
           (risk / Compile / exportedProducts).value.files ++
           (orderModel / Compile / exportedProducts).value.files ++
           (executionScenario / Compile / exportedProducts).value.files ++
+          (boundaryCodecs / Compile / exportedProducts).value.files ++
           (feePolicy / Compile / exportedProducts).value.files
         val quantitiesDependencies    = (quantities / Compile / externalDependencyClasspath).value.files
         val referenceDataDependencies = (referenceData / Compile / externalDependencyClasspath).value.files
@@ -315,11 +346,12 @@ lazy val adversarialBoundary =
         val riskDependencies          = (risk / Compile / externalDependencyClasspath).value.files
         val orderDependencies         = (orderModel / Compile / externalDependencyClasspath).value.files
         val scenarioDependencies      = (executionScenario / Compile / externalDependencyClasspath).value.files
+        val boundaryCodecDependencies = (boundaryCodecs / Compile / externalDependencyClasspath).value.files
         val feePolicyDependencies     = (feePolicy / Compile / externalDependencyClasspath).value.files
         val compilerDependencies      = (Test / externalDependencyClasspath).value.files
         (moduleProducts ++ quantitiesDependencies ++ referenceDataDependencies ++ applicationDependencies ++
           runtimeDependencies ++ instrumentDependencies ++ orderDependencies ++ scenarioDependencies ++
-          riskDependencies ++ feePolicyDependencies ++ compilerDependencies).distinct
+          riskDependencies ++ boundaryCodecDependencies ++ feePolicyDependencies ++ compilerDependencies).distinct
       },
       applicationBoundaryClasspath := {
         val products = (quantities / Compile / exportedProducts).value.files ++
@@ -447,6 +479,31 @@ lazy val adversarialBoundary =
         (moduleProducts ++ quantitiesDependencies ++ referenceDependencies ++ instrumentDependencies ++
           orderDependencies ++ scenarioDependencies ++ feePolicyDependencies ++ compilerDependencies).distinct
       },
+      boundaryCodecCompilerClasspath := {
+        val moduleProducts = (quantities / Compile / exportedProducts).value.files ++
+          (referenceData / Compile / exportedProducts).value.files ++
+          (instrumentEconomics / Compile / exportedProducts).value.files ++
+          (orderModel / Compile / exportedProducts).value.files ++
+          (executionScenario / Compile / exportedProducts).value.files ++
+          (boundaryCodecs / Compile / exportedProducts).value.files
+        val quantitiesDependencies    = (quantities / Compile / externalDependencyClasspath).value.files
+        val referenceDependencies     = (referenceData / Compile / externalDependencyClasspath).value.files
+        val instrumentDependencies    = (instrumentEconomics / Compile / externalDependencyClasspath).value.files
+        val orderDependencies         = (orderModel / Compile / externalDependencyClasspath).value.files
+        val scenarioDependencies      = (executionScenario / Compile / externalDependencyClasspath).value.files
+        val boundaryCodecDependencies = (boundaryCodecs / Compile / externalDependencyClasspath).value.files
+        val compilerDependencies      = (Test / externalDependencyClasspath).value.files.filter { file =>
+          val name = file.getName
+          name.startsWith("scala3-compiler_3-") ||
+          name.startsWith("scala3-interfaces-") ||
+          name.startsWith("tasty-core_3-") ||
+          name.startsWith("scala-asm-") ||
+          name.startsWith("compiler-interface-") ||
+          name.startsWith("util-interface-")
+        }
+        (moduleProducts ++ quantitiesDependencies ++ referenceDependencies ++ instrumentDependencies ++
+          orderDependencies ++ scenarioDependencies ++ boundaryCodecDependencies ++ compilerDependencies).distinct
+      },
       Test / resourceGenerators += Def.task {
         val directory = (Test / resourceManaged).value
         val outputs   = Seq(
@@ -494,6 +551,12 @@ lazy val adversarialBoundary =
       Test / resourceGenerators += Def.task {
         val output    = (Test / resourceManaged).value / "fee-policy-compiler.classpath"
         val classpath = feePolicyCompilerClasspath.value.map(_.getAbsolutePath).mkString(java.io.File.pathSeparator)
+        IO.write(output, classpath)
+        Seq(output)
+      }.taskValue,
+      Test / resourceGenerators += Def.task {
+        val output    = (Test / resourceManaged).value / "boundary-codec-compiler.classpath"
+        val classpath = boundaryCodecCompilerClasspath.value.map(_.getAbsolutePath).mkString(java.io.File.pathSeparator)
         IO.write(output, classpath)
         Seq(output)
       }.taskValue,

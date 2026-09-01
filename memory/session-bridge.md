@@ -15,22 +15,23 @@ updated: 2026-09-01
 - **Change**: introduce-versioned-boundary-codecs
 - **Worktree**: /Users/m/src/money/.worktrees/introduce-versioned-boundary-codecs
 - **Phase at Checkpoint**: applying
-- **Task Group at Checkpoint**: 1
-- **Observed Run Revision**: 2
-- **Last Verified HEAD**: f356ba4bd02cf16bb4f1d1b1e03d9f3395f1286c
+- **Task Group at Checkpoint**: 2
+- **Observed Run Revision**: 3
+- **Last Verified HEAD**: bc3d2c18c97aa7d8390112f8fb5405ba474dd036
 
-The phase and revision above are the required next checkpoint carried by Task Group 1. Live Run Contract authority
-remains `applying` at revision 1 until Corgi acknowledges that commit.
+The phase and revision above are the required next checkpoint carried by Task Group 2. Live Run Contract authority
+remains `applying` at revision 2 until Corgi acknowledges that commit.
 
 ## Next Action
-- Commit and acknowledge `introduce-versioned-boundary-codecs` Task Group 1, open its draft PR, then implement Task
-  Group 2. Verify, Human Review, Human QA, and Archive remain separate gates.
+- Commit and acknowledge `introduce-versioned-boundary-codecs` Task Group 2, synchronize its draft PR, then implement
+  Task Group 3. Verify, Human Review, Human QA, and Archive remain separate gates.
 
 ## Blockers
 - none
 
 ## Uncommitted Work
-- Task Group 1's authority/baseline/inventory note and this next-state checkpoint; production codec code is unchanged.
+- Task Group 2's module/dependency/compiler-boundary implementation note and this next-state checkpoint, together with
+  the new boundary-codec artifact, resources, build wiring, tests, and documentation.
 
 ## Discoveries
 - The archived `establish-pure-instrument-economics` boundary was reconciled from commit `86613ee` before S-02
@@ -395,8 +396,22 @@ remains `applying` at revision 1 until Corgi acknowledges that commit.
   catalog state/snapshots, canonical instrument assembly, closed order/scenario alternatives, and explicit market
   observers. Retired `Packed*`, `Resolved*`, registry, heterogeneous-runtime, and `GridCoordinateEncoding` names remain
   absent; no portfolio drift requires an RFC or planning amendment.
+- The physical `trading-boundary-codecs` artifact now owns the `trading.codec` package/resource root above quantities,
+  reference data, instrument economics, order model, and execution scenario. Its production classpath adds only Cats
+  Core and Jackson Core 3.2.2; NetworkNT 3.0.7 and Java JSON Canonicalization 1.1 remain test-only.
+- Completed-JAR compiler fixtures prove the codec production classpath excludes fee policy, risk, application,
+  runtime, effects, streams, persistence/clients, telemetry, Jackson Databind/Scala, Circe, and test oracles, while all
+  seven lower/pure artifacts reject reverse `trading.codec` imports.
+- The clean Group 2 matrix passes 918 tests: 601 quantities, 13 reference data, 9 application, 18 runtime, 13
+  instrument economics, 40 risk, 7 order model, 16 execution scenario, 1 boundary codec, 38 fee policy/integration,
+  and 162 completed-JAR/compiler/adversarial tests. Both formatting checks also pass.
+- The automated Group 2 review checked AC-017 scope, dependency and configuration containment, completed-JAR/public API
+  boundaries, resource/documentation honesty, validation evidence, and performance/security applicability with no
+  findings. It changed no file, triaged no finding, and is not canonical Verify or Human Review.
 
 ## Promotion Queue
 - Review agent-configuration constraints before promoting any item to `memory/MEMORY.md`.
 - Keep the S-05 Group 1 baseline and inventory as delivery evidence until Archive proves the complete codec boundary;
   no Task Group 1 discovery is independently eligible for permanent promotion.
+- Keep Group 2's module/dependency boundary and test-only oracle containment as delivery evidence until Archive proves
+  the complete codec capability; no Group 2 discovery is independently eligible for permanent promotion.

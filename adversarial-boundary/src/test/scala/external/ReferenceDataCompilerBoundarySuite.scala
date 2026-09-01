@@ -69,11 +69,12 @@ class ReferenceDataCompilerBoundarySuite extends FunSuite:
       )
     finally applicationJar.close()
 
-  test("the completed reference-data classpath cannot access fee policy"):
+  test("the completed reference-data classpath cannot access fee policy or boundary codecs"):
     val entries = referenceDataOnlyClasspath.split(File.pathSeparator).toList.map(Paths.get(_))
     assertEquals(entries.count(_.getFileName.toString.startsWith("trading-quantities_3-")), 1)
     assertEquals(entries.count(_.getFileName.toString.startsWith("trading-reference-data_3-")), 1)
     assert(!entries.exists(_.getFileName.toString.startsWith("trading-fee-policy_3-")), entries.mkString("\n"))
+    assert(!entries.exists(_.getFileName.toString.startsWith("trading-boundary-codecs_3-")), entries.mkString("\n"))
 
     val source  = fixturesRoot.resolve("negative/FeePolicyUnavailable.scala")
     val prelude = compileFilteredPrelude(source, compileReferenceDataOnly)
@@ -81,6 +82,7 @@ class ReferenceDataCompilerBoundarySuite extends FunSuite:
     val rejected = compileReferenceDataOnly(source)
     assert(rejected.errors.nonEmpty, rejected.rendered)
     assert(rejected.rendered.contains("fee is not a member of trading"), rejected.rendered)
+    assert(rejected.rendered.contains("codec is not a member of trading"), rejected.rendered)
     referenceDataForbiddenDiagnostics.foreach(fragment =>
       assert(!rejected.rendered.contains(fragment), rejected.rendered)
     )

@@ -13,6 +13,8 @@ object StableIdentityUnavailable:
   val packed = trading.quantity.runtime.PackedGridQuantity
   val risk: Class[trading.risk.RiskIdentityError] = classOf[trading.risk.RiskIdentityError]
   val feePolicy: Class[trading.fee.FeePolicy[?, ?, ?, ?, ?]] = classOf[trading.fee.FeePolicy[?, ?, ?, ?, ?]]
+  object MissingBoundaryCodecs:
+    import trading.codec.*
   // OFFENDING-END
 
 end StableIdentityUnavailable
