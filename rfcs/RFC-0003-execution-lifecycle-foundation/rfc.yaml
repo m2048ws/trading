@@ -1,6 +1,10 @@
 schemaVersion: 1
 id: RFC-0003-execution-lifecycle-foundation
 type: feature
-status: draft
+status: accepted
 author: m@2048.ws
 createdAt: '2026-09-01T17:49:44.613Z'
+acceptance:
+  approver: m2048ws
+  approvedAt: '2026-09-01T18:04:52.763Z'
+  digest: 4fa0a8d017bf9b505cfa6150605e28dfc47e3c185acfad1070df56d9523da360

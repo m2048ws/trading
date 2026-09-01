@@ -1,6 +1,10 @@
 schemaVersion: 1
 rfcId: RFC-0003-execution-lifecycle-foundation
-revision: 0
+revision: 1
 slices:
-  S-01-execution-lifecycle-foundation:
+  S-01-actual-execution-lifecycle:
+    status: unbound
+  S-02-execution-application-boundary:
+    status: unbound
+  S-03-versioned-execution-records:
     status: unbound
