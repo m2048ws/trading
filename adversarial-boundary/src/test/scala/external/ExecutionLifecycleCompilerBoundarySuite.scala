@@ -101,6 +101,17 @@ class ExecutionLifecycleCompilerBoundarySuite extends FunSuite:
     assert(result.succeeded, result.rendered)
     runModule(result.output, "external.execution.positive.ExecutionIdentityBoundaryClient$", "run")
 
+  test("completed execution-lifecycle JAR compiles and runs typed authority, ordering, and lifecycle construction"):
+    val result = compile(
+      List(
+        fixturesRoot.resolve("ExecutionLifecycleSetup.scala"),
+        fixturesRoot.resolve("positive/ExecutionAuthorityBoundaryClient.scala")
+      ),
+      executionClasspath
+    )
+    assert(result.succeeded, result.rendered)
+    runModule(result.output, "external.execution.positive.ExecutionAuthorityBoundaryClient$", "run")
+
   test("execution-lifecycle classpath rejects downstream mechanisms"):
     val source  = fixturesRoot.resolve("negative/ExecutionLifecycleHasNoDownstream.scala")
     val prelude = compilePrelude(source, executionClasspath)
@@ -130,6 +141,15 @@ class ExecutionLifecycleCompilerBoundarySuite extends FunSuite:
         clues(owner, rejected.rendered)
       )
 
+  test("completed JAR rejects same-package constructors, copies, and unknown alternatives"):
+    val source  = fixturesRoot.resolve("negative/PackageSpoofExecutionAuthority.scala")
+    val prelude = compilePrelude(source, executionClasspath)
+    assert(prelude.succeeded, s"fixture prelude must compile independently:\n${prelude.rendered}")
+    val rejected = compile(source, executionClasspath)
+    assert(rejected.errors.size >= 11, rejected.rendered)
+    assert(rejected.rendered.contains("cannot be accessed"), rejected.rendered)
+    assert(rejected.rendered.contains("value copy is not a member"), rejected.rendered)
+
   test("identity constructors are JVM-private and unavailable to same-package Java"):
     List(
       Class.forName("trading.execution.ApplicationCommandId"),
@@ -141,13 +161,38 @@ class ExecutionLifecycleCompilerBoundarySuite extends FunSuite:
       Class.forName("trading.execution.NativeSourceOrderId"),
       Class.forName("trading.execution.NativeFillId"),
       Class.forName("trading.execution.SourceStreamId"),
-      Class.forName("trading.execution.SourceSequence")
+      Class.forName("trading.execution.SourceSequence"),
+      Class.forName("trading.execution.ExecutionConstructionErrors"),
+      Class.forName("trading.execution.ExecutionTarget"),
+      Class.forName("trading.execution.QualifiedSourceEventId"),
+      Class.forName("trading.execution.QualifiedSourceOrderId"),
+      Class.forName("trading.execution.QualifiedFillId"),
+      Class.forName("trading.execution.QualifiedSourceStreamId"),
+      Class.forName("trading.execution.QualifiedStreamPosition"),
+      Class.forName("trading.execution.SourceContinuation$StreamOrigin"),
+      Class.forName("trading.execution.SourceContinuation$ContinuesAfter"),
+      Class.forName("trading.execution.AuthoritativelySequenced"),
+      Class.forName("trading.execution.SourceCheckpoint"),
+      Class.forName("trading.execution.SourceCompleteness"),
+      Class.forName("trading.execution.ExecutionLifecycle")
     ).foreach: representation =>
       assert(Modifier.isFinal(representation.getModifiers), s"${representation.getName} is not final")
       assert(
         representation.getDeclaredConstructors.forall(constructor => Modifier.isPrivate(constructor.getModifiers)),
         s"${representation.getName} exposes a non-private JVM constructor"
       )
+
+  test("completed JAR rejects unknown Java ordering alternatives at construction"):
+    val result = compileJava(javaRoot.resolve("positive/RejectedExecutionAlternatives.java"))
+    assert(result.succeeded, result.diagnostics)
+    val loader = new URLClassLoader(Array(result.output.toUri.toURL), getClass.getClassLoader)
+    try
+      val fixture = Class.forName("external.execution.positive.RejectedExecutionAlternatives", true, loader)
+      assertEquals(
+        fixture.getMethod("guardsRejectUnknownAlternatives").invoke(null),
+        java.lang.Boolean.TRUE
+      )
+    finally loader.close()
 
     val rejected = compileJava(javaRoot.resolve("negative/RejectedExecutionIdentityConstruction.java"))
     assert(!rejected.succeeded, "same-package Java unexpectedly forged execution identities")
@@ -184,12 +229,14 @@ class ExecutionLifecycleCompilerBoundarySuite extends FunSuite:
     compile(copy, classpath)
 
   private def compile(source: Path, classpath: String): Compilation =
-    val output   = Files.createTempDirectory("execution-classes-")
-    val reporter = new StoreReporter()
-    val _        = Main.process(
-      Array("-classpath", classpath, "-d", output.toString, "-Werror", "-source:future", source.toString),
-      reporter
-    )
+    compile(List(source), classpath)
+
+  private def compile(sources: List[Path], classpath: String): Compilation =
+    val output    = Files.createTempDirectory("execution-classes-")
+    val reporter  = new StoreReporter()
+    val arguments =
+      List("-classpath", classpath, "-d", output.toString, "-Werror", "-source:future") ++ sources.map(_.toString)
+    val _ = Main.process(arguments.toArray, reporter)
     Compilation(output, reporter.allErrors.map(_.message), reporter.allWarnings.map(_.message))
 
   private def compileJava(source: Path): JavaCompilation =

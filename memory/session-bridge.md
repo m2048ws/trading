@@ -15,23 +15,23 @@ updated: 2026-09-01
 - **Change**: establish-actual-execution-lifecycle
 - **Worktree**: /Users/m/src/money/.worktrees/establish-actual-execution-lifecycle
 - **Phase at Checkpoint**: applying
-- **Task Group at Checkpoint**: 1
-- **Observed Run Revision**: 2
-- **Last Verified HEAD**: 57954ba7a534b44587eab28b9e3c45f94d1eae6c
+- **Task Group at Checkpoint**: 2
+- **Observed Run Revision**: 3
+- **Last Verified HEAD**: cc8162464633fdeb6c5006f2ce10c0608cdff32e
 
-The phase and revision above are the required next checkpoint carried by Task Group 1. Live Run Contract
-`run-faf4d455-8dbc-4369-a994-66f868cfa7ef` remains `applying` at revision 1 until Corgi acknowledges that commit.
+The phase and revision above are the required next checkpoint carried by Task Group 2. Live Run Contract
+`run-faf4d455-8dbc-4369-a994-66f868cfa7ef` remains `applying` at revision 2 until Corgi acknowledges that commit.
 
 ## Next Action
-- Commit and acknowledge `establish-actual-execution-lifecycle` Task Group 1, open its draft PR, then implement Task
-  Group 2. Verify, Human Review, Human QA, and Archive remain separate gates.
+- Commit and acknowledge `establish-actual-execution-lifecycle` Task Group 2, synchronize draft PR #35, then implement
+  Task Group 3. Verify, Human Review, Human QA, and Archive remain separate gates.
 
 ## Blockers
-- Task Group 1's execution-lifecycle module, checked identity foundation, completed-JAR boundary evidence, and this
-  next-state checkpoint.
+- none
 
 ## Uncommitted Work
-- none
+- Task Group 2's qualified authority products, ordering/completeness evidence, typed lifecycle construction,
+  completed-JAR/JVM guards, and this next-state checkpoint.
 
 ## Discoveries
 - The archived `establish-pure-instrument-economics` boundary was reconciled from commit `86613ee` before S-02
@@ -393,7 +393,7 @@ The phase and revision above are the required next checkpoint carried by Task Gr
   policy, and risk cannot import actual execution. The execution classpath admits only quantities/reference data,
   instrument economics, order model, Scala, and pure support while rejecting application/runtime, scenario/fee/risk,
   codecs, effects, streams, clients, persistence, telemetry, venue SDKs, and JMH.
-- The final Task Group 1 gate passes formatting, JMH compilation, and 918 tests: the prior 913-test repository matrix
+- The final Task Group 1 gate passes formatting, JMH compilation, and 924 tests: the prior 913-test repository matrix
   plus five execution identity tests, with six execution completed-JAR tests included in the 164-test adversarial
   total. `javap -p`, same-package Java compilation, and reflection confirm that the remediated constructor bridge is
   private and exposes no privileged lookup helper.
@@ -401,6 +401,25 @@ The phase and revision above are the required next checkpoint carried by Task Gr
   broad reverse-dependency proxy with a quantities-only completed-artifact classpath. The final scope, behavior,
   architecture, JVM security, dependency, performance-applicability, and evidence pass has no findings, changed no
   file, human-triaged no finding, and is not canonical Verify or Human Review.
+- Task Group 1's aggregate count was initially transcribed as 918 in its bridge/evidence summary; the command output
+  proves the correct count is 924 (the 913-test baseline plus five identity and six boundary tests). This forward
+  correction does not rewrite canonical evidence or Run history.
+- Source/account-qualified event, source-order, fill, stream, and position products now preserve native identity and
+  nominal scope. Ordering is an honest closed sum of explicitly unsequenced or authoritative position plus explicit
+  origin/continuation; checkpoint and completeness values retain the same qualified stream authority, including gap
+  and rewind-shaped evidence for later deterministic evaluation.
+- Checked lifecycle creation retains one trusted instrument, immutable typed order, logical execution-order identity,
+  lineage, execution target, dependent position/base/quote dimensions, exact ordered lots, initial signed position,
+  and the instrument's position grid. Missing identities and independent order/intent/lots instrument mismatches
+  accumulate in stable non-empty order before the only trusted constructor is reached.
+- Scala and Java completed-JAR fixtures, runtime subclass guards, reflection, serialization probes, and `javap -p`
+  prove qualified references, ordering evidence, checkpoints, completeness, targets, error collections, and lifecycle
+  construction cannot be forged by constructors, copies, package spoofing, unknown alternatives, or erased inputs.
+- The final Task Group 2 gate passes repository formatting and 933 tests: 11 execution-lifecycle tests and 167
+  completed-JAR/compiler/adversarial tests alongside the unchanged module suites. The automated final review checked
+  scope, structural equality/hash, dimensional retention, deterministic accumulation, JVM authority, dependency
+  purity, performance/security applicability, and evidence with no findings; it changed no file, human-triaged no
+  finding, and is not canonical Verify or Human Review.
 
 ## Promotion Queue
 - Review agent-configuration constraints before promoting any item to `memory/MEMORY.md`.
@@ -408,3 +427,5 @@ The phase and revision above are the required next checkpoint carried by Task Gr
   identity authority model.
 - After whole-change approval, evaluate promotion of the JVM-private cached-method-handle and completed-JAR
   reverse-dependency guard pattern.
+- After whole-change approval, evaluate promotion of qualified source/account authority and explicit ordering,
+  continuation, checkpoint, and completeness evidence.
