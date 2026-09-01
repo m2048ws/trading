@@ -1,9 +1,10 @@
 # Coding Corgi Flow pilot
 
 This directory pins the reversible Corgi delivery pilot. Corgi v4 bootstrap, the accepted Foundation/portfolio RFCs,
-and semantic rehydration are complete. Admission is enabled for exactly the five names in `pilot.json`; all other
-changes remain rejected. GitHub-native dependencies gate claims: Issues #7 and #8 are blocked by the external
-instrument-economics tracker #11, while Issues #9 and #10 are blocked by #7.
+and semantic rehydration are complete. Admission includes the five architecture-portfolio deliveries plus the accepted
+RFC-0003/S-01 actual-execution-lifecycle delivery named in `pilot.json`; all other changes remain rejected.
+GitHub-native dependencies gate claims: Issues #7 and #8 are blocked by the external instrument-economics tracker #11,
+while Issues #9 and #10 are blocked by #7.
 
 ## Reproduce the runtime and preflight
 

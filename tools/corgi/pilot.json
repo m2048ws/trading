@@ -21,7 +21,8 @@
     "separate-order-and-execution-scenario-modules",
     "introduce-pure-risk-module",
     "introduce-pure-fee-policy-module",
-    "introduce-versioned-boundary-codecs"
+    "introduce-versioned-boundary-codecs",
+    "establish-actual-execution-lifecycle"
   ],
   "authority": {
     "localCorgiCommits": true,
