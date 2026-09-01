@@ -1,0 +1,27 @@
+schemaVersion: 1
+kind: rfc-slice
+deliveryRef: RFC-0002-architecture-portfolio/S-01-application-runtime-foundation
+rfc:
+  id: RFC-0002-architecture-portfolio
+  path: rfcs/RFC-0002-architecture-portfolio
+  acceptedCommit: 7b6f7a58f4dcbb8fb4bbdf3a8ba74ba66f222cce
+  digest: sha256:a00c0cf1e3a4440bfce7dc828ad4ac119414f10d72e8d8c52c613403ef5977e2
+slice:
+  id: S-01-application-runtime-foundation
+  digest: sha256:66fe6a6bd715fce2574d7b649c4e739f1a2c6edbb6d1f05110651c27c1673b8a
+acceptance:
+  - id: AC-001
+    evidence: automated
+  - id: AC-002
+    evidence: both
+  - id: AC-003
+    evidence: human
+  - id: AC-004
+    evidence: automated
+deliveryBindingDigest: sha256:facd1d79452d06ae2db05d53f1c57b280715b804f9852896ef83464611e207d0
+tracker:
+  provider: github
+  idempotencyKey: 3cf00c5a7b86e1a408b67fba3aaf4a3cbd7e80e932f56cedf67f091a4fa024bc
+  issue:
+    id: '6'
+    url: https://github.com/m2048ws/trading/issues/6

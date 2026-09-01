@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 3,
+  "scope": "group-10",
+  "runId": "run-064db6bc-938e-4619-b87f-abc218cb0564",
+  "references": [
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fexecution-scenario-compiler%2Fnegative%2FPackageSpoofScenarioConstruction.scala#sha256:3731d39d8bb5446e06b645a05f3189babaf807f571165ff91bbe4b2fb25de635",
+      "sourcePath": "adversarial-boundary/src/test/resources/execution-scenario-compiler/negative/PackageSpoofScenarioConstruction.scala",
+      "digest": "sha256:3731d39d8bb5446e06b645a05f3189babaf807f571165ff91bbe4b2fb25de635",
+      "archivePath": "references/blobs/3731d39d8bb5446e06b645a05f3189babaf807f571165ff91bbe4b2fb25de635"
+    },
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Forder-model-compiler%2Fnegative%2FPackageSpoofOrderConstruction.scala#sha256:f0c77e35d9e958ac0f1e2658c14e74e511acfe212bf40cfbcb1759215cfa091f",
+      "sourcePath": "adversarial-boundary/src/test/resources/order-model-compiler/negative/PackageSpoofOrderConstruction.scala",
+      "digest": "sha256:f0c77e35d9e958ac0f1e2658c14e74e511acfe212bf40cfbcb1759215cfa091f",
+      "archivePath": "references/blobs/f0c77e35d9e958ac0f1e2658c14e74e511acfe212bf40cfbcb1759215cfa091f"
+    },
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Forder-scenario-java%2Fnegative%2FPackageSpoofOrderConstruction.java#sha256:ad23438b91e6ad959490e75e886006394bae9e1121d6f74533ba9cd3b288b7b3",
+      "sourcePath": "adversarial-boundary/src/test/resources/order-scenario-java/negative/PackageSpoofOrderConstruction.java",
+      "digest": "sha256:ad23438b91e6ad959490e75e886006394bae9e1121d6f74533ba9cd3b288b7b3",
+      "archivePath": "references/blobs/ad23438b91e6ad959490e75e886006394bae9e1121d6f74533ba9cd3b288b7b3"
+    },
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Forder-scenario-java%2Fnegative%2FPackageSpoofScenarioConstruction.java#sha256:458c9678c9ccbe95c0f7d586dc05ccb85d68061ccfb14f272809f01b8abbd7d2",
+      "sourcePath": "adversarial-boundary/src/test/resources/order-scenario-java/negative/PackageSpoofScenarioConstruction.java",
+      "digest": "sha256:458c9678c9ccbe95c0f7d586dc05ccb85d68061ccfb14f272809f01b8abbd7d2",
+      "archivePath": "references/blobs/458c9678c9ccbe95c0f7d586dc05ccb85d68061ccfb14f272809f01b8abbd7d2"
+    },
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FEconomicsCompilerBoundarySuite.scala#sha256:f506bc083d7db84edecddd1c73cd515fe3d07124af6d5a01f91441dde5d0f2b4",
+      "sourcePath": "adversarial-boundary/src/test/scala/external/EconomicsCompilerBoundarySuite.scala",
+      "digest": "sha256:f506bc083d7db84edecddd1c73cd515fe3d07124af6d5a01f91441dde5d0f2b4",
+      "archivePath": "references/blobs/f506bc083d7db84edecddd1c73cd515fe3d07124af6d5a01f91441dde5d0f2b4"
+    },
+    {
+      "reference": "file:build.sbt#sha256:efb082cc63779899e258cbf9a3e51b71b4c4259bc73670ada206f916120d08a1",
+      "sourcePath": "build.sbt",
+      "digest": "sha256:efb082cc63779899e258cbf9a3e51b71b4c4259bc73670ada206f916120d08a1",
+      "archivePath": "references/blobs/efb082cc63779899e258cbf9a3e51b71b4c4259bc73670ada206f916120d08a1"
+    },
+    {
+      "reference": "file:execution-scenario%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fscenario%2FScenario.scala#sha256:c4957331192a12cece9bf5484752326046f521f4b2a60a0b1864809bde61f2a3",
+      "sourcePath": "execution-scenario/src/main/scala/trading/scenario/Scenario.scala",
+      "digest": "sha256:c4957331192a12cece9bf5484752326046f521f4b2a60a0b1864809bde61f2a3",
+      "archivePath": "references/blobs/c4957331192a12cece9bf5484752326046f521f4b2a60a0b1864809bde61f2a3"
+    },
+    {
+      "reference": "file:memory%2Fsession-bridge.md#sha256:fe36ba2238eeda1ae3cd27520a312a65a689e69261abd033cbff7353909916a6",
+      "sourcePath": "memory/session-bridge.md",
+      "digest": "sha256:fe36ba2238eeda1ae3cd27520a312a65a689e69261abd033cbff7353909916a6",
+      "archivePath": "references/blobs/fe36ba2238eeda1ae3cd27520a312a65a689e69261abd033cbff7353909916a6"
+    },
+    {
+      "reference": "file:openspec%2Fchanges%2Fseparate-order-and-execution-scenario-modules%2Fcorgi%2Fsource.yaml#sha256:5d573cd0d12bbcffacb9b047475ee4beb81069dedabd420018b5d3f32f7acdd0",
+      "sourcePath": "openspec/changes/separate-order-and-execution-scenario-modules/corgi/source.yaml",
+      "digest": "sha256:5d573cd0d12bbcffacb9b047475ee4beb81069dedabd420018b5d3f32f7acdd0",
+      "archivePath": "references/blobs/5d573cd0d12bbcffacb9b047475ee4beb81069dedabd420018b5d3f32f7acdd0"
+    },
+    {
+      "reference": "file:openspec%2Fchanges%2Fseparate-order-and-execution-scenario-modules%2Fcorgi%2Ftraceability.yaml#sha256:a265f9092baad966ec7ef5f731ab1a889dc3542f8bd9a5e893b1f8338af6de5f",
+      "sourcePath": "openspec/changes/separate-order-and-execution-scenario-modules/corgi/traceability.yaml",
+      "digest": "sha256:a265f9092baad966ec7ef5f731ab1a889dc3542f8bd9a5e893b1f8338af6de5f",
+      "archivePath": "references/blobs/a265f9092baad966ec7ef5f731ab1a889dc3542f8bd9a5e893b1f8338af6de5f"
+    },
+    {
+      "reference": "file:openspec%2Fchanges%2Fseparate-order-and-execution-scenario-modules%2Ftasks.md#sha256:65cccfc0927a6a6a65e2fdf023fb80585232c24983c2036c5dedb66c51c9442c",
+      "sourcePath": "openspec/changes/separate-order-and-execution-scenario-modules/tasks.md",
+      "digest": "sha256:65cccfc0927a6a6a65e2fdf023fb80585232c24983c2036c5dedb66c51c9442c",
+      "archivePath": "references/blobs/65cccfc0927a6a6a65e2fdf023fb80585232c24983c2036c5dedb66c51c9442c"
+    },
+    {
+      "reference": "file:order-model%2Fsrc%2Fmain%2Fscala%2Ftrading%2Forder%2FOrder.scala#sha256:d773cf584f9ed812dae132258662962a12c233cf6d5cd4923b28ef1851368816",
+      "sourcePath": "order-model/src/main/scala/trading/order/Order.scala",
+      "digest": "sha256:d773cf584f9ed812dae132258662962a12c233cf6d5cd4923b28ef1851368816",
+      "archivePath": "references/blobs/d773cf584f9ed812dae132258662962a12c233cf6d5cd4923b28ef1851368816"
+    },
+    {
+      "reference": "file:tools%2Fcorgi%2Fpilot.json#sha256:24d0716a12c530d02a502503abe4cf478aae0681eefd594257285e5207f1e582",
+      "sourcePath": "tools/corgi/pilot.json",
+      "digest": "sha256:24d0716a12c530d02a502503abe4cf478aae0681eefd594257285e5207f1e582",
+      "archivePath": "references/blobs/24d0716a12c530d02a502503abe4cf478aae0681eefd594257285e5207f1e582"
+    }
+  ]
+}

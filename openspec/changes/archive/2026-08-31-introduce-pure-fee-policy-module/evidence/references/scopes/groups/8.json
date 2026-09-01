@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 3,
+  "scope": "group-8",
+  "runId": "run-f72899aa-a667-4f01-8c8c-22d2fc1d784a",
+  "references": [
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Feconomics-compiler%2Fpositive%2FCompleteCompositionClient.scala#sha256:b54b5a579bef83486e58241e2c08e2be82645def51cb6d91c9bad7b7cb189d3d",
+      "sourcePath": "adversarial-boundary/src/test/resources/economics-compiler/positive/CompleteCompositionClient.scala",
+      "digest": "sha256:b54b5a579bef83486e58241e2c08e2be82645def51cb6d91c9bad7b7cb189d3d",
+      "archivePath": "references/blobs/b54b5a579bef83486e58241e2c08e2be82645def51cb6d91c9bad7b7cb189d3d"
+    },
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Feconomics-compiler%2FSharedEconomicsSetup.scala#sha256:ad3643e6acd92b04394c844191d761a63995b4c4333f1bf763c20e72967896ce",
+      "sourcePath": "adversarial-boundary/src/test/resources/economics-compiler/SharedEconomicsSetup.scala",
+      "digest": "sha256:ad3643e6acd92b04394c844191d761a63995b4c4333f1bf763c20e72967896ce",
+      "archivePath": "references/blobs/ad3643e6acd92b04394c844191d761a63995b4c4333f1bf763c20e72967896ce"
+    },
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Ffee-policy-compiler%2Fnegative%2FUnlawfulPolicyApi.scala#sha256:a905257ac66001d2d47013587b2f823628e6a02d7d018f07ed42469045ae4e8c",
+      "sourcePath": "adversarial-boundary/src/test/resources/fee-policy-compiler/negative/UnlawfulPolicyApi.scala",
+      "digest": "sha256:a905257ac66001d2d47013587b2f823628e6a02d7d018f07ed42469045ae4e8c",
+      "archivePath": "references/blobs/a905257ac66001d2d47013587b2f823628e6a02d7d018f07ed42469045ae4e8c"
+    },
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Ffee-policy-compiler%2Fpositive%2FFeePolicyBoundaryClient.scala#sha256:954787352b722221e93b423650eea340bbb57b387ff30975442f81a2f7d16c8c",
+      "sourcePath": "adversarial-boundary/src/test/resources/fee-policy-compiler/positive/FeePolicyBoundaryClient.scala",
+      "digest": "sha256:954787352b722221e93b423650eea340bbb57b387ff30975442f81a2f7d16c8c",
+      "archivePath": "references/blobs/954787352b722221e93b423650eea340bbb57b387ff30975442f81a2f7d16c8c"
+    },
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FEconomicsCompilerBoundarySuite.scala#sha256:24fd860360730c4f82ba297d82260edd7abe569e1b25f34e7aa7c79f0832efe6",
+      "sourcePath": "adversarial-boundary/src/test/scala/external/EconomicsCompilerBoundarySuite.scala",
+      "digest": "sha256:24fd860360730c4f82ba297d82260edd7abe569e1b25f34e7aa7c79f0832efe6",
+      "archivePath": "references/blobs/24fd860360730c4f82ba297d82260edd7abe569e1b25f34e7aa7c79f0832efe6"
+    },
+    {
+      "reference": "file:docs%2Farchitecture-charter-audit.md#sha256:2acafa1abc57270567f9e376600902d5a258299bc015f722b497d8f72d7f3fd5",
+      "sourcePath": "docs/architecture-charter-audit.md",
+      "digest": "sha256:2acafa1abc57270567f9e376600902d5a258299bc015f722b497d8f72d7f3fd5",
+      "archivePath": "references/blobs/2acafa1abc57270567f9e376600902d5a258299bc015f722b497d8f72d7f3fd5"
+    },
+    {
+      "reference": "file:fee-policy%2FREADME.md#sha256:08adca205113ae9b4f2d45751e48cdd32f6ee86237b699acdc5725a3f660eb07",
+      "sourcePath": "fee-policy/README.md",
+      "digest": "sha256:08adca205113ae9b4f2d45751e48cdd32f6ee86237b699acdc5725a3f660eb07",
+      "archivePath": "references/blobs/08adca205113ae9b4f2d45751e48cdd32f6ee86237b699acdc5725a3f660eb07"
+    },
+    {
+      "reference": "file:fee-policy%2Fsrc%2Ftest%2Fscala%2Ftrading%2Ffee%2FFeeCalculationSuite.scala#sha256:1f0a406ff667f5b927d38a7043c4524239d26c3f60416db24889924fd173dcfe",
+      "sourcePath": "fee-policy/src/test/scala/trading/fee/FeeCalculationSuite.scala",
+      "digest": "sha256:1f0a406ff667f5b927d38a7043c4524239d26c3f60416db24889924fd173dcfe",
+      "archivePath": "references/blobs/1f0a406ff667f5b927d38a7043c4524239d26c3f60416db24889924fd173dcfe"
+    },
+    {
+      "reference": "file:fee-policy%2Fsrc%2Ftest%2Fscala%2Ftrading%2FFeePolicyIntegrationSuite.scala#sha256:6ccbcd9d6a0a9f6cd4f253a0592489b5f95897fd36c3aa8ad7028c598f26bef1",
+      "sourcePath": "fee-policy/src/test/scala/trading/FeePolicyIntegrationSuite.scala",
+      "digest": "sha256:6ccbcd9d6a0a9f6cd4f253a0592489b5f95897fd36c3aa8ad7028c598f26bef1",
+      "archivePath": "references/blobs/6ccbcd9d6a0a9f6cd4f253a0592489b5f95897fd36c3aa8ad7028c598f26bef1"
+    },
+    {
+      "reference": "file:memory%2Fsession-bridge.md#sha256:83ae0373d41316d90c3dc9908e71a6318eb627a46e904b3f28d5b9a8b92e3ab2",
+      "sourcePath": "memory/session-bridge.md",
+      "digest": "sha256:83ae0373d41316d90c3dc9908e71a6318eb627a46e904b3f28d5b9a8b92e3ab2",
+      "archivePath": "references/blobs/83ae0373d41316d90c3dc9908e71a6318eb627a46e904b3f28d5b9a8b92e3ab2"
+    },
+    {
+      "reference": "file:openspec%2Fchanges%2Fintroduce-pure-fee-policy-module%2Fimplementation-notes%2Ftask-group-8.md#sha256:c88ddf215483356bbeac6a8689f949b1dd239a3305391e7457a86fd22fc029c8",
+      "sourcePath": "openspec/changes/introduce-pure-fee-policy-module/implementation-notes/task-group-8.md",
+      "digest": "sha256:c88ddf215483356bbeac6a8689f949b1dd239a3305391e7457a86fd22fc029c8",
+      "archivePath": "references/blobs/c88ddf215483356bbeac6a8689f949b1dd239a3305391e7457a86fd22fc029c8"
+    },
+    {
+      "reference": "file:openspec%2Fconfig.yaml#sha256:8c7ddc283b3730415e6f6c5bd8f6e24cc386c3f0b07a08c218bf3291a811c75a",
+      "sourcePath": "openspec/config.yaml",
+      "digest": "sha256:8c7ddc283b3730415e6f6c5bd8f6e24cc386c3f0b07a08c218bf3291a811c75a",
+      "archivePath": "references/blobs/8c7ddc283b3730415e6f6c5bd8f6e24cc386c3f0b07a08c218bf3291a811c75a"
+    },
+    {
+      "reference": "file:risk%2FREADME.md#sha256:c92053fe859342cda009a610690b92052e71a7e9ffbfb923639cd4f3b0ba73b1",
+      "sourcePath": "risk/README.md",
+      "digest": "sha256:c92053fe859342cda009a610690b92052e71a7e9ffbfb923639cd4f3b0ba73b1",
+      "archivePath": "references/blobs/c92053fe859342cda009a610690b92052e71a7e9ffbfb923639cd4f3b0ba73b1"
+    }
+  ]
+}

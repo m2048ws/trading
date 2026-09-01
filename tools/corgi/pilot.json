@@ -3,9 +3,9 @@
   "enabled": true,
   "blockedReason": null,
   "corgi": {
-    "version": "4.0.0-rc2",
+    "version": "4.0.0-rc2-money.2",
     "binary": "tools/corgi/node_modules/.bin/corgispec",
-    "npmIntegrity": "sha512-J+i7s4BthgIDvnMFTq/o/moRmnELa9EZ7So/a+3x+0CcUvzgASt/mESHX+/aTd3KuETk5onEkXZqZUhV/RX+ZQ=="
+    "npmIntegrity": "sha512-Gs9kVgOg+rezg8sVojrgqZ85htTQTL/3gEqvAThwVpAYIFKkqJRyIbj0hfnplE0hsYiX22cEOqVAo8uVl1iOZg=="
   },
   "github": {
     "repository": "m2048ws/trading",

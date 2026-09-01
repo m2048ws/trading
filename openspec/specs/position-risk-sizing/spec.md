@@ -4,84 +4,246 @@
 Defines exact downside-risk measurement and deterministic maximum-lot selection by evaluating complete fee-inclusive trade scenarios on an instrument's discrete lot grid.
 ## Requirements
 ### Requirement: Downside risk from net PnL
-The instrument-owned `sizing` capability SHALL calculate downside risk for a fee-inclusive PnL value in the instrument's settlement dimension as the exact nonnegative quantity:
+A pure risk operation SHALL consume an explicit instrument and core `Pnl` and return
+`NonNegative[Quantity[settle.D]]` exactly as:
 
 ```text
 max(0, -netPnl)
 ```
 
-The operation SHALL preserve exact rational semantics and SHALL NOT quantize the risk value or convert it to floating point.
+The operation SHALL validate ordinary runtime instrument identity, use the existing quantity/refinement algebra,
+preserve exact rational semantics, and perform no quantization, floating-point conversion, or raw-scalar reconstruction.
+`Instrument` SHALL NOT expose an owned sizing capability.
 
 #### Scenario: Measure a losing scenario
-- **WHEN** net PnL is exact `-17/3` in the settlement asset
-- **THEN** `sizing` returns exact nonnegative downside risk `17/3` in that asset
+- **WHEN** net PnL is exact `-17/3` in the supplied instrument's settlement dimension
+- **THEN** downside risk is refined nonnegative exact `17/3`
 
 #### Scenario: Clamp profitable risk to zero
 - **WHEN** net PnL is zero or positive
-- **THEN** downside risk is exact zero
+- **THEN** downside risk is the lawful refined zero in the same settlement dimension
 
-### Requirement: Maximum discrete-lot selection
-The instrument-owned `sizing` capability SHALL expose maximum-lot selection that accepts a nonnegative risk budget in the instrument settlement dimension, a positive whole-number lot-count cap, an instrument-bound fee schedule, and a total scenario builder from positive candidate `Lots` to a complete round-trip scenario. It SHALL return the greatest candidate lot count no larger than the cap whose fee-inclusive downside risk does not exceed the budget, or no result when even one lot exceeds the budget.
+#### Scenario: Reject foreign PnL
+- **WHEN** instrument and PnL carry different runtime `InstrumentId` values
+- **THEN** risk evaluation returns a typed identity error before inspecting net PnL
 
-Candidates SHALL be constructed through the exact instrument's `Lots` constructor and evaluated using the same `valuation` and `fees` path exposed to ordinary callers. Sizing SHALL NOT manufacture fractional lots, mix instrument paths, compare incompatible settlement dimensions, or omit entry or exit fees.
+#### Scenario: Keep risk downstream
+- **WHEN** Scala depends only on instrument economics
+- **THEN** downside-risk and sizing operations are absent from that artifact and remain owned by the pure risk artifact
 
-#### Scenario: Select the greatest affordable lot count
-- **WHEN** several positive candidates up to the cap satisfy the exact risk budget
-- **THEN** `sizing` returns the satisfying candidate with the greatest lot coordinate
-
-#### Scenario: Reject every positive candidate
-- **WHEN** the complete one-lot scenario already exceeds the risk budget
-- **THEN** sizing returns no lot value rather than zero or a fractional lot
-
-#### Scenario: Respect the cap
-- **WHEN** every evaluated candidate through the cap satisfies the budget
-- **THEN** sizing returns exactly the capped positive lot count
-
-#### Scenario: Include both order legs
-- **WHEN** entry and adverse-exit scenarios both produce trading fees
-- **THEN** sizing measures risk from price PnL plus both exact fee contributions
-
-### Requirement: Nonlinear fee and rounding correctness
-The baseline sizing behavior SHALL evaluate discrete candidate scenarios and SHALL NOT assume that risk or fees are linear per lot. Percentage tiers, minimum fees, maker rebates, per-component quantization, and grid rounding MAY create stepped or non-monotone results. An optimized search SHALL be observationally equivalent to complete candidate evaluation and SHALL require an explicit proven or checked monotonicity condition before discarding candidates based on ordering.
-
-#### Scenario: Cross a minimum-fee threshold
-- **WHEN** a minimum fee makes one-lot risk differ from a linear multiple of larger-lot risk
-- **THEN** sizing evaluates the actual fee result for each relevant candidate and returns the true greatest satisfying lot count
-
-#### Scenario: Preserve per-candidate fee quantization
-- **WHEN** adjacent lot counts quantize to different fee-grid coordinates
-- **THEN** each candidate's risk uses its own quantized fee rather than a scaled one-lot fee
-
-#### Scenario: Avoid an unjustified binary search
-- **WHEN** no monotonicity capability is supplied for the scenario builder and fee schedule
-- **THEN** sizing does not skip candidate lots based on a monotonicity assumption
+#### Scenario: Preserve the refinement for later comparison
+- **WHEN** downside risk is compared with a nonnegative risk budget
+- **THEN** both operands retain typed settlement dimension and nonnegative evidence without another sign check
 
 ### Requirement: Sizing failures are explicit
-If construction or evaluation of a required candidate fails because of an invalid scenario, missing conversion, fee-policy failure, or another typed economics error, sizing SHALL return that failure rather than treating the candidate as unaffordable, skipping it, or returning a smaller result. Candidate evaluation order SHALL be deterministic and SHALL not change the selected result.
+Monotone-model construction failures SHALL be distinct from unaffordable assessed lot sizes. Independent model
+structure, identity, domain, breakpoint, slope, boundary, and dimension violations SHALL accumulate in deterministic
+source order and prevent construction. Once construction succeeds, primary maximum-affordable sizing SHALL be total
+for every refined budget because every observation in the model's declared range is already known to be valid.
+
+The explicit exhaustive fallback SHALL preserve caller-owned typed evaluation causes with their exact positive lot
+coordinates and SHALL return no affordability decision after an unknown required observation. Failures SHALL NOT be
+thrown, converted to strings, skipped, treated as excessive risk, or replaced by a smaller selected lot size.
+
+#### Scenario: Accumulate independent curve violations
+- **WHEN** a proposed piecewise model contains multiple independently detectable domain, breakpoint, and boundary
+  violations
+- **THEN** construction returns every violation in stable source order and no monotone model
+
+#### Scenario: Search only after validation
+- **WHEN** a monotone lot-risk model has been constructed successfully
+- **THEN** maximum-affordable sizing returns a decision without an observation-failure branch
+
+#### Scenario: Preserve an exhaustive evaluation failure
+- **WHEN** the explicit fallback evaluator returns a typed fee, conversion, scenario, or PnL cause at lot `n`
+- **THEN** sizing retains `n` and that cause and returns no partial maximum
 
 #### Scenario: Propagate a missing conversion
-- **WHEN** a candidate produces a fee asset absent from its market state's settlement conversions
-- **THEN** sizing fails with the missing-conversion error instead of silently reducing the candidate size
+- **WHEN** the explicit fallback evaluator reports a missing settlement conversion at lot `n`
+- **THEN** sizing returns a located failure retaining `n` and the typed missing-conversion cause rather than a smaller
+  affordability decision
 
 #### Scenario: Propagate an invalid adverse exit
-- **WHEN** the scenario builder produces an exit that does not close the candidate entry position
-- **THEN** sizing fails with the round-trip validation error
+- **WHEN** upstream scenario evaluation reports that an adverse exit does not close the proposed position at lot `n`
+- **THEN** exhaustive sizing returns the located typed scenario cause and no partial maximum
 
 #### Scenario: Reject a scenario for a different candidate count
-- **WHEN** the builder is invoked for candidate `n` but returns a round trip whose absolute held-position coordinate is `m != n`
-- **THEN** sizing stops at the first mismatch with a typed error preserving `n` and the signed observed held-position coordinate rather than evaluating that scenario
+- **WHEN** an evaluator requested for lot `n` returns a typed mismatch showing a different held-position coordinate
+- **THEN** exhaustive sizing stops at `n`, preserves the requested and observed coordinates in the caller-owned cause,
+  and does not evaluate a later lot
 
 #### Scenario: Return the same maximum under equivalent traversal
-- **WHEN** two implementations evaluate all required candidates in different deterministic orders
-- **THEN** they return the same greatest satisfying lot count or the same underlying evaluation failure policy
+- **WHEN** equivalent pure exhaustive evaluators produce the same successful assessment or typed failure at every
+  required lot coordinate
+- **THEN** deterministic ascending traversal returns the same greatest affordable lot or the same first located failure
 
 ### Requirement: Position-sizing scope is bounded
-This capability SHALL size against the supplied complete scenario's exact price and trading-fee downside only. It SHALL NOT imply fill probability, guarantee execution of maker-only or limit orders, calculate margin or liquidation thresholds, forecast funding, or optimize across portfolios. Such concerns require separate explicit inputs and future capabilities.
+Primary maximum-affordable sizing SHALL describe a standalone proposed position in one instrument from flat exposure
+under one immutable sizing context. Instrument identity, direction, valuation inputs, adverse-price assumptions, fee
+inputs, and the model's lot range SHALL remain fixed while lot count varies. Thresholds, caps, quantization, and nested
+liquidity effects MAY vary with lot count only when represented by the checked curve algebra without violating the
+nondecreasing downside law.
+
+Neither primary nor exhaustive sizing SHALL imply fill probability, guarantee execution, include an existing account
+position, calculate margin or liquidation thresholds, forecast funding, acquire changing data, or make
+diversification, concentration, collateral, hedge, or portfolio-risk claims. Account- and portfolio-aware sizing require
+a later explicit capability whose feasible set and objective are not mislabeled as an isolated monotone curve.
+
+#### Scenario: Hold sizing context fixed
+- **WHEN** primary sizing compares two lot counts
+- **THEN** both observations use the same instrument, direction, valuation state, adverse-price assumptions, fee inputs,
+  and curve version
 
 #### Scenario: Treat maker-only PnL as conditional
-- **WHEN** a scenario assumes a completed maker-only entry
-- **THEN** sizing calculates the conditional fee-inclusive risk of that completed scenario without asserting that the order will fill
+- **WHEN** an upstream model assumes completed maker-only, limit, or sliced execution
+- **THEN** sizing evaluates the resulting immutable conditional loss model without asserting that execution will occur
+
+#### Scenario: Exclude current-position effects
+- **WHEN** an existing position could make an additional order reduce or hedge account risk
+- **THEN** that problem is outside standalone monotone sizing and requires an explicit account/portfolio capability
 
 #### Scenario: Exclude liquidation mechanics
-- **WHEN** no liquidation or margin capability is supplied
-- **THEN** the sizing result expresses only the configured PnL-based risk budget
+- **WHEN** no liquidation or margin model is present
+- **THEN** the decision expresses only the supplied exact downside-budget rule
+
+### Requirement: Pure risk artifact and lot-risk assessment
+Exact downside-risk and lot sizing SHALL be delivered by a pure risk artifact depending only on quantities and
+instrument economics. Instrument economics, order model, execution scenarios, and fee policy SHALL NOT depend on risk.
+The risk artifact SHALL contain no market-data acquisition, catalog lookup, clock, persistence, account service,
+concurrency, stream, transaction, tracing, metrics, or other effect interpreter.
+
+A lot-risk assessment SHALL associate one positive `Lots` value for an explicit instrument with one exact
+`NonNegative[Quantity[settle.D]]` downside value. It SHALL preserve the instrument identity and typed settlement
+dimension. It SHALL be produced by a lot-risk model or by a checked operation that consumes the explicit instrument,
+lots, and core `Pnl` and derives downside itself; no public constructor SHALL accept an unrelated risk claim.
+
+#### Scenario: Assess one lot size
+- **WHEN** a pure lot-risk model observes a valid positive lot size in its declared range
+- **THEN** it returns that exact lot size and its exact refined downside risk under the model's immutable inputs
+
+#### Scenario: Derive an assessment from PnL
+- **WHEN** checked construction receives coherent instrument-bound lots and core PnL
+- **THEN** it associates the lots with downside derived exactly from that PnL rather than accepting a separate risk
+
+#### Scenario: Reject mixed instrument identity
+- **WHEN** model inputs contain lots, PnL, or quantities for a different runtime `InstrumentId`
+- **THEN** construction returns a typed risk-location violation rather than creating a lot-risk assessment
+
+#### Scenario: Keep effects outside risk
+- **WHEN** downstream Scala depends on the risk artifact
+- **THEN** every operation consumes immutable values, checked pure models, or explicitly pure evaluators and no
+  operation returns an abstract effect
+
+### Requirement: Constructive monotone lot-risk model
+The primary sizing input SHALL be an immutable exact lot-risk model with a finite positive whole-number domain
+`1..cap`. Successful construction SHALL establish all of the following:
+
+- every lot count in the domain has exactly one total lot-risk assessment;
+- assessment preserves one instrument and settlement dimension throughout the domain; and
+- for all domain values `a <= b`, `risk(a) <= risk(b)`.
+
+The monotonic guarantee SHALL be introduced only by library-controlled construction from a closed exact curve
+representation, by complete validation of a finite table, or by combinators whose closure under monotonicity is tested
+as an algebraic law. Public callers SHALL NOT convert an arbitrary function into the model through a boolean,
+assertion, cast, marker subtype, type-class instance, or unchecked proof token.
+
+The exact curve vocabulary SHALL support the fixed isolated-instrument shapes needed by ordinary sizing, including
+affine loss with nonnegative marginal loss, checked piecewise loss with ordered boundaries and no downward boundary
+jump, pointwise addition and minimum/maximum of compatible monotone curves, and order-preserving grid quantization.
+Independent structural violations SHALL accumulate deterministically before construction succeeds. Algebraic
+construction SHALL inspect only explicit formula structure and breakpoints rather than enumerating `1..cap`; complete
+finite-table validation is the explicit linear-cost exception.
+
+#### Scenario: Construct an affine loss curve
+- **WHEN** exact first-lot loss is supplied, possibly signed, and every additional lot contributes a nonnegative exact
+  marginal loss
+- **THEN** construction produces a monotone model whose risk at `n` is exact `max(0, affineLoss(n))`
+
+#### Scenario: Construct a stepped venue-style curve
+- **WHEN** ordered fee or risk thresholds change marginal loss without making it negative and every boundary value is
+  no lower than the preceding value
+- **THEN** construction produces one exact piecewise monotone model across the declared cap
+
+#### Scenario: Preserve monotonicity through quantization
+- **WHEN** an exact monotone curve is quantized by an order-preserving uniform-grid operation
+- **THEN** the resulting lot-risk model remains monotone and retains exact grid semantics
+
+#### Scenario: Keep a large affine model compact
+- **WHEN** an affine or algebraically composed model declares a cap containing many lot counts
+- **THEN** construction validates its explicit formula structure without observing every lot in the domain
+
+#### Scenario: Reject a downward boundary
+- **WHEN** a proposed piecewise curve has a negative marginal interval or a boundary whose first value is below the
+  preceding interval's last value
+- **THEN** construction returns the corresponding non-empty structural violations and no monotone model
+
+#### Scenario: Reject an arbitrary promise
+- **WHEN** a caller has only a function from lots to risk and claims that it is monotone
+- **THEN** the primary API provides no unchecked way to turn that claim into a monotone lot-risk model
+
+#### Scenario: Validate a finite observed table
+- **WHEN** a complete finite table has exactly one coherent instrument-bound PnL observation for every lot from one
+  through the cap and the derived risks are nondecreasing
+- **THEN** checked construction may produce a monotone model while making the table's linear validation cost explicit
+
+### Requirement: Maximum affordable lot sizing
+Maximum-affordable sizing SHALL consume a `NonNegative[Quantity[settle.D]]` risk budget and a constructively validated
+monotone lot-risk model. It SHALL return a closed decision with exactly two business alternatives:
+
+- no positive lot size is affordable, retaining the assessed one-lot lower boundary; or
+- the affordable lot-risk assessment with the greatest coordinate, retaining either evidence that it equals the cap or
+  the assessed immediately following lot whose risk exceeds the budget.
+
+The operation SHALL use exact typed quantity order, SHALL observe no lot size more than once, and SHALL require no more
+than `2 + ceil(log2(cap))` distinct model observations. It SHALL NOT manufacture zero/fractional lots, discard the
+selected risk assessment, or linearly traverse the declared range when the primary monotone model is supplied.
+
+#### Scenario: Select an interior maximum
+- **WHEN** lot `n` is affordable and lot `n + 1` is unaffordable under a monotone model
+- **THEN** the decision retains the assessment for `n` and the unaffordable upper-bound assessment for `n + 1`
+
+#### Scenario: Return no affordable lot size
+- **WHEN** the assessed one-lot risk exceeds the exact budget
+- **THEN** the decision is the explicit no-affordable alternative and retains the one-lot assessment
+
+#### Scenario: Select the cap
+- **WHEN** the assessed capped lot size does not exceed the budget
+- **THEN** the decision selects the cap and records that the declared upper boundary was reached
+
+#### Scenario: Size a large discrete range efficiently
+- **WHEN** the cap contains hundreds, thousands, or more positive lot counts
+- **THEN** maximum sizing returns the exact result within the logarithmic distinct-observation bound
+
+#### Scenario: Preserve selected evidence
+- **WHEN** maximum sizing selects lot `n`
+- **THEN** the result exposes the exact lot-risk assessment used for the decision without reconstructing it from a raw
+  scalar
+
+### Requirement: Explicit exhaustive fallback
+A separately named exhaustive sizing boundary SHALL support a genuinely arbitrary deterministic pure evaluator over a
+finite positive lot range. It SHALL evaluate exact lot sizes in ascending order as required to find the true maximum
+without monotonicity, retain the greatest affordable successful assessment, and make its `O(cap)` observation cost
+explicit in API documentation.
+
+An evaluator failure SHALL retain its typed cause and exact lot coordinate and SHALL prevent a partial affordability
+decision. Evaluation SHALL stop at the first failed coordinate in ascending order, making failure choice deterministic
+without evaluating irrelevant later lot sizes. The fallback SHALL NOT reinterpret failure as excessive risk,
+manufacture a monotone capability, or be the default path selected implicitly by maximum-affordable sizing.
+
+#### Scenario: Find an affordable size after a decrease
+- **WHEN** an arbitrary finite risk evaluation is unaffordable at lot `n` but affordable at lot `n + 1`
+- **THEN** explicit exhaustive sizing continues and returns the true greatest affordable lot if every required
+  observation succeeds
+
+#### Scenario: Surface an unknown lot evaluation
+- **WHEN** exhaustive evaluation fails at a positive lot coordinate
+- **THEN** sizing returns that coordinate and typed cause rather than a smaller partial decision
+
+#### Scenario: Return the first ascending failure
+- **WHEN** evaluation would fail at two different lot coordinates
+- **THEN** exhaustive sizing returns the lower failed coordinate and does not evaluate the later one
+
+#### Scenario: Keep the fallback explicit
+- **WHEN** a caller has not constructed a monotone lot-risk model
+- **THEN** it must deliberately select the separately named exhaustive operation and accept its linear cost
+

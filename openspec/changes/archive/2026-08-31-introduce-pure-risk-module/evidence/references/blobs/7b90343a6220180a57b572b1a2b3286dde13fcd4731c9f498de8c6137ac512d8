@@ -1,0 +1,38 @@
+Canonical whole-change verification
+===================================
+Change: introduce-pure-risk-module
+Run: run-133327d8-35ce-46a2-9c8e-c82ab46f82c9
+Final HEAD: 02d15a1cf37f236a15f40f7a88179387caaa3e81
+Final tree: 0ce10b2c6ecaf7298b9a05c492d7747f1cabd59d
+Planning revision: sha256:39af122fd835f55b994cd903dd6dd402e45ddec5b28d8710f9134964e6fde5ae
+JDK: OpenJDK 26.0.2 (repository minimum remains release 25)
+SBT: 1.12.15
+Scala: 3.8.4
+
+$ sbt -batch clean test "benchmarks/Jmh/compile" scalafmtCheckAll
+Exit code: 0
+
+Dependency-ordered test results:
+- quantities: 601 passed, 0 failed
+- referenceData: 13 passed, 0 failed
+- application: 9 passed, 0 failed
+- runtime: 18 passed, 0 failed
+- instrumentEconomics: 13 passed, 0 failed
+- risk: 40 passed, 0 failed
+- orderModel: 7 passed, 0 failed
+- executionScenario: 10 passed, 0 failed
+- feePolicy: 11 passed, 0 failed
+- adversarialBoundary: 147 passed, 0 failed
+- total: 869 passed, 0 failed
+
+The non-published benchmarks project compiled successfully. scalafmtCheckAll checked every configured production and
+test source and exited successfully. The JDK emitted only its known sun.misc.Unsafe deprecation warnings from Scala/JMH.
+
+Git and delivery integrity:
+- git status --porcelain: clean
+- source digest: sha256:1a8cca449f8fdfc009f8ccbe87989a288ea92e7ff41ee58d38aa513a53ed4f2d
+- traceability digest: sha256:caaafeb6cd65026adcb4ea8f5f33d561ffce0ba8e6699d2301b57a5c510c4ab6
+- accepted RFC commit: 7b6f7a58f4dcbb8fb4bbdf3a8ba74ba66f222cce
+- single Issue binding: https://github.com/m2048ws/trading/issues/8
+- Groups 1-10: completed; Group 10 commit 02d15a1cf37f236a15f40f7a88179387caaa3e81
+

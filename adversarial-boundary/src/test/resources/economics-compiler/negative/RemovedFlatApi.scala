@@ -1,39 +1,61 @@
 package external.economics.negative
 
+import external.economics.fixtures.SharedEconomicsSetup.*
 import trading.economics.instrument.*
+import trading.fee.*
+import trading.order.*
 import trading.quantity.*
 import trading.quantity.refinement.PositiveWhole
+import trading.scenario.*
 
 object RemovedFlatApi:
-  def reject(
-    instrument: Instrument,
-    price: instrument.Price,
-    lots: instrument.Lots,
-    state: instrument.MarketState,
-    order: instrument.Order,
-    scenario: instrument.OrderScenario,
-    roundTrip: instrument.RoundTripScenario,
-    schedule: instrument.FeeSchedule
-  ): Unit =
-    val _ = price.ticks
-    val _ = instrument.orders.market(Side.Buy, lots)
-    val _ = instrument.valuation.pnl(roundTrip, schedule)
+  val buyAssumptions = ScenarioAssumptions.one(marketOrder)(
+    marketOrder.activation.evidence,
+    marketOrder.execution.resolution,
+    slice
+  ).toOption.get
+  val entry     = OrderScenario.evaluate(instrument)(buyAssumptions).toOption.get
+  val sell      = Order.market(instrument)(Side.Sell, lots).toOption.get
+  val sellSlice = LiquiditySlice.create(instrument)(lots, state, LiquidityRole.Taker).toOption.get
+  val sellAssumptions = ScenarioAssumptions.one(sell)(
+    sell.activation.evidence,
+    sell.execution.resolution,
+    sellSlice
+  ).toOption.get
+  val exit      = OrderScenario.evaluate(instrument)(sellAssumptions).toOption.get
+  val roundTrip = RoundTripScenario.create(instrument)(entry, exit).toOption.get
+  val currentPosition = PositionLots.fromCoordinate(instrument)(lots.count.unrefined)
+  val noFees          = FeePolicy.noFees(instrument)
 
-    // OFFENDING-BEGIN
-    val _ = instrument.price(1)
-    val _ = instrument.priceExactly(price.rate)
-    val _ = instrument.marketStateForQuote(price)
-    val _ = instrument.marketOrder(Side.Buy, lots)
-    val _ = instrument.positionValue(instrument.positionLots(Side.Buy, lots), state)
-    val _ = instrument.calculatePnl(roundTrip, schedule)
-    val _ = instrument.lotCount(lots)
-    val _ = order.kind
-    val _ = scenario.activationEvidence
-    val _ = instrument.sizePosition(
-      Quantity(instrument.roles.settle.dimension.ref, Rational.one),
-      PositiveWhole(1).toOption.get,
-      schedule
-    )(_ => Right(roundTrip))
-    // OFFENDING-END
+  val _ = price100.ticks
+  val _ = Order.market(instrument)(Side.Buy, lots)
+  val _ = FeeInclusivePnl.evaluate(instrument)(roundTrip, RoundTripFeePolicies.same(noFees))
 
+  // OFFENDING-BEGIN
+  val orders = Orders(instrument)
+  val scenarios = Scenarios(instrument)
+  val price = instrument.price(1)
+  val exactPrice = instrument.priceExactly(price100.rate)
+  val market = instrument.marketStateForQuote(price100)
+  val order = instrument.marketOrder(Side.Buy, lots)
+  val positionValue = instrument.positionValue(currentPosition, state)
+  val pnl = instrument.calculatePnl(roundTrip, noFees)
+  val lotCount = instrument.lotCount(lots)
+  val kind = marketOrder.kind
+  val activationEvidence = entry.activationEvidence
+  val duplicateAssumptionId = buyAssumptions.instrumentId
+  val duplicateTarget       = buyAssumptions.target
+  val duplicateEvaluation   = OrderScenario.evaluate(instrument)(marketOrder, buyAssumptions)
+  val freeFormLocation = ScenarioViolation.Identity(
+    "scenario.order",
+    instrument.identity.id,
+    instrument.identity.id
+  )
+  val universalScenarioError = InvalidScenario(ScenarioFailureReason.NoSlices)
+  val sized = instrument.sizePosition(
+    Quantity(instrument.roles.settle.dimension.ref, Rational.one),
+    PositiveWhole(1).toOption.get,
+    noFees
+  )(_ => Right(roundTrip))
+  // OFFENDING-END
 end RemovedFlatApi

@@ -1,0 +1,28 @@
+S-02 Task Group 13 archive-delta completeness evidence
+Date: 2026-08-31
+Run: run-e912075b-0579-49ba-8fbe-530c8b138a6b
+Group: 13
+Baseline: f0120a94d1c640d19c7e7c60511c2b3872352885
+Planning revision: sha256:dfda7d3d6ddedf107afdbd3fb8820c55d9d89ec610e1fbe1a5894b4d7ff0d3e9
+Source digest: sha256:5d573cd0d12bbcffacb9b047475ee4beb81069dedabd420018b5d3f32f7acdd0
+Traceability digest: sha256:a265f9092baad966ec7ef5f731ab1a889dc3542f8bd9a5e893b1f8338af6de5f
+
+Checks
+- openspec validate separate-order-and-execution-scenario-modules --strict --json: PASS (1/1 changes)
+- corgispec ready separate-order-and-execution-scenario-modules --strict --json: READY (13 stable Task Groups)
+- Cross-artifact semantic readiness review: READY; no errors or warnings; no files changed
+- Disposable local clone received the exact planning diff from the delivery worktree
+- openspec archive separate-order-and-execution-scenario-modules --yes --json: PASS
+  - archivedAs: 2026-08-31-separate-order-and-execution-scenario-modules
+  - specsUpdated: true
+  - totals: added=1, modified=5, removed=0, renamed=0
+- git diff --check: PASS
+- Git scope from verified predecessor through Group 13 baseline/checkpoint: memory/session-bridge.md, delta spec, tasks.md
+- Production/build diff (*.scala, *.sbt): empty
+- Automated Task Group review: PASS; findings=[]
+
+Recovery disposition
+- The first local Archive attempt moved no Change and created no closeout commit.
+- The CLI-owned recovery validated and removed only canonical untracked evidence plus the pending journal.
+- Every scenario from each pre-existing modified canonical requirement is explicitly retained by name.
+- Stronger S-02 scenarios remain present; accepted RFC/source/traceability contracts are unchanged.

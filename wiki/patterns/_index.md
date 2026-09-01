@@ -13,5 +13,8 @@ updated: 2026-08-29
 
 ## Verified Delivery Sources
 <!-- corgi:managed:start pattern-deliveries -->
-- none
+- [[wiki/deliveries/RFC-0002-architecture-portfolio-S-01-application-runtime-foundation|RFC-0002-architecture-portfolio/S-01-application-runtime-foundation]]
+- [[wiki/deliveries/RFC-0002-architecture-portfolio-S-02-order-execution-scenarios|RFC-0002-architecture-portfolio/S-02-order-execution-scenarios]]
+- [[wiki/deliveries/RFC-0002-architecture-portfolio-S-03-pure-risk|RFC-0002-architecture-portfolio/S-03-pure-risk]]
+- [[wiki/deliveries/RFC-0002-architecture-portfolio-S-04-fee-policy|RFC-0002-architecture-portfolio/S-04-fee-policy]]
 <!-- corgi:managed:end pattern-deliveries -->

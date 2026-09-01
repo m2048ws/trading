@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 3,
+  "groupId": "9",
+  "summary": "Integrated current main at 05a8af0ff836b846247c082901ac3baea3d0c169 without rewriting the acknowledged S-02 prefix, repaired JVM construction authority for invariant-bearing order/scenario values, added same-package Scala and Java completed-JAR bypass fixtures, passed the clean 815-test repository gate plus JMH compilation, formatting, strict OpenSpec validation, and deterministic readiness, and completed the remediated automated Task Group review with no findings.",
+  "checks": [
+    {
+      "name": "current-main integration and responsibility-owned conflict disposition",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:build.sbt#sha256:efb082cc63779899e258cbf9a3e51b71b4c4259bc73670ada206f916120d08a1",
+        "file:docs%2Farchitecture-charter-audit.md#sha256:39b3a327c4ad89663df399d53bb61e8a572a42200545610b8331194c4389e324",
+        "file:memory%2Fsession-bridge.md#sha256:221904cb8870600f920825dca7ddd7809f6ab6eac8a706ac52a16214ec71ba08"
+      ]
+    },
+    {
+      "name": "JVM-private order and execution-scenario construction authority with retained value semantics",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:order-model%2Fsrc%2Fmain%2Fscala%2Ftrading%2Forder%2FOrder.scala#sha256:d773cf584f9ed812dae132258662962a12c233cf6d5cd4923b28ef1851368816",
+        "file:execution-scenario%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fscenario%2FScenario.scala#sha256:c4957331192a12cece9bf5484752326046f521f4b2a60a0b1864809bde61f2a3"
+      ]
+    },
+    {
+      "name": "same-package Scala and Java completed-JAR constructor/copy rejection",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FEconomicsCompilerBoundarySuite.scala#sha256:f506bc083d7db84edecddd1c73cd515fe3d07124af6d5a01f91441dde5d0f2b4",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Forder-model-compiler%2Fnegative%2FPackageSpoofOrderConstruction.scala#sha256:f0c77e35d9e958ac0f1e2658c14e74e511acfe212bf40cfbcb1759215cfa091f",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fexecution-scenario-compiler%2Fnegative%2FPackageSpoofScenarioConstruction.scala#sha256:3731d39d8bb5446e06b645a05f3189babaf807f571165ff91bbe4b2fb25de635",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Forder-scenario-java%2Fnegative%2FPackageSpoofOrderConstruction.java#sha256:ad23438b91e6ad959490e75e886006394bae9e1121d6f74533ba9cd3b288b7b3",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Forder-scenario-java%2Fnegative%2FPackageSpoofScenarioConstruction.java#sha256:458c9678c9ccbe95c0f7d586dc05ccb85d68061ccfb14f272809f01b8abbd7d2"
+      ]
+    },
+    {
+      "name": "clean repository test gate: 815 tests across nine ordered suites and explicit JMH compilation",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:memory%2Fsession-bridge.md#sha256:221904cb8870600f920825dca7ddd7809f6ab6eac8a706ac52a16214ec71ba08",
+        "file:build.sbt#sha256:efb082cc63779899e258cbf9a3e51b71b4c4259bc73670ada206f916120d08a1",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FEconomicsCompilerBoundarySuite.scala#sha256:f506bc083d7db84edecddd1c73cd515fe3d07124af6d5a01f91441dde5d0f2b4"
+      ]
+    },
+    {
+      "name": "strict planning readiness and Repair Task Group handoff",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:openspec%2Fchanges%2Fseparate-order-and-execution-scenario-modules%2Ftasks.md#sha256:e6a4b6b3394b3f7f86245260910c3cac6152afaf7846e6c6989d3d425cf85958",
+        "file:memory%2Fsession-bridge.md#sha256:221904cb8870600f920825dca7ddd7809f6ab6eac8a706ac52a16214ec71ba08"
+      ]
+    }
+  ],
+  "automatedReview": {
+    "verdict": "pass",
+    "findings": []
+  },
+  "artifacts": [
+    "file:order-model%2Fsrc%2Fmain%2Fscala%2Ftrading%2Forder%2FOrder.scala#sha256:d773cf584f9ed812dae132258662962a12c233cf6d5cd4923b28ef1851368816",
+    "file:execution-scenario%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fscenario%2FScenario.scala#sha256:c4957331192a12cece9bf5484752326046f521f4b2a60a0b1864809bde61f2a3",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FEconomicsCompilerBoundarySuite.scala#sha256:f506bc083d7db84edecddd1c73cd515fe3d07124af6d5a01f91441dde5d0f2b4",
+    "file:docs%2Farchitecture-charter-audit.md#sha256:39b3a327c4ad89663df399d53bb61e8a572a42200545610b8331194c4389e324",
+    "file:memory%2Fsession-bridge.md#sha256:221904cb8870600f920825dca7ddd7809f6ab6eac8a706ac52a16214ec71ba08"
+  ]
+}

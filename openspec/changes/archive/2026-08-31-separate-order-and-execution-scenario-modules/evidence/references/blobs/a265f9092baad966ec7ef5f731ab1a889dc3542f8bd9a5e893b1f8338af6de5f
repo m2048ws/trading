@@ -1,0 +1,40 @@
+schemaVersion: 1
+sourceDigest: sha256:5d573cd0d12bbcffacb9b047475ee4beb81069dedabd420018b5d3f32f7acdd0
+acceptance:
+  - id: AC-005
+    evidence: automated
+    planningRefs:
+      - path: specs/order-scenarios/spec.md
+        anchor: requirement-order-and-execution-scenario-artifact-boundary
+    taskGroups:
+      - '2'
+      - '7'
+  - id: AC-006
+    evidence: both
+    planningRefs:
+      - path: specs/order-scenarios/spec.md
+        anchor: requirement-compositional-immutable-orders
+      - path: specs/order-scenarios/spec.md
+        anchor: requirement-explicit-trigger-and-price-mechanics
+      - path: specs/order-scenarios/spec.md
+        anchor: requirement-liquidityrole-describes-matched-quantity
+    taskGroups:
+      - '3'
+      - '4'
+      - '5'
+  - id: AC-007
+    evidence: automated
+    planningRefs:
+      - path: specs/order-scenarios/spec.md
+        anchor: requirement-complete-checked-order-scenarios
+    taskGroups:
+      - '5'
+      - '6'
+  - id: AC-008
+    evidence: both
+    planningRefs:
+      - path: specs/order-scenarios/spec.md
+        anchor: requirement-checked-round-trip-scenarios
+    taskGroups:
+      - '7'
+      - '8'

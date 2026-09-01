@@ -37,20 +37,20 @@ class StaticDimensionCompilerBoundarySuite extends FunSuite:
     val entries             = compilationClasspath.split(File.pathSeparator).toList.map(Paths.get(_))
     val quantitiesArtifacts = entries.filter: entry =>
       entry.getFileName.toString.startsWith("trading-quantities_3-")
-    val economicsArtifacts = entries.filter: entry =>
-      entry.getFileName.toString.startsWith("trading-economics_3-")
+    val feePolicyArtifacts = entries.filter: entry =>
+      entry.getFileName.toString.startsWith("trading-fee-policy_3-")
     val referenceDataArtifacts = entries.filter: entry =>
       entry.getFileName.toString.startsWith("trading-reference-data_3-")
     val compilerArtifacts = entries.filter: entry =>
       entry.getFileName.toString.startsWith("scala3-compiler_3-")
 
     assertEquals(quantitiesArtifacts.size, 1)
-    assertEquals(economicsArtifacts.size, 1)
+    assertEquals(feePolicyArtifacts.size, 1)
     assertEquals(referenceDataArtifacts.size, 1)
     assertEquals(compilerArtifacts.size, 1)
     assert(entries.forall(path => Files.isRegularFile(path)), entries.mkString("\n"))
     assert(quantitiesArtifacts.head.getFileName.toString.endsWith(".jar"))
-    assert(economicsArtifacts.head.getFileName.toString.endsWith(".jar"))
+    assert(feePolicyArtifacts.head.getFileName.toString.endsWith(".jar"))
 
     val quantitiesArchive = new JarFile(quantitiesArtifacts.head.toFile)
     try

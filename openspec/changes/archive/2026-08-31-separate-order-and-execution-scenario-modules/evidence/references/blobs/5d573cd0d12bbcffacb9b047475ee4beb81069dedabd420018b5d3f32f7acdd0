@@ -1,0 +1,27 @@
+schemaVersion: 1
+kind: rfc-slice
+deliveryRef: RFC-0002-architecture-portfolio/S-02-order-execution-scenarios
+rfc:
+  id: RFC-0002-architecture-portfolio
+  path: rfcs/RFC-0002-architecture-portfolio
+  acceptedCommit: 7b6f7a58f4dcbb8fb4bbdf3a8ba74ba66f222cce
+  digest: sha256:a00c0cf1e3a4440bfce7dc828ad4ac119414f10d72e8d8c52c613403ef5977e2
+slice:
+  id: S-02-order-execution-scenarios
+  digest: sha256:cebb122465d6e8ad277a0b6eaea1619edfdf604d749ec7d090c3c7af32a319c0
+acceptance:
+  - id: AC-005
+    evidence: automated
+  - id: AC-006
+    evidence: both
+  - id: AC-007
+    evidence: automated
+  - id: AC-008
+    evidence: both
+deliveryBindingDigest: sha256:b5f179ffb22b36ab994bb08899cef924b1a34dd3d1a904239f7e352e541b7f85
+tracker:
+  provider: github
+  idempotencyKey: b6050dd64a83ec73bbbdfe51650a5554afa7efd70abc8a0946f9fa8c4abbe8f3
+  issue:
+    id: '7'
+    url: https://github.com/m2048ws/trading/issues/7

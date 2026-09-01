@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 3,
+  "groupId": "2",
+  "checks": [
+    {
+      "name": "runtime module, dependency ownership, root aggregation, and ordered test wiring",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:build.sbt#sha256:b94da7f050493db7b78b0cb4154104c6029cf09658116aa9e5cdb281686d0fca",
+        "file:runtime%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fruntime%2Fpackage.scala#sha256:bf27f044abca4dc397f254b11ffeedb56f45869539ee0be4d03bde58546dae32",
+        "file:runtime%2FREADME.md#sha256:17c072365ae25fa06a012e20303a2174ec7298b54c0ee903b36dcce7e99af03d"
+      ]
+    },
+    {
+      "name": "completed-JAR application/runtime classpath and API leakage checks",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FApplicationRuntimeBoundarySuite.scala#sha256:d882437dd7500619abe5064f186dbfd1d31b433cc2d018da702c17a7241e4293",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fapplication-runtime-boundary%2Fnegative%2FConcreteEffectLeak.scala#sha256:7fcf149ae983e78f582a019c000b239b477650ba0a7961c5ad8654eebe0f25f9"
+      ]
+    },
+    {
+      "name": "runtime package, scalafmt, targeted boundary suite, and full adversarial matrix",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:runtime%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fruntime%2Fpackage.scala#sha256:bf27f044abca4dc397f254b11ffeedb56f45869539ee0be4d03bde58546dae32",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fapplication-runtime-boundary%2Fpositive%2FRuntimeDependencyClient.scala#sha256:9314c51721fba63862c9fead806139cb4b238cd7e37824ca4e993285ac334c8f"
+      ]
+    }
+  ],
+  "automatedReview": {
+    "verdict": "pass",
+    "findings": []
+  },
+  "artifacts": [
+    "file:build.sbt#sha256:b94da7f050493db7b78b0cb4154104c6029cf09658116aa9e5cdb281686d0fca",
+    "file:README.md#sha256:2bff7d0d9face49dfdcc1d9cf7aab5afd89d504a4c7b6e386b5da76360fb0424",
+    "file:runtime%2FREADME.md#sha256:17c072365ae25fa06a012e20303a2174ec7298b54c0ee903b36dcce7e99af03d",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FApplicationRuntimeBoundarySuite.scala#sha256:d882437dd7500619abe5064f186dbfd1d31b433cc2d018da702c17a7241e4293",
+    "file:memory%2Fsession-bridge.md#sha256:facf58ba759b9116c8669394b2a5cd9f6c3fda29e40d3fea65d2784c870fcb4c"
+  ],
+  "summary": "Established trading-runtime as the sole Cats Effect dependency boundary, wired ordered and completed-artifact checks, proved application remains runtime-neutral, documented the artifact without speculative APIs, and passed 119 adversarial tests. Automated review covered scope, dependency direction, public API leakage, build graph, dependency versions, JDK compatibility, and documentation truthfulness with no remaining findings; it changed no file, triaged no finding, and is not canonical Verify or Human Review."
+}

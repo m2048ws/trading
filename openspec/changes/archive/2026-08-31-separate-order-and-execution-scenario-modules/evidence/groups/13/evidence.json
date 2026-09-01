@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 3,
+  "groupId": "13",
+  "checks": [
+    {
+      "name": "Strict OpenSpec validation and exact-diff disposable Archive rehearsal",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:target%2Fs02-tg13-archive-rehearsal.log#sha256:66edb17b41133abb684423f518173f410571c80896a062fc0381af5ebd82b3da",
+        "file:openspec%2Fchanges%2Fseparate-order-and-execution-scenario-modules%2Fspecs%2Forder-scenarios%2Fspec.md#sha256:13ccdd6f12b4b99e4e8e4ef427f9ea6c9593a838fceb24cbc91588bd76d77ccd"
+      ]
+    },
+    {
+      "name": "Deterministic strict Corgi readiness and read-only cross-artifact semantic review",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:target%2Fs02-tg13-archive-rehearsal.log#sha256:66edb17b41133abb684423f518173f410571c80896a062fc0381af5ebd82b3da",
+        "file:openspec%2Fchanges%2Fseparate-order-and-execution-scenario-modules%2Ftasks.md#sha256:48d82a3837749dcc77f0f71d2cb8a493b6b4965e29f181d8be788ae99a795c3e"
+      ]
+    },
+    {
+      "name": "Accepted contract stability, immutable carried prefix, and planning-only Git scope",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:openspec%2Fchanges%2Fseparate-order-and-execution-scenario-modules%2Fcorgi%2Fsource.yaml#sha256:5d573cd0d12bbcffacb9b047475ee4beb81069dedabd420018b5d3f32f7acdd0",
+        "file:openspec%2Fchanges%2Fseparate-order-and-execution-scenario-modules%2Fcorgi%2Ftraceability.yaml#sha256:a265f9092baad966ec7ef5f731ab1a889dc3542f8bd9a5e893b1f8338af6de5f",
+        "file:memory%2Fsession-bridge.md#sha256:fa5dcb4418479e78e68324bfc49916026287c6c83e16775c3994ad9293597cf0"
+      ]
+    }
+  ],
+  "automatedReview": {
+    "verdict": "pass",
+    "findings": []
+  },
+  "artifacts": [
+    "file:openspec%2Fchanges%2Fseparate-order-and-execution-scenario-modules%2Fspecs%2Forder-scenarios%2Fspec.md#sha256:13ccdd6f12b4b99e4e8e4ef427f9ea6c9593a838fceb24cbc91588bd76d77ccd",
+    "file:openspec%2Fchanges%2Fseparate-order-and-execution-scenario-modules%2Ftasks.md#sha256:48d82a3837749dcc77f0f71d2cb8a493b6b4965e29f181d8be788ae99a795c3e",
+    "file:openspec%2Fchanges%2Fseparate-order-and-execution-scenario-modules%2Fcorgi%2Fsource.yaml#sha256:5d573cd0d12bbcffacb9b047475ee4beb81069dedabd420018b5d3f32f7acdd0",
+    "file:openspec%2Fchanges%2Fseparate-order-and-execution-scenario-modules%2Fcorgi%2Ftraceability.yaml#sha256:a265f9092baad966ec7ef5f731ab1a889dc3542f8bd9a5e893b1f8338af6de5f",
+    "file:memory%2Fsession-bridge.md#sha256:fa5dcb4418479e78e68324bfc49916026287c6c83e16775c3994ad9293597cf0",
+    "file:target%2Fs02-tg13-archive-rehearsal.log#sha256:66edb17b41133abb684423f518173f410571c80896a062fc0381af5ebd82b3da"
+  ],
+  "summary": "Reconciled every canonical scenario identity in the five modified order-scenarios requirements, retained stronger S-02 semantics, proved a real disposable OpenSpec Archive succeeds, and changed no production or build source."
+}

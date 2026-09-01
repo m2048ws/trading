@@ -1,0 +1,18 @@
+S-04 Repair Task Group 10 — Archive delta completeness
+Date: 2026-08-31
+Planning baseline: 2b8b58f49587885778f5c41bbf207c01281433e4
+Planning revision: sha256:96b5b08c7943f4116de55100e56efd0ca8e65d7e707a1b74c3e51bc7480c7234
+Source digest: sha256:d7face4865eb2e8e69abb4f305d67720842e19f9d1d4fa3b760b744fb8f06443
+Traceability digest: sha256:8ef137a161b86ab60b78dadf55c70e91b8727572212054d1d344ec878057f064
+
+PASS OpenSpec strict validation: 1 change passed, 0 failed.
+PASS Corgi strict readiness: all checks passed, including ARCHIVE_DELTA_COMPATIBLE.
+PASS Repair prefix: Groups 1–9 unchanged; exactly one Group 10 appended.
+PASS Scope: only fee-inclusive-pnl/spec.md and tasks.md changed before the Corgi planning checkpoint.
+PASS Disposable real Archive: /private/tmp/s04-archive-rehearsal.UifirS/project
+PASS Archive result: 3 added, 4 modified, 1 removed, 0 renamed; specs updated.
+PASS Post-Archive strict validation: 14 canonical specs passed, 0 failed.
+PASS Canonical scenario identity check: 13 expected, 0 missing.
+PASS Automated Task Group review: no findings; repository unchanged by review.
+
+Production Scala, tests, and build configuration are unchanged by Repair Task Group 10.

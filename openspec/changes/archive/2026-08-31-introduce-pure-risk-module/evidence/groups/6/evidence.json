@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 3,
+  "groupId": "6",
+  "summary": "Implemented boundary-certified maximum-affordable sizing over validated monotone models with exact integer binary search, closed decisions, retained non-duplicate observations, adjacent upper-boundary evidence, and a logarithmic probe bound. Added generated exhaustive-reference comparisons, huge-cap and inverse-shaped fixtures, a non-published JMH comparison, and completed-JAR/JVM authority checks. Automated review found and remediated unrelated benchmark formatting drift and JVM-subclassable result bases; the final read-only pass had no findings and is not canonical Verify or Human Review.",
+  "checks": [
+    {
+      "name": "risk exact examples, generated primary-versus-exhaustive properties, model, curve, and downside suites passed (31 tests)",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:risk%2Fsrc%2Fmain%2Fscala%2Ftrading%2Frisk%2FSizing.scala#sha256:44dec3986befda23a1d9af356371d96fa299f967a00f4213b095ce14ccad12ac",
+        "file:risk%2Fsrc%2Ftest%2Fscala%2Ftrading%2Frisk%2FMaximumAffordableSuite.scala#sha256:e8cdeb2a45eabc38755e48c8b2b998d49a8b5d5a7724e773d8637294f39884d5",
+        "file:risk%2Fsrc%2Ftest%2Fscala%2Ftrading%2Frisk%2FMaximumAffordablePropertiesSuite.scala#sha256:99ae4fdce8e0e3a7aade9d9fa32374d205064dc166d3016e586ec6491e9244f7"
+      ]
+    },
+    {
+      "name": "transitional downstream economics compatibility passed (10 tests)",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:economics%2Fsrc%2Ftest%2Fscala%2Ftrading%2FDownstreamEconomicsSuite.scala#sha256:72829dbdb8e16ed91d70299915e4c395d6395a4c78b59fb9e58fd313c76a9193"
+      ]
+    },
+    {
+      "name": "completed risk JAR public client and JVM construction-authority suite passed (8 tests)",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FRiskCompilerBoundarySuite.scala#sha256:cabc381362e7fea2058b4f571db47999bec3a93d372d587d0c76e65c9131530e",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Frisk-compiler%2Fpositive%2FRiskBoundaryClient.scala#sha256:6d7536df7b8c7e5b7b6a9d843759585e8efdf3749ac457448df6fc0a81e88979",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Frisk-java%2Fnegative%2FRejectedRiskDecisionImplementations.java#sha256:58fb4612a8e2d2707e1245c4ceb65f0cf145db2add67b01841a7c09ce0ef8e5a"
+      ]
+    },
+    {
+      "name": "repository Scala and SBT formatting checks passed; the final scope audit contained only Task Group 6 files",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:risk%2FREADME.md#sha256:c303b64e728df9cfc1f826391fb0fa315af864d6c7c4c4deffff83974e1c3154",
+        "file:openspec%2Fchanges%2Fintroduce-pure-risk-module%2Fimplementation-notes%2Ftask-group-6.md#sha256:c1f27f1702a9ef36fb2f523848c4b98c0988db788d2aaeb4e2ba3de0da03d696"
+      ]
+    },
+    {
+      "name": "JMH compilation and full recorded comparison passed for direct lookup, boundary-certified sizing, and exhaustive reference evaluation",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:benchmarks%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fbenchmark%2FRiskSizingBenchmark.scala#sha256:43655cf7cdde1bb984682ec8a5ea08bf676325ceddf219b31b776bcc58947a45",
+        "file:openspec%2Fchanges%2Fintroduce-pure-risk-module%2Fimplementation-notes%2Ftask-group-6.md#sha256:c1f27f1702a9ef36fb2f523848c4b98c0988db788d2aaeb4e2ba3de0da03d696"
+      ]
+    }
+  ],
+  "automatedReview": {
+    "verdict": "pass",
+    "findings": []
+  },
+  "artifacts": [
+    "file:risk%2Fsrc%2Fmain%2Fscala%2Ftrading%2Frisk%2FSizing.scala#sha256:44dec3986befda23a1d9af356371d96fa299f967a00f4213b095ce14ccad12ac",
+    "file:risk%2Fsrc%2Ftest%2Fscala%2Ftrading%2Frisk%2FMaximumAffordableSuite.scala#sha256:e8cdeb2a45eabc38755e48c8b2b998d49a8b5d5a7724e773d8637294f39884d5",
+    "file:risk%2Fsrc%2Ftest%2Fscala%2Ftrading%2Frisk%2FMaximumAffordablePropertiesSuite.scala#sha256:99ae4fdce8e0e3a7aade9d9fa32374d205064dc166d3016e586ec6491e9244f7",
+    "file:benchmarks%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fbenchmark%2FRiskSizingBenchmark.scala#sha256:43655cf7cdde1bb984682ec8a5ea08bf676325ceddf219b31b776bcc58947a45",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FRiskCompilerBoundarySuite.scala#sha256:cabc381362e7fea2058b4f571db47999bec3a93d372d587d0c76e65c9131530e",
+    "file:risk%2FREADME.md#sha256:c303b64e728df9cfc1f826391fb0fa315af864d6c7c4c4deffff83974e1c3154",
+    "file:openspec%2Fchanges%2Fintroduce-pure-risk-module%2Fimplementation-notes%2Ftask-group-6.md#sha256:c1f27f1702a9ef36fb2f523848c4b98c0988db788d2aaeb4e2ba3de0da03d696",
+    "file:memory%2Fsession-bridge.md#sha256:1b8892029d84ca60261cd52d22fc871d6a2551c6f990fb3797901d135f48589e"
+  ]
+}

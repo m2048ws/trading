@@ -16,7 +16,6 @@ project/local-plugins.sbt
 .sbt-scripted/
 local.sbt
 
-.agent/reports/
 __pycache__/
 
 # Project-local Coding Corgi Flow pilot runtime

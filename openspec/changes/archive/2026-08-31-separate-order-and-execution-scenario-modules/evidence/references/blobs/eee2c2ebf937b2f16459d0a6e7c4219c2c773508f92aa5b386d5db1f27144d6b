@@ -1,0 +1,28 @@
+S-02 Human QA carry-forward record
+Date: 2026-08-31
+Reviewer: m2048ws
+
+Prior human QA
+- Verified implementation revision: 7843e98eae2594c322f6b1fe7d0a88a82c6dd43f
+- Environment: macOS, Homebrew JDK 26.0.2
+- OrderInstructionSuite: 6 passed, 0 failed
+- OrderScenarioSuite: 9 passed, 0 failed
+- EconomicsCompilerBoundarySuite: 35 passed, 0 failed
+- Total focused human QA: 50 passed, 0 failed
+- Canonical prior QA evidence hash: sha256:0f9ebc3b4f048ffd37a314d5d1bcb28504d98528bd92ecf962e05d9b2aa8ea63
+- Human QA report hash: sha256:ad224ecc6aa014ee0b8b607bfcf26f3f7158b55f4c4e19aa5d8d2f5aefed20ef
+
+Current exact final revision
+- Final revision: 7ca2e135632a275562d46a0e6c5b08b3a3771639
+- Canonical Verify: PASS, 820 tests, formatting, clean compilation, JMH compilation
+- Verify report hash: sha256:bf253de4fe0bfa1ec56814de7481164ae9f2ab76269ce5e4986276554bad6614
+- Independent exact-SHA review: READY, no findings
+
+Carry-forward basis
+- The range 7843e98eae2594c322f6b1fe7d0a88a82c6dd43f..7ca2e135632a275562d46a0e6c5b08b3a3771639 changes only:
+  - memory/session-bridge.md
+  - openspec/changes/separate-order-and-execution-scenario-modules/specs/order-scenarios/spec.md
+  - openspec/changes/separate-order-and-execution-scenario-modules/tasks.md
+- Production code, test code, build configuration, completed-JAR boundaries, and adversarial fixtures are byte-identical.
+- Group 13 repairs archive-delta completeness and its isolated Archive rehearsal passed with one added and five modified requirements and no canonical scenario omissions.
+- AC-006 and AC-008 human results therefore carry forward to the exact final revision without changing the runtime path that was exercised.

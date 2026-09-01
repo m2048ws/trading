@@ -14,5 +14,4 @@ object PackageSpoofInstrumentSpec:
     val basePerPosition = spec.basePerPosition
     val quotePerPosition = spec.quotePerPosition
   // OFFENDING-END
-
 end PackageSpoofInstrumentSpec

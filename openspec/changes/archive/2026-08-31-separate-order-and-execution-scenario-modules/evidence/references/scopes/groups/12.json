@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 3,
+  "scope": "group-12",
+  "runId": "run-245638d2-ba14-4eda-8fbd-98151b33c1d0",
+  "references": [
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fexecution-scenario-compiler%2Fnegative%2FPackageSpoofScenarioConstruction.scala#sha256:3731d39d8bb5446e06b645a05f3189babaf807f571165ff91bbe4b2fb25de635",
+      "sourcePath": "adversarial-boundary/src/test/resources/execution-scenario-compiler/negative/PackageSpoofScenarioConstruction.scala",
+      "digest": "sha256:3731d39d8bb5446e06b645a05f3189babaf807f571165ff91bbe4b2fb25de635",
+      "archivePath": "references/blobs/3731d39d8bb5446e06b645a05f3189babaf807f571165ff91bbe4b2fb25de635"
+    },
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Forder-scenario-java%2Fnegative%2FPackageSpoofScenarioConstruction.java#sha256:cd12f444c83cfc75945c713c1dbada8a6393819c92c8007d326fcb142815af7f",
+      "sourcePath": "adversarial-boundary/src/test/resources/order-scenario-java/negative/PackageSpoofScenarioConstruction.java",
+      "digest": "sha256:cd12f444c83cfc75945c713c1dbada8a6393819c92c8007d326fcb142815af7f",
+      "archivePath": "references/blobs/cd12f444c83cfc75945c713c1dbada8a6393819c92c8007d326fcb142815af7f"
+    },
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FEconomicsCompilerBoundarySuite.scala#sha256:7e5db82154d5754e1c1b8bc76e03f76e90fd42046ca21078ba3e00b32ce294cf",
+      "sourcePath": "adversarial-boundary/src/test/scala/external/EconomicsCompilerBoundarySuite.scala",
+      "digest": "sha256:7e5db82154d5754e1c1b8bc76e03f76e90fd42046ca21078ba3e00b32ce294cf",
+      "archivePath": "references/blobs/7e5db82154d5754e1c1b8bc76e03f76e90fd42046ca21078ba3e00b32ce294cf"
+    },
+    {
+      "reference": "file:build.sbt#sha256:efb082cc63779899e258cbf9a3e51b71b4c4259bc73670ada206f916120d08a1",
+      "sourcePath": "build.sbt",
+      "digest": "sha256:efb082cc63779899e258cbf9a3e51b71b4c4259bc73670ada206f916120d08a1",
+      "archivePath": "references/blobs/efb082cc63779899e258cbf9a3e51b71b4c4259bc73670ada206f916120d08a1"
+    },
+    {
+      "reference": "file:economics%2Fsrc%2Ftest%2Fscala%2Ftrading%2FDownstreamEconomicsSuite.scala#sha256:7f16fb88e3879c39bff684677079d1c4d7f1617ea0d9810701f8d8decec8f1cf",
+      "sourcePath": "economics/src/test/scala/trading/DownstreamEconomicsSuite.scala",
+      "digest": "sha256:7f16fb88e3879c39bff684677079d1c4d7f1617ea0d9810701f8d8decec8f1cf",
+      "archivePath": "references/blobs/7f16fb88e3879c39bff684677079d1c4d7f1617ea0d9810701f8d8decec8f1cf"
+    },
+    {
+      "reference": "file:execution-scenario%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fscenario%2FScenario.scala#sha256:113162e734faaccf960e4e17c081b71df2df071a34d85bfd0baaafef25dc470f",
+      "sourcePath": "execution-scenario/src/main/scala/trading/scenario/Scenario.scala",
+      "digest": "sha256:113162e734faaccf960e4e17c081b71df2df071a34d85bfd0baaafef25dc470f",
+      "archivePath": "references/blobs/113162e734faaccf960e4e17c081b71df2df071a34d85bfd0baaafef25dc470f"
+    },
+    {
+      "reference": "file:execution-scenario%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fscenario%2FOrderScenarioSuite.scala#sha256:29a163d7d3671e1c2048808412618b547f77233b4c70c998ca5bad218b2a7c51",
+      "sourcePath": "execution-scenario/src/test/scala/trading/scenario/OrderScenarioSuite.scala",
+      "digest": "sha256:29a163d7d3671e1c2048808412618b547f77233b4c70c998ca5bad218b2a7c51",
+      "archivePath": "references/blobs/29a163d7d3671e1c2048808412618b547f77233b4c70c998ca5bad218b2a7c51"
+    },
+    {
+      "reference": "file:memory%2Fsession-bridge.md#sha256:c426372cc876f18e924f5c840210db6c62a16e677f359c77bb13f20d0bf99989",
+      "sourcePath": "memory/session-bridge.md",
+      "digest": "sha256:c426372cc876f18e924f5c840210db6c62a16e677f359c77bb13f20d0bf99989",
+      "archivePath": "references/blobs/c426372cc876f18e924f5c840210db6c62a16e677f359c77bb13f20d0bf99989"
+    },
+    {
+      "reference": "file:openspec%2Fchanges%2Fseparate-order-and-execution-scenario-modules%2Fcorgi%2Fsource.yaml#sha256:5d573cd0d12bbcffacb9b047475ee4beb81069dedabd420018b5d3f32f7acdd0",
+      "sourcePath": "openspec/changes/separate-order-and-execution-scenario-modules/corgi/source.yaml",
+      "digest": "sha256:5d573cd0d12bbcffacb9b047475ee4beb81069dedabd420018b5d3f32f7acdd0",
+      "archivePath": "references/blobs/5d573cd0d12bbcffacb9b047475ee4beb81069dedabd420018b5d3f32f7acdd0"
+    },
+    {
+      "reference": "file:openspec%2Fchanges%2Fseparate-order-and-execution-scenario-modules%2Fcorgi%2Ftraceability.yaml#sha256:a265f9092baad966ec7ef5f731ab1a889dc3542f8bd9a5e893b1f8338af6de5f",
+      "sourcePath": "openspec/changes/separate-order-and-execution-scenario-modules/corgi/traceability.yaml",
+      "digest": "sha256:a265f9092baad966ec7ef5f731ab1a889dc3542f8bd9a5e893b1f8338af6de5f",
+      "archivePath": "references/blobs/a265f9092baad966ec7ef5f731ab1a889dc3542f8bd9a5e893b1f8338af6de5f"
+    },
+    {
+      "reference": "file:openspec%2Fchanges%2Fseparate-order-and-execution-scenario-modules%2Fspecs%2Forder-scenarios%2Fspec.md#sha256:775fcec01c7b0d61336c5d207c6784b712ce7269b289f6f9c540cafccb1b975f",
+      "sourcePath": "openspec/changes/separate-order-and-execution-scenario-modules/specs/order-scenarios/spec.md",
+      "digest": "sha256:775fcec01c7b0d61336c5d207c6784b712ce7269b289f6f9c540cafccb1b975f",
+      "archivePath": "references/blobs/775fcec01c7b0d61336c5d207c6784b712ce7269b289f6f9c540cafccb1b975f"
+    },
+    {
+      "reference": "file:openspec%2Fchanges%2Fseparate-order-and-execution-scenario-modules%2Ftasks.md#sha256:2893c0b542a5e20528a8d41e16512435b0d7ea77cafb5c7a532365cf9ee97269",
+      "sourcePath": "openspec/changes/separate-order-and-execution-scenario-modules/tasks.md",
+      "digest": "sha256:2893c0b542a5e20528a8d41e16512435b0d7ea77cafb5c7a532365cf9ee97269",
+      "archivePath": "references/blobs/2893c0b542a5e20528a8d41e16512435b0d7ea77cafb5c7a532365cf9ee97269"
+    }
+  ]
+}

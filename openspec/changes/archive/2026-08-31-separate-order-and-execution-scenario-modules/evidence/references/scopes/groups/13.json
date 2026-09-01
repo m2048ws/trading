@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 3,
+  "scope": "group-13",
+  "runId": "run-e912075b-0579-49ba-8fbe-530c8b138a6b",
+  "references": [
+    {
+      "reference": "file:memory%2Fsession-bridge.md#sha256:fa5dcb4418479e78e68324bfc49916026287c6c83e16775c3994ad9293597cf0",
+      "sourcePath": "memory/session-bridge.md",
+      "digest": "sha256:fa5dcb4418479e78e68324bfc49916026287c6c83e16775c3994ad9293597cf0",
+      "archivePath": "references/blobs/fa5dcb4418479e78e68324bfc49916026287c6c83e16775c3994ad9293597cf0"
+    },
+    {
+      "reference": "file:openspec%2Fchanges%2Fseparate-order-and-execution-scenario-modules%2Fcorgi%2Fsource.yaml#sha256:5d573cd0d12bbcffacb9b047475ee4beb81069dedabd420018b5d3f32f7acdd0",
+      "sourcePath": "openspec/changes/separate-order-and-execution-scenario-modules/corgi/source.yaml",
+      "digest": "sha256:5d573cd0d12bbcffacb9b047475ee4beb81069dedabd420018b5d3f32f7acdd0",
+      "archivePath": "references/blobs/5d573cd0d12bbcffacb9b047475ee4beb81069dedabd420018b5d3f32f7acdd0"
+    },
+    {
+      "reference": "file:openspec%2Fchanges%2Fseparate-order-and-execution-scenario-modules%2Fcorgi%2Ftraceability.yaml#sha256:a265f9092baad966ec7ef5f731ab1a889dc3542f8bd9a5e893b1f8338af6de5f",
+      "sourcePath": "openspec/changes/separate-order-and-execution-scenario-modules/corgi/traceability.yaml",
+      "digest": "sha256:a265f9092baad966ec7ef5f731ab1a889dc3542f8bd9a5e893b1f8338af6de5f",
+      "archivePath": "references/blobs/a265f9092baad966ec7ef5f731ab1a889dc3542f8bd9a5e893b1f8338af6de5f"
+    },
+    {
+      "reference": "file:openspec%2Fchanges%2Fseparate-order-and-execution-scenario-modules%2Fspecs%2Forder-scenarios%2Fspec.md#sha256:13ccdd6f12b4b99e4e8e4ef427f9ea6c9593a838fceb24cbc91588bd76d77ccd",
+      "sourcePath": "openspec/changes/separate-order-and-execution-scenario-modules/specs/order-scenarios/spec.md",
+      "digest": "sha256:13ccdd6f12b4b99e4e8e4ef427f9ea6c9593a838fceb24cbc91588bd76d77ccd",
+      "archivePath": "references/blobs/13ccdd6f12b4b99e4e8e4ef427f9ea6c9593a838fceb24cbc91588bd76d77ccd"
+    },
+    {
+      "reference": "file:openspec%2Fchanges%2Fseparate-order-and-execution-scenario-modules%2Ftasks.md#sha256:48d82a3837749dcc77f0f71d2cb8a493b6b4965e29f181d8be788ae99a795c3e",
+      "sourcePath": "openspec/changes/separate-order-and-execution-scenario-modules/tasks.md",
+      "digest": "sha256:48d82a3837749dcc77f0f71d2cb8a493b6b4965e29f181d8be788ae99a795c3e",
+      "archivePath": "references/blobs/48d82a3837749dcc77f0f71d2cb8a493b6b4965e29f181d8be788ae99a795c3e"
+    },
+    {
+      "reference": "file:target%2Fs02-tg13-archive-rehearsal.log#sha256:66edb17b41133abb684423f518173f410571c80896a062fc0381af5ebd82b3da",
+      "sourcePath": "target/s02-tg13-archive-rehearsal.log",
+      "digest": "sha256:66edb17b41133abb684423f518173f410571c80896a062fc0381af5ebd82b3da",
+      "archivePath": "references/blobs/66edb17b41133abb684423f518173f410571c80896a062fc0381af5ebd82b3da"
+    }
+  ]
+}

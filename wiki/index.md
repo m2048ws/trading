@@ -10,6 +10,7 @@ updated: 2026-08-29
 ## Architecture Insights
 - [[wiki/architecture/_index|Architecture Index]]
 - [[wiki/architecture/implicit-contracts|Implicit Contracts]]
+- [[wiki/architecture/project-foundations|Project Foundations]]
 
 ## Patterns
 - [[wiki/patterns/_index|Patterns Index]]

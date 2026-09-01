@@ -1,0 +1,21 @@
+{
+  "command": "corgispec ready introduce-pure-risk-module --strict --json",
+  "exitCode": 0,
+  "changeName": "introduce-pure-risk-module",
+  "status": "ready",
+  "planningRevision": "sha256:39af122fd835f55b994cd903dd6dd402e45ddec5b28d8710f9134964e6fde5ae",
+  "taskGroups": 10,
+  "checks": {
+    "ARTIFACTS_COMPLETE": "pass",
+    "OPENSPEC_STRICT_VALIDATION": "pass",
+    "TASK_ARTIFACT_CONFIGURED": "pass",
+    "TASK_ARTIFACT_UNIQUE": "pass",
+    "TASK_GROUP_STRUCTURE": "pass",
+    "NO_PLACEHOLDERS": "pass",
+    "NO_OPEN_QUESTIONS": "pass",
+    "CAPABILITY_SPEC_PARITY": "pass",
+    "CHANGE_CONTRACT_PRESENT": "pass",
+    "TRACEABILITY_COMPLETE": "pass",
+    "SOURCE_PROVENANCE_CURRENT": "pass"
+  }
+}

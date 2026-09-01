@@ -1,0 +1,97 @@
+{
+  "schemaVersion": 3,
+  "scope": "group-9",
+  "runId": "run-a9ba484a-5f6b-475a-9a5a-45c890af27ba",
+  "references": [
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fapplication-runtime-boundary%2Fnegative%2FRuntimeInternalsUnavailable.java#sha256:1ac899ad1b5977eabff8129da50e542bfe869346e8131a71117dcee3015a84d3",
+      "sourcePath": "adversarial-boundary/src/test/resources/application-runtime-boundary/negative/RuntimeInternalsUnavailable.java",
+      "digest": "sha256:1ac899ad1b5977eabff8129da50e542bfe869346e8131a71117dcee3015a84d3",
+      "archivePath": "references/blobs/1ac899ad1b5977eabff8129da50e542bfe869346e8131a71117dcee3015a84d3"
+    },
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fapplication-runtime-boundary%2Fnegative%2FRuntimeInternalsUnavailable.scala#sha256:bc3453e16916dac17f547f1c5de09f616bccc790f41f673835a2141e8999aaac",
+      "sourcePath": "adversarial-boundary/src/test/resources/application-runtime-boundary/negative/RuntimeInternalsUnavailable.scala",
+      "digest": "sha256:bc3453e16916dac17f547f1c5de09f616bccc790f41f673835a2141e8999aaac",
+      "archivePath": "references/blobs/bc3453e16916dac17f547f1c5de09f616bccc790f41f673835a2141e8999aaac"
+    },
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FApplicationRuntimeBoundarySuite.scala#sha256:16deebec9a010b22ff2108ea07b7ee78ca5299dcae92dda32eceac51c5bd4b30",
+      "sourcePath": "adversarial-boundary/src/test/scala/external/ApplicationRuntimeBoundarySuite.scala",
+      "digest": "sha256:16deebec9a010b22ff2108ea07b7ee78ca5299dcae92dda32eceac51c5bd4b30",
+      "archivePath": "references/blobs/16deebec9a010b22ff2108ea07b7ee78ca5299dcae92dda32eceac51c5bd4b30"
+    },
+    {
+      "reference": "file:application%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fapplication%2FLiveCatalogContract.scala#sha256:19d70e09a0452b2e14bf57db69a6318b40656cefb843afd48f051797436fffd0",
+      "sourcePath": "application/src/test/scala/trading/application/LiveCatalogContract.scala",
+      "digest": "sha256:19d70e09a0452b2e14bf57db69a6318b40656cefb843afd48f051797436fffd0",
+      "archivePath": "references/blobs/19d70e09a0452b2e14bf57db69a6318b40656cefb843afd48f051797436fffd0"
+    },
+    {
+      "reference": "file:application%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fapplication%2FLiveCatalogContractSuite.scala#sha256:4185f37756d0301c8e40f9e43ab3962a484e4438faa847643af11174e762e1df",
+      "sourcePath": "application/src/test/scala/trading/application/LiveCatalogContractSuite.scala",
+      "digest": "sha256:4185f37756d0301c8e40f9e43ab3962a484e4438faa847643af11174e762e1df",
+      "archivePath": "references/blobs/4185f37756d0301c8e40f9e43ab3962a484e4438faa847643af11174e762e1df"
+    },
+    {
+      "reference": "file:benchmarks%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fbenchmark%2FLiveCatalogRuntimeBenchmark.scala#sha256:47f88c9aa2fa53339f71067750a21c631fa84b324ee7ff9b228170aded125056",
+      "sourcePath": "benchmarks/src/main/scala/trading/benchmark/LiveCatalogRuntimeBenchmark.scala",
+      "digest": "sha256:47f88c9aa2fa53339f71067750a21c631fa84b324ee7ff9b228170aded125056",
+      "archivePath": "references/blobs/47f88c9aa2fa53339f71067750a21c631fa84b324ee7ff9b228170aded125056"
+    },
+    {
+      "reference": "file:build.sbt#sha256:59d08475dcd49da4af7e5b280d785e7289a7bfa510c38f32d963265c21780ac5",
+      "sourcePath": "build.sbt",
+      "digest": "sha256:59d08475dcd49da4af7e5b280d785e7289a7bfa510c38f32d963265c21780ac5",
+      "archivePath": "references/blobs/59d08475dcd49da4af7e5b280d785e7289a7bfa510c38f32d963265c21780ac5"
+    },
+    {
+      "reference": "file:docs%2Farchitecture-charter-audit.md#sha256:a336a9b5f03253dbd21db3fdeb3e8e3ede9f3aad0dafe38161bc41eaa182da9d",
+      "sourcePath": "docs/architecture-charter-audit.md",
+      "digest": "sha256:a336a9b5f03253dbd21db3fdeb3e8e3ede9f3aad0dafe38161bc41eaa182da9d",
+      "archivePath": "references/blobs/a336a9b5f03253dbd21db3fdeb3e8e3ede9f3aad0dafe38161bc41eaa182da9d"
+    },
+    {
+      "reference": "file:docs%2Fcatalog-benchmark.md#sha256:b1d095ee685033695be5276ae26da97182699b9654071929e1627f476730ac31",
+      "sourcePath": "docs/catalog-benchmark.md",
+      "digest": "sha256:b1d095ee685033695be5276ae26da97182699b9654071929e1627f476730ac31",
+      "archivePath": "references/blobs/b1d095ee685033695be5276ae26da97182699b9654071929e1627f476730ac31"
+    },
+    {
+      "reference": "file:memory%2Fsession-bridge.md#sha256:6763a78e44ddd94a2c6de3dd1e750a9d715eff3bd54c87e9fa51beb9b27bc424",
+      "sourcePath": "memory/session-bridge.md",
+      "digest": "sha256:6763a78e44ddd94a2c6de3dd1e750a9d715eff3bd54c87e9fa51beb9b27bc424",
+      "archivePath": "references/blobs/6763a78e44ddd94a2c6de3dd1e750a9d715eff3bd54c87e9fa51beb9b27bc424"
+    },
+    {
+      "reference": "file:openspec%2Fchanges%2Fintroduce-application-and-runtime-foundation%2Fcorgi%2Ftraceability.yaml#sha256:6c7982a9f80036a1d6dd2e9fb27e15c3cb152ac3a01713a5bb4599a0eb0b15bc",
+      "sourcePath": "openspec/changes/introduce-application-and-runtime-foundation/corgi/traceability.yaml",
+      "digest": "sha256:6c7982a9f80036a1d6dd2e9fb27e15c3cb152ac3a01713a5bb4599a0eb0b15bc",
+      "archivePath": "references/blobs/6c7982a9f80036a1d6dd2e9fb27e15c3cb152ac3a01713a5bb4599a0eb0b15bc"
+    },
+    {
+      "reference": "file:openspec%2Fchanges%2Fintroduce-application-and-runtime-foundation%2Ftasks.md#sha256:cce79bda43acde55c6c2a2975fe0a00106085fd2b2aaeaedd4b27f595a8807d3",
+      "sourcePath": "openspec/changes/introduce-application-and-runtime-foundation/tasks.md",
+      "digest": "sha256:cce79bda43acde55c6c2a2975fe0a00106085fd2b2aaeaedd4b27f595a8807d3",
+      "archivePath": "references/blobs/cce79bda43acde55c6c2a2975fe0a00106085fd2b2aaeaedd4b27f595a8807d3"
+    },
+    {
+      "reference": "file:runtime%2Fsrc%2Fmain%2Fjava%2Ftrading%2Fruntime%2FLiveCatalogBridge.java#sha256:e86ccffa4292dacbd80f3b219f738549bccbd660bd0a6cdd7b5f83cbdf42f68c",
+      "sourcePath": "runtime/src/main/java/trading/runtime/LiveCatalogBridge.java",
+      "digest": "sha256:e86ccffa4292dacbd80f3b219f738549bccbd660bd0a6cdd7b5f83cbdf42f68c",
+      "archivePath": "references/blobs/e86ccffa4292dacbd80f3b219f738549bccbd660bd0a6cdd7b5f83cbdf42f68c"
+    },
+    {
+      "reference": "file:runtime%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fruntime%2FInMemoryLiveCatalog.scala#sha256:47a5465a4d3af8ac7286e52b2af04b0e8802ebd473d3ab6e2beb7ce895766eb3",
+      "sourcePath": "runtime/src/main/scala/trading/runtime/InMemoryLiveCatalog.scala",
+      "digest": "sha256:47a5465a4d3af8ac7286e52b2af04b0e8802ebd473d3ab6e2beb7ce895766eb3",
+      "archivePath": "references/blobs/47a5465a4d3af8ac7286e52b2af04b0e8802ebd473d3ab6e2beb7ce895766eb3"
+    },
+    {
+      "reference": "file:runtime%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fruntime%2FInMemoryLiveCatalogContractSuite.scala#sha256:80178bda163b07a7f76d81d857ce81be67bfe2a76feaa7f89eaeef3430397392",
+      "sourcePath": "runtime/src/test/scala/trading/runtime/InMemoryLiveCatalogContractSuite.scala",
+      "digest": "sha256:80178bda163b07a7f76d81d857ce81be67bfe2a76feaa7f89eaeef3430397392",
+      "archivePath": "references/blobs/80178bda163b07a7f76d81d857ce81be67bfe2a76feaa7f89eaeef3430397392"
+    }
+  ]
+}

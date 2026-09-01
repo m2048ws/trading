@@ -106,6 +106,67 @@ with pure immutable transition semantics where practical. Application ports do
 not expose concrete `Ref`, fiber, queue, stream, client, or transaction
 implementations.
 
+## Application port admission and runtime semantics
+
+Use the following encoding rule at the pure/effect boundary:
+
+- durable commands, queries, events, and expected outcomes are explicit closed
+  data owned by the layer that defines their meaning;
+- semantics determined by immutable inputs are ordinary pure functions and
+  state transitions;
+- only operations that genuinely vary with coordinated live state, time,
+  persistence, communication, or another environment become narrow final
+  `F[_]` capabilities;
+- concrete effects, resources, clients, concurrency, streaming loops, and
+  operational decorators belong to runtime interpreters.
+
+Application does not define a repository-wide environment, service locator,
+capability registry, universal application error, free-program layer, or an
+effect-wrapped facade over pure quantities, catalog semantics, instrument
+assembly, valuation, P&L, or other domain calculations. A workflow receives
+only the small product of capabilities that it actually uses. Expected absence,
+conflict, rejection, and idempotent replay remain typed capability results;
+unexpected infrastructure failure and cancellation use the documented effect
+semantics without being recast as one universal business error.
+
+A future port is admitted only after its own RFC Slice or amendment answers the
+applicable questions below. This foundation does not deliver these interfaces:
+
+| Candidate | Required semantic contract before admission | Runtime-owned mechanism |
+| --- | --- | --- |
+| Market data | observation identity, freshness, ordering, gaps, replay, absence, and subscription lifetime | feed client, reconnect, buffering, batching, and stream supervision |
+| Trade persistence | durable command/fact identity, typed commit/read outcomes, idempotency, consistency, and retention | database client, schema, migration, session, and outbox wiring |
+| Business time | named workflow need, wall-clock authority, timestamp meaning, and deterministic interpretation | live clock interpreter; timeout/delay scheduling remains monotonic runtime work |
+| Order execution | explicit commands/events, account and venue identity, lifecycle, ordering, replay, and ambiguous-ack reconciliation | live venue, paper, simulation, backtest, and replay interpreters |
+| Transactions | business-shaped atomic operation, or a rank-scoped composition with commit, rollback, isolation, retry, cancellation, and non-escape rules | connection/session acquisition and scoped transaction lifecycle |
+| Telemetry and audit | distinction between best-effort operational observation and a guaranteed durable business fact | tracing/metrics decorators and exporters; durable audit uses an explicit persistence/event capability |
+
+Fibers, queues, schedulers, callback registries, backpressure, merge policy,
+parallelism, and FS2 or another stream representation stay in runtime wiring by
+default. Runtime may batch and supervise ingress around the same domain-named
+operation available to non-streaming callers. If ordering, replay,
+backpressure, or subscription lifetime becomes observable application behavior,
+its proposal must define that protocol directly; processing many values alone
+does not justify a generic stream algebra or per-value coordinated lookup.
+
+Wall-clock time is business data only when one explicit observation affects a
+command, event, validity rule, or result. Timeouts, retry delays, deadlines, and
+scheduling intervals use monotonic runtime facilities and do not become domain
+timestamps. Pure code never reads a global system clock.
+
+Prefer one business-shaped atomic capability operation for one indivisible
+durable outcome. A context-free `F[A] => F[A]` wrapper cannot prove that its
+effects share a transaction. Multi-operation atomic composition requires a
+scoped program whose session-bound capabilities cannot escape and whose
+proposal defines isolation, retry, cancellation, idempotency, and coordination
+with external effects.
+
+Tracing, metrics, and logs are runtime decorators and may be sampled, delayed,
+duplicated, or lost according to their operational contract. If an observation
+is a guaranteed audit fact, it is explicit durable data committed by a named
+application capability; telemetry must never be allowed to masquerade as that
+guarantee.
+
 ## Validation and errors
 
 Validation is staged by dependency:
@@ -176,8 +237,8 @@ objects, generic mapping models, validation containers, runtime references, and
 similar implementation representations remain confined unless deliberately
 made part of an owning public contract.
 
-The current minimum build and runtime JDK is 17 while the project uses Scala
-3.8.x. Raising that floor or selecting a dependency major that requires a higher
+The current minimum build and runtime JDK is 25 while the project uses Scala
+3.8.x. Changing that floor or selecting a dependency major that requires a higher
 floor is an explicit compatibility decision. Independently released libraries
 use independently named version coordinates even if their current version
 strings match. Proposal 1 owns splitting the current shared Cats/Algebra

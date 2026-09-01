@@ -1,0 +1,662 @@
+{
+  "schemaVersion": 1,
+  "changeName": "separate-order-and-execution-scenario-modules",
+  "schemaName": "spec-driven",
+  "planningRevision": "sha256:dfda7d3d6ddedf107afdbd3fb8820c55d9d89ec610e1fbe1a5894b4d7ff0d3e9",
+  "status": "ready",
+  "taskArtifactId": "tasks",
+  "artifactPaths": {
+    "design": {
+      "outputPath": "design.md",
+      "resolvedOutputPath": "/Users/m/src/money/.worktrees/separate-order-and-execution-scenario-modules/openspec/changes/separate-order-and-execution-scenario-modules/design.md",
+      "existingOutputPaths": [
+        "/Users/m/src/money/.worktrees/separate-order-and-execution-scenario-modules/openspec/changes/separate-order-and-execution-scenario-modules/design.md"
+      ]
+    },
+    "proposal": {
+      "outputPath": "proposal.md",
+      "resolvedOutputPath": "/Users/m/src/money/.worktrees/separate-order-and-execution-scenario-modules/openspec/changes/separate-order-and-execution-scenario-modules/proposal.md",
+      "existingOutputPaths": [
+        "/Users/m/src/money/.worktrees/separate-order-and-execution-scenario-modules/openspec/changes/separate-order-and-execution-scenario-modules/proposal.md"
+      ]
+    },
+    "specs": {
+      "outputPath": "specs/**/*.md",
+      "resolvedOutputPath": "/Users/m/src/money/.worktrees/separate-order-and-execution-scenario-modules/openspec/changes/separate-order-and-execution-scenario-modules/specs/**/*.md",
+      "existingOutputPaths": [
+        "/Users/m/src/money/.worktrees/separate-order-and-execution-scenario-modules/openspec/changes/separate-order-and-execution-scenario-modules/specs/order-scenarios/spec.md"
+      ]
+    },
+    "tasks": {
+      "outputPath": "tasks.md",
+      "resolvedOutputPath": "/Users/m/src/money/.worktrees/separate-order-and-execution-scenario-modules/openspec/changes/separate-order-and-execution-scenario-modules/tasks.md",
+      "existingOutputPaths": [
+        "/Users/m/src/money/.worktrees/separate-order-and-execution-scenario-modules/openspec/changes/separate-order-and-execution-scenario-modules/tasks.md"
+      ]
+    }
+  },
+  "checks": [
+    {
+      "code": "ARTIFACTS_COMPLETE",
+      "status": "pass",
+      "severity": "info",
+      "message": "All planning artifacts are complete"
+    },
+    {
+      "code": "OPENSPEC_STRICT_VALIDATION",
+      "status": "pass",
+      "severity": "info",
+      "message": "OpenSpec strict validation passed"
+    },
+    {
+      "code": "TASK_ARTIFACT_CONFIGURED",
+      "status": "pass",
+      "severity": "info",
+      "message": "Task artifact 'tasks' exists in the schema"
+    },
+    {
+      "code": "TASK_ARTIFACT_UNIQUE",
+      "status": "pass",
+      "severity": "info",
+      "message": "Exactly one concrete task artifact was resolved",
+      "paths": [
+        "/Users/m/src/money/.worktrees/separate-order-and-execution-scenario-modules/openspec/changes/separate-order-and-execution-scenario-modules/tasks.md"
+      ]
+    },
+    {
+      "code": "TASK_GROUP_STRUCTURE",
+      "status": "pass",
+      "severity": "info",
+      "message": "13 Task Group(s) have stable unique ids",
+      "paths": [
+        "/Users/m/src/money/.worktrees/separate-order-and-execution-scenario-modules/openspec/changes/separate-order-and-execution-scenario-modules/tasks.md"
+      ]
+    },
+    {
+      "code": "NO_PLACEHOLDERS",
+      "status": "pass",
+      "severity": "info",
+      "message": "Planning artifacts contain no unresolved placeholders"
+    },
+    {
+      "code": "NO_OPEN_QUESTIONS",
+      "status": "pass",
+      "severity": "info",
+      "message": "No unresolved Open Questions sections remain"
+    },
+    {
+      "code": "CAPABILITY_SPEC_PARITY",
+      "status": "pass",
+      "severity": "info",
+      "message": "Proposal capability names match concrete delta specs",
+      "paths": [
+        "/Users/m/src/money/.worktrees/separate-order-and-execution-scenario-modules/openspec/changes/separate-order-and-execution-scenario-modules/proposal.md",
+        "/Users/m/src/money/.worktrees/separate-order-and-execution-scenario-modules/openspec/changes/separate-order-and-execution-scenario-modules/specs/order-scenarios/spec.md"
+      ]
+    },
+    {
+      "code": "CHANGE_CONTRACT_PRESENT",
+      "status": "pass",
+      "severity": "info",
+      "message": "Change is bound to RFC-0002-architecture-portfolio/S-02-order-execution-scenarios",
+      "paths": [
+        "/Users/m/src/money/.worktrees/separate-order-and-execution-scenario-modules/openspec/changes/separate-order-and-execution-scenario-modules/corgi/source.yaml",
+        "/Users/m/src/money/.worktrees/separate-order-and-execution-scenario-modules/openspec/changes/separate-order-and-execution-scenario-modules/corgi/traceability.yaml"
+      ]
+    },
+    {
+      "code": "TRACEABILITY_COMPLETE",
+      "status": "pass",
+      "severity": "info",
+      "message": "Every acceptance criterion maps to planning artifacts and Task Groups",
+      "paths": [
+        "/Users/m/src/money/.worktrees/separate-order-and-execution-scenario-modules/openspec/changes/separate-order-and-execution-scenario-modules/corgi/traceability.yaml"
+      ]
+    },
+    {
+      "code": "SOURCE_PROVENANCE_CURRENT",
+      "status": "pass",
+      "severity": "info",
+      "message": "RFC acceptance, branch ancestry, Slice binding, and tracker source are current",
+      "paths": []
+    }
+  ],
+  "taskGroups": [
+    {
+      "number": 1,
+      "name": "Contract, Dependency, and Baseline Gates",
+      "tasks": [
+        {
+          "id": "1.1",
+          "description": "Confirm the effective RFC/source/traceability bindings, the externally owned instrument-economics prerequisite",
+          "done": false,
+          "line": 3
+        },
+        {
+          "id": "1.2",
+          "description": "Refresh Git/source/build/Corgi state and record clean formatting, compilation, unit/property tests, and external-artifact",
+          "done": false,
+          "line": 5
+        },
+        {
+          "id": "1.3",
+          "description": "Inventory every order/scenario type, instrument capability call, error case, test fixture, fee-policy consumer,",
+          "done": false,
+          "line": 7
+        }
+      ],
+      "totalTasks": 3,
+      "completedTasks": 0,
+      "status": "pending",
+      "line": 1
+    },
+    {
+      "number": 2,
+      "name": "Module Boundaries",
+      "tasks": [
+        {
+          "id": "2.1",
+          "description": "Add `orderModel` in `order-model/` with artifact `trading-order-model`, package `trading.order`, and only the",
+          "done": false,
+          "line": 12
+        },
+        {
+          "id": "2.2",
+          "description": "Add `executionScenario` in `execution-scenario/` with artifact `trading-execution-scenario`, package",
+          "done": false,
+          "line": 14
+        },
+        {
+          "id": "2.3",
+          "description": "Wire root aggregation, completed-JAR external-artifact tasks, adversarial/compiler-test classpaths, and the",
+          "done": false,
+          "line": 16
+        },
+        {
+          "id": "2.4",
+          "description": "Add compiler guards proving order model cannot access market states/scenario/fee/risk/runtime and execution",
+          "done": false,
+          "line": 18
+        }
+      ],
+      "totalTasks": 4,
+      "completedTasks": 0,
+      "status": "pending",
+      "line": 10
+    },
+    {
+      "number": 3,
+      "name": "Algebraic Order Model",
+      "tasks": [
+        {
+          "id": "3.1",
+          "description": "Move `Side`, time-in-force refinements, liquidity constraint, position effect, price reference, comparison,",
+          "done": false,
+          "line": 23
+        },
+        {
+          "id": "3.2",
+          "description": "Preserve dimension-indexed `Lots`/`Price` relationships and associated `Evidence`/`Resolution` members without",
+          "done": false,
+          "line": 25
+        },
+        {
+          "id": "3.3",
+          "description": "Put local smart constructors on trailing activation, non-resting duration, and other refined order values with",
+          "done": false,
+          "line": 27
+        },
+        {
+          "id": "3.4",
+          "description": "Implement evidence and peg-resolution construction through the corresponding instruction values, deriving",
+          "done": false,
+          "line": 29
+        },
+        {
+          "id": "3.5",
+          "description": "Add compile-positive/exhaustiveness tests for every valid activation/execution composition and compile-negative",
+          "done": false,
+          "line": 31
+        }
+      ],
+      "totalTasks": 5,
+      "completedTasks": 0,
+      "status": "pending",
+      "line": 21
+    },
+    {
+      "number": 4,
+      "name": "Intent and Order Validation",
+      "tasks": [
+        {
+          "id": "4.1",
+          "description": "Implement `OrderIntent` construction from an explicit instrument, side, positive lots, and position effect,",
+          "done": false,
+          "line": 36
+        },
+        {
+          "id": "4.2",
+          "description": "Add closed `OrderComponent`, `OrderViolation`, and non-empty ordered `OrderViolations` domain types; remove",
+          "done": false,
+          "line": 38
+        },
+        {
+          "id": "4.3",
+          "description": "Implement one staged accumulating final-order validator for runtime identity and independent iceberg constraints,",
+          "done": false,
+          "line": 40
+        },
+        {
+          "id": "4.4",
+          "description": "Rebuild market, limit, stop-market, and stop-limit conveniences as composition into the canonical constructor,",
+          "done": false,
+          "line": 42
+        },
+        {
+          "id": "4.5",
+          "description": "Test long/short position changes, reduce-only retention without account enforcement, identity mismatch",
+          "done": false,
+          "line": 44
+        }
+      ],
+      "totalTasks": 5,
+      "completedTasks": 0,
+      "status": "pending",
+      "line": 34
+    },
+    {
+      "number": 5,
+      "name": "Domain Scenario Inputs",
+      "tasks": [
+        {
+          "id": "5.1",
+          "description": "Move `LiquidityRole` and liquidity-slice types to `trading.scenario` and implement pure slice construction from",
+          "done": false,
+          "line": 49
+        },
+        {
+          "id": "5.2",
+          "description": "Implement minimal domain-owned `MatchedSlices` with `one`, head/tail, vector projection, and typed vector",
+          "done": false,
+          "line": 51
+        },
+        {
+          "id": "5.3",
+          "description": "Reshape `ScenarioAssumptions` so it owns one order and its path-dependent activation evidence, pricing",
+          "done": false,
+          "line": 53
+        },
+        {
+          "id": "5.4",
+          "description": "Provide adapter-friendly constructors for each legal associated evidence shape without accepting untyped maps,",
+          "done": false,
+          "line": 55
+        },
+        {
+          "id": "5.5",
+          "description": "Add compiler tests proving missing/extraneous and fixed/trailing or direct/pegged evidence pairings cannot use",
+          "done": false,
+          "line": 57
+        }
+      ],
+      "totalTasks": 5,
+      "completedTasks": 0,
+      "status": "pending",
+      "line": 47
+    },
+    {
+      "number": 6,
+      "name": "Staged Scenario Evaluation",
+      "tasks": [
+        {
+          "id": "6.1",
+          "description": "Add closed `ScenarioLocation`, `ScenarioViolation`, focused activation/pricing causes, and non-empty ordered",
+          "done": false,
+          "line": 62
+        },
+        {
+          "id": "6.2",
+          "description": "Implement the identity-validation stage across instrument, order components, evidence prices, and indexed slice",
+          "done": false,
+          "line": 64
+        },
+        {
+          "id": "6.3",
+          "description": "Implement branch-sensitive lot-total, activation, pricing, market/taker, and maker-only/maker validation with",
+          "done": false,
+          "line": 66
+        },
+        {
+          "id": "6.4",
+          "description": "Implement effective-price-dependent side/limit quality validation without suppressing independent branches or",
+          "done": false,
+          "line": 68
+        },
+        {
+          "id": "6.5",
+          "description": "Construct `OrderScenario` from the one assumptions value, retaining verified results and intent's signed",
+          "done": false,
+          "line": 70
+        },
+        {
+          "id": "6.6",
+          "description": "Remove the `Scenarios` service, duplicate order parameter, `.eq` target comparison, scenario position-sign",
+          "done": false,
+          "line": 72
+        },
+        {
+          "id": "6.7",
+          "description": "Test multi-price slices, non-empty reconstruction, complete lot conservation, activation/peg failures,",
+          "done": false,
+          "line": 74
+        }
+      ],
+      "totalTasks": 7,
+      "completedTasks": 0,
+      "status": "pending",
+      "line": 60
+    },
+    {
+      "number": 7,
+      "name": "Round Trips and Downstream Consumers",
+      "tasks": [
+        {
+          "id": "7.1",
+          "description": "Implement round-trip construction from an explicit instrument and two complete scenarios using checked",
+          "done": false,
+          "line": 79
+        },
+        {
+          "id": "7.2",
+          "description": "Preserve entry/exit assumptions and the entry's retained position as held position, with typed signed-coordinate",
+          "done": false,
+          "line": 81
+        },
+        {
+          "id": "7.3",
+          "description": "Update transitional fee-policy code to consume the new scenario types and slice projections without changing",
+          "done": false,
+          "line": 83
+        },
+        {
+          "id": "7.4",
+          "description": "Update transitional risk/sizing code to consume new round trips without changing candidate traversal or risk",
+          "done": false,
+          "line": 85
+        },
+        {
+          "id": "7.5",
+          "description": "Remove order/scenario production source and related errors from the transitional `economics` artifact, with no",
+          "done": false,
+          "line": 87
+        }
+      ],
+      "totalTasks": 5,
+      "completedTasks": 0,
+      "status": "pending",
+      "line": 77
+    },
+    {
+      "number": 8,
+      "name": "Verification Evidence and Corgi Handoff",
+      "tasks": [
+        {
+          "id": "8.1",
+          "description": "Format all affected Scala/SBT sources and run clean compilation in dependency order.",
+          "done": false,
+          "line": 92
+        },
+        {
+          "id": "8.2",
+          "description": "Run order/scenario unit and property suites, dependent fee/risk suites, negative compilation, external-JAR",
+          "done": false,
+          "line": 93
+        },
+        {
+          "id": "8.3",
+          "description": "Compare all existing valid and invalid order/scenario fixtures against the new behavior, documenting intentional",
+          "done": false,
+          "line": 95
+        },
+        {
+          "id": "8.4",
+          "description": "Inspect packaged APIs and production imports for forbidden dependencies, effect kinds, lifecycle state,",
+          "done": false,
+          "line": 97
+        },
+        {
+          "id": "8.5",
+          "description": "Confirm the current Slice still satisfies strict planning/source/traceability integrity and reconcile any",
+          "done": false,
+          "line": 99
+        },
+        {
+          "id": "8.6",
+          "description": "Prepare the final acknowledged Task Group commit and evidence for separate canonical Verify, human review,",
+          "done": false,
+          "line": 101
+        }
+      ],
+      "totalTasks": 6,
+      "completedTasks": 0,
+      "status": "pending",
+      "line": 90
+    },
+    {
+      "number": 9,
+      "name": "Independent Review Repair",
+      "tasks": [
+        {
+          "id": "9.1",
+          "description": "Integrate the current `main` tree into the repair commit without rewriting the acknowledged Task Group prefix,",
+          "done": false,
+          "line": 106
+        },
+        {
+          "id": "9.2",
+          "description": "Replace package-qualified order/scenario construction authority with JVM-enforced private or otherwise",
+          "done": false,
+          "line": 109
+        },
+        {
+          "id": "9.3",
+          "description": "Add completed-JAR negative fixtures for same-package Scala and Java construction/copy attempts covering order",
+          "done": false,
+          "line": 112
+        },
+        {
+          "id": "9.4",
+          "description": "Run formatting, clean compilation, unit/property suites, completed-JAR compiler boundaries, downstream",
+          "done": false,
+          "line": 115
+        },
+        {
+          "id": "9.5",
+          "description": "Record the repair rationale, conflict dispositions, API inspection, exact validation counts, and independent",
+          "done": false,
+          "line": 118
+        }
+      ],
+      "totalTasks": 5,
+      "completedTasks": 0,
+      "status": "pending",
+      "line": 104
+    },
+    {
+      "number": 10,
+      "name": "Merge-Ancestry Verification Repair",
+      "tasks": [
+        {
+          "id": "10.1",
+          "description": "Verify that the repair baseline records `05a8af0ff836b846247c082901ac3baea3d0c169` as an actual ancestor",
+          "done": false,
+          "line": 124
+        },
+        {
+          "id": "10.2",
+          "description": "Rerun formatting, the clean full repository test matrix, JMH compilation, completed-JAR Scala and Java",
+          "done": false,
+          "line": 127
+        },
+        {
+          "id": "10.3",
+          "description": "Run strict OpenSpec validation, deterministic Corgi readiness, and the automated Task Group review loop;",
+          "done": false,
+          "line": 130
+        },
+        {
+          "id": "10.4",
+          "description": "Prepare one dedicated atomic Repair Task Group commit containing the validation/evidence checkpoint,",
+          "done": false,
+          "line": 133
+        }
+      ],
+      "totalTasks": 4,
+      "completedTasks": 0,
+      "status": "pending",
+      "line": 122
+    },
+    {
+      "number": 11,
+      "name": "Completed-JAR JVM Construction Authority Repair",
+      "tasks": [
+        {
+          "id": "11.1",
+          "description": "Close the completed `trading-order-model` JAR against external Java subclassing of `Order`, external",
+          "done": false,
+          "line": 139
+        },
+        {
+          "id": "11.2",
+          "description": "Close `MatchedSlices` construction at the JVM boundary and remove, hide, or dynamically validate erased",
+          "done": false,
+          "line": 142
+        },
+        {
+          "id": "11.3",
+          "description": "Extend completed-JAR Java adversarial fixtures to reject every demonstrated subclass, implementation,",
+          "done": false,
+          "line": 145
+        },
+        {
+          "id": "11.4",
+          "description": "Run formatting, clean full repository tests, JMH compilation, completed-JAR compiler boundaries,",
+          "done": false,
+          "line": 148
+        },
+        {
+          "id": "11.5",
+          "description": "Record the exact remediation, API/bytecode evidence, validation counts, and review disposition in the",
+          "done": false,
+          "line": 151
+        }
+      ],
+      "totalTasks": 5,
+      "completedTasks": 0,
+      "status": "pending",
+      "line": 137
+    },
+    {
+      "number": 12,
+      "name": "Checked Scenario Structural Value Semantics Repair",
+      "tasks": [
+        {
+          "id": "12.1",
+          "description": "Restore structural `equals` and `hashCode` for `OrderScenario` over its retained assumptions, checked",
+          "done": false,
+          "line": 157
+        },
+        {
+          "id": "12.2",
+          "description": "Restore structural `equals` and `hashCode` for `RoundTripScenario` over its instrument identity, entry, exit,",
+          "done": false,
+          "line": 160
+        },
+        {
+          "id": "12.3",
+          "description": "Add focused laws proving repeated checked evaluation and repeated checked round-trip construction yield equal",
+          "done": false,
+          "line": 162
+        },
+        {
+          "id": "12.4",
+          "description": "Run formatting, the clean full repository test matrix, JMH compilation, completed-JAR Scala and Java boundary",
+          "done": false,
+          "line": 165
+        },
+        {
+          "id": "12.5",
+          "description": "Record the exact remediation, validation counts, and review disposition in the session checkpoint; prepare",
+          "done": false,
+          "line": 168
+        }
+      ],
+      "totalTasks": 5,
+      "completedTasks": 0,
+      "status": "pending",
+      "line": 155
+    },
+    {
+      "number": 13,
+      "name": "Archive Delta Completeness Repair",
+      "tasks": [
+        {
+          "id": "13.1",
+          "description": "Reconcile the modified compositional-order requirement so every scenario in the current canonical requirement",
+          "done": false,
+          "line": 174
+        },
+        {
+          "id": "13.2",
+          "description": "Prove the repaired delta with strict OpenSpec validation and an isolated OpenSpec Archive rehearsal; confirm",
+          "done": false,
+          "line": 176
+        },
+        {
+          "id": "13.3",
+          "description": "Run deterministic Corgi readiness and the automated Task Group review loop, record the recovery rationale and",
+          "done": false,
+          "line": 178
+        },
+        {
+          "id": "13.4",
+          "description": "Rerun canonical Verify, human whole-change Review, Human QA, and the strong Archive transaction against the",
+          "done": false,
+          "line": 180
+        }
+      ],
+      "totalTasks": 4,
+      "completedTasks": 0,
+      "status": "pending",
+      "line": 172
+    }
+  ],
+  "contract": {
+    "schemaVersion": 1,
+    "pathConvention": "project-relative-posix",
+    "kind": "rfc-slice",
+    "deliveryRef": "RFC-0002-architecture-portfolio/S-02-order-execution-scenarios",
+    "rfcId": "RFC-0002-architecture-portfolio",
+    "rfcDigest": "sha256:a00c0cf1e3a4440bfce7dc828ad4ac119414f10d72e8d8c52c613403ef5977e2",
+    "acceptedCommit": "7b6f7a58f4dcbb8fb4bbdf3a8ba74ba66f222cce",
+    "sliceId": "S-02-order-execution-scenarios",
+    "acceptanceIds": [
+      "AC-005",
+      "AC-006",
+      "AC-007",
+      "AC-008"
+    ],
+    "sourcePath": "openspec/changes/separate-order-and-execution-scenario-modules/corgi/source.yaml",
+    "sourceDigest": "sha256:5d573cd0d12bbcffacb9b047475ee4beb81069dedabd420018b5d3f32f7acdd0",
+    "traceabilityPath": "openspec/changes/separate-order-and-execution-scenario-modules/corgi/traceability.yaml",
+    "traceabilityDigest": "sha256:a265f9092baad966ec7ef5f731ab1a889dc3542f8bd9a5e893b1f8338af6de5f",
+    "tracker": {
+      "provider": "github",
+      "idempotencyKey": "b6050dd64a83ec73bbbdfe51650a5554afa7efd70abc8a0946f9fa8c4abbe8f3",
+      "issue": {
+        "id": "7",
+        "url": "https://github.com/m2048ws/trading/issues/7"
+      }
+    }
+  }
+}

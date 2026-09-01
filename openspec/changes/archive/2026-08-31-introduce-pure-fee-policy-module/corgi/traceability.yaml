@@ -1,0 +1,42 @@
+schemaVersion: 1
+sourceDigest: sha256:d7face4865eb2e8e69abb4f305d67720842e19f9d1d4fa3b760b744fb8f06443
+acceptance:
+  - id: AC-013
+    evidence: automated
+    planningRefs:
+      - path: specs/fee-inclusive-pnl/spec.md
+        anchor: requirement-pure-fee-policy-and-assessment-boundary
+    taskGroups:
+      - '2'
+      - '8'
+  - id: AC-014
+    evidence: both
+    planningRefs:
+      - path: specs/fee-inclusive-pnl/spec.md
+        anchor: requirement-contextual-fee-policy-composition
+      - path: specs/fee-inclusive-pnl/spec.md
+        anchor: requirement-signed-grid-constrained-fees
+    taskGroups:
+      - '3'
+      - '4'
+  - id: AC-015
+    evidence: automated
+    planningRefs:
+      - path: specs/fee-inclusive-pnl/spec.md
+        anchor: requirement-pure-fee-policy-and-assessment-boundary
+    taskGroups:
+      - '5'
+  - id: AC-016
+    evidence: both
+    planningRefs:
+      - path: specs/order-scenarios/spec.md
+        anchor: requirement-exact-round-trip-scenario-price-normalization
+      - path: specs/fee-inclusive-pnl/spec.md
+        anchor: requirement-exact-fee-inclusive-pnl-breakdown
+      - path: specs/fee-inclusive-pnl/spec.md
+        anchor: requirement-scenario-context-carries-epistemic-status
+    taskGroups:
+      - '6'
+      - '7'
+      - '8'
+      - '9'

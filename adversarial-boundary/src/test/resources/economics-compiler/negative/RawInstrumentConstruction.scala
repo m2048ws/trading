@@ -8,8 +8,7 @@ object RawInstrumentConstruction:
 
   // OFFENDING-BEGIN
   val raw = Instrument.fromSpec(definition)
-  val snapshot = Instrument.fromSpec(catalogSnapshot)
+  val snapshotValue = Instrument.fromSpec(snapshot)
   val removed = Instrument.create(definition)
   // OFFENDING-END
-
 end RawInstrumentConstruction
