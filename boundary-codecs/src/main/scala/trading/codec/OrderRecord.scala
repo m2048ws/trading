@@ -37,6 +37,7 @@ import trading.order.Side as DomainSide
 import trading.order.TimeInForce as DomainTimeInForce
 import trading.order.TrailingActivation
 import trading.order.TriggerComparison as DomainTriggerComparison
+import trading.quantity.Dim
 import trading.quantity.JavaSerializationUnsupported
 
 /** Local smart-constructor failures retained before canonical order validation. */
@@ -144,6 +145,128 @@ end IndexedOrderReconstructionFailure
 
 /** Frozen stable-data representation and smart-constructor reconstruction boundary for immutable orders. */
 object OrderRecord:
+  private[codec] trait ReconstructedOrderVisitor[
+    D <: Dim,
+    B <: Dim,
+    Q <: Dim,
+    R]:
+    def immediateMarket(
+      order: Order.Aux[D, B, Q, ImmediateActivation[B, Q], MarketExecution[D, B, Q]]
+    ): R
+
+    def immediateLimit(
+      order: Order.Aux[D, B, Q, ImmediateActivation[B, Q], PricedExecution[D, B, Q, LimitPricing[B, Q]]]
+    ): R
+
+    def immediatePegged(
+      order: Order.Aux[D, B, Q, ImmediateActivation[B, Q], PricedExecution[D, B, Q, PeggedPricing[B, Q]]]
+    ): R
+
+    def fixedMarket(
+      order: Order.Aux[D, B, Q, FixedActivation[B, Q], MarketExecution[D, B, Q]]
+    ): R
+
+    def fixedLimit(
+      order: Order.Aux[D, B, Q, FixedActivation[B, Q], PricedExecution[D, B, Q, LimitPricing[B, Q]]]
+    ): R
+
+    def fixedPegged(
+      order: Order.Aux[D, B, Q, FixedActivation[B, Q], PricedExecution[D, B, Q, PeggedPricing[B, Q]]]
+    ): R
+
+    def trailingMarket(
+      order: Order.Aux[D, B, Q, TrailingActivation[B, Q], MarketExecution[D, B, Q]]
+    ): R
+
+    def trailingLimit(
+      order: Order.Aux[D, B, Q, TrailingActivation[B, Q], PricedExecution[D, B, Q, LimitPricing[B, Q]]]
+    ): R
+
+    def trailingPegged(
+      order: Order.Aux[D, B, Q, TrailingActivation[B, Q], PricedExecution[D, B, Q, PeggedPricing[B, Q]]]
+    ): R
+  end ReconstructedOrderVisitor
+
+  private[codec] sealed trait ReconstructedOrder[D <: Dim, B <: Dim, Q <: Dim]:
+    def order: Order[D, B, Q]
+    def visit[R](visitor: ReconstructedOrderVisitor[D, B, Q, R]): R
+  end ReconstructedOrder
+
+  private object ReconstructedOrder:
+    final case class ImmediateMarket[D <: Dim, B <: Dim, Q <: Dim](
+      value: Order.Aux[D, B, Q, ImmediateActivation[B, Q], MarketExecution[D, B, Q]])
+      extends ReconstructedOrder[D, B, Q]:
+      def order: Order[D, B, Q]                                       = value
+      def visit[R](visitor: ReconstructedOrderVisitor[D, B, Q, R]): R = visitor.immediateMarket(value)
+
+    final case class ImmediateLimit[D <: Dim, B <: Dim, Q <: Dim](
+      value: Order.Aux[D, B, Q, ImmediateActivation[B, Q], PricedExecution[D, B, Q, LimitPricing[B, Q]]])
+      extends ReconstructedOrder[D, B, Q]:
+      def order: Order[D, B, Q]                                       = value
+      def visit[R](visitor: ReconstructedOrderVisitor[D, B, Q, R]): R = visitor.immediateLimit(value)
+
+    final case class ImmediatePegged[D <: Dim, B <: Dim, Q <: Dim](
+      value: Order.Aux[D, B, Q, ImmediateActivation[B, Q], PricedExecution[D, B, Q, PeggedPricing[B, Q]]])
+      extends ReconstructedOrder[D, B, Q]:
+      def order: Order[D, B, Q]                                       = value
+      def visit[R](visitor: ReconstructedOrderVisitor[D, B, Q, R]): R = visitor.immediatePegged(value)
+
+    final case class FixedMarket[D <: Dim, B <: Dim, Q <: Dim](
+      value: Order.Aux[D, B, Q, FixedActivation[B, Q], MarketExecution[D, B, Q]])
+      extends ReconstructedOrder[D, B, Q]:
+      def order: Order[D, B, Q]                                       = value
+      def visit[R](visitor: ReconstructedOrderVisitor[D, B, Q, R]): R = visitor.fixedMarket(value)
+
+    final case class FixedLimit[D <: Dim, B <: Dim, Q <: Dim](
+      value: Order.Aux[D, B, Q, FixedActivation[B, Q], PricedExecution[D, B, Q, LimitPricing[B, Q]]])
+      extends ReconstructedOrder[D, B, Q]:
+      def order: Order[D, B, Q]                                       = value
+      def visit[R](visitor: ReconstructedOrderVisitor[D, B, Q, R]): R = visitor.fixedLimit(value)
+
+    final case class FixedPegged[D <: Dim, B <: Dim, Q <: Dim](
+      value: Order.Aux[D, B, Q, FixedActivation[B, Q], PricedExecution[D, B, Q, PeggedPricing[B, Q]]])
+      extends ReconstructedOrder[D, B, Q]:
+      def order: Order[D, B, Q]                                       = value
+      def visit[R](visitor: ReconstructedOrderVisitor[D, B, Q, R]): R = visitor.fixedPegged(value)
+
+    final case class TrailingMarket[D <: Dim, B <: Dim, Q <: Dim](
+      value: Order.Aux[D, B, Q, TrailingActivation[B, Q], MarketExecution[D, B, Q]])
+      extends ReconstructedOrder[D, B, Q]:
+      def order: Order[D, B, Q]                                       = value
+      def visit[R](visitor: ReconstructedOrderVisitor[D, B, Q, R]): R = visitor.trailingMarket(value)
+
+    final case class TrailingLimit[D <: Dim, B <: Dim, Q <: Dim](
+      value: Order.Aux[D, B, Q, TrailingActivation[B, Q], PricedExecution[D, B, Q, LimitPricing[B, Q]]])
+      extends ReconstructedOrder[D, B, Q]:
+      def order: Order[D, B, Q]                                       = value
+      def visit[R](visitor: ReconstructedOrderVisitor[D, B, Q, R]): R = visitor.trailingLimit(value)
+
+    final case class TrailingPegged[D <: Dim, B <: Dim, Q <: Dim](
+      value: Order.Aux[D, B, Q, TrailingActivation[B, Q], PricedExecution[D, B, Q, PeggedPricing[B, Q]]])
+      extends ReconstructedOrder[D, B, Q]:
+      def order: Order[D, B, Q]                                       = value
+      def visit[R](visitor: ReconstructedOrderVisitor[D, B, Q, R]): R = visitor.trailingPegged(value)
+  end ReconstructedOrder
+
+  private sealed trait BuiltActivation[B <: Dim, Q <: Dim]
+  private object BuiltActivation:
+    final case class Immediate[B <: Dim, Q <: Dim](value: ImmediateActivation[B, Q]) extends BuiltActivation[B, Q]
+    final case class Fixed[B <: Dim, Q <: Dim](value: FixedActivation[B, Q])         extends BuiltActivation[B, Q]
+    final case class Trailing[B <: Dim, Q <: Dim](value: TrailingActivation[B, Q])   extends BuiltActivation[B, Q]
+  end BuiltActivation
+
+  private sealed trait BuiltExecution[D <: Dim, B <: Dim, Q <: Dim]
+  private object BuiltExecution:
+    final case class Market[D <: Dim, B <: Dim, Q <: Dim](value: MarketExecution[D, B, Q])
+      extends BuiltExecution[D, B, Q]
+    final case class Limit[D <: Dim, B <: Dim, Q <: Dim](
+      value: PricedExecution[D, B, Q, LimitPricing[B, Q]])
+      extends BuiltExecution[D, B, Q]
+    final case class Pegged[D <: Dim, B <: Dim, Q <: Dim](
+      value: PricedExecution[D, B, Q, PeggedPricing[B, Q]])
+      extends BuiltExecution[D, B, Q]
+  end BuiltExecution
+
   enum Side extends JavaSerializationUnsupported:
     case Buy, Sell
 
@@ -437,7 +560,7 @@ object OrderRecord:
     )
   end executionSchema
 
-  private val v1Schema: WireSchema[V1] =
+  private[codec] val v1Schema: WireSchema[V1] =
     val representation =
       WireRecord
         .field("instrumentId", ExactWire.instrumentId)
@@ -501,7 +624,24 @@ object OrderRecord:
           checkedInstrument.identity.id
         )
       )
-    else reconstructForInstrument(checkedRecord, checkedInstrument)
+    else reconstructForInstrument(checkedRecord, checkedInstrument).map(_.order)
+
+  private[codec] def reconstructForScenario[I <: Instrument](
+    record: V1,
+    instrument: I
+  ): Either[
+    OrderReconstructionFailure,
+    ReconstructedOrder[
+      instrument.roles.position.D,
+      instrument.roles.base.D,
+      instrument.roles.quote.D
+    ]
+  ] =
+    Objects.requireNonNull(record, "scenario order record")
+    Objects.requireNonNull(instrument, "scenario order instrument")
+    if record.instrumentId != instrument.identity.id then
+      Left(OrderReconstructionFailure.ForeignInstrument(record.instrumentId, instrument.identity.id))
+    else reconstructForInstrument(record, instrument)
 
   /** Keep structural syntax, local refinement, and aggregate order validation as closed separate stages. */
   def decodeAndReconstruct[I <: Instrument](
@@ -570,7 +710,14 @@ object OrderRecord:
   private def reconstructForInstrument[I <: Instrument](
     record: V1,
     instrument: I
-  ): Either[OrderReconstructionFailure, Order[?, ?, ?]] =
+  ): Either[
+    OrderReconstructionFailure,
+    ReconstructedOrder[
+      instrument.roles.position.D,
+      instrument.roles.base.D,
+      instrument.roles.quote.D
+    ]
+  ] =
     type D = instrument.roles.position.D
     type B = instrument.roles.base.D
     type Q = instrument.roles.quote.D
@@ -580,9 +727,9 @@ object OrderRecord:
         .fromCount(instrument)(record.lotCoordinate)
         .left
         .map(OrderRefinementFailure.Lots(payloadPath.field("lotCoordinate"), _))
-    val activationResult: Either[Vector[OrderRefinementFailure], OrderActivation[B, Q]] =
+    val activationResult: Either[Vector[OrderRefinementFailure], BuiltActivation[B, Q]] =
       buildActivation(instrument, record.activation)
-    val executionResult: Either[Vector[OrderRefinementFailure], OrderExecution[D, B, Q]] =
+    val executionResult: Either[Vector[OrderRefinementFailure], BuiltExecution[D, B, Q]] =
       buildExecution(instrument, record.execution)
     val failures =
       lotsResult.left.toOption.toVector ++ activationResult.left.toOption.toVector.flatten ++
@@ -598,16 +745,7 @@ object OrderRecord:
               OrderRefinementFailures.one(OrderRefinementFailure.Intent(payloadPath, cause))
             )
           )
-          .flatMap(intent =>
-            Order
-              .create[D, B, Q, OrderActivation[B, Q], OrderExecution[D, B, Q]](instrument)(
-                intent,
-                activation,
-                execution
-              )
-              .left
-              .map(OrderReconstructionFailure.Validation.apply)
-          )
+          .flatMap(intent => createReconstructed(instrument)(intent, activation, execution))
       case _ =>
         OrderRefinementFailures.from(failures) match
           case Some(errors) => Left(OrderReconstructionFailure.Refinement(errors))
@@ -621,12 +759,12 @@ object OrderRecord:
     activation: Activation
   ): Either[
     Vector[OrderRefinementFailure],
-    OrderActivation[instrument.roles.base.D, instrument.roles.quote.D]
+    BuiltActivation[instrument.roles.base.D, instrument.roles.quote.D]
   ] =
     type B = instrument.roles.base.D
     type Q = instrument.roles.quote.D
     activation match
-      case Activation.Immediate                                => Right(ImmediateActivation[B, Q]())
+      case Activation.Immediate => Right(BuiltActivation.Immediate(ImmediateActivation[B, Q]()))
       case Activation.Fixed(reference, comparison, coordinate) =>
         priceFromCoordinate(instrument)(coordinate)
           .left
@@ -638,7 +776,11 @@ object OrderRecord:
               cause
             ))
           )
-          .map(price => FixedActivation(toDomainPriceReference(reference), toDomainComparison(comparison), price))
+          .map(price =>
+            BuiltActivation.Fixed(
+              FixedActivation(toDomainPriceReference(reference), toDomainComparison(comparison), price)
+            )
+          )
       case Activation.Trailing(reference, comparison, offset) =>
         TrailingActivation
           .create[B, Q](toDomainPriceReference(reference), toDomainComparison(comparison), offset)
@@ -649,6 +791,7 @@ object OrderRecord:
               cause
             ))
           )
+          .map(BuiltActivation.Trailing.apply)
     end match
   end buildActivation
 
@@ -657,7 +800,11 @@ object OrderRecord:
     execution: Execution
   ): Either[
     Vector[OrderRefinementFailure],
-    OrderExecution[instrument.roles.position.D, instrument.roles.base.D, instrument.roles.quote.D]
+    BuiltExecution[
+      instrument.roles.position.D,
+      instrument.roles.base.D,
+      instrument.roles.quote.D
+    ]
   ] =
     type D = instrument.roles.position.D
     type B = instrument.roles.base.D
@@ -673,9 +820,9 @@ object OrderRecord:
               cause
             ))
           )
-          .map(value => MarketExecution[D, B, Q](value))
+          .map(value => BuiltExecution.Market(MarketExecution[D, B, Q](value)))
       case Execution.Priced(pricing, timeInForce, liquidityConstraint, visibility) =>
-        val pricingResult: Either[OrderRefinementFailure, OrderPricing[B, Q]] =
+        val pricingResult: Either[OrderRefinementFailure, Either[LimitPricing[B, Q], PeggedPricing[B, Q]]] =
           pricing match
             case Pricing.Limit(coordinate) =>
               priceFromCoordinate(instrument)(coordinate)
@@ -684,9 +831,9 @@ object OrderRecord:
                   payloadPath.field("execution").field("pricing").field("priceCoordinate"),
                   _
                 ))
-                .map(LimitPricing.apply)
+                .map(value => Left(LimitPricing(value)))
             case Pricing.Pegged(reference, offset) =>
-              Right(PeggedPricing[B, Q](toDomainPriceReference(reference), offset))
+              Right(Right(PeggedPricing[B, Q](toDomainPriceReference(reference), offset)))
         val visibilityResult: Either[OrderRefinementFailure, PricedVisibility[D]] =
           visibility match
             case Visibility.Displayed           => Right(DisplayedVisibility)
@@ -703,19 +850,90 @@ object OrderRecord:
         val failures = pricingResult.left.toOption.toVector ++ visibilityResult.left.toOption.toVector
         (pricingResult, visibilityResult) match
           case (Right(checkedPricing), Right(checkedVisibility)) =>
-            Right(
-              PricedExecution[D, B, Q, OrderPricing[B, Q]](
-                checkedPricing,
-                toDomainTimeInForce(timeInForce),
-                toDomainLiquidityConstraint(liquidityConstraint),
-                checkedVisibility
-              )
-            )
+            checkedPricing match
+              case Left(limit) =>
+                Right(
+                  BuiltExecution.Limit(
+                    PricedExecution[D, B, Q, LimitPricing[B, Q]](
+                      limit,
+                      toDomainTimeInForce(timeInForce),
+                      toDomainLiquidityConstraint(liquidityConstraint),
+                      checkedVisibility
+                    )
+                  )
+                )
+              case Right(pegged) =>
+                Right(
+                  BuiltExecution.Pegged(
+                    PricedExecution[D, B, Q, PeggedPricing[B, Q]](
+                      pegged,
+                      toDomainTimeInForce(timeInForce),
+                      toDomainLiquidityConstraint(liquidityConstraint),
+                      checkedVisibility
+                    )
+                  )
+                )
           case _ => Left(failures)
+        end match
     end match
   end buildExecution
 
-  private def priceFromCoordinate[I <: Instrument](
+  private def createReconstructed[I <: Instrument](
+    instrument: I
+  )(
+    intent: OrderIntent[instrument.roles.position.D],
+    activation: BuiltActivation[instrument.roles.base.D, instrument.roles.quote.D],
+    execution: BuiltExecution[
+      instrument.roles.position.D,
+      instrument.roles.base.D,
+      instrument.roles.quote.D
+    ]
+  ): Either[
+    OrderReconstructionFailure,
+    ReconstructedOrder[
+      instrument.roles.position.D,
+      instrument.roles.base.D,
+      instrument.roles.quote.D
+    ]
+  ] =
+    type D = instrument.roles.position.D
+    type B = instrument.roles.base.D
+    type Q = instrument.roles.quote.D
+
+    def checked[A <: OrderActivation[B, Q], E <: OrderExecution[D, B, Q]](
+      activation: A,
+      execution: E
+    )(
+      wrap: Order.Aux[D, B, Q, A, E] => ReconstructedOrder[D, B, Q]
+    ): Either[OrderReconstructionFailure, ReconstructedOrder[D, B, Q]] =
+      Order
+        .create[D, B, Q, A, E](instrument)(intent, activation, execution)
+        .left
+        .map(OrderReconstructionFailure.Validation.apply)
+        .map(wrap)
+
+    (activation, execution) match
+      case (BuiltActivation.Immediate(a), BuiltExecution.Market(e)) =>
+        checked(a, e)(ReconstructedOrder.ImmediateMarket.apply)
+      case (BuiltActivation.Immediate(a), BuiltExecution.Limit(e)) =>
+        checked(a, e)(ReconstructedOrder.ImmediateLimit.apply)
+      case (BuiltActivation.Immediate(a), BuiltExecution.Pegged(e)) =>
+        checked(a, e)(ReconstructedOrder.ImmediatePegged.apply)
+      case (BuiltActivation.Fixed(a), BuiltExecution.Market(e)) =>
+        checked(a, e)(ReconstructedOrder.FixedMarket.apply)
+      case (BuiltActivation.Fixed(a), BuiltExecution.Limit(e)) =>
+        checked(a, e)(ReconstructedOrder.FixedLimit.apply)
+      case (BuiltActivation.Fixed(a), BuiltExecution.Pegged(e)) =>
+        checked(a, e)(ReconstructedOrder.FixedPegged.apply)
+      case (BuiltActivation.Trailing(a), BuiltExecution.Market(e)) =>
+        checked(a, e)(ReconstructedOrder.TrailingMarket.apply)
+      case (BuiltActivation.Trailing(a), BuiltExecution.Limit(e)) =>
+        checked(a, e)(ReconstructedOrder.TrailingLimit.apply)
+      case (BuiltActivation.Trailing(a), BuiltExecution.Pegged(e)) =>
+        checked(a, e)(ReconstructedOrder.TrailingPegged.apply)
+  end createReconstructed
+
+  private[codec] def priceFromCoordinate[I <: Instrument](
     instrument: I
   )(
     coordinate: BigInt

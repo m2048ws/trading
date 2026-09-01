@@ -12,13 +12,19 @@ private[codec] object CodecRecordTypes:
     RecordType.from("trading.instrument-definition").toOption.get
   val order: RecordType =
     RecordType.from("trading.order").toOption.get
+  val orderScenario: RecordType =
+    RecordType.from("trading.order-scenario").toOption.get
+  val roundTripScenario: RecordType =
+    RecordType.from("trading.round-trip-scenario").toOption.get
 
   val current: Set[RecordType] = Set(
     generalGridCoordinate,
     assetGridCoordinate,
     catalogJournalEntry,
     instrumentDefinition,
-    order
+    order,
+    orderScenario,
+    roundTripScenario
   )
 
   def otherThan(recordType: RecordType): Set[RecordType] =

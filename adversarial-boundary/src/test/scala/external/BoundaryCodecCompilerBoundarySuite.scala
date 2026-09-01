@@ -89,6 +89,14 @@ class BoundaryCodecCompilerBoundarySuite extends FunSuite:
         "trading/codec/OrderRefinementFailure.class",
         "trading/codec/OrderRefinementFailures.class",
         "trading/codec/IndexedOrderReconstructionFailure.class",
+        "trading/codec/OrderScenarioRecord$.class",
+        "trading/codec/OrderScenarioRecord$V1.class",
+        "trading/codec/OrderScenarioReconstructionFailure.class",
+        "trading/codec/ScenarioPreparationFailure.class",
+        "trading/codec/ScenarioPreparationFailures.class",
+        "trading/codec/RoundTripScenarioRecord$.class",
+        "trading/codec/RoundTripScenarioRecord$V1.class",
+        "trading/codec/RoundTripScenarioReconstructionFailure.class",
         "trading/codec/WirePath.class",
         "trading/codec/WireViolations.class",
         "trading/codec/StrictJson$.class",
@@ -133,6 +141,12 @@ class BoundaryCodecCompilerBoundarySuite extends FunSuite:
         "trading/codec/OrderRefinementFailure.class",
         "trading/codec/OrderRefinementFailures.class",
         "trading/codec/IndexedOrderReconstructionFailure.class",
+        "trading/codec/OrderScenarioRecord$V1.class",
+        "trading/codec/OrderScenarioReconstructionFailure.class",
+        "trading/codec/ScenarioPreparationFailure.class",
+        "trading/codec/ScenarioPreparationFailures.class",
+        "trading/codec/RoundTripScenarioRecord$V1.class",
+        "trading/codec/RoundTripScenarioReconstructionFailure.class",
         "trading/codec/ExactNumberProblem.class",
         "trading/codec/StableIdentifierProblem.class",
         "trading/codec/DimensionProblem.class",
@@ -161,7 +175,9 @@ class BoundaryCodecCompilerBoundarySuite extends FunSuite:
         classOf[trading.codec.DecodedAssetGridQuantity],
         classOf[trading.codec.CatalogJournalEntry.V1],
         classOf[trading.codec.CatalogReplayResult],
-        classOf[trading.codec.OrderRefinementFailures]
+        classOf[trading.codec.OrderRefinementFailures],
+        classOf[trading.codec.ScenarioPreparationFailures],
+        classOf[trading.codec.RoundTripLegReconstructionFailures]
       )
         .foreach: owner =>
           assert(owner.getDeclaredConstructors.forall(constructor => Modifier.isPrivate(constructor.getModifiers)))
@@ -204,6 +220,10 @@ class BoundaryCodecCompilerBoundarySuite extends FunSuite:
 
   test("immutable-order clients can retain stable records and reconstruct through one explicit instrument"):
     val result = compile(fixturesRoot.resolve("positive/OrderRecordClient.scala"))
+    assert(result.succeeded, result.rendered)
+
+  test("hypothetical-scenario clients reconstruct associated evidence through one instrument and snapshot"):
+    val result = compile(fixturesRoot.resolve("positive/ScenarioRecordClient.scala"))
     assert(result.succeeded, result.rendered)
 
   test("completed boundary-codec classpath rejects downstream, effect, mapping, and test-oracle concerns"):
@@ -331,6 +351,33 @@ class BoundaryCodecCompilerBoundarySuite extends FunSuite:
       "snapshot",
       "lotGridHandle",
       "priceGridHandle"
+    ).foreach: fragment =>
+      assert(rejected.rendered.contains(fragment), s"missing '$fragment' rejection:\n${rejected.rendered}")
+    boundaryForbiddenDiagnostics.foreach(fragment => assert(!rejected.rendered.contains(fragment), rejected.rendered))
+
+  test("scenario records reject execution facts fees valuation lifecycle targets and untyped evidence"):
+    val source  = fixturesRoot.resolve("negative/ScenarioRecordAuthorityEscapesAreUnavailable.scala")
+    val prelude = compilePrelude(source)
+    assert(prelude.succeeded, s"fixture prelude must compile independently:\n${prelude.rendered}")
+
+    val rejected = compile(source)
+    assert(rejected.errors.size >= 17, rejected.rendered)
+    List(
+      "decode",
+      "actualExecution",
+      "fillId",
+      "venue",
+      "feePolicy",
+      "fees",
+      "pnl",
+      "lifecycle",
+      "catalogRevision",
+      "targetAssetId",
+      "heldPosition",
+      "pricePnl",
+      "netPnl",
+      "reconstruct",
+      "evidence"
     ).foreach: fragment =>
       assert(rejected.rendered.contains(fragment), s"missing '$fragment' rejection:\n${rejected.rendered}")
     boundaryForbiddenDiagnostics.foreach(fragment => assert(!rejected.rendered.contains(fragment), rejected.rendered))

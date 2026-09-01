@@ -15,24 +15,24 @@ updated: 2026-09-01
 - **Change**: introduce-versioned-boundary-codecs
 - **Worktree**: /Users/m/src/money/.worktrees/introduce-versioned-boundary-codecs
 - **Phase at Checkpoint**: applying
-- **Task Group at Checkpoint**: 8
-- **Observed Run Revision**: 9
-- **Last Verified HEAD**: da476194a02600abc9675a0a1dab933e48587d16
+- **Task Group at Checkpoint**: 9
+- **Observed Run Revision**: 10
+- **Last Verified HEAD**: 2efdf26833ee1aa0bac6be61c9c8eea9c7306df9
 
-The phase and revision above are the required next checkpoint carried by Task Group 8. Live Run Contract authority
-remains `applying` at revision 8 until Corgi acknowledges that commit.
+The phase and revision above are the required next checkpoint carried by Task Group 9. Live Run Contract authority
+remains `applying` at revision 9 until Corgi acknowledges that commit.
 
 ## Next Action
-- Commit and acknowledge `introduce-versioned-boundary-codecs` Task Group 8, synchronize its draft PR, then implement
-  Task Group 9. Verify, Human Review, Human QA, and Archive remain separate gates.
+- Commit and acknowledge `introduce-versioned-boundary-codecs` Task Group 9, synchronize its draft PR, then implement
+  Task Group 10. Verify, Human Review, Human QA, and Archive remain separate gates.
 
 ## Blockers
 - none
 
 ## Uncommitted Work
-- Task Group 8's immutable-order implementation note and this next-state checkpoint, together with its frozen V1
-  products/coproducts, staged explicit-instrument reconstruction, typed failures, atomic batch traversal, and
-  exhaustive model/property/compiler/adversarial tests.
+- Task Group 9's hypothetical scenario and round-trip codecs, typed reconstructed-order eliminator, retained additional
+  market conversions, staged preparation/validation failures, golden/property/model/compiler tests, and this next-state
+  checkpoint.
 
 ## Discoveries
 - The archived `establish-pure-instrument-economics` boundary was reconciled from commit `86613ee` before S-02
@@ -503,6 +503,21 @@ remains `applying` at revision 8 until Corgi acknowledges that commit.
   final pass checked AC-018 scope, coproduct shape, smart-constructor delegation, stage/order semantics, derived-data
   omission, exhaustive alternatives, batching, serialization, JAR/dependency authority, and linear bounded behavior
   with no findings; it changed no file, triaged no finding, and is not canonical Verify or Human Review.
+- Frozen hypothetical-scenario V1 records embed the immutable order exactly once, retain associated activation and
+  pricing observations, and preserve ordered non-empty liquidity slices with exact lot/price coordinates, base/quote
+  settlement rates, and ordered additional source/rate conversions. Round-trip V1 is exactly entry times exit, with no
+  held-position, execution, fee-policy, fee/PnL, lifecycle, catalog revision, snapshot, or duplicated target data.
+- Scenario reconstruction uses a codec-private typed order eliminator to retain each concrete activation/execution
+  relationship, replays instruction-owned evidence/resolution constructors without untyped decoding or public casts,
+  resolves additional assets through one immutable snapshot, and delegates lots, prices, endpoint conversions, market
+  states, slices, matched slices, scenario evaluation, and exact-flat round trips to their canonical domain owners.
+- The clean Group 9 matrix passes 1,011 tests: 601 quantities, 13 reference data, 9 application, 18 runtime, 13
+  instrument economics, 40 risk, 7 order model, 16 execution scenario, 82 boundary codec, 38 fee policy/integration,
+  and 174 completed-JAR/compiler/adversarial tests. Repository and focused boundary/adversarial formatting checks pass.
+- The automated Group 9 review checked exact scope, frozen record shape, associated evidence replay, one-snapshot
+  conversion and market construction, deterministic typed failure ordering, canonical scenario/round-trip delegation,
+  omission boundaries, compiler authority, and linear traversal cost with no findings. It changed no file, triaged no
+  finding, and is not canonical Verify or Human Review.
 
 ## Promotion Queue
 - Review agent-configuration constraints before promoting any item to `memory/MEMORY.md`.
@@ -528,3 +543,6 @@ remains `applying` at revision 8 until Corgi acknowledges that commit.
 - Keep Group 8's frozen immutable-order coproducts, explicit-instrument smart-constructor reconstruction, closed staged
   failures, exhaustive alternative coverage, and authority-confinement evidence until Archive proves the complete
   codec capability; no Group 8 discovery is independently eligible for permanent promotion.
+- Keep Group 9's frozen hypothetical scenario/round-trip records, associated typed replay, exact snapshot-backed market
+  reconstruction, and omission/authority evidence until Archive proves the complete codec capability; no Group 9
+  discovery is independently eligible for permanent promotion.

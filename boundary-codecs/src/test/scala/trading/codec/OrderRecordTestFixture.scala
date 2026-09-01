@@ -33,6 +33,8 @@ private[codec] final class OrderRecordTestFixture(prefix: String):
   private val quoteDefinition    = asset("quote")
   private val positionDefinition = asset("position")
   private val settleDefinition   = asset("settle")
+  private val tokenDefinition    = asset("token")
+  private val rebateDefinition   = asset("rebate")
 
   private val positionDimension = DimKey.atom(positionDefinition.dimensionAtom)
   private val baseDimension     = DimKey.atom(baseDefinition.dimensionAtom)
@@ -45,11 +47,16 @@ private[codec] final class OrderRecordTestFixture(prefix: String):
     CatalogCommand.RegisterAsset(quoteDefinition),
     CatalogCommand.RegisterAsset(positionDefinition),
     CatalogCommand.RegisterAsset(settleDefinition),
+    CatalogCommand.RegisterAsset(tokenDefinition),
+    CatalogCommand.RegisterAsset(rebateDefinition),
     CatalogCommand.RegisterDimension(priceDimension),
     CatalogCommand.RegisterGrid(positionGrid),
     CatalogCommand.RegisterGrid(priceGrid)
   )
-  private val snapshot = CatalogModel.commit(CatalogRoot.create().initialState, batch).toOption.get.state.snapshot
+  val snapshot = CatalogModel.commit(CatalogRoot.create().initialState, batch).toOption.get.state.snapshot
+
+  val token  = snapshot.resolveAsset(tokenDefinition.id).toOption.get
+  val rebate = snapshot.resolveAsset(rebateDefinition.id).toOption.get
 
   val instrument: Instrument = build("primary")
   val foreign: Instrument    = build("foreign")
