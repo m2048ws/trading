@@ -1,0 +1,6 @@
+schemaVersion: 1
+rfcId: RFC-0003-execution-lifecycle-foundation
+revision: 0
+slices:
+  S-01-execution-lifecycle-foundation:
+    status: unbound
