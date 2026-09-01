@@ -101,7 +101,7 @@ class ExecutionLifecycleCompilerBoundarySuite extends FunSuite:
     assert(result.succeeded, result.rendered)
     runModule(result.output, "external.execution.positive.ExecutionIdentityBoundaryClient$", "run")
 
-  test("completed execution-lifecycle JAR compiles and runs typed authority, ordering, and lifecycle construction"):
+  test("completed execution-lifecycle JAR compiles and runs authority, lifecycle, and closed command transitions"):
     val result = compile(
       List(
         fixturesRoot.resolve("ExecutionLifecycleSetup.scala"),
@@ -174,7 +174,15 @@ class ExecutionLifecycleCompilerBoundarySuite extends FunSuite:
       Class.forName("trading.execution.AuthoritativelySequenced"),
       Class.forName("trading.execution.SourceCheckpoint"),
       Class.forName("trading.execution.SourceCompleteness"),
-      Class.forName("trading.execution.ExecutionLifecycle")
+      Class.forName("trading.execution.ExecutionLifecycle"),
+      Class.forName("trading.execution.CommandViolations"),
+      Class.forName("trading.execution.SubmitOrderCommand"),
+      Class.forName("trading.execution.CancelOrderCommand"),
+      Class.forName("trading.execution.ProvenNotDispatched"),
+      Class.forName("trading.execution.IndeterminateDispatch"),
+      Class.forName("trading.execution.CommandConflict"),
+      Class.forName("trading.execution.CommandTransition"),
+      Class.forName("trading.execution.CommandState")
     ).foreach: representation =>
       assert(Modifier.isFinal(representation.getModifiers), s"${representation.getName} is not final")
       assert(

@@ -33,4 +33,29 @@ public final class RejectedExecutionIdentityConstruction {
   public static ExecutionLifecycle forgeLifecycle() {
     return new ExecutionLifecycle(null, null, null, null, null, null);
   }
+
+  @SuppressWarnings({"rawtypes", "unchecked"})
+  public static SubmitOrderCommand forgeSubmit() {
+    return new SubmitOrderCommand(null, null);
+  }
+
+  @SuppressWarnings({"rawtypes", "unchecked"})
+  public static CancelOrderCommand forgeCancel() {
+    return new CancelOrderCommand(null, null, null);
+  }
+
+  @SuppressWarnings({"rawtypes", "unchecked"})
+  public static ProvenNotDispatched forgeProvenNotDispatched() {
+    return new ProvenNotDispatched(null);
+  }
+
+  @SuppressWarnings({"rawtypes", "unchecked"})
+  public static IndeterminateDispatch forgeIndeterminateDispatch() {
+    return new IndeterminateDispatch(null);
+  }
+
+  @SuppressWarnings({"rawtypes", "unchecked"})
+  public static CommandState forgeCommandState() {
+    return new CommandState(null, null, null, null, null);
+  }
 }

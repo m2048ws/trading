@@ -15,23 +15,23 @@ updated: 2026-09-01
 - **Change**: establish-actual-execution-lifecycle
 - **Worktree**: /Users/m/src/money/.worktrees/establish-actual-execution-lifecycle
 - **Phase at Checkpoint**: applying
-- **Task Group at Checkpoint**: 2
-- **Observed Run Revision**: 3
-- **Last Verified HEAD**: cc8162464633fdeb6c5006f2ce10c0608cdff32e
+- **Task Group at Checkpoint**: 3
+- **Observed Run Revision**: 4
+- **Last Verified HEAD**: 42d2379dbea0ab794e660e8860123190ea2e608a
 
-The phase and revision above are the required next checkpoint carried by Task Group 2. Live Run Contract
-`run-faf4d455-8dbc-4369-a994-66f868cfa7ef` remains `applying` at revision 2 until Corgi acknowledges that commit.
+The phase and revision above are the required next checkpoint carried by Task Group 3. Live Run Contract
+`run-faf4d455-8dbc-4369-a994-66f868cfa7ef` remains `applying` at revision 3 until Corgi acknowledges that commit.
 
 ## Next Action
-- Commit and acknowledge `establish-actual-execution-lifecycle` Task Group 2, synchronize draft PR #35, then implement
-  Task Group 3. Verify, Human Review, Human QA, and Archive remain separate gates.
+- Commit and acknowledge `establish-actual-execution-lifecycle` Task Group 3, synchronize draft PR #35, then implement
+  Task Group 4. Verify, Human Review, Human QA, and Archive remain separate gates.
 
 ## Blockers
 - none
 
 ## Uncommitted Work
-- Task Group 2's qualified authority products, ordering/completeness evidence, typed lifecycle construction,
-  completed-JAR/JVM guards, and this next-state checkpoint.
+- Task Group 3's closed commands, immutable identity-indexed state, dispatch uncertainty evidence, deterministic
+  transitions, completed-JAR/JVM guards, and this next-state checkpoint.
 
 ## Discoveries
 - The archived `establish-pure-instrument-economics` boundary was reconciled from commit `86613ee` before S-02
@@ -420,6 +420,23 @@ The phase and revision above are the required next checkpoint carried by Task Gr
   scope, structural equality/hash, dimensional retention, deterministic accumulation, JVM authority, dependency
   purity, performance/security applicability, and evidence with no findings; it changed no file, human-triaged no
   finding, and is not canonical Verify or Human Review.
+- Closed submit and cancel commands retain stable application-command identity plus the lifecycle-owned logical order,
+  immutable order, lineage, and source/account target. The immutable command index classifies exact redelivery as
+  idempotent, preserves the original under same-identity/different-body conflict, and records cancellation requests
+  separately without any transport-attempt, receipt, native-amend, or atomic cancel-replace authority.
+- Proven non-dispatch and indeterminate dispatch are distinct closed evidence alternatives tied to the exact original
+  submit body. Immutable transitions retain issued commands, dispatch knowledge, command conflicts, and cancellation
+  requests independently while unknown, non-submit, foreign-scope, and incompatible-body references return stable
+  accumulated typed violations.
+- The final Task Group 3 gate passes formatting and 941 tests: 19 execution-lifecycle tests and 167 completed-JAR/
+  compiler/adversarial tests alongside the unchanged module suites. ScalaCheck retry coverage, exhaustive packaged
+  clients, same-package Scala/Java construction rejection, runtime subclass guards, serialization probes, source
+  scans, and `javap -p` all pass.
+- The automated Task Group 3 review corrected command-scope mismatch attribution before its final pass, then checked
+  RFC/task scope, identity conflict precedence, original-identity recovery, dispatch uncertainty, deterministic typed
+  failures, dimensional/order association, immutable evidence separation, JVM construction authority, dependency
+  purity, performance/security applicability, and evidence with no findings. It changed no file during the final pass,
+  human-triaged no finding, and is not canonical Verify or Human Review.
 
 ## Promotion Queue
 - Review agent-configuration constraints before promoting any item to `memory/MEMORY.md`.
@@ -429,3 +446,5 @@ The phase and revision above are the required next checkpoint carried by Task Gr
   reverse-dependency guard pattern.
 - After whole-change approval, evaluate promotion of qualified source/account authority and explicit ordering,
   continuation, checkpoint, and completeness evidence.
+- After whole-change approval, evaluate promotion of stable command-identity conflict semantics and the separation of
+  commands, dispatch uncertainty, cancellation requests, and transport attempts.
