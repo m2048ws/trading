@@ -1,6 +1,6 @@
 ---
 type: memory
-updated: 2026-08-31
+updated: 2026-09-01
 ---
 
 # Session Bridge
@@ -14,20 +14,21 @@ updated: 2026-08-31
 - **Issue**: 34 https://github.com/m2048ws/trading/issues/34
 - **Change**: establish-actual-execution-lifecycle
 - **Worktree**: /Users/m/src/money/.worktrees/establish-actual-execution-lifecycle
-- **Phase at Checkpoint**: planning_ready
+- **Phase at Checkpoint**: applying
 - **Task Group at Checkpoint**: 1
-- **Observed Run Revision**: none
-- **Last Verified HEAD**: 504a03328998b848b476259e23494fbc880761c2
+- **Observed Run Revision**: 2
+- **Last Verified HEAD**: 57954ba7a534b44587eab28b9e3c45f94d1eae6c
 
-The phase and revision above are the required post-acknowledgement checkpoint for successor Run Contract
-`run-fe0e73ca-02b9-4f73-a9c9-5b8c5e5f8171`. Live Run Contract state remains execution authority.
+The phase and revision above are the required next checkpoint carried by Task Group 1. Live Run Contract
+`run-faf4d455-8dbc-4369-a994-66f868cfa7ef` remains `applying` at revision 1 until Corgi acknowledges that commit.
 
 ## Next Action
-- Start Apply for `establish-actual-execution-lifecycle` Task Group 1.
-  Human QA, and Archive remain separate gates.
+- Commit and acknowledge `establish-actual-execution-lifecycle` Task Group 1, open its draft PR, then implement Task
+  Group 2. Verify, Human Review, Human QA, and Archive remain separate gates.
 
 ## Blockers
-- none
+- Task Group 1's execution-lifecycle module, checked identity foundation, completed-JAR boundary evidence, and this
+  next-state checkpoint.
 
 ## Uncommitted Work
 - none
@@ -379,6 +380,31 @@ The phase and revision above are the required post-acknowledgement checkpoint fo
   package/source audits, deterministic and semantic readiness, architecture, performance/security applicability,
   checkpoint integrity, and gate separation with no findings. It changed no file, triaged no finding, and is not
   canonical Verify or Human Review.
+- Fresh Run `run-faf4d455-8dbc-4369-a994-66f868cfa7ef` uses planning baseline
+  `57954ba7a534b44587eab28b9e3c45f94d1eae6c` at planning revision
+  `sha256:1cdf58a7f0094cce60e35d17849b37458553f7e8359f2e3a791d91140fc23c19`. The guarded adapter confirmed the closed
+  order-model/instrument-economic prerequisites, registered delivery worktree, current integration baseline, and
+  enabled local-commit/draft-PR authority.
+- The non-empty `trading-execution-lifecycle` artifact now owns ten checked nominal application/source identity values
+  under `trading.execution`. Their representations are final, structurally equal, Java-serialization rejecting, and
+  JVM-private at construction; factories validate representation without generation, hash, timestamp, receipt, or
+  delivery-order authority.
+- Dedicated completed-JAR classpaths prove quantities, instrument economics, order model, execution scenario, fee
+  policy, and risk cannot import actual execution. The execution classpath admits only quantities/reference data,
+  instrument economics, order model, Scala, and pure support while rejecting application/runtime, scenario/fee/risk,
+  codecs, effects, streams, clients, persistence, telemetry, venue SDKs, and JMH.
+- The final Task Group 1 gate passes formatting, JMH compilation, and 918 tests: the prior 913-test repository matrix
+  plus five execution identity tests, with six execution completed-JAR tests included in the 164-test adversarial
+  total. `javap -p`, same-package Java compilation, and reflection confirm that the remediated constructor bridge is
+  private and exposes no privileged lookup helper.
+- The automated Task Group 1 review found and remediated a JVM-public privileged constructor helper and replaced a
+  broad reverse-dependency proxy with a quantities-only completed-artifact classpath. The final scope, behavior,
+  architecture, JVM security, dependency, performance-applicability, and evidence pass has no findings, changed no
+  file, human-triaged no finding, and is not canonical Verify or Human Review.
 
 ## Promotion Queue
 - Review agent-configuration constraints before promoting any item to `memory/MEMORY.md`.
+- After whole-change approval, evaluate promotion of the actual-execution ownership boundary and application/source
+  identity authority model.
+- After whole-change approval, evaluate promotion of the JVM-private cached-method-handle and completed-JAR
+  reverse-dependency guard pattern.
