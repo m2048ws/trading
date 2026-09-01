@@ -15,23 +15,23 @@ updated: 2026-09-01
 - **Change**: introduce-versioned-boundary-codecs
 - **Worktree**: /Users/m/src/money/.worktrees/introduce-versioned-boundary-codecs
 - **Phase at Checkpoint**: applying
-- **Task Group at Checkpoint**: 2
-- **Observed Run Revision**: 3
-- **Last Verified HEAD**: bc3d2c18c97aa7d8390112f8fb5405ba474dd036
+- **Task Group at Checkpoint**: 3
+- **Observed Run Revision**: 4
+- **Last Verified HEAD**: a658d9006fb3eb8d4d46faa15b72df43fd24ab17
 
-The phase and revision above are the required next checkpoint carried by Task Group 2. Live Run Contract authority
-remains `applying` at revision 2 until Corgi acknowledges that commit.
+The phase and revision above are the required next checkpoint carried by Task Group 3. Live Run Contract authority
+remains `applying` at revision 3 until Corgi acknowledges that commit.
 
 ## Next Action
-- Commit and acknowledge `introduce-versioned-boundary-codecs` Task Group 2, synchronize its draft PR, then implement
-  Task Group 3. Verify, Human Review, Human QA, and Archive remain separate gates.
+- Commit and acknowledge `introduce-versioned-boundary-codecs` Task Group 3, synchronize its draft PR, then implement
+  Task Group 4. Verify, Human Review, Human QA, and Archive remain separate gates.
 
 ## Blockers
 - none
 
 ## Uncommitted Work
-- Task Group 2's module/dependency/compiler-boundary implementation note and this next-state checkpoint, together with
-  the new boundary-codec artifact, resources, build wiring, tests, and documentation.
+- Task Group 3's strict JSON/path/limit/schema-algebra implementation note and this next-state checkpoint, together
+  with its production foundation, law/unit/compiler-boundary tests, build dependencies, and documentation.
 
 ## Discoveries
 - The archived `establish-pure-instrument-economics` boundary was reconciled from commit `86613ee` before S-02
@@ -408,6 +408,20 @@ remains `applying` at revision 2 until Corgi acknowledges that commit.
 - The automated Group 2 review checked AC-017 scope, dependency and configuration containment, completed-JAR/public API
   boundaries, resource/documentation honesty, validation evidence, and performance/security applicability with no
   findings. It changed no file, triaged no finding, and is not canonical Verify or Human Review.
+- The codec foundation now owns structured paths and locations, deterministic typed violations, JVM-constructor-private
+  non-empty aggregates and `DecodeLimits`, exact pre-parse character/UTF-8 checks, and the documented 12-limit default
+  profile without mutable or unbounded policy state.
+- One package-private strict Jackson adapter builds an immutable AST while retaining raw number spelling and locations;
+  the restricted RFC 8785 renderer agrees with the independent JCS oracle, and one internal algebra drives both
+  accumulating codecs and stable-URN local-reference Draft 2020-12 schemas with operational limits omitted.
+- The clean Group 3 matrix passes 946 tests: 601 quantities, 13 reference data, 9 application, 18 runtime, 13 instrument
+  economics, 40 risk, 7 order model, 16 execution scenario, 27 boundary codec, 38 fee policy/integration, and 164
+  completed-JAR/compiler/adversarial tests. Both formatting checks, dependency inspection, and all 12 strict readiness
+  checks pass.
+- The automated Group 3 review corrected a misleading invalid-definition diagnostic, then checked identity/scope,
+  behavior, architecture, API isolation, parser security/limits, canonicalization, schema agreement, dependency scope,
+  and evidence with no findings. It changed no file during the final pass, triaged no finding, and is not canonical
+  Verify or Human Review.
 
 ## Promotion Queue
 - Review agent-configuration constraints before promoting any item to `memory/MEMORY.md`.
@@ -415,3 +429,6 @@ remains `applying` at revision 2 until Corgi acknowledges that commit.
   no Task Group 1 discovery is independently eligible for permanent promotion.
 - Keep Group 2's module/dependency boundary and test-only oracle containment as delivery evidence until Archive proves
   the complete codec capability; no Group 2 discovery is independently eligible for permanent promotion.
+- Keep Group 3's strict JSON, diagnostic/limit, canonical-rendering, and shared schema-algebra foundation as delivery
+  evidence until Archive proves the complete codec capability; no Group 3 discovery is independently eligible for
+  permanent promotion.

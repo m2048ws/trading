@@ -13,9 +13,14 @@ NetworkNT JSON Schema Validator 3.x and the RFC 8785-listed Java JSON Canonicali
 independent checks. Schemas belong under `src/main/resources/trading/codec/schema`; canonical golden vectors belong
 under `src/test/resources/trading/codec/golden`.
 
-Task Group 2 establishes only this physical artifact, package root, dependency direction, resources, and completed-JAR
-verification. Concrete paths, errors, limits, schema algebra, record families, and public encode/parse/reconstruct
-operations are introduced by their later owning Task Groups; this module does not claim those APIs yet.
+Task Group 3 adds the public domain-owned structured paths, syntax locations, stage/limit vocabulary, typed violations,
+non-empty aggregates, and validated immutable `DecodeLimits`. Its package-private kernel owns the immutable JSON AST,
+strict Jackson adapter, restricted RFC 8785-compatible renderer, invariant wire-schema algebra, and Draft 2020-12
+interpreter. Operational limits are intentionally absent from generated mathematical schemas.
+
+Concrete exact primitives, envelopes, record families, and public encode/parse/reconstruct operations remain owned by
+later Task Groups. Parser, Cats validation, JSON Schema validator, and JCS-oracle types do not appear in this artifact's
+public codec foundation.
 
 Build the focused boundary with:
 

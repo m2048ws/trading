@@ -248,7 +248,9 @@ lazy val boundaryCodecs =
         "tools.jackson.core" % "jackson-core"               % jacksonCoreVersion,
         "com.networknt"      % "json-schema-validator"      % jsonSchemaValidatorVersion      % Test,
         "io.github.erdtman"  % "java-json-canonicalization" % javaJsonCanonicalizationVersion % Test,
-        "org.scalameta"     %% "munit"                      % "1.3.5"                         % Test
+        "org.scalameta"     %% "munit"                      % "1.3.5"                         % Test,
+        "org.scalacheck"    %% "scalacheck"                 % "1.20.0"                        % Test,
+        "org.scalameta"     %% "munit-scalacheck"           % "1.3.0"                         % Test
       )
     )
 

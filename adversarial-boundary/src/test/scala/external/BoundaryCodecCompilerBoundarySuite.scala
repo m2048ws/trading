@@ -1,6 +1,7 @@
 package external
 
 import java.io.File
+import java.lang.reflect.Modifier
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.Path
@@ -59,7 +60,7 @@ class BoundaryCodecCompilerBoundarySuite extends FunSuite:
     assert(entries.exists(_.getFileName.toString.startsWith("jackson-core-3.")), entries.mkString("\n"))
     assert(entries.forall(Files.isRegularFile(_)), entries.mkString("\n"))
 
-  test("completed boundary-codec JAR establishes only the owned package and schema resource root"):
+  test("completed boundary-codec JAR contains the public foundation and confined parser/schema internals"):
     val artifact = exactlyOne("trading-boundary-codecs_3-")
     val jar      = new JarFile(artifact.toFile)
     try
@@ -67,22 +68,56 @@ class BoundaryCodecCompilerBoundarySuite extends FunSuite:
       assert(names.contains("trading/codec/package.class"), names.toList.sorted.mkString("\n"))
       assert(names.contains("trading/codec/schema/README.md"), names.toList.sorted.mkString("\n"))
       val codecClasses = names.filter(name => name.startsWith("trading/codec/") && name.endsWith(".class"))
-      assertEquals(codecClasses, Set("trading/codec/package$.class", "trading/codec/package.class"))
-      val forbiddenApiFragments = List(
-        "tools/jackson/",
+      List(
+        "trading/codec/DecodeLimits.class",
+        "trading/codec/WirePath.class",
+        "trading/codec/WireViolations.class",
+        "trading/codec/StrictJson$.class",
+        "trading/codec/WireSchema.class",
+        "trading/codec/JsonSchemaDocument$.class"
+      ).foreach(name => assert(codecClasses.contains(name), names.toList.sorted.mkString("\n")))
+
+      val forbiddenImplementationFragments = List(
         "com/networknt/",
         "org/erdtman/",
         "cats/effect/",
         "fs2/",
-        "scala/deriving/Mirror",
         "java/lang/reflect/"
       )
       codecClasses.foreach: entry =>
         val input = jar.getInputStream(jar.getJarEntry(entry))
         try
           val bytecode = new String(input.readAllBytes(), StandardCharsets.ISO_8859_1)
-          forbiddenApiFragments.foreach(fragment => assert(!bytecode.contains(fragment), s"$entry exposes $fragment"))
+          forbiddenImplementationFragments.foreach: fragment =>
+            assert(!bytecode.contains(fragment), s"$entry exposes $fragment")
         finally input.close()
+
+      val intendedPublicSurface = Set(
+        "trading/codec/DecodeLimits.class",
+        "trading/codec/WirePath.class",
+        "trading/codec/WirePathSegment.class",
+        "trading/codec/WireViolations.class",
+        "trading/codec/WireDecodeViolation.class",
+        "trading/codec/WireEncodeViolation.class",
+        "trading/codec/WireLimitViolation.class"
+      )
+      intendedPublicSurface.foreach: entry =>
+        val input = jar.getInputStream(jar.getJarEntry(entry))
+        try
+          val bytecode = new String(input.readAllBytes(), StandardCharsets.ISO_8859_1)
+          List("tools/jackson/", "cats/data/", "com/networknt/", "org/erdtman/").foreach: fragment =>
+            assert(!bytecode.contains(fragment), s"$entry leaks $fragment")
+        finally input.close()
+
+      val parserInput = jar.getInputStream(jar.getJarEntry("trading/codec/StrictJson$.class"))
+      try
+        val parserBytecode = new String(parserInput.readAllBytes(), StandardCharsets.ISO_8859_1)
+        assert(parserBytecode.contains("tools/jackson/"), "strict adapter does not bind Jackson Core")
+      finally parserInput.close()
+      List(classOf[trading.codec.DecodeLimits], classOf[trading.codec.WirePath],
+        classOf[trading.codec.WireViolations[?]])
+        .foreach: owner =>
+          assert(owner.getDeclaredConstructors.forall(constructor => Modifier.isPrivate(constructor.getModifiers)))
       assert(!names.exists(_.startsWith("trading/fee/")))
       assert(!names.exists(_.startsWith("trading/risk/")))
       assert(!names.exists(_.startsWith("trading/application/")))
@@ -92,6 +127,10 @@ class BoundaryCodecCompilerBoundarySuite extends FunSuite:
 
   test("completed boundary-codec classpath compiles a direct-domain and Jackson-Core client"):
     val result = compile(fixturesRoot.resolve("positive/BoundaryCodecClasspathClient.scala"))
+    assert(result.succeeded, result.rendered)
+
+  test("completed boundary-codec JAR compiles the domain-owned public codec foundation"):
+    val result = compile(fixturesRoot.resolve("positive/BoundaryCodecFoundationClient.scala"))
     assert(result.succeeded, result.rendered)
 
   test("completed boundary-codec classpath rejects downstream, effect, mapping, and test-oracle concerns"):
@@ -104,6 +143,17 @@ class BoundaryCodecCompilerBoundarySuite extends FunSuite:
     List("fee", "risk", "application", "runtime", "effect", "fs2", "doobie", "opentelemetry", "databind", "circe",
       "networknt", "erdtman").foreach: fragment =>
       assert(rejected.rendered.contains(fragment), s"missing '$fragment' rejection:\n${rejected.rendered}")
+    boundaryForbiddenDiagnostics.foreach(fragment => assert(!rejected.rendered.contains(fragment), rejected.rendered))
+
+  test("completed boundary-codec JAR hides parser, AST, and schema-algebra internals"):
+    val source  = fixturesRoot.resolve("negative/CodecInternalsAreUnavailable.scala")
+    val prelude = compilePrelude(source)
+    assert(prelude.succeeded, s"fixture prelude must compile independently:\n${prelude.rendered}")
+
+    val rejected = compile(source)
+    assert(rejected.errors.size >= 6, rejected.rendered)
+    List("StrictJson", "CanonicalJson", "JsonNode", "WireSchema", "JsonSchemaDocument", "DecodeContext").foreach:
+      fragment => assert(rejected.rendered.contains(fragment), s"missing '$fragment' rejection:\n${rejected.rendered}")
     boundaryForbiddenDiagnostics.foreach(fragment => assert(!rejected.rendered.contains(fragment), rejected.rendered))
 
   private def exactlyOne(prefix: String): Path =
