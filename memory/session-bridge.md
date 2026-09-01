@@ -15,23 +15,23 @@ updated: 2026-09-01
 - **Change**: introduce-versioned-boundary-codecs
 - **Worktree**: /Users/m/src/money/.worktrees/introduce-versioned-boundary-codecs
 - **Phase at Checkpoint**: applying
-- **Task Group at Checkpoint**: 5
-- **Observed Run Revision**: 6
-- **Last Verified HEAD**: 3e16373aa40d2fc589a08233ea6a1fef7f132e93
+- **Task Group at Checkpoint**: 6
+- **Observed Run Revision**: 7
+- **Last Verified HEAD**: 3d3dd8aa25343d7efbc86b4b26706222311548dd
 
-The phase and revision above are the required next checkpoint carried by Task Group 5. Live Run Contract authority
-remains `applying` at revision 5 until Corgi acknowledges that commit.
+The phase and revision above are the required next checkpoint carried by Task Group 6. Live Run Contract authority
+remains `applying` at revision 6 until Corgi acknowledges that commit.
 
 ## Next Action
-- Commit and acknowledge `introduce-versioned-boundary-codecs` Task Group 5, synchronize its draft PR, then implement
-  Task Group 6. Verify, Human Review, Human QA, and Archive remain separate gates.
+- Commit and acknowledge `introduce-versioned-boundary-codecs` Task Group 6, synchronize its draft PR, then implement
+  Task Group 7. Verify, Human Review, Human QA, and Archive remain separate gates.
 
 ## Blockers
 - none
 
 ## Uncommitted Work
-- Task Group 5's grid-coordinate record-family implementation note and this next-state checkpoint, together with its
-  exact packing/reconstruction kernel and unit/property/compiler/adversarial tests.
+- Task Group 6's catalog-journal/replay implementation note and this next-state checkpoint, together with its frozen
+  V1 codec, pure sequential replay, typed failures, and model/property/compiler/adversarial tests.
 
 ## Discoveries
 - The archived `establish-pure-instrument-economics` boundary was reconciled from commit `86613ee` before S-02
@@ -449,6 +449,23 @@ remains `applying` at revision 5 until Corgi acknowledges that commit.
   scope, behavior, dependent typing, lookup order, batch semantics, architecture, complexity/security applicability,
   packaged/compiler boundaries, and evidence with no findings. It changed no file, triaged no finding, and is not
   canonical Verify or Human Review.
+- Frozen catalog-journal V1 entries retain only a positive successor revision and the submitted ordered non-empty
+  dimension/asset/grid command batch. Structural history decoding accumulates every independent indexed wire failure
+  before replay, while pure sequential replay reuses `CatalogModel.commit` from an explicit fresh revision-zero state
+  and returns typed revision, catalog-validation, unchanged, publication-mismatch, and non-fresh failures without a
+  partial-state success channel.
+- Direct-model, prefix, exact-number, permutation, duplicate, gap/repeat, conflict, no-op, historical-version, and
+  cross-lineage tests pass. Completed-JAR fixtures compile the supported published-batch/fresh-state API and reject
+  forged entries/results, broader outcomes, encoded authority/state, durability/checkpoint names, and same-package
+  Scala construction bypasses.
+- The clean Group 6 matrix passes 984 tests: 601 quantities, 13 reference data, 9 application, 18 runtime, 13
+  instrument economics, 40 risk, 7 order model, 16 execution scenario, 61 boundary codec, 38 fee policy/integration,
+  and 168 completed-JAR/compiler/adversarial tests. Both formatting checks and all 12 strict readiness checks pass.
+- The first automated Group 6 review found package-spoof access to package-private entry/result factories. Those
+  factories now remain object-private behind cached private method handles and the same-package compiler attack is
+  retained. The final pass checked AC-019 scope, behavior, deterministic ordering, exactness, architecture, API and
+  dependency confinement, resource/security applicability, and evidence with no findings; it changed no file,
+  triaged no finding, and is not canonical Verify or Human Review.
 
 ## Promotion Queue
 - Review agent-configuration constraints before promoting any item to `memory/MEMORY.md`.
@@ -465,3 +482,6 @@ remains `applying` at revision 5 until Corgi acknowledges that commit.
 - Keep Group 5's exact grid-coordinate records, dependent snapshot reconstruction, and explicit batch semantics as
   delivery evidence until Archive proves the complete codec capability; no Group 5 discovery is independently eligible
   for permanent promotion.
+- Keep Group 6's frozen catalog-journal records, pure fresh-lineage replay, typed sequential failures, and authority-
+  confinement evidence until Archive proves the complete codec capability; no Group 6 discovery is independently
+  eligible for permanent promotion.

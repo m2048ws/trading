@@ -74,6 +74,11 @@ class BoundaryCodecCompilerBoundarySuite extends FunSuite:
         "trading/codec/DecodedGridQuantity.class",
         "trading/codec/GeneralGridCoordinateRecord$.class",
         "trading/codec/AssetGridCoordinateRecord$.class",
+        "trading/codec/CatalogJournalEntry$.class",
+        "trading/codec/CatalogJournalEntry$V1.class",
+        "trading/codec/CatalogReplay$.class",
+        "trading/codec/CatalogReplayFailure.class",
+        "trading/codec/CatalogReplayResult.class",
         "trading/codec/WirePath.class",
         "trading/codec/WireViolations.class",
         "trading/codec/StrictJson$.class",
@@ -106,6 +111,10 @@ class BoundaryCodecCompilerBoundarySuite extends FunSuite:
         "trading/codec/WireLimitViolation.class",
         "trading/codec/RecordType.class",
         "trading/codec/SchemaVersion.class",
+        "trading/codec/CatalogJournalEntry$V1.class",
+        "trading/codec/CatalogJournalRebuildFailure.class",
+        "trading/codec/CatalogReplayFailure.class",
+        "trading/codec/CatalogReplayResult.class",
         "trading/codec/ExactNumberProblem.class",
         "trading/codec/StableIdentifierProblem.class",
         "trading/codec/DimensionProblem.class",
@@ -131,7 +140,9 @@ class BoundaryCodecCompilerBoundarySuite extends FunSuite:
         classOf[trading.codec.RecordType],
         classOf[trading.codec.SchemaVersion],
         classOf[trading.codec.DecodedGridQuantity],
-        classOf[trading.codec.DecodedAssetGridQuantity]
+        classOf[trading.codec.DecodedAssetGridQuantity],
+        classOf[trading.codec.CatalogJournalEntry.V1],
+        classOf[trading.codec.CatalogReplayResult]
       )
         .foreach: owner =>
           assert(owner.getDeclaredConstructors.forall(constructor => Modifier.isPrivate(constructor.getModifiers)))
@@ -140,7 +151,9 @@ class BoundaryCodecCompilerBoundarySuite extends FunSuite:
         "PackedGridQuantity",
         "ResolvedAssetGridQuantity",
         "ResolvedGridQuantity",
-        "QuantityRegistry"
+        "QuantityRegistry",
+        "CatalogJournalRepository",
+        "CatalogCheckpoint"
       ).foreach: retired =>
         assert(!names.exists(_.contains(retired)), s"completed codec JAR restored retired name $retired")
       assert(!names.exists(_.startsWith("trading/fee/")))
@@ -160,6 +173,10 @@ class BoundaryCodecCompilerBoundarySuite extends FunSuite:
 
   test("completed boundary-codec JAR compiles exact grid packing and dependent reconstruction clients"):
     val result = compile(fixturesRoot.resolve("positive/GridCoordinateRecordClient.scala"))
+    assert(result.succeeded, result.rendered)
+
+  test("catalog journal clients can retain published batches and replay only from fresh state"):
+    val result = compile(fixturesRoot.resolve("positive/CatalogJournalClient.scala"))
     assert(result.succeeded, result.rendered)
 
   test("completed boundary-codec classpath rejects downstream, effect, mapping, and test-oracle concerns"):
@@ -210,6 +227,32 @@ class BoundaryCodecCompilerBoundarySuite extends FunSuite:
       "PackedGridQuantity",
       "ResolvedGridQuantity",
       "QuantityRegistry"
+    ).foreach: fragment =>
+      assert(rejected.rendered.contains(fragment), s"missing '$fragment' rejection:\n${rejected.rendered}")
+    boundaryForbiddenDiagnostics.foreach(fragment => assert(!rejected.rendered.contains(fragment), rejected.rendered))
+
+  test("catalog journal rejects forged entries, broader outcomes, authority leaks, and durability concerns"):
+    val source  = fixturesRoot.resolve("negative/CatalogJournalAuthorityEscapesAreUnavailable.scala")
+    val prelude = compilePrelude(source)
+    assert(prelude.succeeded, s"fixture prelude must compile independently:\n${prelude.rendered}")
+
+    val rejected = compile(source)
+    assert(rejected.errors.size >= 14, rejected.rendered)
+    List(
+      "V1",
+      "Published",
+      "CatalogState",
+      "CatalogReplayResult",
+      "construct",
+      "from",
+      "root",
+      "lineage",
+      "timestamp",
+      "checkpoint",
+      "activation",
+      "delisting",
+      "CatalogJournalRepository",
+      "CatalogCheckpoint"
     ).foreach: fragment =>
       assert(rejected.rendered.contains(fragment), s"missing '$fragment' rejection:\n${rejected.rendered}")
     boundaryForbiddenDiagnostics.foreach(fragment => assert(!rejected.rendered.contains(fragment), rejected.rendered))
