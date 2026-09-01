@@ -15,24 +15,24 @@ updated: 2026-09-01
 - **Change**: introduce-versioned-boundary-codecs
 - **Worktree**: /Users/m/src/money/.worktrees/introduce-versioned-boundary-codecs
 - **Phase at Checkpoint**: applying
-- **Task Group at Checkpoint**: 7
-- **Observed Run Revision**: 8
-- **Last Verified HEAD**: e831e90e4fe4c2ae226c40a9d80b3f175ebb43ca
+- **Task Group at Checkpoint**: 8
+- **Observed Run Revision**: 9
+- **Last Verified HEAD**: da476194a02600abc9675a0a1dab933e48587d16
 
-The phase and revision above are the required next checkpoint carried by Task Group 7. Live Run Contract authority
-remains `applying` at revision 7 until Corgi acknowledges that commit.
+The phase and revision above are the required next checkpoint carried by Task Group 8. Live Run Contract authority
+remains `applying` at revision 8 until Corgi acknowledges that commit.
 
 ## Next Action
-- Commit and acknowledge `introduce-versioned-boundary-codecs` Task Group 7, synchronize its draft PR, then implement
-  Task Group 8. Verify, Human Review, Human QA, and Archive remain separate gates.
+- Commit and acknowledge `introduce-versioned-boundary-codecs` Task Group 8, synchronize its draft PR, then implement
+  Task Group 9. Verify, Human Review, Human QA, and Archive remain separate gates.
 
 ## Blockers
 - none
 
 ## Uncommitted Work
-- Task Group 7's instrument-definition implementation note and this next-state checkpoint, together with its frozen V1
-  codec, staged snapshot assembly, typed failures, atomic batch traversal, and model/property/compiler/adversarial
-  tests.
+- Task Group 8's immutable-order implementation note and this next-state checkpoint, together with its frozen V1
+  products/coproducts, staged explicit-instrument reconstruction, typed failures, atomic batch traversal, and
+  exhaustive model/property/compiler/adversarial tests.
 
 ## Discoveries
 - The archived `establish-pure-instrument-economics` boundary was reconciled from commit `86613ee` before S-02
@@ -482,6 +482,27 @@ remains `applying` at revision 7 until Corgi acknowledges that commit.
   canonical assembler reuse, exact and historical semantics, stable atomic batching, typed diagnostics, authority
   exclusion, JAR/dependency boundaries, and linear bounded behavior with no findings. It changed no file, triaged no
   finding, and is not canonical Verify or Human Review.
+- Frozen immutable-order V1 records retain one root instrument ID, side, exact lot coordinate, position effect, and
+  closed tagged activation/execution/pricing/visibility products with only case-local fields. They omit derived signed
+  position, component identities, scenario, venue/lifecycle, fills, reported fees, accounts, catalog revision,
+  lineage, snapshots, and handles.
+- Reconstruction checks the supplied assembled instrument identity before using coordinates, delegates lots/prices,
+  trailing offsets, and market duration to their owning smart constructors, derives intent position through
+  `OrderIntent.create`, and delegates final combinations to accumulating `Order.create`. Codec, foreign-instrument,
+  local refinement, and aggregate order-validation failures remain closed distinct stages with stable paths/order.
+- Exhaustive tests round-trip 504 valid side/effect/activation/execution/pricing/visibility combinations and cover
+  cross-case fields, unknown vocabulary, zero coordinates/offsets, resting market duration, aggregate iceberg
+  violations, foreign identity precedence, signed positions, exact signed peg offsets, Java serialization, and atomic
+  indexed batch behavior. Completed-JAR clients reject trusted values, roots/snapshots, derived/execution-fact fields,
+  and `Any` or kind-plus-option decoding.
+- The clean Group 8 matrix passes 1,002 tests: 601 quantities, 13 reference data, 9 application, 18 runtime, 13
+  instrument economics, 40 risk, 7 order model, 16 execution scenario, 75 boundary codec, 38 fee policy/integration,
+  and 172 completed-JAR/compiler/adversarial tests. Both formatting checks and all 12 strict readiness checks pass.
+- The initial automated Group 8 review found that the non-empty refinement aggregate's Scala-private constructor was
+  JVM-public. It is now bytecode-private behind a cached private method handle and retained packaged inspection. The
+  final pass checked AC-018 scope, coproduct shape, smart-constructor delegation, stage/order semantics, derived-data
+  omission, exhaustive alternatives, batching, serialization, JAR/dependency authority, and linear bounded behavior
+  with no findings; it changed no file, triaged no finding, and is not canonical Verify or Human Review.
 
 ## Promotion Queue
 - Review agent-configuration constraints before promoting any item to `memory/MEMORY.md`.
@@ -504,3 +525,6 @@ remains `applying` at revision 7 until Corgi acknowledges that commit.
 - Keep Group 7's frozen instrument-definition records, separate structural and snapshot-assembly stages, atomic batch
   reconstruction, and authority-confinement evidence until Archive proves the complete codec capability; no Group 7
   discovery is independently eligible for permanent promotion.
+- Keep Group 8's frozen immutable-order coproducts, explicit-instrument smart-constructor reconstruction, closed staged
+  failures, exhaustive alternative coverage, and authority-confinement evidence until Archive proves the complete
+  codec capability; no Group 8 discovery is independently eligible for permanent promotion.

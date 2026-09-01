@@ -83,6 +83,12 @@ class BoundaryCodecCompilerBoundarySuite extends FunSuite:
         "trading/codec/InstrumentDefinitionRecord$V1.class",
         "trading/codec/InstrumentDefinitionReconstructionFailure.class",
         "trading/codec/IndexedInstrumentDefinitionReconstructionFailure.class",
+        "trading/codec/OrderRecord$.class",
+        "trading/codec/OrderRecord$V1.class",
+        "trading/codec/OrderReconstructionFailure.class",
+        "trading/codec/OrderRefinementFailure.class",
+        "trading/codec/OrderRefinementFailures.class",
+        "trading/codec/IndexedOrderReconstructionFailure.class",
         "trading/codec/WirePath.class",
         "trading/codec/WireViolations.class",
         "trading/codec/StrictJson$.class",
@@ -122,6 +128,11 @@ class BoundaryCodecCompilerBoundarySuite extends FunSuite:
         "trading/codec/InstrumentDefinitionRecord$V1.class",
         "trading/codec/InstrumentDefinitionReconstructionFailure.class",
         "trading/codec/IndexedInstrumentDefinitionReconstructionFailure.class",
+        "trading/codec/OrderRecord$V1.class",
+        "trading/codec/OrderReconstructionFailure.class",
+        "trading/codec/OrderRefinementFailure.class",
+        "trading/codec/OrderRefinementFailures.class",
+        "trading/codec/IndexedOrderReconstructionFailure.class",
         "trading/codec/ExactNumberProblem.class",
         "trading/codec/StableIdentifierProblem.class",
         "trading/codec/DimensionProblem.class",
@@ -149,7 +160,8 @@ class BoundaryCodecCompilerBoundarySuite extends FunSuite:
         classOf[trading.codec.DecodedGridQuantity],
         classOf[trading.codec.DecodedAssetGridQuantity],
         classOf[trading.codec.CatalogJournalEntry.V1],
-        classOf[trading.codec.CatalogReplayResult]
+        classOf[trading.codec.CatalogReplayResult],
+        classOf[trading.codec.OrderRefinementFailures]
       )
         .foreach: owner =>
           assert(owner.getDeclaredConstructors.forall(constructor => Modifier.isPrivate(constructor.getModifiers)))
@@ -188,6 +200,10 @@ class BoundaryCodecCompilerBoundarySuite extends FunSuite:
 
   test("instrument-definition clients can decode stable data and assemble through one explicit snapshot"):
     val result = compile(fixturesRoot.resolve("positive/InstrumentDefinitionRecordClient.scala"))
+    assert(result.succeeded, result.rendered)
+
+  test("immutable-order clients can retain stable records and reconstruct through one explicit instrument"):
+    val result = compile(fixturesRoot.resolve("positive/OrderRecordClient.scala"))
     assert(result.succeeded, result.rendered)
 
   test("completed boundary-codec classpath rejects downstream, effect, mapping, and test-oracle concerns"):
@@ -287,6 +303,34 @@ class BoundaryCodecCompilerBoundarySuite extends FunSuite:
       "market",
       "venue",
       "productFamily"
+    ).foreach: fragment =>
+      assert(rejected.rendered.contains(fragment), s"missing '$fragment' rejection:\n${rejected.rendered}")
+    boundaryForbiddenDiagnostics.foreach(fragment => assert(!rejected.rendered.contains(fragment), rejected.rendered))
+
+  test("order records reject trusted authority derived state execution facts and untyped decoding"):
+    val source  = fixturesRoot.resolve("negative/OrderRecordAuthorityEscapesAreUnavailable.scala")
+    val prelude = compilePrelude(source)
+    assert(prelude.succeeded, s"fixture prelude must compile independently:\n${prelude.rendered}")
+
+    val rejected = compile(source)
+    assert(rejected.errors.size >= 17, rejected.rendered)
+    List(
+      "Instrument",
+      "CatalogRoot",
+      "CatalogSnapshot",
+      "decode",
+      "positionChange",
+      "componentInstrumentIds",
+      "scenarios",
+      "venueLifecycle",
+      "fills",
+      "reportedFees",
+      "accountState",
+      "catalogRevision",
+      "lineage",
+      "snapshot",
+      "lotGridHandle",
+      "priceGridHandle"
     ).foreach: fragment =>
       assert(rejected.rendered.contains(fragment), s"missing '$fragment' rejection:\n${rejected.rendered}")
     boundaryForbiddenDiagnostics.foreach(fragment => assert(!rejected.rendered.contains(fragment), rejected.rendered))
