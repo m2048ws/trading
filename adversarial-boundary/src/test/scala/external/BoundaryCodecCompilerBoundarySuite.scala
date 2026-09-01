@@ -70,6 +70,10 @@ class BoundaryCodecCompilerBoundarySuite extends FunSuite:
       val codecClasses = names.filter(name => name.startsWith("trading/codec/") && name.endsWith(".class"))
       List(
         "trading/codec/DecodeLimits.class",
+        "trading/codec/DecodedAssetGridQuantity.class",
+        "trading/codec/DecodedGridQuantity.class",
+        "trading/codec/GeneralGridCoordinateRecord$.class",
+        "trading/codec/AssetGridCoordinateRecord$.class",
         "trading/codec/WirePath.class",
         "trading/codec/WireViolations.class",
         "trading/codec/StrictJson$.class",
@@ -125,10 +129,20 @@ class BoundaryCodecCompilerBoundarySuite extends FunSuite:
         classOf[trading.codec.WirePath],
         classOf[trading.codec.WireViolations[?]],
         classOf[trading.codec.RecordType],
-        classOf[trading.codec.SchemaVersion]
+        classOf[trading.codec.SchemaVersion],
+        classOf[trading.codec.DecodedGridQuantity],
+        classOf[trading.codec.DecodedAssetGridQuantity]
       )
         .foreach: owner =>
           assert(owner.getDeclaredConstructors.forall(constructor => Modifier.isPrivate(constructor.getModifiers)))
+      List(
+        "PackedAssetGridQuantity",
+        "PackedGridQuantity",
+        "ResolvedAssetGridQuantity",
+        "ResolvedGridQuantity",
+        "QuantityRegistry"
+      ).foreach: retired =>
+        assert(!names.exists(_.contains(retired)), s"completed codec JAR restored retired name $retired")
       assert(!names.exists(_.startsWith("trading/fee/")))
       assert(!names.exists(_.startsWith("trading/risk/")))
       assert(!names.exists(_.startsWith("trading/application/")))
@@ -142,6 +156,10 @@ class BoundaryCodecCompilerBoundarySuite extends FunSuite:
 
   test("completed boundary-codec JAR compiles the domain-owned public codec foundation"):
     val result = compile(fixturesRoot.resolve("positive/BoundaryCodecFoundationClient.scala"))
+    assert(result.succeeded, result.rendered)
+
+  test("completed boundary-codec JAR compiles exact grid packing and dependent reconstruction clients"):
+    val result = compile(fixturesRoot.resolve("positive/GridCoordinateRecordClient.scala"))
     assert(result.succeeded, result.rendered)
 
   test("completed boundary-codec classpath rejects downstream, effect, mapping, and test-oracle concerns"):
@@ -174,6 +192,24 @@ class BoundaryCodecCompilerBoundarySuite extends FunSuite:
       "EnvelopeCodec",
       "EnvelopeHeader",
       "CanonicalRationalRecord"
+    ).foreach: fragment =>
+      assert(rejected.rendered.contains(fragment), s"missing '$fragment' rejection:\n${rejected.rendered}")
+    boundaryForbiddenDiagnostics.foreach(fragment => assert(!rejected.rendered.contains(fragment), rejected.rendered))
+
+  test("grid-coordinate families reject off-grid values, cross-grid values, private construction, and retired names"):
+    val source  = fixturesRoot.resolve("negative/GridCoordinateEscapesAreUnavailable.scala")
+    val prelude = compilePrelude(source)
+    assert(prelude.succeeded, s"fixture prelude must compile independently:\n${prelude.rendered}")
+
+    val rejected = compile(source)
+    assert(rejected.errors.size >= 9, rejected.rendered)
+    List(
+      "GridQuantity",
+      "DecodedGridQuantity",
+      "DecodedAssetGridQuantity",
+      "PackedGridQuantity",
+      "ResolvedGridQuantity",
+      "QuantityRegistry"
     ).foreach: fragment =>
       assert(rejected.rendered.contains(fragment), s"missing '$fragment' rejection:\n${rejected.rendered}")
     boundaryForbiddenDiagnostics.foreach(fragment => assert(!rejected.rendered.contains(fragment), rejected.rendered))

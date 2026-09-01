@@ -15,23 +15,23 @@ updated: 2026-09-01
 - **Change**: introduce-versioned-boundary-codecs
 - **Worktree**: /Users/m/src/money/.worktrees/introduce-versioned-boundary-codecs
 - **Phase at Checkpoint**: applying
-- **Task Group at Checkpoint**: 4
-- **Observed Run Revision**: 5
-- **Last Verified HEAD**: 1c5769046148f4bd8b42a8bba9b07539bccddff2
+- **Task Group at Checkpoint**: 5
+- **Observed Run Revision**: 6
+- **Last Verified HEAD**: 3e16373aa40d2fc589a08233ea6a1fef7f132e93
 
-The phase and revision above are the required next checkpoint carried by Task Group 4. Live Run Contract authority
-remains `applying` at revision 4 until Corgi acknowledges that commit.
+The phase and revision above are the required next checkpoint carried by Task Group 5. Live Run Contract authority
+remains `applying` at revision 5 until Corgi acknowledges that commit.
 
 ## Next Action
-- Commit and acknowledge `introduce-versioned-boundary-codecs` Task Group 4, synchronize its draft PR, then implement
-  Task Group 5. Verify, Human Review, Human QA, and Archive remain separate gates.
+- Commit and acknowledge `introduce-versioned-boundary-codecs` Task Group 5, synchronize its draft PR, then implement
+  Task Group 6. Verify, Human Review, Human QA, and Archive remain separate gates.
 
 ## Blockers
 - none
 
 ## Uncommitted Work
-- Task Group 4's exact primitive/envelope/version-dispatch implementation note and this next-state checkpoint, together
-  with its production kernel, property/unit/compiler-boundary tests, diagnostics, schemas, and documentation.
+- Task Group 5's grid-coordinate record-family implementation note and this next-state checkpoint, together with its
+  exact packing/reconstruction kernel and unit/property/compiler/adversarial tests.
 
 ## Discoveries
 - The archived `establish-pure-instrument-economics` boundary was reconciled from commit `86613ee` before S-02
@@ -436,6 +436,19 @@ remains `applying` at revision 4 until Corgi acknowledges that commit.
   constructors, normalization resistance, dimension/grid semantics, envelope dispatch, version separation, generated
   schemas, API/dependency containment, bounded allocation, and evidence with no findings. It changed no file, triaged
   no finding, and is not canonical Verify or Human Review.
+- General and asset-qualified grid-coordinate V1 records now contain only full stable grid identity, exact signed
+  coordinate, and asset ID where applicable. Their packers require the exact handle/value relationship and expose no
+  arbitrary-quantity, projection, quantization, copied-quantum, registry, `Packed*`, or `Resolved*` surface.
+- JVM-constructor-private decoded packages retain dimension/asset, grid, and typed value coherence. General rebuilding
+  resolves dimension before the full grid; asset rebuilding resolves asset and rejects dimension drift before the full
+  grid. Both families provide direct-snapshot, linear, all-valid-or-indexed-errors batch traversal.
+- The clean Group 5 matrix passes 973 tests: 601 quantities, 13 reference data, 9 application, 18 runtime, 13 instrument
+  economics, 40 risk, 7 order model, 16 execution scenario, 52 boundary codec, 38 fee policy/integration, and 166
+  completed-JAR/compiler/adversarial tests. Both formatting checks and all 12 strict readiness checks pass.
+- The first automated Group 5 review tightened public reconstruction-failure invariants; its final pass checked exact
+  scope, behavior, dependent typing, lookup order, batch semantics, architecture, complexity/security applicability,
+  packaged/compiler boundaries, and evidence with no findings. It changed no file, triaged no finding, and is not
+  canonical Verify or Human Review.
 
 ## Promotion Queue
 - Review agent-configuration constraints before promoting any item to `memory/MEMORY.md`.
@@ -448,4 +461,7 @@ remains `applying` at revision 4 until Corgi acknowledges that commit.
   permanent promotion.
 - Keep Group 4's exact primitive, stable-identity, canonical-dimension, and explicit envelope/version-dispatch kernel as
   delivery evidence until Archive proves the complete codec capability; no Group 4 discovery is independently eligible
+  for permanent promotion.
+- Keep Group 5's exact grid-coordinate records, dependent snapshot reconstruction, and explicit batch semantics as
+  delivery evidence until Archive proves the complete codec capability; no Group 5 discovery is independently eligible
   for permanent promotion.
