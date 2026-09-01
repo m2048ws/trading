@@ -54,7 +54,7 @@ object CatalogJournalEntry:
         )
       )
 
-  val recordType: RecordType       = RecordType.from("trading.catalog-journal-entry").toOption.get
+  val recordType: RecordType       = CodecRecordTypes.catalogJournalEntry
   val schemaVersion: SchemaVersion = SchemaVersion.one
 
   private val revisionSchema: WireSchema[CatalogRevision] =
@@ -125,7 +125,7 @@ object CatalogJournalEntry:
     recordType,
     schemaVersion,
     Vector(schemaVersion -> v1Schema),
-    Set(GridCoordinateRecordTypes.general, GridCoordinateRecordTypes.asset)
+    CodecRecordTypes.otherThan(recordType)
   )
 
   /** Record exactly the submitted batch and revision issued by a successful publication outcome. */

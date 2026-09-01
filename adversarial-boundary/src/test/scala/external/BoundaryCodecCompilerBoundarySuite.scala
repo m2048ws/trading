@@ -79,6 +79,10 @@ class BoundaryCodecCompilerBoundarySuite extends FunSuite:
         "trading/codec/CatalogReplay$.class",
         "trading/codec/CatalogReplayFailure.class",
         "trading/codec/CatalogReplayResult.class",
+        "trading/codec/InstrumentDefinitionRecord$.class",
+        "trading/codec/InstrumentDefinitionRecord$V1.class",
+        "trading/codec/InstrumentDefinitionReconstructionFailure.class",
+        "trading/codec/IndexedInstrumentDefinitionReconstructionFailure.class",
         "trading/codec/WirePath.class",
         "trading/codec/WireViolations.class",
         "trading/codec/StrictJson$.class",
@@ -115,6 +119,9 @@ class BoundaryCodecCompilerBoundarySuite extends FunSuite:
         "trading/codec/CatalogJournalRebuildFailure.class",
         "trading/codec/CatalogReplayFailure.class",
         "trading/codec/CatalogReplayResult.class",
+        "trading/codec/InstrumentDefinitionRecord$V1.class",
+        "trading/codec/InstrumentDefinitionReconstructionFailure.class",
+        "trading/codec/IndexedInstrumentDefinitionReconstructionFailure.class",
         "trading/codec/ExactNumberProblem.class",
         "trading/codec/StableIdentifierProblem.class",
         "trading/codec/DimensionProblem.class",
@@ -177,6 +184,10 @@ class BoundaryCodecCompilerBoundarySuite extends FunSuite:
 
   test("catalog journal clients can retain published batches and replay only from fresh state"):
     val result = compile(fixturesRoot.resolve("positive/CatalogJournalClient.scala"))
+    assert(result.succeeded, result.rendered)
+
+  test("instrument-definition clients can decode stable data and assemble through one explicit snapshot"):
+    val result = compile(fixturesRoot.resolve("positive/InstrumentDefinitionRecordClient.scala"))
     assert(result.succeeded, result.rendered)
 
   test("completed boundary-codec classpath rejects downstream, effect, mapping, and test-oracle concerns"):
@@ -253,6 +264,29 @@ class BoundaryCodecCompilerBoundarySuite extends FunSuite:
       "delisting",
       "CatalogJournalRepository",
       "CatalogCheckpoint"
+    ).foreach: fragment =>
+      assert(rejected.rendered.contains(fragment), s"missing '$fragment' rejection:\n${rejected.rendered}")
+    boundaryForbiddenDiagnostics.foreach(fragment => assert(!rejected.rendered.contains(fragment), rejected.rendered))
+
+  test("instrument-definition records reject trusted authority revision market and live-context escapes"):
+    val source  = fixturesRoot.resolve("negative/InstrumentDefinitionAuthorityEscapesAreUnavailable.scala")
+    val prelude = compilePrelude(source)
+    assert(prelude.succeeded, s"fixture prelude must compile independently:\n${prelude.rendered}")
+
+    val rejected = compile(source)
+    assert(rejected.errors.size >= 13, rejected.rendered)
+    List(
+      "Instrument",
+      "InstrumentSpec",
+      "CatalogSnapshot",
+      "catalogRevision",
+      "lineage",
+      "snapshot",
+      "positionLotGridHandle",
+      "priceGridHandle",
+      "market",
+      "venue",
+      "productFamily"
     ).foreach: fragment =>
       assert(rejected.rendered.contains(fragment), s"missing '$fragment' rejection:\n${rejected.rendered}")
     boundaryForbiddenDiagnostics.foreach(fragment => assert(!rejected.rendered.contains(fragment), rejected.rendered))

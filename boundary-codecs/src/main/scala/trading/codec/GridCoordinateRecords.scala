@@ -130,11 +130,6 @@ object DecodedAssetGridQuantity:
       .asInstanceOf[DecodedAssetGridQuantity]
 end DecodedAssetGridQuantity
 
-private[codec] object GridCoordinateRecordTypes:
-  val general: RecordType = RecordType.from("trading.general-grid-coordinate").toOption.get
-  val asset: RecordType   = RecordType.from("trading.asset-grid-coordinate").toOption.get
-end GridCoordinateRecordTypes
-
 /** V1 persistence family for a full stable grid identity and its exact signed coordinate. */
 object GeneralGridCoordinateRecord:
   final case class V1(gridIdentity: GridIdentity, coordinate: BigInt) extends JavaSerializationUnsupported:
@@ -142,7 +137,7 @@ object GeneralGridCoordinateRecord:
     Objects.requireNonNull(coordinate, "grid coordinate")
   end V1
 
-  val recordType: RecordType       = GridCoordinateRecordTypes.general
+  val recordType: RecordType       = CodecRecordTypes.generalGridCoordinate
   val schemaVersion: SchemaVersion = SchemaVersion.one
 
   private val v1Schema: WireSchema[V1] =
@@ -157,7 +152,7 @@ object GeneralGridCoordinateRecord:
     recordType,
     schemaVersion,
     Vector(schemaVersion -> v1Schema),
-    Set(GridCoordinateRecordTypes.asset)
+    CodecRecordTypes.otherThan(recordType)
   )
 
   /** Project one already exact grid value to stable identity plus coordinate; no lookup or projection occurs. */
@@ -222,7 +217,7 @@ object AssetGridCoordinateRecord:
     Objects.requireNonNull(coordinate, "grid coordinate")
   end V1
 
-  val recordType: RecordType       = GridCoordinateRecordTypes.asset
+  val recordType: RecordType       = CodecRecordTypes.assetGridCoordinate
   val schemaVersion: SchemaVersion = SchemaVersion.one
 
   private val v1Schema: WireSchema[V1] =
@@ -240,7 +235,7 @@ object AssetGridCoordinateRecord:
     recordType,
     schemaVersion,
     Vector(schemaVersion -> v1Schema),
-    Set(GridCoordinateRecordTypes.general)
+    CodecRecordTypes.otherThan(recordType)
   )
 
   /** Project one value already typed to the asset's exact grid; no lookup, quantization, or projection occurs. */

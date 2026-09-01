@@ -15,23 +15,24 @@ updated: 2026-09-01
 - **Change**: introduce-versioned-boundary-codecs
 - **Worktree**: /Users/m/src/money/.worktrees/introduce-versioned-boundary-codecs
 - **Phase at Checkpoint**: applying
-- **Task Group at Checkpoint**: 6
-- **Observed Run Revision**: 7
-- **Last Verified HEAD**: 3d3dd8aa25343d7efbc86b4b26706222311548dd
+- **Task Group at Checkpoint**: 7
+- **Observed Run Revision**: 8
+- **Last Verified HEAD**: e831e90e4fe4c2ae226c40a9d80b3f175ebb43ca
 
-The phase and revision above are the required next checkpoint carried by Task Group 6. Live Run Contract authority
-remains `applying` at revision 6 until Corgi acknowledges that commit.
+The phase and revision above are the required next checkpoint carried by Task Group 7. Live Run Contract authority
+remains `applying` at revision 7 until Corgi acknowledges that commit.
 
 ## Next Action
-- Commit and acknowledge `introduce-versioned-boundary-codecs` Task Group 6, synchronize its draft PR, then implement
-  Task Group 7. Verify, Human Review, Human QA, and Archive remain separate gates.
+- Commit and acknowledge `introduce-versioned-boundary-codecs` Task Group 7, synchronize its draft PR, then implement
+  Task Group 8. Verify, Human Review, Human QA, and Archive remain separate gates.
 
 ## Blockers
 - none
 
 ## Uncommitted Work
-- Task Group 6's catalog-journal/replay implementation note and this next-state checkpoint, together with its frozen
-  V1 codec, pure sequential replay, typed failures, and model/property/compiler/adversarial tests.
+- Task Group 7's instrument-definition implementation note and this next-state checkpoint, together with its frozen V1
+  codec, staged snapshot assembly, typed failures, atomic batch traversal, and model/property/compiler/adversarial
+  tests.
 
 ## Discoveries
 - The archived `establish-pure-instrument-economics` boundary was reconciled from commit `86613ee` before S-02
@@ -466,6 +467,21 @@ remains `applying` at revision 6 until Corgi acknowledges that commit.
   retained. The final pass checked AC-019 scope, behavior, deterministic ordering, exactness, architecture, API and
   dependency confinement, resource/security applicability, and evidence with no findings; it changed no file,
   triaged no finding, and is not canonical Verify or Human Review.
+- Frozen instrument-definition V1 records retain only stable instrument/underlying and role asset IDs, full lot/price
+  grid identities, and exact base/quote payoff coefficients. Structural decoding accumulates independent syntax,
+  identifier, exact-number, and local-product violations without consulting a catalog; a separate pure stage delegates
+  one explicit snapshot to `InstrumentAssembler` and `Instrument.fromSpec`, preserving codec and assembly failures.
+- Linear all-valid-or-indexed-errors batch reconstruction checks its batch limit once, uses exactly the supplied
+  snapshot for every record, retains stable input ordering, and exposes no partial success. Linear, inverse, quanto,
+  missing/conflicting role and grid, empty payoff, historical-grid, cross-lineage, exact-number, property, and compiler
+  authority tests cover the staged boundary without serializing catalog revision, lineage, handles, venue, or market.
+- The clean Group 7 matrix passes 993 tests: 601 quantities, 13 reference data, 9 application, 18 runtime, 13 instrument
+  economics, 40 risk, 7 order model, 16 execution scenario, 68 boundary codec, 38 fee policy/integration, and 170
+  completed-JAR/compiler/adversarial tests. Both formatting checks and all 12 strict readiness checks pass.
+- The automated Group 7 review checked Run/Group and AC-018 scope, frozen record shape, structural/assembly staging,
+  canonical assembler reuse, exact and historical semantics, stable atomic batching, typed diagnostics, authority
+  exclusion, JAR/dependency boundaries, and linear bounded behavior with no findings. It changed no file, triaged no
+  finding, and is not canonical Verify or Human Review.
 
 ## Promotion Queue
 - Review agent-configuration constraints before promoting any item to `memory/MEMORY.md`.
@@ -485,3 +501,6 @@ remains `applying` at revision 6 until Corgi acknowledges that commit.
 - Keep Group 6's frozen catalog-journal records, pure fresh-lineage replay, typed sequential failures, and authority-
   confinement evidence until Archive proves the complete codec capability; no Group 6 discovery is independently
   eligible for permanent promotion.
+- Keep Group 7's frozen instrument-definition records, separate structural and snapshot-assembly stages, atomic batch
+  reconstruction, and authority-confinement evidence until Archive proves the complete codec capability; no Group 7
+  discovery is independently eligible for permanent promotion.
