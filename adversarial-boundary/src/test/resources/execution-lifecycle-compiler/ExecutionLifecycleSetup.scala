@@ -55,5 +55,6 @@ object ExecutionLifecycleSetup:
   )
   val instrument = Instrument.fromSpec(InstrumentAssembler.assemble(definition, snapshot).toOption.get)
   val lots       = Lots.fromCount(instrument)(2).toOption.get
+  val price      = Price.fromTicks(instrument)(PositiveWhole(2).toOption.get)
   val order      = Order.market(instrument)(Side.Buy, lots).toOption.get
 end ExecutionLifecycleSetup

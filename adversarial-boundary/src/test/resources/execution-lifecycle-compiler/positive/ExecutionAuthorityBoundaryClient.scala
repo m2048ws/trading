@@ -59,3 +59,61 @@ object ExecutionAuthorityBoundaryClient:
     assert(dispatchKinds == Vector("indeterminate"))
     assert(cancelled.kind == CommandTransitionKind.Applied)
     assert(observed.kind == CommandTransitionKind.Applied)
+
+    val eventId = required(
+      QualifiedSourceEventId.create(target, required(NativeSourceEventId.from("accepted")))
+    )
+    val sourceOrderId = required(
+      QualifiedSourceOrderId.create(target, required(NativeSourceOrderId.from("source-order")))
+    )
+    val fillId = required(
+      QualifiedFillId.create(target, required(NativeFillId.from("fill")))
+    )
+    val accepted = required(
+      OrderAccepted.create(lifecycle)(
+        eventId,
+        lifecycle.executionOrderId,
+        sourceOrderId,
+        ordering
+      )
+    )
+    val executionFill = required(
+      ExecutionFill.create(lifecycle)(
+        required(QualifiedSourceEventId.create(target, required(NativeSourceEventId.from("fill")))),
+        lifecycle.executionOrderId,
+        sourceOrderId,
+        fillId,
+        lots,
+        price,
+        SourceOrdering.unsequenced
+      )
+    )
+    val correction = required(
+      FillCorrected.create(lifecycle)(
+        required(QualifiedSourceEventId.create(target, required(NativeSourceEventId.from("correction")))),
+        lifecycle.executionOrderId,
+        sourceOrderId,
+        fillId,
+        lots,
+        price,
+        SourceOrdering.unsequenced
+      )
+    )
+    val sourceState = required(SourceEvidenceState.initial(lifecycle))
+    val unresolved  = sourceState.record(correction).state
+    val resolved    = unresolved.record(executionFill).state
+
+    val factKinds = Vector[SourceFact[?, ?, ?]](accepted, executionFill, correction).map:
+      case _: OrderAccepted[?, ?, ?]              => "accepted"
+      case _: OrderRejected[?, ?, ?]              => "rejected"
+      case _: ExecutionFill[?, ?, ?]              => "fill"
+      case _: FillCorrected[?, ?, ?]              => "corrected"
+      case _: FillBusted[?, ?, ?]                 => "busted"
+      case _: CancellationEffective[?, ?, ?]      => "cancelled"
+      case _: ReconciliationCheckpoint[?, ?, ?]   => "checkpoint"
+      case _: SourceOrderCompleted[?, ?, ?]       => "complete"
+
+    assert(factKinds == Vector("accepted", "fill", "corrected"))
+    assert(unresolved.unresolvedFillReferences.contains(fillId))
+    assert(!resolved.unresolvedFillReferences.contains(fillId))
+    assert(resolved.fillsById(fillId).price == price)

@@ -15,23 +15,23 @@ updated: 2026-09-01
 - **Change**: establish-actual-execution-lifecycle
 - **Worktree**: /Users/m/src/money/.worktrees/establish-actual-execution-lifecycle
 - **Phase at Checkpoint**: applying
-- **Task Group at Checkpoint**: 3
-- **Observed Run Revision**: 4
-- **Last Verified HEAD**: 42d2379dbea0ab794e660e8860123190ea2e608a
+- **Task Group at Checkpoint**: 4
+- **Observed Run Revision**: 5
+- **Last Verified HEAD**: 3576953dc5f3158ad554c97df0dcc64bae2eb21c
 
-The phase and revision above are the required next checkpoint carried by Task Group 3. Live Run Contract
-`run-faf4d455-8dbc-4369-a994-66f868cfa7ef` remains `applying` at revision 3 until Corgi acknowledges that commit.
+The phase and revision above are the required next checkpoint carried by Task Group 4. Live Run Contract
+`run-faf4d455-8dbc-4369-a994-66f868cfa7ef` remains `applying` at revision 4 until Corgi acknowledges that commit.
 
 ## Next Action
-- Commit and acknowledge `establish-actual-execution-lifecycle` Task Group 3, synchronize draft PR #35, then implement
-  Task Group 4. Verify, Human Review, Human QA, and Archive remain separate gates.
+- Commit and acknowledge `establish-actual-execution-lifecycle` Task Group 4, synchronize draft PR #35, then implement
+  Task Group 5. Verify, Human Review, Human QA, and Archive remain separate gates.
 
 ## Blockers
 - none
 
 ## Uncommitted Work
-- Task Group 3's closed commands, immutable identity-indexed state, dispatch uncertainty evidence, deterministic
-  transitions, completed-JAR/JVM guards, and this next-state checkpoint.
+- Task Group 4's closed authoritative source facts, exact fill economics, immutable source indexes, conflict and
+  unresolved-reference evidence, completed-JAR/JVM guards, and this next-state checkpoint.
 
 ## Discoveries
 - The archived `establish-pure-instrument-economics` boundary was reconciled from commit `86613ee` before S-02
@@ -437,6 +437,24 @@ The phase and revision above are the required next checkpoint carried by Task Gr
   failures, dimensional/order association, immutable evidence separation, JVM construction authority, dependency
   purity, performance/security applicability, and evidence with no findings. It changed no file during the final pass,
   human-triaged no finding, and is not canonical Verify or Human Review.
+- Eight closed source-fact alternatives now cover acceptance, rejection, exact fill, correction, bust, effective
+  cancellation, reconciliation checkpoint, and source-order completeness. Every fact retains its qualified native
+  event, source/account target, logical execution order, qualified source order, and explicit sequenced or unsequenced
+  ordering evidence; fills and corrections additionally retain dimension-indexed positive lots and exact grid price.
+- Immutable source evidence indexes classify qualified event and fill replay separately from conflicting identity
+  reuse, retain economically equal fills under distinct qualified fill IDs, preserve all claimants at a conflicting
+  stream position, and materialize correction/bust references as unresolved until the referenced fill arrives.
+  Foreign target, logical-order, instrument, and grid inputs return stable closed-location violations without changing
+  trusted evidence.
+- The final Task Group 4 gate passes formatting and 950 tests: 28 execution-lifecycle tests and 167 completed-JAR/
+  compiler/adversarial tests alongside unchanged module suites. Exhaustive source alternatives, ScalaCheck replay,
+  modifier-before-fill recovery, same-package Scala/Java construction rejection, runtime subclass guards,
+  serialization, source scans, and `javap -p` all pass.
+- The automated Task Group 4 review removed an unintended JVM-visible fill-comparison helper before its final pass,
+  then checked RFC/task scope, native provenance, exact typed economics, event/fill/position classification, unresolved
+  references, deterministic typed failures, immutable retention, JVM authority, dependency purity,
+  performance/security applicability, and evidence with no findings. It changed no file during the final pass,
+  human-triaged no finding, and is not canonical Verify or Human Review.
 
 ## Promotion Queue
 - Review agent-configuration constraints before promoting any item to `memory/MEMORY.md`.
@@ -448,3 +466,5 @@ The phase and revision above are the required next checkpoint carried by Task Gr
   continuation, checkpoint, and completeness evidence.
 - After whole-change approval, evaluate promotion of stable command-identity conflict semantics and the separation of
   commands, dispatch uncertainty, cancellation requests, and transport attempts.
+- After whole-change approval, evaluate promotion of qualified source-fact provenance, dual event/fill identity
+  indexing, and explicit unresolved modifier references.

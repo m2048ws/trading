@@ -182,7 +182,24 @@ class ExecutionLifecycleCompilerBoundarySuite extends FunSuite:
       Class.forName("trading.execution.IndeterminateDispatch"),
       Class.forName("trading.execution.CommandConflict"),
       Class.forName("trading.execution.CommandTransition"),
-      Class.forName("trading.execution.CommandState")
+      Class.forName("trading.execution.CommandState"),
+      Class.forName("trading.execution.SourceFactViolations"),
+      Class.forName("trading.execution.OrderAccepted"),
+      Class.forName("trading.execution.OrderRejected"),
+      Class.forName("trading.execution.ExecutionFill"),
+      Class.forName("trading.execution.FillCorrected"),
+      Class.forName("trading.execution.FillBusted"),
+      Class.forName("trading.execution.CancellationEffective"),
+      Class.forName("trading.execution.ReconciliationCheckpoint"),
+      Class.forName("trading.execution.SourceOrderCompleted"),
+      Class.forName("trading.execution.SourceFactClassifications"),
+      Class.forName("trading.execution.SourceFactConflict"),
+      Class.forName("trading.execution.FillIdentityConflict"),
+      Class.forName("trading.execution.StreamPositionConflict"),
+      Class.forName("trading.execution.UnresolvedFillReference"),
+      Class.forName("trading.execution.SourceFactRecorded"),
+      Class.forName("trading.execution.SourceFactRejected"),
+      Class.forName("trading.execution.SourceEvidenceState")
     ).foreach: representation =>
       assert(Modifier.isFinal(representation.getModifiers), s"${representation.getName} is not final")
       assert(

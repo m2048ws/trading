@@ -29,6 +29,24 @@ object PackageSpoofExecutionAuthority:
   val conflict = new CommandConflict[Dim, Dim, Dim](null, null)
   val commandState = new CommandState[Dim, Dim, Dim](null, Map.empty, Map.empty, Vector.empty, Vector.empty)
   val transition = new CommandTransition[Dim, Dim, Dim](null, null, None)
+  val sourceErrors = new SourceFactViolations(Vector.empty)
+  val accepted = new OrderAccepted[Dim, Dim, Dim](null, null, null, null)
+  val rejected = new OrderRejected[Dim, Dim, Dim](null, null, null, null)
+  val executionFill = new ExecutionFill[Dim, Dim, Dim](null, null, null, null, null, null, null)
+  val corrected = new FillCorrected[Dim, Dim, Dim](null, null, null, null, null, null, null)
+  val busted = new FillBusted[Dim, Dim, Dim](null, null, null, null, null)
+  val effectiveCancellation = new CancellationEffective[Dim, Dim, Dim](null, null, null, null)
+  val reconciliation = new ReconciliationCheckpoint[Dim, Dim, Dim](null, null, null, null, null)
+  val completed = new SourceOrderCompleted[Dim, Dim, Dim](null, null, null, null, null)
+  val classifications = new SourceFactClassifications(Vector.empty)
+  val sourceConflict = new SourceFactConflict[Dim, Dim, Dim](null, null)
+  val fillConflict = new FillIdentityConflict[Dim, Dim, Dim](null, null)
+  val positionConflict = new StreamPositionConflict[Dim, Dim, Dim](null, Vector.empty)
+  val unresolved = new UnresolvedFillReference[Dim, Dim, Dim](null, null)
+  val sourceRecorded = new SourceFactRecorded[Dim, Dim, Dim](null, null)
+  val sourceRejected = new SourceFactRejected[Dim, Dim, Dim](null, null)
+  val sourceState = new SourceEvidenceState[Dim, Dim, Dim](
+    null, Map.empty, Map.empty, Vector.empty, Vector.empty, Map.empty, Map.empty, Map.empty)
   val copied = checkedTarget.copy(source = null)
   final class ForgedContinuation extends SourceContinuation()
   final class ForgedOrdering extends SourceOrdering()
@@ -37,6 +55,13 @@ object PackageSpoofExecutionAuthority:
     val lifecycle = null
   final class ForgedDispatch extends DispatchEvidence[Dim, Dim, Dim]():
     val submit = null
+  final class ForgedSourceFact extends SourceFact[Dim, Dim, Dim]():
+    val eventId = null
+    val executionOrderId = null
+    val sourceOrderId = null
+    val ordering = null
+  final class ForgedSourceTransition extends SourceFactTransition[Dim, Dim, Dim]():
+    val state = null
   val nativeAmend = null.asInstanceOf[SubmitOrderCommand[Dim, Dim, Dim]].amend(null)
   val atomicReplace = null.asInstanceOf[CommandState[Dim, Dim, Dim]].cancelReplace(null)
   // OFFENDING-END

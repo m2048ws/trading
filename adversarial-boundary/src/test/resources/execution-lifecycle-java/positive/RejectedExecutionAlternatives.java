@@ -5,6 +5,13 @@ import trading.execution.ApplicationCommandId;
 import trading.execution.DispatchEvidence;
 import trading.execution.ExecutionCommand;
 import trading.execution.ExecutionLifecycle;
+import trading.execution.ExecutionOrderId;
+import trading.execution.QualifiedSourceEventId;
+import trading.execution.QualifiedSourceOrderId;
+import trading.execution.SourceEvidenceState;
+import trading.execution.SourceFact;
+import trading.execution.SourceFactTransition;
+import trading.execution.SourceOrdering;
 import trading.execution.SubmitOrderCommand;
 import trading.execution.QualifiedSourceStreamId;
 import trading.execution.QualifiedStreamPosition;
@@ -61,6 +68,43 @@ public final class RejectedExecutionAlternatives {
     }
   }
 
+  private static final class ForgedSourceFact extends SourceFact {
+    private ForgedSourceFact() {
+      super();
+    }
+
+    @Override
+    public QualifiedSourceEventId eventId() {
+      return null;
+    }
+
+    @Override
+    public ExecutionOrderId executionOrderId() {
+      return null;
+    }
+
+    @Override
+    public QualifiedSourceOrderId sourceOrderId() {
+      return null;
+    }
+
+    @Override
+    public SourceOrdering ordering() {
+      return null;
+    }
+  }
+
+  private static final class ForgedSourceTransition extends SourceFactTransition {
+    private ForgedSourceTransition() {
+      super();
+    }
+
+    @Override
+    public SourceEvidenceState state() {
+      return null;
+    }
+  }
+
   public static boolean guardsRejectUnknownAlternatives() {
     try {
       new ForgedContinuation();
@@ -82,6 +126,18 @@ public final class RejectedExecutionAlternatives {
     }
     try {
       new ForgedDispatch();
+      return false;
+    } catch (IllegalAccessError expected) {
+      // expected
+    }
+    try {
+      new ForgedSourceFact();
+      return false;
+    } catch (IllegalAccessError expected) {
+      // expected
+    }
+    try {
+      new ForgedSourceTransition();
       return false;
     } catch (IllegalAccessError expected) {
       return true;

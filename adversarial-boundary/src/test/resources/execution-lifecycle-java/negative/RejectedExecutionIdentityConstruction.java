@@ -58,4 +58,24 @@ public final class RejectedExecutionIdentityConstruction {
   public static CommandState forgeCommandState() {
     return new CommandState(null, null, null, null, null);
   }
+
+  @SuppressWarnings({"rawtypes", "unchecked"})
+  public static ExecutionFill forgeFill() {
+    return new ExecutionFill(null, null, null, null, null, null, null);
+  }
+
+  @SuppressWarnings({"rawtypes", "unchecked"})
+  public static FillCorrected forgeCorrection() {
+    return new FillCorrected(null, null, null, null, null, null, null);
+  }
+
+  @SuppressWarnings({"rawtypes", "unchecked"})
+  public static FillBusted forgeBust() {
+    return new FillBusted(null, null, null, null, null);
+  }
+
+  @SuppressWarnings({"rawtypes", "unchecked"})
+  public static SourceEvidenceState forgeSourceState() {
+    return new SourceEvidenceState(null, null, null, null, null, null, null, null);
+  }
 }
