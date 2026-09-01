@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 3,
+  "scope": "group-10",
+  "runId": "run-133327d8-35ce-46a2-9c8e-c82ab46f82c9",
+  "references": [
+    {
+      "reference": "file:memory%2Fsession-bridge.md#sha256:31281864927cd5164ce3037f20ec65fe24d3a8d451e29faeb47e1fb6e06949bd",
+      "sourcePath": "memory/session-bridge.md",
+      "digest": "sha256:31281864927cd5164ce3037f20ec65fe24d3a8d451e29faeb47e1fb6e06949bd",
+      "archivePath": "references/blobs/31281864927cd5164ce3037f20ec65fe24d3a8d451e29faeb47e1fb6e06949bd"
+    },
+    {
+      "reference": "file:openspec%2Fchanges%2Fintroduce-pure-risk-module%2Fcorgi%2Fsource.yaml#sha256:1a8cca449f8fdfc009f8ccbe87989a288ea92e7ff41ee58d38aa513a53ed4f2d",
+      "sourcePath": "openspec/changes/introduce-pure-risk-module/corgi/source.yaml",
+      "digest": "sha256:1a8cca449f8fdfc009f8ccbe87989a288ea92e7ff41ee58d38aa513a53ed4f2d",
+      "archivePath": "references/blobs/1a8cca449f8fdfc009f8ccbe87989a288ea92e7ff41ee58d38aa513a53ed4f2d"
+    },
+    {
+      "reference": "file:openspec%2Fchanges%2Fintroduce-pure-risk-module%2Fcorgi%2Ftraceability.yaml#sha256:caaafeb6cd65026adcb4ea8f5f33d561ffce0ba8e6699d2301b57a5c510c4ab6",
+      "sourcePath": "openspec/changes/introduce-pure-risk-module/corgi/traceability.yaml",
+      "digest": "sha256:caaafeb6cd65026adcb4ea8f5f33d561ffce0ba8e6699d2301b57a5c510c4ab6",
+      "archivePath": "references/blobs/caaafeb6cd65026adcb4ea8f5f33d561ffce0ba8e6699d2301b57a5c510c4ab6"
+    },
+    {
+      "reference": "file:openspec%2Fchanges%2Fintroduce-pure-risk-module%2Fspecs%2Fposition-risk-sizing%2Fspec.md#sha256:26dfcd224ad4b79a35a90741329bbfe110acbab68909245a3af818f15bc4ab77",
+      "sourcePath": "openspec/changes/introduce-pure-risk-module/specs/position-risk-sizing/spec.md",
+      "digest": "sha256:26dfcd224ad4b79a35a90741329bbfe110acbab68909245a3af818f15bc4ab77",
+      "archivePath": "references/blobs/26dfcd224ad4b79a35a90741329bbfe110acbab68909245a3af818f15bc4ab77"
+    },
+    {
+      "reference": "file:openspec%2Fchanges%2Fintroduce-pure-risk-module%2Ftasks.md#sha256:1eb4c8235cedaa1fc141e2c4414fe1b474a0850e2d076616b29bfdfff3844c2a",
+      "sourcePath": "openspec/changes/introduce-pure-risk-module/tasks.md",
+      "digest": "sha256:1eb4c8235cedaa1fc141e2c4414fe1b474a0850e2d076616b29bfdfff3844c2a",
+      "archivePath": "references/blobs/1eb4c8235cedaa1fc141e2c4414fe1b474a0850e2d076616b29bfdfff3844c2a"
+    },
+    {
+      "reference": "file:target%2Fs03-tg10-archive-recovery.log#sha256:2782b715678c205bbc4108995eb02e1ce4405b5318013b1efd9cdc4b4589ff07",
+      "sourcePath": "target/s03-tg10-archive-recovery.log",
+      "digest": "sha256:2782b715678c205bbc4108995eb02e1ce4405b5318013b1efd9cdc4b4589ff07",
+      "archivePath": "references/blobs/2782b715678c205bbc4108995eb02e1ce4405b5318013b1efd9cdc4b4589ff07"
+    }
+  ]
+}

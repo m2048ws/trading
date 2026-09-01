@@ -1,0 +1,115 @@
+{
+  "schemaVersion": 3,
+  "scope": "group-6",
+  "runId": "run-f72899aa-a667-4f01-8c8c-22d2fc1d784a",
+  "references": [
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fexecution-scenario-compiler%2Fnegative%2FRemovedScenarioValuationApi.scala#sha256:ec8f423d9c4f1506e036a68a64e71190ab808a7b7c30c2ff5a9e0f269b6065ba",
+      "sourcePath": "adversarial-boundary/src/test/resources/execution-scenario-compiler/negative/RemovedScenarioValuationApi.scala",
+      "digest": "sha256:ec8f423d9c4f1506e036a68a64e71190ab808a7b7c30c2ff5a9e0f269b6065ba",
+      "archivePath": "references/blobs/ec8f423d9c4f1506e036a68a64e71190ab808a7b7c30c2ff5a9e0f269b6065ba"
+    },
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fexecution-scenario-compiler%2Fpositive%2FScenarioValuationClient.scala#sha256:d34873d7d5db43d4ca2603782c700df2a7fa4580f4b6b8d6a40e38ff563c3bc1",
+      "sourcePath": "adversarial-boundary/src/test/resources/execution-scenario-compiler/positive/ScenarioValuationClient.scala",
+      "digest": "sha256:d34873d7d5db43d4ca2603782c700df2a7fa4580f4b6b8d6a40e38ff563c3bc1",
+      "archivePath": "references/blobs/d34873d7d5db43d4ca2603782c700df2a7fa4580f4b6b8d6a40e38ff563c3bc1"
+    },
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Forder-scenario-java%2Fnegative%2FRemovedSideSign.java#sha256:2c092b5c06b121cb9f3e662a187281620c1e316b563db907d559f8a4c4cf005c",
+      "sourcePath": "adversarial-boundary/src/test/resources/order-scenario-java/negative/RemovedSideSign.java",
+      "digest": "sha256:2c092b5c06b121cb9f3e662a187281620c1e316b563db907d559f8a4c4cf005c",
+      "archivePath": "references/blobs/2c092b5c06b121cb9f3e662a187281620c1e316b563db907d559f8a4c4cf005c"
+    },
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FEconomicsCompilerBoundarySuite.scala#sha256:dbd0cd5c81ca3aaf6bfe29818357330215d0ef2f364d17eb32691eec4e5a80dd",
+      "sourcePath": "adversarial-boundary/src/test/scala/external/EconomicsCompilerBoundarySuite.scala",
+      "digest": "sha256:dbd0cd5c81ca3aaf6bfe29818357330215d0ef2f364d17eb32691eec4e5a80dd",
+      "archivePath": "references/blobs/dbd0cd5c81ca3aaf6bfe29818357330215d0ef2f364d17eb32691eec4e5a80dd"
+    },
+    {
+      "reference": "file:execution-scenario%2FREADME.md#sha256:09b9cde9940fcafc980d7c5c7ab47b146aebdbb88fb9ada18b30c3583f383df5",
+      "sourcePath": "execution-scenario/README.md",
+      "digest": "sha256:09b9cde9940fcafc980d7c5c7ab47b146aebdbb88fb9ada18b30c3583f383df5",
+      "archivePath": "references/blobs/09b9cde9940fcafc980d7c5c7ab47b146aebdbb88fb9ada18b30c3583f383df5"
+    },
+    {
+      "reference": "file:execution-scenario%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fscenario%2FError.scala#sha256:0ccf3b41bd537ec85f968d61bc3b83d21fdfd1e51219c8466123867c161f77a6",
+      "sourcePath": "execution-scenario/src/main/scala/trading/scenario/Error.scala",
+      "digest": "sha256:0ccf3b41bd537ec85f968d61bc3b83d21fdfd1e51219c8466123867c161f77a6",
+      "archivePath": "references/blobs/0ccf3b41bd537ec85f968d61bc3b83d21fdfd1e51219c8466123867c161f77a6"
+    },
+    {
+      "reference": "file:execution-scenario%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fscenario%2FScenario.scala#sha256:31c981cb0dfc80d53602abd8ac87cc9e63fc3615b4ec5645bf64c994f083a6ea",
+      "sourcePath": "execution-scenario/src/main/scala/trading/scenario/Scenario.scala",
+      "digest": "sha256:31c981cb0dfc80d53602abd8ac87cc9e63fc3615b4ec5645bf64c994f083a6ea",
+      "archivePath": "references/blobs/31c981cb0dfc80d53602abd8ac87cc9e63fc3615b4ec5645bf64c994f083a6ea"
+    },
+    {
+      "reference": "file:execution-scenario%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fscenario%2FScenarioValuation.scala#sha256:15e788e3d2a0ec912ae084fd64efa235d12ee26dd085fe30586f266aba109b0b",
+      "sourcePath": "execution-scenario/src/main/scala/trading/scenario/ScenarioValuation.scala",
+      "digest": "sha256:15e788e3d2a0ec912ae084fd64efa235d12ee26dd085fe30586f266aba109b0b",
+      "archivePath": "references/blobs/15e788e3d2a0ec912ae084fd64efa235d12ee26dd085fe30586f266aba109b0b"
+    },
+    {
+      "reference": "file:execution-scenario%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fscenario%2FScenarioPropertiesSuite.scala#sha256:4adf72b9ff72bf77466aa1fb574791eb22493bcd928f176cac4c50a5eae14b96",
+      "sourcePath": "execution-scenario/src/test/scala/trading/scenario/ScenarioPropertiesSuite.scala",
+      "digest": "sha256:4adf72b9ff72bf77466aa1fb574791eb22493bcd928f176cac4c50a5eae14b96",
+      "archivePath": "references/blobs/4adf72b9ff72bf77466aa1fb574791eb22493bcd928f176cac4c50a5eae14b96"
+    },
+    {
+      "reference": "file:execution-scenario%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fscenario%2FScenarioValuationSuite.scala#sha256:1c9175fc44a0ce0900a58a5035769d3ae2d5ef21e3cfae2b7c1fecb8447f9574",
+      "sourcePath": "execution-scenario/src/test/scala/trading/scenario/ScenarioValuationSuite.scala",
+      "digest": "sha256:1c9175fc44a0ce0900a58a5035769d3ae2d5ef21e3cfae2b7c1fecb8447f9574",
+      "archivePath": "references/blobs/1c9175fc44a0ce0900a58a5035769d3ae2d5ef21e3cfae2b7c1fecb8447f9574"
+    },
+    {
+      "reference": "file:fee-policy%2Fsrc%2Fmain%2Fscala%2Ftrading%2Ffee%2Fpolicy%2FError.scala#sha256:f86d315957cdd6a1f890388f209124d33e30cd8c115bb8a78beb4a43fd76d144",
+      "sourcePath": "fee-policy/src/main/scala/trading/fee/policy/Error.scala",
+      "digest": "sha256:f86d315957cdd6a1f890388f209124d33e30cd8c115bb8a78beb4a43fd76d144",
+      "archivePath": "references/blobs/f86d315957cdd6a1f890388f209124d33e30cd8c115bb8a78beb4a43fd76d144"
+    },
+    {
+      "reference": "file:fee-policy%2Fsrc%2Fmain%2Fscala%2Ftrading%2Ffee%2Fpolicy%2FFeeOrchestration.scala#sha256:1d6e54fdb1696f739f4c8707741209c2a859062de9a6fdae191e07a4c8f26a28",
+      "sourcePath": "fee-policy/src/main/scala/trading/fee/policy/FeeOrchestration.scala",
+      "digest": "sha256:1d6e54fdb1696f739f4c8707741209c2a859062de9a6fdae191e07a4c8f26a28",
+      "archivePath": "references/blobs/1d6e54fdb1696f739f4c8707741209c2a859062de9a6fdae191e07a4c8f26a28"
+    },
+    {
+      "reference": "file:fee-policy%2Fsrc%2Ftest%2Fscala%2Ftrading%2FFeePolicyIntegrationSuite.scala#sha256:bcdf2263b658790cdf90d4edd9edb5c6eb3913600bb541cd90e87978d66e0077",
+      "sourcePath": "fee-policy/src/test/scala/trading/FeePolicyIntegrationSuite.scala",
+      "digest": "sha256:bcdf2263b658790cdf90d4edd9edb5c6eb3913600bb541cd90e87978d66e0077",
+      "archivePath": "references/blobs/bcdf2263b658790cdf90d4edd9edb5c6eb3913600bb541cd90e87978d66e0077"
+    },
+    {
+      "reference": "file:memory%2Fsession-bridge.md#sha256:14fcb3ea383b3f4a658da2ccfe5f8052e3d29171b9f4e84e054ac347eaf10b16",
+      "sourcePath": "memory/session-bridge.md",
+      "digest": "sha256:14fcb3ea383b3f4a658da2ccfe5f8052e3d29171b9f4e84e054ac347eaf10b16",
+      "archivePath": "references/blobs/14fcb3ea383b3f4a658da2ccfe5f8052e3d29171b9f4e84e054ac347eaf10b16"
+    },
+    {
+      "reference": "file:openspec%2Fchanges%2Fintroduce-pure-fee-policy-module%2Fimplementation-notes%2Ftask-group-6.md#sha256:ccba185286e027b88b5428cc693283763c4cce5d8c324d1274267a522dc7e7f6",
+      "sourcePath": "openspec/changes/introduce-pure-fee-policy-module/implementation-notes/task-group-6.md",
+      "digest": "sha256:ccba185286e027b88b5428cc693283763c4cce5d8c324d1274267a522dc7e7f6",
+      "archivePath": "references/blobs/ccba185286e027b88b5428cc693283763c4cce5d8c324d1274267a522dc7e7f6"
+    },
+    {
+      "reference": "file:order-model%2Fsrc%2Fmain%2Fscala%2Ftrading%2Forder%2FOrder.scala#sha256:9269db0bb1ad97b163e324d180465230ca0eadcd91a7c9786161ed4916d566b3",
+      "sourcePath": "order-model/src/main/scala/trading/order/Order.scala",
+      "digest": "sha256:9269db0bb1ad97b163e324d180465230ca0eadcd91a7c9786161ed4916d566b3",
+      "archivePath": "references/blobs/9269db0bb1ad97b163e324d180465230ca0eadcd91a7c9786161ed4916d566b3"
+    },
+    {
+      "reference": "file:order-model%2Fsrc%2Ftest%2Fscala%2Ftrading%2Forder%2FOrderPropertiesSuite.scala#sha256:cdb9b4691bb9bb1c0373737d636e7c01e3a34e3a71c36f8e7619059e4d3638b9",
+      "sourcePath": "order-model/src/test/scala/trading/order/OrderPropertiesSuite.scala",
+      "digest": "sha256:cdb9b4691bb9bb1c0373737d636e7c01e3a34e3a71c36f8e7619059e4d3638b9",
+      "archivePath": "references/blobs/cdb9b4691bb9bb1c0373737d636e7c01e3a34e3a71c36f8e7619059e4d3638b9"
+    },
+    {
+      "reference": "file:README.md#sha256:f2561ee2a457ac7f41f2850d4207f948a07a4cdd5e44cab05f8d47c07b7c542e",
+      "sourcePath": "README.md",
+      "digest": "sha256:f2561ee2a457ac7f41f2850d4207f948a07a4cdd5e44cab05f8d47c07b7c542e",
+      "archivePath": "references/blobs/f2561ee2a457ac7f41f2850d4207f948a07a4cdd5e44cab05f8d47c07b7c542e"
+    }
+  ]
+}

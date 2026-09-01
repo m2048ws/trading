@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 3,
+  "groupId": "10",
+  "checks": [
+    {
+      "name": "Strict OpenSpec validation, deterministic readiness, and disposable real Archive rehearsal",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:target%2Fs04-tg10-archive-rehearsal.log#sha256:7168c63a0e6027fb9adb0dc4c15d75892e879610b6335497c99662f56683a19f",
+        "file:openspec%2Fchanges%2Fintroduce-pure-fee-policy-module%2Fspecs%2Ffee-inclusive-pnl%2Fspec.md#sha256:82bbf43361703890390cda736f0f53ef9c53acae9046fdb76f6ee1f5f33009d1",
+        "file:openspec%2Fchanges%2Fintroduce-pure-fee-policy-module%2Ftasks.md#sha256:3c7508e2493bf1d99933f3f9c14270a21d2f9e6ddd24f29cbab3d3136610695c"
+      ]
+    },
+    {
+      "name": "Accepted contract stability, immutable carried prefix, and planning-only Git scope",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:openspec%2Fchanges%2Fintroduce-pure-fee-policy-module%2Fcorgi%2Fsource.yaml#sha256:d7face4865eb2e8e69abb4f305d67720842e19f9d1d4fa3b760b744fb8f06443",
+        "file:openspec%2Fchanges%2Fintroduce-pure-fee-policy-module%2Fcorgi%2Ftraceability.yaml#sha256:8ef137a161b86ab60b78dadf55c70e91b8727572212054d1d344ec878057f064",
+        "file:memory%2Fsession-bridge.md#sha256:518cb93cb4c8ee8c9487b3e68666d45c8a40857507f8f6e2e801c6d112e131ff"
+      ]
+    },
+    {
+      "name": "Automated Repair Task Group review",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:target%2Fs04-tg10-archive-rehearsal.log#sha256:7168c63a0e6027fb9adb0dc4c15d75892e879610b6335497c99662f56683a19f",
+        "file:openspec%2Fchanges%2Fintroduce-pure-fee-policy-module%2Fspecs%2Ffee-inclusive-pnl%2Fspec.md#sha256:82bbf43361703890390cda736f0f53ef9c53acae9046fdb76f6ee1f5f33009d1",
+        "file:memory%2Fsession-bridge.md#sha256:518cb93cb4c8ee8c9487b3e68666d45c8a40857507f8f6e2e801c6d112e131ff"
+      ]
+    }
+  ],
+  "automatedReview": {
+    "verdict": "pass",
+    "findings": []
+  },
+  "artifacts": [
+    "file:target%2Fs04-tg10-archive-rehearsal.log#sha256:7168c63a0e6027fb9adb0dc4c15d75892e879610b6335497c99662f56683a19f",
+    "file:openspec%2Fchanges%2Fintroduce-pure-fee-policy-module%2Fspecs%2Ffee-inclusive-pnl%2Fspec.md#sha256:82bbf43361703890390cda736f0f53ef9c53acae9046fdb76f6ee1f5f33009d1",
+    "file:openspec%2Fchanges%2Fintroduce-pure-fee-policy-module%2Ftasks.md#sha256:3c7508e2493bf1d99933f3f9c14270a21d2f9e6ddd24f29cbab3d3136610695c",
+    "file:openspec%2Fchanges%2Fintroduce-pure-fee-policy-module%2Fcorgi%2Fsource.yaml#sha256:d7face4865eb2e8e69abb4f305d67720842e19f9d1d4fa3b760b744fb8f06443",
+    "file:openspec%2Fchanges%2Fintroduce-pure-fee-policy-module%2Fcorgi%2Ftraceability.yaml#sha256:8ef137a161b86ab60b78dadf55c70e91b8727572212054d1d344ec878057f064",
+    "file:memory%2Fsession-bridge.md#sha256:518cb93cb4c8ee8c9487b3e68666d45c8a40857507f8f6e2e801c6d112e131ff"
+  ],
+  "summary": "Restored all 13 canonical scenario identities in the three modified fee-inclusive-PnL requirements, retained stronger S-04 semantics, proved a disposable real OpenSpec Archive succeeds, preserved Groups 1-9 and the accepted contract, and changed no production or build source."
+}

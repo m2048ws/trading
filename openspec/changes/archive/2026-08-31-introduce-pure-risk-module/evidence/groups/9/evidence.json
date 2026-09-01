@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 3,
+  "groupId": "9",
+  "summary": "Completed the whole-delivery pre-Verify gate for the pure risk module: strict deterministic and semantic readiness pass, formatting and a clean 869-test repository matrix pass, JMH compiles and the focused risk benchmark completes, packaged API/import/dependency/legacy-surface audits find no drift, and the final automated Task Group review has no findings. This handoff remains separate from canonical Verify and Human Review.",
+  "checks": [
+    {
+      "name": "full formatting and clean dependency-ordered repository matrix passed (869 tests)",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:build.sbt#sha256:67d40120a6e0e240e578caf3b00ed1cc1da415e2db083ea417181174ef03b526",
+        "file:risk%2Fsrc%2Ftest%2Fscala%2Ftrading%2Frisk%2FRiskCurvePropertiesSuite.scala#sha256:6720707bd528182e6708d91cec760854f65562a985138b13fd8ac2a4d4b765fc",
+        "file:risk%2Fsrc%2Ftest%2Fscala%2Ftrading%2Frisk%2FMaximumAffordablePropertiesSuite.scala#sha256:99ae4fdce8e0e3a7aade9d9fa32374d205064dc166d3016e586ec6491e9244f7",
+        "file:risk%2Fsrc%2Ftest%2Fscala%2Ftrading%2Frisk%2FExhaustiveLotSizingSuite.scala#sha256:47e53b78d4628f9db0e24f8a19195752b0779eb5c01f1ac248532543b723e878",
+        "file:fee-policy%2Fsrc%2Ftest%2Fscala%2Ftrading%2FFeePolicyIntegrationSuite.scala#sha256:044191057573c26d06ae13402c42b7bfa3447ccae91cbb5ecc846a7458f2606a",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FRiskCompilerBoundarySuite.scala#sha256:60692d4095821c1ad7438e053f2051231a40cfe4dc34482ba5a196281868fb5d"
+      ]
+    },
+    {
+      "name": "JMH project compiled and focused cap-1024 risk benchmark completed with primary and exhaustive measurements",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:benchmarks%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fbenchmark%2FRiskSizingBenchmark.scala#sha256:43655cf7cdde1bb984682ec8a5ea08bf676325ceddf219b31b776bcc58947a45",
+        "file:openspec%2Fchanges%2Fintroduce-pure-risk-module%2Fimplementation-notes%2Ftask-group-9.md#sha256:aa5b59dfc402460c115ff911874ec20f2ddcbe3850bda56e5903e40434886feb"
+      ]
+    },
+    {
+      "name": "packaged API, JVM-private construction, imports, direct dependencies, explicit fallback, and retired aggregate surfaces passed inspection",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:build.sbt#sha256:67d40120a6e0e240e578caf3b00ed1cc1da415e2db083ea417181174ef03b526",
+        "file:risk%2Fsrc%2Fmain%2Fscala%2Ftrading%2Frisk%2FRisk.scala#sha256:1d9ad8eb16566d5027e3edeecfb7c1566ac8ddd546a7cb1cfd0a0410d65b0b54",
+        "file:risk%2Fsrc%2Fmain%2Fscala%2Ftrading%2Frisk%2FModel.scala#sha256:cdd87e416dbb6ed363d0d197a1719eb802508f2b645a23ae4951f0a6f4e27fd0",
+        "file:risk%2Fsrc%2Fmain%2Fscala%2Ftrading%2Frisk%2FSizing.scala#sha256:44dec3986befda23a1d9af356371d96fa299f967a00f4213b095ce14ccad12ac",
+        "file:risk%2Fsrc%2Fmain%2Fscala%2Ftrading%2Frisk%2FExhaustiveSizing.scala#sha256:c150730232ad6b08cee443ec3374cc7a6126775c0e2a7e7569e3ce20d149be63",
+        "file:risk%2FREADME.md#sha256:c92053fe859342cda009a610690b92052e71a7e9ffbfb923639cd4f3b0ba73b1",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FEconomicsCompilerBoundarySuite.scala#sha256:14d2123e9622b2db87d61ff0e7478971a824537c27edcfff960bac97bb5d4bfa",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FRiskCompilerBoundarySuite.scala#sha256:60692d4095821c1ad7438e053f2051231a40cfe4dc34482ba5a196281868fb5d"
+      ]
+    },
+    {
+      "name": "strict Corgi readiness and cross-artifact semantic review passed with no errors, warnings, placeholders, open questions, traceability gaps, or implementation drift",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:openspec%2Fchanges%2Fintroduce-pure-risk-module%2Fproposal.md#sha256:06b2bbf31a75891f5df83f2d451e3f19a00b160b4e54db4299ef688ee61beb21",
+        "file:openspec%2Fchanges%2Fintroduce-pure-risk-module%2Fdesign.md#sha256:7ba15edca7d7dbbacc71d73e44e6413ae71df9cd713fcdff257bd771e2fd57fa",
+        "file:openspec%2Fchanges%2Fintroduce-pure-risk-module%2Fspecs%2Fposition-risk-sizing%2Fspec.md#sha256:a760cc372c0939510012e93cbb034f0585f920b4c6647d834ea0d10e9a1122ff",
+        "file:openspec%2Fchanges%2Fintroduce-pure-risk-module%2Ftasks.md#sha256:78b41064ef8f943a9e534d30abb13ffd98b9c224a652ad06facb40d030d49b6e",
+        "file:openspec%2Fchanges%2Fintroduce-pure-risk-module%2Fcorgi%2Fsource.yaml#sha256:1a8cca449f8fdfc009f8ccbe87989a288ea92e7ff41ee58d38aa513a53ed4f2d",
+        "file:openspec%2Fchanges%2Fintroduce-pure-risk-module%2Fcorgi%2Ftraceability.yaml#sha256:caaafeb6cd65026adcb4ea8f5f33d561ffce0ba8e6699d2301b57a5c510c4ab6"
+      ]
+    },
+    {
+      "name": "final automated Task Group 9 review passed all applicable axes without findings or writes",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:openspec%2Fchanges%2Fintroduce-pure-risk-module%2Fimplementation-notes%2Ftask-group-9.md#sha256:aa5b59dfc402460c115ff911874ec20f2ddcbe3850bda56e5903e40434886feb",
+        "file:memory%2Fsession-bridge.md#sha256:01dcb9cff3fef5afde7ed2be982ae22b4e2aa835bda710a4175e8205e0a9407b"
+      ]
+    }
+  ],
+  "automatedReview": {
+    "verdict": "pass",
+    "findings": []
+  },
+  "artifacts": [
+    "file:openspec%2Fchanges%2Fintroduce-pure-risk-module%2Fimplementation-notes%2Ftask-group-9.md#sha256:aa5b59dfc402460c115ff911874ec20f2ddcbe3850bda56e5903e40434886feb",
+    "file:memory%2Fsession-bridge.md#sha256:01dcb9cff3fef5afde7ed2be982ae22b4e2aa835bda710a4175e8205e0a9407b",
+    "file:build.sbt#sha256:67d40120a6e0e240e578caf3b00ed1cc1da415e2db083ea417181174ef03b526",
+    "file:risk%2FREADME.md#sha256:c92053fe859342cda009a610690b92052e71a7e9ffbfb923639cd4f3b0ba73b1",
+    "file:risk%2Fsrc%2Fmain%2Fscala%2Ftrading%2Frisk%2FRisk.scala#sha256:1d9ad8eb16566d5027e3edeecfb7c1566ac8ddd546a7cb1cfd0a0410d65b0b54",
+    "file:risk%2Fsrc%2Fmain%2Fscala%2Ftrading%2Frisk%2FModel.scala#sha256:cdd87e416dbb6ed363d0d197a1719eb802508f2b645a23ae4951f0a6f4e27fd0",
+    "file:risk%2Fsrc%2Fmain%2Fscala%2Ftrading%2Frisk%2FSizing.scala#sha256:44dec3986befda23a1d9af356371d96fa299f967a00f4213b095ce14ccad12ac",
+    "file:risk%2Fsrc%2Fmain%2Fscala%2Ftrading%2Frisk%2FExhaustiveSizing.scala#sha256:c150730232ad6b08cee443ec3374cc7a6126775c0e2a7e7569e3ce20d149be63",
+    "file:benchmarks%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fbenchmark%2FRiskSizingBenchmark.scala#sha256:43655cf7cdde1bb984682ec8a5ea08bf676325ceddf219b31b776bcc58947a45",
+    "file:fee-policy%2Fsrc%2Ftest%2Fscala%2Ftrading%2FFeePolicyIntegrationSuite.scala#sha256:044191057573c26d06ae13402c42b7bfa3447ccae91cbb5ecc846a7458f2606a",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FRiskCompilerBoundarySuite.scala#sha256:60692d4095821c1ad7438e053f2051231a40cfe4dc34482ba5a196281868fb5d"
+  ]
+}

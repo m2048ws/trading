@@ -1,0 +1,894 @@
+diff --git a/.claude/skills/molecules/corgispec-archive-change/SKILL.md b/.claude/skills/molecules/corgispec-archive-change/SKILL.md
+index cbd265d050f6e0c4fa1baf95b5e02e953277e51a..57a71f4429373f221376c053e4399a5d0a9bc40c 100644
+--- a/.claude/skills/molecules/corgispec-archive-change/SKILL.md
++++ b/.claude/skills/molecules/corgispec-archive-change/SKILL.md
+@@ -24,6 +24,8 @@ Require:
+ - canonical Verify PASS with full automated AC coverage;
+ - explicit Human Review approval;
+ - Human QA PASS or a valid human-confirmed no-runtime skip;
++- deterministic readiness including `ARCHIVE_DELTA_COMPATIBLE`, so every `MODIFIED` requirement preserves current
++  canonical scenario identities before Archive intent is created;
+ - exactly one Slice binding, Change, archive destination, and single Issue/provider-none binding.
+ 
+ Any blocker stops before mutation.
+@@ -32,14 +34,33 @@ Any blocker stops before mutation.
+ 
+ 1. From the Human QA JSON token, run `corgispec archive "<change>" --begin --run-id "<runId>" --session "<sessionId>" --state-revision "<revision>" --nonce "<nonce>" --json`.
+ 2. Copy the newly returned four-field token unchanged into `corgispec archive "<change>" --local --run-id "<runId>" --session "<sessionId>" --state-revision "<revision>" --nonce "<nonce>" --json`. Retry that exact operation/token after an unknown outcome.
+-3. For GitHub/GitLab, use the next token with `--confirm-tracker`; provider `none` skips this operation. Then use the latest token with `--finish`. Each invocation performs exactly one resumable phase; never reuse a superseded token.
+-4. Require canonical evidence materialized into the archived Change, including manifest, per-group evidence, whole-change Verify, Human Review, Human QA, and run binding.
+-5. Require the actual OpenSpec archived root returned by the CLI; never guess or overwrite it.
+-6. `corgispec archive --local` is the sole write transaction for the immutable `wiki/deliveries/<RFC-ID>-<Slice-ID>.md`, managed hot/architecture/pattern regions, MEMORY/pitfall provenance, and the archive bridge checkpoint. Use **corgispec-memory-extract** only for read-only preparation or verification; never use it to create, promote, or repair those files.
+-7. Require RFC `delivery.yaml` archive evidence and local archive closeout commit.
+-8. Let the CLI outbox move the one Issue to done and close it idempotently. Never invoke `gh`/`glab`.
+-9. Require `--finish` to report worktree cleanup only after local and tracker closeout succeed. Preserve the branch by default.
+-
+-If local archive succeeds but tracker closeout fails, keep the intent and worktree and resume tracker closeout without repeating the local archive or rewriting history.
++3. Before tracker closeout, inspect the project-local integration adapter and policy. When the project requires the
++   archive closeout commit to pass a PR/MR merge gate, synchronize that exact commit through the guarded adapter while
++   the Run remains `archiving`; stop when ready/merge authority is unavailable. After the provider confirms that exact
++   commit merged, use the guarded finalizer to run tracker confirmation and Archive finish. Never call
++   `--confirm-tracker` or `--finish` directly to bypass a required integration gate.
++4. When no project integration gate exists, use the next token with `--confirm-tracker` for GitHub/GitLab, then the
++   latest token with `--finish`; provider `none` proceeds directly to `--finish`. Each invocation performs exactly one
++   resumable phase; never reuse a superseded token.
++5. Require canonical evidence materialized into the archived Change, including manifest, per-group evidence, whole-change Verify, Human Review, Human QA, and run binding.
++6. Require the actual OpenSpec archived root returned by the CLI; never guess or overwrite it.
++7. `corgispec archive --local` is the sole write transaction for the immutable `wiki/deliveries/<RFC-ID>-<Slice-ID>.md`, managed hot/architecture/pattern regions, MEMORY/pitfall provenance, and the archive bridge checkpoint. Use **corgispec-memory-extract** only for read-only preparation or verification; never use it to create, promote, or repair those files.
++8. Require RFC `delivery.yaml` archive evidence and local archive closeout commit.
++9. Let the CLI outbox or guarded finalizer move the one Issue to done and close it idempotently. Never invoke
++   `gh`/`glab` directly.
++10. Require `--finish` to report worktree cleanup only after required integration, local closeout, and tracker closeout
++    succeed. Preserve the branch by default.
++
++If local archive succeeds but integration or tracker closeout cannot proceed, keep the intent and worktree and resume
++from that boundary without repeating the local archive or rewriting history. If an older workflow prematurely finished
++and removed the worktree before publishing its archive commit, use a project-provided guarded archived-sync recovery
++that verifies immutable archive evidence; never replace that proof with a raw push or direct provider edit.
++
++If `--local` returns a known deterministic failure before local closeout completes, do not retry it unchanged and do
++not edit `.corgi/loop`. Use the same current token with `corgispec archive "<change>" --request-repair --reason
++"<specific failure>" ... --json`. This command may remove only reproducible untracked Change evidence and the pending
++archive journal, then transitions the Run to `repair_required`. Reconcile planning through **corgispec-update**, append
++exactly one Repair Task Group, create the successor through `corgispec change repair`, and repeat Apply, Verify, Human
++Review, Human QA, and Archive. Never request repair after local closeout succeeds.
+ 
+ Report archived root, evidence manifest, delivery page, promoted knowledge, archive commit, Issue result, final `archived` phase, worktree cleanup, and any retained branch.
+diff --git a/.opencode/skills/molecules/corgispec-archive-change/SKILL.md b/.opencode/skills/molecules/corgispec-archive-change/SKILL.md
+index cbd265d050f6e0c4fa1baf95b5e02e953277e51a..57a71f4429373f221376c053e4399a5d0a9bc40c 100644
+--- a/.opencode/skills/molecules/corgispec-archive-change/SKILL.md
++++ b/.opencode/skills/molecules/corgispec-archive-change/SKILL.md
+@@ -24,6 +24,8 @@ Require:
+ - canonical Verify PASS with full automated AC coverage;
+ - explicit Human Review approval;
+ - Human QA PASS or a valid human-confirmed no-runtime skip;
++- deterministic readiness including `ARCHIVE_DELTA_COMPATIBLE`, so every `MODIFIED` requirement preserves current
++  canonical scenario identities before Archive intent is created;
+ - exactly one Slice binding, Change, archive destination, and single Issue/provider-none binding.
+ 
+ Any blocker stops before mutation.
+@@ -32,14 +34,33 @@ Any blocker stops before mutation.
+ 
+ 1. From the Human QA JSON token, run `corgispec archive "<change>" --begin --run-id "<runId>" --session "<sessionId>" --state-revision "<revision>" --nonce "<nonce>" --json`.
+ 2. Copy the newly returned four-field token unchanged into `corgispec archive "<change>" --local --run-id "<runId>" --session "<sessionId>" --state-revision "<revision>" --nonce "<nonce>" --json`. Retry that exact operation/token after an unknown outcome.
+-3. For GitHub/GitLab, use the next token with `--confirm-tracker`; provider `none` skips this operation. Then use the latest token with `--finish`. Each invocation performs exactly one resumable phase; never reuse a superseded token.
+-4. Require canonical evidence materialized into the archived Change, including manifest, per-group evidence, whole-change Verify, Human Review, Human QA, and run binding.
+-5. Require the actual OpenSpec archived root returned by the CLI; never guess or overwrite it.
+-6. `corgispec archive --local` is the sole write transaction for the immutable `wiki/deliveries/<RFC-ID>-<Slice-ID>.md`, managed hot/architecture/pattern regions, MEMORY/pitfall provenance, and the archive bridge checkpoint. Use **corgispec-memory-extract** only for read-only preparation or verification; never use it to create, promote, or repair those files.
+-7. Require RFC `delivery.yaml` archive evidence and local archive closeout commit.
+-8. Let the CLI outbox move the one Issue to done and close it idempotently. Never invoke `gh`/`glab`.
+-9. Require `--finish` to report worktree cleanup only after local and tracker closeout succeed. Preserve the branch by default.
+-
+-If local archive succeeds but tracker closeout fails, keep the intent and worktree and resume tracker closeout without repeating the local archive or rewriting history.
++3. Before tracker closeout, inspect the project-local integration adapter and policy. When the project requires the
++   archive closeout commit to pass a PR/MR merge gate, synchronize that exact commit through the guarded adapter while
++   the Run remains `archiving`; stop when ready/merge authority is unavailable. After the provider confirms that exact
++   commit merged, use the guarded finalizer to run tracker confirmation and Archive finish. Never call
++   `--confirm-tracker` or `--finish` directly to bypass a required integration gate.
++4. When no project integration gate exists, use the next token with `--confirm-tracker` for GitHub/GitLab, then the
++   latest token with `--finish`; provider `none` proceeds directly to `--finish`. Each invocation performs exactly one
++   resumable phase; never reuse a superseded token.
++5. Require canonical evidence materialized into the archived Change, including manifest, per-group evidence, whole-change Verify, Human Review, Human QA, and run binding.
++6. Require the actual OpenSpec archived root returned by the CLI; never guess or overwrite it.
++7. `corgispec archive --local` is the sole write transaction for the immutable `wiki/deliveries/<RFC-ID>-<Slice-ID>.md`, managed hot/architecture/pattern regions, MEMORY/pitfall provenance, and the archive bridge checkpoint. Use **corgispec-memory-extract** only for read-only preparation or verification; never use it to create, promote, or repair those files.
++8. Require RFC `delivery.yaml` archive evidence and local archive closeout commit.
++9. Let the CLI outbox or guarded finalizer move the one Issue to done and close it idempotently. Never invoke
++   `gh`/`glab` directly.
++10. Require `--finish` to report worktree cleanup only after required integration, local closeout, and tracker closeout
++    succeed. Preserve the branch by default.
++
++If local archive succeeds but integration or tracker closeout cannot proceed, keep the intent and worktree and resume
++from that boundary without repeating the local archive or rewriting history. If an older workflow prematurely finished
++and removed the worktree before publishing its archive commit, use a project-provided guarded archived-sync recovery
++that verifies immutable archive evidence; never replace that proof with a raw push or direct provider edit.
++
++If `--local` returns a known deterministic failure before local closeout completes, do not retry it unchanged and do
++not edit `.corgi/loop`. Use the same current token with `corgispec archive "<change>" --request-repair --reason
++"<specific failure>" ... --json`. This command may remove only reproducible untracked Change evidence and the pending
++archive journal, then transitions the Run to `repair_required`. Reconcile planning through **corgispec-update**, append
++exactly one Repair Task Group, create the successor through `corgispec change repair`, and repeat Apply, Verify, Human
++Review, Human QA, and Archive. Never request repair after local closeout succeeds.
+ 
+ Report archived root, evidence manifest, delivery page, promoted knowledge, archive commit, Issue result, final `archived` phase, worktree cleanup, and any retained branch.
+diff --git a/packages/corgispec/CHANGELOG.md b/packages/corgispec/CHANGELOG.md
+index 7fcd849b64fb4b389c2bc3d50be7899e5e996cc3..77fb3837a99f1b626623c8da82d89d3cc47084d7 100644
+--- a/packages/corgispec/CHANGELOG.md
++++ b/packages/corgispec/CHANGELOG.md
+@@ -2,6 +2,23 @@
+ 
+ All notable changes to this project will be documented in this file.
+ 
++## [Unreleased]
++
++### Added
++
++- Add `ARCHIVE_DELTA_COMPATIBLE` to deterministic readiness so a `MODIFIED` requirement cannot silently omit current
++  canonical scenario identities and fail only during Archive.
++- Add `archive --request-repair --reason <text>` to roll back only reproducible evidence and a pending pre-closeout
++  journal before creating a formal repair successor.
++
++### Changed
++
++- Make Archive begin consume the same compatibility check through lifecycle readiness, while allowing the repair
++  request to preserve binding and recover a known-bad plan without requiring that plan to pass the new check.
++- Make the Archive skill honor project-local PR/MR integration gates after local closeout: synchronize the exact
++  archive commit while the Run remains `archiving`, and defer tracker closeout, finish, and worktree removal until the
++  guarded finalizer confirms the required merge.
++
+ ## [4.0.0-rc2] - 2026-08-19
+ 
+ ### Fixed
+diff --git a/packages/corgispec/src/commands/archive-v3.ts b/packages/corgispec/src/commands/archive-v3.ts
+index e3172f405396800dc45630dfb7388ae6e26d293c..bcad740cfe7d84b6c3bc249ba394b5e2a030d1f8 100644
+--- a/packages/corgispec/src/commands/archive-v3.ts
++++ b/packages/corgispec/src/commands/archive-v3.ts
+@@ -23,6 +23,7 @@ import {
+   finishArchiveV3,
+   LifecycleV3Error,
+   materializeArchiveEvidenceV3,
++  requestArchiveRepairV3,
+   type LifecycleV3Dependencies,
+   type LifecycleTokenV3,
+ } from "../lib/lifecycle-v3.js";
+@@ -47,6 +48,8 @@ interface ArchiveOptionsV3 extends LifecycleCasOptionsV3 {
+   local?: boolean;
+   confirmTracker?: boolean;
+   finish?: boolean;
++  requestRepair?: boolean;
++  reason?: string;
+   store?: string;
+ }
+ 
+@@ -75,6 +78,8 @@ export function createArchiveV3Command(dependencies: ArchiveV3CommandDependencie
+     .option("--local", "Execute the resumable OpenSpec, delivery, knowledge, and closeout-commit transaction")
+     .option("--confirm-tracker", "Move the bound Issue to done and close it through the provider adapter")
+     .option("--finish", "Mark the run archived after local and tracker closeout")
++    .option("--request-repair", "Roll back a failed pre-closeout Archive attempt and require one repair successor")
++    .option("--reason <text>", "Reason for an Archive repair request")
+     .action(async (name: string, options: ArchiveOptionsV3) => {
+       try {
+         const projectRoot = resolve(options.path);
+@@ -89,16 +94,18 @@ export function createArchiveV3Command(dependencies: ArchiveV3CommandDependencie
+           options.local,
+           options.confirmTracker,
+           options.finish,
++          options.requestRepair,
+         ].filter(Boolean).length;
+         if (explicit > 1) {
+           throw Object.assign(new Error("Choose only one archive operation per invocation"), { code: "ARCHIVE_OPERATION_AMBIGUOUS" });
+         }
+-        let operation: "begin" | "local" | "tracker" | "finish" | "cleanup";
++        let operation: "begin" | "local" | "tracker" | "finish" | "cleanup" | "repair";
+         let inspectedState: RunStateV3 | undefined;
+         if (options.begin) operation = "begin";
+         else if (options.local) operation = "local";
+         else if (options.confirmTracker) operation = "tracker";
+         else if (options.finish) operation = "finish";
++        else if (options.requestRepair) operation = "repair";
+         else {
+           const state = inspectArchiveRunV3(projectRoot, name, token.runId, dependencies);
+           if (!state) throw Object.assign(new Error(`Run '${token.runId}' was not found`), { code: "RUN_NOT_FOUND" });
+@@ -137,6 +144,24 @@ export function createArchiveV3Command(dependencies: ArchiveV3CommandDependencie
+           }), options.json);
+           return;
+         }
++        if (operation === "repair") {
++          if (!options.reason?.trim()) {
++            throw Object.assign(new Error("--request-repair requires --reason"), { code: "RUN_ARCHIVE_REPAIR_REASON_REQUIRED" });
++          }
++          const evidence = await materializeArchiveEvidenceV3({ projectRoot, changeName: name, token }, dependencies);
++          const result = await requestArchiveRepairV3({
++            projectRoot,
++            changeName: name,
++            token,
++            evidenceManifestHash: evidence.evidenceManifestHash,
++            reason: options.reason,
++          }, dependencies);
++          await syncTrackerStateV3(projectRoot, result.state, dependencies);
++          emitLifecycleResult(lifecycleCommandOutputV3("archive-repair-requested", result.state, {
++            rollback: result.rollback,
++          }), options.json);
++          return;
++        }
+         if (operation === "cleanup") {
+           const state = inspectedState
+             ?? requireArchiveRunV3(projectRoot, name, token.runId, dependencies);
+diff --git a/packages/corgispec/src/lib/archive-closeout-v3.ts b/packages/corgispec/src/lib/archive-closeout-v3.ts
+index 089aeba77f6f30a77bab2b1c259f27eba91f8487..a6d833061f69596cc3ff4e5a0dc53c2f4266d139 100644
+--- a/packages/corgispec/src/lib/archive-closeout-v3.ts
++++ b/packages/corgispec/src/lib/archive-closeout-v3.ts
+@@ -65,6 +65,114 @@ export interface SealedArchiveCheckpointV3 {
+   specsDigest: string;
+ }
+ 
++export interface PendingArchiveRollbackV3 {
++  removedEvidencePath: string;
++  removedJournalPath: string | null;
++}
++
++/**
++ * Roll back only the reproducible local artifacts from a failed, pre-move
++ * Archive attempt. Run Contract state is transitioned separately through the
++ * Loop store after this function proves that no durable closeout occurred.
++ */
++export function rollbackPendingArchiveCloseoutV3(input: {
++  projectRoot: string;
++  changeName: string;
++  state: RunStateV3;
++  evidenceManifestHash: ArtifactHashV3;
++}, dependencies: ArchiveCloseoutV3Dependencies = {}): PendingArchiveRollbackV3 {
++  const root = resolve(input.projectRoot);
++  const state = input.state;
++  if (state.phase !== "archiving" || !state.archive || state.archive.localCompleted) {
++    throw new ArchiveCloseoutV3Error(
++      "Pending Archive rollback requires an active intent before local closeout",
++      "ARCHIVE_ROLLBACK_NOT_PENDING",
++    );
++  }
++  if (!state.finalRevision) {
++    throw new ArchiveCloseoutV3Error("Pending Archive rollback requires a verified final revision", "ARCHIVE_FINAL_REVISION_CHANGED");
++  }
++
++  const runGit = dependencies.git ?? git;
++  if (runGit(root, ["rev-parse", "HEAD"]) !== state.finalRevision) {
++    throw new ArchiveCloseoutV3Error(
++      "Pending Archive rollback requires the verified final revision at HEAD",
++      "ARCHIVE_FINAL_REVISION_CHANGED",
++    );
++  }
++
++  const activeSource = resolve(root, state.contract.sourcePath);
++  const activeChangeRoot = dirname(dirname(activeSource));
++  const activeRelative = relative(root, activeChangeRoot).replace(/\\/gu, "/");
++  if (
++    !activeRelative
++    || activeRelative === ".."
++    || activeRelative.startsWith("../")
++    || isAbsolute(activeRelative)
++    || !existsSync(activeSource)
++  ) {
++    throw new ArchiveCloseoutV3Error("Active Change is unavailable for pending Archive rollback", "ARCHIVE_CHANGE_NOT_FOUND");
++  }
++  const active = loadChangeContract(activeChangeRoot, { required: true })!;
++  assertContractBinding(active, state);
++  assertChangeEvidence(activeChangeRoot, state, input.evidenceManifestHash);
++
++  if (findArchivedCandidates(activeChangeRoot, input.changeName, state).length > 0) {
++    throw new ArchiveCloseoutV3Error(
++      "Pending Archive rollback refuses an existing matching archive target",
++      "ARCHIVE_ROLLBACK_TARGET_EXISTS",
++    );
++  }
++
++  const evidencePath = resolve(activeChangeRoot, "evidence");
++  const evidenceRelative = relative(root, evidencePath).replace(/\\/gu, "/");
++  const trackedEvidence = runGit(root, ["ls-files", "-z", "--", evidenceRelative])
++    .split("\0").filter(Boolean);
++  if (trackedEvidence.length > 0) {
++    throw new ArchiveCloseoutV3Error(
++      "Pending Archive rollback refuses tracked Change evidence",
++      "ARCHIVE_ROLLBACK_EVIDENCE_TRACKED",
++    );
++  }
++  const dirty = gitDirtyPaths(root, runGit);
++  const unrelated = dirty.filter((path) => path !== evidenceRelative && !path.startsWith(`${evidenceRelative}/`));
++  if (unrelated.length > 0) {
++    throw new ArchiveCloseoutV3Error(
++      `Pending Archive rollback found unrelated dirty paths: ${unrelated.join(", ")}`,
++      "ARCHIVE_ROLLBACK_MIXED_DIRTY",
++    );
++  }
++
++  const journalPath = archiveJournalPath(root, state);
++  let removedJournalPath: string | null = null;
++  if (existsSync(journalPath)) {
++    const journal = loadArchiveJournal(journalPath, state);
++    if (journal.stage !== "pending") {
++      throw new ArchiveCloseoutV3Error(
++        "Pending Archive rollback refuses a sealed closeout journal",
++        "ARCHIVE_ROLLBACK_JOURNAL_SEALED",
++      );
++    }
++    if (journal.activeChangeDigest !== directoryDigest(activeChangeRoot)) {
++      throw new ArchiveCloseoutV3Error(
++        "Active Change differs from the pending Archive journal",
++        "ARCHIVE_DIGEST_CHANGED",
++      );
++    }
++    removedJournalPath = journalPath;
++  }
++
++  rmSync(evidencePath, { recursive: true, force: false });
++  if (gitDirtyPaths(root, runGit).length > 0) {
++    throw new ArchiveCloseoutV3Error(
++      "Pending Archive rollback did not restore a clean verified worktree",
++      "ARCHIVE_ROLLBACK_INCOMPLETE",
++    );
++  }
++  if (removedJournalPath) rmSync(removedJournalPath, { force: false });
++  return { removedEvidencePath: evidencePath, removedJournalPath };
++}
++
+ /**
+  * Re-validate the durable boundary created immediately after OpenSpec moves a
+  * Change.  Tracker closeout and run finalization both call this so a later
+diff --git a/packages/corgispec/src/lib/lifecycle-v3.ts b/packages/corgispec/src/lib/lifecycle-v3.ts
+index aa5c033b19c254089c81a257d0d809958f1106fb..87122725bd3ef55c39fc71f7bb84cb2fd22e4ffc 100644
+--- a/packages/corgispec/src/lib/lifecycle-v3.ts
++++ b/packages/corgispec/src/lib/lifecycle-v3.ts
+@@ -26,7 +26,11 @@ import {
+   type LoadedChangeContract,
+   type TrackerBinding,
+ } from "./change-contract.js";
+-import { verifySealedArchiveCheckpointV3 } from "./archive-closeout-v3.js";
++import {
++  rollbackPendingArchiveCloseoutV3,
++  verifySealedArchiveCheckpointV3,
++  type PendingArchiveRollbackV3,
++} from "./archive-closeout-v3.js";
+ import { loadConfigFromDir } from "./config.js";
+ import { validateMaintenanceDiffScope } from "./maintenance.js";
+ import {
+@@ -111,6 +115,12 @@ export interface LifecycleV3Dependencies {
+     currentSliceId: string | null,
+   ) => EffectiveAmendmentV3;
+   verifyArchiveCheckpoint?: (projectRoot: string, state: RunStateV3) => { archivedRoot: string };
++  rollbackPendingArchive?: (input: {
++    projectRoot: string;
++    changeName: string;
++    state: RunStateV3;
++    evidenceManifestHash: ArtifactHashV3;
++  }) => PendingArchiveRollbackV3;
+   assertGroupBridgeCheckpoint?: (input: {
+     projectRoot: string;
+     state: RunStateV3;
+@@ -460,13 +470,25 @@ async function requireState(
+   changeName: string,
+   token: LifecycleTokenV3,
+   dependencies: LifecycleV3Dependencies,
++): Promise<{ state: RunStateV3; plan: LifecyclePlanV3; store: LoopStoreV3; git: GitWorkspaceV2; now: () => string; nonce: () => string }> {
++  const context = await requireBoundState(projectRoot, changeName, token, dependencies);
++  if (context.plan.blockers.length > 0) {
++    throw new LifecycleV3Error("PLANNING_NOT_READY", context.plan.blockers.join("; "));
++  }
++  return context;
++}
++
++async function requireBoundState(
++  projectRoot: string,
++  changeName: string,
++  token: LifecycleTokenV3,
++  dependencies: LifecycleV3Dependencies,
+ ): Promise<{ state: RunStateV3; plan: LifecyclePlanV3; store: LoopStoreV3; git: GitWorkspaceV2; now: () => string; nonce: () => string }> {
+   const service = services(projectRoot, dependencies);
+   const inspection = service.store.inspect(changeName, token.runId);
+   if (!inspection.state) throw new LifecycleV3Error("RUN_NOT_FOUND", `Run '${token.runId}' was not found`);
+   tokenMatches(inspection.state, token);
+   const plan = await (dependencies.inspectPlan ?? inspectLifecyclePlanV3)(projectRoot, changeName);
+-  if (plan.blockers.length > 0) throw new LifecycleV3Error("PLANNING_NOT_READY", plan.blockers.join("; "));
+   if (
+     plan.planningRevision !== inspection.state.planningRevision
+     || plan.binding.sourceDigest !== inspection.state.contract.sourceDigest
+@@ -964,6 +986,53 @@ export async function beginArchiveV3(input: {
+   return mutate(context.state, context.store, event);
+ }
+ 
++export async function requestArchiveRepairV3(input: {
++  projectRoot: string;
++  changeName: string;
++  token: LifecycleTokenV3;
++  evidenceManifestHash: ArtifactHashV3;
++  reason: string;
++}, dependencies: LifecycleV3Dependencies = {}): Promise<{
++  state: RunStateV3;
++  rollback: PendingArchiveRollbackV3;
++}> {
++  const reason = input.reason.trim();
++  if (!reason) throw new LifecycleV3Error("RUN_ARCHIVE_REPAIR_REASON_REQUIRED", "archive repair requires a reason");
++  // Archive repair exists specifically to recover a planning defect discovered
++  // after Archive begin. Preserve the exact planning/source binding, but do not
++  // require the known-bad plan to pass current readiness before it can be
++  // rolled back into the formal repair lifecycle.
++  const context = await requireBoundState(input.projectRoot, input.changeName, input.token, dependencies);
++  if (context.state.phase !== "archiving" || context.state.archive?.localCompleted !== false) {
++    throw new LifecycleV3Error(
++      "RUN_ARCHIVE_REPAIR_INVALID",
++      "archive repair may be requested only before local archive closeout completes",
++    );
++  }
++  const rollback = (dependencies.rollbackPendingArchive ?? rollbackPendingArchiveCloseoutV3)({
++    projectRoot: input.projectRoot,
++    changeName: input.changeName,
++    state: context.state,
++    evidenceManifestHash: input.evidenceManifestHash,
++  });
++  const snapshot = await context.git.snapshot();
++  if (!snapshot.clean || snapshot.headRevision !== context.state.finalRevision) {
++    throw new LifecycleV3Error(
++      "ARCHIVE_ROLLBACK_INCOMPLETE",
++      "archive rollback must restore the clean verified final revision",
++    );
++  }
++  const event: RunEventV3 = {
++    ...eventBaseV3(context.state, "archive_repair_requested", {
++      occurredAt: context.now(),
++      nextNonce: nextNonce(context.state.nonce, context.nonce),
++    }),
++    type: "archive_repair_requested",
++    reason,
++  };
++  return { state: mutate(context.state, context.store, event), rollback };
++}
++
+ export function canonicalEvidenceFilesV3(
+   state: RunStateV3,
+   groupEvidence: Record<string, Record<string, unknown>> = {},
+diff --git a/packages/corgispec/src/lib/lifecycle.ts b/packages/corgispec/src/lib/lifecycle.ts
+index 8f80dc4c36121bcdc13eda272aedaa8356a63cbb..342a7a3731d6464747e8b907209427060a57a3d9 100644
+--- a/packages/corgispec/src/lib/lifecycle.ts
++++ b/packages/corgispec/src/lib/lifecycle.ts
+@@ -9,6 +9,7 @@ import type {
+   OpenSpecValidationResponse,
+ } from "./openspec-adapter.js";
+ import type { ResolvedChangeArtifacts } from "./artifact-resolver.js";
++import { archiveDeltaCompatibilityCheck } from "./archive-compatibility-v3.js";
+ import { buildReadyReport, type ReadyReport } from "./readiness.js";
+ import {
+   findNextTaskGroup,
+@@ -211,6 +212,7 @@ export async function buildLifecycleReadyReport(
+     taskArtifactId,
+     strict: strictWarnings,
+   });
++  report.checks.push(archiveDeltaCompatibilityCheck(resolved));
+   const contractRequired =
+     (config.corgi as (typeof config.corgi & { contract?: string }) | undefined)?.contract ===
+     "rfc-v1";
+diff --git a/packages/corgispec/src/lib/run-contract-v3.ts b/packages/corgispec/src/lib/run-contract-v3.ts
+index 19cccc39d96d91f3de20181d189e21f75b157713..f8d74266fda7f48e5a8e49686cae6ca94aaa3be9 100644
+--- a/packages/corgispec/src/lib/run-contract-v3.ts
++++ b/packages/corgispec/src/lib/run-contract-v3.ts
+@@ -117,7 +117,7 @@ export interface HumanQaEvidenceV3 {
+ export interface RepairRequirementV3 {
+   kind: "implementation" | "rfc_amendment";
+   reason: string;
+-  failedPhase: "verify" | "human_review" | "human_qa";
++  failedPhase: "verify" | "human_review" | "human_qa" | "archive";
+   requestedAt: string;
+ }
+ 
+@@ -213,6 +213,11 @@ export interface ArchiveStartedEventV3 extends EventBaseV3 {
+   intentId: string;
+ }
+ 
++export interface ArchiveRepairRequestedEventV3 extends EventBaseV3 {
++  type: "archive_repair_requested";
++  reason: string;
++}
++
+ export interface ArchiveLocalCompletedEventV3 extends EventBaseV3 {
+   type: "archive_local_completed";
+   evidenceManifestHash: ArtifactHashV3;
+@@ -243,6 +248,7 @@ export type RunEventV3 =
+   | HumanReviewSubmittedEventV3
+   | HumanQaSubmittedEventV3
+   | ArchiveStartedEventV3
++  | ArchiveRepairRequestedEventV3
+   | ArchiveLocalCompletedEventV3
+   | ArchiveTrackerCompletedEventV3
+   | RunArchivedEventV3
+@@ -577,6 +583,15 @@ export function reduceRunEventV3(state: RunStateV3 | null, event: RunEventV3): R
+       };
+       next.phase = "archiving";
+       break;
++    case "archive_repair_requested":
++      requireCondition(
++        next.phase === "archiving" && next.archive?.localCompleted === false,
++        "RUN_ARCHIVE_REPAIR_INVALID",
++        "archive repair may be requested only before local archive closeout completes",
++      );
++      requireCondition(nonEmpty(event.reason), "RUN_ARCHIVE_REPAIR_REASON_REQUIRED", "archive repair requires a reason");
++      setRepair(next, "implementation", "archive", event.reason.trim());
++      break;
+     case "archive_local_completed":
+       requireCondition(next.phase === "archiving" && next.archive !== null, "RUN_PHASE_INVALID", "archive has not started");
+       requireCondition(isArtifactHashV3(event.evidenceManifestHash), "RUN_ARCHIVE_EVIDENCE_INVALID", "archive evidence manifest hash is invalid");
+diff --git a/packages/corgispec/test/archive-closeout-v3.test.ts b/packages/corgispec/test/archive-closeout-v3.test.ts
+index 5fe0ce8cecc5f0713e4b05263a1148a03e381870..5d31dcd0fde45d3d882d5d9be7bf39e638fa5886 100644
+--- a/packages/corgispec/test/archive-closeout-v3.test.ts
++++ b/packages/corgispec/test/archive-closeout-v3.test.ts
+@@ -1,6 +1,7 @@
+ import { execFileSync } from "node:child_process";
+ import { createHash } from "node:crypto";
+ import {
++  existsSync,
+   mkdirSync,
+   mkdtempSync,
+   readFileSync,
+@@ -14,6 +15,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
+ 
+ import {
+   performLocalArchiveCloseoutV3,
++  rollbackPendingArchiveCloseoutV3,
+   verifySealedArchiveCheckpointV3,
+ } from "../src/lib/archive-closeout-v3.js";
+ import {
+@@ -41,6 +43,138 @@ describe("strong local Archive v3 closeout", () => {
+     if (root) rmSync(root, { recursive: true, force: true });
+   });
+ 
++  it("removes only validated untracked evidence and a pending journal before repair", async () => {
++    root = mkdtempSync(resolve(tmpdir(), "corgispec-archive-rollback-"));
++    initializeProject(root);
++    const changeName = "guide-repair";
++    const changeRoot = resolve(root, "openspec/changes", changeName);
++    const source: MaintenanceSource = {
++      schemaVersion: 1,
++      kind: "maintenance",
++      deliveryRef: `maintenance/${changeName}`,
++      maintenance: {
++        category: "docs-only",
++        description: "Repair a delta before Archive.",
++        reason: "Archive preflight found an incomplete delta.",
++        boundary: "Planning repair only.",
++        contractRefs: [],
++      },
++      acceptance: [{ id: "MC-001", evidence: "automated" }],
++      tracker: { provider: "none", idempotencyKey: "maintenance-guide-repair" },
++    };
++    const sourceDigest = writeChangeSource(changeRoot, source) as ArtifactHashV3;
++    const traceabilityDigest = writeChangeTraceability(changeRoot, {
++      schemaVersion: 1,
++      sourceDigest,
++      acceptance: [{
++        id: "MC-001",
++        evidence: "automated",
++        planningRefs: [{ path: "tasks.md", anchor: "guide" }],
++        taskGroups: ["1"],
++      }],
++    }) as ArtifactHashV3;
++    writeFileSync(resolve(changeRoot, "tasks.md"), "## 1. Guide\n- [ ] 1.1 clarify\n");
++    git(root, ["add", "."]);
++    git(root, ["commit", "-m", "verified maintenance"]);
++    const finalRevision = git(root, ["rev-parse", "HEAD"]);
++    const state = maintenanceArchiveState({ changeName, sourceDigest, traceabilityDigest, finalRevision });
++    const evidencePath = resolve(changeRoot, "evidence");
++    mkdirSync(evidencePath, { recursive: true });
++    writeFileSync(resolve(evidencePath, "manifest.json"), `${JSON.stringify({
++      schemaVersion: 3,
++      changeName,
++      runId: state.runId,
++      finalRevision,
++      planningRevision: state.planningRevision,
++      sourceDigest,
++      traceabilityDigest,
++      files: [],
++      manifestHash: HASH,
++    }, null, 2)}\n`);
++
++    await expect(performLocalArchiveCloseoutV3({
++      projectRoot: root,
++      changeName,
++      state,
++      evidenceManifestHash: HASH,
++    }, { archiveChange: async () => { throw new Error("delta conflict"); } })).rejects.toThrow("delta conflict");
++    const journal = archiveJournalPath(root, state);
++    expect(existsSync(journal)).toBe(true);
++
++    const result = rollbackPendingArchiveCloseoutV3({
++      projectRoot: root,
++      changeName,
++      state,
++      evidenceManifestHash: HASH,
++    });
++    expect(result).toEqual({ removedEvidencePath: evidencePath, removedJournalPath: journal });
++    expect(existsSync(evidencePath)).toBe(false);
++    expect(existsSync(journal)).toBe(false);
++    expect(git(root, ["status", "--porcelain"])).toBe("");
++  });
++
++  it("fails closed when pending Archive evidence is tracked or unrelated work is dirty", async () => {
++    root = mkdtempSync(resolve(tmpdir(), "corgispec-archive-rollback-guards-"));
++    initializeProject(root);
++    const changeName = "guarded-repair";
++    const changeRoot = resolve(root, "openspec/changes", changeName);
++    const source: MaintenanceSource = {
++      schemaVersion: 1,
++      kind: "maintenance",
++      deliveryRef: `maintenance/${changeName}`,
++      maintenance: {
++        category: "test-only",
++        description: "Exercise rollback guards.",
++        reason: "Test recovery safety.",
++        boundary: "Test fixture only.",
++        contractRefs: [],
++      },
++      acceptance: [{ id: "MC-001", evidence: "automated" }],
++      tracker: { provider: "none", idempotencyKey: "maintenance-guarded-repair" },
++    };
++    const sourceDigest = writeChangeSource(changeRoot, source) as ArtifactHashV3;
++    const traceabilityDigest = writeChangeTraceability(changeRoot, {
++      schemaVersion: 1,
++      sourceDigest,
++      acceptance: [{ id: "MC-001", evidence: "automated", planningRefs: [{ path: "tasks.md" }], taskGroups: ["1"] }],
++    }) as ArtifactHashV3;
++    writeFileSync(resolve(changeRoot, "tasks.md"), "## 1. Guard\n- [ ] 1.1 guard\n");
++    git(root, ["add", "."]);
++    git(root, ["commit", "-m", "verified maintenance"]);
++    const finalRevision = git(root, ["rev-parse", "HEAD"]);
++    const state = maintenanceArchiveState({ changeName, sourceDigest, traceabilityDigest, finalRevision });
++    const evidencePath = resolve(changeRoot, "evidence");
++    mkdirSync(evidencePath, { recursive: true });
++    writeFileSync(resolve(evidencePath, "manifest.json"), `${JSON.stringify({
++      schemaVersion: 3,
++      changeName,
++      runId: state.runId,
++      finalRevision,
++      planningRevision: state.planningRevision,
++      sourceDigest,
++      traceabilityDigest,
++      files: [],
++      manifestHash: HASH,
++    }, null, 2)}\n`);
++    writeFileSync(resolve(root, "unrelated.tmp"), "user work\n");
++
++    expect(() => rollbackPendingArchiveCloseoutV3({
++      projectRoot: root,
++      changeName,
++      state,
++      evidenceManifestHash: HASH,
++    })).toThrowError(expect.objectContaining({ code: "ARCHIVE_ROLLBACK_MIXED_DIRTY" }));
++    rmSync(resolve(root, "unrelated.tmp"));
++    git(root, ["add", "--", relative(root, evidencePath)]);
++    expect(() => rollbackPendingArchiveCloseoutV3({
++      projectRoot: root,
++      changeName,
++      state,
++      evidenceManifestHash: HASH,
++    })).toThrowError(expect.objectContaining({ code: "ARCHIVE_ROLLBACK_EVIDENCE_TRACKED" }));
++    expect(existsSync(evidencePath)).toBe(true);
++  });
++
+   it("resumes after OpenSpec moved the Change and commits delivery, Wiki, and Bridge exactly once", async () => {
+     root = mkdtempSync(resolve(tmpdir(), "corgispec-archive-closeout-"));
+     initializeProject(root);
+@@ -497,6 +631,7 @@ function initializeProject(root: string): void {
+   git(root, ["init", "-b", "main"]);
+   git(root, ["config", "user.email", "human@example.test"]);
+   git(root, ["config", "user.name", "Human Reviewer"]);
++  git(root, ["config", "commit.gpgsign", "false"]);
+   ensureFoundationRfc({ projectDir: root });
+   completeRfc(root, "RFC-0001-project-foundation", "S-01-project-foundation");
+   acceptRfc({
+diff --git a/packages/corgispec/test/lifecycle-v3.test.ts b/packages/corgispec/test/lifecycle-v3.test.ts
+index b9d81487688df93245be31d57b20d9072f47a29f..75886b03c4f65e55c63ad3a6235ce73a18372266 100644
+--- a/packages/corgispec/test/lifecycle-v3.test.ts
++++ b/packages/corgispec/test/lifecycle-v3.test.ts
+@@ -29,6 +29,7 @@ import {
+   finishArchiveV3,
+   lifecycleTokenV3,
+   materializeArchiveEvidenceV3,
++  requestArchiveRepairV3,
+   startApplyV3,
+   submitHumanQaV3,
+   submitHumanReviewV3,
+@@ -296,6 +297,46 @@ async function archiving(h: Harness): Promise<RunStateV3> {
+ }
+ 
+ describe("Run Contract v3 lifecycle services", () => {
++  it("rolls back pending Archive artifacts before recording repair_required", async () => {
++    const h = harness();
++    const state = await archiving(h);
++    let rollbackCalls = 0;
++    h.dependencies.rollbackPendingArchive = (input) => {
++      rollbackCalls += 1;
++      expect(input).toMatchObject({
++        projectRoot: h.root,
++        changeName: "change-a",
++        evidenceManifestHash: H,
++        state: { runId: state.runId, phase: "archiving" },
++      });
++      return {
++        removedEvidencePath: resolve(h.root, "openspec/changes/change-a/evidence"),
++        removedJournalPath: resolve(h.root, ".corgi/loop/change-a/archive-closeout/archive.json"),
++      };
++    };
++    h.plan.blockers.push("ARCHIVE_DELTA_COMPATIBLE: canonical scenario identity is missing");
++
++    const result = await requestArchiveRepairV3({
++      projectRoot: h.root,
++      changeName: "change-a",
++      token: lifecycleTokenV3(state),
++      evidenceManifestHash: H,
++      reason: " delta would drop canonical scenarios ",
++    }, h.dependencies);
++
++    expect(rollbackCalls).toBe(1);
++    expect(result.state).toMatchObject({
++      phase: "repair_required",
++      repair: {
++        kind: "implementation",
++        failedPhase: "archive",
++        reason: "delta would drop canonical scenarios",
++      },
++      archive: { intentId: "archive-a", localCompleted: false },
++    });
++    expect(h.store.inspect("change-a", state.runId).state).toEqual(result.state);
++  });
++
+   it("requires the Task Group commit bridge checkpoint to name the next Run state", async () => {
+     const h = harness();
+     const state = await startApplyV3({
+diff --git a/packages/corgispec/test/planning-commands.test.ts b/packages/corgispec/test/planning-commands.test.ts
+index a9efe6dbb8940b7c3799cccf5e41406c04eb0210..ab67a12892f5e99097385f7a0a58b979bab54e4d 100644
+--- a/packages/corgispec/test/planning-commands.test.ts
++++ b/packages/corgispec/test/planning-commands.test.ts
+@@ -161,6 +161,62 @@ describe("planning CLI JSON contracts", () => {
+     }));
+   });
+ 
++  it("blocks ready when a MODIFIED requirement would drop a canonical scenario", async () => {
++    const changeRoot = String(status.changeRoot);
++    const planningHome = status.planningHome as { changesDir: string };
++    const deltaSpec = resolve(changeRoot, "specs/cap-a/spec.md");
++    const canonicalSpec = resolve(planningHome.changesDir, "../specs/cap-a/spec.md");
++    mkdirSync(resolve(deltaSpec, ".."), { recursive: true });
++    mkdirSync(resolve(canonicalSpec, ".."), { recursive: true });
++    writeFileSync(resolve(changeRoot, "proposal.md"), [
++      "## Capabilities",
++      "### Modified Capabilities",
++      "- `cap-a`: capability",
++      "",
++    ].join("\n"));
++    writeFileSync(canonicalSpec, [
++      "### Requirement: Existing behavior",
++      "#### Scenario: Keep this identity",
++      "",
++    ].join("\n"));
++    writeFileSync(deltaSpec, [
++      "## MODIFIED Requirements",
++      "### Requirement: Existing behavior",
++      "#### Scenario: Replacement identity",
++      "",
++    ].join("\n"));
++    (status.artifactPaths as Record<string, unknown>).specs = {
++      outputPath: "specs/**/*.md",
++      resolvedOutputPath: resolve(changeRoot, "specs/**/*.md"),
++      existingOutputPaths: [deltaSpec],
++    };
++    (status.artifacts as Array<Record<string, unknown>>).push({
++      id: "specs",
++      outputPath: "specs/**/*.md",
++      status: "done",
++    });
++    const validation = {
++      items: [{ id: "change-a", type: "change", valid: true, issues: [], durationMs: 1 }],
++      summary: { valid: 1, invalid: 0 },
++      version: "1.6",
++    };
++    const runner = new QueueRunner([result(status), result(validation)]);
++    const adapter = createOpenSpecAdapter(root, runner, { verifyRuntime: false });
++
++    await createReadyCommand({ createAdapter: () => adapter }).parseAsync(
++      ["change-a", "--strict", "--json", "--path", root],
++      { from: "user" },
++    );
++
++    expect(process.exitCode).toBe(1);
++    const output = JSON.parse(String(log.mock.calls[0]![0]));
++    expect(output.checks).toContainEqual(expect.objectContaining({
++      code: "ARCHIVE_DELTA_COMPATIBLE",
++      status: "fail",
++      message: expect.stringContaining("Keep this identity"),
++    }));
++  });
++
+   it("maps malformed OpenSpec output to contract_error/exit 2", async () => {
+     const runner = new QueueRunner([result("not-json")]);
+     const adapter = createOpenSpecAdapter(root, runner, { verifyRuntime: false });
+diff --git a/packages/corgispec/test/run-contract-skill-assets.test.ts b/packages/corgispec/test/run-contract-skill-assets.test.ts
+index 018b1059e0afb98e5cb6e9ab7f34c8ffe544a134..0f930e6f1a157bdea55c1e2125feb7ec41ae6abe 100644
+--- a/packages/corgispec/test/run-contract-skill-assets.test.ts
++++ b/packages/corgispec/test/run-contract-skill-assets.test.ts
+@@ -59,6 +59,13 @@ describe("Run Contract v3 public skill chain", () => {
+     for (const operation of ["--begin", "--local", "--confirm-tracker", "--finish"]) {
+       expect(archive).toContain(operation);
+     }
++    expect(archive).toContain("synchronize that exact commit through the guarded adapter");
++    expect(archive).toContain("stop when ready/merge authority is unavailable");
++    expect(archive).toContain("Never call");
++    expect(archive).toContain("to bypass a required integration gate");
++    expect(archive.indexOf("synchronize that exact commit"))
++      .toBeLessThan(archive.indexOf("After the provider confirms that exact"));
++    expect(archive).toContain("never replace that proof with a raw push or direct provider edit");
+   });
+ 
+   it("keeps archive knowledge materialization in the CLI and extraction read-only", () => {
+diff --git a/packages/corgispec/test/run-contract-v3.test.ts b/packages/corgispec/test/run-contract-v3.test.ts
+index 234f71dcda41cf309de4686c7ce6cb8fe40eec22..d0cc91ece80ab197799d769126764f427dfd6e9f 100644
+--- a/packages/corgispec/test/run-contract-v3.test.ts
++++ b/packages/corgispec/test/run-contract-v3.test.ts
+@@ -101,6 +101,64 @@ function verifyAcceptance(): CriterionEvidenceV3[] {
+ }
+ 
+ describe("Run Contract v3", () => {
++  it("routes a failed pre-closeout Archive into one implementation repair successor", () => {
++    let state = throughApply();
++    state = applyEvent(state, "verify_submitted", {
++      evidence: {
++        verdict: "pass",
++        finalRevision: "commit-2",
++        planningRevision: state.planningRevision,
++        sourceDigest: state.contract.sourceDigest,
++        traceabilityDigest: state.contract.traceabilityDigest,
++        reportHash: hashes[8]!,
++        checks: [{ name: "test", status: "pass", evidenceRefs: ["test.log"] }],
++        acceptance: verifyAcceptance(),
++        verifiedAt: "2026-08-14T00:00:04.000Z",
++      },
++    });
++    state = applyEvent(state, "human_review_submitted", {
++      evidence: {
++        decision: "approve",
++        reviewer: "human-a",
++        reason: null,
++        finalRevision: "commit-2",
++        planningRevision: state.planningRevision,
++        verifyReportHash: state.verify!.reportHash,
++        reviewedAt: "2026-08-14T00:00:05.000Z",
++      },
++    });
++    state = applyEvent(state, "human_qa_submitted", {
++      evidence: {
++        verdict: "pass",
++        reviewer: "human-a",
++        reason: null,
++        noRuntimeImpact: false,
++        finalRevision: "commit-2",
++        planningRevision: state.planningRevision,
++        reportHash: hashes[7]!,
++        acceptance: [
++          { id: "AC-001", automated: "not_applicable", human: "not_applicable", evidenceRefs: [] },
++          { id: "AC-002", automated: "not_applicable", human: "pass", evidenceRefs: ["qa:walkthrough"] },
++        ],
++        evidenceRefs: ["qa:walkthrough"],
++        reviewedAt: "2026-08-14T00:00:06.000Z",
++      },
++    });
++    state = applyEvent(state, "archive_started", { intentId: "archive-a" });
++    state = applyEvent(state, "archive_repair_requested", { reason: "delta would drop canonical scenarios" });
++
++    expect(state.phase).toBe("repair_required");
++    expect(state.repair).toMatchObject({
++      kind: "implementation",
++      failedPhase: "archive",
++      reason: "delta would drop canonical scenarios",
++    });
++    expect(state.archive).toMatchObject({ intentId: "archive-a", localCompleted: false });
++    expect(Object.values(state.groups).every((group) => group.status === "completed")).toBe(true);
++    expect(() => applyEvent(state, "archive_repair_requested", { reason: "again" }))
++      .toThrowError(expect.objectContaining({ code: "RUN_ARCHIVE_REPAIR_INVALID" }));
++  });
++
+   it("moves Apply only to awaiting_verify and gates the complete quality chain", () => {
+     let state = throughApply();
+     expect(state.phase).toBe("awaiting_verify");

@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 3,
+  "groupId": "2",
+  "checks": [
+    {
+      "name": "finalized fee-policy project, artifact, package root, and production/test dependency graph",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:build.sbt#sha256:864bcc328b1c9517e1ab7f4c1412dfc1bd3c83d5b5039ece773f3bb577fa9f04",
+        "file:README.md#sha256:51fa5de281b0a0c8a2d76e80c2a796ce1cb3252eba76c4f7b5e556ba4e4e9662",
+        "file:fee-policy%2FREADME.md#sha256:fef31702e9b6a9f5c2de6a3e176ffc20e6aca642e261323913f69b3b49387f30",
+        "file:docs%2Farchitecture-charter-audit.md#sha256:5398e7ffd8b2e32600c5fb14b7bbcf64c830ac87a7c0c52d6b56f7502eb075ba",
+        "file:openspec%2Fchanges%2Fintroduce-pure-fee-policy-module%2Fimplementation-notes%2Ftask-group-2.md#sha256:368b61cc701e345aaa9c4300de591a285a03659094fbbcc03158ce022294c5e7"
+      ]
+    },
+    {
+      "name": "dedicated completed-JAR reference-data and fee-policy classpaths with executable downstream client",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:build.sbt#sha256:864bcc328b1c9517e1ab7f4c1412dfc1bd3c83d5b5039ece773f3bb577fa9f04",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FEconomicsCompilerBoundarySuite.scala#sha256:e0d892c17d2137b11acaa2964196f05254fc5ea5c66ee2e487beb56c0646d334",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Ffee-policy-compiler%2Fpositive%2FFeePolicyBoundaryClient.scala#sha256:92c9762b5e2a9608f14137edaad83f42bbb565da1587485a3331faca8cc58ce2",
+        "file:openspec%2Fchanges%2Fintroduce-pure-fee-policy-module%2Fimplementation-notes%2Ftask-group-2.md#sha256:368b61cc701e345aaa9c4300de591a285a03659094fbbcc03158ce022294c5e7"
+      ]
+    },
+    {
+      "name": "lower-layer fee-policy rejection and fee-policy downstream/effect rejection compiler guards",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FQuantityArtifactBoundarySuite.scala#sha256:41d0d41ca03e097b1ced30dfcd12ee458dcc92d9317183748329f87ed9dd7a6c",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FReferenceDataCompilerBoundarySuite.scala#sha256:826a3af1744d89bc6749228d3d8aff5da7098ff3f21ed96f63461f127f8369c4",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FEconomicsCompilerBoundarySuite.scala#sha256:e0d892c17d2137b11acaa2964196f05254fc5ea5c66ee2e487beb56c0646d334",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fquantity-artifact-boundary%2Fnegative%2FStableIdentityUnavailable.scala#sha256:5f058d24618bc0e78db87f1a87418429ca84b1ca148821689990177842c1ce93",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Freference-data-compiler%2Fnegative%2FFeePolicyUnavailable.scala#sha256:8296b77b39edaabee27c669ea04a6f93a7c2f99a92789ac16d7df181030474c8",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Forder-model-compiler%2FOrderModelHasNoDownstream.scala#sha256:99d7aa0c6c4f477e7dc7e0d32847e120b4285e61550ee8e663cc891fb6a56924",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fexecution-scenario-compiler%2FExecutionScenarioHasNoUpstreamMutationOrDownstream.scala#sha256:e518bb05d05ae530875f28e07ac148262c18ee9bfd1654cd851b3afc7d342396",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Ffee-policy-compiler%2Fnegative%2FFeePolicyHasNoDownstream.scala#sha256:388ba0499710349b4ce88ce8e357395238553e7b3dbcebc4ef07e4b5af63052a"
+      ]
+    },
+    {
+      "name": "formatting, fee-policy integration, and 151-test completed-artifact adversarial gate",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:openspec%2Fchanges%2Fintroduce-pure-fee-policy-module%2Fimplementation-notes%2Ftask-group-2.md#sha256:368b61cc701e345aaa9c4300de591a285a03659094fbbcc03158ce022294c5e7",
+        "file:build.sbt#sha256:864bcc328b1c9517e1ab7f4c1412dfc1bd3c83d5b5039ece773f3bb577fa9f04",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FEconomicsCompilerBoundarySuite.scala#sha256:e0d892c17d2137b11acaa2964196f05254fc5ea5c66ee2e487beb56c0646d334"
+      ]
+    }
+  ],
+  "automatedReview": {
+    "verdict": "pass",
+    "findings": []
+  },
+  "artifacts": [
+    "file:build.sbt#sha256:864bcc328b1c9517e1ab7f4c1412dfc1bd3c83d5b5039ece773f3bb577fa9f04",
+    "file:fee-policy%2FREADME.md#sha256:fef31702e9b6a9f5c2de6a3e176ffc20e6aca642e261323913f69b3b49387f30",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FEconomicsCompilerBoundarySuite.scala#sha256:e0d892c17d2137b11acaa2964196f05254fc5ea5c66ee2e487beb56c0646d334",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FReferenceDataCompilerBoundarySuite.scala#sha256:826a3af1744d89bc6749228d3d8aff5da7098ff3f21ed96f63461f127f8369c4",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Ffee-policy-compiler%2Fpositive%2FFeePolicyBoundaryClient.scala#sha256:92c9762b5e2a9608f14137edaad83f42bbb565da1587485a3331faca8cc58ce2",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Ffee-policy-compiler%2Fnegative%2FFeePolicyHasNoDownstream.scala#sha256:388ba0499710349b4ce88ce8e357395238553e7b3dbcebc4ef07e4b5af63052a",
+    "file:openspec%2Fchanges%2Fintroduce-pure-fee-policy-module%2Fimplementation-notes%2Ftask-group-2.md#sha256:368b61cc701e345aaa9c4300de591a285a03659094fbbcc03158ce022294c5e7",
+    "file:memory%2Fsession-bridge.md#sha256:bc40444941f5586f8815c5d922071ea61101aa80146da931ba6839e96c1c80d3"
+  ],
+  "summary": "Finalized the existing trading-fee-policy module boundary with the accepted direct quantities edge, retained risk only for tests, documented the honest trading.fee root and provisional subpackage, added isolated completed-JAR reference-data and fee-policy classpaths, and proved every required lower/reverse boundary. Both formatting checks, 11 fee-policy tests, and 151 adversarial/compiler tests pass. Automated review covered scope, build topology, packaged artifacts, behavior, architecture, documentation honesty, and performance/security applicability with no findings; it changed no file, triaged no finding, and is not canonical whole-change Verify or Human Review."
+}

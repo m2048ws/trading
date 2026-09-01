@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 3,
+  "scope": "group-3",
+  "runId": "run-a29691ac-e873-47ae-aa50-f27dff8c0381",
+  "references": [
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Feconomics-compiler%2Fpositive%2FCompleteEconomicsClient.scala#sha256:95b071854344150682a14a6dfbe059d8c35b91e13b30871b0be3c95803ba03bd",
+      "sourcePath": "adversarial-boundary/src/test/resources/economics-compiler/positive/CompleteEconomicsClient.scala",
+      "digest": "sha256:95b071854344150682a14a6dfbe059d8c35b91e13b30871b0be3c95803ba03bd",
+      "archivePath": "references/blobs/95b071854344150682a14a6dfbe059d8c35b91e13b30871b0be3c95803ba03bd"
+    },
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Frisk-compiler%2Fnegative%2FInvalidRiskInputs.scala#sha256:d131ad19ef6648c7962c224940756e4210327b24a39de31cbe6041f999301738",
+      "sourcePath": "adversarial-boundary/src/test/resources/risk-compiler/negative/InvalidRiskInputs.scala",
+      "digest": "sha256:d131ad19ef6648c7962c224940756e4210327b24a39de31cbe6041f999301738",
+      "archivePath": "references/blobs/d131ad19ef6648c7962c224940756e4210327b24a39de31cbe6041f999301738"
+    },
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Frisk-compiler%2Fpositive%2FRiskBoundaryClient.scala#sha256:740879ba743bc247bfcbd7eaf8d4ed4261dfe0d716a2fbf4ab456209a6cfe152",
+      "sourcePath": "adversarial-boundary/src/test/resources/risk-compiler/positive/RiskBoundaryClient.scala",
+      "digest": "sha256:740879ba743bc247bfcbd7eaf8d4ed4261dfe0d716a2fbf4ab456209a6cfe152",
+      "archivePath": "references/blobs/740879ba743bc247bfcbd7eaf8d4ed4261dfe0d716a2fbf4ab456209a6cfe152"
+    },
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FRiskCompilerBoundarySuite.scala#sha256:b70b2cd7de1d8069eaa8d7cc969ae8bd699ecaaf4a6503f88c6c32bae3925542",
+      "sourcePath": "adversarial-boundary/src/test/scala/external/RiskCompilerBoundarySuite.scala",
+      "digest": "sha256:b70b2cd7de1d8069eaa8d7cc969ae8bd699ecaaf4a6503f88c6c32bae3925542",
+      "archivePath": "references/blobs/b70b2cd7de1d8069eaa8d7cc969ae8bd699ecaaf4a6503f88c6c32bae3925542"
+    },
+    {
+      "reference": "file:build.sbt#sha256:83e574c48a75a48dda30c7ae5243efc0102d2d1a8417eb2659e523c96657e479",
+      "sourcePath": "build.sbt",
+      "digest": "sha256:83e574c48a75a48dda30c7ae5243efc0102d2d1a8417eb2659e523c96657e479",
+      "archivePath": "references/blobs/83e574c48a75a48dda30c7ae5243efc0102d2d1a8417eb2659e523c96657e479"
+    },
+    {
+      "reference": "file:economics%2Fsrc%2Fmain%2Fscala%2Ftrading%2Frisk%2FError.scala#sha256:4928643075b715b02ccf369f115100bb993c6503776ffb16c42a39535fc1dcb8",
+      "sourcePath": "economics/src/main/scala/trading/risk/Error.scala",
+      "digest": "sha256:4928643075b715b02ccf369f115100bb993c6503776ffb16c42a39535fc1dcb8",
+      "archivePath": "references/blobs/4928643075b715b02ccf369f115100bb993c6503776ffb16c42a39535fc1dcb8"
+    },
+    {
+      "reference": "file:economics%2Fsrc%2Fmain%2Fscala%2Ftrading%2Frisk%2FRisk.scala#sha256:cbfc178049168955226149a35cbf6cb2b85074db377f106382a7a701210dc4f4",
+      "sourcePath": "economics/src/main/scala/trading/risk/Risk.scala",
+      "digest": "sha256:cbfc178049168955226149a35cbf6cb2b85074db377f106382a7a701210dc4f4",
+      "archivePath": "references/blobs/cbfc178049168955226149a35cbf6cb2b85074db377f106382a7a701210dc4f4"
+    },
+    {
+      "reference": "file:economics%2Fsrc%2Ftest%2Fscala%2Ftrading%2FDownstreamEconomicsSuite.scala#sha256:72829dbdb8e16ed91d70299915e4c395d6395a4c78b59fb9e58fd313c76a9193",
+      "sourcePath": "economics/src/test/scala/trading/DownstreamEconomicsSuite.scala",
+      "digest": "sha256:72829dbdb8e16ed91d70299915e4c395d6395a4c78b59fb9e58fd313c76a9193",
+      "archivePath": "references/blobs/72829dbdb8e16ed91d70299915e4c395d6395a4c78b59fb9e58fd313c76a9193"
+    },
+    {
+      "reference": "file:memory%2Fsession-bridge.md#sha256:d55740d74382840b3c142cdba87f908d64f4f374e938f34662d63e9c99744cbe",
+      "sourcePath": "memory/session-bridge.md",
+      "digest": "sha256:d55740d74382840b3c142cdba87f908d64f4f374e938f34662d63e9c99744cbe",
+      "archivePath": "references/blobs/d55740d74382840b3c142cdba87f908d64f4f374e938f34662d63e9c99744cbe"
+    },
+    {
+      "reference": "file:openspec%2Fchanges%2Fintroduce-pure-risk-module%2Fimplementation-notes%2Ftask-group-3.md#sha256:25fa7f5a82f4eadbda341b876e5f62aa43bcddc990b906fe8bc5a3dc2f0ed365",
+      "sourcePath": "openspec/changes/introduce-pure-risk-module/implementation-notes/task-group-3.md",
+      "digest": "sha256:25fa7f5a82f4eadbda341b876e5f62aa43bcddc990b906fe8bc5a3dc2f0ed365",
+      "archivePath": "references/blobs/25fa7f5a82f4eadbda341b876e5f62aa43bcddc990b906fe8bc5a3dc2f0ed365"
+    },
+    {
+      "reference": "file:risk%2Fsrc%2Fmain%2Fscala%2Ftrading%2Frisk%2FError.scala#sha256:686bedec5cb191e231067e29f7ee3f63cc4dd93e3b245fed3df56732d2fbff19",
+      "sourcePath": "risk/src/main/scala/trading/risk/Error.scala",
+      "digest": "sha256:686bedec5cb191e231067e29f7ee3f63cc4dd93e3b245fed3df56732d2fbff19",
+      "archivePath": "references/blobs/686bedec5cb191e231067e29f7ee3f63cc4dd93e3b245fed3df56732d2fbff19"
+    },
+    {
+      "reference": "file:risk%2Fsrc%2Fmain%2Fscala%2Ftrading%2Frisk%2FRisk.scala#sha256:1d9ad8eb16566d5027e3edeecfb7c1566ac8ddd546a7cb1cfd0a0410d65b0b54",
+      "sourcePath": "risk/src/main/scala/trading/risk/Risk.scala",
+      "digest": "sha256:1d9ad8eb16566d5027e3edeecfb7c1566ac8ddd546a7cb1cfd0a0410d65b0b54",
+      "archivePath": "references/blobs/1d9ad8eb16566d5027e3edeecfb7c1566ac8ddd546a7cb1cfd0a0410d65b0b54"
+    },
+    {
+      "reference": "file:risk%2Fsrc%2Ftest%2Fscala%2Ftrading%2Frisk%2FRiskDownsideSuite.scala#sha256:a781f696da156118f3c3843c172a4234956cfc48c2e14f508af847aee3d190c4",
+      "sourcePath": "risk/src/test/scala/trading/risk/RiskDownsideSuite.scala",
+      "digest": "sha256:a781f696da156118f3c3843c172a4234956cfc48c2e14f508af847aee3d190c4",
+      "archivePath": "references/blobs/a781f696da156118f3c3843c172a4234956cfc48c2e14f508af847aee3d190c4"
+    }
+  ]
+}

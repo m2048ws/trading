@@ -1,0 +1,13 @@
+S-04 Repair Task Group 10 — planning verification
+Date: 2026-08-31
+Final revision: 0eceeabf1d2eb1f8ad2b534f65f00552dc6f53dc
+Planning revision: sha256:96b5b08c7943f4116de55100e56efd0ca8e65d7e707a1b74c3e51bc7480c7234
+Source digest: sha256:d7face4865eb2e8e69abb4f305d67720842e19f9d1d4fa3b760b744fb8f06443
+Traceability digest: sha256:8ef137a161b86ab60b78dadf55c70e91b8727572212054d1d344ec878057f064
+
+PASS OpenSpec strict validation: 1 change passed, 0 failed
+PASS Corgi strict readiness: no failed checks
+PASS ARCHIVE_DELTA_COMPATIBLE: every MODIFIED requirement preserves canonical scenario identities
+PASS Repair plan shape: Groups 1-9 immutable; exactly one Group 10 appended
+PASS Git scope since the previously verified implementation revision: memory/session-bridge.md, fee-inclusive-pnl delta spec, and tasks.md only
+PASS Production/runtime impact: none

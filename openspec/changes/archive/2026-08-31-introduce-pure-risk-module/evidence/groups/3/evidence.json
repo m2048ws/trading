@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 3,
+  "groupId": "3",
+  "checks": [
+    {
+      "name": "exact typed downside mathematics and focused identity error",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:risk%2Fsrc%2Fmain%2Fscala%2Ftrading%2Frisk%2FRisk.scala#sha256:1d9ad8eb16566d5027e3edeecfb7c1566ac8ddd546a7cb1cfd0a0410d65b0b54",
+        "file:risk%2Fsrc%2Fmain%2Fscala%2Ftrading%2Frisk%2FError.scala#sha256:686bedec5cb191e231067e29f7ee3f63cc4dd93e3b245fed3df56732d2fbff19",
+        "file:risk%2Fsrc%2Ftest%2Fscala%2Ftrading%2Frisk%2FRiskDownsideSuite.scala#sha256:a781f696da156118f3c3843c172a4234956cfc48c2e14f508af847aee3d190c4"
+      ]
+    },
+    {
+      "name": "refined budget boundary and removal of raw budget validation",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:economics%2Fsrc%2Fmain%2Fscala%2Ftrading%2Frisk%2FRisk.scala#sha256:cbfc178049168955226149a35cbf6cb2b85074db377f106382a7a701210dc4f4",
+        "file:economics%2Fsrc%2Fmain%2Fscala%2Ftrading%2Frisk%2FError.scala#sha256:4928643075b715b02ccf369f115100bb993c6503776ffb16c42a39535fc1dcb8",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Frisk-compiler%2Fnegative%2FInvalidRiskInputs.scala#sha256:d131ad19ef6648c7962c224940756e4210327b24a39de31cbe6041f999301738"
+      ]
+    },
+    {
+      "name": "completed-JAR downside API, dimension mismatch, and downstream integration",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FRiskCompilerBoundarySuite.scala#sha256:b70b2cd7de1d8069eaa8d7cc969ae8bd699ecaaf4a6503f88c6c32bae3925542",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Frisk-compiler%2Fpositive%2FRiskBoundaryClient.scala#sha256:740879ba743bc247bfcbd7eaf8d4ed4261dfe0d716a2fbf4ab456209a6cfe152",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Feconomics-compiler%2Fpositive%2FCompleteEconomicsClient.scala#sha256:95b071854344150682a14a6dfbe059d8c35b91e13b30871b0be3c95803ba03bd",
+        "file:economics%2Fsrc%2Ftest%2Fscala%2Ftrading%2FDownstreamEconomicsSuite.scala#sha256:72829dbdb8e16ed91d70299915e4c395d6395a4c78b59fb9e58fd313c76a9193"
+      ]
+    },
+    {
+      "name": "formatting and 54-test focused exact/API/integration gate",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:openspec%2Fchanges%2Fintroduce-pure-risk-module%2Fimplementation-notes%2Ftask-group-3.md#sha256:25fa7f5a82f4eadbda341b876e5f62aa43bcddc990b906fe8bc5a3dc2f0ed365",
+        "file:build.sbt#sha256:83e574c48a75a48dda30c7ae5243efc0102d2d1a8417eb2659e523c96657e479"
+      ]
+    }
+  ],
+  "automatedReview": {
+    "verdict": "pass",
+    "findings": []
+  },
+  "artifacts": [
+    "file:risk%2Fsrc%2Fmain%2Fscala%2Ftrading%2Frisk%2FRisk.scala#sha256:1d9ad8eb16566d5027e3edeecfb7c1566ac8ddd546a7cb1cfd0a0410d65b0b54",
+    "file:risk%2Fsrc%2Fmain%2Fscala%2Ftrading%2Frisk%2FError.scala#sha256:686bedec5cb191e231067e29f7ee3f63cc4dd93e3b245fed3df56732d2fbff19",
+    "file:risk%2Fsrc%2Ftest%2Fscala%2Ftrading%2Frisk%2FRiskDownsideSuite.scala#sha256:a781f696da156118f3c3843c172a4234956cfc48c2e14f508af847aee3d190c4",
+    "file:openspec%2Fchanges%2Fintroduce-pure-risk-module%2Fimplementation-notes%2Ftask-group-3.md#sha256:25fa7f5a82f4eadbda341b876e5f62aa43bcddc990b906fe8bc5a3dc2f0ed365",
+    "file:memory%2Fsession-bridge.md#sha256:d55740d74382840b3c142cdba87f908d64f4f374e938f34662d63e9c99744cbe"
+  ],
+  "summary": "Added exact refined downside measurement with identity-first validation, typed order/zero/subtraction, no coefficient reconstruction, and focused identity failure; migrated the temporary exhaustive service to refined budgets and removed InvalidRiskBudget; and proved raw-budget and dimension rejection at the completed-JAR boundary. Formatting and 54 focused tests pass. Automated review found one public-name collision, remediated it, and then passed all axes; it is not canonical whole-change Verify or Human Review."
+}

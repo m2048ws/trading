@@ -1,0 +1,42 @@
+schemaVersion: 1
+sourceDigest: sha256:1a8cca449f8fdfc009f8ccbe87989a288ea92e7ff41ee58d38aa513a53ed4f2d
+acceptance:
+  - id: AC-009
+    evidence: automated
+    planningRefs:
+      - path: specs/position-risk-sizing/spec.md
+        anchor: requirement-pure-risk-artifact-and-lot-risk-assessment
+      - path: specs/position-risk-sizing/spec.md
+        anchor: requirement-downside-risk-from-net-pnl
+    taskGroups:
+      - '2'
+      - '3'
+      - '8'
+  - id: AC-010
+    evidence: both
+    planningRefs:
+      - path: specs/position-risk-sizing/spec.md
+        anchor: requirement-constructive-monotone-lot-risk-model
+    taskGroups:
+      - '4'
+      - '5'
+  - id: AC-011
+    evidence: automated
+    planningRefs:
+      - path: specs/position-risk-sizing/spec.md
+        anchor: requirement-maximum-affordable-lot-sizing
+    taskGroups:
+      - '6'
+  - id: AC-012
+    evidence: both
+    planningRefs:
+      - path: specs/position-risk-sizing/spec.md
+        anchor: requirement-explicit-exhaustive-fallback
+      - path: specs/position-risk-sizing/spec.md
+        anchor: requirement-sizing-failures-are-explicit
+      - path: specs/position-risk-sizing/spec.md
+        anchor: requirement-position-sizing-scope-is-bounded
+    taskGroups:
+      - '5'
+      - '7'
+      - '9'

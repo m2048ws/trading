@@ -12,12 +12,18 @@ val applicationBoundaryClasspath =
   taskKey[Seq[File]]("Completed application artifact classpath without runtime dependencies")
 val runtimeBoundaryClasspath =
   taskKey[Seq[File]]("Completed runtime artifact classpath with its concrete effect dependencies")
+val referenceDataCompilerClasspath =
+  taskKey[Seq[File]]("Immutable classpath for completed-JAR reference-data compiler fixtures")
 val instrumentEconomicsCompilerClasspath =
   taskKey[Seq[File]]("Immutable classpath for completed-JAR instrument-economics compiler fixtures")
+val riskCompilerClasspath =
+  taskKey[Seq[File]]("Immutable classpath for completed-JAR risk compiler fixtures")
 val orderModelCompilerClasspath =
   taskKey[Seq[File]]("Immutable classpath for completed-JAR order-model compiler fixtures")
 val executionScenarioCompilerClasspath =
   taskKey[Seq[File]]("Immutable classpath for completed-JAR execution-scenario compiler fixtures")
+val feePolicyCompilerClasspath =
+  taskKey[Seq[File]]("Immutable classpath for completed-JAR fee-policy compiler fixtures")
 
 ThisBuild / scalaVersion := scala3Version
 ThisBuild / version      := "0.1.0-SNAPSHOT"
@@ -33,9 +39,10 @@ lazy val root =
       application,
       runtime,
       instrumentEconomics,
+      risk,
       orderModel,
       executionScenario,
-      economics,
+      feePolicy,
       adversarialBoundary
     )
     .settings(
@@ -53,9 +60,10 @@ lazy val root =
             application / Test / test,
             runtime / Test / test,
             instrumentEconomics / Test / test,
+            risk / Test / test,
             orderModel / Test / test,
             executionScenario / Test / test,
-            economics / Test / test,
+            feePolicy / Test / test,
             adversarialBoundary / Test / test
           )
           .value
@@ -108,20 +116,19 @@ lazy val referenceData =
       )
     )
 
-lazy val economics =
+lazy val feePolicy =
   project
-    .in(file("economics"))
-    .dependsOn(instrumentEconomics, executionScenario)
+    .in(file("fee-policy"))
+    .dependsOn(quantities, instrumentEconomics, orderModel, executionScenario, risk % "test->compile")
     .settings(
-      name       := "trading-economics",
-      moduleName := "trading-economics",
+      name       := "trading-fee-policy",
+      moduleName := "trading-fee-policy",
 
       Compile / exportJars := true,
 
       Test / classLoaderLayeringStrategy := ClassLoaderLayeringStrategy.Flat,
-      // The root clean gate rebuilds reference-data between sequential module test tasks. Isolate this downstream test
-      // runner so it observes one completed dependency classpath instead of an in-process loader cached across
-      // rebuilds.
+      // The root clean gate rebuilds upstream artifacts between sequential module test tasks. Isolate this downstream
+      // runner so it observes one completed dependency classpath instead of an in-process loader cached across builds.
       Test / fork := true,
 
       libraryDependencies ++= Seq(
@@ -139,6 +146,27 @@ lazy val instrumentEconomics =
     .settings(
       name       := "trading-instrument-economics",
       moduleName := "trading-instrument-economics",
+
+      Compile / exportJars := true,
+
+      Test / classLoaderLayeringStrategy := ClassLoaderLayeringStrategy.Flat,
+      Test / fork                        := true,
+
+      libraryDependencies ++= Seq(
+        "org.typelevel"  %% "cats-core"        % catsVersion,
+        "org.scalameta"  %% "munit"            % "1.3.5"  % Test,
+        "org.scalacheck" %% "scalacheck"       % "1.20.0" % Test,
+        "org.scalameta"  %% "munit-scalacheck" % "1.3.0"  % Test
+      )
+    )
+
+lazy val risk =
+  project
+    .in(file("risk"))
+    .dependsOn(quantities, instrumentEconomics % "compile->compile;test->test")
+    .settings(
+      name       := "trading-risk",
+      moduleName := "trading-risk",
 
       Compile / exportJars := true,
 
@@ -242,7 +270,7 @@ lazy val benchmarks =
   project
     .in(file("benchmarks"))
     .enablePlugins(JmhPlugin)
-    .dependsOn(referenceData, application, runtime)
+    .dependsOn(referenceData, application, runtime, risk)
     .settings(
       name           := "trading-benchmarks",
       publish / skip := true
@@ -257,9 +285,10 @@ lazy val adversarialBoundary =
       application,
       runtime,
       instrumentEconomics,
+      risk,
       orderModel,
       executionScenario,
-      economics
+      feePolicy
     )
     .settings(
       name           := "trading-quantities-adversarial-boundary",
@@ -274,21 +303,23 @@ lazy val adversarialBoundary =
           (application / Compile / exportedProducts).value.files ++
           (runtime / Compile / exportedProducts).value.files ++
           (instrumentEconomics / Compile / exportedProducts).value.files ++
+          (risk / Compile / exportedProducts).value.files ++
           (orderModel / Compile / exportedProducts).value.files ++
           (executionScenario / Compile / exportedProducts).value.files ++
-          (economics / Compile / exportedProducts).value.files
+          (feePolicy / Compile / exportedProducts).value.files
         val quantitiesDependencies    = (quantities / Compile / externalDependencyClasspath).value.files
         val referenceDataDependencies = (referenceData / Compile / externalDependencyClasspath).value.files
         val applicationDependencies   = (application / Compile / externalDependencyClasspath).value.files
         val runtimeDependencies       = (runtime / Compile / externalDependencyClasspath).value.files
         val instrumentDependencies    = (instrumentEconomics / Compile / externalDependencyClasspath).value.files
+        val riskDependencies          = (risk / Compile / externalDependencyClasspath).value.files
         val orderDependencies         = (orderModel / Compile / externalDependencyClasspath).value.files
         val scenarioDependencies      = (executionScenario / Compile / externalDependencyClasspath).value.files
-        val economicsDependencies     = (economics / Compile / externalDependencyClasspath).value.files
+        val feePolicyDependencies     = (feePolicy / Compile / externalDependencyClasspath).value.files
         val compilerDependencies      = (Test / externalDependencyClasspath).value.files
         (moduleProducts ++ quantitiesDependencies ++ referenceDataDependencies ++ applicationDependencies ++
           runtimeDependencies ++ instrumentDependencies ++ orderDependencies ++ scenarioDependencies ++
-          economicsDependencies ++ compilerDependencies).distinct
+          riskDependencies ++ feePolicyDependencies ++ compilerDependencies).distinct
       },
       applicationBoundaryClasspath := {
         val products = (quantities / Compile / exportedProducts).value.files ++
@@ -315,6 +346,22 @@ lazy val adversarialBoundary =
         val dependencies = (runtime / Compile / externalDependencyClasspath).value.files
         (products ++ dependencies).distinct
       },
+      referenceDataCompilerClasspath := {
+        val moduleProducts = (quantities / Compile / exportedProducts).value.files ++
+          (referenceData / Compile / exportedProducts).value.files
+        val quantitiesDependencies = (quantities / Compile / externalDependencyClasspath).value.files
+        val referenceDependencies  = (referenceData / Compile / externalDependencyClasspath).value.files
+        val compilerDependencies   = (Test / externalDependencyClasspath).value.files.filter { file =>
+          val name = file.getName
+          name.startsWith("scala3-compiler_3-") ||
+          name.startsWith("scala3-interfaces-") ||
+          name.startsWith("tasty-core_3-") ||
+          name.startsWith("scala-asm-") ||
+          name.startsWith("compiler-interface-") ||
+          name.startsWith("util-interface-")
+        }
+        (moduleProducts ++ quantitiesDependencies ++ referenceDependencies ++ compilerDependencies).distinct
+      },
       instrumentEconomicsCompilerClasspath := {
         val moduleProducts = (quantities / Compile / exportedProducts).value.files ++
           (referenceData / Compile / exportedProducts).value.files ++
@@ -325,6 +372,27 @@ lazy val adversarialBoundary =
         val compilerDependencies   = (Test / externalDependencyClasspath).value.files
         (moduleProducts ++ quantitiesDependencies ++ referenceDependencies ++ instrumentDependencies ++
           compilerDependencies).distinct
+      },
+      riskCompilerClasspath := {
+        val moduleProducts = (quantities / Compile / exportedProducts).value.files ++
+          (referenceData / Compile / exportedProducts).value.files ++
+          (instrumentEconomics / Compile / exportedProducts).value.files ++
+          (risk / Compile / exportedProducts).value.files
+        val quantitiesDependencies = (quantities / Compile / externalDependencyClasspath).value.files
+        val referenceDependencies  = (referenceData / Compile / externalDependencyClasspath).value.files
+        val instrumentDependencies = (instrumentEconomics / Compile / externalDependencyClasspath).value.files
+        val riskDependencies       = (risk / Compile / externalDependencyClasspath).value.files
+        val compilerDependencies   = (Test / externalDependencyClasspath).value.files.filter { file =>
+          val name = file.getName
+          name.startsWith("scala3-compiler_3-") ||
+          name.startsWith("scala3-interfaces-") ||
+          name.startsWith("tasty-core_3-") ||
+          name.startsWith("scala-asm-") ||
+          name.startsWith("compiler-interface-") ||
+          name.startsWith("util-interface-")
+        }
+        (moduleProducts ++ quantitiesDependencies ++ referenceDependencies ++ instrumentDependencies ++
+          riskDependencies ++ compilerDependencies).distinct
       },
       orderModelCompilerClasspath := {
         val moduleProducts = (quantities / Compile / exportedProducts).value.files ++
@@ -354,6 +422,31 @@ lazy val adversarialBoundary =
         (moduleProducts ++ quantitiesDependencies ++ referenceDependencies ++ instrumentDependencies ++
           orderDependencies ++ scenarioDependencies ++ compilerDependencies).distinct
       },
+      feePolicyCompilerClasspath := {
+        val moduleProducts = (quantities / Compile / exportedProducts).value.files ++
+          (referenceData / Compile / exportedProducts).value.files ++
+          (instrumentEconomics / Compile / exportedProducts).value.files ++
+          (orderModel / Compile / exportedProducts).value.files ++
+          (executionScenario / Compile / exportedProducts).value.files ++
+          (feePolicy / Compile / exportedProducts).value.files
+        val quantitiesDependencies = (quantities / Compile / externalDependencyClasspath).value.files
+        val referenceDependencies  = (referenceData / Compile / externalDependencyClasspath).value.files
+        val instrumentDependencies = (instrumentEconomics / Compile / externalDependencyClasspath).value.files
+        val orderDependencies      = (orderModel / Compile / externalDependencyClasspath).value.files
+        val scenarioDependencies   = (executionScenario / Compile / externalDependencyClasspath).value.files
+        val feePolicyDependencies  = (feePolicy / Compile / externalDependencyClasspath).value.files
+        val compilerDependencies   = (Test / externalDependencyClasspath).value.files.filter { file =>
+          val name = file.getName
+          name.startsWith("scala3-compiler_3-") ||
+          name.startsWith("scala3-interfaces-") ||
+          name.startsWith("tasty-core_3-") ||
+          name.startsWith("scala-asm-") ||
+          name.startsWith("compiler-interface-") ||
+          name.startsWith("util-interface-")
+        }
+        (moduleProducts ++ quantitiesDependencies ++ referenceDependencies ++ instrumentDependencies ++
+          orderDependencies ++ scenarioDependencies ++ feePolicyDependencies ++ compilerDependencies).distinct
+      },
       Test / resourceGenerators += Def.task {
         val directory = (Test / resourceManaged).value
         val outputs   = Seq(
@@ -374,8 +467,20 @@ lazy val adversarialBoundary =
         Seq(output)
       }.taskValue,
       Test / resourceGenerators += Def.task {
+        val output    = (Test / resourceManaged).value / "reference-data-compiler.classpath"
+        val classpath = referenceDataCompilerClasspath.value.map(_.getAbsolutePath).mkString(java.io.File.pathSeparator)
+        IO.write(output, classpath)
+        Seq(output)
+      }.taskValue,
+      Test / resourceGenerators += Def.task {
         val output    = (Test / resourceManaged).value / "order-model-compiler.classpath"
         val classpath = orderModelCompilerClasspath.value.map(_.getAbsolutePath).mkString(java.io.File.pathSeparator)
+        IO.write(output, classpath)
+        Seq(output)
+      }.taskValue,
+      Test / resourceGenerators += Def.task {
+        val output    = (Test / resourceManaged).value / "risk-compiler.classpath"
+        val classpath = riskCompilerClasspath.value.map(_.getAbsolutePath).mkString(java.io.File.pathSeparator)
         IO.write(output, classpath)
         Seq(output)
       }.taskValue,
@@ -383,6 +488,12 @@ lazy val adversarialBoundary =
         val output    = (Test / resourceManaged).value / "execution-scenario-compiler.classpath"
         val classpath =
           executionScenarioCompilerClasspath.value.map(_.getAbsolutePath).mkString(java.io.File.pathSeparator)
+        IO.write(output, classpath)
+        Seq(output)
+      }.taskValue,
+      Test / resourceGenerators += Def.task {
+        val output    = (Test / resourceManaged).value / "fee-policy-compiler.classpath"
+        val classpath = feePolicyCompilerClasspath.value.map(_.getAbsolutePath).mkString(java.io.File.pathSeparator)
         IO.write(output, classpath)
         Seq(output)
       }.taskValue,

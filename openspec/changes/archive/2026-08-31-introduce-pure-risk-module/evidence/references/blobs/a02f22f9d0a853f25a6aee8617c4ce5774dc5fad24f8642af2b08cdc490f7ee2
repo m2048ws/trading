@@ -1,0 +1,93 @@
+schema: spec-driven
+context: |
+  Project: trading
+  Build: Scala 3 multi-module SBT
+
+  Current production modules:
+    - SBT ID: quantities
+      Directory: quantities
+      Artifact: trading-quantities
+      Primary package: trading.quantity
+    - SBT ID: referenceData
+      Directory: reference-data
+      Artifact: trading-reference-data
+      Primary package: trading.reference
+    - SBT ID: application
+      Directory: application
+      Artifact: trading-application
+      Primary package: trading.application
+    - SBT ID: runtime
+      Directory: runtime
+      Artifact: trading-runtime
+      Primary package: trading.runtime
+    - SBT ID: instrumentEconomics
+      Directory: instrument-economics
+      Artifact: trading-instrument-economics
+      Primary package: trading.economics.instrument
+    - SBT ID: orderModel
+      Directory: order-model
+      Artifact: trading-order-model
+      Primary package: trading.order
+    - SBT ID: executionScenario
+      Directory: execution-scenario
+      Artifact: trading-execution-scenario
+      Primary package: trading.scenario
+    - SBT ID: feePolicy
+      Directory: fee-policy
+      Artifact: trading-fee-policy
+      Primary package: trading.fee.policy
+    - SBT ID: risk
+      Directory: risk
+      Artifact: trading-risk
+      Primary package: trading.risk
+
+  Current test-only boundary:
+    SBT ID: adversarialBoundary
+    Directory: adversarial-boundary
+
+  Production package structure:
+    trading.quantity
+    trading.quantity.grid
+    trading.quantity.refinement
+    trading.quantity.algebra
+    trading.reference
+    trading.application
+    trading.economics.instrument
+    trading.order
+    trading.scenario
+    trading.fee.policy
+    trading.risk
+
+  Current scope includes exact dimension-safe quantities, anonymous uniform-grid
+  arithmetic and projection, checked refinements, runtime quantity identity,
+  stable reference-data handles, optional exact algebra, pure instrument
+  economics, immutable orders, hypothetical execution scenarios, downstream fee policy,
+  and constructive/exhaustive isolated-position risk sizing.
+
+  Reference data owns pure immutable catalog transitions and coherent snapshots;
+  application currently owns only the two-method effect-polymorphic LiveCatalog
+  port. Instrument economics owns assembly, static instruments, prices, market
+  state, fee values, valuation, and PnL. Runtime owns the concrete live-catalog
+  interpreter; boundary codecs remain future-owned.
+  Quantity-owned logical packing is absent until the boundary-codec change
+  restores durable reconstruction against immutable reference-data state.
+
+  The architecture charter is documented in docs/design-principles.md. Its
+  proposed target modules are not implemented merely because they are named.
+  Current transitional exceptions and proposal owners are recorded in
+  docs/architecture-charter-audit.md. Minimum build/runtime JDK: 25.
+isolation:
+  mode: worktree
+  root: .worktrees
+  branch_prefix: corgi/
+corgi:
+  tracking:
+    provider: github
+  contract: rfc-v1
+  rfcRoot: rfcs
+  foundation: RFC-0001-project-foundation
+  governance:
+    integrationBranch: origin/main
+installer:
+  version: 2
+  managed_at: '2026-08-29T19:30:09.485Z'

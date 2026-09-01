@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 3,
+  "groupId": "5",
+  "checks": [
+    {
+      "name": "canonical identity and policy-evaluation stages suppress dependent work and retain typed causes",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:fee-policy%2Fsrc%2Fmain%2Fscala%2Ftrading%2Ffee%2FAssessment.scala#sha256:adf536e821cb043d367f9c497c2f7867045d1776c392811bc87851f6488bd892",
+        "file:fee-policy%2Fsrc%2Ftest%2Fscala%2Ftrading%2Ffee%2FFeeAssessmentSuite.scala#sha256:dc37e2391cf1a8a9ab979321cee9c3724a0dc1fd001253df1d0f5ec83d27e81b",
+        "file:openspec%2Fchanges%2Fintroduce-pure-fee-policy-module%2Fimplementation-notes%2Ftask-group-5.md#sha256:c6c6925a33caabf548b9fff7c4de7c3665c8fe06dc4d568b9f589d2487473378"
+      ]
+    },
+    {
+      "name": "directive fee, denomination, and index failures accumulate independently in stable order",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:fee-policy%2Fsrc%2Fmain%2Fscala%2Ftrading%2Ffee%2FAssessment.scala#sha256:adf536e821cb043d367f9c497c2f7867045d1776c392811bc87851f6488bd892",
+        "file:fee-policy%2Fsrc%2Ftest%2Fscala%2Ftrading%2Ffee%2FFeeAssessmentSuite.scala#sha256:dc37e2391cf1a8a9ab979321cee9c3724a0dc1fd001253df1d0f5ec83d27e81b"
+      ]
+    },
+    {
+      "name": "scenario-owned existential attribution retains exact duplicate-coordinate slices and heterogeneous fee dimensions",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:fee-policy%2Fsrc%2Fmain%2Fscala%2Ftrading%2Ffee%2FAssessment.scala#sha256:adf536e821cb043d367f9c497c2f7867045d1776c392811bc87851f6488bd892",
+        "file:fee-policy%2Fsrc%2Ftest%2Fscala%2Ftrading%2Ffee%2FFeeAssessmentSuite.scala#sha256:dc37e2391cf1a8a9ab979321cee9c3724a0dc1fd001253df1d0f5ec83d27e81b",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Ffee-policy-compiler%2Fpositive%2FFeePolicyBoundaryClient.scala#sha256:b3c1cac2c28ad4bd165b59fab85c8c2c949b2a5f394cbfab42f2d0a5c9a22a75"
+      ]
+    },
+    {
+      "name": "JVM-private final attribution construction and completed-JAR guards reject arbitrary caller attachment",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Ffee-policy-compiler%2Fnegative%2FForgedAssessment.scala#sha256:970e376f48ce5c03035aef96e13fc87322a168154b420c087d617d9ff4493d11",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FEconomicsCompilerBoundarySuite.scala#sha256:49bffb5d348329a82143c76457122f8b73b4cb2377a651189a3175e56fa25d50",
+        "file:openspec%2Fchanges%2Fintroduce-pure-fee-policy-module%2Fimplementation-notes%2Ftask-group-5.md#sha256:c6c6925a33caabf548b9fff7c4de7c3665c8fe06dc4d568b9f589d2487473378"
+      ]
+    },
+    {
+      "name": "FeeLine, caller-selected source markets, reference reconciliation, and universal policy errors are absent",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:fee-policy%2Fsrc%2Fmain%2Fscala%2Ftrading%2Ffee%2Fpolicy%2FFeeOrchestration.scala#sha256:9490b32df629ca5ca3fc265651c3b1e6132c56358533919856fd3d50b4b7503b",
+        "file:fee-policy%2Fsrc%2Fmain%2Fscala%2Ftrading%2Ffee%2Fpolicy%2FError.scala#sha256:8c392001c201b6ebe1fa9c91c13c379b4a1827db60407aa95fddd715544c47b8",
+        "file:fee-policy%2Fsrc%2Ftest%2Fscala%2Ftrading%2FFeePolicyIntegrationSuite.scala#sha256:fa0fd528c5643b430e11746238c036fcaf73ca90e259f9b6425de2392a0abdd9",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FEconomicsCompilerBoundarySuite.scala#sha256:49bffb5d348329a82143c76457122f8b73b4cb2377a651189a3175e56fa25d50"
+      ]
+    },
+    {
+      "name": "formatting, 31-test fee-policy gate, 155-test adversarial gate, bytecode audit, and clean automated review",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:fee-policy%2Fsrc%2Ftest%2Fscala%2Ftrading%2Ffee%2FFeeAssessmentSuite.scala#sha256:dc37e2391cf1a8a9ab979321cee9c3724a0dc1fd001253df1d0f5ec83d27e81b",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FEconomicsCompilerBoundarySuite.scala#sha256:49bffb5d348329a82143c76457122f8b73b4cb2377a651189a3175e56fa25d50",
+        "file:openspec%2Fchanges%2Fintroduce-pure-fee-policy-module%2Fimplementation-notes%2Ftask-group-5.md#sha256:c6c6925a33caabf548b9fff7c4de7c3665c8fe06dc4d568b9f589d2487473378",
+        "file:memory%2Fsession-bridge.md#sha256:45bd0b69c96c64714135c8d61a44341ab535f44b848b4600c8efd81f71c5a8c6"
+      ]
+    }
+  ],
+  "automatedReview": {
+    "verdict": "pass",
+    "findings": []
+  },
+  "artifacts": [
+    "file:fee-policy%2Fsrc%2Fmain%2Fscala%2Ftrading%2Ffee%2FAssessment.scala#sha256:adf536e821cb043d367f9c497c2f7867045d1776c392811bc87851f6488bd892",
+    "file:fee-policy%2Fsrc%2Fmain%2Fscala%2Ftrading%2Ffee%2Fpolicy%2FFeeOrchestration.scala#sha256:9490b32df629ca5ca3fc265651c3b1e6132c56358533919856fd3d50b4b7503b",
+    "file:fee-policy%2Fsrc%2Fmain%2Fscala%2Ftrading%2Ffee%2Fpolicy%2FError.scala#sha256:8c392001c201b6ebe1fa9c91c13c379b4a1827db60407aa95fddd715544c47b8",
+    "file:fee-policy%2Fsrc%2Ftest%2Fscala%2Ftrading%2Ffee%2FFeeAssessmentSuite.scala#sha256:dc37e2391cf1a8a9ab979321cee9c3724a0dc1fd001253df1d0f5ec83d27e81b",
+    "file:fee-policy%2Fsrc%2Ftest%2Fscala%2Ftrading%2FFeePolicyIntegrationSuite.scala#sha256:fa0fd528c5643b430e11746238c036fcaf73ca90e259f9b6425de2392a0abdd9",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Ffee-policy-compiler%2Fnegative%2FForgedAssessment.scala#sha256:970e376f48ce5c03035aef96e13fc87322a168154b420c087d617d9ff4493d11",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Ffee-policy-compiler%2Fpositive%2FFeePolicyBoundaryClient.scala#sha256:b3c1cac2c28ad4bd165b59fab85c8c2c949b2a5f394cbfab42f2d0a5c9a22a75",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FEconomicsCompilerBoundarySuite.scala#sha256:49bffb5d348329a82143c76457122f8b73b4cb2377a651189a3175e56fa25d50",
+    "file:openspec%2Fchanges%2Fintroduce-pure-fee-policy-module%2Fimplementation-notes%2Ftask-group-5.md#sha256:c6c6925a33caabf548b9fff7c4de7c3665c8fe06dc4d568b9f589d2487473378",
+    "file:memory%2Fsession-bridge.md#sha256:45bd0b69c96c64714135c8d61a44341ab535f44b848b4600c8efd81f71c5a8c6"
+  ],
+  "summary": "Introduced canonical staged FeeAssessment with generic non-empty ordered violations and typed policy-cause locations; validated scenario and policy identity before evaluation; accumulated every directive fee, denomination, and index failure in stable order; and constructed ScenarioFees plus existential AssessedFee values only after full success. Exact indexed slices, including equal-looking duplicates and heterogeneous fee assets, are retained through JVM-private constructors. The provisional PnL bridge now consumes assessed fees, while FeeLine, caller-selected markets, reference-equality reconciliation, and the universal FeePolicyError surface are absent. Both formatting checks, 31 fee-policy tests, and all 155 adversarial/compiler tests pass. The automated review completed scope, AC-015, staged suppression, error provenance, scenario ownership, JVM construction authority, migration, architecture, complexity, security applicability, evidence, and checkpoint axes with no findings; it changed no file, triaged no finding, and is not canonical whole-change Verify or Human Review."
+}

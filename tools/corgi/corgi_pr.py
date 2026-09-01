@@ -233,6 +233,8 @@ class DeliveryStatus:
     change: str
     phase: str
     final_revision: str | None
+    integration_revision: str | None
+    review_approved: bool
     issue_id: int
     issue_url: str
     groups_complete: int
@@ -514,6 +516,128 @@ class Adapter:
             )
             return result_for("opened" if create else "synchronized", refreshed, head)
 
+    def sync_archived(self, change: str) -> dict[str, Any]:
+        """Recover publication after an archived Run removed its worktree.
+
+        This path owns no lifecycle repair. It accepts only the exact local
+        archive closeout commit proven by immutable archived evidence, then
+        performs the same fast-forward push and bounded draft-PR projection as
+        ordinary sync.
+        """
+
+        self.config.require_admitted(change)
+        if not self.config.authority.fast_forward_wip_push:
+            raise PilotError("push_not_authorized", "WIP push authority is disabled")
+        if not self.config.authority.draft_pr_create_or_update:
+            raise PilotError(
+                "draft_pr_not_authorized", "Draft PR authority is disabled"
+            )
+        with self.integration_lock():
+            branch = self.config.branch(change)
+            status, head, archive_root, manifest_hash = self.archived_status(
+                change, branch
+            )
+            prs = self.find_prs(branch)
+            pr = require_one_pr(prs, self.config, status, branch)
+            if pr.state != "OPEN":
+                raise PilotError("pr_not_open", f"PR #{pr.number} is {pr.state.lower()}")
+            if not pr.is_draft:
+                raise PilotError(
+                    "pr_not_draft", "Archived recovery may update only a draft PR"
+                )
+            self.require_archived_issue(status.issue_id)
+            self.fast_forward_push_ref(branch, head)
+            body = render_body(status, self.config, branch, head)
+            assert_safe_projection(body, self.root)
+            refreshed = require_one_pr(
+                self.find_prs(branch), self.config, status, branch
+            )
+            if refreshed.head_oid != head:
+                raise PilotError(
+                    "pr_head_stale",
+                    f"PR head is {refreshed.head_oid}, expected freshly pushed {head}",
+                )
+            if refreshed.body != body:
+                self.gh(
+                    "pr",
+                    "edit",
+                    str(refreshed.number),
+                    "--repo",
+                    self.config.repository,
+                    "--body",
+                    body,
+                )
+            confirmed = require_one_pr(
+                self.find_prs(branch), self.config, status, branch
+            )
+            if confirmed.head_oid != head or confirmed.body != body:
+                raise PilotError(
+                    "pr_sync_unconfirmed",
+                    "GitHub did not retain the exact archived head and bounded status",
+                )
+            return {
+                "operation": "archived-synchronized",
+                "pr": confirmed.number,
+                "url": confirmed.url,
+                "draft": confirmed.is_draft,
+                "head": head,
+                "archiveRoot": archive_root,
+                "evidenceManifest": manifest_hash,
+            }
+
+    def merge_archived(self, change: str, *, authorized: bool) -> dict[str, Any]:
+        """Merge an already-synchronized archive commit through immutable evidence."""
+
+        self.config.require_admitted(change)
+        if not authorized or not self.config.authority.merge:
+            raise PilotError(
+                "merge_not_authorized",
+                "Merge requires both explicit invocation and enabled authority",
+            )
+        with self.integration_lock():
+            branch = self.config.branch(change)
+            status, head, _, _ = self.archived_status(change, branch)
+            pr = require_one_pr(self.find_prs(branch), self.config, status, branch)
+            if pr.state != "OPEN":
+                raise PilotError("pr_not_open", f"PR #{pr.number} is {pr.state.lower()}")
+            if pr.is_draft:
+                raise PilotError("pr_is_draft", "PR must be explicitly marked ready first")
+            if pr.head_oid != head:
+                raise PilotError("pr_head_stale", "PR head does not match archive evidence")
+            self.require_archived_issue(status.issue_id)
+            self.require_dependencies_closed(status.issue_id)
+            detail = self.pr_detail(pr.number)
+            require_mergeable(
+                detail,
+                head,
+                canonical_review_approved=status.review_approved,
+            )
+            self.gh(
+                "pr",
+                "merge",
+                str(pr.number),
+                "--repo",
+                self.config.repository,
+                "--merge",
+                "--match-head-commit",
+                head,
+            )
+            refreshed = self.pr_detail(pr.number)
+            if (
+                refreshed.get("state") != "MERGED"
+                or refreshed.get("headRefOid") != head
+            ):
+                raise PilotError(
+                    "merge_unconfirmed", "GitHub did not confirm the exact archived merge"
+                )
+            return {
+                "operation": "archived-merged",
+                "pr": pr.number,
+                "url": pr.url,
+                "head": head,
+                "mergedAt": refreshed.get("mergedAt"),
+            }
+
     def publish_review(
         self,
         change: str,
@@ -562,13 +686,18 @@ class Adapter:
             )
         with self.integration_lock():
             status, pr, head = self.integration_identity(change)
-            if status.phase != "archiving" or status.final_revision != head:
+            if status.phase != "archiving" or status.integration_revision != head:
                 raise PilotError(
                     "ready_phase_invalid",
                     "Ready requires the locally materialized Archive head",
                 )
             self.require_dependencies_closed(status.issue_id)
-            require_review_and_checks(self.pr_detail(pr.number), head, allow_draft=True)
+            require_review_and_checks(
+                self.pr_detail(pr.number),
+                head,
+                allow_draft=True,
+                canonical_review_approved=status.review_approved,
+            )
             if not pr.is_draft:
                 return result_for("already-ready", pr, head)
             self.gh(
@@ -588,13 +717,17 @@ class Adapter:
             )
         with self.integration_lock():
             status, pr, head = self.integration_identity(change)
-            if status.phase != "archiving" or status.final_revision != head:
+            if status.phase != "archiving" or status.integration_revision != head:
                 raise PilotError("merge_phase_invalid", "Merge requires the Archive head")
             if pr.is_draft:
                 raise PilotError("pr_is_draft", "PR must be explicitly marked ready first")
             self.require_dependencies_closed(status.issue_id)
             detail = self.pr_detail(pr.number)
-            require_mergeable(detail, head)
+            require_mergeable(
+                detail,
+                head,
+                canonical_review_approved=status.review_approved,
+            )
             self.gh(
                 "pr",
                 "merge",
@@ -635,7 +768,12 @@ class Adapter:
                     "merge_not_confirmed", "Exact Corgi head is not confirmed merged"
                 )
             self.require_dependencies_closed(status.issue_id)
-            require_review_and_checks(detail, head, allow_draft=False)
+            require_review_and_checks(
+                detail,
+                head,
+                allow_draft=False,
+                canonical_review_approved=status.review_approved,
+            )
             resolved_token_file = inside(
                 self.root,
                 token_file if token_file.is_absolute() else self.root / token_file,
@@ -696,7 +834,13 @@ class Adapter:
         else:
             run = mapping(run_raw, "runContract")
             phase = required_string(run, "phase")
-            if phase not in OPEN_PHASES and phase != "archived":
+            # A repair successor already owns a real planning_ready Run. Claim
+            # explicitly opts into that phase; publication/finalization paths
+            # must continue to reject it until Apply has started.
+            if phase == "planning_ready":
+                if not allow_planning:
+                    raise PilotError("corgi_phase_invalid", f"Unsupported Corgi phase '{phase}'")
+            elif phase not in OPEN_PHASES and phase != "archived":
                 raise PilotError("corgi_phase_invalid", f"Unsupported Corgi phase '{phase}'")
         contract = mapping(raw.get("contract"), "contract")
         tracker = mapping(contract.get("tracker"), "contract.tracker")
@@ -730,16 +874,198 @@ class Adapter:
             isinstance(final_revision, str) and SHA_RE.fullmatch(final_revision)
         ):
             raise PilotError("corgi_status_invalid", "Corgi finalRevision is invalid")
+        integration_revision = final_revision
+        archive_raw = run.get("archive")
+        if isinstance(archive_raw, dict) and archive_raw.get("localCompleted") is True:
+            closeout_commit = archive_raw.get("closeoutCommit")
+            if not isinstance(closeout_commit, str) or not SHA_RE.fullmatch(
+                closeout_commit
+            ):
+                raise PilotError(
+                    "corgi_status_invalid",
+                    "Locally archived Corgi status lacks a valid closeout commit",
+                )
+            integration_revision = closeout_commit
+        review_raw = run.get("review")
+        review_approved = (
+            isinstance(review_raw, dict)
+            and review_raw.get("decision") == "approve"
+            and review_raw.get("finalRevision") == final_revision
+            and isinstance(review_raw.get("reviewer"), str)
+            and bool(str(review_raw.get("reviewer")).strip())
+        )
         return DeliveryStatus(
             raw=raw,
             change=change,
             phase=phase,
             final_revision=final_revision,
+            integration_revision=integration_revision,
+            review_approved=review_approved,
             issue_id=int(issue_raw),
             issue_url=issue_url,
             groups_complete=complete,
             groups_total=len(groups),
         )
+
+    def archived_status(
+        self, change: str, branch: str
+    ) -> tuple[DeliveryStatus, str, str, str]:
+        local_ref = f"refs/heads/{branch}"
+        head = self.git("rev-parse", "--verify", local_ref).stdout.strip()
+        if not SHA_RE.fullmatch(head):
+            raise PilotError("head_invalid", "Local archive branch head is invalid")
+        worktrees = parse_worktrees(
+            self.git("worktree", "list", "--porcelain").stdout
+        )
+        if any(item.branch == branch for item in worktrees):
+            raise PilotError(
+                "archived_worktree_present",
+                "Use ordinary sync while the delivery worktree is registered",
+            )
+        tree = self.git(
+            "ls-tree",
+            "-r",
+            "--name-only",
+            head,
+            "--",
+            "openspec/changes/archive",
+        ).stdout.splitlines()
+        binding_pattern = re.compile(
+            rf"^openspec/changes/archive/[^/]*{re.escape(change)}/evidence/run-binding\.json$"
+        )
+        bindings = [path for path in tree if binding_pattern.fullmatch(path)]
+        if len(bindings) != 1:
+            raise PilotError(
+                "archive_evidence_ambiguous",
+                f"Expected one archived run binding for '{change}', found {len(bindings)}",
+            )
+        binding_path = bindings[0]
+        archive_root = binding_path.removesuffix("/evidence/run-binding.json")
+        binding = mapping(
+            parse_json(
+                self.git("show", f"{head}:{binding_path}").stdout,
+                "archived run binding",
+            ),
+            "archived run binding",
+        )
+        if binding.get("schemaVersion") != 3 or binding.get("changeName") != change:
+            raise PilotError(
+                "archive_evidence_invalid", "Archived run binding identity is invalid"
+            )
+        final_revision = required_string(binding, "finalRevision")
+        if not SHA_RE.fullmatch(final_revision):
+            raise PilotError(
+                "archive_evidence_invalid", "Archived final revision is invalid"
+            )
+        contract = mapping(binding.get("contract"), "archived contract")
+        delivery_ref = required_string(contract, "deliveryRef")
+        tracker = mapping(contract.get("tracker"), "archived tracker")
+        if tracker.get("provider") != "github":
+            raise PilotError(
+                "tracker_not_github", "Archived recovery requires a GitHub binding"
+            )
+        issue = mapping(tracker.get("issue"), "archived tracker issue")
+        issue_raw = required_string(issue, "id")
+        if not issue_raw.isdigit() or int(issue_raw) <= 0:
+            raise PilotError("issue_invalid", "Archived Issue id is invalid")
+        issue_url = required_string(issue, "url")
+        expected_suffix = f"/{self.config.repository}/issues/{issue_raw}"
+        if not issue_url.startswith("https://github.com/") or not issue_url.endswith(
+            expected_suffix
+        ):
+            raise PilotError(
+                "issue_identity_mismatch", "Archived Issue URL is unexpected"
+            )
+        parents = self.git("rev-list", "--parents", "-n", "1", head).stdout.split()
+        if parents != [head, final_revision]:
+            raise PilotError(
+                "archive_commit_invalid",
+                "Archive closeout must be a direct child of the verified final revision",
+            )
+        subject = self.git("show", "-s", "--format=%s", head).stdout.strip()
+        if subject != f"chore(corgi): archive {delivery_ref}":
+            raise PilotError(
+                "archive_commit_invalid", "Archive closeout commit subject is invalid"
+            )
+        active_probe = self.git(
+            "ls-tree",
+            "--name-only",
+            head,
+            "--",
+            f"openspec/changes/{change}/.openspec.yaml",
+        ).stdout.strip()
+        if active_probe:
+            raise PilotError(
+                "archive_commit_invalid", "Archive branch still contains the active Change"
+            )
+        manifest_path = f"{archive_root}/evidence/manifest.json"
+        manifest = mapping(
+            parse_json(
+                self.git("show", f"{head}:{manifest_path}").stdout,
+                "archive evidence manifest",
+            ),
+            "archive evidence manifest",
+        )
+        manifest_hash = required_string(manifest, "manifestHash")
+        if not re.fullmatch(r"sha256:[0-9a-f]{64}", manifest_hash):
+            raise PilotError(
+                "archive_evidence_invalid", "Evidence manifest hash is invalid"
+            )
+        expected_manifest = {
+            "schemaVersion": 3,
+            "changeName": change,
+            "runId": required_string(binding, "runId"),
+            "finalRevision": final_revision,
+            "planningRevision": required_string(binding, "planningRevision"),
+            "sourceDigest": required_string(contract, "sourceDigest"),
+            "traceabilityDigest": required_string(contract, "traceabilityDigest"),
+        }
+        if any(manifest.get(key) != value for key, value in expected_manifest.items()):
+            raise PilotError(
+                "archive_evidence_invalid",
+                "Evidence manifest does not match the archived run binding",
+            )
+        review_path = f"{archive_root}/evidence/human-review.json"
+        review = mapping(
+            parse_json(
+                self.git("show", f"{head}:{review_path}").stdout,
+                "archived Human Review",
+            ),
+            "archived Human Review",
+        )
+        review_approved = (
+            review.get("decision") == "approve"
+            and review.get("finalRevision") == final_revision
+            and review.get("planningRevision") == binding.get("planningRevision")
+            and isinstance(review.get("reviewer"), str)
+            and bool(str(review.get("reviewer")).strip())
+        )
+        if not review_approved:
+            raise PilotError(
+                "archive_review_invalid",
+                "Archived Human Review does not approve the verified revision",
+            )
+        group_pattern = re.compile(
+            rf"^{re.escape(archive_root)}/evidence/groups/([1-9][0-9]*)/evidence\.json$"
+        )
+        groups = {match.group(1) for path in tree if (match := group_pattern.fullmatch(path))}
+        if not groups:
+            raise PilotError(
+                "archive_evidence_invalid", "Archived evidence contains no Task Groups"
+            )
+        status = DeliveryStatus(
+            raw={"archiveRoot": archive_root, "manifestHash": manifest_hash},
+            change=change,
+            phase="archived",
+            final_revision=final_revision,
+            integration_revision=head,
+            review_approved=True,
+            issue_id=int(issue_raw),
+            issue_url=issue_url,
+            groups_complete=len(groups),
+            groups_total=len(groups),
+        )
+        return status, head, archive_root, manifest_hash
 
     def git_identity(self, change: str) -> tuple[str, str]:
         branch, head = self.git_branch_identity(change)
@@ -792,6 +1118,60 @@ class Adapter:
         after = self.remote_sha(ref)
         if after != head:
             raise PilotError("push_unconfirmed", "Remote WIP branch does not match HEAD")
+
+    def fast_forward_push_ref(self, branch: str, head: str) -> None:
+        ref = f"refs/heads/{branch}"
+        local_ref = f"refs/heads/{branch}"
+        resolved = self.git("rev-parse", "--verify", local_ref).stdout.strip()
+        if resolved != head:
+            raise PilotError("head_changed", "Local archive branch changed during preflight")
+        before = self.remote_sha(ref)
+        if before:
+            self.git("fetch", "--no-tags", self.config.remote, ref)
+            fetched = self.git("rev-parse", "--verify", "FETCH_HEAD").stdout.strip()
+            if fetched != before:
+                raise PilotError("remote_changed", "Remote branch changed during preflight")
+            ancestry = self.git(
+                "merge-base", "--is-ancestor", before, head, accepted=(0, 1)
+            )
+            if ancestry.returncode != 0:
+                raise PilotError(
+                    "remote_diverged", "Remote WIP branch is not an ancestor of local HEAD"
+                )
+        self.git("push", self.config.remote, f"{local_ref}:{ref}")
+        after = self.remote_sha(ref)
+        if after != head:
+            raise PilotError("push_unconfirmed", "Remote WIP branch does not match HEAD")
+
+    def require_archived_issue(self, issue_id: int) -> None:
+        raw = mapping(
+            parse_json(
+                self.gh(
+                    "issue",
+                    "view",
+                    str(issue_id),
+                    "--repo",
+                    self.config.repository,
+                    "--json",
+                    "number,state,labels",
+                ).stdout,
+                "archived Issue",
+            ),
+            "archived Issue",
+        )
+        if raw.get("number") != issue_id or raw.get("state") != "CLOSED":
+            raise PilotError(
+                "archive_issue_invalid", "Archived recovery requires the closed bound Issue"
+            )
+        labels = raw.get("labels")
+        if not isinstance(labels, list) or "done" not in {
+            str(label.get("name") or "")
+            for label in labels
+            if isinstance(label, dict)
+        }:
+            raise PilotError(
+                "archive_issue_invalid", "Archived Issue lacks the done label"
+            )
 
     def remote_sha(self, ref: str) -> str | None:
         output = self.git("ls-remote", "--heads", self.config.remote, ref).stdout
@@ -945,6 +1325,11 @@ class Adapter:
             raise PilotError("pr_state_invalid", f"Unexpected PR state {pr.state}")
         if pr.head_oid != head:
             raise PilotError("pr_head_stale", "PR head does not match local HEAD")
+        if status.integration_revision != head:
+            raise PilotError(
+                "integration_head_stale",
+                "Local HEAD does not match the Corgi integration revision",
+            )
         return status, pr, head
 
     def require_dependencies_closed(self, issue_id: int) -> None:
@@ -1350,8 +1735,18 @@ def render_review_comment(
     return "\n".join(lines) + "\n"
 
 
-def require_mergeable(detail: dict[str, Any], head: str) -> None:
-    require_review_and_checks(detail, head, allow_draft=False)
+def require_mergeable(
+    detail: dict[str, Any],
+    head: str,
+    *,
+    canonical_review_approved: bool = False,
+) -> None:
+    require_review_and_checks(
+        detail,
+        head,
+        allow_draft=False,
+        canonical_review_approved=canonical_review_approved,
+    )
     if detail.get("mergeStateStatus") not in {"CLEAN", "HAS_HOOKS"}:
         raise PilotError(
             "pr_not_mergeable", "GitHub merge state is not clean at the exact head"
@@ -1359,14 +1754,21 @@ def require_mergeable(detail: dict[str, Any], head: str) -> None:
 
 
 def require_review_and_checks(
-    detail: dict[str, Any], head: str, *, allow_draft: bool
+    detail: dict[str, Any],
+    head: str,
+    *,
+    allow_draft: bool,
+    canonical_review_approved: bool = False,
 ) -> None:
     if detail.get("headRefOid") != head:
         raise PilotError("pr_head_stale", "PR head changed before the transition")
     if not allow_draft and detail.get("isDraft") is True:
         raise PilotError("pr_is_draft", "PR is still draft")
-    if detail.get("reviewDecision") != "APPROVED":
-        raise PilotError("review_missing", "GitHub review decision is not APPROVED")
+    if detail.get("reviewDecision") != "APPROVED" and not canonical_review_approved:
+        raise PilotError(
+            "review_missing",
+            "Neither GitHub nor canonical Corgi review approves the exact head",
+        )
     checks = detail.get("statusCheckRollup")
     if not isinstance(checks, list) or not checks:
         raise PilotError("checks_missing", "No final GitHub checks were reported")
@@ -1460,6 +1862,17 @@ def parser() -> argparse.ArgumentParser:
     for name in ("open", "sync"):
         command = commands.add_parser(name)
         command.add_argument("change")
+    sync_archived = commands.add_parser(
+        "sync-archived",
+        help="Recover exact archive-commit publication after worktree cleanup",
+    )
+    sync_archived.add_argument("change")
+    merge_archived = commands.add_parser(
+        "merge-archived",
+        help="Merge an exact archive commit using immutable Corgi evidence",
+    )
+    merge_archived.add_argument("change")
+    merge_archived.add_argument("--authorize-merge", action="store_true")
     review = commands.add_parser("review")
     review.add_argument("change")
     review.add_argument("--report", required=True)
@@ -1495,6 +1908,12 @@ def main(argv: Sequence[str] | None = None) -> int:
             )
         elif args.command in {"open", "sync"}:
             output = adapter.open_or_sync(args.change, create=args.command == "open")
+        elif args.command == "sync-archived":
+            output = adapter.sync_archived(args.change)
+        elif args.command == "merge-archived":
+            output = adapter.merge_archived(
+                args.change, authorized=args.authorize_merge
+            )
         elif args.command == "review":
             output = adapter.publish_review(
                 args.change, pathlib.Path(args.report), args.reviewed_sha
