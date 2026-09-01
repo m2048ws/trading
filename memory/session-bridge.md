@@ -15,24 +15,24 @@ updated: 2026-09-01
 - **Change**: introduce-versioned-boundary-codecs
 - **Worktree**: /Users/m/src/money/.worktrees/introduce-versioned-boundary-codecs
 - **Phase at Checkpoint**: applying
-- **Task Group at Checkpoint**: 9
-- **Observed Run Revision**: 10
-- **Last Verified HEAD**: 2efdf26833ee1aa0bac6be61c9c8eea9c7306df9
+- **Task Group at Checkpoint**: 10
+- **Observed Run Revision**: 11
+- **Last Verified HEAD**: c47480998d495257fa61f979c9ba56aa6b246ee7
 
-The phase and revision above are the required next checkpoint carried by Task Group 9. Live Run Contract authority
-remains `applying` at revision 9 until Corgi acknowledges that commit.
+The phase and revision above are the required next checkpoint carried by Task Group 10. Live Run Contract authority
+remains `applying` at revision 10 until Corgi acknowledges that commit.
 
 ## Next Action
-- Commit and acknowledge `introduce-versioned-boundary-codecs` Task Group 9, synchronize its draft PR, then implement
-  Task Group 10. Verify, Human Review, Human QA, and Archive remain separate gates.
+- Commit and acknowledge `introduce-versioned-boundary-codecs` Task Group 10, synchronize its draft PR, then implement
+  Task Group 11. Verify, Human Review, Human QA, and Archive remain separate gates.
 
 ## Blockers
 - none
 
 ## Uncommitted Work
-- Task Group 9's hypothetical scenario and round-trip codecs, typed reconstructed-order eliminator, retained additional
-  market conversions, staged preparation/validation failures, golden/property/model/compiler tests, and this next-state
-  checkpoint.
+- Task Group 10's named scenario collection limits, encoded grid/scenario all-valid-or-indexed-errors batches,
+  allocation- and stack-safe parser preflight, malformed/property robustness suite, separated codec JMH benchmarks,
+  completed-JAR/source audits, and this next-state checkpoint.
 
 ## Discoveries
 - The archived `establish-pure-instrument-economics` boundary was reconciled from commit `86613ee` before S-02
@@ -518,6 +518,26 @@ remains `applying` at revision 9 until Corgi acknowledges that commit.
   conversion and market construction, deterministic typed failure ordering, canonical scenario/round-trip delegation,
   omission boundaries, compiler authority, and linear traversal cost with no findings. It changed no file, triaged no
   finding, and is not canonical Verify or Human Review.
+- Scenario slices and additional market conversions now consume their dedicated named limits. Encoded general/asset
+  grid coordinates, order scenarios, and round trips expose shared linear all-valid-or-indexed-errors batch traversal:
+  oversized inputs fail once before record work, within-limit records retain zero-based failure/output order, and every
+  reconstruction receives exactly the caller-supplied immutable snapshot.
+- Strict JSON payload byte preflight now counts UTF-8 without allocating an encoded copy, and object/array descent plus
+  parser-context recovery are stack-safe. Arbitrary-input and mutation properties cover all seven published families;
+  controlled 2,048-level nesting completes without JVM recursion, while default depth, malformed syntax, duplicates,
+  unknown/null fields, Unicode, exact values, arrays, sums, and mixed failures remain typed and deterministic.
+- The shared non-published codec JMH benchmark records OpenJDK 26.0.2, no VM arguments, one thread, a 1,024-record
+  general-grid-coordinate V1 batch, a 351-byte payload, and a 128-digit coordinate. Its smoke run separately measured
+  parse, render, one live snapshot capture, pure parsed reconstruction, and combined decode/reconstruction; directional
+  results were 4.897, 31.673, 67.029, 22.663, and 0.018 ops/ms respectively.
+- The clean Group 10 matrix passes 1,018 tests: 601 quantities, 13 reference data, 9 application, 18 runtime, 13
+  instrument economics, 40 risk, 7 order model, 16 execution scenario, 89 boundary codec, 38 fee policy/integration,
+  and 174 completed-JAR/compiler/adversarial tests. Both formatting checks, JMH compilation/smoke, diff hygiene, and
+  the production source audit for live catalog, monitor, synchronization, and atomic references pass.
+- The automated Group 10 review checked exact Run/Group identity, limit ordering and identity, stable atomic batch
+  behavior, snapshot coherence, total malformed/deep/Unicode/exact-value handling, public/JAR dependency boundaries,
+  parser allocation/stack safety, benchmark separation, and performance/security applicability with no findings. It
+  changed no file, triaged no finding, and is not canonical Verify or Human Review.
 
 ## Promotion Queue
 - Review agent-configuration constraints before promoting any item to `memory/MEMORY.md`.
@@ -545,4 +565,7 @@ remains `applying` at revision 9 until Corgi acknowledges that commit.
   codec capability; no Group 8 discovery is independently eligible for permanent promotion.
 - Keep Group 9's frozen hypothetical scenario/round-trip records, associated typed replay, exact snapshot-backed market
   reconstruction, and omission/authority evidence until Archive proves the complete codec capability; no Group 9
+  discovery is independently eligible for permanent promotion.
+- Keep Group 10's operational-limit enforcement, robust stack-safe parsing, coherent atomic encoded batches, adversarial
+  properties, and separated codec benchmark evidence until Archive proves the complete codec capability; no Group 10
   discovery is independently eligible for permanent promotion.

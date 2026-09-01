@@ -2,6 +2,7 @@ package client
 
 import trading.codec.OrderScenarioRecord
 import trading.codec.RoundTripScenarioRecord
+import trading.codec.DecodeLimits
 import trading.economics.instrument.Instrument
 import trading.reference.CatalogSnapshot
 import trading.scenario.OrderScenario
@@ -17,6 +18,13 @@ object ScenarioRecordClient:
   def decode(input: String, instrument: Instrument, snapshot: CatalogSnapshot) =
     OrderScenarioRecord.decodeAndReconstruct(input, instrument, snapshot)
 
+  def decodeBatch(
+    inputs: Vector[String],
+    instrument: Instrument,
+    snapshot: CatalogSnapshot,
+    limits: DecodeLimits
+  ) = OrderScenarioRecord.reconstructBatch(inputs, instrument, snapshot, limits)
+
   def encode(
     instrument: Instrument,
     scenario: OrderScenario[
@@ -29,6 +37,13 @@ object ScenarioRecordClient:
 
   def reconstructTrip(record: RoundTripScenarioRecord.V1, instrument: Instrument, snapshot: CatalogSnapshot) =
     RoundTripScenarioRecord.reconstruct(record, instrument, snapshot)
+
+  def decodeTripBatch(
+    inputs: Vector[String],
+    instrument: Instrument,
+    snapshot: CatalogSnapshot,
+    limits: DecodeLimits
+  ) = RoundTripScenarioRecord.reconstructBatch(inputs, instrument, snapshot, limits)
 
   def encodeTrip(
     instrument: Instrument,

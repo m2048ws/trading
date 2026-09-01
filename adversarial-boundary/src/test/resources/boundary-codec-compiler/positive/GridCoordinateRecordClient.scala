@@ -4,6 +4,7 @@ import trading.codec.*
 import trading.quantity.Dim
 import trading.quantity.GridQuantity
 import trading.reference.Asset
+import trading.reference.CatalogSnapshot
 import trading.reference.GridHandle
 
 object GridCoordinateRecordClient:
@@ -34,5 +35,14 @@ object GridCoordinateRecordClient:
     _.toOption.map(generalCoordinate)
 
   val indexedFailure: IndexedGridCoordinateReconstructionFailure => Int =
+    _.recordIndex
+
+  def decodeGeneralBatch(inputs: Vector[String], snapshot: CatalogSnapshot, limits: DecodeLimits) =
+    GeneralGridCoordinateRecord.decodeAndReconstructBatch(inputs, snapshot, limits)
+
+  def decodeAssetBatch(inputs: Vector[String], snapshot: CatalogSnapshot, limits: DecodeLimits) =
+    AssetGridCoordinateRecord.decodeAndReconstructBatch(inputs, snapshot, limits)
+
+  val encodedIndexedFailure: IndexedGridCoordinateRecordReconstructionFailure => Int =
     _.recordIndex
 end GridCoordinateRecordClient

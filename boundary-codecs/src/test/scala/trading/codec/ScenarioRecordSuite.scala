@@ -269,6 +269,88 @@ final class ScenarioRecordSuite extends FunSuite:
         )) => ()
       case other => fail(s"expected canonical flat-position failure, got $other")
 
+  test("named scenario limits and encoded scenario batches are deterministic atomic and snapshot-coherent"):
+    val order = Order.market(instrument)(Side.Buy, lots10).toOption.get
+    val multi = OrderScenarioRecord.fromScenario(instrument)(
+      scenario(order)(
+        order.activation.evidence,
+        order.execution.resolution,
+        slice(4, 100, LiquidityRole.Taker, Vector(fixture.token -> Rational(3), fixture.rebate -> Rational(5))),
+        slice(6, 101, LiquidityRole.Taker)
+      )
+    )
+    val multiWire = OrderScenarioRecord.encode(multi).toOption.get
+
+    OrderScenarioRecord.parse(multiWire, limits(maxScenarioSlices = 1)).left.toOption.get.head match
+      case WireDecodeViolation.Limit(value) =>
+        assertEquals(value.limit, DecodeLimit.ScenarioSlices)
+        assertEquals(value.path.render, "$.payload.slices")
+      case other => fail(s"expected named scenario-slice limit, got $other")
+
+    OrderScenarioRecord.parse(multiWire, limits(maxMarketConversions = 1)).left.toOption.get.head match
+      case WireDecodeViolation.Limit(value) =>
+        assertEquals(value.limit, DecodeLimit.MarketConversions)
+        assertEquals(value.path.render, "$.payload.slices[0].market.additionalConversions")
+      case other => fail(s"expected named market-conversion limit, got $other")
+
+    val validWire   = OrderScenarioRecord.encode(simpleMarketRecord).toOption.get
+    val invalidWire = OrderScenarioRecord.encode(simpleMarketRecord.copy(slices = Vector.empty)).toOption.get
+    val successful  = OrderScenarioRecord
+      .reconstructBatch(Vector(validWire, validWire), instrument, fixture.snapshot)
+      .toOption
+      .get
+    assertEquals(successful.map(OrderScenarioRecord.fromScenario(instrument)),
+      Vector(simpleMarketRecord, simpleMarketRecord))
+
+    val failures = OrderScenarioRecord
+      .reconstructBatch(Vector(validWire, "not-json", invalidWire, validWire), instrument, fixture.snapshot)
+      .left
+      .toOption
+      .get
+      .toVector
+    assertEquals(failures.map(_.recordIndex), Vector(1, 2))
+    assert(failures.head.failure.isInstanceOf[OrderScenarioReconstructionFailure.Codec])
+    assert(failures.last.failure.isInstanceOf[OrderScenarioReconstructionFailure.Preparation])
+
+    OrderScenarioRecord
+      .reconstructBatch(Vector(validWire, "not-json"), instrument, fixture.snapshot, limits(maxBatchRecords = 1)) match
+      case Left(errors) =>
+        assertEquals(errors.toVector.size, 1)
+        errors.head.failure match
+          case OrderScenarioReconstructionFailure.Codec(violations) =>
+            violations.head match
+              case WireDecodeViolation.Limit(value) =>
+                assertEquals(value.limit, DecodeLimit.BatchRecords)
+                assertEquals(value.actual, 2L)
+              case other => fail(s"expected one pre-record batch limit, got $other")
+          case other => fail(s"expected codec-stage batch limit, got $other")
+      case other => fail(s"oversized scenario batch must fail before record work, got $other")
+
+    val trip = RoundTripScenario
+      .create(instrument)(simpleMarketScenario(Side.Buy, 100), simpleMarketScenario(Side.Sell, 102))
+      .toOption
+      .get
+    val tripWire     = RoundTripScenarioRecord.encodeScenario(instrument)(trip).toOption.get
+    val tripFailures = RoundTripScenarioRecord
+      .reconstructBatch(Vector(tripWire, "not-json", tripWire), instrument, fixture.snapshot)
+      .left
+      .toOption
+      .get
+      .toVector
+    assertEquals(tripFailures.map(_.recordIndex), Vector(1))
+    assert(tripFailures.head.failure.isInstanceOf[RoundTripScenarioReconstructionFailure.Codec])
+    RoundTripScenarioRecord
+      .reconstructBatch(Vector(tripWire, "not-json"), instrument, fixture.snapshot, limits(maxBatchRecords = 1)) match
+      case Left(errors) =>
+        assertEquals(errors.toVector.size, 1)
+        errors.head.failure match
+          case RoundTripScenarioReconstructionFailure.Codec(violations) =>
+            violations.head match
+              case WireDecodeViolation.Limit(value) => assertEquals(value.limit, DecodeLimit.BatchRecords)
+              case other                            => fail(s"expected round-trip batch limit, got $other")
+          case other => fail(s"expected round-trip codec-stage batch limit, got $other")
+      case other => fail(s"oversized round-trip batch must fail before record work, got $other")
+
   test("schemas encode hypothetical assumptions only and omit execution fee PnL and lifecycle facts"):
     val scenarioSchema = OrderScenarioRecord.schema().toOption.get
     val tripSchema     = RoundTripScenarioRecord.schema().toOption.get
@@ -415,6 +497,29 @@ final class ScenarioRecordSuite extends FunSuite:
     value match
       case OrderScenarioRecord.PricingResolution.Direct    => ScenarioEvidenceShape.DirectPricing
       case _: OrderScenarioRecord.PricingResolution.Pegged => ScenarioEvidenceShape.PeggedPricing
+
+  private def limits(
+    maxBatchRecords: Int = 10_000,
+    maxScenarioSlices: Int = 10_000,
+    maxMarketConversions: Int = 1_024
+  ): DecodeLimits =
+    DecodeLimits
+      .create(
+        maxPayloadCharacters = 1_000_000,
+        maxPayloadUtf8Bytes = 4_000_000,
+        maxNestingDepth = 32,
+        maxBatchRecords = maxBatchRecords,
+        maxObjectMembers = 128,
+        maxArrayEntries = 10_000,
+        maxStringCharacters = 4_096,
+        maxIntegerDigits = 4_096,
+        maxDimensionFactors = 256,
+        maxCatalogCommands = 10_000,
+        maxScenarioSlices = maxScenarioSlices,
+        maxMarketConversions = maxMarketConversions
+      )
+      .toOption
+      .get
 
   private def rejectSerialization(value: AnyRef): Unit =
     val output = ByteArrayOutputStream()

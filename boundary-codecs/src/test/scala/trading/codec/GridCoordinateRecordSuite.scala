@@ -101,9 +101,10 @@ class GridCoordinateRecordSuite extends FunSuite:
     val secondGrid = snapshot.resolveGrid(asset.dimension)(second.key).toOption.get
     val coordinate = BigInt(10).pow(500) + 123
     val record     = AssetGridCoordinateRecord.pack(asset)(firstGrid)(firstGrid.fromCoordinate(coordinate))
+    val wire       = AssetGridCoordinateRecord.encode(record).toOption.get
 
     assertEquals(record, AssetGridCoordinateRecord.V1(asset.id, first, coordinate))
-    assertEquals(AssetGridCoordinateRecord.parse(AssetGridCoordinateRecord.encode(record).toOption.get), Right(record))
+    assertEquals(AssetGridCoordinateRecord.parse(wire), Right(record))
     val decoded = AssetGridCoordinateRecord.reconstruct(record, snapshot).toOption.get
     assert(decoded.asset.eq(asset))
     assert(decoded.grid.eq(firstGrid))
@@ -112,6 +113,24 @@ class GridCoordinateRecordSuite extends FunSuite:
     assertEquals(decoded.grid.quantum.unrefined, Rational(1, 100))
     assertEquals(decoded.grid.coordinate(decoded.value), coordinate)
     assertEquals(decoded.grid.asQuantity(decoded.value).coefficient, Rational(coordinate, BigInt(100)))
+    assertEquals(
+      AssetGridCoordinateRecord
+        .decodeAndReconstructBatch(Vector(wire, wire), snapshot)
+        .toOption
+        .get
+        .map(value => value.grid.coordinate(value.value)),
+      Vector(coordinate, coordinate)
+    )
+    AssetGridCoordinateRecord.decodeAndReconstructBatch(Vector(wire, "not-json"), snapshot, limits(1)) match
+      case Left(errors) =>
+        assertEquals(errors.toVector.size, 1)
+        errors.head.failure match
+          case GridCoordinateRecordReconstructionFailure.Codec(violations) =>
+            violations.head match
+              case WireDecodeViolation.Limit(value) => assertEquals(value.limit, DecodeLimit.BatchRecords)
+              case other                            => fail(s"expected asset batch limit, got $other")
+          case other => fail(s"expected asset codec-stage batch limit, got $other")
+      case other => fail(s"oversized asset batch must fail before record work, got $other")
     rejectSerialization(decoded)
 
   test("snapshot reconstruction reports dimension, asset, mismatch, and full-grid stages without fallback"):
@@ -209,6 +228,45 @@ class GridCoordinateRecordSuite extends FunSuite:
     )
     failures.toVector.foreach(rejectSerialization)
 
+    val firstWire      = GeneralGridCoordinateRecord.encode(first).toOption.get
+    val secondWire     = GeneralGridCoordinateRecord.encode(second).toOption.get
+    val encodedSuccess = GeneralGridCoordinateRecord
+      .decodeAndReconstructBatch(Vector(firstWire, secondWire), snapshot)
+      .toOption
+      .get
+    assertEquals(
+      encodedSuccess.map(value => value.grid.coordinate(value.value)),
+      Vector(BigInt(-3), BigInt(0))
+    )
+
+    val absentWire = GeneralGridCoordinateRecord
+      .encode(GeneralGridCoordinateRecord.V1(absentGrid, BigInt(2)))
+      .toOption
+      .get
+    val encodedFailures = GeneralGridCoordinateRecord
+      .decodeAndReconstructBatch(Vector(firstWire, "not-json", absentWire, secondWire), snapshot)
+      .left
+      .toOption
+      .get
+      .toVector
+    assertEquals(encodedFailures.map(_.recordIndex), Vector(1, 2))
+    assert(encodedFailures.head.failure.isInstanceOf[GridCoordinateRecordReconstructionFailure.Codec])
+    assert(encodedFailures.last.failure.isInstanceOf[GridCoordinateRecordReconstructionFailure.Snapshot])
+
+    GeneralGridCoordinateRecord
+      .decodeAndReconstructBatch(Vector(firstWire, "not-json"), snapshot, limits(maxBatchRecords = 1)) match
+      case Left(errors) =>
+        assertEquals(errors.toVector.size, 1)
+        errors.head.failure match
+          case GridCoordinateRecordReconstructionFailure.Codec(violations) =>
+            violations.head match
+              case WireDecodeViolation.Limit(value) =>
+                assertEquals(value.limit, DecodeLimit.BatchRecords)
+                assertEquals(value.actual, 2L)
+              case other => fail(s"expected one pre-record batch limit, got $other")
+          case other => fail(s"expected codec-stage batch limit, got $other")
+      case other => fail(s"oversized encoded batch must fail before record work, got $other")
+
   test("family codecs retain typed field paths, reject cross-family envelopes, and omit copied quantum"):
     val missingCoordinate =
       """{"payload":{"gridIdentity":{"dimension":[],"gridId":"g","gridVersion":"1"}},"recordType":"trading.general-grid-coordinate","schemaVersion":1}"""
@@ -284,6 +342,25 @@ class GridCoordinateRecordSuite extends FunSuite:
       value => value
     )
     GridDefinition(identity, quantum)
+
+  private def limits(maxBatchRecords: Int): DecodeLimits =
+    DecodeLimits
+      .create(
+        maxPayloadCharacters = 1_000_000,
+        maxPayloadUtf8Bytes = 4_000_000,
+        maxNestingDepth = 32,
+        maxBatchRecords = maxBatchRecords,
+        maxObjectMembers = 128,
+        maxArrayEntries = 10_000,
+        maxStringCharacters = 4_096,
+        maxIntegerDigits = 4_096,
+        maxDimensionFactors = 256,
+        maxCatalogCommands = 10_000,
+        maxScenarioSlices = 10_000,
+        maxMarketConversions = 1_024
+      )
+      .toOption
+      .get
 
   private def rejectSerialization(value: JavaSerializationUnsupported): Unit =
     val bytes  = new ByteArrayOutputStream

@@ -1,6 +1,8 @@
 package trading.codec
 
-import java.nio.charset.StandardCharsets
+import scala.util.control.TailCalls.TailRec
+import scala.util.control.TailCalls.done
+import scala.util.control.TailCalls.tailcall
 import scala.util.matching.Regex
 
 import tools.jackson.core.JacksonException
@@ -34,7 +36,7 @@ private[codec] object StrictJson:
         if first == null then
           Left(WireViolations.one(syntax(SyntaxProblem.EmptyInput, SyntaxLocation.unknown, recordIndex)))
         else
-          readValue(parser, first, WirePath.root, depth = 0, limits, recordIndex).flatMap: root =>
+          readValue(parser, first, WirePath.root, depth = 0, limits, recordIndex).result.flatMap: root =>
             val trailing = parser.nextToken()
             if trailing == null then Right(root)
             else
@@ -87,7 +89,7 @@ private[codec] object StrictJson:
             )
           )
         else
-          val bytes = input.getBytes(StandardCharsets.UTF_8).length.toLong
+          val bytes = utf8Length(input)
           if bytes > limits.maxPayloadUtf8Bytes then
             Left(
               WireViolations.one(
@@ -122,6 +124,7 @@ private[codec] object StrictJson:
     JsonReadFeature.values().foreach(feature => builder.disable(feature))
     builder.build()
 
+  /** Trampoline nested containers so a larger explicit depth profile never consumes the JVM call stack. */
   private def readValue(
     parser: JsonParser,
     token: JsonToken,
@@ -129,30 +132,34 @@ private[codec] object StrictJson:
     depth: Int,
     limits: DecodeLimits,
     recordIndex: Int
-  ): Either[WireViolations[WireDecodeViolation], JsonNode] =
+  ): TailRec[Either[WireViolations[WireDecodeViolation], JsonNode]] =
     val at = location(parser.currentTokenLocation())
     token match
       case JsonToken.START_OBJECT =>
-        checkDepth(depth + 1, path, limits, recordIndex).flatMap: _ =>
-          readObject(parser, path, depth + 1, at, limits, recordIndex)
+        checkDepth(depth + 1, path, limits, recordIndex) match
+          case Left(errors) => done(Left(errors))
+          case Right(_)     => tailcall(readObject(parser, path, depth + 1, at, limits, recordIndex))
       case JsonToken.START_ARRAY =>
-        checkDepth(depth + 1, path, limits, recordIndex).flatMap: _ =>
-          readArray(parser, path, depth + 1, at, limits, recordIndex)
+        checkDepth(depth + 1, path, limits, recordIndex) match
+          case Left(errors) => done(Left(errors))
+          case Right(_)     => tailcall(readArray(parser, path, depth + 1, at, limits, recordIndex))
       case JsonToken.VALUE_STRING =>
         val value = parser.getString()
-        checkString(value, path, at, limits, recordIndex).map: _ =>
-          JsonNode(JsonValue.JString(value), at)
+        done(checkString(value, path, at, limits, recordIndex).map: _ =>
+          JsonNode(JsonValue.JString(value), at))
       case JsonToken.VALUE_NUMBER_INT | JsonToken.VALUE_NUMBER_FLOAT =>
         val raw    = parser.getString()
         val digits = raw.count(_.isDigit).toLong
         if digits > limits.maxIntegerDigits then
-          Left(WireViolations.one(limit(DecodeLimit.IntegerDigits, digits, limits.maxIntegerDigits, path, recordIndex)))
-        else Right(JsonNode(JsonValue.JNumber(raw), at))
-      case JsonToken.VALUE_TRUE  => Right(JsonNode(JsonValue.JBoolean(true), at))
-      case JsonToken.VALUE_FALSE => Right(JsonNode(JsonValue.JBoolean(false), at))
-      case JsonToken.VALUE_NULL  => Right(JsonNode(JsonValue.JNull, at))
+          done(Left(WireViolations.one(
+            limit(DecodeLimit.IntegerDigits, digits, limits.maxIntegerDigits, path, recordIndex)
+          )))
+        else done(Right(JsonNode(JsonValue.JNumber(raw), at)))
+      case JsonToken.VALUE_TRUE  => done(Right(JsonNode(JsonValue.JBoolean(true), at)))
+      case JsonToken.VALUE_FALSE => done(Right(JsonNode(JsonValue.JBoolean(false), at)))
+      case JsonToken.VALUE_NULL  => done(Right(JsonNode(JsonValue.JNull, at)))
       case _                     =>
-        Left(
+        done(Left(
           WireViolations.one(
             WireDecodeViolation.Syntax(
               SyntaxProblem.MalformedJson(s"unexpected token ${token.toString}"),
@@ -161,7 +168,7 @@ private[codec] object StrictJson:
               recordIndex
             )
           )
-        )
+        ))
     end match
   end readValue
 
@@ -172,17 +179,16 @@ private[codec] object StrictJson:
     at: SyntaxLocation,
     limits: DecodeLimits,
     recordIndex: Int
-  ): Either[WireViolations[WireDecodeViolation], JsonNode] =
+  ): TailRec[Either[WireViolations[WireDecodeViolation], JsonNode]] =
     val fields = Vector.newBuilder[JsonField]
-    var count  = 0
-    var token  = parser.nextToken()
-    while token != JsonToken.END_OBJECT do
-      if token == null then
-        return Left(
+    def loop(count: Int, token: JsonToken | Null): TailRec[Either[WireViolations[WireDecodeViolation], JsonNode]] =
+      if token == JsonToken.END_OBJECT then done(Right(JsonNode(JsonValue.JObject(fields.result()), at)))
+      else if token == null then
+        done(Left(
           WireViolations.one(syntax(SyntaxProblem.UnexpectedEnd, location(parser.currentLocation()), recordIndex, path))
-        )
-      if token != JsonToken.PROPERTY_NAME then
-        return Left(
+        ))
+      else if token != JsonToken.PROPERTY_NAME then
+        done(Left(
           WireViolations.one(
             WireDecodeViolation.Syntax(
               SyntaxProblem.MalformedJson(s"expected property name, found ${token.toString}"),
@@ -191,31 +197,37 @@ private[codec] object StrictJson:
               recordIndex
             )
           )
-        )
-      val name         = parser.currentName()
-      val nameLocation = location(parser.currentTokenLocation())
-      val fieldPath    = path.field(name)
-      checkString(name, fieldPath, nameLocation, limits, recordIndex) match
-        case Left(errors) => return Left(errors)
-        case Right(_)     => ()
-      count += 1
-      if count > limits.maxObjectMembers then
-        return Left(
-          WireViolations.one(
-            limit(DecodeLimit.ObjectMembers, count.toLong, limits.maxObjectMembers, path, recordIndex)
-          )
-        )
-      val valueToken = parser.nextToken()
-      if valueToken == null then
-        return Left(WireViolations.one(
-          syntax(SyntaxProblem.UnexpectedEnd, location(parser.currentLocation()), recordIndex, fieldPath)
         ))
-      readValue(parser, valueToken, fieldPath, depth, limits, recordIndex) match
-        case Left(errors) => return Left(errors)
-        case Right(value) => fields += JsonField(name, nameLocation, value)
-      token = parser.nextToken()
-    end while
-    Right(JsonNode(JsonValue.JObject(fields.result()), at))
+      else
+        val name         = parser.currentName()
+        val nameLocation = location(parser.currentTokenLocation())
+        val fieldPath    = path.field(name)
+        checkString(name, fieldPath, nameLocation, limits, recordIndex) match
+          case Left(errors) => done(Left(errors))
+          case Right(_)     =>
+            val nextCount = count + 1
+            if nextCount > limits.maxObjectMembers then
+              done(Left(
+                WireViolations.one(
+                  limit(DecodeLimit.ObjectMembers, nextCount.toLong, limits.maxObjectMembers, path, recordIndex)
+                )
+              ))
+            else
+              val valueToken = parser.nextToken()
+              if valueToken == null then
+                done(Left(WireViolations.one(
+                  syntax(SyntaxProblem.UnexpectedEnd, location(parser.currentLocation()), recordIndex, fieldPath)
+                )))
+              else
+                readValue(parser, valueToken, fieldPath, depth, limits, recordIndex).flatMap:
+                  case Left(errors) => done(Left(errors))
+                  case Right(value) =>
+                    fields += JsonField(name, nameLocation, value)
+                    tailcall(loop(nextCount, parser.nextToken()))
+        end match
+    end loop
+
+    tailcall(loop(0, parser.nextToken()))
   end readObject
 
   private def readArray(
@@ -225,28 +237,44 @@ private[codec] object StrictJson:
     at: SyntaxLocation,
     limits: DecodeLimits,
     recordIndex: Int
-  ): Either[WireViolations[WireDecodeViolation], JsonNode] =
+  ): TailRec[Either[WireViolations[WireDecodeViolation], JsonNode]] =
     val values = Vector.newBuilder[JsonNode]
-    var index  = 0
-    var token  = parser.nextToken()
-    while token != JsonToken.END_ARRAY do
-      if token == null then
-        return Left(
+    def loop(index: Int, token: JsonToken | Null): TailRec[Either[WireViolations[WireDecodeViolation], JsonNode]] =
+      if token == JsonToken.END_ARRAY then done(Right(JsonNode(JsonValue.JArray(values.result()), at)))
+      else if token == null then
+        done(Left(
           WireViolations.one(syntax(SyntaxProblem.UnexpectedEnd, location(parser.currentLocation()), recordIndex, path))
-        )
-      if index >= limits.maxArrayEntries then
-        return Left(
+        ))
+      else if index >= limits.maxArrayEntries then
+        done(Left(
           WireViolations.one(
             limit(DecodeLimit.ArrayEntries, index.toLong + 1L, limits.maxArrayEntries, path, recordIndex)
           )
-        )
-      readValue(parser, token, path.index(index), depth, limits, recordIndex) match
-        case Left(errors) => return Left(errors)
-        case Right(value) => values += value
-      index += 1
-      token = parser.nextToken()
-    Right(JsonNode(JsonValue.JArray(values.result()), at))
+        ))
+      else
+        readValue(parser, token, path.index(index), depth, limits, recordIndex).flatMap:
+          case Left(errors) => done(Left(errors))
+          case Right(value) =>
+            values += value
+            tailcall(loop(index + 1, parser.nextToken()))
+    end loop
+
+    tailcall(loop(0, parser.nextToken()))
   end readArray
+
+  private def utf8Length(value: String): Long =
+    var index = 0
+    var bytes = 0L
+    while index < value.length do
+      val codePoint = value.codePointAt(index)
+      bytes += (
+        if codePoint <= 0x7f then 1L
+        else if codePoint <= 0x7ff then 2L
+        else if codePoint <= 0xffff then 3L
+        else 4L
+      )
+      index += Character.charCount(codePoint)
+    bytes
 
   private def checkDepth(
     depth: Int,
@@ -302,15 +330,15 @@ private[codec] object StrictJson:
     WireDecodeViolation.Syntax(problem, location(failure.getLocation()), exactPath, recordIndex)
 
   private def contextPath(context: TokenStreamContext): WirePath =
-    def segments(current: TokenStreamContext | Null): Vector[WirePathSegment] =
-      if current == null || current.inRoot() then Vector.empty
-      else
-        val prefix = segments(current.getParent())
-        if current.inObject() && current.hasCurrentName() then prefix :+ WirePathSegment.field(current.currentName())
-        else if current.inArray() && current.hasCurrentIndex() then
-          prefix :+ WirePathSegment.index(current.getCurrentIndex())
-        else prefix
-    segments(context).foldLeft(WirePath.root):
+    val reversed = Vector.newBuilder[WirePathSegment]
+    var current  = context
+    while current != null && !current.inRoot() do
+      if current.inObject() && current.hasCurrentName() then
+        reversed += WirePathSegment.field(current.currentName())
+      else if current.inArray() && current.hasCurrentIndex() then
+        reversed += WirePathSegment.index(current.getCurrentIndex())
+      current = current.getParent()
+    reversed.result().reverse.foldLeft(WirePath.root):
       case (path, segment) =>
         segment.fieldName match
           case Some(name) => path.field(name)

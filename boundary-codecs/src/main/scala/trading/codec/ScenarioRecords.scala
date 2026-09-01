@@ -116,6 +116,15 @@ enum OrderScenarioReconstructionFailure extends JavaSerializationUnsupported:
       case Validation(violations) => Objects.requireNonNull(violations, "scenario validation violations")
 end OrderScenarioReconstructionFailure
 
+/** One indexed hypothetical-scenario failure in an atomic encoded batch. */
+final case class IndexedOrderScenarioReconstructionFailure(
+  recordIndex: Int,
+  failure: OrderScenarioReconstructionFailure)
+  extends JavaSerializationUnsupported:
+  require(recordIndex >= 0, "scenario record index must be nonnegative")
+  Objects.requireNonNull(failure, "indexed scenario reconstruction failure")
+end IndexedOrderScenarioReconstructionFailure
+
 /** One failed entry/exit branch in stable leg order. */
 final case class RoundTripLegReconstructionFailure(
   leg: RoundTripLeg,
@@ -188,6 +197,15 @@ enum RoundTripScenarioReconstructionFailure extends JavaSerializationUnsupported
       case Legs(failures)    => Objects.requireNonNull(failures, "round-trip leg failures")
       case Validation(cause) => Objects.requireNonNull(cause, "round-trip validation failure")
 end RoundTripScenarioReconstructionFailure
+
+/** One indexed round-trip failure in an atomic encoded batch. */
+final case class IndexedRoundTripScenarioReconstructionFailure(
+  recordIndex: Int,
+  failure: RoundTripScenarioReconstructionFailure)
+  extends JavaSerializationUnsupported:
+  require(recordIndex >= 0, "round-trip record index must be nonnegative")
+  Objects.requireNonNull(failure, "indexed round-trip reconstruction failure")
+end IndexedRoundTripScenarioReconstructionFailure
 
 /** Frozen stable assumptions for one complete hypothetical order scenario. */
 object OrderScenarioRecord:
@@ -346,7 +364,7 @@ object OrderScenarioRecord:
         .product(
           WireRecord.field(
             "additionalConversions",
-            WireSchema.vector(additionalConversionSchema)
+            WireSchema.vector(additionalConversionSchema, DecodeLimit.MarketConversions)
           )
         )
         .imap(value => Market(value._1._1._1, value._1._1._2, value._1._2, value._2))(value =>
@@ -371,7 +389,7 @@ object OrderScenarioRecord:
         .field("order", OrderRecord.v1Schema)
         .product(WireRecord.field("activationEvidence", activationEvidenceSchema))
         .product(WireRecord.field("pricingResolution", pricingResolutionSchema))
-        .product(WireRecord.field("slices", WireSchema.vector(sliceSchema)))
+        .product(WireRecord.field("slices", WireSchema.vector(sliceSchema, DecodeLimit.ScenarioSlices)))
         .imap(value => V1(value._1._1._1, value._1._1._2, value._1._2, value._2))(value =>
           (((value.order, value.activationEvidence), value.pricingResolution), value.slices)
         )
@@ -516,6 +534,31 @@ object OrderScenarioRecord:
       .left
       .map(OrderScenarioReconstructionFailure.Codec.apply)
       .flatMap(record => reconstruct(record, instrument, snapshot))
+
+  /** Decode every independent record against one instrument and one captured snapshot, with no partial success. */
+  def reconstructBatch[I <: Instrument](
+    inputs: Vector[String],
+    instrument: I,
+    snapshot: CatalogSnapshot,
+    limits: DecodeLimits = DecodeLimits.default
+  ): Either[
+    WireViolations[IndexedOrderScenarioReconstructionFailure],
+    Vector[
+      OrderScenario[
+        instrument.roles.position.D,
+        instrument.roles.base.D,
+        instrument.roles.quote.D,
+        instrument.MarketState
+      ]
+    ]
+  ] =
+    val _               = Objects.requireNonNull(instrument, "scenario batch instrument")
+    val checkedSnapshot = Objects.requireNonNull(snapshot, "scenario batch catalog snapshot")
+    AllOrErrorsBatch.decode(inputs, limits, "order-scenario")(
+      OrderScenarioReconstructionFailure.Codec.apply,
+      IndexedOrderScenarioReconstructionFailure.apply
+    )((input, index) => decodeAndReconstruct(input, instrument, checkedSnapshot, limits, index))
+  end reconstructBatch
 
   def schema(
     id: String = "urn:trading:codec:schema:order-scenario:v1",
@@ -1039,6 +1082,31 @@ object RoundTripScenarioRecord:
       .left
       .map(RoundTripScenarioReconstructionFailure.Codec.apply)
       .flatMap(record => reconstruct(record, instrument, snapshot))
+
+  /** Decode every round trip against one instrument and one captured snapshot, with no partial success. */
+  def reconstructBatch[I <: Instrument](
+    inputs: Vector[String],
+    instrument: I,
+    snapshot: CatalogSnapshot,
+    limits: DecodeLimits = DecodeLimits.default
+  ): Either[
+    WireViolations[IndexedRoundTripScenarioReconstructionFailure],
+    Vector[
+      RoundTripScenario[
+        instrument.roles.position.D,
+        instrument.roles.base.D,
+        instrument.roles.quote.D,
+        instrument.MarketState
+      ]
+    ]
+  ] =
+    val _               = Objects.requireNonNull(instrument, "round-trip batch instrument")
+    val checkedSnapshot = Objects.requireNonNull(snapshot, "round-trip batch catalog snapshot")
+    AllOrErrorsBatch.decode(inputs, limits, "round-trip scenario")(
+      RoundTripScenarioReconstructionFailure.Codec.apply,
+      IndexedRoundTripScenarioReconstructionFailure.apply
+    )((input, index) => decodeAndReconstruct(input, instrument, checkedSnapshot, limits, index))
+  end reconstructBatch
 
   def schema(
     id: String = "urn:trading:codec:schema:round-trip-scenario:v1",

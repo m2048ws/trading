@@ -56,6 +56,26 @@ final case class IndexedGridCoordinateReconstructionFailure(
   Objects.requireNonNull(failure, "grid-coordinate reconstruction failure")
 end IndexedGridCoordinateReconstructionFailure
 
+/** Closed syntax/snapshot stages for one encoded grid-coordinate record. */
+enum GridCoordinateRecordReconstructionFailure extends JavaSerializationUnsupported:
+  case Codec(violations: WireViolations[WireDecodeViolation])
+  case Snapshot(cause: GridCoordinateReconstructionFailure)
+
+  private val _ =
+    this match
+      case Codec(violations) => Objects.requireNonNull(violations, "grid-coordinate codec violations")
+      case Snapshot(cause)   => Objects.requireNonNull(cause, "grid-coordinate snapshot failure")
+end GridCoordinateRecordReconstructionFailure
+
+/** One indexed encoded grid-coordinate failure in an atomic batch. */
+final case class IndexedGridCoordinateRecordReconstructionFailure(
+  recordIndex: Int,
+  failure: GridCoordinateRecordReconstructionFailure)
+  extends JavaSerializationUnsupported:
+  require(recordIndex >= 0, "grid-coordinate record index must be nonnegative")
+  Objects.requireNonNull(failure, "indexed grid-coordinate record reconstruction failure")
+end IndexedGridCoordinateRecordReconstructionFailure
+
 /** Canonical dimension, full grid witness, and value rebuilt from one general coordinate record. */
 @nowarn("msg=Ignoring.*qualifier")
 final class DecodedGridQuantity private[this] (
@@ -170,6 +190,20 @@ object GeneralGridCoordinateRecord:
   ): Either[WireViolations[WireDecodeViolation], V1] =
     codec.read(input, limits, recordIndex)
 
+  /** Keep encoded syntax separate from immutable-snapshot reconstruction. */
+  def decodeAndReconstruct(
+    input: String,
+    snapshot: CatalogSnapshot,
+    limits: DecodeLimits = DecodeLimits.default,
+    recordIndex: Int = 0
+  ): Either[GridCoordinateRecordReconstructionFailure, DecodedGridQuantity] =
+    parse(input, limits, recordIndex)
+      .left
+      .map(GridCoordinateRecordReconstructionFailure.Codec.apply)
+      .flatMap(record =>
+        reconstruct(record, snapshot).left.map(GridCoordinateRecordReconstructionFailure.Snapshot.apply)
+      )
+
   def schema(
     id: String = "urn:trading:codec:schema:general-grid-coordinate:v1",
     definitionName: String = "GeneralGridCoordinateRecordV1"
@@ -195,6 +229,19 @@ object GeneralGridCoordinateRecord:
     snapshot: CatalogSnapshot
   ): Either[WireViolations[IndexedGridCoordinateReconstructionFailure], Vector[DecodedGridQuantity]] =
     GridCoordinateReconstruction.batch(records, snapshot)(reconstruct)
+
+  /** Decode against one captured snapshot and return either every value or every indexed failure. */
+  def decodeAndReconstructBatch(
+    inputs: Vector[String],
+    snapshot: CatalogSnapshot,
+    limits: DecodeLimits = DecodeLimits.default
+  ): Either[WireViolations[IndexedGridCoordinateRecordReconstructionFailure], Vector[DecodedGridQuantity]] =
+    val checkedSnapshot = Objects.requireNonNull(snapshot, "general grid-coordinate batch snapshot")
+    AllOrErrorsBatch.decode(inputs, limits, "general grid-coordinate")(
+      GridCoordinateRecordReconstructionFailure.Codec.apply,
+      IndexedGridCoordinateRecordReconstructionFailure.apply
+    )((input, index) => decodeAndReconstruct(input, checkedSnapshot, limits, index))
+  end decodeAndReconstructBatch
 
   private def reconstructWithDimension[D <: Dim](
     record: V1,
@@ -260,6 +307,20 @@ object AssetGridCoordinateRecord:
   ): Either[WireViolations[WireDecodeViolation], V1] =
     codec.read(input, limits, recordIndex)
 
+  /** Keep encoded syntax separate from immutable-snapshot reconstruction. */
+  def decodeAndReconstruct(
+    input: String,
+    snapshot: CatalogSnapshot,
+    limits: DecodeLimits = DecodeLimits.default,
+    recordIndex: Int = 0
+  ): Either[GridCoordinateRecordReconstructionFailure, DecodedAssetGridQuantity] =
+    parse(input, limits, recordIndex)
+      .left
+      .map(GridCoordinateRecordReconstructionFailure.Codec.apply)
+      .flatMap(record =>
+        reconstruct(record, snapshot).left.map(GridCoordinateRecordReconstructionFailure.Snapshot.apply)
+      )
+
   def schema(
     id: String = "urn:trading:codec:schema:asset-grid-coordinate:v1",
     definitionName: String = "AssetGridCoordinateRecordV1"
@@ -285,6 +346,19 @@ object AssetGridCoordinateRecord:
     snapshot: CatalogSnapshot
   ): Either[WireViolations[IndexedGridCoordinateReconstructionFailure], Vector[DecodedAssetGridQuantity]] =
     GridCoordinateReconstruction.batch(records, snapshot)(reconstruct)
+
+  /** Decode against one captured snapshot and return either every value or every indexed failure. */
+  def decodeAndReconstructBatch(
+    inputs: Vector[String],
+    snapshot: CatalogSnapshot,
+    limits: DecodeLimits = DecodeLimits.default
+  ): Either[WireViolations[IndexedGridCoordinateRecordReconstructionFailure], Vector[DecodedAssetGridQuantity]] =
+    val checkedSnapshot = Objects.requireNonNull(snapshot, "asset grid-coordinate batch snapshot")
+    AllOrErrorsBatch.decode(inputs, limits, "asset grid-coordinate")(
+      GridCoordinateRecordReconstructionFailure.Codec.apply,
+      IndexedGridCoordinateRecordReconstructionFailure.apply
+    )((input, index) => decodeAndReconstruct(input, checkedSnapshot, limits, index))
+  end decodeAndReconstructBatch
 
   private def reconstructForAsset(
     record: V1,
