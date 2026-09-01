@@ -1,0 +1,167 @@
+{
+  "$defs": {
+    "CatalogJournalEntryV1": {
+      "additionalProperties": false,
+      "properties": {
+        "payload": {
+          "additionalProperties": false,
+          "properties": {
+            "commands": {
+              "items": {
+                "oneOf": [
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "dimension": {
+                        "items": {
+                          "additionalProperties": false,
+                          "properties": {
+                            "atom": {
+                              "type": "string"
+                            },
+                            "power": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "atom",
+                            "power"
+                          ],
+                          "type": "object"
+                        },
+                        "type": "array"
+                      },
+                      "kind": {
+                        "const": "register-dimension",
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "kind",
+                      "dimension"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "assetId": {
+                        "type": "string"
+                      },
+                      "dimensionAtom": {
+                        "type": "string"
+                      },
+                      "kind": {
+                        "const": "register-asset",
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "kind",
+                      "assetId",
+                      "dimensionAtom"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "gridIdentity": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "dimension": {
+                            "items": {
+                              "additionalProperties": false,
+                              "properties": {
+                                "atom": {
+                                  "type": "string"
+                                },
+                                "power": {
+                                  "type": "string"
+                                }
+                              },
+                              "required": [
+                                "atom",
+                                "power"
+                              ],
+                              "type": "object"
+                            },
+                            "type": "array"
+                          },
+                          "gridId": {
+                            "type": "string"
+                          },
+                          "gridVersion": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "dimension",
+                          "gridId",
+                          "gridVersion"
+                        ],
+                        "type": "object"
+                      },
+                      "kind": {
+                        "const": "register-grid",
+                        "type": "string"
+                      },
+                      "quantum": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "denominator": {
+                            "type": "string"
+                          },
+                          "numerator": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "numerator",
+                          "denominator"
+                        ],
+                        "type": "object"
+                      }
+                    },
+                    "required": [
+                      "kind",
+                      "gridIdentity",
+                      "quantum"
+                    ],
+                    "type": "object"
+                  }
+                ]
+              },
+              "type": "array"
+            },
+            "successorRevision": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "successorRevision",
+            "commands"
+          ],
+          "type": "object"
+        },
+        "recordType": {
+          "const": "trading.catalog-journal-entry",
+          "type": "string"
+        },
+        "schemaVersion": {
+          "const": 1,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "payload",
+        "recordType",
+        "schemaVersion"
+      ],
+      "type": "object"
+    }
+  },
+  "$id": "urn:trading:codec:schema:catalog-journal-entry:v1",
+  "$ref": "#/$defs/CatalogJournalEntryV1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

@@ -67,7 +67,42 @@ class BoundaryCodecCompilerBoundarySuite extends FunSuite:
       val names = jar.entries().asScala.map(_.getName).toSet
       assert(names.contains("trading/codec/package.class"), names.toList.sorted.mkString("\n"))
       assert(names.contains("trading/codec/schema/README.md"), names.toList.sorted.mkString("\n"))
+      val schemaResources = names.filter(name =>
+        name.startsWith("trading/codec/schema/") && name.endsWith(".schema.json")
+      )
+      assertEquals(
+        schemaResources,
+        Set(
+          "trading/codec/schema/general-grid-coordinate-v1.schema.json",
+          "trading/codec/schema/asset-grid-coordinate-v1.schema.json",
+          "trading/codec/schema/catalog-journal-entry-v1.schema.json",
+          "trading/codec/schema/instrument-definition-v1.schema.json",
+          "trading/codec/schema/order-v1.schema.json",
+          "trading/codec/schema/order-scenario-v1.schema.json",
+          "trading/codec/schema/round-trip-scenario-v1.schema.json"
+        )
+      )
+      schemaResources.foreach: entry =>
+        val input = jar.getInputStream(jar.getJarEntry(entry))
+        try
+          val schema = new String(input.readAllBytes(), StandardCharsets.UTF_8)
+          List(
+            "feePolicy",
+            "feeAssessment",
+            "pricePnl",
+            "netPnl",
+            "accountId",
+            "fillId",
+            "venue",
+            "catalogRevision",
+            "snapshot",
+            "checkpoint",
+            "repository"
+          ).foreach(fragment => assert(!schema.contains(fragment), s"$entry contains out-of-scope $fragment"))
+        finally input.close()
       val codecClasses = names.filter(name => name.startsWith("trading/codec/") && name.endsWith(".class"))
+      List("Packed", "GridCoordinateEncoding", "LiveCatalog", "Repository", "Checkpoint").foreach: fragment =>
+        assert(!codecClasses.exists(_.contains(fragment)), s"codec JAR retained out-of-scope name $fragment")
       List(
         "trading/codec/DecodeLimits.class",
         "trading/codec/DecodedAssetGridQuantity.class",

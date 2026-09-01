@@ -15,24 +15,25 @@ updated: 2026-09-01
 - **Change**: introduce-versioned-boundary-codecs
 - **Worktree**: /Users/m/src/money/.worktrees/introduce-versioned-boundary-codecs
 - **Phase at Checkpoint**: applying
-- **Task Group at Checkpoint**: 10
-- **Observed Run Revision**: 11
-- **Last Verified HEAD**: c47480998d495257fa61f979c9ba56aa6b246ee7
+- **Task Group at Checkpoint**: 11
+- **Observed Run Revision**: 12
+- **Last Verified HEAD**: ffc0b1eb097f34254c63dd5679ef6e0c702e808f
 
-The phase and revision above are the required next checkpoint carried by Task Group 10. Live Run Contract authority
-remains `applying` at revision 10 until Corgi acknowledges that commit.
+The phase and revision above are the required next checkpoint carried by Task Group 11. Live Run Contract authority
+remains `applying` at revision 11 until Corgi acknowledges that commit.
 
 ## Next Action
-- Commit and acknowledge `introduce-versioned-boundary-codecs` Task Group 10, synchronize its draft PR, then implement
-  Task Group 11. Verify, Human Review, Human QA, and Archive remain separate gates.
+- Commit and acknowledge `introduce-versioned-boundary-codecs` Task Group 11, synchronize its draft PR, then execute
+  Task Group 12's final validation and evidence handoff. Verify, Human Review, Human QA, and Archive remain separate
+  gates.
 
 ## Blockers
 - none
 
 ## Uncommitted Work
-- Task Group 10's named scenario collection limits, encoded grid/scenario all-valid-or-indexed-errors batches,
-  allocation- and stack-safe parser preflight, malformed/property robustness suite, separated codec JMH benchmarks,
-  completed-JAR/source audits, and this next-state checkpoint.
+- Task Group 11's seven frozen V1 schemas, canonical golden records and histories, schema-invalid fixtures, independent
+  offline schema/JCS checks, semantic/version/serialization compatibility coverage, scope documentation/audits, and
+  this next-state checkpoint.
 
 ## Discoveries
 - The archived `establish-pure-instrument-economics` boundary was reconciled from commit `86613ee` before S-02
@@ -538,6 +539,22 @@ remains `applying` at revision 10 until Corgi acknowledges that commit.
   behavior, snapshot coherence, total malformed/deep/Unicode/exact-value handling, public/JAR dependency boundaries,
   parser allocation/stack safety, benchmark separation, and performance/security applicability with no findings. It
   changed no file, triaged no finding, and is not canonical Verify or Human Review.
+- Seven stable-URN local-reference Draft 2020-12 schemas and canonical V1 golden records/histories are now checked in
+  for every published family. Byte regeneration, meta-schema validation, every valid golden, explicit structural and
+  unknown-version invalid fixtures, and an independent offline NetworkNT/JCS oracle all pass.
+- Compatibility coverage freezes explicit V1 dispatch, canonical re-encoding, coherent scenario/round-trip meaning,
+  and Java-serialization rejection for every reachable codec-owned record plus decoded dependent packages. The
+  documented boundary keeps JSON text/UTF-8 as its sole durable representation and assigns snapshot capture, framing,
+  storage, recovery, and publication atomicity to later application/runtime integrations.
+- The clean Group 11 matrix passes 1,024 tests: 601 quantities, 13 reference data, 9 application, 18 runtime, 13
+  instrument economics, 40 risk, 7 order model, 16 execution scenario, 95 boundary codec, 38 fee policy/integration,
+  and 174 completed-JAR/compiler/adversarial tests. Formatting, deterministic resource regeneration, JSON parsing,
+  schema/resource packaging, and production scope audits pass.
+- The first automated Group 11 review found that independent schema validation covered only each family's first golden
+  and that nested serialization coverage did not prove every reachable codec-owned value implemented the fail-closed
+  policy. Both checks were strengthened; the final pass checked requirements, behavior, code quality, one-way
+  architecture, compatibility, serialization safety, and bounded/offline validation with no findings. It changed no
+  file, triaged no finding, and is not canonical Verify or Human Review.
 
 ## Promotion Queue
 - Review agent-configuration constraints before promoting any item to `memory/MEMORY.md`.
@@ -569,3 +586,6 @@ remains `applying` at revision 10 until Corgi acknowledges that commit.
 - Keep Group 10's operational-limit enforcement, robust stack-safe parsing, coherent atomic encoded batches, adversarial
   properties, and separated codec benchmark evidence until Archive proves the complete codec capability; no Group 10
   discovery is independently eligible for permanent promotion.
+- Keep Group 11's frozen schemas/goldens, independent offline compatibility validation, version/serialization policy,
+  documentation, and scope-audit evidence until Archive proves the complete codec capability; no Group 11 discovery is
+  independently eligible for permanent promotion.

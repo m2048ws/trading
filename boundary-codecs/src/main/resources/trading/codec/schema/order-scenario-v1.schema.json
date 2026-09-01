@@ -1,0 +1,456 @@
+{
+  "$defs": {
+    "OrderScenarioRecordV1": {
+      "additionalProperties": false,
+      "properties": {
+        "payload": {
+          "additionalProperties": false,
+          "properties": {
+            "activationEvidence": {
+              "oneOf": [
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "kind": {
+                      "const": "immediate",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "kind"
+                  ],
+                  "type": "object"
+                },
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "kind": {
+                      "const": "fixed",
+                      "type": "string"
+                    },
+                    "observedPriceCoordinate": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "kind",
+                    "observedPriceCoordinate"
+                  ],
+                  "type": "object"
+                },
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "favorableExtremePriceCoordinate": {
+                      "type": "string"
+                    },
+                    "kind": {
+                      "const": "trailing",
+                      "type": "string"
+                    },
+                    "observedPriceCoordinate": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "kind",
+                    "favorableExtremePriceCoordinate",
+                    "observedPriceCoordinate"
+                  ],
+                  "type": "object"
+                }
+              ]
+            },
+            "order": {
+              "additionalProperties": false,
+              "properties": {
+                "activation": {
+                  "oneOf": [
+                    {
+                      "additionalProperties": false,
+                      "properties": {
+                        "kind": {
+                          "const": "immediate",
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "kind"
+                      ],
+                      "type": "object"
+                    },
+                    {
+                      "additionalProperties": false,
+                      "properties": {
+                        "comparison": {
+                          "type": "string"
+                        },
+                        "kind": {
+                          "const": "fixed",
+                          "type": "string"
+                        },
+                        "reference": {
+                          "type": "string"
+                        },
+                        "triggerPriceCoordinate": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "kind",
+                        "reference",
+                        "comparison",
+                        "triggerPriceCoordinate"
+                      ],
+                      "type": "object"
+                    },
+                    {
+                      "additionalProperties": false,
+                      "properties": {
+                        "comparison": {
+                          "type": "string"
+                        },
+                        "kind": {
+                          "const": "trailing",
+                          "type": "string"
+                        },
+                        "offsetTicks": {
+                          "type": "string"
+                        },
+                        "reference": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "kind",
+                        "reference",
+                        "comparison",
+                        "offsetTicks"
+                      ],
+                      "type": "object"
+                    }
+                  ]
+                },
+                "execution": {
+                  "oneOf": [
+                    {
+                      "additionalProperties": false,
+                      "properties": {
+                        "kind": {
+                          "const": "market",
+                          "type": "string"
+                        },
+                        "timeInForce": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "kind",
+                        "timeInForce"
+                      ],
+                      "type": "object"
+                    },
+                    {
+                      "additionalProperties": false,
+                      "properties": {
+                        "kind": {
+                          "const": "priced",
+                          "type": "string"
+                        },
+                        "liquidityConstraint": {
+                          "type": "string"
+                        },
+                        "pricing": {
+                          "oneOf": [
+                            {
+                              "additionalProperties": false,
+                              "properties": {
+                                "kind": {
+                                  "const": "limit",
+                                  "type": "string"
+                                },
+                                "priceCoordinate": {
+                                  "type": "string"
+                                }
+                              },
+                              "required": [
+                                "kind",
+                                "priceCoordinate"
+                              ],
+                              "type": "object"
+                            },
+                            {
+                              "additionalProperties": false,
+                              "properties": {
+                                "kind": {
+                                  "const": "pegged",
+                                  "type": "string"
+                                },
+                                "offsetTicks": {
+                                  "type": "string"
+                                },
+                                "reference": {
+                                  "type": "string"
+                                }
+                              },
+                              "required": [
+                                "kind",
+                                "reference",
+                                "offsetTicks"
+                              ],
+                              "type": "object"
+                            }
+                          ]
+                        },
+                        "timeInForce": {
+                          "type": "string"
+                        },
+                        "visibility": {
+                          "oneOf": [
+                            {
+                              "additionalProperties": false,
+                              "properties": {
+                                "kind": {
+                                  "const": "displayed",
+                                  "type": "string"
+                                }
+                              },
+                              "required": [
+                                "kind"
+                              ],
+                              "type": "object"
+                            },
+                            {
+                              "additionalProperties": false,
+                              "properties": {
+                                "kind": {
+                                  "const": "hidden",
+                                  "type": "string"
+                                }
+                              },
+                              "required": [
+                                "kind"
+                              ],
+                              "type": "object"
+                            },
+                            {
+                              "additionalProperties": false,
+                              "properties": {
+                                "displayedLotsCoordinate": {
+                                  "type": "string"
+                                },
+                                "kind": {
+                                  "const": "iceberg",
+                                  "type": "string"
+                                }
+                              },
+                              "required": [
+                                "kind",
+                                "displayedLotsCoordinate"
+                              ],
+                              "type": "object"
+                            }
+                          ]
+                        }
+                      },
+                      "required": [
+                        "kind",
+                        "pricing",
+                        "timeInForce",
+                        "liquidityConstraint",
+                        "visibility"
+                      ],
+                      "type": "object"
+                    }
+                  ]
+                },
+                "instrumentId": {
+                  "type": "string"
+                },
+                "lotCoordinate": {
+                  "type": "string"
+                },
+                "positionEffect": {
+                  "type": "string"
+                },
+                "side": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "instrumentId",
+                "side",
+                "lotCoordinate",
+                "positionEffect",
+                "activation",
+                "execution"
+              ],
+              "type": "object"
+            },
+            "pricingResolution": {
+              "oneOf": [
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "kind": {
+                      "const": "direct",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "kind"
+                  ],
+                  "type": "object"
+                },
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "kind": {
+                      "const": "pegged",
+                      "type": "string"
+                    },
+                    "referencePriceCoordinate": {
+                      "type": "string"
+                    },
+                    "resolvedLimitCoordinate": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "kind",
+                    "referencePriceCoordinate",
+                    "resolvedLimitCoordinate"
+                  ],
+                  "type": "object"
+                }
+              ]
+            },
+            "slices": {
+              "items": {
+                "additionalProperties": false,
+                "properties": {
+                  "liquidity": {
+                    "type": "string"
+                  },
+                  "lotCoordinate": {
+                    "type": "string"
+                  },
+                  "market": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "additionalConversions": {
+                        "items": {
+                          "additionalProperties": false,
+                          "properties": {
+                            "sourceAssetId": {
+                              "type": "string"
+                            },
+                            "sourceToSettle": {
+                              "additionalProperties": false,
+                              "properties": {
+                                "denominator": {
+                                  "type": "string"
+                                },
+                                "numerator": {
+                                  "type": "string"
+                                }
+                              },
+                              "required": [
+                                "numerator",
+                                "denominator"
+                              ],
+                              "type": "object"
+                            }
+                          },
+                          "required": [
+                            "sourceAssetId",
+                            "sourceToSettle"
+                          ],
+                          "type": "object"
+                        },
+                        "type": "array"
+                      },
+                      "baseToSettle": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "denominator": {
+                            "type": "string"
+                          },
+                          "numerator": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "numerator",
+                          "denominator"
+                        ],
+                        "type": "object"
+                      },
+                      "priceCoordinate": {
+                        "type": "string"
+                      },
+                      "quoteToSettle": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "denominator": {
+                            "type": "string"
+                          },
+                          "numerator": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "numerator",
+                          "denominator"
+                        ],
+                        "type": "object"
+                      }
+                    },
+                    "required": [
+                      "priceCoordinate",
+                      "baseToSettle",
+                      "quoteToSettle",
+                      "additionalConversions"
+                    ],
+                    "type": "object"
+                  }
+                },
+                "required": [
+                  "lotCoordinate",
+                  "liquidity",
+                  "market"
+                ],
+                "type": "object"
+              },
+              "type": "array"
+            }
+          },
+          "required": [
+            "order",
+            "activationEvidence",
+            "pricingResolution",
+            "slices"
+          ],
+          "type": "object"
+        },
+        "recordType": {
+          "const": "trading.order-scenario",
+          "type": "string"
+        },
+        "schemaVersion": {
+          "const": 1,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "payload",
+        "recordType",
+        "schemaVersion"
+      ],
+      "type": "object"
+    }
+  },
+  "$id": "urn:trading:codec:schema:order-scenario:v1",
+  "$ref": "#/$defs/OrderScenarioRecordV1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}
