@@ -8,22 +8,22 @@ updated: 2026-08-31
 > Durable checkpoint mirror. Read first at startup; `.corgi/loop` remains lifecycle authority. `corgispec archive --local` alone writes archive closeout fields.
 
 ## Delivery Pointer
-- **RFC**: RFC-0002-architecture-portfolio
-- **RFC Revision**: 7b6f7a58f4dcbb8fb4bbdf3a8ba74ba66f222cce
-- **Slice**: S-04-fee-policy
-- **Issue**: 9 https://github.com/m2048ws/trading/issues/9
-- **Change**: introduce-pure-fee-policy-module
-- **Worktree**: /Users/m/src/money/.worktrees/introduce-pure-fee-policy-module
-- **Phase at Checkpoint**: archiving
-- **Task Group at Checkpoint**: none
-- **Observed Run Revision**: 7
-- **Last Verified HEAD**: 0eceeabf1d2eb1f8ad2b534f65f00552dc6f53dc
+- **RFC**: RFC-0003-execution-lifecycle-foundation
+- **RFC Revision**: c3e3071cfd4a39dc094404732d58eb0037c09f16
+- **Slice**: S-01-actual-execution-lifecycle
+- **Issue**: 34 https://github.com/m2048ws/trading/issues/34
+- **Change**: establish-actual-execution-lifecycle
+- **Worktree**: /Users/m/src/money/.worktrees/establish-actual-execution-lifecycle
+- **Phase at Checkpoint**: planning_ready
+- **Task Group at Checkpoint**: 1
+- **Observed Run Revision**: none
+- **Last Verified HEAD**: 504a03328998b848b476259e23494fbc880761c2
 
 The phase and revision above are the required post-acknowledgement checkpoint for successor Run Contract
 `run-fe0e73ca-02b9-4f73-a9c9-5b8c5e5f8171`. Live Run Contract state remains execution authority.
 
 ## Next Action
-- Consult Run Contract v3: resume tracker closeout for `introduce-pure-fee-policy-module` only if pending; otherwise select the next accepted Slice. Local delivery: `wiki/deliveries/RFC-0002-architecture-portfolio-S-04-fee-policy.md`.
+- Start Apply for `establish-actual-execution-lifecycle` Task Group 1.
   Human QA, and Archive remain separate gates.
 
 ## Blockers

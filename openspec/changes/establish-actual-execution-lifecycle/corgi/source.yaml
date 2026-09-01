@@ -1,0 +1,29 @@
+schemaVersion: 1
+kind: rfc-slice
+deliveryRef: RFC-0003-execution-lifecycle-foundation/S-01-actual-execution-lifecycle
+rfc:
+  id: RFC-0003-execution-lifecycle-foundation
+  path: rfcs/RFC-0003-execution-lifecycle-foundation
+  acceptedCommit: c3e3071cfd4a39dc094404732d58eb0037c09f16
+  digest: sha256:4fa0a8d017bf9b505cfa6150605e28dfc47e3c185acfad1070df56d9523da360
+slice:
+  id: S-01-actual-execution-lifecycle
+  digest: sha256:f068f3a78dc1cb261d68a497c52a913c3a7774d2e58b7cdda19fbe2a25076c83
+acceptance:
+  - id: AC-001
+    evidence: automated
+  - id: AC-002
+    evidence: both
+  - id: AC-003
+    evidence: automated
+  - id: AC-004
+    evidence: both
+  - id: AC-005
+    evidence: both
+deliveryBindingDigest: sha256:019dbfb7204deacadbd7cbfc8ea41afd129a5e0cfddebef192427399f714c788
+tracker:
+  provider: github
+  idempotencyKey: a6e4af5bd32e974b1f0528fec8378c58bfcae68efc9e6fa7642b6c2e3f917665
+  issue:
+    id: '34'
+    url: https://github.com/m2048ws/trading/issues/34
