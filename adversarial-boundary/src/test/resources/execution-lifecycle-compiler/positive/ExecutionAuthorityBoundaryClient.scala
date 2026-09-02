@@ -2,10 +2,19 @@ package external.execution.positive
 
 import external.execution.fixtures.ExecutionLifecycleSetup.*
 import trading.execution.*
+import trading.quantity.Dim
 
 object ExecutionAuthorityBoundaryClient:
   private def required[A](value: Either[?, A]): A =
     value.fold(error => throw new AssertionError(error.toString), identity)
+
+  private def acceptedTransition[D <: Dim, B <: Dim, Q <: Dim](
+    value: LifecycleTransition[D, B, Q]
+  ): LifecycleAccepted[D, B, Q] = value match
+    case transition: LifecycleAccepted[?, ?, ?] =>
+      transition.asInstanceOf[LifecycleAccepted[D, B, Q]]
+    case transition: LifecycleRejected[?, ?, ?] =>
+      throw new AssertionError(transition.rejection.toString)
 
   def run(): Unit =
     val target = required(
@@ -117,3 +126,24 @@ object ExecutionAuthorityBoundaryClient:
     assert(unresolved.unresolvedFillReferences.contains(fillId))
     assert(!resolved.unresolvedFillReferences.contains(fillId))
     assert(resolved.fillsById(fillId).price == price)
+
+    val commandApplied = acceptedTransition(required(ExecutionState.initial(lifecycle)).record(submit))
+    val fillApplied    = acceptedTransition(commandApplied.state.record(executionFill))
+    val observation    = fillApplied.state.observation
+    val replay         = required(
+      ExecutionState.replay(lifecycle)(Vector(submit), Vector.empty, Vector(executionFill))
+    )
+    val transitionKinds = Vector[LifecycleTransition[?, ?, ?]](commandApplied, fillApplied).map:
+      case value: LifecycleAccepted[?, ?, ?] => value.kind
+      case _: LifecycleRejected[?, ?, ?]     => throw new AssertionError("unexpected lifecycle rejection")
+
+    assert(transitionKinds == Vector(LifecycleTransitionKind.Applied, LifecycleTransitionKind.Applied))
+    assert(observation.issuedCommands.keySet == Set(submit.commandId))
+    assert(observation.fills.keySet == Set(fillId))
+    assert(observation.commandConflicts.isEmpty)
+    assert(observation.sourceEventConflicts.isEmpty)
+    assert(observation.fillIdentityConflicts.isEmpty)
+    assert(observation.streamPositionConflicts.isEmpty)
+    assert(observation.explicitlyUnsequencedEvents == Vector(executionFill.eventId))
+    assert(replay.state == fillApplied.state)
+    assert(replay.rejections.isEmpty)

@@ -78,4 +78,34 @@ public final class RejectedExecutionIdentityConstruction {
   public static SourceEvidenceState forgeSourceState() {
     return new SourceEvidenceState(null, null, null, null, null, null, null, null);
   }
+
+  @SuppressWarnings({"rawtypes", "unchecked"})
+  public static ExecutionState forgeExecutionState() {
+    return new ExecutionState(null, null, null, null);
+  }
+
+  @SuppressWarnings({"rawtypes", "unchecked"})
+  public static LifecycleAccepted forgeLifecycleAccepted() {
+    return new LifecycleAccepted(null, null, null);
+  }
+
+  @SuppressWarnings({"rawtypes", "unchecked"})
+  public static LifecycleRejected forgeLifecycleRejected() {
+    return new LifecycleRejected(null, null, null);
+  }
+
+  public static LifecycleDiagnostics forgeLifecycleDiagnostics() {
+    return new LifecycleDiagnostics(null);
+  }
+
+  @SuppressWarnings({"rawtypes", "unchecked"})
+  public static LifecycleObservation forgeLifecycleObservation() {
+    return new LifecycleObservation(
+        null, null, null, null, null, null, null, null, null, null, null, null, null);
+  }
+
+  @SuppressWarnings({"rawtypes", "unchecked"})
+  public static LifecycleReplayResult forgeLifecycleReplay() {
+    return new LifecycleReplayResult(null, null);
+  }
 }

@@ -47,6 +47,14 @@ object PackageSpoofExecutionAuthority:
   val sourceRejected = new SourceFactRejected[Dim, Dim, Dim](null, null)
   val sourceState = new SourceEvidenceState[Dim, Dim, Dim](
     null, Map.empty, Map.empty, Vector.empty, Vector.empty, Map.empty, Map.empty, Map.empty)
+  val executionState = new ExecutionState[Dim, Dim, Dim](null, null, null, null)
+  val lifecycleAccepted = new LifecycleAccepted[Dim, Dim, Dim](null, null, null)
+  val lifecycleRejected = new LifecycleRejected[Dim, Dim, Dim](null, null, null)
+  val lifecycleDiagnostics = new LifecycleDiagnostics(Vector.empty)
+  val lifecycleObservation = new LifecycleObservation[Dim, Dim, Dim](
+    null, Map.empty, Map.empty, Map.empty, Vector.empty, Vector.empty, Vector.empty, Map.empty, Map.empty, Set.empty,
+    Vector.empty, Map.empty, None)
+  val lifecycleReplay = new LifecycleReplayResult[Dim, Dim, Dim](null, Vector.empty)
   val copied = checkedTarget.copy(source = null)
   final class ForgedContinuation extends SourceContinuation()
   final class ForgedOrdering extends SourceOrdering()
@@ -62,6 +70,9 @@ object PackageSpoofExecutionAuthority:
     val ordering = null
   final class ForgedSourceTransition extends SourceFactTransition[Dim, Dim, Dim]():
     val state = null
+  final class ForgedLifecycleTransition extends LifecycleTransition[Dim, Dim, Dim]():
+    val state = null
+    val work = null
   val nativeAmend = null.asInstanceOf[SubmitOrderCommand[Dim, Dim, Dim]].amend(null)
   val atomicReplace = null.asInstanceOf[CommandState[Dim, Dim, Dim]].cancelReplace(null)
   // OFFENDING-END

@@ -199,7 +199,13 @@ class ExecutionLifecycleCompilerBoundarySuite extends FunSuite:
       Class.forName("trading.execution.UnresolvedFillReference"),
       Class.forName("trading.execution.SourceFactRecorded"),
       Class.forName("trading.execution.SourceFactRejected"),
-      Class.forName("trading.execution.SourceEvidenceState")
+      Class.forName("trading.execution.SourceEvidenceState"),
+      Class.forName("trading.execution.ExecutionState"),
+      Class.forName("trading.execution.LifecycleAccepted"),
+      Class.forName("trading.execution.LifecycleRejected"),
+      Class.forName("trading.execution.LifecycleDiagnostics"),
+      Class.forName("trading.execution.LifecycleObservation"),
+      Class.forName("trading.execution.LifecycleReplayResult")
     ).foreach: representation =>
       assert(Modifier.isFinal(representation.getModifiers), s"${representation.getName} is not final")
       assert(

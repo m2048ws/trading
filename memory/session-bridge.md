@@ -1,6 +1,6 @@
 ---
 type: memory
-updated: 2026-09-01
+updated: 2026-09-02
 ---
 
 # Session Bridge
@@ -15,23 +15,23 @@ updated: 2026-09-01
 - **Change**: establish-actual-execution-lifecycle
 - **Worktree**: /Users/m/src/money/.worktrees/establish-actual-execution-lifecycle
 - **Phase at Checkpoint**: applying
-- **Task Group at Checkpoint**: 4
-- **Observed Run Revision**: 5
-- **Last Verified HEAD**: 3576953dc5f3158ad554c97df0dcc64bae2eb21c
+- **Task Group at Checkpoint**: 5
+- **Observed Run Revision**: 6
+- **Last Verified HEAD**: 04feb6d34ddc846215e57ed3a81f2fd1b22d44fe
 
-The phase and revision above are the required next checkpoint carried by Task Group 4. Live Run Contract
-`run-faf4d455-8dbc-4369-a994-66f868cfa7ef` remains `applying` at revision 4 until Corgi acknowledges that commit.
+The phase and revision above are the required next checkpoint carried by Task Group 5. Live Run Contract
+`run-faf4d455-8dbc-4369-a994-66f868cfa7ef` remains `applying` at revision 5 until Corgi acknowledges that commit.
 
 ## Next Action
-- Commit and acknowledge `establish-actual-execution-lifecycle` Task Group 4, synchronize draft PR #35, then implement
-  Task Group 5. Verify, Human Review, Human QA, and Archive remain separate gates.
+- Commit and acknowledge `establish-actual-execution-lifecycle` Task Group 5, synchronize draft PR #35, then implement
+  Task Group 6. Verify, Human Review, Human QA, and Archive remain separate gates.
 
 ## Blockers
 - none
 
 ## Uncommitted Work
-- Task Group 4's closed authoritative source facts, exact fill economics, immutable source indexes, conflict and
-  unresolved-reference evidence, completed-JAR/JVM guards, and this next-state checkpoint.
+- Task Group 5's immutable combined lifecycle transition/replay state, exact stream/completeness diagnostics,
+  deterministic conflict/reference observations, completed-JAR/JVM guards, and this next-state checkpoint.
 
 ## Discoveries
 - The archived `establish-pure-instrument-economics` boundary was reconciled from commit `86613ee` before S-02
@@ -455,6 +455,19 @@ The phase and revision above are the required next checkpoint carried by Task Gr
   references, deterministic typed failures, immutable retention, JVM authority, dependency purity,
   performance/security applicability, and evidence with no findings. It changed no file during the final pass,
   human-triaged no finding, and is not canonical Verify or Human Review.
+- Immutable `ExecutionState` now combines command, dispatch, and source evidence behind total applied, idempotent,
+  conflicting, and typed-rejected transitions. Canonical replay orders complete normalized bodies rather than arrival,
+  converges across conflict-bearing permutations, retains all conflicting evidence in its public observation, and
+  routes missing elements through checked rejection rather than failing during sorting.
+- Exact stream observation derives missing ranges, position conflicts, continuation/checkpoint rewinds, late-gap
+  closure, explicit unsequenced events, unresolved fill references, and source-authoritative completeness from
+  qualified immutable indexes. Stable closed diagnostic ordering is independent of map iteration and reports the
+  checkpoint position behind the previously established boundary in the correct direction.
+- The final Task Group 5 gate passes formatting and 961 tests: 39 execution-lifecycle tests and 167 completed-JAR/
+  compiler/adversarial tests alongside unchanged module suites. The automated review corrected deterministic conflict
+  keys, checkpoint-rewind direction, checked null replay, and retained-conflict observation before its final scope,
+  replay, completeness, JVM authority, architecture, complexity, security-applicability, and evidence pass returned no
+  findings. The final pass changed no file, human-triaged no finding, and is not canonical Verify or Human Review.
 
 ## Promotion Queue
 - Review agent-configuration constraints before promoting any item to `memory/MEMORY.md`.
@@ -468,3 +481,5 @@ The phase and revision above are the required next checkpoint carried by Task Gr
   commands, dispatch uncertainty, cancellation requests, and transport attempts.
 - After whole-change approval, evaluate promotion of qualified source-fact provenance, dual event/fill identity
   indexing, and explicit unresolved modifier references.
+- After whole-change approval, evaluate promotion of canonical conflict-bearing replay, exact stream completeness
+  diagnostics, and public retained-conflict observations.

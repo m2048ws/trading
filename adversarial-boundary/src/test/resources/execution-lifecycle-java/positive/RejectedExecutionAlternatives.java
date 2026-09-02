@@ -6,6 +6,8 @@ import trading.execution.DispatchEvidence;
 import trading.execution.ExecutionCommand;
 import trading.execution.ExecutionLifecycle;
 import trading.execution.ExecutionOrderId;
+import trading.execution.ExecutionState;
+import trading.execution.LifecycleTransition;
 import trading.execution.QualifiedSourceEventId;
 import trading.execution.QualifiedSourceOrderId;
 import trading.execution.SourceEvidenceState;
@@ -13,6 +15,7 @@ import trading.execution.SourceFact;
 import trading.execution.SourceFactTransition;
 import trading.execution.SourceOrdering;
 import trading.execution.SubmitOrderCommand;
+import trading.execution.TransitionWork;
 import trading.execution.QualifiedSourceStreamId;
 import trading.execution.QualifiedStreamPosition;
 import trading.execution.SourceContinuation;
@@ -105,6 +108,22 @@ public final class RejectedExecutionAlternatives {
     }
   }
 
+  private static final class ForgedLifecycleTransition extends LifecycleTransition {
+    private ForgedLifecycleTransition() {
+      super();
+    }
+
+    @Override
+    public ExecutionState state() {
+      return null;
+    }
+
+    @Override
+    public TransitionWork work() {
+      return null;
+    }
+  }
+
   public static boolean guardsRejectUnknownAlternatives() {
     try {
       new ForgedContinuation();
@@ -138,6 +157,12 @@ public final class RejectedExecutionAlternatives {
     }
     try {
       new ForgedSourceTransition();
+      return false;
+    } catch (IllegalAccessError expected) {
+      // expected
+    }
+    try {
+      new ForgedLifecycleTransition();
       return false;
     } catch (IllegalAccessError expected) {
       return true;
