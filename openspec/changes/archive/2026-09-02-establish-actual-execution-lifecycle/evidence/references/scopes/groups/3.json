@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 3,
+  "scope": "group-3",
+  "runId": "run-faf4d455-8dbc-4369-a994-66f868cfa7ef",
+  "references": [
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fexecution-lifecycle-compiler%2Fnegative%2FPackageSpoofExecutionAuthority.scala#sha256:2b02782ee0de7a2cb849e1d386110fd4fd33995e1c9eed0b8c0c2dd717907c8c",
+      "sourcePath": "adversarial-boundary/src/test/resources/execution-lifecycle-compiler/negative/PackageSpoofExecutionAuthority.scala",
+      "digest": "sha256:2b02782ee0de7a2cb849e1d386110fd4fd33995e1c9eed0b8c0c2dd717907c8c",
+      "archivePath": "references/blobs/2b02782ee0de7a2cb849e1d386110fd4fd33995e1c9eed0b8c0c2dd717907c8c"
+    },
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fexecution-lifecycle-compiler%2Fpositive%2FExecutionAuthorityBoundaryClient.scala#sha256:422d514e5f9b927695ff4f5218601ee13fb78a240bb3ea34cf35b7a6ae998223",
+      "sourcePath": "adversarial-boundary/src/test/resources/execution-lifecycle-compiler/positive/ExecutionAuthorityBoundaryClient.scala",
+      "digest": "sha256:422d514e5f9b927695ff4f5218601ee13fb78a240bb3ea34cf35b7a6ae998223",
+      "archivePath": "references/blobs/422d514e5f9b927695ff4f5218601ee13fb78a240bb3ea34cf35b7a6ae998223"
+    },
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fexecution-lifecycle-java%2Fnegative%2FRejectedExecutionIdentityConstruction.java#sha256:e412bc8e5db8f4b8ee6692b9ace91f42a2d6fe4720bfcba25467fe3e1c54c3ed",
+      "sourcePath": "adversarial-boundary/src/test/resources/execution-lifecycle-java/negative/RejectedExecutionIdentityConstruction.java",
+      "digest": "sha256:e412bc8e5db8f4b8ee6692b9ace91f42a2d6fe4720bfcba25467fe3e1c54c3ed",
+      "archivePath": "references/blobs/e412bc8e5db8f4b8ee6692b9ace91f42a2d6fe4720bfcba25467fe3e1c54c3ed"
+    },
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fexecution-lifecycle-java%2Fpositive%2FRejectedExecutionAlternatives.java#sha256:ef01eec95648c913834f07f20667977f4f363d8aa349c8dab39f5fd89be83dbb",
+      "sourcePath": "adversarial-boundary/src/test/resources/execution-lifecycle-java/positive/RejectedExecutionAlternatives.java",
+      "digest": "sha256:ef01eec95648c913834f07f20667977f4f363d8aa349c8dab39f5fd89be83dbb",
+      "archivePath": "references/blobs/ef01eec95648c913834f07f20667977f4f363d8aa349c8dab39f5fd89be83dbb"
+    },
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FExecutionLifecycleCompilerBoundarySuite.scala#sha256:46742d0b9c5a96d2bce6d977feeb3ce8c49e5863fa2414a9a073e0eed858872c",
+      "sourcePath": "adversarial-boundary/src/test/scala/external/ExecutionLifecycleCompilerBoundarySuite.scala",
+      "digest": "sha256:46742d0b9c5a96d2bce6d977feeb3ce8c49e5863fa2414a9a073e0eed858872c",
+      "archivePath": "references/blobs/46742d0b9c5a96d2bce6d977feeb3ce8c49e5863fa2414a9a073e0eed858872c"
+    },
+    {
+      "reference": "file:adversarial-boundary%2Ftarget%2Ftest-reports%2FTEST-external.ExecutionLifecycleCompilerBoundarySuite.xml#sha256:3e12b48c819cee144ee609f26e856ee05ba7da8a874bb144e26bdfa7e25e8b0d",
+      "sourcePath": "adversarial-boundary/target/test-reports/TEST-external.ExecutionLifecycleCompilerBoundarySuite.xml",
+      "digest": "sha256:3e12b48c819cee144ee609f26e856ee05ba7da8a874bb144e26bdfa7e25e8b0d",
+      "archivePath": "references/blobs/3e12b48c819cee144ee609f26e856ee05ba7da8a874bb144e26bdfa7e25e8b0d"
+    },
+    {
+      "reference": "file:execution-lifecycle%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fexecution%2FCommands.scala#sha256:50cef4f9c2c7bd780a8854d4f8a611f4cc75d82582f2ce9ca68417b5661b7bc9",
+      "sourcePath": "execution-lifecycle/src/main/scala/trading/execution/Commands.scala",
+      "digest": "sha256:50cef4f9c2c7bd780a8854d4f8a611f4cc75d82582f2ce9ca68417b5661b7bc9",
+      "archivePath": "references/blobs/50cef4f9c2c7bd780a8854d4f8a611f4cc75d82582f2ce9ca68417b5661b7bc9"
+    },
+    {
+      "reference": "file:execution-lifecycle%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fexecution%2FCommandStateSuite.scala#sha256:296a5961b2bedd06e9048eb461851c8635e2dfabb7c55486853f4b67c61f03e7",
+      "sourcePath": "execution-lifecycle/src/test/scala/trading/execution/CommandStateSuite.scala",
+      "digest": "sha256:296a5961b2bedd06e9048eb461851c8635e2dfabb7c55486853f4b67c61f03e7",
+      "archivePath": "references/blobs/296a5961b2bedd06e9048eb461851c8635e2dfabb7c55486853f4b67c61f03e7"
+    },
+    {
+      "reference": "file:execution-lifecycle%2Ftarget%2Fscala-3.8.4%2Ftrading-execution-lifecycle_3-0.1.0-SNAPSHOT.jar#sha256:ff4db6bac5612060630f647e0d90b3efa569a7840c9381e9f5f432cdbda5e4dc",
+      "sourcePath": "execution-lifecycle/target/scala-3.8.4/trading-execution-lifecycle_3-0.1.0-SNAPSHOT.jar",
+      "digest": "sha256:ff4db6bac5612060630f647e0d90b3efa569a7840c9381e9f5f432cdbda5e4dc",
+      "archivePath": "references/blobs/ff4db6bac5612060630f647e0d90b3efa569a7840c9381e9f5f432cdbda5e4dc"
+    },
+    {
+      "reference": "file:execution-lifecycle%2Ftarget%2Ftest-reports%2FTEST-trading.execution.CommandStateSuite.xml#sha256:a73152647d782496d629e565d9ceb0b9def939307836624dfade8d6d39f16169",
+      "sourcePath": "execution-lifecycle/target/test-reports/TEST-trading.execution.CommandStateSuite.xml",
+      "digest": "sha256:a73152647d782496d629e565d9ceb0b9def939307836624dfade8d6d39f16169",
+      "archivePath": "references/blobs/a73152647d782496d629e565d9ceb0b9def939307836624dfade8d6d39f16169"
+    },
+    {
+      "reference": "file:memory%2Fsession-bridge.md#sha256:9730f2d5d17658e383f329d2894873ebffd37595878c90f0ae99144f1198c058",
+      "sourcePath": "memory/session-bridge.md",
+      "digest": "sha256:9730f2d5d17658e383f329d2894873ebffd37595878c90f0ae99144f1198c058",
+      "archivePath": "references/blobs/9730f2d5d17658e383f329d2894873ebffd37595878c90f0ae99144f1198c058"
+    }
+  ]
+}

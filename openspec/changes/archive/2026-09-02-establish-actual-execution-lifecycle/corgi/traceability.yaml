@@ -1,0 +1,58 @@
+schemaVersion: 1
+sourceDigest: sha256:f11a68db674bf8a6db3dbf79a9dc4d81df5403a8e597c182714ae2d4a296b5fc
+acceptance:
+  - id: AC-001
+    evidence: automated
+    planningRefs:
+      - path: specs/actual-execution-lifecycle/spec.md
+        anchor: requirement-actual-execution-has-one-pure-domain-owner
+      - path: specs/repository-architecture/spec.md
+        anchor: requirement-actual-execution-is-a-one-way-pure-lifecycle-layer
+    taskGroups:
+      - '1'
+      - '9'
+  - id: AC-002
+    evidence: both
+    planningRefs:
+      - path: specs/actual-execution-lifecycle/spec.md
+        anchor: requirement-execution-identities-retain-explicit-authority-and-scope
+      - path: specs/actual-execution-lifecycle/spec.md
+        anchor: requirement-commands-are-stable-business-data-with-idempotent-reuse
+    taskGroups:
+      - '1'
+      - '2'
+      - '3'
+      - '4'
+      - '9'
+  - id: AC-003
+    evidence: automated
+    planningRefs:
+      - path: specs/actual-execution-lifecycle/spec.md
+        anchor: requirement-ordering-gaps-and-completeness-are-evidence
+      - path: specs/actual-execution-lifecycle/spec.md
+        anchor: requirement-pure-transition-and-replay-are-deterministic
+    taskGroups:
+      - '4'
+      - '5'
+      - '9'
+  - id: AC-004
+    evidence: both
+    planningRefs:
+      - path: specs/actual-execution-lifecycle/spec.md
+        anchor: requirement-submission-knowledge-preserves-uncertainty
+    taskGroups:
+      - '3'
+      - '6'
+      - '9'
+  - id: AC-005
+    evidence: both
+    planningRefs:
+      - path: specs/actual-execution-lifecycle/spec.md
+        anchor: requirement-effective-fills-preserve-exact-exposure-and-corrections
+      - path: specs/actual-execution-lifecycle/spec.md
+        anchor: requirement-cancellation-facts-and-lineage-remain-honest
+    taskGroups:
+      - '4'
+      - '7'
+      - '8'
+      - '9'

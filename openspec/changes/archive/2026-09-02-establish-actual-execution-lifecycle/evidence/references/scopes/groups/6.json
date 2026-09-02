@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 3,
+  "scope": "group-6",
+  "runId": "run-faf4d455-8dbc-4369-a994-66f868cfa7ef",
+  "references": [
+    {
+      "reference": "file:.scalafmt.conf#sha256:efecb2eaad5b314fc053f173f899c8c87f9a468432c8444593c0dcb386a3207f",
+      "sourcePath": ".scalafmt.conf",
+      "digest": "sha256:efecb2eaad5b314fc053f173f899c8c87f9a468432c8444593c0dcb386a3207f",
+      "archivePath": "references/blobs/efecb2eaad5b314fc053f173f899c8c87f9a468432c8444593c0dcb386a3207f"
+    },
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FExecutionLifecycleCompilerBoundarySuite.scala#sha256:33441ae86b2b054b185cecc947e0aa6d1503b7ee555a2aea426749960d427afc",
+      "sourcePath": "adversarial-boundary/src/test/scala/external/ExecutionLifecycleCompilerBoundarySuite.scala",
+      "digest": "sha256:33441ae86b2b054b185cecc947e0aa6d1503b7ee555a2aea426749960d427afc",
+      "archivePath": "references/blobs/33441ae86b2b054b185cecc947e0aa6d1503b7ee555a2aea426749960d427afc"
+    },
+    {
+      "reference": "file:build.sbt#sha256:47ece9b184d750d417cde80384dddf73905fabc118ed6dd2de3a4f98cb9a0b50",
+      "sourcePath": "build.sbt",
+      "digest": "sha256:47ece9b184d750d417cde80384dddf73905fabc118ed6dd2de3a4f98cb9a0b50",
+      "archivePath": "references/blobs/47ece9b184d750d417cde80384dddf73905fabc118ed6dd2de3a4f98cb9a0b50"
+    },
+    {
+      "reference": "file:execution-lifecycle%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fexecution%2FExecutionState.scala#sha256:7bb485e5c2fb8b3b7a3ab2d988f67d5f944af97479787898644b66b14b8ada34",
+      "sourcePath": "execution-lifecycle/src/main/scala/trading/execution/ExecutionState.scala",
+      "digest": "sha256:7bb485e5c2fb8b3b7a3ab2d988f67d5f944af97479787898644b66b14b8ada34",
+      "archivePath": "references/blobs/7bb485e5c2fb8b3b7a3ab2d988f67d5f944af97479787898644b66b14b8ada34"
+    },
+    {
+      "reference": "file:execution-lifecycle%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fexecution%2FSourceFacts.scala#sha256:545a2e4521b92f114298093a655e9b6f9fe66afd7f9520afa3831384688f90c4",
+      "sourcePath": "execution-lifecycle/src/main/scala/trading/execution/SourceFacts.scala",
+      "digest": "sha256:545a2e4521b92f114298093a655e9b6f9fe66afd7f9520afa3831384688f90c4",
+      "archivePath": "references/blobs/545a2e4521b92f114298093a655e9b6f9fe66afd7f9520afa3831384688f90c4"
+    },
+    {
+      "reference": "file:execution-lifecycle%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fexecution%2FSubmissionKnowledge.scala#sha256:481fb576e34ab56d7c7fb718df40d11a2d95fffdce990c9331b8b9bee38a7ac4",
+      "sourcePath": "execution-lifecycle/src/main/scala/trading/execution/SubmissionKnowledge.scala",
+      "digest": "sha256:481fb576e34ab56d7c7fb718df40d11a2d95fffdce990c9331b8b9bee38a7ac4",
+      "archivePath": "references/blobs/481fb576e34ab56d7c7fb718df40d11a2d95fffdce990c9331b8b9bee38a7ac4"
+    },
+    {
+      "reference": "file:execution-lifecycle%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fexecution%2FSubmissionKnowledgeSuite.scala#sha256:754745b43d54efa245d03a9b3808e0e31583190268c8b695f32136655db77135",
+      "sourcePath": "execution-lifecycle/src/test/scala/trading/execution/SubmissionKnowledgeSuite.scala",
+      "digest": "sha256:754745b43d54efa245d03a9b3808e0e31583190268c8b695f32136655db77135",
+      "archivePath": "references/blobs/754745b43d54efa245d03a9b3808e0e31583190268c8b695f32136655db77135"
+    },
+    {
+      "reference": "file:memory%2Fsession-bridge.md#sha256:66cd12aaaa4940cfa8c5105618f0e747b7d9127fb6800fd2adf1cb7d0242bb5d",
+      "sourcePath": "memory/session-bridge.md",
+      "digest": "sha256:66cd12aaaa4940cfa8c5105618f0e747b7d9127fb6800fd2adf1cb7d0242bb5d",
+      "archivePath": "references/blobs/66cd12aaaa4940cfa8c5105618f0e747b7d9127fb6800fd2adf1cb7d0242bb5d"
+    }
+  ]
+}

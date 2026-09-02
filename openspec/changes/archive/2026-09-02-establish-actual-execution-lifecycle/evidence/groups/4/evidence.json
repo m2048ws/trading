@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 3,
+  "groupId": "4",
+  "checks": [
+    {
+      "name": "sbt -batch scalafmtCheckAll executionLifecycle/testOnly trading.execution.SourceFactSuite",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:execution-lifecycle%2Ftarget%2Ftest-reports%2FTEST-trading.execution.SourceFactSuite.xml#sha256:a5a48d120e5f5ab5c731ad298b4ebc9372a80f29dcba9e7d81fc112dcbe932df"
+      ]
+    },
+    {
+      "name": "sbt -batch adversarialBoundary/testOnly external.ExecutionLifecycleCompilerBoundarySuite",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:adversarial-boundary%2Ftarget%2Ftest-reports%2FTEST-external.ExecutionLifecycleCompilerBoundarySuite.xml#sha256:3875884577b73631f117a8b1ae1cce219275829109bf71d811d35e604f8058f3",
+        "file:execution-lifecycle%2Ftarget%2Fscala-3.8.4%2Ftrading-execution-lifecycle_3-0.1.0-SNAPSHOT.jar#sha256:e29896681112541610cb0f42c141fdd53c4fe3aad1b44c231c89250e1a3ad7a6"
+      ]
+    },
+    {
+      "name": "sbt -batch test (950 tests), javap -p, serialization, and forbidden provenance/API scans",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:execution-lifecycle%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fexecution%2FSourceFacts.scala#sha256:0514adeec6acb79a66402bcc1189643596f597a2080ec5a00b8b3b72ae0ef6f5",
+        "file:execution-lifecycle%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fexecution%2FSourceEvidenceState.scala#sha256:76f791e5505e288973ea9350d2987418790a9b430fb8a24bc1630327fabba243",
+        "file:execution-lifecycle%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fexecution%2FSourceFactSuite.scala#sha256:e00f9646f89909bf11af5b42c1195418e498f480b118dc98ead28ff32086a4d6",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fexecution-lifecycle-java%2Fpositive%2FRejectedExecutionAlternatives.java#sha256:99691ec8fc08ec66e717b5d3c89c488d59ca4efdf1d346ddf5b77b9eeadef225"
+      ]
+    }
+  ],
+  "automatedReview": {
+    "verdict": "pass",
+    "findings": []
+  },
+  "artifacts": [
+    "file:execution-lifecycle%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fexecution%2FSourceFacts.scala#sha256:0514adeec6acb79a66402bcc1189643596f597a2080ec5a00b8b3b72ae0ef6f5",
+    "file:execution-lifecycle%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fexecution%2FSourceEvidenceState.scala#sha256:76f791e5505e288973ea9350d2987418790a9b430fb8a24bc1630327fabba243",
+    "file:execution-lifecycle%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fexecution%2FSourceFactSuite.scala#sha256:e00f9646f89909bf11af5b42c1195418e498f480b118dc98ead28ff32086a4d6",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fexecution-lifecycle-compiler%2FExecutionLifecycleSetup.scala#sha256:695b740eb28f8d3bdf4f9575c272dd3a922b7f16888b846c316f11ef3598d4f9",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fexecution-lifecycle-compiler%2Fnegative%2FPackageSpoofExecutionAuthority.scala#sha256:c2d48ddc16380c0a183c72a889e4ade740603d4816b00c77c63655d10518e050",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fexecution-lifecycle-compiler%2Fpositive%2FExecutionAuthorityBoundaryClient.scala#sha256:35af9ee35249dbc534361ab299de2f0ce38bf703ec5af726c8b210ba0c74670a",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fexecution-lifecycle-java%2Fnegative%2FRejectedExecutionIdentityConstruction.java#sha256:4967ab7c25304e240218bd0b66bc34f93d287ea4344aabde5dc6fdffab379027",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fexecution-lifecycle-java%2Fpositive%2FRejectedExecutionAlternatives.java#sha256:99691ec8fc08ec66e717b5d3c89c488d59ca4efdf1d346ddf5b77b9eeadef225",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FExecutionLifecycleCompilerBoundarySuite.scala#sha256:85c0c9a7314014f9509cf7ed64512e7a27822ea107ebf58b221460b62d56eb63",
+    "file:memory%2Fsession-bridge.md#sha256:ca04d254c2919b0f4365927768cedb8f6c5996e81f1adf9c12aba5276f90858a"
+  ],
+  "summary": "Task Group 4 established eight closed source-fact alternatives with qualified provenance, exact dimension-indexed fills and corrections, immutable event/fill/position indexes, retained conflicts, and unresolved correction/bust references. Formatting, 950 aggregate tests, property and completed-JAR coverage, JVM construction/serialization guards, source scans, javap inspection, and the final automated review passed."
+}

@@ -1,6 +1,6 @@
 ---
 type: memory
-updated: 2026-09-01
+updated: 2026-09-02
 ---
 
 # Session Bridge
@@ -8,30 +8,30 @@ updated: 2026-09-01
 > Durable checkpoint mirror. Read first at startup; `.corgi/loop` remains lifecycle authority. `corgispec archive --local` alone writes archive closeout fields.
 
 ## Delivery Pointer
-- **RFC**: RFC-0002-architecture-portfolio
-- **RFC Revision**: 7b6f7a58f4dcbb8fb4bbdf3a8ba74ba66f222cce
-- **Slice**: S-05-versioned-boundary-codecs
-- **Issue**: 10 https://github.com/m2048ws/trading/issues/10
-- **Change**: introduce-versioned-boundary-codecs
-- **Worktree**: /Users/m/src/money/.worktrees/introduce-versioned-boundary-codecs
+- **RFC**: RFC-0003-execution-lifecycle-foundation
+- **RFC Revision**: c3e3071cfd4a39dc094404732d58eb0037c09f16
+- **Slice**: S-01-actual-execution-lifecycle
+- **Issue**: 34 https://github.com/m2048ws/trading/issues/34
+- **Change**: establish-actual-execution-lifecycle
+- **Worktree**: /Users/m/src/money/.worktrees/establish-actual-execution-lifecycle
 - **Phase at Checkpoint**: archiving
 - **Task Group at Checkpoint**: none
-- **Observed Run Revision**: 18
-- **Last Verified HEAD**: 4c93275e3ce5dfaae219d1a9567461951cbc79e1
+- **Observed Run Revision**: 15
+- **Last Verified HEAD**: 4f8d8194fe1bfba185c9effb6ab2ca6b1a653a41
 
-The phase and revision above are the required next checkpoint carried by Task Group 12. Live Run Contract authority
-remains `applying` at revision 12 until Corgi acknowledges that commit.
+The phase and revision above are the required next checkpoint carried by Task Group 9. Live Run Contract
+`run-faf4d455-8dbc-4369-a994-66f868cfa7ef` remains `applying` at revision 9 until Corgi acknowledges that commit.
 
 ## Next Action
-- Consult Run Contract v3: resume tracker closeout for `introduce-versioned-boundary-codecs` only if pending; otherwise select the next accepted Slice. Local delivery: `wiki/deliveries/RFC-0002-architecture-portfolio-S-05-versioned-boundary-codecs.md`.
-  separate canonical Verify against the exact acknowledged commit. Human Review, Human QA, and Archive remain later
-  separate gates.
+- Consult Run Contract v3: resume tracker closeout for `establish-actual-execution-lifecycle` only if pending; otherwise select the next accepted Slice. Local delivery: `wiki/deliveries/RFC-0003-execution-lifecycle-foundation-S-01-actual-execution-lifecycle.md`.
+  `awaiting_verify`, and hand off to canonical Verify. Human Review, Human QA, and Archive remain separate later gates.
 
 ## Blockers
 - none
 
 ## Uncommitted Work
-- Task Group 12's final Apply evidence handoff and this next-state checkpoint.
+- Task Group 9's reconciled repository/module architecture documentation, actual-versus-hypothetical execution guide,
+  AC-001 through AC-005 evidence map, final clean validation/audit results, and this next-state checkpoint.
 
 ## Discoveries
 - The archived `establish-pure-instrument-economics` boundary was reconciled from commit `86613ee` before S-02
@@ -607,3 +607,184 @@ remains `applying` at revision 12 until Corgi acknowledges that commit.
 - Keep Group 12's clean validation matrix, packaged audit, readiness cross-check, benchmark smoke, and separate-gate
   handoff until Archive proves the complete codec capability; no Group 12 discovery is independently eligible for
   permanent promotion.
+- Fresh Run `run-faf4d455-8dbc-4369-a994-66f868cfa7ef` uses planning baseline
+  `57954ba7a534b44587eab28b9e3c45f94d1eae6c` at planning revision
+  `sha256:1cdf58a7f0094cce60e35d17849b37458553f7e8359f2e3a791d91140fc23c19`. The guarded adapter confirmed the closed
+  order-model/instrument-economic prerequisites, registered delivery worktree, current integration baseline, and
+  enabled local-commit/draft-PR authority.
+- The non-empty `trading-execution-lifecycle` artifact now owns ten checked nominal application/source identity values
+  under `trading.execution`. Their representations are final, structurally equal, Java-serialization rejecting, and
+  JVM-private at construction; factories validate representation without generation, hash, timestamp, receipt, or
+  delivery-order authority.
+- Dedicated completed-JAR classpaths prove quantities, instrument economics, order model, execution scenario, fee
+  policy, and risk cannot import actual execution. The execution classpath admits only quantities/reference data,
+  instrument economics, order model, Scala, and pure support while rejecting application/runtime, scenario/fee/risk,
+  codecs, effects, streams, clients, persistence, telemetry, venue SDKs, and JMH.
+- The final Task Group 1 gate passes formatting, JMH compilation, and 924 tests: the prior 913-test repository matrix
+  plus five execution identity tests, with six execution completed-JAR tests included in the 164-test adversarial
+  total. `javap -p`, same-package Java compilation, and reflection confirm that the remediated constructor bridge is
+  private and exposes no privileged lookup helper.
+- The automated Task Group 1 review found and remediated a JVM-public privileged constructor helper and replaced a
+  broad reverse-dependency proxy with a quantities-only completed-artifact classpath. The final scope, behavior,
+  architecture, JVM security, dependency, performance-applicability, and evidence pass has no findings, changed no
+  file, human-triaged no finding, and is not canonical Verify or Human Review.
+- Task Group 1's aggregate count was initially transcribed as 918 in its bridge/evidence summary; the command output
+  proves the correct count is 924 (the 913-test baseline plus five identity and six boundary tests). This forward
+  correction does not rewrite canonical evidence or Run history.
+- Source/account-qualified event, source-order, fill, stream, and position products now preserve native identity and
+  nominal scope. Ordering is an honest closed sum of explicitly unsequenced or authoritative position plus explicit
+  origin/continuation; checkpoint and completeness values retain the same qualified stream authority, including gap
+  and rewind-shaped evidence for later deterministic evaluation.
+- Checked lifecycle creation retains one trusted instrument, immutable typed order, logical execution-order identity,
+  lineage, execution target, dependent position/base/quote dimensions, exact ordered lots, initial signed position,
+  and the instrument's position grid. Missing identities and independent order/intent/lots instrument mismatches
+  accumulate in stable non-empty order before the only trusted constructor is reached.
+- Scala and Java completed-JAR fixtures, runtime subclass guards, reflection, serialization probes, and `javap -p`
+  prove qualified references, ordering evidence, checkpoints, completeness, targets, error collections, and lifecycle
+  construction cannot be forged by constructors, copies, package spoofing, unknown alternatives, or erased inputs.
+- The final Task Group 2 gate passes repository formatting and 933 tests: 11 execution-lifecycle tests and 167
+  completed-JAR/compiler/adversarial tests alongside the unchanged module suites. The automated final review checked
+  scope, structural equality/hash, dimensional retention, deterministic accumulation, JVM authority, dependency
+  purity, performance/security applicability, and evidence with no findings; it changed no file, human-triaged no
+  finding, and is not canonical Verify or Human Review.
+- Closed submit and cancel commands retain stable application-command identity plus the lifecycle-owned logical order,
+  immutable order, lineage, and source/account target. The immutable command index classifies exact redelivery as
+  idempotent, preserves the original under same-identity/different-body conflict, and records cancellation requests
+  separately without any transport-attempt, receipt, native-amend, or atomic cancel-replace authority.
+- Proven non-dispatch and indeterminate dispatch are distinct closed evidence alternatives tied to the exact original
+  submit body. Immutable transitions retain issued commands, dispatch knowledge, command conflicts, and cancellation
+  requests independently while unknown, non-submit, foreign-scope, and incompatible-body references return stable
+  accumulated typed violations.
+- The final Task Group 3 gate passes formatting and 941 tests: 19 execution-lifecycle tests and 167 completed-JAR/
+  compiler/adversarial tests alongside the unchanged module suites. ScalaCheck retry coverage, exhaustive packaged
+  clients, same-package Scala/Java construction rejection, runtime subclass guards, serialization probes, source
+  scans, and `javap -p` all pass.
+- The automated Task Group 3 review corrected command-scope mismatch attribution before its final pass, then checked
+  RFC/task scope, identity conflict precedence, original-identity recovery, dispatch uncertainty, deterministic typed
+  failures, dimensional/order association, immutable evidence separation, JVM construction authority, dependency
+  purity, performance/security applicability, and evidence with no findings. It changed no file during the final pass,
+  human-triaged no finding, and is not canonical Verify or Human Review.
+- Eight closed source-fact alternatives now cover acceptance, rejection, exact fill, correction, bust, effective
+  cancellation, reconciliation checkpoint, and source-order completeness. Every fact retains its qualified native
+  event, source/account target, logical execution order, qualified source order, and explicit sequenced or unsequenced
+  ordering evidence; fills and corrections additionally retain dimension-indexed positive lots and exact grid price.
+- Immutable source evidence indexes classify qualified event and fill replay separately from conflicting identity
+  reuse, retain economically equal fills under distinct qualified fill IDs, preserve all claimants at a conflicting
+  stream position, and materialize correction/bust references as unresolved until the referenced fill arrives.
+  Foreign target, logical-order, instrument, and grid inputs return stable closed-location violations without changing
+  trusted evidence.
+- The final Task Group 4 gate passes formatting and 950 tests: 28 execution-lifecycle tests and 167 completed-JAR/
+  compiler/adversarial tests alongside unchanged module suites. Exhaustive source alternatives, ScalaCheck replay,
+  modifier-before-fill recovery, same-package Scala/Java construction rejection, runtime subclass guards,
+  serialization, source scans, and `javap -p` all pass.
+- The automated Task Group 4 review removed an unintended JVM-visible fill-comparison helper before its final pass,
+  then checked RFC/task scope, native provenance, exact typed economics, event/fill/position classification, unresolved
+  references, deterministic typed failures, immutable retention, JVM authority, dependency purity,
+  performance/security applicability, and evidence with no findings. It changed no file during the final pass,
+  human-triaged no finding, and is not canonical Verify or Human Review.
+- Immutable `ExecutionState` now combines command, dispatch, and source evidence behind total applied, idempotent,
+  conflicting, and typed-rejected transitions. Canonical replay orders complete normalized bodies rather than arrival,
+  converges across conflict-bearing permutations, retains all conflicting evidence in its public observation, and
+  routes missing elements through checked rejection rather than failing during sorting.
+- Exact stream observation derives missing ranges, position conflicts, continuation/checkpoint rewinds, late-gap
+  closure, explicit unsequenced events, unresolved fill references, and source-authoritative completeness from
+  qualified immutable indexes. Stable closed diagnostic ordering is independent of map iteration and reports the
+  checkpoint position behind the previously established boundary in the correct direction.
+- The final Task Group 5 gate passes formatting and 961 tests: 39 execution-lifecycle tests and 167 completed-JAR/
+  compiler/adversarial tests alongside unchanged module suites. The automated review corrected deterministic conflict
+  keys, checkpoint-rewind direction, checked null replay, and retained-conflict observation before its final scope,
+  replay, completeness, JVM authority, architecture, complexity, security-applicability, and evidence pass returned no
+  findings. The final pass changed no file, human-triaged no finding, and is not canonical Verify or Human Review.
+- Closed submission knowledge now distinguishes issued/pending, accepted, rejected, proven non-dispatch,
+  indeterminate dispatch, execution proven without acceptance, authoritative absence, and conflicting evidence while
+  retaining the exact supporting commands, dispatch evidence, acknowledgements, fills, and absence reports.
+- `SourceOrderAbsent` records a qualified source lookup absence only with an explicit completeness boundary. It derives
+  authoritative non-acceptance only when that stream has no gap, rewind, position conflict, or unresolved reference;
+  otherwise the absence stays retained while submission knowledge remains incomplete.
+- Indeterminate dispatch rejects a fresh submit for the same logical execution order, admits exact same-command replay,
+  defensive cancellation, and later source reconciliation, and canonical replay reconstructs the dispatch-backed
+  original before evaluating a fresh duplicate. Acceptance, rejection, and fills refine uncertainty without deleting
+  it or fabricating an acknowledgement.
+- The final Task Group 6 gate passes formatting and 969 tests: 47 execution-lifecycle tests and 167 completed-JAR/
+  compiler/adversarial tests alongside unchanged module suites. The automated review added authoritative absence,
+  corrected replay admission order, and removed partial initialization/guard lookups before the final scope, all-eight-
+  alternative, conflict, recovery, JVM authority, architecture, complexity, security-applicability, and evidence pass
+  returned no findings. The final pass changed no file, human-triaged no finding, and is not canonical Verify or Human
+  Review.
+- The effective-fill ledger retains distinct qualified fills, de-duplicates same fill bodies, withholds invented value
+  from event/fill conflicts and unresolved or ambiguous modifier chains, and retains original plus modifying source
+  facts. One authoritatively ordered stream applies the last correction's exact lots/price or a final bust's zero
+  contribution; unsequenced, multi-stream, conflicting-position, and post-bust chains remain explicitly ambiguous.
+- Active fill counts derive exact signed `PositionLots` from the lifecycle's retained instrument grid and immutable
+  order side. Authoritative exposure is never capped at ordered lots: exact buy/sell overfills remain in known exposure
+  and carry an exact signed excess anomaly, while foreign target, logical-order, instrument, and grid economics are
+  rejected before ledger contribution.
+- The final Task Group 7 gate passes formatting and 978 tests: 56 execution-lifecycle tests and 167 completed-JAR/
+  compiler/adversarial tests alongside unchanged module suites. The automated review checked scope, AC-005 behavior,
+  exactness/dimensions, correction and conflict authority, deterministic equality/replay, JVM construction guards,
+  dependency purity, complexity, security applicability, and evidence with no findings. It changed no file,
+  human-triaged no finding, and is not canonical Verify or Human Review.
+- Closed cancellation knowledge keeps valid issued requests, conflicting reported requests, referenced submit bodies,
+  reported source confirmations, conflict-free authoritative confirmations, and command/source conflicts distinct.
+  Request evidence never fabricates effective cancellation, while independent unsequenced confirmation establishes
+  effectiveness without fabricating race order.
+- Post-cancellation anomalies use only conflict-free authoritative positions in the same qualified stream and retain
+  each active effective fill plus every provably prior cancellation and its exact signed exposure. Later authoritative
+  correction replaces the anomaly economics, bust removes its contribution, and overfill, event, fill-identity, and
+  stream-position conflicts remain composed in one immutable observation.
+- Checked mechanism-neutral lineage links require distinct logical execution orders, shared lineage and trusted
+  instrument definition, confirmed predecessor cancellation, and at least one retained successor submit. They make no
+  native-amend, atomicity, priority, cutover, or transport claim. Canonical command replay now orders submit bodies
+  before dependent cancellation bodies independently of command-ID lexical order.
+- The final Task Group 8 gate passes formatting and 988 tests: 66 execution-lifecycle tests and 167 completed-JAR/
+  compiler/adversarial tests alongside unchanged module suites. The automated review corrected submit-before-cancel
+  replay dependency ordering and explicit referenced-submit retention, then checked scope, cancellation authority,
+  race order, exact correction/bust effects, lineage, replay equality, JVM guards, dependency purity, complexity,
+  security applicability, and evidence with no findings. Its final pass changed no file, human-triaged no finding, and
+  is not canonical Verify or Human Review.
+- Repository and module documentation now record ten production modules, the acyclic actual-execution dependency node,
+  its independence from hypothetical scenarios, exact versus incomplete knowledge, source authority, correction/bust
+  and cancel-race examples, Slice non-goals, and the one-way later application/runtime/codec direction without
+  presenting any future mechanism as implemented.
+- The final clean dependency-ordered gate passes 988 tests: 601 quantities, 13 reference data, 9 application, 18
+  runtime, 13 instrument economics, 40 risk, 7 order model, 66 execution lifecycle, 16 execution scenario, 38 fee
+  policy/integration, and 167 completed-JAR/compiler/adversarial tests. Formatting and explicit JMH compilation pass.
+  Retained operation evidence reports two lookups/two updates/zero history scans for an indexed fill insertion and two
+  lookups/zero updates/zero scans for duplicate detection.
+- Packaged JAR/API, `javap -p`, completed-artifact classpath, source-import, public-signature, Java-serialization,
+  closed-alternative, and forbidden-name audits pass. Upstream and sibling classpaths contain no execution-lifecycle
+  artifact; its production classpath contains only quantities, reference data, instrument economics, order model,
+  Scala, Cats Core/Kernel, and Algebra. The adversarial fixture separately admits compiler support to run its negative
+  compilation probes. No native amend, atomic cancel-replace, downstream mechanism, or throwing placeholder is present.
+- All eleven deterministic Corgi readiness checks, including embedded strict OpenSpec validation, source provenance,
+  and complete AC traceability, pass at planning revision
+  `sha256:1cdf58a7f0094cce60e35d17849b37458553f7e8359f2e3a791d91140fc23c19`. The read-only semantic readiness review of
+  proposal, both specs, design, tasks, source, and traceability found no error, warning, or informational drift and
+  changed no planning file.
+- The automated Task Group 9 review checked scope, AC-001 through AC-005, architecture and future-layer direction, the
+  complete matrix, JMH and operation evidence, packaged/JVM boundaries, dependency purity, performance/security,
+  planning integrity, checkpoint accuracy, and gate separation with no findings. Its final pass changed no file,
+  human-triaged no finding, and is not canonical Verify or Human Review.
+
+## Promotion Queue
+- Review agent-configuration constraints before promoting any item to `memory/MEMORY.md`.
+- After whole-change approval, evaluate promotion of the actual-execution ownership boundary and application/source
+  identity authority model.
+- After whole-change approval, evaluate promotion of the JVM-private cached-method-handle and completed-JAR
+  reverse-dependency guard pattern.
+- After whole-change approval, evaluate promotion of qualified source/account authority and explicit ordering,
+  continuation, checkpoint, and completeness evidence.
+- After whole-change approval, evaluate promotion of stable command-identity conflict semantics and the separation of
+  commands, dispatch uncertainty, cancellation requests, and transport attempts.
+- After whole-change approval, evaluate promotion of qualified source-fact provenance, dual event/fill identity
+  indexing, and explicit unresolved modifier references.
+- After whole-change approval, evaluate promotion of canonical conflict-bearing replay, exact stream completeness
+  diagnostics, and public retained-conflict observations.
+- After whole-change approval, evaluate promotion of the closed submission-knowledge lattice, explicit qualified
+  authoritative-absence evidence, and indeterminate same-identity recovery rule.
+- After whole-change approval, evaluate promotion of effective-fill conflict/ambiguity semantics, immutable
+  correction/bust history, and exact signed overfill exposure.
+- After whole-change approval, evaluate promotion of closed cancellation knowledge, authoritative race classification,
+  exact post-cancellation exposure, and checked mechanism-neutral execution-order lineage.
+- After whole-change approval, evaluate promotion of the actual-versus-hypothetical execution ownership distinction
+  and the one-way application/runtime/codec consumption direction.

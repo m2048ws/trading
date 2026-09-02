@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 3,
+  "groupId": "3",
+  "checks": [
+    {
+      "name": "sbt -batch scalafmtCheckAll executionLifecycle/testOnly trading.execution.CommandStateSuite",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:execution-lifecycle%2Ftarget%2Ftest-reports%2FTEST-trading.execution.CommandStateSuite.xml#sha256:a73152647d782496d629e565d9ceb0b9def939307836624dfade8d6d39f16169"
+      ]
+    },
+    {
+      "name": "sbt -batch adversarialBoundary/testOnly external.ExecutionLifecycleCompilerBoundarySuite",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:adversarial-boundary%2Ftarget%2Ftest-reports%2FTEST-external.ExecutionLifecycleCompilerBoundarySuite.xml#sha256:3e12b48c819cee144ee609f26e856ee05ba7da8a874bb144e26bdfa7e25e8b0d",
+        "file:execution-lifecycle%2Ftarget%2Fscala-3.8.4%2Ftrading-execution-lifecycle_3-0.1.0-SNAPSHOT.jar#sha256:ff4db6bac5612060630f647e0d90b3efa569a7840c9381e9f5f432cdbda5e4dc"
+      ]
+    },
+    {
+      "name": "sbt -batch test (941 tests), javap -p, serialization, and forbidden API/import scans",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:execution-lifecycle%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fexecution%2FCommands.scala#sha256:50cef4f9c2c7bd780a8854d4f8a611f4cc75d82582f2ce9ca68417b5661b7bc9",
+        "file:execution-lifecycle%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fexecution%2FCommandStateSuite.scala#sha256:296a5961b2bedd06e9048eb461851c8635e2dfabb7c55486853f4b67c61f03e7",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fexecution-lifecycle-compiler%2Fnegative%2FPackageSpoofExecutionAuthority.scala#sha256:2b02782ee0de7a2cb849e1d386110fd4fd33995e1c9eed0b8c0c2dd717907c8c",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fexecution-lifecycle-java%2Fpositive%2FRejectedExecutionAlternatives.java#sha256:ef01eec95648c913834f07f20667977f4f363d8aa349c8dab39f5fd89be83dbb"
+      ]
+    }
+  ],
+  "automatedReview": {
+    "verdict": "pass",
+    "findings": []
+  },
+  "artifacts": [
+    "file:execution-lifecycle%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fexecution%2FCommands.scala#sha256:50cef4f9c2c7bd780a8854d4f8a611f4cc75d82582f2ce9ca68417b5661b7bc9",
+    "file:execution-lifecycle%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fexecution%2FCommandStateSuite.scala#sha256:296a5961b2bedd06e9048eb461851c8635e2dfabb7c55486853f4b67c61f03e7",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fexecution-lifecycle-compiler%2Fnegative%2FPackageSpoofExecutionAuthority.scala#sha256:2b02782ee0de7a2cb849e1d386110fd4fd33995e1c9eed0b8c0c2dd717907c8c",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fexecution-lifecycle-compiler%2Fpositive%2FExecutionAuthorityBoundaryClient.scala#sha256:422d514e5f9b927695ff4f5218601ee13fb78a240bb3ea34cf35b7a6ae998223",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fexecution-lifecycle-java%2Fnegative%2FRejectedExecutionIdentityConstruction.java#sha256:e412bc8e5db8f4b8ee6692b9ace91f42a2d6fe4720bfcba25467fe3e1c54c3ed",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fexecution-lifecycle-java%2Fpositive%2FRejectedExecutionAlternatives.java#sha256:ef01eec95648c913834f07f20667977f4f363d8aa349c8dab39f5fd89be83dbb",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FExecutionLifecycleCompilerBoundarySuite.scala#sha256:46742d0b9c5a96d2bce6d977feeb3ce8c49e5863fa2414a9a073e0eed858872c",
+    "file:memory%2Fsession-bridge.md#sha256:9730f2d5d17658e383f329d2894873ebffd37595878c90f0ae99144f1198c058"
+  ],
+  "summary": "Task Group 3 established closed immutable submit/cancel commands, identity-indexed idempotent/conflict transitions, distinct dispatch uncertainty evidence, separate immutable command/dispatch/conflict/cancellation state, and deterministic typed rejection. Formatting, 941 aggregate tests, property and completed-JAR coverage, JVM construction/serialization guards, source/API scans, javap inspection, and the final automated review passed."
+}

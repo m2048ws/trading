@@ -11,6 +11,8 @@ val jdkRelease                      = "25"
 
 val staticDimensionCompilerClasspath =
   taskKey[Seq[File]]("Immutable classpath for real-source static-dimension compiler fixtures")
+val quantitiesCompilerClasspath =
+  taskKey[Seq[File]]("Immutable classpath for completed-JAR quantities compiler fixtures")
 val applicationBoundaryClasspath =
   taskKey[Seq[File]]("Completed application artifact classpath without runtime dependencies")
 val runtimeBoundaryClasspath =
@@ -23,6 +25,8 @@ val riskCompilerClasspath =
   taskKey[Seq[File]]("Immutable classpath for completed-JAR risk compiler fixtures")
 val orderModelCompilerClasspath =
   taskKey[Seq[File]]("Immutable classpath for completed-JAR order-model compiler fixtures")
+val executionLifecycleCompilerClasspath =
+  taskKey[Seq[File]]("Immutable classpath for completed-JAR actual-execution compiler fixtures")
 val executionScenarioCompilerClasspath =
   taskKey[Seq[File]]("Immutable classpath for completed-JAR execution-scenario compiler fixtures")
 val feePolicyCompilerClasspath =
@@ -46,6 +50,7 @@ lazy val root =
       instrumentEconomics,
       risk,
       orderModel,
+      executionLifecycle,
       executionScenario,
       boundaryCodecs,
       feePolicy,
@@ -68,6 +73,7 @@ lazy val root =
             instrumentEconomics / Test / test,
             risk / Test / test,
             orderModel / Test / test,
+            executionLifecycle / Test / test,
             executionScenario / Test / test,
             boundaryCodecs / Test / test,
             feePolicy / Test / test,
@@ -209,6 +215,27 @@ lazy val orderModel =
       )
     )
 
+lazy val executionLifecycle =
+  project
+    .in(file("execution-lifecycle"))
+    .dependsOn(instrumentEconomics % "compile->compile;test->test", orderModel)
+    .settings(
+      name       := "trading-execution-lifecycle",
+      moduleName := "trading-execution-lifecycle",
+
+      Compile / exportJars := true,
+
+      Test / classLoaderLayeringStrategy := ClassLoaderLayeringStrategy.Flat,
+      Test / fork                        := true,
+
+      libraryDependencies ++= Seq(
+        "org.typelevel"  %% "cats-core"        % catsVersion,
+        "org.scalameta"  %% "munit"            % "1.3.5"  % Test,
+        "org.scalacheck" %% "scalacheck"       % "1.20.0" % Test,
+        "org.scalameta"  %% "munit-scalacheck" % "1.3.0"  % Test
+      )
+    )
+
 lazy val executionScenario =
   project
     .in(file("execution-scenario"))
@@ -318,6 +345,7 @@ lazy val adversarialBoundary =
       instrumentEconomics,
       risk,
       orderModel,
+      executionLifecycle,
       executionScenario,
       boundaryCodecs,
       feePolicy
@@ -354,6 +382,20 @@ lazy val adversarialBoundary =
         (moduleProducts ++ quantitiesDependencies ++ referenceDataDependencies ++ applicationDependencies ++
           runtimeDependencies ++ instrumentDependencies ++ orderDependencies ++ scenarioDependencies ++
           riskDependencies ++ boundaryCodecDependencies ++ feePolicyDependencies ++ compilerDependencies).distinct
+      },
+      quantitiesCompilerClasspath := {
+        val moduleProducts         = (quantities / Compile / exportedProducts).value.files
+        val quantitiesDependencies = (quantities / Compile / externalDependencyClasspath).value.files
+        val compilerDependencies   = (Test / externalDependencyClasspath).value.files.filter { file =>
+          val name = file.getName
+          name.startsWith("scala3-compiler_3-") ||
+          name.startsWith("scala3-interfaces-") ||
+          name.startsWith("tasty-core_3-") ||
+          name.startsWith("scala-asm-") ||
+          name.startsWith("compiler-interface-") ||
+          name.startsWith("util-interface-")
+        }
+        (moduleProducts ++ quantitiesDependencies ++ compilerDependencies).distinct
       },
       applicationBoundaryClasspath := {
         val products = (quantities / Compile / exportedProducts).value.files ++
@@ -441,6 +483,29 @@ lazy val adversarialBoundary =
         (moduleProducts ++ quantitiesDependencies ++ referenceDependencies ++ instrumentDependencies ++
           orderDependencies ++ compilerDependencies).distinct
       },
+      executionLifecycleCompilerClasspath := {
+        val moduleProducts = (quantities / Compile / exportedProducts).value.files ++
+          (referenceData / Compile / exportedProducts).value.files ++
+          (instrumentEconomics / Compile / exportedProducts).value.files ++
+          (orderModel / Compile / exportedProducts).value.files ++
+          (executionLifecycle / Compile / exportedProducts).value.files
+        val quantitiesDependencies = (quantities / Compile / externalDependencyClasspath).value.files
+        val referenceDependencies  = (referenceData / Compile / externalDependencyClasspath).value.files
+        val instrumentDependencies = (instrumentEconomics / Compile / externalDependencyClasspath).value.files
+        val orderDependencies      = (orderModel / Compile / externalDependencyClasspath).value.files
+        val executionDependencies  = (executionLifecycle / Compile / externalDependencyClasspath).value.files
+        val compilerDependencies   = (Test / externalDependencyClasspath).value.files.filter { file =>
+          val name = file.getName
+          name.startsWith("scala3-compiler_3-") ||
+          name.startsWith("scala3-interfaces-") ||
+          name.startsWith("tasty-core_3-") ||
+          name.startsWith("scala-asm-") ||
+          name.startsWith("compiler-interface-") ||
+          name.startsWith("util-interface-")
+        }
+        (moduleProducts ++ quantitiesDependencies ++ referenceDependencies ++ instrumentDependencies ++
+          orderDependencies ++ executionDependencies ++ compilerDependencies).distinct
+      },
       executionScenarioCompilerClasspath := {
         val moduleProducts = (quantities / Compile / exportedProducts).value.files ++
           (referenceData / Compile / exportedProducts).value.files ++
@@ -519,6 +584,12 @@ lazy val adversarialBoundary =
         outputs.map(_._1)
       }.taskValue,
       Test / resourceGenerators += Def.task {
+        val output    = (Test / resourceManaged).value / "quantities-compiler.classpath"
+        val classpath = quantitiesCompilerClasspath.value.map(_.getAbsolutePath).mkString(java.io.File.pathSeparator)
+        IO.write(output, classpath)
+        Seq(output)
+      }.taskValue,
+      Test / resourceGenerators += Def.task {
         val output    = (Test / resourceManaged).value / "instrument-economics-compiler.classpath"
         val classpath =
           instrumentEconomicsCompilerClasspath.value.map(_.getAbsolutePath).mkString(java.io.File.pathSeparator)
@@ -534,6 +605,13 @@ lazy val adversarialBoundary =
       Test / resourceGenerators += Def.task {
         val output    = (Test / resourceManaged).value / "order-model-compiler.classpath"
         val classpath = orderModelCompilerClasspath.value.map(_.getAbsolutePath).mkString(java.io.File.pathSeparator)
+        IO.write(output, classpath)
+        Seq(output)
+      }.taskValue,
+      Test / resourceGenerators += Def.task {
+        val output    = (Test / resourceManaged).value / "execution-lifecycle-compiler.classpath"
+        val classpath =
+          executionLifecycleCompilerClasspath.value.map(_.getAbsolutePath).mkString(java.io.File.pathSeparator)
         IO.write(output, classpath)
         Seq(output)
       }.taskValue,

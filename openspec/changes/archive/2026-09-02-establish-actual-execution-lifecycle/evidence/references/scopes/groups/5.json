@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 3,
+  "scope": "group-5",
+  "runId": "run-faf4d455-8dbc-4369-a994-66f868cfa7ef",
+  "references": [
+    {
+      "reference": "file:.scalafmt.conf#sha256:efecb2eaad5b314fc053f173f899c8c87f9a468432c8444593c0dcb386a3207f",
+      "sourcePath": ".scalafmt.conf",
+      "digest": "sha256:efecb2eaad5b314fc053f173f899c8c87f9a468432c8444593c0dcb386a3207f",
+      "archivePath": "references/blobs/efecb2eaad5b314fc053f173f899c8c87f9a468432c8444593c0dcb386a3207f"
+    },
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FExecutionLifecycleCompilerBoundarySuite.scala#sha256:fc50b5ef0cea4151460b92dd7c4c958f51ab45929bd772c5f5e6adc6c03ad093",
+      "sourcePath": "adversarial-boundary/src/test/scala/external/ExecutionLifecycleCompilerBoundarySuite.scala",
+      "digest": "sha256:fc50b5ef0cea4151460b92dd7c4c958f51ab45929bd772c5f5e6adc6c03ad093",
+      "archivePath": "references/blobs/fc50b5ef0cea4151460b92dd7c4c958f51ab45929bd772c5f5e6adc6c03ad093"
+    },
+    {
+      "reference": "file:build.sbt#sha256:47ece9b184d750d417cde80384dddf73905fabc118ed6dd2de3a4f98cb9a0b50",
+      "sourcePath": "build.sbt",
+      "digest": "sha256:47ece9b184d750d417cde80384dddf73905fabc118ed6dd2de3a4f98cb9a0b50",
+      "archivePath": "references/blobs/47ece9b184d750d417cde80384dddf73905fabc118ed6dd2de3a4f98cb9a0b50"
+    },
+    {
+      "reference": "file:execution-lifecycle%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fexecution%2FExecutionState.scala#sha256:4c6f7c4a012d24b0e1176f769d14268309b235f0a346683ea790e4087c0fd113",
+      "sourcePath": "execution-lifecycle/src/main/scala/trading/execution/ExecutionState.scala",
+      "digest": "sha256:4c6f7c4a012d24b0e1176f769d14268309b235f0a346683ea790e4087c0fd113",
+      "archivePath": "references/blobs/4c6f7c4a012d24b0e1176f769d14268309b235f0a346683ea790e4087c0fd113"
+    },
+    {
+      "reference": "file:execution-lifecycle%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fexecution%2FExecutionStateSuite.scala#sha256:eaeeabc367a967ca53a9f57ae3356c51d21a14ae10ca93503de8a034c4408278",
+      "sourcePath": "execution-lifecycle/src/test/scala/trading/execution/ExecutionStateSuite.scala",
+      "digest": "sha256:eaeeabc367a967ca53a9f57ae3356c51d21a14ae10ca93503de8a034c4408278",
+      "archivePath": "references/blobs/eaeeabc367a967ca53a9f57ae3356c51d21a14ae10ca93503de8a034c4408278"
+    },
+    {
+      "reference": "file:memory%2Fsession-bridge.md#sha256:77bad258ef901cca0453ba480c9e529f93a182468784d667e54d048a92187e10",
+      "sourcePath": "memory/session-bridge.md",
+      "digest": "sha256:77bad258ef901cca0453ba480c9e529f93a182468784d667e54d048a92187e10",
+      "archivePath": "references/blobs/77bad258ef901cca0453ba480c9e529f93a182468784d667e54d048a92187e10"
+    }
+  ]
+}

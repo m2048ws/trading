@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 3,
+  "changeName": "establish-actual-execution-lifecycle",
+  "runId": "run-faf4d455-8dbc-4369-a994-66f868cfa7ef",
+  "finalRevision": "4f8d8194fe1bfba185c9effb6ab2ca6b1a653a41",
+  "planningRevision": "sha256:1cdf58a7f0094cce60e35d17849b37458553f7e8359f2e3a791d91140fc23c19",
+  "contract": {
+    "kind": "rfc-slice",
+    "deliveryRef": "RFC-0003-execution-lifecycle-foundation/S-01-actual-execution-lifecycle",
+    "rfcId": "RFC-0003-execution-lifecycle-foundation",
+    "rfcDigest": "sha256:4fa0a8d017bf9b505cfa6150605e28dfc47e3c185acfad1070df56d9523da360",
+    "acceptedCommit": "c3e3071cfd4a39dc094404732d58eb0037c09f16",
+    "sliceId": "S-01-actual-execution-lifecycle",
+    "sourcePath": "openspec/changes/establish-actual-execution-lifecycle/corgi/source.yaml",
+    "sourceDigest": "sha256:f11a68db674bf8a6db3dbf79a9dc4d81df5403a8e597c182714ae2d4a296b5fc",
+    "traceabilityPath": "openspec/changes/establish-actual-execution-lifecycle/corgi/traceability.yaml",
+    "traceabilityDigest": "sha256:5bc845cce8d1832066d03138070f420341dcb5ea8219116e97416860e971ff0f",
+    "acceptance": [
+      {
+        "id": "AC-001",
+        "evidence": "automated",
+        "taskGroups": [
+          "1",
+          "9"
+        ]
+      },
+      {
+        "id": "AC-002",
+        "evidence": "both",
+        "taskGroups": [
+          "1",
+          "2",
+          "3",
+          "4",
+          "9"
+        ]
+      },
+      {
+        "id": "AC-003",
+        "evidence": "automated",
+        "taskGroups": [
+          "4",
+          "5",
+          "9"
+        ]
+      },
+      {
+        "id": "AC-004",
+        "evidence": "both",
+        "taskGroups": [
+          "3",
+          "6",
+          "9"
+        ]
+      },
+      {
+        "id": "AC-005",
+        "evidence": "both",
+        "taskGroups": [
+          "4",
+          "7",
+          "8",
+          "9"
+        ]
+      }
+    ],
+    "tracker": {
+      "provider": "github",
+      "idempotencyKey": "a6e4af5bd32e974b1f0528fec8378c58bfcae68efc9e6fa7642b6c2e3f917665",
+      "issue": {
+        "id": "34",
+        "url": "https://github.com/m2048ws/trading/issues/34"
+      }
+    }
+  },
+  "archiveIntentId": "archive-a419b1f4-c163-4c90-9bcd-479d0186686c"
+}

@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 3,
+  "groupId": "2",
+  "checks": [
+    {
+      "name": "sbt -batch scalafmtCheckAll executionLifecycle/test",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:execution-lifecycle%2Ftarget%2Ftest-reports%2FTEST-trading.execution.ExecutionAuthoritySuite.xml#sha256:20bed74ac29d249ad4622454cbc510b7d91704d34514a2748aac800adca4a957",
+        "file:execution-lifecycle%2Ftarget%2Ftest-reports%2FTEST-trading.execution.ExecutionIdentitySuite.xml#sha256:eab40bb71e06bc3eb05fab4acd2035daa7f1c356f63c470be2e371b6e8ecd73b"
+      ]
+    },
+    {
+      "name": "sbt -batch adversarialBoundary/testOnly external.ExecutionLifecycleCompilerBoundarySuite",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:adversarial-boundary%2Ftarget%2Ftest-reports%2FTEST-external.ExecutionLifecycleCompilerBoundarySuite.xml#sha256:4b034c85b9a704101d088b08abe740e0f51f4958c1fb9e61fcf1cb6a4430699d",
+        "file:execution-lifecycle%2Ftarget%2Fscala-3.8.4%2Ftrading-execution-lifecycle_3-0.1.0-SNAPSHOT.jar#sha256:6985a3d383a3da91269be1a621fc4692807116c14bc2d2bba9603639707c8a40"
+      ]
+    },
+    {
+      "name": "sbt -batch test and javap -p authority inspection",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:execution-lifecycle%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fexecution%2FAuthority.scala#sha256:29df188c1a5b55f6c7dbd0a7709a7288e9af9d0b2672d59bb1d3ba44132aaa40",
+        "file:execution-lifecycle%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fexecution%2FOrdering.scala#sha256:d34c44b3af690f69e53fd4d0bf0fb7906c8c5f1d6fa34815b93e8d2d903bda63",
+        "file:execution-lifecycle%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fexecution%2FLifecycle.scala#sha256:a6156e9eb48d55cf3d0289e12058d2d825d6dbb7360d5cc06fd7009a7022837b",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fexecution-lifecycle-java%2Fpositive%2FRejectedExecutionAlternatives.java#sha256:bd1e952b67d38161f5a5287ffb497aeb0a224210514173b3d2648db4d2db6071"
+      ]
+    }
+  ],
+  "automatedReview": {
+    "verdict": "pass",
+    "findings": []
+  },
+  "artifacts": [
+    "file:execution-lifecycle%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fexecution%2FAuthority.scala#sha256:29df188c1a5b55f6c7dbd0a7709a7288e9af9d0b2672d59bb1d3ba44132aaa40",
+    "file:execution-lifecycle%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fexecution%2FOrdering.scala#sha256:d34c44b3af690f69e53fd4d0bf0fb7906c8c5f1d6fa34815b93e8d2d903bda63",
+    "file:execution-lifecycle%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fexecution%2FLifecycle.scala#sha256:a6156e9eb48d55cf3d0289e12058d2d825d6dbb7360d5cc06fd7009a7022837b",
+    "file:execution-lifecycle%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fexecution%2FExecutionAuthoritySuite.scala#sha256:42aaa08fec9dab65572a630c5d7a39fb43aad1ad19042cc38dc5ed502e959a41",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FExecutionLifecycleCompilerBoundarySuite.scala#sha256:f79406a9415b29dc0d6cce6ee7abada0d601a077f5b9fcba31965291b5f1e0e0",
+    "file:memory%2Fsession-bridge.md#sha256:e9328ca01cae92f9b2d2be9898a2a7a6c91d95a0cbb95045afc60420dc4a0c23"
+  ],
+  "summary": "Task Group 2 established source/account-qualified identities, explicit ordering/continuation/checkpoint/completeness evidence, and checked dimension-preserving lifecycle construction. Formatting, 933 aggregate tests, completed-JAR Scala/Java/JVM guards, serialization, equality/hash, deterministic accumulation, and the final automated review passed; the bridge also records the forward correction of Group 1's aggregate count from 918 to 924."
+}
