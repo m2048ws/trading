@@ -15,23 +15,23 @@ updated: 2026-09-02
 - **Change**: establish-actual-execution-lifecycle
 - **Worktree**: /Users/m/src/money/.worktrees/establish-actual-execution-lifecycle
 - **Phase at Checkpoint**: applying
-- **Task Group at Checkpoint**: 5
-- **Observed Run Revision**: 6
-- **Last Verified HEAD**: 04feb6d34ddc846215e57ed3a81f2fd1b22d44fe
+- **Task Group at Checkpoint**: 6
+- **Observed Run Revision**: 7
+- **Last Verified HEAD**: b1b6b336ad5dce2ba5c48fa13de2cf40e528fee9
 
-The phase and revision above are the required next checkpoint carried by Task Group 5. Live Run Contract
-`run-faf4d455-8dbc-4369-a994-66f868cfa7ef` remains `applying` at revision 5 until Corgi acknowledges that commit.
+The phase and revision above are the required next checkpoint carried by Task Group 6. Live Run Contract
+`run-faf4d455-8dbc-4369-a994-66f868cfa7ef` remains `applying` at revision 6 until Corgi acknowledges that commit.
 
 ## Next Action
-- Commit and acknowledge `establish-actual-execution-lifecycle` Task Group 5, synchronize draft PR #35, then implement
-  Task Group 6. Verify, Human Review, Human QA, and Archive remain separate gates.
+- Commit and acknowledge `establish-actual-execution-lifecycle` Task Group 6, synchronize draft PR #35, then implement
+  Task Group 7. Verify, Human Review, Human QA, and Archive remain separate gates.
 
 ## Blockers
 - none
 
 ## Uncommitted Work
-- Task Group 5's immutable combined lifecycle transition/replay state, exact stream/completeness diagnostics,
-  deterministic conflict/reference observations, completed-JAR/JVM guards, and this next-state checkpoint.
+- Task Group 6's closed submission-knowledge product, explicit authoritative-absence evidence, indeterminate duplicate
+  prevention and replay recovery, completed-JAR/JVM guards, and this next-state checkpoint.
 
 ## Discoveries
 - The archived `establish-pure-instrument-economics` boundary was reconciled from commit `86613ee` before S-02
@@ -468,6 +468,22 @@ The phase and revision above are the required next checkpoint carried by Task Gr
   keys, checkpoint-rewind direction, checked null replay, and retained-conflict observation before its final scope,
   replay, completeness, JVM authority, architecture, complexity, security-applicability, and evidence pass returned no
   findings. The final pass changed no file, human-triaged no finding, and is not canonical Verify or Human Review.
+- Closed submission knowledge now distinguishes issued/pending, accepted, rejected, proven non-dispatch,
+  indeterminate dispatch, execution proven without acceptance, authoritative absence, and conflicting evidence while
+  retaining the exact supporting commands, dispatch evidence, acknowledgements, fills, and absence reports.
+- `SourceOrderAbsent` records a qualified source lookup absence only with an explicit completeness boundary. It derives
+  authoritative non-acceptance only when that stream has no gap, rewind, position conflict, or unresolved reference;
+  otherwise the absence stays retained while submission knowledge remains incomplete.
+- Indeterminate dispatch rejects a fresh submit for the same logical execution order, admits exact same-command replay,
+  defensive cancellation, and later source reconciliation, and canonical replay reconstructs the dispatch-backed
+  original before evaluating a fresh duplicate. Acceptance, rejection, and fills refine uncertainty without deleting
+  it or fabricating an acknowledgement.
+- The final Task Group 6 gate passes formatting and 969 tests: 47 execution-lifecycle tests and 167 completed-JAR/
+  compiler/adversarial tests alongside unchanged module suites. The automated review added authoritative absence,
+  corrected replay admission order, and removed partial initialization/guard lookups before the final scope, all-eight-
+  alternative, conflict, recovery, JVM authority, architecture, complexity, security-applicability, and evidence pass
+  returned no findings. The final pass changed no file, human-triaged no finding, and is not canonical Verify or Human
+  Review.
 
 ## Promotion Queue
 - Review agent-configuration constraints before promoting any item to `memory/MEMORY.md`.
@@ -483,3 +499,5 @@ The phase and revision above are the required next checkpoint carried by Task Gr
   indexing, and explicit unresolved modifier references.
 - After whole-change approval, evaluate promotion of canonical conflict-bearing replay, exact stream completeness
   diagnostics, and public retained-conflict observations.
+- After whole-change approval, evaluate promotion of the closed submission-knowledge lattice, explicit qualified
+  authoritative-absence evidence, and indeterminate same-identity recovery rule.

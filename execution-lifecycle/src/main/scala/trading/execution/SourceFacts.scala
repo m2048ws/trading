@@ -120,6 +120,12 @@ private object SourceFactValidation:
             SourceFactLocation.Completeness,
             complete.completeness.completeThrough.stream.target
           )
+        case absent: SourceOrderAbsent[D, B, Q] =>
+          qualifiedTarget(
+            lifecycle,
+            SourceFactLocation.Completeness,
+            absent.completeness.completeThrough.stream.target
+          )
         case _: OrderAccepted[D, B, Q]         => Vector.empty
         case _: OrderRejected[D, B, Q]         => Vector.empty
         case _: CancellationEffective[D, B, Q] => Vector.empty
@@ -235,7 +241,8 @@ object SourceFact:
         runtimeClass == classOf[FillBusted[?, ?, ?]] ||
         runtimeClass == classOf[CancellationEffective[?, ?, ?]] ||
         runtimeClass == classOf[ReconciliationCheckpoint[?, ?, ?]] ||
-        runtimeClass == classOf[SourceOrderCompleted[?, ?, ?]]
+        runtimeClass == classOf[SourceOrderCompleted[?, ?, ?]] ||
+        runtimeClass == classOf[SourceOrderAbsent[?, ?, ?]]
     if !supported then
       throw new IllegalAccessError(s"unsupported SourceFact implementation: ${runtimeClass.getName}")
 
@@ -769,3 +776,73 @@ object SourceOrderCompleted:
     )
   end create
 end SourceOrderCompleted
+
+/** An explicit source lookup reporting that the qualified source order is absent through a declared boundary. */
+@nowarn("msg=Ignoring.*qualifier")
+final class SourceOrderAbsent[D <: Dim, B <: Dim, Q <: Dim] private[this] (
+  val eventId: QualifiedSourceEventId,
+  val executionOrderId: ExecutionOrderId,
+  val sourceOrderId: QualifiedSourceOrderId,
+  val completeness: SourceCompleteness,
+  val ordering: SourceOrdering)
+  extends SourceFact[D, B, Q]():
+
+  override def equals(other: Any): Boolean = other match
+    case that: SourceOrderAbsent[?, ?, ?] =>
+      SourceFactEquality.common(this, that) && completeness == that.completeness
+    case _ => false
+  override def hashCode(): Int = ("absent", SourceFactEquality.commonHash(this), completeness).hashCode
+
+object SourceOrderAbsent:
+  private val constructor: MethodHandle =
+    MethodHandles
+      .privateLookupIn(classOf[SourceOrderAbsent[?, ?, ?]], MethodHandles.lookup())
+      .findConstructor(
+        classOf[SourceOrderAbsent[?, ?, ?]],
+        MethodType.methodType(
+          classOf[Unit],
+          classOf[QualifiedSourceEventId],
+          classOf[ExecutionOrderId],
+          classOf[QualifiedSourceOrderId],
+          classOf[SourceCompleteness],
+          classOf[SourceOrdering]
+        )
+      )
+
+  private def construct[D <: Dim, B <: Dim, Q <: Dim](
+    eventId: QualifiedSourceEventId,
+    executionOrderId: ExecutionOrderId,
+    sourceOrderId: QualifiedSourceOrderId,
+    completeness: SourceCompleteness,
+    ordering: SourceOrdering
+  ): SourceOrderAbsent[D, B, Q] =
+    constructor
+      .invoke(eventId, executionOrderId, sourceOrderId, completeness, ordering)
+      .asInstanceOf[SourceOrderAbsent[D, B, Q]]
+
+  def create[D <: Dim, B <: Dim, Q <: Dim](
+    lifecycle: ExecutionLifecycle[D, B, Q]
+  )(
+    eventId: QualifiedSourceEventId,
+    executionOrderId: ExecutionOrderId,
+    sourceOrderId: QualifiedSourceOrderId,
+    completeness: SourceCompleteness,
+    ordering: SourceOrdering
+  ): Either[SourceFactViolations, SourceOrderAbsent[D, B, Q]] =
+    val missing =
+      Vector(Option.when(completeness == null)(MissingSourceFactValue(SourceFactLocation.Completeness))).flatten
+    val target =
+      if completeness == null then Vector.empty
+      else
+        SourceFactValidation.qualifiedTarget(
+          lifecycle,
+          SourceFactLocation.Completeness,
+          completeness.completeThrough.stream.target
+        )
+    val violations =
+      SourceFactValidation.common(lifecycle, eventId, executionOrderId, sourceOrderId, ordering) ++ missing ++ target
+    SourceFactViolations.from(violations).toLeft(
+      construct(eventId, executionOrderId, sourceOrderId, completeness, ordering)
+    )
+  end create
+end SourceOrderAbsent

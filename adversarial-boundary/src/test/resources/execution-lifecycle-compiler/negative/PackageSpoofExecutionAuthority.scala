@@ -38,6 +38,7 @@ object PackageSpoofExecutionAuthority:
   val effectiveCancellation = new CancellationEffective[Dim, Dim, Dim](null, null, null, null)
   val reconciliation = new ReconciliationCheckpoint[Dim, Dim, Dim](null, null, null, null, null)
   val completed = new SourceOrderCompleted[Dim, Dim, Dim](null, null, null, null, null)
+  val absent = new SourceOrderAbsent[Dim, Dim, Dim](null, null, null, null, null)
   val classifications = new SourceFactClassifications(Vector.empty)
   val sourceConflict = new SourceFactConflict[Dim, Dim, Dim](null, null)
   val fillConflict = new FillIdentityConflict[Dim, Dim, Dim](null, null)
@@ -47,13 +48,24 @@ object PackageSpoofExecutionAuthority:
   val sourceRejected = new SourceFactRejected[Dim, Dim, Dim](null, null)
   val sourceState = new SourceEvidenceState[Dim, Dim, Dim](
     null, Map.empty, Map.empty, Vector.empty, Vector.empty, Map.empty, Map.empty, Map.empty)
+  val submissionConflicts = new SubmissionConflicts(Vector.empty)
+  val submissionEvidence = new SubmissionEvidence[Dim, Dim, Dim](
+    Set.empty, Set.empty, Set.empty, Set.empty, Set.empty, Set.empty)
+  val pendingSubmission = new IssuedPendingSubmission[Dim, Dim, Dim](null)
+  val acceptedSubmission = new AcceptedSubmission[Dim, Dim, Dim](null)
+  val rejectedSubmission = new RejectedSubmission[Dim, Dim, Dim](null)
+  val notDispatchedSubmission = new ProvenNotDispatchedSubmission[Dim, Dim, Dim](null)
+  val indeterminateSubmission = new IndeterminateSubmission[Dim, Dim, Dim](null)
+  val executionProvenSubmission = new ExecutionProvenSubmission[Dim, Dim, Dim](null)
+  val absentSubmission = new AuthoritativelyAbsentSubmission[Dim, Dim, Dim](null)
+  val conflictingSubmission = new ConflictingSubmission[Dim, Dim, Dim](null, null)
   val executionState = new ExecutionState[Dim, Dim, Dim](null, null, null, null)
   val lifecycleAccepted = new LifecycleAccepted[Dim, Dim, Dim](null, null, null)
   val lifecycleRejected = new LifecycleRejected[Dim, Dim, Dim](null, null, null)
   val lifecycleDiagnostics = new LifecycleDiagnostics(Vector.empty)
   val lifecycleObservation = new LifecycleObservation[Dim, Dim, Dim](
-    null, Map.empty, Map.empty, Map.empty, Vector.empty, Vector.empty, Vector.empty, Map.empty, Map.empty, Set.empty,
-    Vector.empty, Map.empty, None)
+    null, None, Map.empty, Map.empty, Map.empty, Vector.empty, Vector.empty, Vector.empty, Map.empty, Map.empty,
+    Set.empty, Vector.empty, Map.empty, None)
   val lifecycleReplay = new LifecycleReplayResult[Dim, Dim, Dim](null, Vector.empty)
   val copied = checkedTarget.copy(source = null)
   final class ForgedContinuation extends SourceContinuation()
@@ -73,6 +85,8 @@ object PackageSpoofExecutionAuthority:
   final class ForgedLifecycleTransition extends LifecycleTransition[Dim, Dim, Dim]():
     val state = null
     val work = null
+  final class ForgedSubmissionKnowledge extends SubmissionKnowledge[Dim, Dim, Dim]():
+    val evidence = null
   val nativeAmend = null.asInstanceOf[SubmitOrderCommand[Dim, Dim, Dim]].amend(null)
   val atomicReplace = null.asInstanceOf[CommandState[Dim, Dim, Dim]].cancelReplace(null)
   // OFFENDING-END

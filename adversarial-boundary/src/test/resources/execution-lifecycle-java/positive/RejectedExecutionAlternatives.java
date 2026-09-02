@@ -15,6 +15,8 @@ import trading.execution.SourceFact;
 import trading.execution.SourceFactTransition;
 import trading.execution.SourceOrdering;
 import trading.execution.SubmitOrderCommand;
+import trading.execution.SubmissionEvidence;
+import trading.execution.SubmissionKnowledge;
 import trading.execution.TransitionWork;
 import trading.execution.QualifiedSourceStreamId;
 import trading.execution.QualifiedStreamPosition;
@@ -124,6 +126,17 @@ public final class RejectedExecutionAlternatives {
     }
   }
 
+  private static final class ForgedSubmissionKnowledge extends SubmissionKnowledge {
+    private ForgedSubmissionKnowledge() {
+      super();
+    }
+
+    @Override
+    public SubmissionEvidence evidence() {
+      return null;
+    }
+  }
+
   public static boolean guardsRejectUnknownAlternatives() {
     try {
       new ForgedContinuation();
@@ -163,6 +176,12 @@ public final class RejectedExecutionAlternatives {
     }
     try {
       new ForgedLifecycleTransition();
+      return false;
+    } catch (IllegalAccessError expected) {
+      // expected
+    }
+    try {
+      new ForgedSubmissionKnowledge();
       return false;
     } catch (IllegalAccessError expected) {
       return true;

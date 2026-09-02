@@ -121,6 +121,7 @@ object ExecutionAuthorityBoundaryClient:
       case _: CancellationEffective[?, ?, ?]      => "cancelled"
       case _: ReconciliationCheckpoint[?, ?, ?]   => "checkpoint"
       case _: SourceOrderCompleted[?, ?, ?]       => "complete"
+      case _: SourceOrderAbsent[?, ?, ?]          => "absent"
 
     assert(factKinds == Vector("accepted", "fill", "corrected"))
     assert(unresolved.unresolvedFillReferences.contains(fillId))
@@ -145,5 +146,15 @@ object ExecutionAuthorityBoundaryClient:
     assert(observation.fillIdentityConflicts.isEmpty)
     assert(observation.streamPositionConflicts.isEmpty)
     assert(observation.explicitlyUnsequencedEvents == Vector(executionFill.eventId))
+    val submissionKind = observation.submissionKnowledge.get match
+      case _: IssuedPendingSubmission[?, ?, ?]         => "pending"
+      case _: AcceptedSubmission[?, ?, ?]              => "accepted"
+      case _: RejectedSubmission[?, ?, ?]              => "rejected"
+      case _: ProvenNotDispatchedSubmission[?, ?, ?]   => "not-dispatched"
+      case _: IndeterminateSubmission[?, ?, ?]         => "indeterminate"
+      case _: ExecutionProvenSubmission[?, ?, ?]       => "execution-proven"
+      case _: AuthoritativelyAbsentSubmission[?, ?, ?] => "absent"
+      case _: ConflictingSubmission[?, ?, ?]           => "conflicting"
+    assert(submissionKind == "execution-proven")
     assert(replay.state == fillApplied.state)
     assert(replay.rejections.isEmpty)

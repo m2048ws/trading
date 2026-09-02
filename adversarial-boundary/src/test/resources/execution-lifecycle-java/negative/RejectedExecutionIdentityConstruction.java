@@ -75,6 +75,11 @@ public final class RejectedExecutionIdentityConstruction {
   }
 
   @SuppressWarnings({"rawtypes", "unchecked"})
+  public static SourceOrderAbsent forgeSourceOrderAbsent() {
+    return new SourceOrderAbsent(null, null, null, null, null);
+  }
+
+  @SuppressWarnings({"rawtypes", "unchecked"})
   public static SourceEvidenceState forgeSourceState() {
     return new SourceEvidenceState(null, null, null, null, null, null, null, null);
   }
@@ -82,6 +87,55 @@ public final class RejectedExecutionIdentityConstruction {
   @SuppressWarnings({"rawtypes", "unchecked"})
   public static ExecutionState forgeExecutionState() {
     return new ExecutionState(null, null, null, null);
+  }
+
+  @SuppressWarnings({"rawtypes", "unchecked"})
+  public static SubmissionEvidence forgeSubmissionEvidence() {
+    return new SubmissionEvidence(null, null, null, null, null, null);
+  }
+
+  public static SubmissionConflicts forgeSubmissionConflicts() {
+    return new SubmissionConflicts(null);
+  }
+
+  @SuppressWarnings({"rawtypes", "unchecked"})
+  public static IssuedPendingSubmission forgePendingSubmission() {
+    return new IssuedPendingSubmission(null);
+  }
+
+  @SuppressWarnings({"rawtypes", "unchecked"})
+  public static AcceptedSubmission forgeAcceptedSubmission() {
+    return new AcceptedSubmission(null);
+  }
+
+  @SuppressWarnings({"rawtypes", "unchecked"})
+  public static RejectedSubmission forgeRejectedSubmission() {
+    return new RejectedSubmission(null);
+  }
+
+  @SuppressWarnings({"rawtypes", "unchecked"})
+  public static ProvenNotDispatchedSubmission forgeNotDispatchedSubmission() {
+    return new ProvenNotDispatchedSubmission(null);
+  }
+
+  @SuppressWarnings({"rawtypes", "unchecked"})
+  public static IndeterminateSubmission forgeIndeterminateSubmission() {
+    return new IndeterminateSubmission(null);
+  }
+
+  @SuppressWarnings({"rawtypes", "unchecked"})
+  public static ExecutionProvenSubmission forgeExecutionProvenSubmission() {
+    return new ExecutionProvenSubmission(null);
+  }
+
+  @SuppressWarnings({"rawtypes", "unchecked"})
+  public static AuthoritativelyAbsentSubmission forgeAbsentSubmission() {
+    return new AuthoritativelyAbsentSubmission(null);
+  }
+
+  @SuppressWarnings({"rawtypes", "unchecked"})
+  public static ConflictingSubmission forgeConflictingSubmission() {
+    return new ConflictingSubmission(null, null);
   }
 
   @SuppressWarnings({"rawtypes", "unchecked"})
@@ -101,7 +155,7 @@ public final class RejectedExecutionIdentityConstruction {
   @SuppressWarnings({"rawtypes", "unchecked"})
   public static LifecycleObservation forgeLifecycleObservation() {
     return new LifecycleObservation(
-        null, null, null, null, null, null, null, null, null, null, null, null, null);
+        null, null, null, null, null, null, null, null, null, null, null, null, null, null);
   }
 
   @SuppressWarnings({"rawtypes", "unchecked"})

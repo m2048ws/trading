@@ -182,9 +182,18 @@ final class SourceFactSuite extends ScalaCheckSuite:
         SourceOrdering.unsequenced
       )
     )
+    val absent = required(
+      SourceOrderAbsent.create(lifecycle)(
+        event(target, "absent"),
+        lifecycle.executionOrderId,
+        sourceOrder,
+        completeness,
+        SourceOrdering.unsequenced
+      )
+    )
 
     val alternatives: Vector[SourceFact[?, ?, ?]] =
-      Vector(accepted, rejected, executionFill, correction, bust, cancelled, reconciled, completed)
+      Vector(accepted, rejected, executionFill, correction, bust, cancelled, reconciled, completed, absent)
     val kinds = alternatives.map:
       case _: OrderAccepted[?, ?, ?]            => "accepted"
       case _: OrderRejected[?, ?, ?]            => "rejected"
@@ -194,9 +203,10 @@ final class SourceFactSuite extends ScalaCheckSuite:
       case _: CancellationEffective[?, ?, ?]    => "cancelled"
       case _: ReconciliationCheckpoint[?, ?, ?] => "checkpoint"
       case _: SourceOrderCompleted[?, ?, ?]     => "complete"
+      case _: SourceOrderAbsent[?, ?, ?]        => "absent"
 
     assertEquals(kinds,
-      Vector("accepted", "rejected", "fill", "corrected", "busted", "cancelled", "checkpoint", "complete"))
+      Vector("accepted", "rejected", "fill", "corrected", "busted", "cancelled", "checkpoint", "complete", "absent"))
     alternatives.foreach: fact =>
       assertEquals(fact.target, target)
       assertEquals(fact.sourceOrderId.target, target)
@@ -412,6 +422,7 @@ final class SourceFactSuite extends ScalaCheckSuite:
       classOf[CancellationEffective[?, ?, ?]],
       classOf[ReconciliationCheckpoint[?, ?, ?]],
       classOf[SourceOrderCompleted[?, ?, ?]],
+      classOf[SourceOrderAbsent[?, ?, ?]],
       classOf[SourceFactClassifications],
       classOf[SourceFactConflict[?, ?, ?]],
       classOf[FillIdentityConflict[?, ?, ?]],

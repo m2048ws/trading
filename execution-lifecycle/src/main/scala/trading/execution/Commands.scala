@@ -40,6 +40,11 @@ final case class ReferencedCommandIsNotSubmit(commandId: ApplicationCommandId) e
 
 final case class DispatchSubmitBodyMismatch(commandId: ApplicationCommandId) extends CommandViolation
 
+final case class FreshSubmitBlockedByIndeterminate(
+  existingCommandId: ApplicationCommandId,
+  attemptedCommandId: ApplicationCommandId)
+  extends CommandViolation
+
 @nowarn("msg=Ignoring.*qualifier")
 final class CommandViolations private[this] (private val values: Vector[CommandViolation])
   extends JavaSerializationUnsupported:

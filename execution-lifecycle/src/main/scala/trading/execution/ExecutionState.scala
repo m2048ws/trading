@@ -133,6 +133,7 @@ object LifecycleDiagnostics:
 @nowarn("msg=Ignoring.*qualifier")
 final class LifecycleObservation[D <: Dim, B <: Dim, Q <: Dim] private[this] (
   val lifecycle: ExecutionLifecycle[D, B, Q],
+  val submissionKnowledge: Option[SubmissionKnowledge[D, B, Q]],
   val issuedCommands: Map[ApplicationCommandId, ExecutionCommand[D, B, Q]],
   val sourceFacts: Map[QualifiedSourceEventId, SourceFact[D, B, Q]],
   val fills: Map[QualifiedFillId, ExecutionFill[D, B, Q]],
@@ -149,7 +150,8 @@ final class LifecycleObservation[D <: Dim, B <: Dim, Q <: Dim] private[this] (
 
   override def equals(other: Any): Boolean = other match
     case that: LifecycleObservation[?, ?, ?] =>
-      lifecycle == that.lifecycle && issuedCommands == that.issuedCommands &&
+      lifecycle == that.lifecycle && submissionKnowledge == that.submissionKnowledge &&
+      issuedCommands == that.issuedCommands &&
       sourceFacts == that.sourceFacts && fills == that.fills &&
       commandConflicts == that.commandConflicts && sourceEventConflicts == that.sourceEventConflicts &&
       fillIdentityConflicts == that.fillIdentityConflicts &&
@@ -163,6 +165,7 @@ final class LifecycleObservation[D <: Dim, B <: Dim, Q <: Dim] private[this] (
   override def hashCode(): Int =
     (
       lifecycle,
+      submissionKnowledge,
       issuedCommands,
       sourceFacts,
       fills,
@@ -266,6 +269,7 @@ object ExecutionState:
         MethodType.methodType(
           classOf[Unit],
           classOf[ExecutionLifecycle[?, ?, ?]],
+          classOf[Option[?]],
           classOf[Map[?, ?]],
           classOf[Map[?, ?]],
           classOf[Map[?, ?]],
@@ -314,25 +318,44 @@ object ExecutionState:
   def initial[D <: Dim, B <: Dim, Q <: Dim](
     lifecycle: ExecutionLifecycle[D, B, Q]
   ): Either[CommandViolations, ExecutionState[D, B, Q]] =
-    CommandState.initial(lifecycle).map: commands =>
-      val source = SourceEvidenceState.initial(lifecycle).toOption.get
-      construct(lifecycle, commands, source, TransitionWork(0, 0, 0))
+    CommandState.initial(lifecycle).flatMap: commands =>
+      SourceEvidenceState.initial(lifecycle) match
+        case Right(source) => Right(construct(lifecycle, commands, source, TransitionWork(0, 0, 0)))
+        case Left(_)       =>
+          Left(CommandViolations.one(MissingCommandValue(CommandViolationLocation.Lifecycle)))
 
   private def recordCommand[D <: Dim, B <: Dim, Q <: Dim](
     state: ExecutionState[D, B, Q],
     command: ExecutionCommand[D, B, Q]
   ): LifecycleTransition[D, B, Q] =
-    val result = state.commands.record(command)
-    val work   = TransitionWork(1, if result.state == state.commands then 0 else 1, 0)
-    val next   = construct(state.lifecycle, result.state, state.source, work)
-    result.kind match
-      case CommandTransitionKind.Applied             => accepted(next, LifecycleTransitionKind.Applied, work)
-      case CommandTransitionKind.IdempotentDuplicate =>
-        accepted(next, LifecycleTransitionKind.IdempotentDuplicate, work)
-      case CommandTransitionKind.ConflictingCommand | CommandTransitionKind.ConflictingDispatchEvidence =>
-        accepted(next, LifecycleTransitionKind.ConflictingEvidence, work)
-      case CommandTransitionKind.Rejected =>
-        rejected(next, CommandInputRejected(result.violations.get), work)
+    val indeterminateCommandId = state.commands.dispatchKnowledge.valuesIterator.flatten.collectFirst:
+      case value: IndeterminateDispatch[D, B, Q] => value.submit.commandId
+    (command, indeterminateCommandId) match
+      case (submit: SubmitOrderCommand[D, B, Q], Some(originalCommandId))
+        if submit.executionOrderId == state.lifecycle.executionOrderId &&
+          !state.commands.issuedCommands.get(submit.commandId).contains(submit) =>
+        val work = TransitionWork(1, 0, 0)
+        rejected(
+          construct(state.lifecycle, state.commands, state.source, work),
+          CommandInputRejected(
+            CommandViolations.one(FreshSubmitBlockedByIndeterminate(originalCommandId, submit.commandId))
+          ),
+          work
+        )
+      case _ =>
+        val result = state.commands.record(command)
+        val work   = TransitionWork(1, if result.state == state.commands then 0 else 1, 0)
+        val next   = construct(state.lifecycle, result.state, state.source, work)
+        result.kind match
+          case CommandTransitionKind.Applied             => accepted(next, LifecycleTransitionKind.Applied, work)
+          case CommandTransitionKind.IdempotentDuplicate =>
+            accepted(next, LifecycleTransitionKind.IdempotentDuplicate, work)
+          case CommandTransitionKind.ConflictingCommand | CommandTransitionKind.ConflictingDispatchEvidence =>
+            accepted(next, LifecycleTransitionKind.ConflictingEvidence, work)
+          case CommandTransitionKind.Rejected =>
+            rejected(next, CommandInputRejected(result.violations.get), work)
+    end match
+  end recordCommand
 
   private def recordDispatch[D <: Dim, B <: Dim, Q <: Dim](
     state: ExecutionState[D, B, Q],
@@ -379,20 +402,30 @@ object ExecutionState:
     facts: Vector[SourceFact[D, B, Q]]
   ): Either[CommandViolations, LifecycleReplayResult[D, B, Q]] =
     initial(lifecycle).map: empty =>
-      var state      = empty
-      val rejections = Vector.newBuilder[LifecycleRejection]
-      commands.sortBy(commandSortKey).foreach: command =>
+      var state                                                   = empty
+      val rejections                                              = Vector.newBuilder[LifecycleRejection]
+      def recordCommand(command: ExecutionCommand[D, B, Q]): Unit =
         state.record(command) match
           case value: LifecycleAccepted[D, B, Q] => state = value.state
           case value: LifecycleRejected[D, B, Q] =>
             state = value.state
             rejections += value.rejection
-      dispatch.sortBy(dispatchSortKey).foreach: evidence =>
+
+      val sortedCommands      = commands.sortBy(commandSortKey)
+      val sortedDispatch      = dispatch.sortBy(dispatchSortKey)
+      val dispatchedSubmitIds = sortedDispatch.collect:
+        case evidence if evidence != null => evidence.submitCommandId
+      .toSet
+      val (dispatchedCommands, remainingCommands) = sortedCommands.partition: command =>
+        command != null && dispatchedSubmitIds.contains(command.commandId)
+      dispatchedCommands.foreach(recordCommand)
+      sortedDispatch.foreach: evidence =>
         state.observeDispatch(evidence) match
           case value: LifecycleAccepted[D, B, Q] => state = value.state
           case value: LifecycleRejected[D, B, Q] =>
             state = value.state
             rejections += value.rejection
+      remainingCommands.foreach(recordCommand)
       facts.sortBy(factSortKey).foreach: fact =>
         state.record(fact) match
           case value: LifecycleAccepted[D, B, Q] => state = value.state
@@ -411,6 +444,7 @@ object ExecutionState:
       case value: ReconciliationCheckpoint[D, B, Q] => value.checkpoint
     val completenessEvidence = facts.collect:
       case value: SourceOrderCompleted[D, B, Q] => value.completeness
+      case value: SourceOrderAbsent[D, B, Q]    => value.completeness
 
     val positionsByStream    = state.source.positionClaimants.keys.groupBy(_.stream)
     val checkpointsByStream  = checkpointEvidence.groupBy(_.position.stream)
@@ -480,6 +514,7 @@ object ExecutionState:
     diagnosticsConstructor
       .invoke(
         state.lifecycle,
+        SubmissionKnowledge.derive(state, authoritativeCompleteness.keySet),
         state.commands.issuedCommands,
         state.source.factsByEvent,
         state.source.fillsById,
@@ -562,6 +597,8 @@ object ExecutionState:
         s"6-checkpoint-${positionKey(checkpoint.checkpoint.position)}-${continuationKey(checkpoint.checkpoint.continuation)}"
       case complete: SourceOrderCompleted[?, ?, ?] =>
         s"7-complete-${positionKey(complete.completeness.completeThrough)}"
+      case absent: SourceOrderAbsent[?, ?, ?] =>
+        s"8-absent-${positionKey(absent.completeness.completeThrough)}"
     s"${eventKey(fact.eventId)}|${fact.executionOrderId.value}|${sourceOrderKey(fact.sourceOrderId)}|$body|${orderingKey(fact.ordering)}"
 
   private def factSortKey(fact: SourceFact[?, ?, ?]): String =
