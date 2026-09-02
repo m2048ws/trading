@@ -14,26 +14,24 @@ updated: 2026-09-01
 - **Issue**: 10 https://github.com/m2048ws/trading/issues/10
 - **Change**: introduce-versioned-boundary-codecs
 - **Worktree**: /Users/m/src/money/.worktrees/introduce-versioned-boundary-codecs
-- **Phase at Checkpoint**: applying
-- **Task Group at Checkpoint**: 11
-- **Observed Run Revision**: 12
-- **Last Verified HEAD**: ffc0b1eb097f34254c63dd5679ef6e0c702e808f
+- **Phase at Checkpoint**: awaiting_verify
+- **Task Group at Checkpoint**: 12
+- **Observed Run Revision**: 13
+- **Last Verified HEAD**: 1f0d324a552b9d5be5bc6a43bade4ac5676e0b56
 
-The phase and revision above are the required next checkpoint carried by Task Group 11. Live Run Contract authority
-remains `applying` at revision 11 until Corgi acknowledges that commit.
+The phase and revision above are the required next checkpoint carried by Task Group 12. Live Run Contract authority
+remains `applying` at revision 12 until Corgi acknowledges that commit.
 
 ## Next Action
-- Commit and acknowledge `introduce-versioned-boundary-codecs` Task Group 11, synchronize its draft PR, then execute
-  Task Group 12's final validation and evidence handoff. Verify, Human Review, Human QA, and Archive remain separate
-  gates.
+- Commit and acknowledge `introduce-versioned-boundary-codecs` Task Group 12 and synchronize its draft PR, then run
+  separate canonical Verify against the exact acknowledged commit. Human Review, Human QA, and Archive remain later
+  separate gates.
 
 ## Blockers
 - none
 
 ## Uncommitted Work
-- Task Group 11's seven frozen V1 schemas, canonical golden records and histories, schema-invalid fixtures, independent
-  offline schema/JCS checks, semantic/version/serialization compatibility coverage, scope documentation/audits, and
-  this next-state checkpoint.
+- Task Group 12's final Apply evidence handoff and this next-state checkpoint.
 
 ## Discoveries
 - The archived `establish-pure-instrument-economics` boundary was reconciled from commit `86613ee` before S-02
@@ -555,6 +553,23 @@ remains `applying` at revision 11 until Corgi acknowledges that commit.
   policy. Both checks were strengthened; the final pass checked requirements, behavior, code quality, one-way
   architecture, compatibility, serialization safety, and bounded/offline validation with no findings. It changed no
   file, triaged no finding, and is not canonical Verify or Human Review.
+- Task Group 12's from-scratch dependency-ordered production compilation passes, followed by the complete 1,024-test
+  repository matrix and explicit JMH compilation. Repository/SBT formatting, JSON/resource parsing and regeneration,
+  diff hygiene, and the focused schema/golden/compiler/serialization boundaries also pass.
+- The focused one-thread JMH smoke used OpenJDK 26.0.2, one fork, one 100 ms warmup/measurement, a 1,024-record
+  general-grid-coordinate V1 batch, a 351-byte payload, and a 128-digit coordinate. Directional capture, combined
+  decode/reconstruct, parse, parsed-reconstruct, and render results were 63.229, 0.016, 3.715, 18.195, and 31.675 ops/ms.
+- Completed-JAR, `javap`, source, and dependency inspection confirm that supported production APIs retain typed
+  codec/domain vocabulary; test validators/oracles and Databind remain test-only; effects/runtime/persistence are
+  absent; and the remaining erased casts are checked private-constructor method-handle bridges rather than semantic
+  record/evidence coercions.
+- Strict readiness remains `ready` with all 12 deterministic checks passing at planning revision
+  `sha256:e5cbb7f10509095ee6311d1369cef5fd883b8a196713a4bf817a3d2289b26da6`. The final read-only
+  proposal/design/spec/task/RFC/source/traceability semantic review found no errors or warnings and changed no file.
+- The automated Group 12 review checked exact identity, final-task coverage, evidence accuracy, repository behavior,
+  packaged boundaries, compatibility/authority exclusions, benchmark/security applicability, planning integrity, and
+  lifecycle separation with no findings. It changed no file, triaged no finding, and is not canonical Verify or Human
+  Review.
 
 ## Promotion Queue
 - Review agent-configuration constraints before promoting any item to `memory/MEMORY.md`.
@@ -589,3 +604,6 @@ remains `applying` at revision 11 until Corgi acknowledges that commit.
 - Keep Group 11's frozen schemas/goldens, independent offline compatibility validation, version/serialization policy,
   documentation, and scope-audit evidence until Archive proves the complete codec capability; no Group 11 discovery is
   independently eligible for permanent promotion.
+- Keep Group 12's clean validation matrix, packaged audit, readiness cross-check, benchmark smoke, and separate-gate
+  handoff until Archive proves the complete codec capability; no Group 12 discovery is independently eligible for
+  permanent promotion.
