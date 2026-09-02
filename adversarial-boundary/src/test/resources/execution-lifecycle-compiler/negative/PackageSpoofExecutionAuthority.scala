@@ -66,13 +66,22 @@ object PackageSpoofExecutionAuthority:
   val conflictingEffectiveFill = new ConflictingEffectiveFill[Dim, Dim, Dim](
     null, Vector.empty, Vector.empty, Vector.empty)
   val effectiveFillLedger = new EffectiveFillLedger[Dim, Dim, Dim](null, null, None, null)
+  val cancellationEvidence = new CancellationEvidence[Dim, Dim, Dim](
+    Set.empty, Set.empty, Set.empty, Set.empty, Set.empty, Set.empty, Set.empty)
+  val cancellationRequested = new CancellationRequested[Dim, Dim, Dim](null)
+  val cancellationConfirmed = new CancellationConfirmed[Dim, Dim, Dim](null)
+  val cancellationConflicted = new CancellationConflicted[Dim, Dim, Dim](null)
+  val postCancellationFill = new PostCancellationFillAnomaly[Dim, Dim, Dim](null, Vector.empty, null)
+  val executionAnomalies = new ExecutionAnomalies[Dim, Dim, Dim](None, Vector.empty, Set.empty, Set.empty, Map.empty)
+  val lineageViolations = new LineageLinkViolations(Vector.empty)
+  val lineageLink = new OrderLineageLink(null, null, null, null, Set.empty)
   val executionState = new ExecutionState[Dim, Dim, Dim](null, null, null, null)
   val lifecycleAccepted = new LifecycleAccepted[Dim, Dim, Dim](null, null, null)
   val lifecycleRejected = new LifecycleRejected[Dim, Dim, Dim](null, null, null)
   val lifecycleDiagnostics = new LifecycleDiagnostics(Vector.empty)
   val lifecycleObservation = new LifecycleObservation[Dim, Dim, Dim](
-    null, None, Map.empty, Map.empty, Map.empty, null, Vector.empty, Vector.empty, Vector.empty, Map.empty, Map.empty,
-    Set.empty, Vector.empty, Map.empty, None)
+    null, None, None, Map.empty, Map.empty, Map.empty, null, null, Vector.empty, Vector.empty, Vector.empty, Map.empty,
+    Map.empty, Set.empty, Vector.empty, Map.empty, None)
   val lifecycleReplay = new LifecycleReplayResult[Dim, Dim, Dim](null, Vector.empty)
   val copied = checkedTarget.copy(source = null)
   final class ForgedContinuation extends SourceContinuation()
@@ -97,6 +106,8 @@ object PackageSpoofExecutionAuthority:
   final class ForgedEffectiveFill extends EffectiveFill[Dim, Dim, Dim]():
     val original = null
     val modifiers = Vector.empty
+  final class ForgedCancellationKnowledge extends CancellationKnowledge[Dim, Dim, Dim]():
+    val evidence = null
   val nativeAmend = null.asInstanceOf[SubmitOrderCommand[Dim, Dim, Dim]].amend(null)
   val atomicReplace = null.asInstanceOf[CommandState[Dim, Dim, Dim]].cancelReplace(null)
   // OFFENDING-END

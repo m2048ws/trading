@@ -15,23 +15,24 @@ updated: 2026-09-02
 - **Change**: establish-actual-execution-lifecycle
 - **Worktree**: /Users/m/src/money/.worktrees/establish-actual-execution-lifecycle
 - **Phase at Checkpoint**: applying
-- **Task Group at Checkpoint**: 7
-- **Observed Run Revision**: 8
-- **Last Verified HEAD**: 6c5c0dddd12f8949b924f29c249ff58afd06caf0
+- **Task Group at Checkpoint**: 8
+- **Observed Run Revision**: 9
+- **Last Verified HEAD**: e0e060146cbff413d8870f4e00a03cd33dcb9386
 
-The phase and revision above are the required next checkpoint carried by Task Group 7. Live Run Contract
-`run-faf4d455-8dbc-4369-a994-66f868cfa7ef` remains `applying` at revision 7 until Corgi acknowledges that commit.
+The phase and revision above are the required next checkpoint carried by Task Group 8. Live Run Contract
+`run-faf4d455-8dbc-4369-a994-66f868cfa7ef` remains `applying` at revision 8 until Corgi acknowledges that commit.
 
 ## Next Action
-- Commit and acknowledge `establish-actual-execution-lifecycle` Task Group 7, synchronize draft PR #35, then implement
-  Task Group 8. Verify, Human Review, Human QA, and Archive remain separate gates.
+- Commit and acknowledge `establish-actual-execution-lifecycle` Task Group 8, synchronize draft PR #35, then implement
+  Task Group 9. Verify, Human Review, Human QA, and Archive remain separate gates.
 
 ## Blockers
 - none
 
 ## Uncommitted Work
-- Task Group 7's closed effective-fill ledger, authoritative correction/bust resolution, exact signed exposure and
-  overfill anomalies, conflict/ambiguity retention, completed-JAR/JVM guards, and this next-state checkpoint.
+- Task Group 8's closed cancellation knowledge, authoritative cancel/fill race anomalies, exact corrected/busted
+  post-cancellation exposure, checked lineage links, replay dependency ordering, completed-JAR/JVM guards, and this
+  next-state checkpoint.
 
 ## Discoveries
 - The archived `establish-pure-instrument-economics` boundary was reconciled from commit `86613ee` before S-02
@@ -497,6 +498,24 @@ The phase and revision above are the required next checkpoint carried by Task Gr
   exactness/dimensions, correction and conflict authority, deterministic equality/replay, JVM construction guards,
   dependency purity, complexity, security applicability, and evidence with no findings. It changed no file,
   human-triaged no finding, and is not canonical Verify or Human Review.
+- Closed cancellation knowledge keeps valid issued requests, conflicting reported requests, referenced submit bodies,
+  reported source confirmations, conflict-free authoritative confirmations, and command/source conflicts distinct.
+  Request evidence never fabricates effective cancellation, while independent unsequenced confirmation establishes
+  effectiveness without fabricating race order.
+- Post-cancellation anomalies use only conflict-free authoritative positions in the same qualified stream and retain
+  each active effective fill plus every provably prior cancellation and its exact signed exposure. Later authoritative
+  correction replaces the anomaly economics, bust removes its contribution, and overfill, event, fill-identity, and
+  stream-position conflicts remain composed in one immutable observation.
+- Checked mechanism-neutral lineage links require distinct logical execution orders, shared lineage and trusted
+  instrument definition, confirmed predecessor cancellation, and at least one retained successor submit. They make no
+  native-amend, atomicity, priority, cutover, or transport claim. Canonical command replay now orders submit bodies
+  before dependent cancellation bodies independently of command-ID lexical order.
+- The final Task Group 8 gate passes formatting and 988 tests: 66 execution-lifecycle tests and 167 completed-JAR/
+  compiler/adversarial tests alongside unchanged module suites. The automated review corrected submit-before-cancel
+  replay dependency ordering and explicit referenced-submit retention, then checked scope, cancellation authority,
+  race order, exact correction/bust effects, lineage, replay equality, JVM guards, dependency purity, complexity,
+  security applicability, and evidence with no findings. Its final pass changed no file, human-triaged no finding, and
+  is not canonical Verify or Human Review.
 
 ## Promotion Queue
 - Review agent-configuration constraints before promoting any item to `memory/MEMORY.md`.
@@ -516,3 +535,5 @@ The phase and revision above are the required next checkpoint carried by Task Gr
   authoritative-absence evidence, and indeterminate same-identity recovery rule.
 - After whole-change approval, evaluate promotion of effective-fill conflict/ambiguity semantics, immutable
   correction/bust history, and exact signed overfill exposure.
+- After whole-change approval, evaluate promotion of closed cancellation knowledge, authoritative race classification,
+  exact post-cancellation exposure, and checked mechanism-neutral execution-order lineage.

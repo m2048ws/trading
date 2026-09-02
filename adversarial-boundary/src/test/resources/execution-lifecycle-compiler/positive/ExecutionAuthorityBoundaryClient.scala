@@ -129,17 +129,32 @@ object ExecutionAuthorityBoundaryClient:
     assert(resolved.fillsById(fillId).price == price)
 
     val commandApplied = acceptedTransition(required(ExecutionState.initial(lifecycle)).record(submit))
-    val fillApplied    = acceptedTransition(commandApplied.state.record(executionFill))
-    val observation    = fillApplied.state.observation
-    val replay         = required(
-      ExecutionState.replay(lifecycle)(Vector(submit), Vector.empty, Vector(executionFill))
+    val cancelApplied  = acceptedTransition(commandApplied.state.record(cancel))
+    val fillApplied    = acceptedTransition(cancelApplied.state.record(executionFill))
+    val confirmedCancellation = required(
+      CancellationEffective.create(lifecycle)(
+        required(QualifiedSourceEventId.create(target, required(NativeSourceEventId.from("cancelled")))),
+        lifecycle.executionOrderId,
+        sourceOrderId,
+        ordering
+      )
     )
-    val transitionKinds = Vector[LifecycleTransition[?, ?, ?]](commandApplied, fillApplied).map:
+    val cancellationApplied = acceptedTransition(fillApplied.state.record(confirmedCancellation))
+    val observation         = cancellationApplied.state.observation
+    val replay         = required(
+      ExecutionState.replay(lifecycle)(Vector(submit, cancel), Vector.empty, Vector(executionFill, confirmedCancellation))
+    )
+    val transitionKinds = Vector[LifecycleTransition[?, ?, ?]](
+      commandApplied,
+      cancelApplied,
+      fillApplied,
+      cancellationApplied
+    ).map:
       case value: LifecycleAccepted[?, ?, ?] => value.kind
       case _: LifecycleRejected[?, ?, ?]     => throw new AssertionError("unexpected lifecycle rejection")
 
-    assert(transitionKinds == Vector(LifecycleTransitionKind.Applied, LifecycleTransitionKind.Applied))
-    assert(observation.issuedCommands.keySet == Set(submit.commandId))
+    assert(transitionKinds == Vector.fill(4)(LifecycleTransitionKind.Applied))
+    assert(observation.issuedCommands.keySet == Set(submit.commandId, cancel.commandId))
     assert(observation.fills.keySet == Set(fillId))
     assert(observation.commandConflicts.isEmpty)
     assert(observation.sourceEventConflicts.isEmpty)
@@ -154,6 +169,12 @@ object ExecutionAuthorityBoundaryClient:
     assert(effectiveFillKind == "active")
     assert(observation.effectiveFillLedger.knownExposure == lifecycle.initialPositionChange)
     assert(observation.effectiveFillLedger.overfill.isEmpty)
+    val cancellationKind = observation.cancellationKnowledge.get match
+      case _: CancellationRequested[?, ?, ?]  => "requested"
+      case _: CancellationConfirmed[?, ?, ?]  => "confirmed"
+      case _: CancellationConflicted[?, ?, ?] => "conflicted"
+    assert(cancellationKind == "confirmed")
+    assert(observation.anomalies.isEmpty)
     val submissionKind = observation.submissionKnowledge.get match
       case _: IssuedPendingSubmission[?, ?, ?]         => "pending"
       case _: AcceptedSubmission[?, ?, ?]              => "accepted"
@@ -164,5 +185,23 @@ object ExecutionAuthorityBoundaryClient:
       case _: AuthoritativelyAbsentSubmission[?, ?, ?] => "absent"
       case _: ConflictingSubmission[?, ?, ?]           => "conflicting"
     assert(submissionKind == "execution-proven")
-    assert(replay.state == fillApplied.state)
+    val successorLifecycle = required(
+      ExecutionLifecycle.create(instrument)(
+        order,
+        required(ExecutionOrderId.from("successor-order")),
+        lifecycle.lineageId,
+        target
+      )
+    )
+    val successorSubmit = required(
+      SubmitOrderCommand.create(successorLifecycle)(required(ApplicationCommandId.from("successor-submit")))
+    )
+    val successorState = acceptedTransition(
+      required(ExecutionState.initial(successorLifecycle)).record(successorSubmit)
+    ).state
+    val lineage = required(OrderLineageLink.create(cancellationApplied.state, successorState))
+    assert(lineage.predecessorExecutionOrderId == lifecycle.executionOrderId)
+    assert(lineage.successorExecutionOrderId == successorLifecycle.executionOrderId)
+    assert(lineage.lineageId == lifecycle.lineageId)
+    assert(replay.state == cancellationApplied.state)
     assert(replay.rejections.isEmpty)

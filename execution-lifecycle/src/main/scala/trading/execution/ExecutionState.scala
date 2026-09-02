@@ -134,10 +134,12 @@ object LifecycleDiagnostics:
 final class LifecycleObservation[D <: Dim, B <: Dim, Q <: Dim] private[this] (
   val lifecycle: ExecutionLifecycle[D, B, Q],
   val submissionKnowledge: Option[SubmissionKnowledge[D, B, Q]],
+  val cancellationKnowledge: Option[CancellationKnowledge[D, B, Q]],
   val issuedCommands: Map[ApplicationCommandId, ExecutionCommand[D, B, Q]],
   val sourceFacts: Map[QualifiedSourceEventId, SourceFact[D, B, Q]],
   val fills: Map[QualifiedFillId, ExecutionFill[D, B, Q]],
   val effectiveFillLedger: EffectiveFillLedger[D, B, Q],
+  val anomalies: ExecutionAnomalies[D, B, Q],
   val commandConflicts: Vector[CommandConflict[D, B, Q]],
   val sourceEventConflicts: Vector[SourceFactConflict[D, B, Q]],
   val fillIdentityConflicts: Vector[FillIdentityConflict[D, B, Q]],
@@ -152,8 +154,10 @@ final class LifecycleObservation[D <: Dim, B <: Dim, Q <: Dim] private[this] (
   override def equals(other: Any): Boolean = other match
     case that: LifecycleObservation[?, ?, ?] =>
       lifecycle == that.lifecycle && submissionKnowledge == that.submissionKnowledge &&
+      cancellationKnowledge == that.cancellationKnowledge &&
       issuedCommands == that.issuedCommands &&
       sourceFacts == that.sourceFacts && fills == that.fills && effectiveFillLedger == that.effectiveFillLedger &&
+      anomalies == that.anomalies &&
       commandConflicts == that.commandConflicts && sourceEventConflicts == that.sourceEventConflicts &&
       fillIdentityConflicts == that.fillIdentityConflicts &&
       streamPositionConflicts == that.streamPositionConflicts &&
@@ -167,10 +171,12 @@ final class LifecycleObservation[D <: Dim, B <: Dim, Q <: Dim] private[this] (
     (
       lifecycle,
       submissionKnowledge,
+      cancellationKnowledge,
       issuedCommands,
       sourceFacts,
       fills,
       effectiveFillLedger,
+      anomalies,
       commandConflicts,
       sourceEventConflicts,
       fillIdentityConflicts,
@@ -272,10 +278,12 @@ object ExecutionState:
           classOf[Unit],
           classOf[ExecutionLifecycle[?, ?, ?]],
           classOf[Option[?]],
+          classOf[Option[?]],
           classOf[Map[?, ?]],
           classOf[Map[?, ?]],
           classOf[Map[?, ?]],
           classOf[EffectiveFillLedger[?, ?, ?]],
+          classOf[ExecutionAnomalies[?, ?, ?]],
           classOf[Vector[?]],
           classOf[Vector[?]],
           classOf[Vector[?]],
@@ -514,14 +522,17 @@ object ExecutionState:
       case fact if fact.ordering == ExplicitlyUnsequenced => fact.eventId
     .sortBy(eventKey)
 
+    val effectiveFillLedger = EffectiveFillLedger.derive(state)
     diagnosticsConstructor
       .invoke(
         state.lifecycle,
         SubmissionKnowledge.derive(state, authoritativeCompleteness.keySet),
+        CancellationKnowledge.derive(state),
         state.commands.issuedCommands,
         state.source.factsByEvent,
         state.source.fillsById,
-        EffectiveFillLedger.derive(state),
+        effectiveFillLedger,
+        ExecutionAnomalies.derive(state),
         state.commands.conflicts,
         state.source.eventConflicts,
         state.source.fillConflicts,
@@ -573,7 +584,7 @@ object ExecutionState:
     val kind = command match
       case _: SubmitOrderCommand[?, ?, ?]      => "0-submit"
       case cancel: CancelOrderCommand[?, ?, ?] => s"1-cancel-${cancel.originalSubmitCommandId.value}"
-    s"${command.commandId.value}|$kind|${lifecycleKey(command.lifecycle)}"
+    s"$kind|${command.commandId.value}|${lifecycleKey(command.lifecycle)}"
 
   private def commandSortKey(command: ExecutionCommand[?, ?, ?]): String =
     if command == null then "0-null" else s"1|${commandKey(command)}"

@@ -168,6 +168,44 @@ public final class RejectedExecutionIdentityConstruction {
   }
 
   @SuppressWarnings({"rawtypes", "unchecked"})
+  public static CancellationEvidence forgeCancellationEvidence() {
+    return new CancellationEvidence(null, null, null, null, null, null, null);
+  }
+
+  @SuppressWarnings({"rawtypes", "unchecked"})
+  public static CancellationRequested forgeCancellationRequested() {
+    return new CancellationRequested(null);
+  }
+
+  @SuppressWarnings({"rawtypes", "unchecked"})
+  public static CancellationConfirmed forgeCancellationConfirmed() {
+    return new CancellationConfirmed(null);
+  }
+
+  @SuppressWarnings({"rawtypes", "unchecked"})
+  public static CancellationConflicted forgeCancellationConflicted() {
+    return new CancellationConflicted(null);
+  }
+
+  @SuppressWarnings({"rawtypes", "unchecked"})
+  public static PostCancellationFillAnomaly forgePostCancellationFill() {
+    return new PostCancellationFillAnomaly(null, null, null);
+  }
+
+  @SuppressWarnings({"rawtypes", "unchecked"})
+  public static ExecutionAnomalies forgeExecutionAnomalies() {
+    return new ExecutionAnomalies(null, null, null, null, null);
+  }
+
+  public static LineageLinkViolations forgeLineageViolations() {
+    return new LineageLinkViolations(null);
+  }
+
+  public static OrderLineageLink forgeLineageLink() {
+    return new OrderLineageLink(null, null, null, null, null);
+  }
+
+  @SuppressWarnings({"rawtypes", "unchecked"})
   public static LifecycleAccepted forgeLifecycleAccepted() {
     return new LifecycleAccepted(null, null, null);
   }
@@ -184,7 +222,7 @@ public final class RejectedExecutionIdentityConstruction {
   @SuppressWarnings({"rawtypes", "unchecked"})
   public static LifecycleObservation forgeLifecycleObservation() {
     return new LifecycleObservation(
-        null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+        null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
   }
 
   @SuppressWarnings({"rawtypes", "unchecked"})

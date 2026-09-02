@@ -2,6 +2,8 @@ package external.execution.positive;
 
 import scala.Option;
 import trading.execution.ApplicationCommandId;
+import trading.execution.CancellationEvidence;
+import trading.execution.CancellationKnowledge;
 import trading.execution.DispatchEvidence;
 import trading.execution.ExecutionCommand;
 import trading.execution.EffectiveFill;
@@ -156,6 +158,17 @@ public final class RejectedExecutionAlternatives {
     }
   }
 
+  private static final class ForgedCancellationKnowledge extends CancellationKnowledge {
+    private ForgedCancellationKnowledge() {
+      super();
+    }
+
+    @Override
+    public CancellationEvidence evidence() {
+      return null;
+    }
+  }
+
   public static boolean guardsRejectUnknownAlternatives() {
     try {
       new ForgedContinuation();
@@ -207,6 +220,12 @@ public final class RejectedExecutionAlternatives {
     }
     try {
       new ForgedEffectiveFill();
+      return false;
+    } catch (IllegalAccessError expected) {
+      // expected
+    }
+    try {
+      new ForgedCancellationKnowledge();
       return false;
     } catch (IllegalAccessError expected) {
       return true;
