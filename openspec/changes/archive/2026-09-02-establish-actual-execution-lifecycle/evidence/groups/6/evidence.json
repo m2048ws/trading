@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 3,
+  "groupId": "6",
+  "checks": [
+    {
+      "name": "scalafmtCheckAll",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:.scalafmt.conf#sha256:efecb2eaad5b314fc053f173f899c8c87f9a468432c8444593c0dcb386a3207f",
+        "file:execution-lifecycle%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fexecution%2FSubmissionKnowledge.scala#sha256:481fb576e34ab56d7c7fb718df40d11a2d95fffdce990c9331b8b9bee38a7ac4"
+      ]
+    },
+    {
+      "name": "submission-knowledge-focused",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:execution-lifecycle%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fexecution%2FSubmissionKnowledgeSuite.scala#sha256:754745b43d54efa245d03a9b3808e0e31583190268c8b695f32136655db77135"
+      ]
+    },
+    {
+      "name": "completed-jar-boundary",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FExecutionLifecycleCompilerBoundarySuite.scala#sha256:33441ae86b2b054b185cecc947e0aa6d1503b7ee555a2aea426749960d427afc"
+      ]
+    },
+    {
+      "name": "aggregate-test-969",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:build.sbt#sha256:47ece9b184d750d417cde80384dddf73905fabc118ed6dd2de3a4f98cb9a0b50",
+        "file:execution-lifecycle%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fexecution%2FSubmissionKnowledgeSuite.scala#sha256:754745b43d54efa245d03a9b3808e0e31583190268c8b695f32136655db77135"
+      ]
+    }
+  ],
+  "automatedReview": {
+    "verdict": "pass",
+    "findings": []
+  },
+  "artifacts": [
+    "file:execution-lifecycle%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fexecution%2FSubmissionKnowledge.scala#sha256:481fb576e34ab56d7c7fb718df40d11a2d95fffdce990c9331b8b9bee38a7ac4",
+    "file:execution-lifecycle%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fexecution%2FExecutionState.scala#sha256:7bb485e5c2fb8b3b7a3ab2d988f67d5f944af97479787898644b66b14b8ada34",
+    "file:execution-lifecycle%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fexecution%2FSourceFacts.scala#sha256:545a2e4521b92f114298093a655e9b6f9fe66afd7f9520afa3831384688f90c4",
+    "file:execution-lifecycle%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fexecution%2FSubmissionKnowledgeSuite.scala#sha256:754745b43d54efa245d03a9b3808e0e31583190268c8b695f32136655db77135",
+    "file:memory%2Fsession-bridge.md#sha256:66cd12aaaa4940cfa8c5105618f0e747b7d9127fb6800fd2adf1cb7d0242bb5d"
+  ],
+  "summary": "Task Group 6 adds closed evidence-retaining submission knowledge, explicit completeness-backed source-order absence, indeterminate fresh-submit prevention with exact retry/cancel/reconciliation recovery, deterministic replay admission, and completed-JAR/JVM guards; formatting and all 969 tests pass after an automated review with no remaining findings."
+}

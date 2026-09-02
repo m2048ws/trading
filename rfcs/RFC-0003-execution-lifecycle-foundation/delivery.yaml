@@ -1,17 +1,21 @@
 schemaVersion: 1
 rfcId: RFC-0003-execution-lifecycle-foundation
-revision: 2
+revision: 3
 slices:
   S-01-actual-execution-lifecycle:
-    status: planned
+    status: archived
     binding:
       change: establish-actual-execution-lifecycle
+      sourceDigest: sha256:f11a68db674bf8a6db3dbf79a9dc4d81df5403a8e597c182714ae2d4a296b5fc
+      plannedAt: '2026-09-01T18:59:13.266Z'
       issue:
         provider: github
         id: '34'
         url: https://github.com/m2048ws/trading/issues/34
-      sourceDigest: sha256:f11a68db674bf8a6db3dbf79a9dc4d81df5403a8e597c182714ae2d4a296b5fc
-      plannedAt: '2026-09-01T18:59:13.266Z'
+    archive:
+      archivedAt: '2026-09-02T17:01:02.819Z'
+      commit: 4f8d8194fe1bfba185c9effb6ab2ca6b1a653a41
+      evidenceManifest: sha256:65afe49168a3c223c12556a2ffdfea42e0244580b2d29a30b3d5365b9d28c2e6
   S-02-execution-application-boundary:
     status: unbound
   S-03-versioned-execution-records:

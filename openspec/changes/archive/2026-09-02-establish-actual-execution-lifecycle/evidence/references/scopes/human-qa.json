@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 3,
+  "scope": "human-qa",
+  "runId": "run-faf4d455-8dbc-4369-a994-66f868cfa7ef",
+  "references": [
+    {
+      "reference": "file:docs%2Farchitecture-charter-audit.md#sha256:c31ef09cee1eeb5088620bf4b03137279b1cfbd2ec46c7873eb8765834b13d3f",
+      "sourcePath": "docs/architecture-charter-audit.md",
+      "digest": "sha256:c31ef09cee1eeb5088620bf4b03137279b1cfbd2ec46c7873eb8765834b13d3f",
+      "archivePath": "references/blobs/c31ef09cee1eeb5088620bf4b03137279b1cfbd2ec46c7873eb8765834b13d3f"
+    },
+    {
+      "reference": "file:execution-lifecycle%2FREADME.md#sha256:06e7ba9d1af9d87edfb0ebf5089a3c3f06e0643a9cfd27dee2d203850f073fb2",
+      "sourcePath": "execution-lifecycle/README.md",
+      "digest": "sha256:06e7ba9d1af9d87edfb0ebf5089a3c3f06e0643a9cfd27dee2d203850f073fb2",
+      "archivePath": "references/blobs/06e7ba9d1af9d87edfb0ebf5089a3c3f06e0643a9cfd27dee2d203850f073fb2"
+    },
+    {
+      "reference": "file:README.md#sha256:a5f6e0220bbaa3fc17ea1509098a9a5a07559af62ebdfee5aeb6abf3e0b2120c",
+      "sourcePath": "README.md",
+      "digest": "sha256:a5f6e0220bbaa3fc17ea1509098a9a5a07559af62ebdfee5aeb6abf3e0b2120c",
+      "archivePath": "references/blobs/a5f6e0220bbaa3fc17ea1509098a9a5a07559af62ebdfee5aeb6abf3e0b2120c"
+    }
+  ]
+}

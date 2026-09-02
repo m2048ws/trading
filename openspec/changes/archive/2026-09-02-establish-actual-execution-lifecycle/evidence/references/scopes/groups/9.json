@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 3,
+  "scope": "group-9",
+  "runId": "run-faf4d455-8dbc-4369-a994-66f868cfa7ef",
+  "references": [
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FExecutionLifecycleCompilerBoundarySuite.scala#sha256:ab629426812446bec0ab2b3b69db53d493415af36fbf9676eaa2f12bb85f636e",
+      "sourcePath": "adversarial-boundary/src/test/scala/external/ExecutionLifecycleCompilerBoundarySuite.scala",
+      "digest": "sha256:ab629426812446bec0ab2b3b69db53d493415af36fbf9676eaa2f12bb85f636e",
+      "archivePath": "references/blobs/ab629426812446bec0ab2b3b69db53d493415af36fbf9676eaa2f12bb85f636e"
+    },
+    {
+      "reference": "file:build.sbt#sha256:47ece9b184d750d417cde80384dddf73905fabc118ed6dd2de3a4f98cb9a0b50",
+      "sourcePath": "build.sbt",
+      "digest": "sha256:47ece9b184d750d417cde80384dddf73905fabc118ed6dd2de3a4f98cb9a0b50",
+      "archivePath": "references/blobs/47ece9b184d750d417cde80384dddf73905fabc118ed6dd2de3a4f98cb9a0b50"
+    },
+    {
+      "reference": "file:docs%2Farchitecture-charter-audit.md#sha256:c31ef09cee1eeb5088620bf4b03137279b1cfbd2ec46c7873eb8765834b13d3f",
+      "sourcePath": "docs/architecture-charter-audit.md",
+      "digest": "sha256:c31ef09cee1eeb5088620bf4b03137279b1cfbd2ec46c7873eb8765834b13d3f",
+      "archivePath": "references/blobs/c31ef09cee1eeb5088620bf4b03137279b1cfbd2ec46c7873eb8765834b13d3f"
+    },
+    {
+      "reference": "file:docs%2Fexecution-lifecycle-evidence.md#sha256:8100c51d4be9216c73375cdbfbac5d9aaa926867e34dd89fbf53df4de42f6d3a",
+      "sourcePath": "docs/execution-lifecycle-evidence.md",
+      "digest": "sha256:8100c51d4be9216c73375cdbfbac5d9aaa926867e34dd89fbf53df4de42f6d3a",
+      "archivePath": "references/blobs/8100c51d4be9216c73375cdbfbac5d9aaa926867e34dd89fbf53df4de42f6d3a"
+    },
+    {
+      "reference": "file:execution-lifecycle%2FREADME.md#sha256:06e7ba9d1af9d87edfb0ebf5089a3c3f06e0643a9cfd27dee2d203850f073fb2",
+      "sourcePath": "execution-lifecycle/README.md",
+      "digest": "sha256:06e7ba9d1af9d87edfb0ebf5089a3c3f06e0643a9cfd27dee2d203850f073fb2",
+      "archivePath": "references/blobs/06e7ba9d1af9d87edfb0ebf5089a3c3f06e0643a9cfd27dee2d203850f073fb2"
+    },
+    {
+      "reference": "file:execution-lifecycle%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fexecution%2FExecutionStateSuite.scala#sha256:eaeeabc367a967ca53a9f57ae3356c51d21a14ae10ca93503de8a034c4408278",
+      "sourcePath": "execution-lifecycle/src/test/scala/trading/execution/ExecutionStateSuite.scala",
+      "digest": "sha256:eaeeabc367a967ca53a9f57ae3356c51d21a14ae10ca93503de8a034c4408278",
+      "archivePath": "references/blobs/eaeeabc367a967ca53a9f57ae3356c51d21a14ae10ca93503de8a034c4408278"
+    },
+    {
+      "reference": "file:execution-scenario%2FREADME.md#sha256:a33f9b769e8e56be74b0f49df4f8da246c4291c3c8451a8847370027f86551f7",
+      "sourcePath": "execution-scenario/README.md",
+      "digest": "sha256:a33f9b769e8e56be74b0f49df4f8da246c4291c3c8451a8847370027f86551f7",
+      "archivePath": "references/blobs/a33f9b769e8e56be74b0f49df4f8da246c4291c3c8451a8847370027f86551f7"
+    },
+    {
+      "reference": "file:memory%2Fsession-bridge.md#sha256:ce65f16d236b4b4215c4afe0d01aec82e2859a0ea9401779689d0dde0484fc72",
+      "sourcePath": "memory/session-bridge.md",
+      "digest": "sha256:ce65f16d236b4b4215c4afe0d01aec82e2859a0ea9401779689d0dde0484fc72",
+      "archivePath": "references/blobs/ce65f16d236b4b4215c4afe0d01aec82e2859a0ea9401779689d0dde0484fc72"
+    },
+    {
+      "reference": "file:openspec%2Fchanges%2Festablish-actual-execution-lifecycle%2Fcorgi%2Ftraceability.yaml#sha256:5bc845cce8d1832066d03138070f420341dcb5ea8219116e97416860e971ff0f",
+      "sourcePath": "openspec/changes/establish-actual-execution-lifecycle/corgi/traceability.yaml",
+      "digest": "sha256:5bc845cce8d1832066d03138070f420341dcb5ea8219116e97416860e971ff0f",
+      "archivePath": "references/blobs/5bc845cce8d1832066d03138070f420341dcb5ea8219116e97416860e971ff0f"
+    },
+    {
+      "reference": "file:openspec%2Fchanges%2Festablish-actual-execution-lifecycle%2Fspecs%2Factual-execution-lifecycle%2Fspec.md#sha256:903b5ceb625ec5c45993b83515386b35c20e9ec6368a612a384f7de64beadd5e",
+      "sourcePath": "openspec/changes/establish-actual-execution-lifecycle/specs/actual-execution-lifecycle/spec.md",
+      "digest": "sha256:903b5ceb625ec5c45993b83515386b35c20e9ec6368a612a384f7de64beadd5e",
+      "archivePath": "references/blobs/903b5ceb625ec5c45993b83515386b35c20e9ec6368a612a384f7de64beadd5e"
+    },
+    {
+      "reference": "file:README.md#sha256:a5f6e0220bbaa3fc17ea1509098a9a5a07559af62ebdfee5aeb6abf3e0b2120c",
+      "sourcePath": "README.md",
+      "digest": "sha256:a5f6e0220bbaa3fc17ea1509098a9a5a07559af62ebdfee5aeb6abf3e0b2120c",
+      "archivePath": "references/blobs/a5f6e0220bbaa3fc17ea1509098a9a5a07559af62ebdfee5aeb6abf3e0b2120c"
+    }
+  ]
+}

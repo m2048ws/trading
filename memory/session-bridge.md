@@ -14,16 +14,16 @@ updated: 2026-09-02
 - **Issue**: 34 https://github.com/m2048ws/trading/issues/34
 - **Change**: establish-actual-execution-lifecycle
 - **Worktree**: /Users/m/src/money/.worktrees/establish-actual-execution-lifecycle
-- **Phase at Checkpoint**: awaiting_verify
-- **Task Group at Checkpoint**: 9
-- **Observed Run Revision**: 10
-- **Last Verified HEAD**: 69c7e5e8ad041d167e2ab1456a988f87225538c1
+- **Phase at Checkpoint**: archiving
+- **Task Group at Checkpoint**: none
+- **Observed Run Revision**: 15
+- **Last Verified HEAD**: 4f8d8194fe1bfba185c9effb6ab2ca6b1a653a41
 
 The phase and revision above are the required next checkpoint carried by Task Group 9. Live Run Contract
 `run-faf4d455-8dbc-4369-a994-66f868cfa7ef` remains `applying` at revision 9 until Corgi acknowledges that commit.
 
 ## Next Action
-- Commit and acknowledge `establish-actual-execution-lifecycle` Task Group 9, synchronize draft PR #35, stop Apply at
+- Consult Run Contract v3: resume tracker closeout for `establish-actual-execution-lifecycle` only if pending; otherwise select the next accepted Slice. Local delivery: `wiki/deliveries/RFC-0003-execution-lifecycle-foundation-S-01-actual-execution-lifecycle.md`.
   `awaiting_verify`, and hand off to canonical Verify. Human Review, Human QA, and Archive remain separate later gates.
 
 ## Blockers

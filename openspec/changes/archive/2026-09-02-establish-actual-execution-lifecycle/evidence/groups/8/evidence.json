@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 3,
+  "groupId": "8",
+  "checks": [
+    {
+      "name": "full repository formatting and test gate",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:build.sbt#sha256:47ece9b184d750d417cde80384dddf73905fabc118ed6dd2de3a4f98cb9a0b50",
+        "file:execution-lifecycle%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fexecution%2FCancellationSuite.scala#sha256:9d34276c959a624714a55747e31b04e7460c1acfa38b3b90a338898031d7bea0"
+      ]
+    },
+    {
+      "name": "cancellation race anomaly correction bust and lineage behavior",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:execution-lifecycle%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fexecution%2FCancellationSuite.scala#sha256:9d34276c959a624714a55747e31b04e7460c1acfa38b3b90a338898031d7bea0",
+        "file:execution-lifecycle%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fexecution%2FCancellation.scala#sha256:511a7a3c6abe00ca9e17cb784b22a53b9d874981e103216021a4598c8cc0ab75",
+        "file:execution-lifecycle%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fexecution%2FOrderLineage.scala#sha256:2dafbe2d46d3f2a73e3c4537454edeb2f23c7ad2b15336ccbff2b25976a921ef"
+      ]
+    },
+    {
+      "name": "completed-JAR JVM construction and closed-alternative boundaries",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FExecutionLifecycleCompilerBoundarySuite.scala#sha256:ab629426812446bec0ab2b3b69db53d493415af36fbf9676eaa2f12bb85f636e",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fexecution-lifecycle-compiler%2Fnegative%2FPackageSpoofExecutionAuthority.scala#sha256:8c06079fe319eb3952a86236ec6c284e93643977674164f925a96e03d6130c44",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fexecution-lifecycle-java%2Fpositive%2FRejectedExecutionAlternatives.java#sha256:e31fa859fc2dd6734083546776c740e9afea503c6d314256058e4a4fab4d8b8a"
+      ]
+    }
+  ],
+  "automatedReview": {
+    "verdict": "pass",
+    "findings": []
+  },
+  "artifacts": [
+    "file:execution-lifecycle%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fexecution%2FCancellation.scala#sha256:511a7a3c6abe00ca9e17cb784b22a53b9d874981e103216021a4598c8cc0ab75",
+    "file:execution-lifecycle%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fexecution%2FOrderLineage.scala#sha256:2dafbe2d46d3f2a73e3c4537454edeb2f23c7ad2b15336ccbff2b25976a921ef",
+    "file:execution-lifecycle%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fexecution%2FExecutionState.scala#sha256:7b3fa377ddc5705861749758e5b0c3cc107b273abd83036fe8c41511f453b282",
+    "file:execution-lifecycle%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fexecution%2FCancellationSuite.scala#sha256:9d34276c959a624714a55747e31b04e7460c1acfa38b3b90a338898031d7bea0",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FExecutionLifecycleCompilerBoundarySuite.scala#sha256:ab629426812446bec0ab2b3b69db53d493415af36fbf9676eaa2f12bb85f636e",
+    "file:memory%2Fsession-bridge.md#sha256:ec3395b084d8014023aab2771399007b1e88c2c36c4425b05538fe51072fafe8"
+  ],
+  "summary": "Task Group 8 adds closed retained cancellation knowledge, conflict-free authoritative race classification, exact post-cancellation anomalies that follow correction and bust effects, checked mechanism-neutral predecessor/successor lineage, dependency-aware command replay, deterministic equality, and completed-JAR/JVM boundary coverage. The structured automated review corrected replay ordering and referenced-submit evidence before a final no-findings pass; it did not replace canonical Verify or Human Review."
+}
