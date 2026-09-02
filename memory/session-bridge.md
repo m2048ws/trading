@@ -15,23 +15,23 @@ updated: 2026-09-02
 - **Change**: establish-actual-execution-lifecycle
 - **Worktree**: /Users/m/src/money/.worktrees/establish-actual-execution-lifecycle
 - **Phase at Checkpoint**: applying
-- **Task Group at Checkpoint**: 6
-- **Observed Run Revision**: 7
-- **Last Verified HEAD**: b1b6b336ad5dce2ba5c48fa13de2cf40e528fee9
+- **Task Group at Checkpoint**: 7
+- **Observed Run Revision**: 8
+- **Last Verified HEAD**: 6c5c0dddd12f8949b924f29c249ff58afd06caf0
 
-The phase and revision above are the required next checkpoint carried by Task Group 6. Live Run Contract
-`run-faf4d455-8dbc-4369-a994-66f868cfa7ef` remains `applying` at revision 6 until Corgi acknowledges that commit.
+The phase and revision above are the required next checkpoint carried by Task Group 7. Live Run Contract
+`run-faf4d455-8dbc-4369-a994-66f868cfa7ef` remains `applying` at revision 7 until Corgi acknowledges that commit.
 
 ## Next Action
-- Commit and acknowledge `establish-actual-execution-lifecycle` Task Group 6, synchronize draft PR #35, then implement
-  Task Group 7. Verify, Human Review, Human QA, and Archive remain separate gates.
+- Commit and acknowledge `establish-actual-execution-lifecycle` Task Group 7, synchronize draft PR #35, then implement
+  Task Group 8. Verify, Human Review, Human QA, and Archive remain separate gates.
 
 ## Blockers
 - none
 
 ## Uncommitted Work
-- Task Group 6's closed submission-knowledge product, explicit authoritative-absence evidence, indeterminate duplicate
-  prevention and replay recovery, completed-JAR/JVM guards, and this next-state checkpoint.
+- Task Group 7's closed effective-fill ledger, authoritative correction/bust resolution, exact signed exposure and
+  overfill anomalies, conflict/ambiguity retention, completed-JAR/JVM guards, and this next-state checkpoint.
 
 ## Discoveries
 - The archived `establish-pure-instrument-economics` boundary was reconciled from commit `86613ee` before S-02
@@ -484,6 +484,19 @@ The phase and revision above are the required next checkpoint carried by Task Gr
   alternative, conflict, recovery, JVM authority, architecture, complexity, security-applicability, and evidence pass
   returned no findings. The final pass changed no file, human-triaged no finding, and is not canonical Verify or Human
   Review.
+- The effective-fill ledger retains distinct qualified fills, de-duplicates same fill bodies, withholds invented value
+  from event/fill conflicts and unresolved or ambiguous modifier chains, and retains original plus modifying source
+  facts. One authoritatively ordered stream applies the last correction's exact lots/price or a final bust's zero
+  contribution; unsequenced, multi-stream, conflicting-position, and post-bust chains remain explicitly ambiguous.
+- Active fill counts derive exact signed `PositionLots` from the lifecycle's retained instrument grid and immutable
+  order side. Authoritative exposure is never capped at ordered lots: exact buy/sell overfills remain in known exposure
+  and carry an exact signed excess anomaly, while foreign target, logical-order, instrument, and grid economics are
+  rejected before ledger contribution.
+- The final Task Group 7 gate passes formatting and 978 tests: 56 execution-lifecycle tests and 167 completed-JAR/
+  compiler/adversarial tests alongside unchanged module suites. The automated review checked scope, AC-005 behavior,
+  exactness/dimensions, correction and conflict authority, deterministic equality/replay, JVM construction guards,
+  dependency purity, complexity, security applicability, and evidence with no findings. It changed no file,
+  human-triaged no finding, and is not canonical Verify or Human Review.
 
 ## Promotion Queue
 - Review agent-configuration constraints before promoting any item to `memory/MEMORY.md`.
@@ -501,3 +514,5 @@ The phase and revision above are the required next checkpoint carried by Task Gr
   diagnostics, and public retained-conflict observations.
 - After whole-change approval, evaluate promotion of the closed submission-knowledge lattice, explicit qualified
   authoritative-absence evidence, and indeterminate same-identity recovery rule.
+- After whole-change approval, evaluate promotion of effective-fill conflict/ambiguity semantics, immutable
+  correction/bust history, and exact signed overfill exposure.

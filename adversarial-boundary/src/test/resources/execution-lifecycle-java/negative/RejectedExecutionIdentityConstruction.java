@@ -138,6 +138,35 @@ public final class RejectedExecutionIdentityConstruction {
     return new ConflictingSubmission(null, null);
   }
 
+  public static ModifierAmbiguity forgeModifierAmbiguity() {
+    return new ModifierAmbiguity(null);
+  }
+
+  @SuppressWarnings({"rawtypes", "unchecked"})
+  public static ActiveEffectiveFill forgeActiveEffectiveFill() {
+    return new ActiveEffectiveFill(null, null, null, null);
+  }
+
+  @SuppressWarnings({"rawtypes", "unchecked"})
+  public static BustedEffectiveFill forgeBustedEffectiveFill() {
+    return new BustedEffectiveFill(null, null, null);
+  }
+
+  @SuppressWarnings({"rawtypes", "unchecked"})
+  public static AmbiguousEffectiveFill forgeAmbiguousEffectiveFill() {
+    return new AmbiguousEffectiveFill(null, null, null);
+  }
+
+  @SuppressWarnings({"rawtypes", "unchecked"})
+  public static ConflictingEffectiveFill forgeConflictingEffectiveFill() {
+    return new ConflictingEffectiveFill(null, null, null, null);
+  }
+
+  @SuppressWarnings({"rawtypes", "unchecked"})
+  public static EffectiveFillLedger forgeEffectiveFillLedger() {
+    return new EffectiveFillLedger(null, null, null, null);
+  }
+
   @SuppressWarnings({"rawtypes", "unchecked"})
   public static LifecycleAccepted forgeLifecycleAccepted() {
     return new LifecycleAccepted(null, null, null);
@@ -155,7 +184,7 @@ public final class RejectedExecutionIdentityConstruction {
   @SuppressWarnings({"rawtypes", "unchecked"})
   public static LifecycleObservation forgeLifecycleObservation() {
     return new LifecycleObservation(
-        null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+        null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
   }
 
   @SuppressWarnings({"rawtypes", "unchecked"})

@@ -59,12 +59,19 @@ object PackageSpoofExecutionAuthority:
   val executionProvenSubmission = new ExecutionProvenSubmission[Dim, Dim, Dim](null)
   val absentSubmission = new AuthoritativelyAbsentSubmission[Dim, Dim, Dim](null)
   val conflictingSubmission = new ConflictingSubmission[Dim, Dim, Dim](null, null)
+  val modifierAmbiguity = new ModifierAmbiguity(Vector.empty)
+  val activeEffectiveFill = new ActiveEffectiveFill[Dim, Dim, Dim](null, null, null, Vector.empty)
+  val bustedEffectiveFill = new BustedEffectiveFill[Dim, Dim, Dim](null, null, Vector.empty)
+  val ambiguousEffectiveFill = new AmbiguousEffectiveFill[Dim, Dim, Dim](null, Vector.empty, null)
+  val conflictingEffectiveFill = new ConflictingEffectiveFill[Dim, Dim, Dim](
+    null, Vector.empty, Vector.empty, Vector.empty)
+  val effectiveFillLedger = new EffectiveFillLedger[Dim, Dim, Dim](null, null, None, null)
   val executionState = new ExecutionState[Dim, Dim, Dim](null, null, null, null)
   val lifecycleAccepted = new LifecycleAccepted[Dim, Dim, Dim](null, null, null)
   val lifecycleRejected = new LifecycleRejected[Dim, Dim, Dim](null, null, null)
   val lifecycleDiagnostics = new LifecycleDiagnostics(Vector.empty)
   val lifecycleObservation = new LifecycleObservation[Dim, Dim, Dim](
-    null, None, Map.empty, Map.empty, Map.empty, Vector.empty, Vector.empty, Vector.empty, Map.empty, Map.empty,
+    null, None, Map.empty, Map.empty, Map.empty, null, Vector.empty, Vector.empty, Vector.empty, Map.empty, Map.empty,
     Set.empty, Vector.empty, Map.empty, None)
   val lifecycleReplay = new LifecycleReplayResult[Dim, Dim, Dim](null, Vector.empty)
   val copied = checkedTarget.copy(source = null)
@@ -87,6 +94,9 @@ object PackageSpoofExecutionAuthority:
     val work = null
   final class ForgedSubmissionKnowledge extends SubmissionKnowledge[Dim, Dim, Dim]():
     val evidence = null
+  final class ForgedEffectiveFill extends EffectiveFill[Dim, Dim, Dim]():
+    val original = null
+    val modifiers = Vector.empty
   val nativeAmend = null.asInstanceOf[SubmitOrderCommand[Dim, Dim, Dim]].amend(null)
   val atomicReplace = null.asInstanceOf[CommandState[Dim, Dim, Dim]].cancelReplace(null)
   // OFFENDING-END

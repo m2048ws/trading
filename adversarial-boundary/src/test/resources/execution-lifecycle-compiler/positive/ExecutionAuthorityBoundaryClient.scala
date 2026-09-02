@@ -146,6 +146,14 @@ object ExecutionAuthorityBoundaryClient:
     assert(observation.fillIdentityConflicts.isEmpty)
     assert(observation.streamPositionConflicts.isEmpty)
     assert(observation.explicitlyUnsequencedEvents == Vector(executionFill.eventId))
+    val effectiveFillKind = observation.effectiveFillLedger.byFillId(fillId) match
+      case _: ActiveEffectiveFill[?, ?, ?]      => "active"
+      case _: BustedEffectiveFill[?, ?, ?]      => "busted"
+      case _: AmbiguousEffectiveFill[?, ?, ?]   => "ambiguous"
+      case _: ConflictingEffectiveFill[?, ?, ?] => "conflicting"
+    assert(effectiveFillKind == "active")
+    assert(observation.effectiveFillLedger.knownExposure == lifecycle.initialPositionChange)
+    assert(observation.effectiveFillLedger.overfill.isEmpty)
     val submissionKind = observation.submissionKnowledge.get match
       case _: IssuedPendingSubmission[?, ?, ?]         => "pending"
       case _: AcceptedSubmission[?, ?, ?]              => "accepted"

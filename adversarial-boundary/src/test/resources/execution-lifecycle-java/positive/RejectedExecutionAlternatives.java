@@ -4,6 +4,8 @@ import scala.Option;
 import trading.execution.ApplicationCommandId;
 import trading.execution.DispatchEvidence;
 import trading.execution.ExecutionCommand;
+import trading.execution.EffectiveFill;
+import trading.execution.ExecutionFill;
 import trading.execution.ExecutionLifecycle;
 import trading.execution.ExecutionOrderId;
 import trading.execution.ExecutionState;
@@ -13,6 +15,7 @@ import trading.execution.QualifiedSourceOrderId;
 import trading.execution.SourceEvidenceState;
 import trading.execution.SourceFact;
 import trading.execution.SourceFactTransition;
+import trading.execution.FillModifier;
 import trading.execution.SourceOrdering;
 import trading.execution.SubmitOrderCommand;
 import trading.execution.SubmissionEvidence;
@@ -137,6 +140,22 @@ public final class RejectedExecutionAlternatives {
     }
   }
 
+  private static final class ForgedEffectiveFill extends EffectiveFill {
+    private ForgedEffectiveFill() {
+      super();
+    }
+
+    @Override
+    public ExecutionFill original() {
+      return null;
+    }
+
+    @Override
+    public scala.collection.immutable.Vector<FillModifier> modifiers() {
+      return null;
+    }
+  }
+
   public static boolean guardsRejectUnknownAlternatives() {
     try {
       new ForgedContinuation();
@@ -182,6 +201,12 @@ public final class RejectedExecutionAlternatives {
     }
     try {
       new ForgedSubmissionKnowledge();
+      return false;
+    } catch (IllegalAccessError expected) {
+      // expected
+    }
+    try {
+      new ForgedEffectiveFill();
       return false;
     } catch (IllegalAccessError expected) {
       return true;

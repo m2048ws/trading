@@ -137,6 +137,7 @@ final class LifecycleObservation[D <: Dim, B <: Dim, Q <: Dim] private[this] (
   val issuedCommands: Map[ApplicationCommandId, ExecutionCommand[D, B, Q]],
   val sourceFacts: Map[QualifiedSourceEventId, SourceFact[D, B, Q]],
   val fills: Map[QualifiedFillId, ExecutionFill[D, B, Q]],
+  val effectiveFillLedger: EffectiveFillLedger[D, B, Q],
   val commandConflicts: Vector[CommandConflict[D, B, Q]],
   val sourceEventConflicts: Vector[SourceFactConflict[D, B, Q]],
   val fillIdentityConflicts: Vector[FillIdentityConflict[D, B, Q]],
@@ -152,7 +153,7 @@ final class LifecycleObservation[D <: Dim, B <: Dim, Q <: Dim] private[this] (
     case that: LifecycleObservation[?, ?, ?] =>
       lifecycle == that.lifecycle && submissionKnowledge == that.submissionKnowledge &&
       issuedCommands == that.issuedCommands &&
-      sourceFacts == that.sourceFacts && fills == that.fills &&
+      sourceFacts == that.sourceFacts && fills == that.fills && effectiveFillLedger == that.effectiveFillLedger &&
       commandConflicts == that.commandConflicts && sourceEventConflicts == that.sourceEventConflicts &&
       fillIdentityConflicts == that.fillIdentityConflicts &&
       streamPositionConflicts == that.streamPositionConflicts &&
@@ -169,6 +170,7 @@ final class LifecycleObservation[D <: Dim, B <: Dim, Q <: Dim] private[this] (
       issuedCommands,
       sourceFacts,
       fills,
+      effectiveFillLedger,
       commandConflicts,
       sourceEventConflicts,
       fillIdentityConflicts,
@@ -273,6 +275,7 @@ object ExecutionState:
           classOf[Map[?, ?]],
           classOf[Map[?, ?]],
           classOf[Map[?, ?]],
+          classOf[EffectiveFillLedger[?, ?, ?]],
           classOf[Vector[?]],
           classOf[Vector[?]],
           classOf[Vector[?]],
@@ -518,6 +521,7 @@ object ExecutionState:
         state.commands.issuedCommands,
         state.source.factsByEvent,
         state.source.fillsById,
+        EffectiveFillLedger.derive(state),
         state.commands.conflicts,
         state.source.eventConflicts,
         state.source.fillConflicts,
