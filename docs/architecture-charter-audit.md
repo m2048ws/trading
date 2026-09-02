@@ -31,13 +31,14 @@ projects and must not be confused with the remaining proposed target.
 
 | State | SBT project | Artifact/directory | Production dependency |
 | --- | --- | --- | --- |
-| Current | root `trading` | unpublished aggregate | aggregates quantities, reference data, application, runtime, instrument economics, order model, execution scenario, fee policy, risk, adversarial boundary |
+| Current | root `trading` | unpublished aggregate | aggregates quantities, reference data, application, runtime, instrument economics, order model, execution lifecycle, execution scenario, fee policy, risk, adversarial boundary |
 | Current | `quantities` | `trading-quantities` / `quantities/` | external mathematical libraries only |
 | Current | `referenceData` | `trading-reference-data` / `reference-data/` | quantities |
 | Current | `application` | `trading-application` / `application/` | reference data |
 | Current | `runtime` | `trading-runtime` / `runtime/` | application and reference data |
 | Current | `instrumentEconomics` | `trading-instrument-economics` / `instrument-economics/` | quantities and reference data |
 | Current | `orderModel` | `trading-order-model` / `order-model/` | quantities and instrument economics |
+| Current | `executionLifecycle` | `trading-execution-lifecycle` / `execution-lifecycle/` | instrument economics and order model |
 | Current | `executionScenario` | `trading-execution-scenario` / `execution-scenario/` | instrument economics and order model |
 | Current | `feePolicy` | `trading-fee-policy` / `fee-policy/` | quantities, instrument economics, order model, execution scenario; risk in tests only |
 | Current | `risk` | `trading-risk` / `risk/` | quantities and instrument economics |
@@ -52,6 +53,8 @@ quantities <- instrumentEconomics
 referenceData <- instrumentEconomics
 quantities <- orderModel
 instrumentEconomics <- orderModel
+instrumentEconomics <- executionLifecycle
+orderModel <- executionLifecycle
 instrumentEconomics <- executionScenario
 orderModel <- executionScenario
 quantities <- feePolicy
@@ -81,6 +84,7 @@ build/runtime JDK is 25.
 | Stable-ID instrument input and proof-producing assembly | instrument-assembly boundary, initially alongside economics | reference data and quantities | 3 |
 | Assembled instruments, lots, positions, prices, payoff, valuation, economic fee values, P&L | `trading-instrument-economics` | quantities and reference data | 4 |
 | Immutable order intent and instruction evidence | `trading-order-model` | instrument economics | 5 |
+| Actual execution commands, qualified source facts, reconciliation, exact exposure, and anomalies | `trading-execution-lifecycle` | order model and instrument economics | RFC-0003 S-01 |
 | Hypothetical matched execution evidence and checked scenarios | `trading-execution-scenario` | order model and instrument economics | 5 |
 | Venue/account/tier fee rules and assessed attribution | `trading-fee-policy` | instrument economics, order model, execution scenario | 6 |
 | Isolated-instrument downside and sizing procedures | `trading-risk` | quantities and instrument economics | 7 |
@@ -104,9 +108,10 @@ back on codecs.
 | Reference data -> assembly | `InstrumentDefinition + CatalogSnapshot -> InstrumentSpec` | reference data own generic lookup failures; assembly adds instrument-role context and owns non-empty assembly errors | assembler is pure and accepts neither live catalog nor codec/parser |
 | Assembly -> economics | `InstrumentDefinition -> InstrumentSpec -> Instrument` | assembly owns resolution/coherence; total instrument construction introduces no repeated lookup error | trusted instrument retains handles, not snapshot/live state |
 | Economics -> orders/scenarios | `Instrument`, `OrderIntent`, instruction-shaped evidence, `ScenarioAssumptions`, `MatchedSlices` | order errors own instruction construction; scenario errors own evidence/outcome validation | both layers are pure and codec-free |
+| Orders/economics -> actual execution | `ExecutionLifecycle`, application commands, qualified source facts, `ExecutionState`, exact fill ledger | execution lifecycle owns identity/scope errors, retained conflicts/incompleteness, replay, and exposure anomalies | pure and codec-free; later application/runtime/codecs consume it one-way |
 | Scenario -> fee policy | pure `FeePolicy` produces directives; assessment binds them to actual scenario slices; `FeeInclusivePnl` composes leg policies and core `Pnl` | policy owns rule/output errors; assessment and composition retain located typed failures | policy acquisition, clocks, account/tier/version selection, audit envelopes, and execution reports remain application/runtime or boundary-codec concerns |
 | Economics -> risk | explicit instrument plus core `Pnl` produces refined downside/model observations | risk owns model/search errors; it does not reinterpret scenario/fee failures | pure; no scenario/fee dependency hidden in kernel |
-| Application -> runtime | `LiveCatalog[F]` is the initial minimal port; runtime supplies Cats Effect interpreter | application owns capability outcomes; runtime owns lifecycle/cancellation mechanics | concrete effects and telemetry remain in runtime |
+| Application -> runtime | `LiveCatalog[F]` is the initial minimal port; runtime supplies Cats Effect interpreter | application owns capability outcomes; runtime owns resource and concurrency mechanics | concrete effects and telemetry remain in runtime; actual-execution domain state remains execution-lifecycle-owned |
 | Domain -> codecs | V1 record families contain stable IDs/exact primitives; decoding uses one snapshot and owning constructors | codec owns syntax/path/resource errors; reference/assembly/order/scenario errors remain typed stages | codecs are pure; caller captures snapshot; no `F`, live lookup, or I/O |
 
 Naming, trust transitions, catalog responsibility, validation staging, effect
@@ -236,3 +241,24 @@ and a separately named linear exhaustive fallback with typed located failures. S
 current positions, account/portfolio offsets, margin, liquidation, funding, market acquisition, concurrency,
 persistence, tracing, and audit envelopes remain outside the risk capability. The production graph stays acyclic and
 the minimum build/runtime JDK remains 25.
+
+## 2026-09-02 RFC-0003 S-01 actual-execution delivery refresh
+
+RFC-0003 Slice `S-01-actual-execution-lifecycle` physically adds the pure `trading-execution-lifecycle` artifact. It
+depends only on instrument economics and the immutable order model, and no existing production module depends on it in
+this Slice. The root aggregate and completed-JAR adversarial boundary consume it for build and verification only. The
+new graph edges are `instrumentEconomics <- executionLifecycle` and `orderModel <- executionLifecycle`; the sibling
+`executionScenario` remains independent and hypothetical.
+
+Execution lifecycle owns application command identities and normalized command bodies, source/account-qualified facts
+and ordering, immutable reconciliation, closed submission/cancellation knowledge, exact active-fill exposure,
+correction/bust history, conflicts, incompleteness, anomalies, and mechanism-neutral logical-order lineage. Delivery
+time, timestamps, transport attempts, and scenario slices provide no source authority. Explicitly unsequenced evidence
+is retained without a fabricated race order, and authoritative overfill or post-cancellation fills remain exact
+exposure rather than being rejected.
+
+The Slice does not implement a venue client, application workflow, concrete effect, stream, persistence mechanism,
+telemetry integration, durable codec, native amend/cancel-replace, multi-order campaign, accounting, fee, PnL, or risk
+behavior. Later RFC Slices may add effect-polymorphic ports in application, concrete interpreters in runtime, and
+versioned records in the codec boundary. Those are one-way consumers of the pure lifecycle and do not relocate its
+domain authority. The minimum build/runtime JDK remains 25.

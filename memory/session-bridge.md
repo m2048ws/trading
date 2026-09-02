@@ -14,25 +14,24 @@ updated: 2026-09-02
 - **Issue**: 34 https://github.com/m2048ws/trading/issues/34
 - **Change**: establish-actual-execution-lifecycle
 - **Worktree**: /Users/m/src/money/.worktrees/establish-actual-execution-lifecycle
-- **Phase at Checkpoint**: applying
-- **Task Group at Checkpoint**: 8
-- **Observed Run Revision**: 9
-- **Last Verified HEAD**: e0e060146cbff413d8870f4e00a03cd33dcb9386
+- **Phase at Checkpoint**: awaiting_verify
+- **Task Group at Checkpoint**: 9
+- **Observed Run Revision**: 10
+- **Last Verified HEAD**: 69c7e5e8ad041d167e2ab1456a988f87225538c1
 
-The phase and revision above are the required next checkpoint carried by Task Group 8. Live Run Contract
-`run-faf4d455-8dbc-4369-a994-66f868cfa7ef` remains `applying` at revision 8 until Corgi acknowledges that commit.
+The phase and revision above are the required next checkpoint carried by Task Group 9. Live Run Contract
+`run-faf4d455-8dbc-4369-a994-66f868cfa7ef` remains `applying` at revision 9 until Corgi acknowledges that commit.
 
 ## Next Action
-- Commit and acknowledge `establish-actual-execution-lifecycle` Task Group 8, synchronize draft PR #35, then implement
-  Task Group 9. Verify, Human Review, Human QA, and Archive remain separate gates.
+- Commit and acknowledge `establish-actual-execution-lifecycle` Task Group 9, synchronize draft PR #35, stop Apply at
+  `awaiting_verify`, and hand off to canonical Verify. Human Review, Human QA, and Archive remain separate later gates.
 
 ## Blockers
 - none
 
 ## Uncommitted Work
-- Task Group 8's closed cancellation knowledge, authoritative cancel/fill race anomalies, exact corrected/busted
-  post-cancellation exposure, checked lineage links, replay dependency ordering, completed-JAR/JVM guards, and this
-  next-state checkpoint.
+- Task Group 9's reconciled repository/module architecture documentation, actual-versus-hypothetical execution guide,
+  AC-001 through AC-005 evidence map, final clean validation/audit results, and this next-state checkpoint.
 
 ## Discoveries
 - The archived `establish-pure-instrument-economics` boundary was reconciled from commit `86613ee` before S-02
@@ -516,6 +515,29 @@ The phase and revision above are the required next checkpoint carried by Task Gr
   race order, exact correction/bust effects, lineage, replay equality, JVM guards, dependency purity, complexity,
   security applicability, and evidence with no findings. Its final pass changed no file, human-triaged no finding, and
   is not canonical Verify or Human Review.
+- Repository and module documentation now record ten production modules, the acyclic actual-execution dependency node,
+  its independence from hypothetical scenarios, exact versus incomplete knowledge, source authority, correction/bust
+  and cancel-race examples, Slice non-goals, and the one-way later application/runtime/codec direction without
+  presenting any future mechanism as implemented.
+- The final clean dependency-ordered gate passes 988 tests: 601 quantities, 13 reference data, 9 application, 18
+  runtime, 13 instrument economics, 40 risk, 7 order model, 66 execution lifecycle, 16 execution scenario, 38 fee
+  policy/integration, and 167 completed-JAR/compiler/adversarial tests. Formatting and explicit JMH compilation pass.
+  Retained operation evidence reports two lookups/two updates/zero history scans for an indexed fill insertion and two
+  lookups/zero updates/zero scans for duplicate detection.
+- Packaged JAR/API, `javap -p`, completed-artifact classpath, source-import, public-signature, Java-serialization,
+  closed-alternative, and forbidden-name audits pass. Upstream and sibling classpaths contain no execution-lifecycle
+  artifact; its production classpath contains only quantities, reference data, instrument economics, order model,
+  Scala, Cats Core/Kernel, and Algebra. The adversarial fixture separately admits compiler support to run its negative
+  compilation probes. No native amend, atomic cancel-replace, downstream mechanism, or throwing placeholder is present.
+- All eleven deterministic Corgi readiness checks, including embedded strict OpenSpec validation, source provenance,
+  and complete AC traceability, pass at planning revision
+  `sha256:1cdf58a7f0094cce60e35d17849b37458553f7e8359f2e3a791d91140fc23c19`. The read-only semantic readiness review of
+  proposal, both specs, design, tasks, source, and traceability found no error, warning, or informational drift and
+  changed no planning file.
+- The automated Task Group 9 review checked scope, AC-001 through AC-005, architecture and future-layer direction, the
+  complete matrix, JMH and operation evidence, packaged/JVM boundaries, dependency purity, performance/security,
+  planning integrity, checkpoint accuracy, and gate separation with no findings. Its final pass changed no file,
+  human-triaged no finding, and is not canonical Verify or Human Review.
 
 ## Promotion Queue
 - Review agent-configuration constraints before promoting any item to `memory/MEMORY.md`.
@@ -537,3 +559,5 @@ The phase and revision above are the required next checkpoint carried by Task Gr
   correction/bust history, and exact signed overfill exposure.
 - After whole-change approval, evaluate promotion of closed cancellation knowledge, authoritative race classification,
   exact post-cancellation exposure, and checked mechanism-neutral execution-order lineage.
+- After whole-change approval, evaluate promotion of the actual-versus-hypothetical execution ownership distinction
+  and the one-way application/runtime/codec consumption direction.
