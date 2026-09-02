@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 3,
+  "scope": "group-8",
+  "runId": "run-2b01f872-e634-4491-acd3-b1454c94b59e",
+  "references": [
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fboundary-codec-compiler%2Fnegative%2FOrderRecordAuthorityEscapesAreUnavailable.scala#sha256:60c49b11579968d91293ba107e62c7ac52330b43056e19a9e9fe4f584c3f98f5",
+      "sourcePath": "adversarial-boundary/src/test/resources/boundary-codec-compiler/negative/OrderRecordAuthorityEscapesAreUnavailable.scala",
+      "digest": "sha256:60c49b11579968d91293ba107e62c7ac52330b43056e19a9e9fe4f584c3f98f5",
+      "archivePath": "references/blobs/60c49b11579968d91293ba107e62c7ac52330b43056e19a9e9fe4f584c3f98f5"
+    },
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fboundary-codec-compiler%2Fpositive%2FOrderRecordClient.scala#sha256:09e291d12643fa4388e337330dde9efb7accf242298c23c25c90a401d9f35686",
+      "sourcePath": "adversarial-boundary/src/test/resources/boundary-codec-compiler/positive/OrderRecordClient.scala",
+      "digest": "sha256:09e291d12643fa4388e337330dde9efb7accf242298c23c25c90a401d9f35686",
+      "archivePath": "references/blobs/09e291d12643fa4388e337330dde9efb7accf242298c23c25c90a401d9f35686"
+    },
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FBoundaryCodecCompilerBoundarySuite.scala#sha256:33f55bc03232c21eb4fc3fd3c7b0f229de9f12a2cdd30e78bad572f6b803a33b",
+      "sourcePath": "adversarial-boundary/src/test/scala/external/BoundaryCodecCompilerBoundarySuite.scala",
+      "digest": "sha256:33f55bc03232c21eb4fc3fd3c7b0f229de9f12a2cdd30e78bad572f6b803a33b",
+      "archivePath": "references/blobs/33f55bc03232c21eb4fc3fd3c7b0f229de9f12a2cdd30e78bad572f6b803a33b"
+    },
+    {
+      "reference": "file:boundary-codecs%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fcodec%2FOrderRecord.scala#sha256:8526f859685b4fd137231e1ba0cf81ea0dfb7aefc3e423cea66de32cf2cc5e77",
+      "sourcePath": "boundary-codecs/src/main/scala/trading/codec/OrderRecord.scala",
+      "digest": "sha256:8526f859685b4fd137231e1ba0cf81ea0dfb7aefc3e423cea66de32cf2cc5e77",
+      "archivePath": "references/blobs/8526f859685b4fd137231e1ba0cf81ea0dfb7aefc3e423cea66de32cf2cc5e77"
+    },
+    {
+      "reference": "file:boundary-codecs%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fcodec%2FOrderRecordPropertiesSuite.scala#sha256:1195351d35c79dc0428aacfea3c9feb47458be7fc8ffa9706e7ab12509b175a7",
+      "sourcePath": "boundary-codecs/src/test/scala/trading/codec/OrderRecordPropertiesSuite.scala",
+      "digest": "sha256:1195351d35c79dc0428aacfea3c9feb47458be7fc8ffa9706e7ab12509b175a7",
+      "archivePath": "references/blobs/1195351d35c79dc0428aacfea3c9feb47458be7fc8ffa9706e7ab12509b175a7"
+    },
+    {
+      "reference": "file:boundary-codecs%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fcodec%2FOrderRecordSuite.scala#sha256:cad84d3e16ffc6701e325e5fdf9bf487a9053cc3e4362dd071357599d48230f0",
+      "sourcePath": "boundary-codecs/src/test/scala/trading/codec/OrderRecordSuite.scala",
+      "digest": "sha256:cad84d3e16ffc6701e325e5fdf9bf487a9053cc3e4362dd071357599d48230f0",
+      "archivePath": "references/blobs/cad84d3e16ffc6701e325e5fdf9bf487a9053cc3e4362dd071357599d48230f0"
+    },
+    {
+      "reference": "file:openspec%2Fchanges%2Fintroduce-versioned-boundary-codecs%2Fimplementation-notes%2Ftask-group-8.md#sha256:a83a7a2e01c715fd8f811a7332716c438227a7c8cf776f01f1cb01c77e8a634a",
+      "sourcePath": "openspec/changes/introduce-versioned-boundary-codecs/implementation-notes/task-group-8.md",
+      "digest": "sha256:a83a7a2e01c715fd8f811a7332716c438227a7c8cf776f01f1cb01c77e8a634a",
+      "archivePath": "references/blobs/a83a7a2e01c715fd8f811a7332716c438227a7c8cf776f01f1cb01c77e8a634a"
+    }
+  ]
+}

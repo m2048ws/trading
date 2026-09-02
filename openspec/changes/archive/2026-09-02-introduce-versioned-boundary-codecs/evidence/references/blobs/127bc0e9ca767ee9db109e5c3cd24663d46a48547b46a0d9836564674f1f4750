@@ -1,0 +1,370 @@
+[info] welcome to sbt 1.12.15 (Homebrew Java 26.0.2)
+[info] loading settings for project introduce-versioned-boundary-codecs-build from plugins.sbt...
+[info] loading project definition from /Users/m/src/money/.worktrees/introduce-versioned-boundary-codecs/project
+[info] loading settings for project root from build.sbt...
+[info] resolving key references (11672 settings) ...
+[info] set current project to trading (in build file:/Users/m/src/money/.worktrees/introduce-versioned-boundary-codecs/)
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by scala.runtime.LazyVals$ (file:/Users/m/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/scala-library/3.8.4/scala-library-3.8.4.jar)
+WARNING: Please consider reporting this to the maintainers of class scala.runtime.LazyVals$
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+Test run trading.quantity.grid.GridProjectionSuite started
+trading.quantity.grid.GridProjectionSuite: finished 0.133s
+Test run trading.quantity.grid.GridProjectionSuite finished: 0 failed, 0 ignored, 4 total 0.142s
+Test run trading.quantity.examples.NormalizedArithmeticExamplesSuite started
+trading.quantity.examples.NormalizedArithmeticExamplesSuite: finished 0.009s
+Test run trading.quantity.examples.NormalizedArithmeticExamplesSuite finished: 0 failed, 0 ignored, 4 total 0.009s
+Test run trading.quantity.examples.FoundationExamplesSuite started
+trading.quantity.examples.FoundationExamplesSuite: finished 0.012s
+Test run trading.quantity.examples.FoundationExamplesSuite finished: 0 failed, 0 ignored, 4 total 0.012s
+Test run trading.quantity.laws.DimensionDisciplineSuite started
+trading.quantity.laws.DimensionDisciplineSuite: finished 5.417s
+Test run trading.quantity.laws.DimensionDisciplineSuite finished: 0 failed, 0 ignored, 28 total 5.417s
+Test run trading.quantity.DimensionLawsSuite started
+trading.quantity.DimensionLawsSuite: finished 0.097s
+Test run trading.quantity.DimensionLawsSuite finished: 0 failed, 0 ignored, 7 total 0.097s
+Test run trading.quantity.grid.QuotRemSuite started
+trading.quantity.grid.QuotRemSuite: finished 0.004s
+Test run trading.quantity.grid.QuotRemSuite finished: 0 failed, 0 ignored, 2 total 0.004s
+Test run trading.quantity.RationalInvariantSuite started
+trading.quantity.RationalInvariantSuite: finished 0.023s
+Test run trading.quantity.RationalInvariantSuite finished: 0 failed, 0 ignored, 6 total 0.023s
+Test run trading.quantity.laws.DivisionAndAllocationDisciplineSuite started
+trading.quantity.laws.DivisionAndAllocationDisciplineSuite: finished 0.02s
+Test run trading.quantity.laws.DivisionAndAllocationDisciplineSuite finished: 0 failed, 0 ignored, 2 total 0.02s
+Test run trading.quantity.grid.ConversionLawsSuite started
+trading.quantity.grid.ConversionLawsSuite: finished 0.005s
+Test run trading.quantity.grid.ConversionLawsSuite finished: 0 failed, 0 ignored, 4 total 0.005s
+Test run trading.quantity.grid.SameGridArithmeticSuite started
+trading.quantity.grid.SameGridArithmeticSuite: finished 0.005s
+Test run trading.quantity.grid.SameGridArithmeticSuite finished: 0 failed, 0 ignored, 3 total 0.005s
+Test run trading.quantity.MultiplicativeArithmeticSuite started
+trading.quantity.MultiplicativeArithmeticSuite: finished 0.004s
+Test run trading.quantity.MultiplicativeArithmeticSuite finished: 0 failed, 0 ignored, 10 total 0.004s
+Test run trading.quantity.grid.CrossGridArithmeticSuite started
+trading.quantity.grid.CrossGridArithmeticSuite: finished 0.006s
+Test run trading.quantity.grid.CrossGridArithmeticSuite finished: 0 failed, 0 ignored, 4 total 0.006s
+Test run trading.quantity.laws.RefinementDisciplineSuite started
+trading.quantity.laws.RefinementDisciplineSuite: finished 0.011s
+Test run trading.quantity.laws.RefinementDisciplineSuite finished: 0 failed, 0 ignored, 9 total 0.011s
+Test run trading.quantity.algebra.AlgebraInstancesSuite started
+trading.quantity.algebra.AlgebraInstancesSuite: finished 0.009s
+Test run trading.quantity.algebra.AlgebraInstancesSuite finished: 0 failed, 0 ignored, 8 total 0.011s
+Test run trading.quantity.refinement.RefinementClosureBytecodeSuite started
+trading.quantity.refinement.RefinementClosureBytecodeSuite: finished 1.265s
+Test run trading.quantity.refinement.RefinementClosureBytecodeSuite finished: 0 failed, 0 ignored, 2 total 1.265s
+Test run trading.quantity.DimensionExponentBoundarySuite started
+trading.quantity.DimensionExponentBoundarySuite: finished 0.002s
+Test run trading.quantity.DimensionExponentBoundarySuite finished: 0 failed, 0 ignored, 3 total 0.002s
+Test run trading.quantity.grid.GridEvidenceSuite started
+trading.quantity.grid.GridEvidenceSuite: finished 0.002s
+Test run trading.quantity.grid.GridEvidenceSuite finished: 0 failed, 0 ignored, 7 total 0.002s
+Test run external.QuantityPublicTypeShapeSuite started
+external.QuantityPublicTypeShapeSuite: finished 0.002s
+Test run external.QuantityPublicTypeShapeSuite finished: 0 failed, 0 ignored, 6 total 0.002s
+Test run trading.quantity.laws.QuantityDisciplineSuite started
+trading.quantity.laws.QuantityDisciplineSuite: finished 0.523s
+Test run trading.quantity.laws.QuantityDisciplineSuite finished: 0 failed, 0 ignored, 99 total 0.523s
+Test run external.ConstructionAndProvenanceBoundarySuite started
+external.ConstructionAndProvenanceBoundarySuite: finished 0.001s
+Test run external.ConstructionAndProvenanceBoundarySuite finished: 0 failed, 0 ignored, 2 total 0.001s
+Test run trading.quantity.AdversarialConstructionBoundarySuite started
+trading.quantity.AdversarialConstructionBoundarySuite: finished 0.001s
+Test run trading.quantity.AdversarialConstructionBoundarySuite finished: 0 failed, 0 ignored, 7 total 0.001s
+Test run trading.quantity.ExactScalarDivisionSuite started
+trading.quantity.ExactScalarDivisionSuite: finished 0.002s
+Test run trading.quantity.ExactScalarDivisionSuite finished: 0 failed, 0 ignored, 4 total 0.002s
+Test run trading.quantity.testkit.TestSupportSuite started
+trading.quantity.testkit.TestSupportSuite: finished 0.003s
+Test run trading.quantity.testkit.TestSupportSuite finished: 0 failed, 0 ignored, 5 total 0.003s
+Test run trading.quantity.StaticDimensionNormalizationSuite started
+trading.quantity.StaticDimensionNormalizationSuite: finished 0.005s
+Test run trading.quantity.StaticDimensionNormalizationSuite finished: 0 failed, 0 ignored, 13 total 0.005s
+Test run trading.quantity.grid.QuantizationPolicySuite started
+trading.quantity.grid.QuantizationPolicySuite: finished 0.003s
+Test run trading.quantity.grid.QuantizationPolicySuite finished: 0 failed, 0 ignored, 3 total 0.003s
+Test run trading.quantity.laws.GridQuantityDisciplineSuite started
+trading.quantity.laws.GridQuantityDisciplineSuite: finished 0.038s
+Test run trading.quantity.laws.GridQuantityDisciplineSuite finished: 0 failed, 0 ignored, 103 total 0.038s
+Test run trading.quantity.laws.RationalDisciplineSuite started
+trading.quantity.laws.RationalDisciplineSuite: finished 0.394s
+Test run trading.quantity.laws.RationalDisciplineSuite finished: 0 failed, 0 ignored, 132 total 0.394s
+Test run trading.quantity.grid.QuantizationSuite started
+trading.quantity.grid.QuantizationSuite: finished 0.005s
+Test run trading.quantity.grid.QuantizationSuite finished: 0 failed, 0 ignored, 5 total 0.005s
+Test run trading.quantity.QuantitySuite started
+trading.quantity.QuantitySuite: finished 0.002s
+Test run trading.quantity.QuantitySuite finished: 0 failed, 0 ignored, 5 total 0.002s
+Test run trading.quantity.testkit.PublicApiSafetySuite started
+trading.quantity.testkit.PublicApiSafetySuite: finished 0.001s
+Test run trading.quantity.testkit.PublicApiSafetySuite finished: 0 failed, 0 ignored, 6 total 0.001s
+Test run trading.quantity.laws.RateDisciplineSuite started
+trading.quantity.laws.RateDisciplineSuite: finished 0.005s
+Test run trading.quantity.laws.RateDisciplineSuite finished: 0 failed, 0 ignored, 4 total 0.005s
+Test run trading.quantity.CompileTimeArithmeticSuite started
+trading.quantity.CompileTimeArithmeticSuite: finished 0.0s
+Test run trading.quantity.CompileTimeArithmeticSuite finished: 0 failed, 0 ignored, 4 total 0.0s
+Test run trading.quantity.runtime.JavaSerializationPolicySuite started
+trading.quantity.runtime.JavaSerializationPolicySuite: finished 0.007s
+Test run trading.quantity.runtime.JavaSerializationPolicySuite finished: 0 failed, 0 ignored, 1 total 0.007s
+Test run trading.quantity.laws.ProjectionDisciplineSuite started
+trading.quantity.laws.ProjectionDisciplineSuite: finished 0.02s
+Test run trading.quantity.laws.ProjectionDisciplineSuite finished: 0 failed, 0 ignored, 44 total 0.02s
+Test run trading.quantity.grid.AllocationSuite started
+trading.quantity.grid.AllocationSuite: finished 0.005s
+Test run trading.quantity.grid.AllocationSuite finished: 0 failed, 0 ignored, 3 total 0.005s
+Test run external.PublicApiBoundarySuite started
+external.PublicApiBoundarySuite: finished 0.0s
+Test run external.PublicApiBoundarySuite finished: 0 failed, 0 ignored, 6 total 0.0s
+Test run trading.quantity.refinementtests.RefinedOperationsSuite started
+trading.quantity.refinementtests.RefinedOperationsSuite: finished 0.003s
+Test run trading.quantity.refinementtests.RefinedOperationsSuite finished: 0 failed, 0 ignored, 8 total 0.003s
+Test run trading.quantity.GridQuantitySuite started
+trading.quantity.GridQuantitySuite: finished 0.002s
+Test run trading.quantity.GridQuantitySuite finished: 0 failed, 0 ignored, 6 total 0.002s
+Test run external.GridOperationImportBoundarySuite started
+external.GridOperationImportBoundarySuite: finished 0.001s
+Test run external.GridOperationImportBoundarySuite finished: 0 failed, 0 ignored, 4 total 0.001s
+Test run trading.quantity.refinement.RefinementSuite started
+trading.quantity.refinement.RefinementSuite: finished 0.004s
+Test run trading.quantity.refinement.RefinementSuite finished: 0 failed, 0 ignored, 7 total 0.004s
+Test run trading.quantity.QuantityDivisionSuite started
+trading.quantity.QuantityDivisionSuite: finished 0.003s
+Test run trading.quantity.QuantityDivisionSuite finished: 0 failed, 0 ignored, 8 total 0.003s
+Test run trading.quantity.WholeScalarsSuite started
+trading.quantity.WholeScalarsSuite: finished 0.005s
+Test run trading.quantity.WholeScalarsSuite finished: 0 failed, 0 ignored, 5 total 0.005s
+Test run external.GridQuantityPublicTypeShapeSuite started
+external.GridQuantityPublicTypeShapeSuite: finished 0.001s
+Test run external.GridQuantityPublicTypeShapeSuite finished: 0 failed, 0 ignored, 4 total 0.001s
+[info] Passed: Total 601, Failed 0, Errors 0, Passed 601
+Test run trading.reference.ReferenceDataSuite started
+trading.reference.ReferenceDataSuite: finished 0.191s
+Test run trading.reference.ReferenceDataSuite finished: 0 failed, 0 ignored, 11 total 0.201s
+Test run trading.reference.CatalogPropertiesSuite started
+trading.reference.CatalogPropertiesSuite: finished 0.305s
+Test run trading.reference.CatalogPropertiesSuite finished: 0 failed, 0 ignored, 2 total 0.314s
+[info] Passed: Total 13, Failed 0, Errors 0, Passed 13
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by scala.runtime.LazyVals$ (file:/Users/m/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/scala-library/3.8.4/scala-library-3.8.4.jar)
+WARNING: Please consider reporting this to the maintainers of class scala.runtime.LazyVals$
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+Test run trading.application.LiveCatalogContractRejectionSuite started
+trading.application.LiveCatalogContractRejectionSuite: finished 0.14s
+Test run trading.application.LiveCatalogContractRejectionSuite finished: 0 failed, 0 ignored, 4 total 0.153s
+Test run trading.application.LiveCatalogContractSuite started
+trading.application.LiveCatalogContractSuite: finished 0.022s
+Test run trading.application.LiveCatalogContractSuite finished: 0 failed, 0 ignored, 5 total 0.022s
+[info] Passed: Total 9, Failed 0, Errors 0, Passed 9
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by scala.runtime.LazyVals$ (file:/Users/m/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/scala-library/3.8.4/scala-library-3.8.4.jar)
+WARNING: Please consider reporting this to the maintainers of class scala.runtime.LazyVals$
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+Test run trading.runtime.InMemoryLiveCatalogConcurrencySuite started
+trading.runtime.InMemoryLiveCatalogConcurrencySuite: finished 0.423s
+Test run trading.runtime.InMemoryLiveCatalogConcurrencySuite finished: 0 failed, 0 ignored, 4 total 0.427s
+Test run trading.runtime.InMemoryLiveCatalogContractSuite started
+trading.runtime.InMemoryLiveCatalogContractSuite: finished 0.036s
+Test run trading.runtime.InMemoryLiveCatalogContractSuite finished: 0 failed, 0 ignored, 7 total 0.037s
+Test run trading.runtime.InMemoryLiveCatalogConstructionSuite started
+trading.runtime.InMemoryLiveCatalogConstructionSuite: finished 0.013s
+Test run trading.runtime.InMemoryLiveCatalogConstructionSuite finished: 0 failed, 0 ignored, 5 total 0.013s
+Test run trading.runtime.InMemoryLiveCatalogAtomicSuite started
+trading.runtime.InMemoryLiveCatalogAtomicSuite: finished 0.013s
+Test run trading.runtime.InMemoryLiveCatalogAtomicSuite finished: 0 failed, 0 ignored, 2 total 0.013s
+[info] Passed: Total 18, Failed 0, Errors 0, Passed 18
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by scala.runtime.LazyVals$ (file:/Users/m/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/scala-library/3.8.4/scala-library-3.8.4.jar)
+WARNING: Please consider reporting this to the maintainers of class scala.runtime.LazyVals$
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+Test run trading.economics.instrument.PureInstrumentEconomicsSuite started
+trading.economics.instrument.PureInstrumentEconomicsSuite: finished 0.078s
+Test run trading.economics.instrument.PureInstrumentEconomicsSuite finished: 0 failed, 0 ignored, 11 total 0.092s
+Test run trading.economics.instrument.EconomicsPropertiesSuite started
+trading.economics.instrument.EconomicsPropertiesSuite: finished 0.118s
+Test run trading.economics.instrument.EconomicsPropertiesSuite finished: 0 failed, 0 ignored, 2 total 0.118s
+[info] Passed: Total 13, Failed 0, Errors 0, Passed 13
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by scala.runtime.LazyVals$ (file:/Users/m/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/scala-library/3.8.4/scala-library-3.8.4.jar)
+WARNING: Please consider reporting this to the maintainers of class scala.runtime.LazyVals$
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+Test run trading.risk.RiskCurvePropertiesSuite started
+trading.risk.RiskCurvePropertiesSuite: finished 0.226s
+Test run trading.risk.RiskCurvePropertiesSuite finished: 0 failed, 0 ignored, 3 total 0.23s
+Test run trading.risk.ExhaustiveLotSizingSuite started
+trading.risk.ExhaustiveLotSizingSuite: finished 0.118s
+Test run trading.risk.ExhaustiveLotSizingSuite finished: 0 failed, 0 ignored, 9 total 0.118s
+Test run trading.risk.RiskCurveSuite started
+trading.risk.RiskCurveSuite: finished 0.021s
+Test run trading.risk.RiskCurveSuite finished: 0 failed, 0 ignored, 11 total 0.021s
+Test run trading.risk.MaximumAffordablePropertiesSuite started
+trading.risk.MaximumAffordablePropertiesSuite: finished 0.009s
+Test run trading.risk.MaximumAffordablePropertiesSuite finished: 0 failed, 0 ignored, 1 total 0.01s
+Test run trading.risk.RiskModelBoundarySuite started
+trading.risk.RiskModelBoundarySuite: finished 0.014s
+Test run trading.risk.RiskModelBoundarySuite finished: 0 failed, 0 ignored, 5 total 0.014s
+Test run trading.risk.MaximumAffordableSuite started
+trading.risk.MaximumAffordableSuite: finished 0.02s
+Test run trading.risk.MaximumAffordableSuite finished: 0 failed, 0 ignored, 7 total 0.02s
+Test run trading.risk.RiskDownsideSuite started
+trading.risk.RiskDownsideSuite: finished 0.002s
+Test run trading.risk.RiskDownsideSuite finished: 0 failed, 0 ignored, 4 total 0.002s
+[info] Passed: Total 40, Failed 0, Errors 0, Passed 40
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by scala.runtime.LazyVals$ (file:/Users/m/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/scala-library/3.8.4/scala-library-3.8.4.jar)
+WARNING: Please consider reporting this to the maintainers of class scala.runtime.LazyVals$
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+Test run trading.order.OrderInstructionSuite started
+trading.order.OrderInstructionSuite: finished 0.051s
+Test run trading.order.OrderInstructionSuite finished: 0 failed, 0 ignored, 6 total 0.063s
+Test run trading.order.OrderPropertiesSuite started
+trading.order.OrderPropertiesSuite: finished 0.082s
+Test run trading.order.OrderPropertiesSuite finished: 0 failed, 0 ignored, 1 total 0.082s
+[info] Passed: Total 7, Failed 0, Errors 0, Passed 7
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by scala.runtime.LazyVals$ (file:/Users/m/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/scala-library/3.8.4/scala-library-3.8.4.jar)
+WARNING: Please consider reporting this to the maintainers of class scala.runtime.LazyVals$
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+Test run trading.scenario.ScenarioPropertiesSuite started
+trading.scenario.ScenarioPropertiesSuite: finished 0.202s
+Test run trading.scenario.ScenarioPropertiesSuite finished: 0 failed, 0 ignored, 1 total 0.209s
+Test run trading.scenario.OrderScenarioSuite started
+trading.scenario.OrderScenarioSuite: finished 0.025s
+Test run trading.scenario.OrderScenarioSuite finished: 0 failed, 0 ignored, 9 total 0.025s
+Test run trading.scenario.ScenarioValuationSuite started
+trading.scenario.ScenarioValuationSuite: finished 0.017s
+Test run trading.scenario.ScenarioValuationSuite finished: 0 failed, 0 ignored, 6 total 0.017s
+[info] Passed: Total 16, Failed 0, Errors 0, Passed 16
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by scala.runtime.LazyVals$ (file:/Users/m/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/scala-library/3.8.4/scala-library-3.8.4.jar)
+WARNING: Please consider reporting this to the maintainers of class scala.runtime.LazyVals$
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+Test run trading.codec.BoundaryDependencyScopeSuite started
+trading.codec.BoundaryDependencyScopeSuite: finished 0.039s
+Test run trading.codec.BoundaryDependencyScopeSuite finished: 0 failed, 0 ignored, 1 total 0.054s
+Test run trading.codec.CanonicalJsonSuite started
+trading.codec.CanonicalJsonSuite: finished 0.07s
+Test run trading.codec.CanonicalJsonSuite finished: 0 failed, 0 ignored, 4 total 0.071s
+Test run trading.codec.WireDiagnosticsSuite started
+trading.codec.WireDiagnosticsSuite: finished 0.009s
+Test run trading.codec.WireDiagnosticsSuite finished: 0 failed, 0 ignored, 4 total 0.009s
+Test run trading.codec.GridCoordinateRecordPropertiesSuite started
+trading.codec.GridCoordinateRecordPropertiesSuite: finished 0.311s
+Test run trading.codec.GridCoordinateRecordPropertiesSuite finished: 0 failed, 0 ignored, 1 total 0.311s
+SLF4J(W): No SLF4J providers were found.
+SLF4J(W): Defaulting to no-operation (NOP) logger implementation
+SLF4J(W): See https://www.slf4j.org/codes.html#noProviders for further details.
+Test run trading.codec.WireSchemaLawsSuite started
+trading.codec.WireSchemaLawsSuite: finished 0.306s
+Test run trading.codec.WireSchemaLawsSuite finished: 0 failed, 0 ignored, 8 total 0.306s
+Test run trading.codec.OrderRecordPropertiesSuite started
+trading.codec.OrderRecordPropertiesSuite: finished 0.084s
+Test run trading.codec.OrderRecordPropertiesSuite finished: 0 failed, 0 ignored, 1 total 0.084s
+Test run trading.codec.RecordEnvelopeSuite started
+trading.codec.RecordEnvelopeSuite: finished 0.03s
+Test run trading.codec.RecordEnvelopeSuite finished: 0 failed, 0 ignored, 7 total 0.03s
+Test run trading.codec.OrderRecordSuite started
+trading.codec.OrderRecordSuite: finished 0.273s
+Test run trading.codec.OrderRecordSuite finished: 0 failed, 0 ignored, 6 total 0.273s
+Test run trading.codec.StrictJsonSuite started
+trading.codec.StrictJsonSuite: finished 0.008s
+Test run trading.codec.StrictJsonSuite finished: 0 failed, 0 ignored, 6 total 0.008s
+Test run trading.codec.DecodeLimitsSuite started
+trading.codec.DecodeLimitsSuite: finished 0.005s
+Test run trading.codec.DecodeLimitsSuite finished: 0 failed, 0 ignored, 4 total 0.005s
+Test run trading.codec.ExactPrimitivesSuite started
+trading.codec.ExactPrimitivesSuite: finished 0.022s
+Test run trading.codec.ExactPrimitivesSuite finished: 0 failed, 0 ignored, 9 total 0.022s
+Test run trading.codec.GridCoordinateRecordSuite started
+trading.codec.GridCoordinateRecordSuite: finished 0.026s
+Test run trading.codec.GridCoordinateRecordSuite finished: 0 failed, 0 ignored, 8 total 0.026s
+Test run trading.codec.BoundaryCodecRobustnessPropertiesSuite started
+trading.codec.BoundaryCodecRobustnessPropertiesSuite: finished 0.066s
+Test run trading.codec.BoundaryCodecRobustnessPropertiesSuite finished: 0 failed, 0 ignored, 6 total 0.066s
+Test run trading.codec.ScenarioRecordSuite started
+trading.codec.ScenarioRecordSuite: finished 0.062s
+Test run trading.codec.ScenarioRecordSuite finished: 0 failed, 0 ignored, 7 total 0.062s
+Test run trading.codec.CatalogJournalPropertiesSuite started
+trading.codec.CatalogJournalPropertiesSuite: finished 0.053s
+Test run trading.codec.CatalogJournalPropertiesSuite finished: 0 failed, 0 ignored, 1 total 0.053s
+Test run trading.codec.CatalogJournalSuite started
+trading.codec.CatalogJournalSuite: finished 0.027s
+Test run trading.codec.CatalogJournalSuite finished: 0 failed, 0 ignored, 8 total 0.028s
+Test run trading.codec.InstrumentDefinitionRecordPropertiesSuite started
+trading.codec.InstrumentDefinitionRecordPropertiesSuite: finished 0.026s
+Test run trading.codec.InstrumentDefinitionRecordPropertiesSuite finished: 0 failed, 0 ignored, 1 total 0.026s
+Test run trading.codec.InstrumentDefinitionRecordSuite started
+trading.codec.InstrumentDefinitionRecordSuite: finished 0.021s
+Test run trading.codec.InstrumentDefinitionRecordSuite finished: 0 failed, 0 ignored, 6 total 0.021s
+Test run trading.codec.ScenarioRecordPropertiesSuite started
+trading.codec.ScenarioRecordPropertiesSuite: finished 0.106s
+Test run trading.codec.ScenarioRecordPropertiesSuite finished: 0 failed, 0 ignored, 1 total 0.106s
+Test run trading.codec.BoundaryCodecCompatibilitySuite started
+trading.codec.BoundaryCodecCompatibilitySuite: finished 0.098s
+Test run trading.codec.BoundaryCodecCompatibilitySuite finished: 0 failed, 0 ignored, 6 total 0.098s
+[info] Passed: Total 95, Failed 0, Errors 0, Passed 95
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by scala.runtime.LazyVals$ (file:/Users/m/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/scala-library/3.8.4/scala-library-3.8.4.jar)
+WARNING: Please consider reporting this to the maintainers of class scala.runtime.LazyVals$
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+Test run trading.fee.FeeAssessmentSuite started
+trading.fee.FeeAssessmentSuite: finished 0.073s
+Test run trading.fee.FeeAssessmentSuite finished: 0 failed, 0 ignored, 7 total 0.086s
+Test run trading.FeePolicyIntegrationSuite started
+trading.FeePolicyIntegrationSuite: finished 0.153s
+Test run trading.FeePolicyIntegrationSuite finished: 0 failed, 0 ignored, 11 total 0.153s
+Test run trading.fee.FeeInclusivePnlSuite started
+trading.fee.FeeInclusivePnlSuite: finished 0.021s
+Test run trading.fee.FeeInclusivePnlSuite finished: 0 failed, 0 ignored, 7 total 0.021s
+Test run trading.fee.FeeCalculationSuite started
+trading.fee.FeeCalculationSuite: finished 0.082s
+Test run trading.fee.FeeCalculationSuite finished: 0 failed, 0 ignored, 6 total 0.082s
+Test run trading.fee.FeePolicyStrategySuite started
+trading.fee.FeePolicyStrategySuite: finished 0.021s
+Test run trading.fee.FeePolicyStrategySuite finished: 0 failed, 0 ignored, 7 total 0.021s
+[info] Passed: Total 38, Failed 0, Errors 0, Passed 38
+Test run external.BoundaryCodecCompilerBoundarySuite started
+external.BoundaryCodecCompilerBoundarySuite: finished 21.389s
+Test run external.BoundaryCodecCompilerBoundarySuite finished: 0 failed, 0 ignored, 16 total 21.398s
+Test run external.QuantityArtifactBoundarySuite started
+external.QuantityArtifactBoundarySuite: finished 0.89s
+Test run external.QuantityArtifactBoundarySuite finished: 0 failed, 0 ignored, 2 total 0.892s
+Test run external.StaticDimensionCompilerBoundarySuite started
+external.StaticDimensionCompilerBoundarySuite: finished 14.837s
+Test run external.StaticDimensionCompilerBoundarySuite finished: 0 failed, 0 ignored, 45 total 14.838s
+Test run external.ReferenceDataJavaBoundarySuite started
+external.ReferenceDataJavaBoundarySuite: finished 0.898s
+Test run external.ReferenceDataJavaBoundarySuite finished: 0 failed, 0 ignored, 2 total 0.898s
+Test run trading.quantity.grid.GridPackageSpoofBoundarySuite started
+trading.quantity.grid.GridPackageSpoofBoundarySuite: finished 0.001s
+Test run trading.quantity.grid.GridPackageSpoofBoundarySuite finished: 0 failed, 0 ignored, 5 total 0.001s
+Test run trading.quantity.refinement.RefinementPackageSpoofBoundarySuite started
+trading.quantity.refinement.RefinementPackageSpoofBoundarySuite: finished 0.001s
+Test run trading.quantity.refinement.RefinementPackageSpoofBoundarySuite finished: 0 failed, 0 ignored, 4 total 0.001s
+Test run external.ConstructionAndProvenanceBoundarySuite started
+external.ConstructionAndProvenanceBoundarySuite: finished 0.013s
+Test run external.ConstructionAndProvenanceBoundarySuite finished: 0 failed, 0 ignored, 4 total 0.013s
+Test run external.RiskCompilerBoundarySuite started
+external.RiskCompilerBoundarySuite: finished 2.002s
+Test run external.RiskCompilerBoundarySuite finished: 0 failed, 0 ignored, 8 total 2.002s
+Test run external.EconomicsCompilerBoundarySuite started
+external.EconomicsCompilerBoundarySuite: finished 14.28s
+Test run external.EconomicsCompilerBoundarySuite finished: 0 failed, 0 ignored, 45 total 14.281s
+Test run external.ReferenceDataCompilerBoundarySuite started
+external.ReferenceDataCompilerBoundarySuite: finished 3.372s
+Test run external.ReferenceDataCompilerBoundarySuite finished: 0 failed, 0 ignored, 17 total 3.372s
+Test run external.ApplicationRuntimeBoundarySuite started
+external.ApplicationRuntimeBoundarySuite: finished 0.788s
+Test run external.ApplicationRuntimeBoundarySuite finished: 0 failed, 0 ignored, 7 total 0.789s
+Test run trading.quantity.PackageSpoofBoundarySuite started
+trading.quantity.PackageSpoofBoundarySuite: finished 0.001s
+Test run trading.quantity.PackageSpoofBoundarySuite finished: 0 failed, 0 ignored, 13 total 0.001s
+Test run external.ReferenceDataRuntimeBoundarySuite started
+external.ReferenceDataRuntimeBoundarySuite: finished 0.029s
+Test run external.ReferenceDataRuntimeBoundarySuite finished: 0 failed, 0 ignored, 6 total 0.029s
+[info] Passed: Total 174, Failed 0, Errors 0, Passed 174
+[success] Total time: 76 s (0:01:16.0), completed Sep 2, 2026, 4:35:19 PM
+[success] Total time: 1 s, completed Sep 2, 2026, 4:35:19 PM
+[success] Total time: 1 s, completed Sep 2, 2026, 4:35:20 PM
+[info] scalafmt: Checking 2 Scala sources (/Users/m/src/money/.worktrees/introduce-versioned-boundary-codecs)...
+[success] Total time: 1 s, completed Sep 2, 2026, 4:35:22 PM

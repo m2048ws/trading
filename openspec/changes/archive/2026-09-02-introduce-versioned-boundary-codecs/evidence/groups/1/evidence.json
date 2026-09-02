@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 3,
+  "groupId": "1",
+  "checks": [
+    {
+      "name": "RFC source, traceability, prerequisite, integration topology, and strict readiness reconciliation",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:openspec%2Fchanges%2Fintroduce-versioned-boundary-codecs%2Fcorgi%2Fsource.yaml#sha256:625809aa552c0c3f4efd1a8e2d9982c76414f82ce405674ce6f91b475807cceb",
+        "file:openspec%2Fchanges%2Fintroduce-versioned-boundary-codecs%2Fcorgi%2Ftraceability.yaml#sha256:c7545d03bf6039543fee8aab7947aa9c10c46923f8e0ee9cc716a12ab66ac44f",
+        "file:openspec%2Fchanges%2Fintroduce-versioned-boundary-codecs%2Fimplementation-notes%2Ftask-group-1.md#sha256:591f932e28c7c88cc103009a29c186216bf0944f0207e47130f0210a5c64c3f4"
+      ]
+    },
+    {
+      "name": "clean formatting, dependency-order compilation, domain and adversarial tests, and JMH baseline",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:openspec%2Fchanges%2Fintroduce-versioned-boundary-codecs%2Fimplementation-notes%2Ftask-group-1.md#sha256:591f932e28c7c88cc103009a29c186216bf0944f0207e47130f0210a5c64c3f4",
+        "file:build.sbt#sha256:864bcc328b1c9517e1ab7f4c1412dfc1bd3c83d5b5039ece773f3bb577fa9f04",
+        "file:reference-data%2Fsrc%2Fmain%2Fscala%2Ftrading%2Freference%2FCatalog.scala#sha256:9564b1ae116d4519f3175652343efb780536d37401c8ee43ba4de99c674fae3a",
+        "file:order-model%2Fsrc%2Fmain%2Fscala%2Ftrading%2Forder%2FOrder.scala#sha256:9269db0bb1ad97b163e324d180465230ca0eadcd91a7c9786161ed4916d566b3",
+        "file:execution-scenario%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fscenario%2FScenario.scala#sha256:31c981cb0dfc80d53602abd8ac87cc9e63fc3615b4ec5645bf64c994f083a6ea"
+      ]
+    },
+    {
+      "name": "stable identity, catalog, instrument assembly, market, order, scenario, and retired-name inventory",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:openspec%2Fchanges%2Fintroduce-versioned-boundary-codecs%2Fimplementation-notes%2Ftask-group-1.md#sha256:591f932e28c7c88cc103009a29c186216bf0944f0207e47130f0210a5c64c3f4",
+        "file:reference-data%2Fsrc%2Fmain%2Fscala%2Ftrading%2Freference%2FReferenceData.scala#sha256:8216307bc974574f60f197a67d62e0d89e9bac2a62ba9ceaf51e77f35ccc4ce8",
+        "file:instrument-economics%2Fsrc%2Fmain%2Fscala%2Ftrading%2Feconomics%2Finstrument%2FDefinition.scala#sha256:79dd51e30abda8af185f8d7154f9437dbcfac431f1e6bac31492c1383d6979c4",
+        "file:instrument-economics%2Fsrc%2Fmain%2Fscala%2Ftrading%2Feconomics%2Finstrument%2FAssembly.scala#sha256:1a6ee02dd6d468572b194e49e598725ea73ea5d187e40693b09ea65718cbe426",
+        "file:instrument-economics%2Fsrc%2Fmain%2Fscala%2Ftrading%2Feconomics%2Finstrument%2FMarket.scala#sha256:d69359b5ca4b271dd62bafe5222f6afdece877d218483446f5c5f74fbbcf8740"
+      ]
+    }
+  ],
+  "automatedReview": {
+    "verdict": "pass",
+    "findings": []
+  },
+  "artifacts": [
+    "file:openspec%2Fchanges%2Fintroduce-versioned-boundary-codecs%2Fimplementation-notes%2Ftask-group-1.md#sha256:591f932e28c7c88cc103009a29c186216bf0944f0207e47130f0210a5c64c3f4",
+    "file:memory%2Fsession-bridge.md#sha256:33daca1167a1e1fc932d42365103c935954243f057fb8a7ac1388542422c76bd"
+  ],
+  "summary": "Reconciled accepted S-05 AC-017 through AC-020 and the closed S-02 prerequisite on an ancestry-correct exact-main Group 1 merge; recorded the clean formatting, 913-test, completed-JAR/adversarial, and JMH baseline; and fixed V1 against the final stable identity, catalog, assembly, market, order, and scenario surfaces while keeping every retired packed/registry name absent. The automated review corrected one stale readiness-count phrase, then its final scope, topology, behavior, architecture, evidence, and performance/security pass found no findings; it changed no file during the final pass, triaged no finding, and is not canonical whole-change Verify or Human Review."
+}

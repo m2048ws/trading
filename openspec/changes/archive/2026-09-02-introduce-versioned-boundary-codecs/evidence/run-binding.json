@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 3,
+  "changeName": "introduce-versioned-boundary-codecs",
+  "runId": "run-2b01f872-e634-4491-acd3-b1454c94b59e",
+  "finalRevision": "4c93275e3ce5dfaae219d1a9567461951cbc79e1",
+  "planningRevision": "sha256:e5cbb7f10509095ee6311d1369cef5fd883b8a196713a4bf817a3d2289b26da6",
+  "contract": {
+    "kind": "rfc-slice",
+    "deliveryRef": "RFC-0002-architecture-portfolio/S-05-versioned-boundary-codecs",
+    "rfcId": "RFC-0002-architecture-portfolio",
+    "rfcDigest": "sha256:a00c0cf1e3a4440bfce7dc828ad4ac119414f10d72e8d8c52c613403ef5977e2",
+    "acceptedCommit": "7b6f7a58f4dcbb8fb4bbdf3a8ba74ba66f222cce",
+    "sliceId": "S-05-versioned-boundary-codecs",
+    "sourcePath": "openspec/changes/introduce-versioned-boundary-codecs/corgi/source.yaml",
+    "sourceDigest": "sha256:625809aa552c0c3f4efd1a8e2d9982c76414f82ce405674ce6f91b475807cceb",
+    "traceabilityPath": "openspec/changes/introduce-versioned-boundary-codecs/corgi/traceability.yaml",
+    "traceabilityDigest": "sha256:c7545d03bf6039543fee8aab7947aa9c10c46923f8e0ee9cc716a12ab66ac44f",
+    "acceptance": [
+      {
+        "id": "AC-017",
+        "evidence": "automated",
+        "taskGroups": [
+          "2",
+          "3",
+          "4"
+        ]
+      },
+      {
+        "id": "AC-018",
+        "evidence": "both",
+        "taskGroups": [
+          "5",
+          "7",
+          "8",
+          "9"
+        ]
+      },
+      {
+        "id": "AC-019",
+        "evidence": "automated",
+        "taskGroups": [
+          "6"
+        ]
+      },
+      {
+        "id": "AC-020",
+        "evidence": "both",
+        "taskGroups": [
+          "10",
+          "11",
+          "12"
+        ]
+      }
+    ],
+    "tracker": {
+      "provider": "github",
+      "idempotencyKey": "e77b236d5f666a87238069c9a1b46c085aa02562343e877f061358dea5aea96e",
+      "issue": {
+        "id": "10",
+        "url": "https://github.com/m2048ws/trading/issues/10"
+      }
+    }
+  },
+  "archiveIntentId": "archive-c839931e-8707-42aa-9612-b07e85bfdf99"
+}

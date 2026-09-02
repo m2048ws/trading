@@ -78,7 +78,8 @@ final class MarketState[B <: Dim, Q <: Dim, S <: Dim] private (
   val price: Price[B, Q],
   val baseToSettle: Rate[B, S],
   val quoteToSettle: Rate[Q, S],
-  conversions: Vector[SettlementConversion[S]])
+  conversions: Vector[SettlementConversion[S]],
+  val additionalConversions: Vector[SettlementConversion[S]])
   extends JavaSerializationUnsupported:
 
   private val byId: Map[AssetId, SettlementConversion[S]] =
@@ -451,7 +452,8 @@ object MarketState:
           price,
           baseRate,
           quoteRate,
-          deduplicateGenerated(Vector(baseConversion, quoteConversion, settleConversion)) ++ additional
+          deduplicateGenerated(Vector(baseConversion, quoteConversion, settleConversion)) ++ additional,
+          additional
         )
     end match
   end checked

@@ -1,6 +1,6 @@
 schemaVersion: 1
 rfcId: RFC-0002-architecture-portfolio
-revision: 9
+revision: 11
 slices:
   S-01-application-runtime-foundation:
     status: archived
@@ -59,4 +59,16 @@ slices:
       commit: 0eceeabf1d2eb1f8ad2b534f65f00552dc6f53dc
       evidenceManifest: sha256:4556f072667579a209e7a80bfe55a0a29d43cdebc873a3682893dc9479016eb7
   S-05-versioned-boundary-codecs:
-    status: unbound
+    status: archived
+    binding:
+      change: introduce-versioned-boundary-codecs
+      sourceDigest: sha256:625809aa552c0c3f4efd1a8e2d9982c76414f82ce405674ce6f91b475807cceb
+      plannedAt: '2026-08-29T20:09:43.533Z'
+      issue:
+        provider: github
+        id: '10'
+        url: https://github.com/m2048ws/trading/issues/10
+    archive:
+      archivedAt: '2026-09-02T15:08:41.988Z'
+      commit: 4c93275e3ce5dfaae219d1a9567461951cbc79e1
+      evidenceManifest: sha256:21835d70b9da0a74b9b03f9a22ca11833eec287671357f63a7281dd3de69c897

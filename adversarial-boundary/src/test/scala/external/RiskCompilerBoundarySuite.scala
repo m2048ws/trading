@@ -95,8 +95,9 @@ class RiskCompilerBoundarySuite extends FunSuite:
     val prelude = compilePrelude(source)
     assert(prelude.succeeded, s"fixture prelude must compile independently:\n${prelude.rendered}")
     val rejected = compile(source)
-    assert(rejected.errors.size >= 11, rejected.rendered)
+    assert(rejected.errors.size >= 12, rejected.rendered)
     assert(rejected.rendered.contains("is not a member") || rejected.rendered.contains("Not found"), rejected.rendered)
+    assert(rejected.rendered.contains("codec is not a member of trading"), rejected.rendered)
     forbiddenDiagnostics.foreach(fragment => assert(!rejected.rendered.contains(fragment), rejected.rendered))
 
   test("completed risk API rejects raw refinements, dimension mismatches, and arbitrary monotonicity promises"):

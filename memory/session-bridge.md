@@ -1,6 +1,6 @@
 ---
 type: memory
-updated: 2026-08-31
+updated: 2026-09-01
 ---
 
 # Session Bridge
@@ -10,27 +10,28 @@ updated: 2026-08-31
 ## Delivery Pointer
 - **RFC**: RFC-0002-architecture-portfolio
 - **RFC Revision**: 7b6f7a58f4dcbb8fb4bbdf3a8ba74ba66f222cce
-- **Slice**: S-04-fee-policy
-- **Issue**: 9 https://github.com/m2048ws/trading/issues/9
-- **Change**: introduce-pure-fee-policy-module
-- **Worktree**: /Users/m/src/money/.worktrees/introduce-pure-fee-policy-module
+- **Slice**: S-05-versioned-boundary-codecs
+- **Issue**: 10 https://github.com/m2048ws/trading/issues/10
+- **Change**: introduce-versioned-boundary-codecs
+- **Worktree**: /Users/m/src/money/.worktrees/introduce-versioned-boundary-codecs
 - **Phase at Checkpoint**: archiving
 - **Task Group at Checkpoint**: none
-- **Observed Run Revision**: 7
-- **Last Verified HEAD**: 0eceeabf1d2eb1f8ad2b534f65f00552dc6f53dc
+- **Observed Run Revision**: 18
+- **Last Verified HEAD**: 4c93275e3ce5dfaae219d1a9567461951cbc79e1
 
-The phase and revision above are the required post-acknowledgement checkpoint for successor Run Contract
-`run-fe0e73ca-02b9-4f73-a9c9-5b8c5e5f8171`. Live Run Contract state remains execution authority.
+The phase and revision above are the required next checkpoint carried by Task Group 12. Live Run Contract authority
+remains `applying` at revision 12 until Corgi acknowledges that commit.
 
 ## Next Action
-- Consult Run Contract v3: resume tracker closeout for `introduce-pure-fee-policy-module` only if pending; otherwise select the next accepted Slice. Local delivery: `wiki/deliveries/RFC-0002-architecture-portfolio-S-04-fee-policy.md`.
-  Human QA, and Archive remain separate gates.
+- Consult Run Contract v3: resume tracker closeout for `introduce-versioned-boundary-codecs` only if pending; otherwise select the next accepted Slice. Local delivery: `wiki/deliveries/RFC-0002-architecture-portfolio-S-05-versioned-boundary-codecs.md`.
+  separate canonical Verify against the exact acknowledged commit. Human Review, Human QA, and Archive remain later
+  separate gates.
 
 ## Blockers
 - none
 
 ## Uncommitted Work
-- none
+- Task Group 12's final Apply evidence handoff and this next-state checkpoint.
 
 ## Discoveries
 - The archived `establish-pure-instrument-economics` boundary was reconciled from commit `86613ee` before S-02
@@ -379,6 +380,230 @@ The phase and revision above are the required post-acknowledgement checkpoint fo
   package/source audits, deterministic and semantic readiness, architecture, performance/security applicability,
   checkpoint integrity, and gate separation with no findings. It changed no file, triaged no finding, and is not
   canonical Verify or Human Review.
+- S-05 remains bound to accepted `RFC-0002-architecture-portfolio/S-05-versioned-boundary-codecs`, AC-017 through
+  AC-020, source digest `sha256:625809aa552c0c3f4efd1a8e2d9982c76414f82ce405674ce6f91b475807cceb`, and
+  traceability digest `sha256:c7545d03bf6039543fee8aab7947aa9c10c46923f8e0ee9cc716a12ab66ac44f`;
+  strict readiness passes at planning revision
+  `sha256:e5cbb7f10509095ee6311d1369cef5fd883b8a196713a4bf817a3d2289b26da6`.
+- Run `run-2b01f872-e634-4491-acd3-b1454c94b59e` uses planning baseline
+  `f356ba4bd02cf16bb4f1d1b1e03d9f3395f1286c`; Group 1 records exact integration parent
+  `4e0034e7ca16b0f4cc67b045beadf6a3a9b0613c`. The pre-refresh resolved tree remains preserved as recovery commit
+  `2cf25761f36c6a01a026855aacea7b9f3adad995`.
+- The clean S-05 baseline passes both formatting checks, dependency-order compilation, all 913 tests, all 158
+  completed-JAR/compiler/adversarial boundary tests, and explicit JMH compilation on OpenJDK 26.0.2, SBT 1.12.15,
+  and Scala 3.8.4.
+- The final delivered inventory fixes V1 against stable dimension/asset/grid/instrument identities, immutable
+  catalog state/snapshots, canonical instrument assembly, closed order/scenario alternatives, and explicit market
+  observers. Retired `Packed*`, `Resolved*`, registry, heterogeneous-runtime, and `GridCoordinateEncoding` names remain
+  absent; no portfolio drift requires an RFC or planning amendment.
+- The physical `trading-boundary-codecs` artifact now owns the `trading.codec` package/resource root above quantities,
+  reference data, instrument economics, order model, and execution scenario. Its production classpath adds only Cats
+  Core and Jackson Core 3.2.2; NetworkNT 3.0.7 and Java JSON Canonicalization 1.1 remain test-only.
+- Completed-JAR compiler fixtures prove the codec production classpath excludes fee policy, risk, application,
+  runtime, effects, streams, persistence/clients, telemetry, Jackson Databind/Scala, Circe, and test oracles, while all
+  seven lower/pure artifacts reject reverse `trading.codec` imports.
+- The clean Group 2 matrix passes 918 tests: 601 quantities, 13 reference data, 9 application, 18 runtime, 13
+  instrument economics, 40 risk, 7 order model, 16 execution scenario, 1 boundary codec, 38 fee policy/integration,
+  and 162 completed-JAR/compiler/adversarial tests. Both formatting checks also pass.
+- The automated Group 2 review checked AC-017 scope, dependency and configuration containment, completed-JAR/public API
+  boundaries, resource/documentation honesty, validation evidence, and performance/security applicability with no
+  findings. It changed no file, triaged no finding, and is not canonical Verify or Human Review.
+- The codec foundation now owns structured paths and locations, deterministic typed violations, JVM-constructor-private
+  non-empty aggregates and `DecodeLimits`, exact pre-parse character/UTF-8 checks, and the documented 12-limit default
+  profile without mutable or unbounded policy state.
+- One package-private strict Jackson adapter builds an immutable AST while retaining raw number spelling and locations;
+  the restricted RFC 8785 renderer agrees with the independent JCS oracle, and one internal algebra drives both
+  accumulating codecs and stable-URN local-reference Draft 2020-12 schemas with operational limits omitted.
+- The clean Group 3 matrix passes 946 tests: 601 quantities, 13 reference data, 9 application, 18 runtime, 13 instrument
+  economics, 40 risk, 7 order model, 16 execution scenario, 27 boundary codec, 38 fee policy/integration, and 164
+  completed-JAR/compiler/adversarial tests. Both formatting checks, dependency inspection, and all 12 strict readiness
+  checks pass.
+- The automated Group 3 review corrected a misleading invalid-definition diagnostic, then checked identity/scope,
+  behavior, architecture, API isolation, parser security/limits, canonicalization, schema agreement, dependency scope,
+  and evidence with no findings. It changed no file during the final pass, triaged no finding, and is not canonical
+  Verify or Human Review.
+- The codec kernel now owns canonical signed/positive decimal strings, reduced rational records, exact stable-ID
+  reconstruction, canonical UTF-16-ordered `DimKey` factors, full `GridIdentity`, checked `RecordType`/`SchemaVersion`,
+  and family-specific explicit envelope dispatch. It rejects numeric/dimension normalization aliases, malformed
+  Unicode, unknown/mismatched type/version pairs, and Java serialization of the new public version values.
+- Reordered/whitespace input re-encodes to one canonical envelope, cross-alternative and closed-object fields remain
+  structural failures, generated Draft 2020-12 envelopes fix the type/version constants with local references only,
+  and `GridVersion` remains an exact payload string distinct from the literal envelope schema version.
+- The clean Group 4 matrix passes 962 tests: 601 quantities, 13 reference data, 9 application, 18 runtime, 13 instrument
+  economics, 40 risk, 7 order model, 16 execution scenario, 43 boundary codec, 38 fee policy/integration, and 164
+  completed-JAR/compiler/adversarial tests. Both formatting checks and all 12 strict readiness checks pass.
+- The automated Group 4 review checked Run/Group identity, AC-017 scope, exact-number/Unicode behavior, owning
+  constructors, normalization resistance, dimension/grid semantics, envelope dispatch, version separation, generated
+  schemas, API/dependency containment, bounded allocation, and evidence with no findings. It changed no file, triaged
+  no finding, and is not canonical Verify or Human Review.
+- General and asset-qualified grid-coordinate V1 records now contain only full stable grid identity, exact signed
+  coordinate, and asset ID where applicable. Their packers require the exact handle/value relationship and expose no
+  arbitrary-quantity, projection, quantization, copied-quantum, registry, `Packed*`, or `Resolved*` surface.
+- JVM-constructor-private decoded packages retain dimension/asset, grid, and typed value coherence. General rebuilding
+  resolves dimension before the full grid; asset rebuilding resolves asset and rejects dimension drift before the full
+  grid. Both families provide direct-snapshot, linear, all-valid-or-indexed-errors batch traversal.
+- The clean Group 5 matrix passes 973 tests: 601 quantities, 13 reference data, 9 application, 18 runtime, 13 instrument
+  economics, 40 risk, 7 order model, 16 execution scenario, 52 boundary codec, 38 fee policy/integration, and 166
+  completed-JAR/compiler/adversarial tests. Both formatting checks and all 12 strict readiness checks pass.
+- The first automated Group 5 review tightened public reconstruction-failure invariants; its final pass checked exact
+  scope, behavior, dependent typing, lookup order, batch semantics, architecture, complexity/security applicability,
+  packaged/compiler boundaries, and evidence with no findings. It changed no file, triaged no finding, and is not
+  canonical Verify or Human Review.
+- Frozen catalog-journal V1 entries retain only a positive successor revision and the submitted ordered non-empty
+  dimension/asset/grid command batch. Structural history decoding accumulates every independent indexed wire failure
+  before replay, while pure sequential replay reuses `CatalogModel.commit` from an explicit fresh revision-zero state
+  and returns typed revision, catalog-validation, unchanged, publication-mismatch, and non-fresh failures without a
+  partial-state success channel.
+- Direct-model, prefix, exact-number, permutation, duplicate, gap/repeat, conflict, no-op, historical-version, and
+  cross-lineage tests pass. Completed-JAR fixtures compile the supported published-batch/fresh-state API and reject
+  forged entries/results, broader outcomes, encoded authority/state, durability/checkpoint names, and same-package
+  Scala construction bypasses.
+- The clean Group 6 matrix passes 984 tests: 601 quantities, 13 reference data, 9 application, 18 runtime, 13
+  instrument economics, 40 risk, 7 order model, 16 execution scenario, 61 boundary codec, 38 fee policy/integration,
+  and 168 completed-JAR/compiler/adversarial tests. Both formatting checks and all 12 strict readiness checks pass.
+- The first automated Group 6 review found package-spoof access to package-private entry/result factories. Those
+  factories now remain object-private behind cached private method handles and the same-package compiler attack is
+  retained. The final pass checked AC-019 scope, behavior, deterministic ordering, exactness, architecture, API and
+  dependency confinement, resource/security applicability, and evidence with no findings; it changed no file,
+  triaged no finding, and is not canonical Verify or Human Review.
+- Frozen instrument-definition V1 records retain only stable instrument/underlying and role asset IDs, full lot/price
+  grid identities, and exact base/quote payoff coefficients. Structural decoding accumulates independent syntax,
+  identifier, exact-number, and local-product violations without consulting a catalog; a separate pure stage delegates
+  one explicit snapshot to `InstrumentAssembler` and `Instrument.fromSpec`, preserving codec and assembly failures.
+- Linear all-valid-or-indexed-errors batch reconstruction checks its batch limit once, uses exactly the supplied
+  snapshot for every record, retains stable input ordering, and exposes no partial success. Linear, inverse, quanto,
+  missing/conflicting role and grid, empty payoff, historical-grid, cross-lineage, exact-number, property, and compiler
+  authority tests cover the staged boundary without serializing catalog revision, lineage, handles, venue, or market.
+- The clean Group 7 matrix passes 993 tests: 601 quantities, 13 reference data, 9 application, 18 runtime, 13 instrument
+  economics, 40 risk, 7 order model, 16 execution scenario, 68 boundary codec, 38 fee policy/integration, and 170
+  completed-JAR/compiler/adversarial tests. Both formatting checks and all 12 strict readiness checks pass.
+- The automated Group 7 review checked Run/Group and AC-018 scope, frozen record shape, structural/assembly staging,
+  canonical assembler reuse, exact and historical semantics, stable atomic batching, typed diagnostics, authority
+  exclusion, JAR/dependency boundaries, and linear bounded behavior with no findings. It changed no file, triaged no
+  finding, and is not canonical Verify or Human Review.
+- Frozen immutable-order V1 records retain one root instrument ID, side, exact lot coordinate, position effect, and
+  closed tagged activation/execution/pricing/visibility products with only case-local fields. They omit derived signed
+  position, component identities, scenario, venue/lifecycle, fills, reported fees, accounts, catalog revision,
+  lineage, snapshots, and handles.
+- Reconstruction checks the supplied assembled instrument identity before using coordinates, delegates lots/prices,
+  trailing offsets, and market duration to their owning smart constructors, derives intent position through
+  `OrderIntent.create`, and delegates final combinations to accumulating `Order.create`. Codec, foreign-instrument,
+  local refinement, and aggregate order-validation failures remain closed distinct stages with stable paths/order.
+- Exhaustive tests round-trip 504 valid side/effect/activation/execution/pricing/visibility combinations and cover
+  cross-case fields, unknown vocabulary, zero coordinates/offsets, resting market duration, aggregate iceberg
+  violations, foreign identity precedence, signed positions, exact signed peg offsets, Java serialization, and atomic
+  indexed batch behavior. Completed-JAR clients reject trusted values, roots/snapshots, derived/execution-fact fields,
+  and `Any` or kind-plus-option decoding.
+- The clean Group 8 matrix passes 1,002 tests: 601 quantities, 13 reference data, 9 application, 18 runtime, 13
+  instrument economics, 40 risk, 7 order model, 16 execution scenario, 75 boundary codec, 38 fee policy/integration,
+  and 172 completed-JAR/compiler/adversarial tests. Both formatting checks and all 12 strict readiness checks pass.
+- The initial automated Group 8 review found that the non-empty refinement aggregate's Scala-private constructor was
+  JVM-public. It is now bytecode-private behind a cached private method handle and retained packaged inspection. The
+  final pass checked AC-018 scope, coproduct shape, smart-constructor delegation, stage/order semantics, derived-data
+  omission, exhaustive alternatives, batching, serialization, JAR/dependency authority, and linear bounded behavior
+  with no findings; it changed no file, triaged no finding, and is not canonical Verify or Human Review.
+- Frozen hypothetical-scenario V1 records embed the immutable order exactly once, retain associated activation and
+  pricing observations, and preserve ordered non-empty liquidity slices with exact lot/price coordinates, base/quote
+  settlement rates, and ordered additional source/rate conversions. Round-trip V1 is exactly entry times exit, with no
+  held-position, execution, fee-policy, fee/PnL, lifecycle, catalog revision, snapshot, or duplicated target data.
+- Scenario reconstruction uses a codec-private typed order eliminator to retain each concrete activation/execution
+  relationship, replays instruction-owned evidence/resolution constructors without untyped decoding or public casts,
+  resolves additional assets through one immutable snapshot, and delegates lots, prices, endpoint conversions, market
+  states, slices, matched slices, scenario evaluation, and exact-flat round trips to their canonical domain owners.
+- The clean Group 9 matrix passes 1,011 tests: 601 quantities, 13 reference data, 9 application, 18 runtime, 13
+  instrument economics, 40 risk, 7 order model, 16 execution scenario, 82 boundary codec, 38 fee policy/integration,
+  and 174 completed-JAR/compiler/adversarial tests. Repository and focused boundary/adversarial formatting checks pass.
+- The automated Group 9 review checked exact scope, frozen record shape, associated evidence replay, one-snapshot
+  conversion and market construction, deterministic typed failure ordering, canonical scenario/round-trip delegation,
+  omission boundaries, compiler authority, and linear traversal cost with no findings. It changed no file, triaged no
+  finding, and is not canonical Verify or Human Review.
+- Scenario slices and additional market conversions now consume their dedicated named limits. Encoded general/asset
+  grid coordinates, order scenarios, and round trips expose shared linear all-valid-or-indexed-errors batch traversal:
+  oversized inputs fail once before record work, within-limit records retain zero-based failure/output order, and every
+  reconstruction receives exactly the caller-supplied immutable snapshot.
+- Strict JSON payload byte preflight now counts UTF-8 without allocating an encoded copy, and object/array descent plus
+  parser-context recovery are stack-safe. Arbitrary-input and mutation properties cover all seven published families;
+  controlled 2,048-level nesting completes without JVM recursion, while default depth, malformed syntax, duplicates,
+  unknown/null fields, Unicode, exact values, arrays, sums, and mixed failures remain typed and deterministic.
+- The shared non-published codec JMH benchmark records OpenJDK 26.0.2, no VM arguments, one thread, a 1,024-record
+  general-grid-coordinate V1 batch, a 351-byte payload, and a 128-digit coordinate. Its smoke run separately measured
+  parse, render, one live snapshot capture, pure parsed reconstruction, and combined decode/reconstruction; directional
+  results were 4.897, 31.673, 67.029, 22.663, and 0.018 ops/ms respectively.
+- The clean Group 10 matrix passes 1,018 tests: 601 quantities, 13 reference data, 9 application, 18 runtime, 13
+  instrument economics, 40 risk, 7 order model, 16 execution scenario, 89 boundary codec, 38 fee policy/integration,
+  and 174 completed-JAR/compiler/adversarial tests. Both formatting checks, JMH compilation/smoke, diff hygiene, and
+  the production source audit for live catalog, monitor, synchronization, and atomic references pass.
+- The automated Group 10 review checked exact Run/Group identity, limit ordering and identity, stable atomic batch
+  behavior, snapshot coherence, total malformed/deep/Unicode/exact-value handling, public/JAR dependency boundaries,
+  parser allocation/stack safety, benchmark separation, and performance/security applicability with no findings. It
+  changed no file, triaged no finding, and is not canonical Verify or Human Review.
+- Seven stable-URN local-reference Draft 2020-12 schemas and canonical V1 golden records/histories are now checked in
+  for every published family. Byte regeneration, meta-schema validation, every valid golden, explicit structural and
+  unknown-version invalid fixtures, and an independent offline NetworkNT/JCS oracle all pass.
+- Compatibility coverage freezes explicit V1 dispatch, canonical re-encoding, coherent scenario/round-trip meaning,
+  and Java-serialization rejection for every reachable codec-owned record plus decoded dependent packages. The
+  documented boundary keeps JSON text/UTF-8 as its sole durable representation and assigns snapshot capture, framing,
+  storage, recovery, and publication atomicity to later application/runtime integrations.
+- The clean Group 11 matrix passes 1,024 tests: 601 quantities, 13 reference data, 9 application, 18 runtime, 13
+  instrument economics, 40 risk, 7 order model, 16 execution scenario, 95 boundary codec, 38 fee policy/integration,
+  and 174 completed-JAR/compiler/adversarial tests. Formatting, deterministic resource regeneration, JSON parsing,
+  schema/resource packaging, and production scope audits pass.
+- The first automated Group 11 review found that independent schema validation covered only each family's first golden
+  and that nested serialization coverage did not prove every reachable codec-owned value implemented the fail-closed
+  policy. Both checks were strengthened; the final pass checked requirements, behavior, code quality, one-way
+  architecture, compatibility, serialization safety, and bounded/offline validation with no findings. It changed no
+  file, triaged no finding, and is not canonical Verify or Human Review.
+- Task Group 12's from-scratch dependency-ordered production compilation passes, followed by the complete 1,024-test
+  repository matrix and explicit JMH compilation. Repository/SBT formatting, JSON/resource parsing and regeneration,
+  diff hygiene, and the focused schema/golden/compiler/serialization boundaries also pass.
+- The focused one-thread JMH smoke used OpenJDK 26.0.2, one fork, one 100 ms warmup/measurement, a 1,024-record
+  general-grid-coordinate V1 batch, a 351-byte payload, and a 128-digit coordinate. Directional capture, combined
+  decode/reconstruct, parse, parsed-reconstruct, and render results were 63.229, 0.016, 3.715, 18.195, and 31.675 ops/ms.
+- Completed-JAR, `javap`, source, and dependency inspection confirm that supported production APIs retain typed
+  codec/domain vocabulary; test validators/oracles and Databind remain test-only; effects/runtime/persistence are
+  absent; and the remaining erased casts are checked private-constructor method-handle bridges rather than semantic
+  record/evidence coercions.
+- Strict readiness remains `ready` with all 12 deterministic checks passing at planning revision
+  `sha256:e5cbb7f10509095ee6311d1369cef5fd883b8a196713a4bf817a3d2289b26da6`. The final read-only
+  proposal/design/spec/task/RFC/source/traceability semantic review found no errors or warnings and changed no file.
+- The automated Group 12 review checked exact identity, final-task coverage, evidence accuracy, repository behavior,
+  packaged boundaries, compatibility/authority exclusions, benchmark/security applicability, planning integrity, and
+  lifecycle separation with no findings. It changed no file, triaged no finding, and is not canonical Verify or Human
+  Review.
 
 ## Promotion Queue
 - Review agent-configuration constraints before promoting any item to `memory/MEMORY.md`.
+- Keep the S-05 Group 1 baseline and inventory as delivery evidence until Archive proves the complete codec boundary;
+  no Task Group 1 discovery is independently eligible for permanent promotion.
+- Keep Group 2's module/dependency boundary and test-only oracle containment as delivery evidence until Archive proves
+  the complete codec capability; no Group 2 discovery is independently eligible for permanent promotion.
+- Keep Group 3's strict JSON, diagnostic/limit, canonical-rendering, and shared schema-algebra foundation as delivery
+  evidence until Archive proves the complete codec capability; no Group 3 discovery is independently eligible for
+  permanent promotion.
+- Keep Group 4's exact primitive, stable-identity, canonical-dimension, and explicit envelope/version-dispatch kernel as
+  delivery evidence until Archive proves the complete codec capability; no Group 4 discovery is independently eligible
+  for permanent promotion.
+- Keep Group 5's exact grid-coordinate records, dependent snapshot reconstruction, and explicit batch semantics as
+  delivery evidence until Archive proves the complete codec capability; no Group 5 discovery is independently eligible
+  for permanent promotion.
+- Keep Group 6's frozen catalog-journal records, pure fresh-lineage replay, typed sequential failures, and authority-
+  confinement evidence until Archive proves the complete codec capability; no Group 6 discovery is independently
+  eligible for permanent promotion.
+- Keep Group 7's frozen instrument-definition records, separate structural and snapshot-assembly stages, atomic batch
+  reconstruction, and authority-confinement evidence until Archive proves the complete codec capability; no Group 7
+  discovery is independently eligible for permanent promotion.
+- Keep Group 8's frozen immutable-order coproducts, explicit-instrument smart-constructor reconstruction, closed staged
+  failures, exhaustive alternative coverage, and authority-confinement evidence until Archive proves the complete
+  codec capability; no Group 8 discovery is independently eligible for permanent promotion.
+- Keep Group 9's frozen hypothetical scenario/round-trip records, associated typed replay, exact snapshot-backed market
+  reconstruction, and omission/authority evidence until Archive proves the complete codec capability; no Group 9
+  discovery is independently eligible for permanent promotion.
+- Keep Group 10's operational-limit enforcement, robust stack-safe parsing, coherent atomic encoded batches, adversarial
+  properties, and separated codec benchmark evidence until Archive proves the complete codec capability; no Group 10
+  discovery is independently eligible for permanent promotion.
+- Keep Group 11's frozen schemas/goldens, independent offline compatibility validation, version/serialization policy,
+  documentation, and scope-audit evidence until Archive proves the complete codec capability; no Group 11 discovery is
+  independently eligible for permanent promotion.
+- Keep Group 12's clean validation matrix, packaged audit, readiness cross-check, benchmark smoke, and separate-gate
+  handoff until Archive proves the complete codec capability; no Group 12 discovery is independently eligible for
+  permanent promotion.

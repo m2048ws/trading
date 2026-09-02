@@ -4,7 +4,7 @@
 non-published aggregator: production code belongs to independently named modules rather than the repository root. The
 minimum build and runtime JDK is 25.
 
-The current implementation has nine production modules. `trading-quantities` provides exact quantities, anonymous
+The current implementation has ten production modules. `trading-quantities` provides exact quantities, anonymous
 uniform-grid arithmetic and projection, checked refinements, domain-neutral runtime dimension identity, and optional
 Typelevel Algebra integration. `trading-reference-data` owns stable asset/grid identity, immutable catalog transitions,
 trusted handles, and coherent snapshots. `trading-application` owns the minimal interpreter-neutral `LiveCatalog[F]`
@@ -15,8 +15,9 @@ part of this foundation. `trading-instrument-economics` owns assembled instrumen
 fee-value, and PnL kernel. `trading-order-model` owns immutable order intent and instruction evidence, while
 `trading-execution-scenario` owns checked hypothetical matched outcomes and depends one-way on the order model.
 `trading-fee-policy` owns the existing pure downstream fee/scenario composition under the `trading.fee` package root,
-while `trading-risk` owns exact
-downside, constructive monotone models, boundary-certified maximum sizing, and the explicit exhaustive fallback.
+while `trading-risk` owns exact downside, constructive monotone models, boundary-certified maximum sizing, and the
+explicit exhaustive fallback. `trading-boundary-codecs` now establishes the pure `trading.codec` artifact above the
+encodable domain modules; its versioned record-family APIs are introduced incrementally by the active S-05 delivery.
 
 | Module | Directory | SBT ID | Artifact | Package |
 | --- | --- | --- | --- | --- |
@@ -29,12 +30,14 @@ downside, constructive monotone models, boundary-certified maximum sizing, and t
 | trading-execution-scenario | `execution-scenario` | `executionScenario` | `trading-execution-scenario` | `trading.scenario` |
 | trading-fee-policy | `fee-policy` | `feePolicy` | `trading-fee-policy` | `trading.fee` |
 | trading-risk | `risk` | `risk` | `trading-risk` | `trading.risk` |
+| trading-boundary-codecs | `boundary-codecs` | `boundaryCodecs` | `trading-boundary-codecs` | `trading.codec` |
 
 See the [quantity module guide](quantities/README.md), [reference-data module guide](reference-data/README.md),
 [application module guide](application/README.md), [runtime module guide](runtime/README.md),
 [instrument economics guide](instrument-economics/README.md),
 [order-model guide](order-model/README.md), [execution-scenario guide](execution-scenario/README.md),
 [fee-policy module guide](fee-policy/README.md), [risk module guide](risk/README.md),
+[boundary-codec module guide](boundary-codecs/README.md),
 [catalog benchmark evidence](docs/catalog-benchmark.md), and [quantity performance notes](quantities/docs/performance.md).
 
 ## Architecture charter
@@ -47,11 +50,11 @@ the proposed target architecture separately.
 
 The catalog, snapshot, application-port, runtime-interpreter, instrument-economics, and shared benchmark
 responsibilities now have concrete owners. Order intent, execution-scenario interpretation, fee-policy composition and
-scenario-owned attribution, and risk are separate physical pure boundaries. The current RFC-0002 S-04 delivery owns
-the fee-policy API's semantic redesign, while the boundary-codec artifact remains owned by S-05. RFC-0002
-S-01 delivered the runtime and future-port admission foundation and its first live-catalog interpreter; S-05 owns the
-removed packing capability's durable replacement. Every current module owns a concrete responsibility rather than
-existing solely to match the target diagram.
+scenario-owned attribution, risk, and boundary representation are separate physical pure boundaries. RFC-0002 S-04
+delivered the fee-policy API, while active S-05 owns the boundary-codec artifact and the removed packing capability's
+durable replacement. RFC-0002 S-01 delivered the runtime and future-port admission foundation and its first
+live-catalog interpreter. Every current module owns a concrete responsibility rather than existing solely to match the
+target diagram.
 
 ## Build commands
 
@@ -65,6 +68,7 @@ sbt orderModel/test
 sbt executionScenario/test
 sbt feePolicy/test
 sbt risk/test
+sbt boundaryCodecs/test
 sbt benchmarks/Jmh/compile
 sbt quantities/doc
 sbt adversarialBoundary/test

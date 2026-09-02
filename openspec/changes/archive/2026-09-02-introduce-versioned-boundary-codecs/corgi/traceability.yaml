@@ -1,0 +1,60 @@
+schemaVersion: 1
+sourceDigest: sha256:625809aa552c0c3f4efd1a8e2d9982c76414f82ce405674ce6f91b475807cceb
+acceptance:
+  - id: AC-017
+    evidence: automated
+    planningRefs:
+      - path: specs/versioned-boundary-codecs/spec.md
+        anchor: requirement-boundary-codecs-form-a-pure-one-way-artifact
+      - path: specs/versioned-boundary-codecs/spec.md
+        anchor: requirement-every-record-uses-an-independently-versioned-envelope
+      - path: specs/versioned-boundary-codecs/spec.md
+        anchor: requirement-canonical-json-has-one-writer-representation
+      - path: specs/versioned-boundary-codecs/spec.md
+        anchor: requirement-exact-primitives-have-canonical-non-floating-encodings
+      - path: specs/versioned-boundary-codecs/spec.md
+        anchor: requirement-decode-limits-protect-parsing-without-changing-mathematical-schemas
+    taskGroups:
+      - '2'
+      - '3'
+      - '4'
+  - id: AC-018
+    evidence: both
+    planningRefs:
+      - path: specs/versioned-boundary-codecs/spec.md
+        anchor: requirement-grid-coordinate-records-restore-dependent-values-through-snapshots
+      - path: specs/versioned-boundary-codecs/spec.md
+        anchor: requirement-instrument-definition-records-reconstruct-through-assembly
+      - path: specs/versioned-boundary-codecs/spec.md
+        anchor: requirement-order-records-reconstruct-one-immutable-instruction-algebra
+      - path: specs/versioned-boundary-codecs/spec.md
+        anchor: requirement-scenario-records-rebuild-associated-evidence-and-validated-outcomes
+    taskGroups:
+      - '5'
+      - '7'
+      - '8'
+      - '9'
+  - id: AC-019
+    evidence: automated
+    planningRefs:
+      - path: specs/catalog-command-replay/spec.md
+        anchor: requirement-journal-entries-represent-successful-catalog-publications
+      - path: specs/catalog-command-replay/spec.md
+        anchor: requirement-replay-rebuilds-a-catalog-sequentially-from-a-fresh-root
+      - path: specs/catalog-command-replay/spec.md
+        anchor: requirement-replay-rejects-gaps-no-ops-conflicts-and-out-of-order-history
+    taskGroups:
+      - '6'
+  - id: AC-020
+    evidence: both
+    planningRefs:
+      - path: specs/versioned-boundary-codecs/spec.md
+        anchor: requirement-batch-reconstruction-uses-one-coherent-snapshot-and-is-atomic-as-a-result
+      - path: specs/versioned-boundary-codecs/spec.md
+        anchor: requirement-compatibility-is-verified-by-schemas-golden-vectors-and-semantic-laws
+      - path: specs/versioned-boundary-codecs/spec.md
+        anchor: requirement-boundary-codec-scope-excludes-unspecified-live-and-derived-records
+    taskGroups:
+      - '10'
+      - '11'
+      - '12'

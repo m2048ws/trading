@@ -1,0 +1,139 @@
+[info] welcome to sbt 1.12.15 (Homebrew Java 26.0.2)
+[info] loading settings for project introduce-versioned-boundary-codecs-build from plugins.sbt...
+[info] loading project definition from /Users/m/src/money/.worktrees/introduce-versioned-boundary-codecs/project
+[info] loading settings for project root from build.sbt...
+[info] resolving key references (11672 settings) ...
+[info] set current project to trading (in build file:/Users/m/src/money/.worktrees/introduce-versioned-boundary-codecs/)
+[info] running (fork) org.openjdk.jmh.Main -wi 1 -i 1 -f 1 -w 100ms -r 100ms trading.benchmark.BoundaryCodecBenchmark.*
+[error] WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+[error] WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.openjdk.jmh.util.Utils (file:/Users/m/src/money/.worktrees/introduce-versioned-boundary-codecs/target/bg-jobs/sbt_28854c84/target/0a592882/1296d6b9/jmh-core-1.37.jar)
+[error] WARNING: Please consider reporting this to the maintainers of class org.openjdk.jmh.util.Utils
+[error] WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+[info] # JMH version: 1.37
+[info] # VM version: JDK 26.0.2, OpenJDK 64-Bit Server VM, 26.0.2
+[info] # VM invoker: /opt/homebrew/Cellar/openjdk/26.0.2/libexec/openjdk.jdk/Contents/Home/bin/java
+[info] # VM options: <none>
+[info] # Blackhole mode: compiler (auto-detected, use -Djmh.blackhole.autoDetect=false to disable)
+[info] # Warmup: 1 iterations, 100 ms each
+[info] # Measurement: 1 iterations, 100 ms each
+[info] # Timeout: 10 min per iteration
+[info] # Threads: 1 thread, will synchronize iterations
+[info] # Benchmark mode: Throughput, ops/time
+[info] # Benchmark: trading.benchmark.BoundaryCodecBenchmark.captureOneSnapshotOutsideCodec
+[info] # Parameters: (batchSize = 1024, coordinateDigits = 128, payloadShape = general-grid-coordinate-v1, payloadUtf8Bytes = 351)
+[info] # Run progress: 0.00% complete, ETA 00:00:01
+[info] # Fork: 1 of 1
+[info] WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+[info] WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.openjdk.jmh.util.Utils (file:/Users/m/src/money/.worktrees/introduce-versioned-boundary-codecs/target/bg-jobs/sbt_28854c84/target/0a592882/1296d6b9/jmh-core-1.37.jar)
+[info] WARNING: Please consider reporting this to the maintainers of class org.openjdk.jmh.util.Utils
+[info] WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+[info] # Warmup Iteration   1: 33262.085 ops/s
+[info] Iteration   1: 70256.686 ops/s
+[info] Result "trading.benchmark.BoundaryCodecBenchmark.captureOneSnapshotOutsideCodec":
+[info]   70256.686 ops/s
+[info] # JMH version: 1.37
+[info] # VM version: JDK 26.0.2, OpenJDK 64-Bit Server VM, 26.0.2
+[info] # VM invoker: /opt/homebrew/Cellar/openjdk/26.0.2/libexec/openjdk.jdk/Contents/Home/bin/java
+[info] # VM options: <none>
+[info] # Blackhole mode: compiler (auto-detected, use -Djmh.blackhole.autoDetect=false to disable)
+[info] # Warmup: 1 iterations, 100 ms each
+[info] # Measurement: 1 iterations, 100 ms each
+[info] # Timeout: 10 min per iteration
+[info] # Threads: 1 thread, will synchronize iterations
+[info] # Benchmark mode: Throughput, ops/time
+[info] # Benchmark: trading.benchmark.BoundaryCodecBenchmark.decodeAndReconstructBatch
+[info] # Parameters: (batchSize = 1024, coordinateDigits = 128, payloadShape = general-grid-coordinate-v1, payloadUtf8Bytes = 351)
+[info] # Run progress: 20.00% complete, ETA 00:00:03
+[info] # Fork: 1 of 1
+[info] WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+[info] WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.openjdk.jmh.util.Utils (file:/Users/m/src/money/.worktrees/introduce-versioned-boundary-codecs/target/bg-jobs/sbt_28854c84/target/0a592882/1296d6b9/jmh-core-1.37.jar)
+[info] WARNING: Please consider reporting this to the maintainers of class org.openjdk.jmh.util.Utils
+[info] WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+[info] # Warmup Iteration   1: 3.362 ops/s
+[info] Iteration   1: 16.693 ops/s
+[info] Result "trading.benchmark.BoundaryCodecBenchmark.decodeAndReconstructBatch":
+[info]   16.693 ops/s
+[info] # JMH version: 1.37
+[info] # VM version: JDK 26.0.2, OpenJDK 64-Bit Server VM, 26.0.2
+[info] # VM invoker: /opt/homebrew/Cellar/openjdk/26.0.2/libexec/openjdk.jdk/Contents/Home/bin/java
+[info] # VM options: <none>
+[info] # Blackhole mode: compiler (auto-detected, use -Djmh.blackhole.autoDetect=false to disable)
+[info] # Warmup: 1 iterations, 100 ms each
+[info] # Measurement: 1 iterations, 100 ms each
+[info] # Timeout: 10 min per iteration
+[info] # Threads: 1 thread, will synchronize iterations
+[info] # Benchmark mode: Throughput, ops/time
+[info] # Benchmark: trading.benchmark.BoundaryCodecBenchmark.parseJson
+[info] # Parameters: (batchSize = 1024, coordinateDigits = 128, payloadShape = general-grid-coordinate-v1, payloadUtf8Bytes = 351)
+[info] # Run progress: 40.00% complete, ETA 00:00:03
+[info] # Fork: 1 of 1
+[info] WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+[info] WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.openjdk.jmh.util.Utils (file:/Users/m/src/money/.worktrees/introduce-versioned-boundary-codecs/target/bg-jobs/sbt_28854c84/target/0a592882/1296d6b9/jmh-core-1.37.jar)
+[info] WARNING: Please consider reporting this to the maintainers of class org.openjdk.jmh.util.Utils
+[info] WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+[info] # Warmup Iteration   1: 560.224 ops/s
+[info] Iteration   1: 4276.897 ops/s
+[info] Result "trading.benchmark.BoundaryCodecBenchmark.parseJson":
+[info]   4276.897 ops/s
+[info] # JMH version: 1.37
+[info] # VM version: JDK 26.0.2, OpenJDK 64-Bit Server VM, 26.0.2
+[info] # VM invoker: /opt/homebrew/Cellar/openjdk/26.0.2/libexec/openjdk.jdk/Contents/Home/bin/java
+[info] # VM options: <none>
+[info] # Blackhole mode: compiler (auto-detected, use -Djmh.blackhole.autoDetect=false to disable)
+[info] # Warmup: 1 iterations, 100 ms each
+[info] # Measurement: 1 iterations, 100 ms each
+[info] # Timeout: 10 min per iteration
+[info] # Threads: 1 thread, will synchronize iterations
+[info] # Benchmark mode: Throughput, ops/time
+[info] # Benchmark: trading.benchmark.BoundaryCodecBenchmark.reconstructParsedBatch
+[info] # Parameters: (batchSize = 1024, coordinateDigits = 128, payloadShape = general-grid-coordinate-v1, payloadUtf8Bytes = 351)
+[info] # Run progress: 60.00% complete, ETA 00:00:01
+[info] # Fork: 1 of 1
+[info] WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+[info] WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.openjdk.jmh.util.Utils (file:/Users/m/src/money/.worktrees/introduce-versioned-boundary-codecs/target/bg-jobs/sbt_28854c84/target/0a592882/1296d6b9/jmh-core-1.37.jar)
+[info] WARNING: Please consider reporting this to the maintainers of class org.openjdk.jmh.util.Utils
+[info] WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+[info] # Warmup Iteration   1: 5991.575 ops/s
+[info] Iteration   1: 21738.596 ops/s
+[info] Result "trading.benchmark.BoundaryCodecBenchmark.reconstructParsedBatch":
+[info]   21738.596 ops/s
+[info] # JMH version: 1.37
+[info] # VM version: JDK 26.0.2, OpenJDK 64-Bit Server VM, 26.0.2
+[info] # VM invoker: /opt/homebrew/Cellar/openjdk/26.0.2/libexec/openjdk.jdk/Contents/Home/bin/java
+[info] # VM options: <none>
+[info] # Blackhole mode: compiler (auto-detected, use -Djmh.blackhole.autoDetect=false to disable)
+[info] # Warmup: 1 iterations, 100 ms each
+[info] # Measurement: 1 iterations, 100 ms each
+[info] # Timeout: 10 min per iteration
+[info] # Threads: 1 thread, will synchronize iterations
+[info] # Benchmark mode: Throughput, ops/time
+[info] # Benchmark: trading.benchmark.BoundaryCodecBenchmark.renderJson
+[info] # Parameters: (batchSize = 1024, coordinateDigits = 128, payloadShape = general-grid-coordinate-v1, payloadUtf8Bytes = 351)
+[info] # Run progress: 80.00% complete, ETA 00:00:00
+[info] # Fork: 1 of 1
+[info] WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+[info] WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.openjdk.jmh.util.Utils (file:/Users/m/src/money/.worktrees/introduce-versioned-boundary-codecs/target/bg-jobs/sbt_28854c84/target/0a592882/1296d6b9/jmh-core-1.37.jar)
+[info] WARNING: Please consider reporting this to the maintainers of class org.openjdk.jmh.util.Utils
+[info] WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+[info] # Warmup Iteration   1: 7539.984 ops/s
+[info] Iteration   1: 29017.945 ops/s
+[info] Result "trading.benchmark.BoundaryCodecBenchmark.renderJson":
+[info]   29017.945 ops/s
+[info] # Run complete. Total time: 00:00:04
+[info] REMEMBER: The numbers below are just data. To gain reusable insights, you need to follow up on
+[info] why the numbers are the way they are. Use profilers (see -prof, -lprof), design factorial
+[info] experiments, perform baseline and negative tests that provide experimental control, make sure
+[info] the benchmarking environment is safe on JVM/OS/HW level, ask for reviews from the domain experts.
+[info] Do not assume the numbers tell you what you want them to tell.
+[info] NOTE: Current JVM experimentally supports Compiler Blackholes, and they are in use. Please exercise
+[info] extra caution when trusting the results, look into the generated code to check the benchmark still
+[info] works, and factor in a small probability of new VM bugs. Additionally, while comparisons between
+[info] different JVMs are already problematic, the performance difference caused by different Blackhole
+[info] modes can be very significant. Please make sure you use the consistent Blackhole mode for comparisons.
+[info] Benchmark                                              (batchSize)  (coordinateDigits)              (payloadShape)  (payloadUtf8Bytes)   Mode  Cnt      Score   Error  Units
+[info] BoundaryCodecBenchmark.captureOneSnapshotOutsideCodec         1024                 128  general-grid-coordinate-v1                 351  thrpt       70256.686          ops/s
+[info] BoundaryCodecBenchmark.decodeAndReconstructBatch              1024                 128  general-grid-coordinate-v1                 351  thrpt          16.693          ops/s
+[info] BoundaryCodecBenchmark.parseJson                              1024                 128  general-grid-coordinate-v1                 351  thrpt        4276.897          ops/s
+[info] BoundaryCodecBenchmark.reconstructParsedBatch                 1024                 128  general-grid-coordinate-v1                 351  thrpt       21738.596          ops/s
+[info] BoundaryCodecBenchmark.renderJson                             1024                 128  general-grid-coordinate-v1                 351  thrpt       29017.945          ops/s
+[success] Total time: 7 s, completed Sep 2, 2026, 4:35:38 PM

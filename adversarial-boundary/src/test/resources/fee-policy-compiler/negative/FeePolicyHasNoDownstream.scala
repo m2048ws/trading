@@ -15,6 +15,9 @@ object FeePolicyHasNoDownstream:
   object MissingRuntime:
     import trading.runtime.*
 
+  object MissingBoundaryCodecs:
+    import trading.codec.*
+
   object MissingEffects:
     import cats.effect.*
 

@@ -1,0 +1,1 @@
+{"payload":{"activation":{"kind":"immediate"},"execution":{"kind":"market","timeInForce":"immediateOrCancel"},"instrumentId":"compatibility-primary","lotCoordinate":"10","positionEffect":"unrestricted","side":"buy"},"recordType":"trading.order","schemaVersion":2}

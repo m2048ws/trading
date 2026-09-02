@@ -83,9 +83,10 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
     val prelude = compileCorePrelude(source)
     assert(prelude.succeeded, s"fixture prelude must compile independently:\n${prelude.rendered}")
     val rejected = compileCore(source)
-    assert(rejected.errors.size >= 4, rejected.rendered)
+    assert(rejected.errors.size >= 5, rejected.rendered)
     assert(rejected.rendered.contains("is not a member"), rejected.rendered)
     assert(rejected.rendered.contains("fee is not a member of trading"), rejected.rendered)
+    assert(rejected.rendered.contains("codec is not a member of trading"), rejected.rendered)
     economicsForbiddenDiagnostics.foreach(fragment => assert(!rejected.rendered.contains(fragment), rejected.rendered))
 
   test("packaged artifacts preserve quantities, reference-data, and pure instrument-economics boundaries"):
@@ -345,9 +346,10 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
     val prelude = compileFilteredPrelude(source, compileOrder)
     assert(prelude.succeeded, s"fixture prelude must compile independently:\n${prelude.rendered}")
     val rejected = compileOrder(source)
-    assert(rejected.errors.size >= 6, rejected.rendered)
+    assert(rejected.errors.size >= 7, rejected.rendered)
     assert(rejected.rendered.contains("is not a member"), rejected.rendered)
     assert(rejected.rendered.contains("fee is not a member of trading"), rejected.rendered)
+    assert(rejected.rendered.contains("codec is not a member of trading"), rejected.rendered)
     economicsForbiddenDiagnostics.foreach(fragment => assert(!rejected.rendered.contains(fragment), rejected.rendered))
 
   test("completed fee-policy classpath contains exactly its pure one-way production graph"):
@@ -431,8 +433,9 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
     val prelude = compileFilteredPrelude(source, compileFeePolicy)
     assert(prelude.succeeded, s"fixture prelude must compile independently:\n${prelude.rendered}")
     val rejected = compileFeePolicy(source)
-    assert(rejected.errors.size >= 9, rejected.rendered)
+    assert(rejected.errors.size >= 10, rejected.rendered)
     assert(rejected.rendered.contains("is not a member"), rejected.rendered)
+    assert(rejected.rendered.contains("codec is not a member of trading"), rejected.rendered)
     economicsForbiddenDiagnostics.foreach(fragment => assert(!rejected.rendered.contains(fragment), rejected.rendered))
 
   test("completed order-model classpath compiles every supported instruction shape exhaustively"):
@@ -469,9 +472,10 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
     val prelude = compileFilteredPrelude(source, compileScenario)
     assert(prelude.succeeded, s"fixture prelude must compile independently:\n${prelude.rendered}")
     val rejected = compileScenario(source)
-    assert(rejected.errors.size >= 10, rejected.rendered)
+    assert(rejected.errors.size >= 11, rejected.rendered)
     assert(rejected.rendered.contains("is not a member"), rejected.rendered)
     assert(rejected.rendered.contains("fee is not a member of trading"), rejected.rendered)
+    assert(rejected.rendered.contains("codec is not a member of trading"), rejected.rendered)
     assert(rejected.rendered.toLowerCase.contains("reassignment to val"), rejected.rendered)
     assert(rejected.rendered.contains("cannot be accessed"), rejected.rendered)
     economicsForbiddenDiagnostics.foreach(fragment => assert(!rejected.rendered.contains(fragment), rejected.rendered))

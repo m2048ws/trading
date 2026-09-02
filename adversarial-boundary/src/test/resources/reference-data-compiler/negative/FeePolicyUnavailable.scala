@@ -7,6 +7,8 @@ object FeePolicyUnavailable:
 
   // OFFENDING-BEGIN
   val feePolicy: Class[trading.fee.FeePolicy[?, ?, ?, ?, ?]] = classOf[trading.fee.FeePolicy[?, ?, ?, ?, ?]]
+  object MissingBoundaryCodecs:
+    import trading.codec.*
   // OFFENDING-END
 
 end FeePolicyUnavailable

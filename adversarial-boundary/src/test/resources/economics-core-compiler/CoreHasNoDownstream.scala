@@ -10,5 +10,7 @@ object CoreHasNoDownstream:
   val role: trading.scenario.LiquidityRole = trading.scenario.LiquidityRole.Taker
   val policy: Class[trading.fee.FeePolicy[?, ?, ?, ?, ?]] = classOf[trading.fee.FeePolicy[?, ?, ?, ?, ?]]
   val risk: Class[trading.risk.RiskIdentityError] = classOf[trading.risk.RiskIdentityError]
+  object MissingBoundaryCodecs:
+    import trading.codec.*
   // OFFENDING-END
 end CoreHasNoDownstream

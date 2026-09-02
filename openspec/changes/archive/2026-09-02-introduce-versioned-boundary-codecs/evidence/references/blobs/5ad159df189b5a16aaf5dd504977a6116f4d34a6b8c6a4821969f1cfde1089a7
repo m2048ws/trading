@@ -1,0 +1,75 @@
+{
+  "$defs": {
+    "GeneralGridCoordinateRecordV1": {
+      "additionalProperties": false,
+      "properties": {
+        "payload": {
+          "additionalProperties": false,
+          "properties": {
+            "coordinate": {
+              "type": "string"
+            },
+            "gridIdentity": {
+              "additionalProperties": false,
+              "properties": {
+                "dimension": {
+                  "items": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "atom": {
+                        "type": "string"
+                      },
+                      "power": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "atom",
+                      "power"
+                    ],
+                    "type": "object"
+                  },
+                  "type": "array"
+                },
+                "gridId": {
+                  "type": "string"
+                },
+                "gridVersion": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "dimension",
+                "gridId",
+                "gridVersion"
+              ],
+              "type": "object"
+            }
+          },
+          "required": [
+            "gridIdentity",
+            "coordinate"
+          ],
+          "type": "object"
+        },
+        "recordType": {
+          "const": "trading.general-grid-coordinate",
+          "type": "string"
+        },
+        "schemaVersion": {
+          "const": 1,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "payload",
+        "recordType",
+        "schemaVersion"
+      ],
+      "type": "object"
+    }
+  },
+  "$id": "urn:trading:codec:schema:general-grid-coordinate:v1",
+  "$ref": "#/$defs/GeneralGridCoordinateRecordV1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

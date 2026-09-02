@@ -1,0 +1,120 @@
+{
+  "verdict": "pass",
+  "finalRevision": "4c93275e3ce5dfaae219d1a9567461951cbc79e1",
+  "planningRevision": "sha256:e5cbb7f10509095ee6311d1369cef5fd883b8a196713a4bf817a3d2289b26da6",
+  "sourceDigest": "sha256:625809aa552c0c3f4efd1a8e2d9982c76414f82ce405674ce6f91b475807cceb",
+  "traceabilityDigest": "sha256:c7545d03bf6039543fee8aab7947aa9c10c46923f8e0ee9cc716a12ab66ac44f",
+  "reportHash": "sha256:33701c4991dbaf53efa195f4b1c89c1460e810a40ee8d4bd6a4649cdf603f895",
+  "checks": [
+    {
+      "name": "clean dependency-ordered repository test matrix, JMH compilation, and canonical formatting passed at exact final HEAD (1,024 tests)",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:target%2Fcorgi-verify%2Fs05-canonical-verify.log#sha256:127bc0e9ca767ee9db109e5c3cd24663d46a48547b46a0d9836564674f1f4750",
+        "file:build.sbt#sha256:8ca7eb6d07cfef2edb6d38ec8602d7addee90e8b51c733b3b60702158b60ed0f",
+        "file:docs%2Fboundary-codecs-apply-evidence.md#sha256:8ee61c1be5ab806127d047f361a8c341734849d7ab8e2bedda18faa091eea381"
+      ]
+    },
+    {
+      "name": "strict OpenSpec validation, exact AC traceability, accepted RFC provenance, and all 12 Task Groups passed at the unchanged planning revision",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:target%2Fcorgi-verify%2Fs05-ready-verify.json#sha256:bc529e370b5cdd7e5e546c1e8094c80befbe2e56e3d6ee01c10c46bba3d5170d",
+        "file:openspec%2Fchanges%2Fintroduce-versioned-boundary-codecs%2Fcorgi%2Fsource.yaml#sha256:625809aa552c0c3f4efd1a8e2d9982c76414f82ce405674ce6f91b475807cceb",
+        "file:openspec%2Fchanges%2Fintroduce-versioned-boundary-codecs%2Fcorgi%2Ftraceability.yaml#sha256:c7545d03bf6039543fee8aab7947aa9c10c46923f8e0ee9cc716a12ab66ac44f",
+        "file:openspec%2Fchanges%2Fintroduce-versioned-boundary-codecs%2Ftasks.md#sha256:43c12a4cfb46ad1f54a5a1e7b64d0eb82b224deb1798014bbad985c40c5c34d2"
+      ]
+    },
+    {
+      "name": "V1 schemas, canonical goldens, exact round trips, model/property laws, strict malformed-input handling, and Java-serialization rejection passed",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:target%2Fcorgi-verify%2Fs05-canonical-verify.log#sha256:127bc0e9ca767ee9db109e5c3cd24663d46a48547b46a0d9836564674f1f4750",
+        "file:boundary-codecs%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fcodec%2FBoundaryCodecCompatibilitySuite.scala#sha256:283196b99c21af4a089f339a62c1fb844fe1e4205e7e97299db77c87b03a8525",
+        "file:boundary-codecs%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fcodec%2FBoundaryCodecRobustnessPropertiesSuite.scala#sha256:35a95427a9746348fc7c5e69a118f1cb428ba64856d62c62bba083aa24997ebf",
+        "file:boundary-codecs%2Fsrc%2Fmain%2Fresources%2Ftrading%2Fcodec%2Fschema%2FREADME.md#sha256:87cd2e5bb6cc15248fb4443cc17285d34cdd47d8a8990a3b243b3b3233c2615d",
+        "file:boundary-codecs%2Fsrc%2Ftest%2Fresources%2Ftrading%2Fcodec%2Fgolden%2FREADME.md#sha256:bd75372772d11b6a00803400c721f0c958deb9660e287585378156fa2abbf664"
+      ]
+    },
+    {
+      "name": "completed-JAR dependency/API/compiler boundaries passed with parser and schema internals confined and all out-of-scope live, effect, runtime, and derived records excluded",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:target%2Fcorgi-verify%2Fs05-canonical-verify.log#sha256:127bc0e9ca767ee9db109e5c3cd24663d46a48547b46a0d9836564674f1f4750",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FBoundaryCodecCompilerBoundarySuite.scala#sha256:235c62f7161a92051180255e293dc6cfbb9992d509f1eaeb2abd2e788689acce",
+        "file:boundary-codecs%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fcodec%2FBoundaryDependencyScopeSuite.scala#sha256:c9855e4eebb57cbfa01c86da6f95fdd3a8cdd9b248e4c3f95de3f8717dedc46b",
+        "file:boundary-codecs%2FREADME.md#sha256:c34af73a955d79a6c549ad64c020839b865445b1a5474328e0b8add9550d0afd"
+      ]
+    },
+    {
+      "name": "focused cap-1,024 codec JMH smoke separated external snapshot capture, parsing, rendering, parsed reconstruction, and combined decode/reconstruction",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:target%2Fcorgi-verify%2Fs05-jmh-verify.log#sha256:a1e093f43b3687c79c59abb780ddd94ebec2011eea08e47b85fab49f2f0ae7cf",
+        "file:benchmarks%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fbenchmark%2FBoundaryCodecBenchmark.scala#sha256:fe57a56898e61668c0b1f174612495dbdfb3f492f3002f197fb1e0306e76b2ab",
+        "file:docs%2Fboundary-codecs-apply-evidence.md#sha256:8ee61c1be5ab806127d047f361a8c341734849d7ab8e2bedda18faa091eea381"
+      ]
+    }
+  ],
+  "acceptance": [
+    {
+      "id": "AC-017",
+      "automated": "pass",
+      "human": "not_applicable",
+      "evidenceRefs": [
+        "file:target%2Fcorgi-verify%2Fs05-canonical-verify.log#sha256:127bc0e9ca767ee9db109e5c3cd24663d46a48547b46a0d9836564674f1f4750",
+        "file:build.sbt#sha256:8ca7eb6d07cfef2edb6d38ec8602d7addee90e8b51c733b3b60702158b60ed0f",
+        "file:boundary-codecs%2FREADME.md#sha256:c34af73a955d79a6c549ad64c020839b865445b1a5474328e0b8add9550d0afd",
+        "file:boundary-codecs%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fcodec%2FBoundaryDependencyScopeSuite.scala#sha256:c9855e4eebb57cbfa01c86da6f95fdd3a8cdd9b248e4c3f95de3f8717dedc46b",
+        "file:boundary-codecs%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fcodec%2FStrictJsonSuite.scala#sha256:cd2f7ea1532765ce8b2b710836e7e610be96ea1a33dd9bf214240158ebc6fa62",
+        "file:boundary-codecs%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fcodec%2FExactPrimitivesSuite.scala#sha256:692617b1efdcf3df2a9f787803ef8d6c1b045b7e0d0223e41619436d08c12353",
+        "file:boundary-codecs%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fcodec%2FRecordEnvelopeSuite.scala#sha256:b903a272ee58fcd88159d19a6f51d72c4446f00083343a2a54fad390d11453fa",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FBoundaryCodecCompilerBoundarySuite.scala#sha256:235c62f7161a92051180255e293dc6cfbb9992d509f1eaeb2abd2e788689acce"
+      ]
+    },
+    {
+      "id": "AC-018",
+      "automated": "pass",
+      "human": "not_applicable",
+      "evidenceRefs": [
+        "file:target%2Fcorgi-verify%2Fs05-canonical-verify.log#sha256:127bc0e9ca767ee9db109e5c3cd24663d46a48547b46a0d9836564674f1f4750",
+        "file:boundary-codecs%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fcodec%2FGridCoordinateRecordSuite.scala#sha256:c812421f852b98889af34780029345801e8e94edb8e9f9646cc2f7c16dd6dc9e",
+        "file:boundary-codecs%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fcodec%2FGridCoordinateRecordPropertiesSuite.scala#sha256:d544fe70a8387577ccb0a67dfaa463c646e26ce975264ee57dd2c46c1148f34e",
+        "file:boundary-codecs%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fcodec%2FInstrumentDefinitionRecordSuite.scala#sha256:37efe2d8ffe8d6696e32518c9abf8c4ad2b9c093052afda21a40e0ea94056c86",
+        "file:boundary-codecs%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fcodec%2FInstrumentDefinitionRecordPropertiesSuite.scala#sha256:69cb436ebb05a2d72c797cb549b6b9e5b36ab556122671b6d094aa093b6d8d2b",
+        "file:boundary-codecs%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fcodec%2FOrderRecordSuite.scala#sha256:cad84d3e16ffc6701e325e5fdf9bf487a9053cc3e4362dd071357599d48230f0",
+        "file:boundary-codecs%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fcodec%2FOrderRecordPropertiesSuite.scala#sha256:1195351d35c79dc0428aacfea3c9feb47458be7fc8ffa9706e7ab12509b175a7",
+        "file:boundary-codecs%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fcodec%2FScenarioRecordSuite.scala#sha256:50efb21dc9b03963a44df0c4b74204770f98c70af3a1f7c8c6b6d8a5ee3cf5cc",
+        "file:boundary-codecs%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fcodec%2FScenarioRecordPropertiesSuite.scala#sha256:a38a72326eda43af0f909be730637eab29b262240b789f23da6148de2c6f2a29"
+      ]
+    },
+    {
+      "id": "AC-019",
+      "automated": "pass",
+      "human": "not_applicable",
+      "evidenceRefs": [
+        "file:target%2Fcorgi-verify%2Fs05-canonical-verify.log#sha256:127bc0e9ca767ee9db109e5c3cd24663d46a48547b46a0d9836564674f1f4750",
+        "file:boundary-codecs%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fcodec%2FCatalogJournal.scala#sha256:6d0dd55713633e3f02ae6a932e23c9d5613bd5cba0da80260b59d8270aae91d0",
+        "file:boundary-codecs%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fcodec%2FCatalogJournalSuite.scala#sha256:902e5d5fe8524df5aa828280fd3d1a3fb822195091e38e04a3d0b223e1b5c6bd",
+        "file:boundary-codecs%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fcodec%2FCatalogJournalPropertiesSuite.scala#sha256:a359ff0bc31db6e45d2ab42fa8c3feb6a68b0f03e02c49df54cd6a1342f6ec40",
+        "file:openspec%2Fchanges%2Fintroduce-versioned-boundary-codecs%2Fspecs%2Fcatalog-command-replay%2Fspec.md#sha256:f94e8c0656bb6f1c750e481d3c5ec5365bd765672253de5c3771db8c163bde18"
+      ]
+    },
+    {
+      "id": "AC-020",
+      "automated": "pass",
+      "human": "not_applicable",
+      "evidenceRefs": [
+        "file:target%2Fcorgi-verify%2Fs05-canonical-verify.log#sha256:127bc0e9ca767ee9db109e5c3cd24663d46a48547b46a0d9836564674f1f4750",
+        "file:target%2Fcorgi-verify%2Fs05-ready-verify.json#sha256:bc529e370b5cdd7e5e546c1e8094c80befbe2e56e3d6ee01c10c46bba3d5170d",
+        "file:target%2Fcorgi-verify%2Fs05-jmh-verify.log#sha256:a1e093f43b3687c79c59abb780ddd94ebec2011eea08e47b85fab49f2f0ae7cf",
+        "file:boundary-codecs%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fcodec%2FBoundaryCodecCompatibilitySuite.scala#sha256:283196b99c21af4a089f339a62c1fb844fe1e4205e7e97299db77c87b03a8525",
+        "file:boundary-codecs%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fcodec%2FBoundaryCodecRobustnessPropertiesSuite.scala#sha256:35a95427a9746348fc7c5e69a118f1cb428ba64856d62c62bba083aa24997ebf",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FBoundaryCodecCompilerBoundarySuite.scala#sha256:235c62f7161a92051180255e293dc6cfbb9992d509f1eaeb2abd2e788689acce",
+        "file:boundary-codecs%2FREADME.md#sha256:c34af73a955d79a6c549ad64c020839b865445b1a5474328e0b8add9550d0afd",
+        "file:docs%2Fboundary-codecs-apply-evidence.md#sha256:8ee61c1be5ab806127d047f361a8c341734849d7ab8e2bedda18faa091eea381"
+      ]
+    }
+  ],
+  "verifiedAt": "2026-09-02T14:37:25.260Z"
+}

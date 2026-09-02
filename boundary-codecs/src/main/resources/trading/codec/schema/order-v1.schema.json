@@ -1,0 +1,252 @@
+{
+  "$defs": {
+    "OrderRecordV1": {
+      "additionalProperties": false,
+      "properties": {
+        "payload": {
+          "additionalProperties": false,
+          "properties": {
+            "activation": {
+              "oneOf": [
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "kind": {
+                      "const": "immediate",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "kind"
+                  ],
+                  "type": "object"
+                },
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "comparison": {
+                      "type": "string"
+                    },
+                    "kind": {
+                      "const": "fixed",
+                      "type": "string"
+                    },
+                    "reference": {
+                      "type": "string"
+                    },
+                    "triggerPriceCoordinate": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "kind",
+                    "reference",
+                    "comparison",
+                    "triggerPriceCoordinate"
+                  ],
+                  "type": "object"
+                },
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "comparison": {
+                      "type": "string"
+                    },
+                    "kind": {
+                      "const": "trailing",
+                      "type": "string"
+                    },
+                    "offsetTicks": {
+                      "type": "string"
+                    },
+                    "reference": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "kind",
+                    "reference",
+                    "comparison",
+                    "offsetTicks"
+                  ],
+                  "type": "object"
+                }
+              ]
+            },
+            "execution": {
+              "oneOf": [
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "kind": {
+                      "const": "market",
+                      "type": "string"
+                    },
+                    "timeInForce": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "kind",
+                    "timeInForce"
+                  ],
+                  "type": "object"
+                },
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "kind": {
+                      "const": "priced",
+                      "type": "string"
+                    },
+                    "liquidityConstraint": {
+                      "type": "string"
+                    },
+                    "pricing": {
+                      "oneOf": [
+                        {
+                          "additionalProperties": false,
+                          "properties": {
+                            "kind": {
+                              "const": "limit",
+                              "type": "string"
+                            },
+                            "priceCoordinate": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "kind",
+                            "priceCoordinate"
+                          ],
+                          "type": "object"
+                        },
+                        {
+                          "additionalProperties": false,
+                          "properties": {
+                            "kind": {
+                              "const": "pegged",
+                              "type": "string"
+                            },
+                            "offsetTicks": {
+                              "type": "string"
+                            },
+                            "reference": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "kind",
+                            "reference",
+                            "offsetTicks"
+                          ],
+                          "type": "object"
+                        }
+                      ]
+                    },
+                    "timeInForce": {
+                      "type": "string"
+                    },
+                    "visibility": {
+                      "oneOf": [
+                        {
+                          "additionalProperties": false,
+                          "properties": {
+                            "kind": {
+                              "const": "displayed",
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "kind"
+                          ],
+                          "type": "object"
+                        },
+                        {
+                          "additionalProperties": false,
+                          "properties": {
+                            "kind": {
+                              "const": "hidden",
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "kind"
+                          ],
+                          "type": "object"
+                        },
+                        {
+                          "additionalProperties": false,
+                          "properties": {
+                            "displayedLotsCoordinate": {
+                              "type": "string"
+                            },
+                            "kind": {
+                              "const": "iceberg",
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "kind",
+                            "displayedLotsCoordinate"
+                          ],
+                          "type": "object"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "kind",
+                    "pricing",
+                    "timeInForce",
+                    "liquidityConstraint",
+                    "visibility"
+                  ],
+                  "type": "object"
+                }
+              ]
+            },
+            "instrumentId": {
+              "type": "string"
+            },
+            "lotCoordinate": {
+              "type": "string"
+            },
+            "positionEffect": {
+              "type": "string"
+            },
+            "side": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "instrumentId",
+            "side",
+            "lotCoordinate",
+            "positionEffect",
+            "activation",
+            "execution"
+          ],
+          "type": "object"
+        },
+        "recordType": {
+          "const": "trading.order",
+          "type": "string"
+        },
+        "schemaVersion": {
+          "const": 1,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "payload",
+        "recordType",
+        "schemaVersion"
+      ],
+      "type": "object"
+    }
+  },
+  "$id": "urn:trading:codec:schema:order:v1",
+  "$ref": "#/$defs/OrderRecordV1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

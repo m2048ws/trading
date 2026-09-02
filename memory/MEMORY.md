@@ -27,6 +27,7 @@ Add an entry only after a human accepts it or a verified delivery proves it. Eve
 - [[wiki/deliveries/RFC-0002-architecture-portfolio-S-02-order-execution-scenarios|RFC-0002-architecture-portfolio/S-02-order-execution-scenarios]] — verified by sha256:cf55e7a63baf6f69f82624c3dda1f4cf8b2ca1ca742c6465fea71b43c28f7a03
 - [[wiki/deliveries/RFC-0002-architecture-portfolio-S-03-pure-risk|RFC-0002-architecture-portfolio/S-03-pure-risk]] — verified by sha256:12efcb23d09389513848f9ff1dda4f7e03a0e9eb1eba0b2648d70af0e4a5442f
 - [[wiki/deliveries/RFC-0002-architecture-portfolio-S-04-fee-policy|RFC-0002-architecture-portfolio/S-04-fee-policy]] — verified by sha256:4556f072667579a209e7a80bfe55a0a29d43cdebc873a3682893dc9479016eb7
+- [[wiki/deliveries/RFC-0002-architecture-portfolio-S-05-versioned-boundary-codecs|RFC-0002-architecture-portfolio/S-05-versioned-boundary-codecs]] — verified by sha256:21835d70b9da0a74b9b03f9a22ca11833eec287671357f63a7281dd3de69c897
 <!-- corgi:managed:end verified-deliveries -->
 
 ## Working Preferences

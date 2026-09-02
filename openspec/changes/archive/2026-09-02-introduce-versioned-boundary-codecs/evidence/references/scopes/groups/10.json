@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 3,
+  "scope": "group-10",
+  "runId": "run-2b01f872-e634-4491-acd3-b1454c94b59e",
+  "references": [
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fboundary-codec-compiler%2Fpositive%2FGridCoordinateRecordClient.scala#sha256:d6d555a5bdfc1eb8a1fdd85853e5199bfcdaaeb114b9cc39552664c9256bd4c2",
+      "sourcePath": "adversarial-boundary/src/test/resources/boundary-codec-compiler/positive/GridCoordinateRecordClient.scala",
+      "digest": "sha256:d6d555a5bdfc1eb8a1fdd85853e5199bfcdaaeb114b9cc39552664c9256bd4c2",
+      "archivePath": "references/blobs/d6d555a5bdfc1eb8a1fdd85853e5199bfcdaaeb114b9cc39552664c9256bd4c2"
+    },
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fboundary-codec-compiler%2Fpositive%2FScenarioRecordClient.scala#sha256:cf0c76f41c97a06cabcd0317c6a4da1eb60871754caf6ee414dc6acb91cc4c2f",
+      "sourcePath": "adversarial-boundary/src/test/resources/boundary-codec-compiler/positive/ScenarioRecordClient.scala",
+      "digest": "sha256:cf0c76f41c97a06cabcd0317c6a4da1eb60871754caf6ee414dc6acb91cc4c2f",
+      "archivePath": "references/blobs/cf0c76f41c97a06cabcd0317c6a4da1eb60871754caf6ee414dc6acb91cc4c2f"
+    },
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FBoundaryCodecCompilerBoundarySuite.scala#sha256:b5311cfdbecad7ad7df867ef56022bd15f42634340d02271cc0bf7d7f0dd96aa",
+      "sourcePath": "adversarial-boundary/src/test/scala/external/BoundaryCodecCompilerBoundarySuite.scala",
+      "digest": "sha256:b5311cfdbecad7ad7df867ef56022bd15f42634340d02271cc0bf7d7f0dd96aa",
+      "archivePath": "references/blobs/b5311cfdbecad7ad7df867ef56022bd15f42634340d02271cc0bf7d7f0dd96aa"
+    },
+    {
+      "reference": "file:benchmarks%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fbenchmark%2FBoundaryCodecBenchmark.scala#sha256:fe57a56898e61668c0b1f174612495dbdfb3f492f3002f197fb1e0306e76b2ab",
+      "sourcePath": "benchmarks/src/main/scala/trading/benchmark/BoundaryCodecBenchmark.scala",
+      "digest": "sha256:fe57a56898e61668c0b1f174612495dbdfb3f492f3002f197fb1e0306e76b2ab",
+      "archivePath": "references/blobs/fe57a56898e61668c0b1f174612495dbdfb3f492f3002f197fb1e0306e76b2ab"
+    },
+    {
+      "reference": "file:boundary-codecs%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fcodec%2FAllOrErrorsBatch.scala#sha256:202703aacc9474b7ba65d2a8693da255ec6e75f4289fbe02ffb16f82bfd0b504",
+      "sourcePath": "boundary-codecs/src/main/scala/trading/codec/AllOrErrorsBatch.scala",
+      "digest": "sha256:202703aacc9474b7ba65d2a8693da255ec6e75f4289fbe02ffb16f82bfd0b504",
+      "archivePath": "references/blobs/202703aacc9474b7ba65d2a8693da255ec6e75f4289fbe02ffb16f82bfd0b504"
+    },
+    {
+      "reference": "file:boundary-codecs%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fcodec%2FGridCoordinateRecords.scala#sha256:456a45488ccd46377e8040ba03d811838216086e8a0c06b6a55cbe44ac4ba506",
+      "sourcePath": "boundary-codecs/src/main/scala/trading/codec/GridCoordinateRecords.scala",
+      "digest": "sha256:456a45488ccd46377e8040ba03d811838216086e8a0c06b6a55cbe44ac4ba506",
+      "archivePath": "references/blobs/456a45488ccd46377e8040ba03d811838216086e8a0c06b6a55cbe44ac4ba506"
+    },
+    {
+      "reference": "file:boundary-codecs%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fcodec%2FScenarioRecords.scala#sha256:73ef46e7d3e973d97651a1ef4f38da144fb4895b68912855053a557f50f8013b",
+      "sourcePath": "boundary-codecs/src/main/scala/trading/codec/ScenarioRecords.scala",
+      "digest": "sha256:73ef46e7d3e973d97651a1ef4f38da144fb4895b68912855053a557f50f8013b",
+      "archivePath": "references/blobs/73ef46e7d3e973d97651a1ef4f38da144fb4895b68912855053a557f50f8013b"
+    },
+    {
+      "reference": "file:boundary-codecs%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fcodec%2FStrictJson.scala#sha256:e384a90bf38872aeb4275c7e058c2a64dcee61884a5cb66d630c04cf0719b2c7",
+      "sourcePath": "boundary-codecs/src/main/scala/trading/codec/StrictJson.scala",
+      "digest": "sha256:e384a90bf38872aeb4275c7e058c2a64dcee61884a5cb66d630c04cf0719b2c7",
+      "archivePath": "references/blobs/e384a90bf38872aeb4275c7e058c2a64dcee61884a5cb66d630c04cf0719b2c7"
+    },
+    {
+      "reference": "file:boundary-codecs%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fcodec%2FBoundaryCodecRobustnessPropertiesSuite.scala#sha256:35a95427a9746348fc7c5e69a118f1cb428ba64856d62c62bba083aa24997ebf",
+      "sourcePath": "boundary-codecs/src/test/scala/trading/codec/BoundaryCodecRobustnessPropertiesSuite.scala",
+      "digest": "sha256:35a95427a9746348fc7c5e69a118f1cb428ba64856d62c62bba083aa24997ebf",
+      "archivePath": "references/blobs/35a95427a9746348fc7c5e69a118f1cb428ba64856d62c62bba083aa24997ebf"
+    },
+    {
+      "reference": "file:boundary-codecs%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fcodec%2FGridCoordinateRecordSuite.scala#sha256:c812421f852b98889af34780029345801e8e94edb8e9f9646cc2f7c16dd6dc9e",
+      "sourcePath": "boundary-codecs/src/test/scala/trading/codec/GridCoordinateRecordSuite.scala",
+      "digest": "sha256:c812421f852b98889af34780029345801e8e94edb8e9f9646cc2f7c16dd6dc9e",
+      "archivePath": "references/blobs/c812421f852b98889af34780029345801e8e94edb8e9f9646cc2f7c16dd6dc9e"
+    },
+    {
+      "reference": "file:boundary-codecs%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fcodec%2FScenarioRecordSuite.scala#sha256:50efb21dc9b03963a44df0c4b74204770f98c70af3a1f7c8c6b6d8a5ee3cf5cc",
+      "sourcePath": "boundary-codecs/src/test/scala/trading/codec/ScenarioRecordSuite.scala",
+      "digest": "sha256:50efb21dc9b03963a44df0c4b74204770f98c70af3a1f7c8c6b6d8a5ee3cf5cc",
+      "archivePath": "references/blobs/50efb21dc9b03963a44df0c4b74204770f98c70af3a1f7c8c6b6d8a5ee3cf5cc"
+    },
+    {
+      "reference": "file:build.sbt#sha256:8ca7eb6d07cfef2edb6d38ec8602d7addee90e8b51c733b3b60702158b60ed0f",
+      "sourcePath": "build.sbt",
+      "digest": "sha256:8ca7eb6d07cfef2edb6d38ec8602d7addee90e8b51c733b3b60702158b60ed0f",
+      "archivePath": "references/blobs/8ca7eb6d07cfef2edb6d38ec8602d7addee90e8b51c733b3b60702158b60ed0f"
+    },
+    {
+      "reference": "file:memory%2Fsession-bridge.md#sha256:e8283658b700893be309e4c285687c14e84160b25d0f9d788f5242e6e0333335",
+      "sourcePath": "memory/session-bridge.md",
+      "digest": "sha256:e8283658b700893be309e4c285687c14e84160b25d0f9d788f5242e6e0333335",
+      "archivePath": "references/blobs/e8283658b700893be309e4c285687c14e84160b25d0f9d788f5242e6e0333335"
+    }
+  ]
+}

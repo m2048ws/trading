@@ -20,6 +20,9 @@ object ExecutionScenarioHasNoUpstreamMutationOrDownstream:
   object MissingRuntime:
     import trading.runtime.*
 
+  object MissingBoundaryCodecs:
+    import trading.codec.*
+
   def mutateSlice[L, M](slice: LiquiditySlice[L, M], replacement: L): Unit =
     slice.lots = replacement
     val copied = slice.copy(lots = replacement)

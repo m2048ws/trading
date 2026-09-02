@@ -1,0 +1,678 @@
+{
+  "schemaVersion": 1,
+  "changeName": "introduce-versioned-boundary-codecs",
+  "schemaName": "spec-driven",
+  "planningRevision": "sha256:e5cbb7f10509095ee6311d1369cef5fd883b8a196713a4bf817a3d2289b26da6",
+  "status": "ready",
+  "taskArtifactId": "tasks",
+  "artifactPaths": {
+    "design": {
+      "outputPath": "design.md",
+      "resolvedOutputPath": "/Users/m/src/money/.worktrees/introduce-versioned-boundary-codecs/openspec/changes/introduce-versioned-boundary-codecs/design.md",
+      "existingOutputPaths": [
+        "/Users/m/src/money/.worktrees/introduce-versioned-boundary-codecs/openspec/changes/introduce-versioned-boundary-codecs/design.md"
+      ]
+    },
+    "proposal": {
+      "outputPath": "proposal.md",
+      "resolvedOutputPath": "/Users/m/src/money/.worktrees/introduce-versioned-boundary-codecs/openspec/changes/introduce-versioned-boundary-codecs/proposal.md",
+      "existingOutputPaths": [
+        "/Users/m/src/money/.worktrees/introduce-versioned-boundary-codecs/openspec/changes/introduce-versioned-boundary-codecs/proposal.md"
+      ]
+    },
+    "specs": {
+      "outputPath": "specs/**/*.md",
+      "resolvedOutputPath": "/Users/m/src/money/.worktrees/introduce-versioned-boundary-codecs/openspec/changes/introduce-versioned-boundary-codecs/specs/**/*.md",
+      "existingOutputPaths": [
+        "/Users/m/src/money/.worktrees/introduce-versioned-boundary-codecs/openspec/changes/introduce-versioned-boundary-codecs/specs/catalog-command-replay/spec.md",
+        "/Users/m/src/money/.worktrees/introduce-versioned-boundary-codecs/openspec/changes/introduce-versioned-boundary-codecs/specs/versioned-boundary-codecs/spec.md"
+      ]
+    },
+    "tasks": {
+      "outputPath": "tasks.md",
+      "resolvedOutputPath": "/Users/m/src/money/.worktrees/introduce-versioned-boundary-codecs/openspec/changes/introduce-versioned-boundary-codecs/tasks.md",
+      "existingOutputPaths": [
+        "/Users/m/src/money/.worktrees/introduce-versioned-boundary-codecs/openspec/changes/introduce-versioned-boundary-codecs/tasks.md"
+      ]
+    }
+  },
+  "checks": [
+    {
+      "code": "ARTIFACTS_COMPLETE",
+      "status": "pass",
+      "severity": "info",
+      "message": "All planning artifacts are complete"
+    },
+    {
+      "code": "OPENSPEC_STRICT_VALIDATION",
+      "status": "pass",
+      "severity": "info",
+      "message": "OpenSpec strict validation passed"
+    },
+    {
+      "code": "TASK_ARTIFACT_CONFIGURED",
+      "status": "pass",
+      "severity": "info",
+      "message": "Task artifact 'tasks' exists in the schema"
+    },
+    {
+      "code": "TASK_ARTIFACT_UNIQUE",
+      "status": "pass",
+      "severity": "info",
+      "message": "Exactly one concrete task artifact was resolved",
+      "paths": [
+        "/Users/m/src/money/.worktrees/introduce-versioned-boundary-codecs/openspec/changes/introduce-versioned-boundary-codecs/tasks.md"
+      ]
+    },
+    {
+      "code": "TASK_GROUP_STRUCTURE",
+      "status": "pass",
+      "severity": "info",
+      "message": "12 Task Group(s) have stable unique ids",
+      "paths": [
+        "/Users/m/src/money/.worktrees/introduce-versioned-boundary-codecs/openspec/changes/introduce-versioned-boundary-codecs/tasks.md"
+      ]
+    },
+    {
+      "code": "NO_PLACEHOLDERS",
+      "status": "pass",
+      "severity": "info",
+      "message": "Planning artifacts contain no unresolved placeholders"
+    },
+    {
+      "code": "NO_OPEN_QUESTIONS",
+      "status": "pass",
+      "severity": "info",
+      "message": "No unresolved Open Questions sections remain"
+    },
+    {
+      "code": "CAPABILITY_SPEC_PARITY",
+      "status": "pass",
+      "severity": "info",
+      "message": "Proposal capability names match concrete delta specs",
+      "paths": [
+        "/Users/m/src/money/.worktrees/introduce-versioned-boundary-codecs/openspec/changes/introduce-versioned-boundary-codecs/proposal.md",
+        "/Users/m/src/money/.worktrees/introduce-versioned-boundary-codecs/openspec/changes/introduce-versioned-boundary-codecs/specs/catalog-command-replay/spec.md",
+        "/Users/m/src/money/.worktrees/introduce-versioned-boundary-codecs/openspec/changes/introduce-versioned-boundary-codecs/specs/versioned-boundary-codecs/spec.md"
+      ]
+    },
+    {
+      "code": "ARCHIVE_DELTA_COMPATIBLE",
+      "status": "pass",
+      "severity": "info",
+      "message": "Every MODIFIED requirement preserves canonical scenario identities"
+    },
+    {
+      "code": "CHANGE_CONTRACT_PRESENT",
+      "status": "pass",
+      "severity": "info",
+      "message": "Change is bound to RFC-0002-architecture-portfolio/S-05-versioned-boundary-codecs",
+      "paths": [
+        "/Users/m/src/money/.worktrees/introduce-versioned-boundary-codecs/openspec/changes/introduce-versioned-boundary-codecs/corgi/source.yaml",
+        "/Users/m/src/money/.worktrees/introduce-versioned-boundary-codecs/openspec/changes/introduce-versioned-boundary-codecs/corgi/traceability.yaml"
+      ]
+    },
+    {
+      "code": "TRACEABILITY_COMPLETE",
+      "status": "pass",
+      "severity": "info",
+      "message": "Every acceptance criterion maps to planning artifacts and Task Groups",
+      "paths": [
+        "/Users/m/src/money/.worktrees/introduce-versioned-boundary-codecs/openspec/changes/introduce-versioned-boundary-codecs/corgi/traceability.yaml"
+      ]
+    },
+    {
+      "code": "SOURCE_PROVENANCE_CURRENT",
+      "status": "pass",
+      "severity": "info",
+      "message": "RFC acceptance, branch ancestry, Slice binding, and tracker source are current",
+      "paths": []
+    }
+  ],
+  "taskGroups": [
+    {
+      "number": 1,
+      "name": "Contract, Dependency, and Baseline Gates",
+      "tasks": [
+        {
+          "id": "1.1",
+          "description": "Confirm the effective RFC/source/traceability bindings, the order/scenario Slice is closed, this package has",
+          "done": false,
+          "line": 3
+        },
+        {
+          "id": "1.2",
+          "description": "Refresh Git/source/build/Corgi state and record a clean baseline for formatting, compilation, catalog/",
+          "done": false,
+          "line": 5
+        },
+        {
+          "id": "1.3",
+          "description": "Inventory final stable IDs, catalog commands/outcomes/state/snapshot APIs, instrument definitions/assembly,",
+          "done": false,
+          "line": 7
+        }
+      ],
+      "totalTasks": 3,
+      "completedTasks": 0,
+      "status": "pending",
+      "line": 1
+    },
+    {
+      "number": 2,
+      "name": "Boundary-Codec Module and Dependency Direction",
+      "tasks": [
+        {
+          "id": "2.1",
+          "description": "Add `boundaryCodecs` in `boundary-codecs/`, artifact `trading-boundary-codecs`, package `trading.codec`, with",
+          "done": false,
+          "line": 13
+        },
+        {
+          "id": "2.2",
+          "description": "Wire root aggregation, dependency-ordered tests, completed-JAR external-artifact compilation, adversarial/",
+          "done": false,
+          "line": 17
+        },
+        {
+          "id": "2.3",
+          "description": "Add compiler guards proving every lower/pure artifact is independent of codecs and codecs cannot access fee",
+          "done": false,
+          "line": 19
+        },
+        {
+          "id": "2.4",
+          "description": "Verify no public codec API exposes parser/JSON-library types, Jackson Databind/the Jackson Scala module, Circe,",
+          "done": false,
+          "line": 22
+        }
+      ],
+      "totalTasks": 4,
+      "completedTasks": 0,
+      "status": "pending",
+      "line": 11
+    },
+    {
+      "number": 3,
+      "name": "Strict JSON, Paths, Limits, and Schema Algebra",
+      "tasks": [
+        {
+          "id": "3.1",
+          "description": "Implement immutable structured field/index paths, syntax locations, stage ordinals, typed encode/decode/limit",
+          "done": false,
+          "line": 28
+        },
+        {
+          "id": "3.2",
+          "description": "Implement validated immutable `DecodeLimits` with the documented safe defaults for payload characters/bytes,",
+          "done": false,
+          "line": 30
+        },
+        {
+          "id": "3.3",
+          "description": "Isolate the configured Jackson Core 3.x streaming parser behind one adapter that preserves raw number spelling/",
+          "done": false,
+          "line": 33
+        },
+        {
+          "id": "3.4",
+          "description": "Implement RFC 8785-compatible canonical rendering for the restricted AST, including UTF-16 member ordering,",
+          "done": false,
+          "line": 36
+        },
+        {
+          "id": "3.5",
+          "description": "Implement the package-private `WireSchema[A]`-shaped algebra for primitives, checked refinements, fields,",
+          "done": false,
+          "line": 39
+        },
+        {
+          "id": "3.6",
+          "description": "Implement interpretation of the same schema shape to local-reference JSON Schema Draft 2020-12 documents with",
+          "done": false,
+          "line": 41
+        },
+        {
+          "id": "3.7",
+          "description": "Add law/property tests for total invariant mapping identity/composition, product association under the public",
+          "done": false,
+          "line": 44
+        }
+      ],
+      "totalTasks": 7,
+      "completedTasks": 0,
+      "status": "pending",
+      "line": 26
+    },
+    {
+      "number": 4,
+      "name": "Exact Primitives, Envelope, and Version Dispatch",
+      "tasks": [
+        {
+          "id": "4.1",
+          "description": "Implement canonical signed/positive decimal-string validation with digit-limit checks before `BigInt`",
+          "done": false,
+          "line": 50
+        },
+        {
+          "id": "4.2",
+          "description": "Implement canonical reduced rational object encoding/decoding with positive denominator and zero-as-`0/1`;",
+          "done": false,
+          "line": 52
+        },
+        {
+          "id": "4.3",
+          "description": "Implement well-formed-Unicode validation and exact stable identifier construction for asset/grid/instrument/",
+          "done": false,
+          "line": 54
+        },
+        {
+          "id": "4.4",
+          "description": "Implement canonical dimension-factor and full `GridIdentity` codecs, verifying nonzero powers, uniqueness,",
+          "done": false,
+          "line": 56
+        },
+        {
+          "id": "4.5",
+          "description": "Implement validated record-type/schema-version values and the exact `{payload, recordType, schemaVersion}`",
+          "done": false,
+          "line": 58
+        },
+        {
+          "id": "4.6",
+          "description": "Add shared fixtures for reordered/whitespace input, duplicate/unknown/missing/null members, cross-alternative",
+          "done": false,
+          "line": 60
+        }
+      ],
+      "totalTasks": 6,
+      "completedTasks": 0,
+      "status": "pending",
+      "line": 48
+    },
+    {
+      "number": 5,
+      "name": "Grid-Coordinate Record Families",
+      "tasks": [
+        {
+          "id": "5.1",
+          "description": "Implement immutable Java-serialization-rejecting V1 general and asset grid-coordinate records containing only",
+          "done": false,
+          "line": 65
+        },
+        {
+          "id": "5.2",
+          "description": "Implement packing from exact `GridHandle`/`GridQuantity` relationships without lookup, quantization,",
+          "done": false,
+          "line": 67
+        },
+        {
+          "id": "5.3",
+          "description": "Implement constructor-private `DecodedGridQuantity` and `DecodedAssetGridQuantity` dependent packages without",
+          "done": false,
+          "line": 69
+        },
+        {
+          "id": "5.4",
+          "description": "Implement general dimension-first then full-grid snapshot reconstruction and asset-first/dimension-check then",
+          "done": false,
+          "line": 71
+        },
+        {
+          "id": "5.5",
+          "description": "Implement all-valid-or-indexed-errors batch reconstruction over one explicit snapshot and preserve input order",
+          "done": false,
+          "line": 73
+        },
+        {
+          "id": "5.6",
+          "description": "Add exact/property/compiler/adversarial tests for compound dimensions, signed/huge coordinates, historical",
+          "done": false,
+          "line": 75
+        }
+      ],
+      "totalTasks": 6,
+      "completedTasks": 0,
+      "status": "pending",
+      "line": 63
+    },
+    {
+      "number": 6,
+      "name": "Catalog Journal and Pure Replay",
+      "tasks": [
+        {
+          "id": "6.1",
+          "description": "Implement frozen V1 tagged representations/codecs for dimension, asset, and grid catalog commands and ordered",
+          "done": false,
+          "line": 81
+        },
+        {
+          "id": "6.2",
+          "description": "Implement Java-serialization-rejecting catalog journal entries containing positive successor revision and batch,",
+          "done": false,
+          "line": 83
+        },
+        {
+          "id": "6.3",
+          "description": "Implement entry and history structural decoding that accumulates all independent indexed wire violations before",
+          "done": false,
+          "line": 85
+        },
+        {
+          "id": "6.4",
+          "description": "Implement replay validation for fresh empty revision-zero state and sequential next-revision checking through",
+          "done": false,
+          "line": 87
+        },
+        {
+          "id": "6.5",
+          "description": "Implement final replay result plus typed revision-gap/repeat, catalog-violation, unexpected-unchanged, and",
+          "done": false,
+          "line": 89
+        },
+        {
+          "id": "6.6",
+          "description": "Add direct-model equivalence/property tests for empty history, published multi-command batches, valid duplicate",
+          "done": false,
+          "line": 91
+        },
+        {
+          "id": "6.7",
+          "description": "Add negative/API tests proving no journal path encodes or restores root/lineage tokens, handles, snapshots,",
+          "done": false,
+          "line": 94
+        }
+      ],
+      "totalTasks": 7,
+      "completedTasks": 0,
+      "status": "pending",
+      "line": 79
+    },
+    {
+      "number": 7,
+      "name": "Instrument-Definition Codec and Assembly Composition",
+      "tasks": [
+        {
+          "id": "7.1",
+          "description": "Implement frozen V1 instrument-definition products for one identity/underlying, role asset IDs, full listing",
+          "done": false,
+          "line": 99
+        },
+        {
+          "id": "7.2",
+          "description": "Implement structural JSON-to-`InstrumentDefinition` decoding that accumulates syntax/identifier/exact/local",
+          "done": false,
+          "line": 101
+        },
+        {
+          "id": "7.3",
+          "description": "Implement the separate pure decode/assemble operation using exactly one snapshot, canonical",
+          "done": false,
+          "line": 103
+        },
+        {
+          "id": "7.4",
+          "description": "Implement family batch reconstruction over one snapshot with stable indexed diagnostics and no partial success",
+          "done": false,
+          "line": 105
+        },
+        {
+          "id": "7.5",
+          "description": "Add golden/property/model tests for exact linear/inverse/quanto definitions, missing/conflicting role/grid",
+          "done": false,
+          "line": 107
+        }
+      ],
+      "totalTasks": 5,
+      "completedTasks": 0,
+      "status": "pending",
+      "line": 97
+    },
+    {
+      "number": 8,
+      "name": "Immutable Order Codec",
+      "tasks": [
+        {
+          "id": "8.1",
+          "description": "Implement frozen V1 products/coproducts for root instrument ID, side, lot coordinate, position effect, all",
+          "done": false,
+          "line": 113
+        },
+        {
+          "id": "8.2",
+          "description": "Encode each valid order alternative with only case-local fields and omit derived position change, component",
+          "done": false,
+          "line": 115
+        },
+        {
+          "id": "8.3",
+          "description": "Implement explicit-instrument decoding that checks root identity, constructs lots/prices/refinements and exact",
+          "done": false,
+          "line": 117
+        },
+        {
+          "id": "8.4",
+          "description": "Preserve structural, refinement, and order-validation failures as distinct deterministic typed stages and add",
+          "done": false,
+          "line": 119
+        },
+        {
+          "id": "8.5",
+          "description": "Add exhaustive golden/round-trip/compiler tests for every activation/execution/pricing/visibility combination,",
+          "done": false,
+          "line": 121
+        }
+      ],
+      "totalTasks": 5,
+      "completedTasks": 0,
+      "status": "pending",
+      "line": 111
+    },
+    {
+      "number": 9,
+      "name": "Hypothetical Scenario and Round-Trip Codecs",
+      "tasks": [
+        {
+          "id": "9.1",
+          "description": "Implement frozen V1 scenario records containing the order once, activation/pricing observations, ordered",
+          "done": false,
+          "line": 127
+        },
+        {
+          "id": "9.2",
+          "description": "Implement scenario encoding from retained validated assumptions/markets while preserving slice/additional-",
+          "done": false,
+          "line": 130
+        },
+        {
+          "id": "9.3",
+          "description": "Implement branch-sensitive decoding through the reconstructed order's associated evidence/resolution",
+          "done": false,
+          "line": 132
+        },
+        {
+          "id": "9.4",
+          "description": "Resolve additional conversion assets through the one supplied snapshot, construct typed source-to-settle/base/",
+          "done": false,
+          "line": 134
+        },
+        {
+          "id": "9.5",
+          "description": "Invoke canonical accumulating `OrderScenario.evaluate` only after prerequisites and retain codec/catalog/",
+          "done": false,
+          "line": 136
+        },
+        {
+          "id": "9.6",
+          "description": "Implement V1 round-trip as entry × exit only, decode eligible legs independently, and delegate held-position/",
+          "done": false,
+          "line": 138
+        },
+        {
+          "id": "9.7",
+          "description": "Add golden/property/model tests for all evidence shapes, same-shape semantic replay, multi-slice order,",
+          "done": false,
+          "line": 140
+        }
+      ],
+      "totalTasks": 7,
+      "completedTasks": 0,
+      "status": "pending",
+      "line": 125
+    },
+    {
+      "number": 10,
+      "name": "Limits, Batch Semantics, and Adversarial Robustness",
+      "tasks": [
+        {
+          "id": "10.1",
+          "description": "Verify every family checks payload/input limits before expensive allocation where practical and integer digit",
+          "done": false,
+          "line": 146
+        },
+        {
+          "id": "10.2",
+          "description": "Verify oversized batches fail once before record work, within-limit independent records accumulate in stable",
+          "done": false,
+          "line": 148
+        },
+        {
+          "id": "10.3",
+          "description": "Add controlled larger-limit profile tests proving operational policies do not change exact/schema semantics",
+          "done": false,
+          "line": 150
+        },
+        {
+          "id": "10.4",
+          "description": "Add malformed/mutation/property fuzzing for syntax, deep nesting, duplicate/unknown/null fields, Unicode,",
+          "done": false,
+          "line": 152
+        },
+        {
+          "id": "10.5",
+          "description": "Extend the shared non-published `benchmarks` JMH project with focused codec parsing/rendering/batch-",
+          "done": false,
+          "line": 154
+        }
+      ],
+      "totalTasks": 5,
+      "completedTasks": 0,
+      "status": "pending",
+      "line": 144
+    },
+    {
+      "number": 11,
+      "name": "Schemas, Compatibility, Documentation, and Scope Audit",
+      "tasks": [
+        {
+          "id": "11.1",
+          "description": "Generate and check in one stable-URN local-reference JSON Schema Draft 2020-12 document per record family V1;",
+          "done": false,
+          "line": 161
+        },
+        {
+          "id": "11.2",
+          "description": "Check in canonical JCS golden records/histories for every alternative, compare applicable renderer output",
+          "done": false,
+          "line": 164
+        },
+        {
+          "id": "11.3",
+          "description": "Add semantic round-trip properties within adequate limits and coherent snapshot/instrument contexts, plus",
+          "done": false,
+          "line": 167
+        },
+        {
+          "id": "11.4",
+          "description": "Extend project-owned Java-serialization rejection to every codec-owned record/dependent package, verify the",
+          "done": false,
+          "line": 169
+        },
+        {
+          "id": "11.5",
+          "description": "Document schema/version policy, exact encodings, limits, record-family APIs, snapshot capture/batch use,",
+          "done": false,
+          "line": 172
+        },
+        {
+          "id": "11.6",
+          "description": "Audit production code/API/resources for removed packed aliases, serialized handles/snapshots/specs, generic",
+          "done": false,
+          "line": 174
+        }
+      ],
+      "totalTasks": 6,
+      "completedTasks": 0,
+      "status": "pending",
+      "line": 159
+    },
+    {
+      "number": 12,
+      "name": "Verification Evidence and Corgi Handoff",
+      "tasks": [
+        {
+          "id": "12.1",
+          "description": "Format all affected Scala/SBT/JSON/Markdown sources and run clean compilation in dependency order.",
+          "done": false,
+          "line": 180
+        },
+        {
+          "id": "12.2",
+          "description": "Run primitive/schema/golden/unit/property/model/fuzz suites, all domain reconstruction dependents, negative",
+          "done": false,
+          "line": 181
+        },
+        {
+          "id": "12.3",
+          "description": "Inspect packaged APIs and production/test dependency reports for leaked parser/Cats validation internals,",
+          "done": false,
+          "line": 184
+        },
+        {
+          "id": "12.4",
+          "description": "Confirm the current Slice still satisfies strict planning/source/traceability integrity, perform the final",
+          "done": false,
+          "line": 188
+        },
+        {
+          "id": "12.5",
+          "description": "Prepare the final acknowledged Task Group commit and evidence for separate canonical Verify, human review,",
+          "done": false,
+          "line": 191
+        }
+      ],
+      "totalTasks": 5,
+      "completedTasks": 0,
+      "status": "pending",
+      "line": 178
+    }
+  ],
+  "contract": {
+    "schemaVersion": 1,
+    "pathConvention": "project-relative-posix",
+    "kind": "rfc-slice",
+    "deliveryRef": "RFC-0002-architecture-portfolio/S-05-versioned-boundary-codecs",
+    "rfcId": "RFC-0002-architecture-portfolio",
+    "rfcDigest": "sha256:a00c0cf1e3a4440bfce7dc828ad4ac119414f10d72e8d8c52c613403ef5977e2",
+    "acceptedCommit": "7b6f7a58f4dcbb8fb4bbdf3a8ba74ba66f222cce",
+    "sliceId": "S-05-versioned-boundary-codecs",
+    "acceptanceIds": [
+      "AC-017",
+      "AC-018",
+      "AC-019",
+      "AC-020"
+    ],
+    "sourcePath": "openspec/changes/introduce-versioned-boundary-codecs/corgi/source.yaml",
+    "sourceDigest": "sha256:625809aa552c0c3f4efd1a8e2d9982c76414f82ce405674ce6f91b475807cceb",
+    "traceabilityPath": "openspec/changes/introduce-versioned-boundary-codecs/corgi/traceability.yaml",
+    "traceabilityDigest": "sha256:c7545d03bf6039543fee8aab7947aa9c10c46923f8e0ee9cc716a12ab66ac44f",
+    "tracker": {
+      "provider": "github",
+      "idempotencyKey": "e77b236d5f666a87238069c9a1b46c085aa02562343e877f061358dea5aea96e",
+      "issue": {
+        "id": "10",
+        "url": "https://github.com/m2048ws/trading/issues/10"
+      }
+    }
+  }
+}

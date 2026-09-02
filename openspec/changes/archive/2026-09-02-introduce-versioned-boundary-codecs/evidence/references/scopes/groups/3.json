@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 3,
+  "scope": "group-3",
+  "runId": "run-2b01f872-e634-4491-acd3-b1454c94b59e",
+  "references": [
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fboundary-codec-compiler%2Fnegative%2FCodecInternalsAreUnavailable.scala#sha256:88cd0d3ffbdfa1fd1131c479a0a62612e7a790cfc14ede3793e3e408b290dd9c",
+      "sourcePath": "adversarial-boundary/src/test/resources/boundary-codec-compiler/negative/CodecInternalsAreUnavailable.scala",
+      "digest": "sha256:88cd0d3ffbdfa1fd1131c479a0a62612e7a790cfc14ede3793e3e408b290dd9c",
+      "archivePath": "references/blobs/88cd0d3ffbdfa1fd1131c479a0a62612e7a790cfc14ede3793e3e408b290dd9c"
+    },
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FBoundaryCodecCompilerBoundarySuite.scala#sha256:fc42c0279d237651ecfc0583fac7694ac8b752e2de9edd2e3f42f735496b3c16",
+      "sourcePath": "adversarial-boundary/src/test/scala/external/BoundaryCodecCompilerBoundarySuite.scala",
+      "digest": "sha256:fc42c0279d237651ecfc0583fac7694ac8b752e2de9edd2e3f42f735496b3c16",
+      "archivePath": "references/blobs/fc42c0279d237651ecfc0583fac7694ac8b752e2de9edd2e3f42f735496b3c16"
+    },
+    {
+      "reference": "file:boundary-codecs%2FREADME.md#sha256:e595e8ceced926300a2f29fc8e6fa29ba65bc20139decbe1e9d8e08c9e5ec4e4",
+      "sourcePath": "boundary-codecs/README.md",
+      "digest": "sha256:e595e8ceced926300a2f29fc8e6fa29ba65bc20139decbe1e9d8e08c9e5ec4e4",
+      "archivePath": "references/blobs/e595e8ceced926300a2f29fc8e6fa29ba65bc20139decbe1e9d8e08c9e5ec4e4"
+    },
+    {
+      "reference": "file:boundary-codecs%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fcodec%2FJsonSchemaDocument.scala#sha256:99b137dc81b4cd3d0d24cb6349f7eee4864193fd8aed912717e00de2a7bf7355",
+      "sourcePath": "boundary-codecs/src/main/scala/trading/codec/JsonSchemaDocument.scala",
+      "digest": "sha256:99b137dc81b4cd3d0d24cb6349f7eee4864193fd8aed912717e00de2a7bf7355",
+      "archivePath": "references/blobs/99b137dc81b4cd3d0d24cb6349f7eee4864193fd8aed912717e00de2a7bf7355"
+    },
+    {
+      "reference": "file:boundary-codecs%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fcodec%2FStrictJson.scala#sha256:f241f9d583d0842ec7461a9db3e3e2909cfb99b15fc04d201f4219997973e5b3",
+      "sourcePath": "boundary-codecs/src/main/scala/trading/codec/StrictJson.scala",
+      "digest": "sha256:f241f9d583d0842ec7461a9db3e3e2909cfb99b15fc04d201f4219997973e5b3",
+      "archivePath": "references/blobs/f241f9d583d0842ec7461a9db3e3e2909cfb99b15fc04d201f4219997973e5b3"
+    },
+    {
+      "reference": "file:boundary-codecs%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fcodec%2FWireSchema.scala#sha256:0afed257d18b5a35344708dc441ea88c22d02261f7abf8c21b0dde1f5de9e8e0",
+      "sourcePath": "boundary-codecs/src/main/scala/trading/codec/WireSchema.scala",
+      "digest": "sha256:0afed257d18b5a35344708dc441ea88c22d02261f7abf8c21b0dde1f5de9e8e0",
+      "archivePath": "references/blobs/0afed257d18b5a35344708dc441ea88c22d02261f7abf8c21b0dde1f5de9e8e0"
+    },
+    {
+      "reference": "file:boundary-codecs%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fcodec%2FWireDiagnosticsSuite.scala#sha256:d57355762a6ae440dd328d67d0578c0ba608ab24b3ad4c9e7c4762418df48b12",
+      "sourcePath": "boundary-codecs/src/test/scala/trading/codec/WireDiagnosticsSuite.scala",
+      "digest": "sha256:d57355762a6ae440dd328d67d0578c0ba608ab24b3ad4c9e7c4762418df48b12",
+      "archivePath": "references/blobs/d57355762a6ae440dd328d67d0578c0ba608ab24b3ad4c9e7c4762418df48b12"
+    },
+    {
+      "reference": "file:boundary-codecs%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fcodec%2FWireSchemaLawsSuite.scala#sha256:85346e06effababd93632dcaaccb20542aeb61655bc64b7af53d2887fc6bf32c",
+      "sourcePath": "boundary-codecs/src/test/scala/trading/codec/WireSchemaLawsSuite.scala",
+      "digest": "sha256:85346e06effababd93632dcaaccb20542aeb61655bc64b7af53d2887fc6bf32c",
+      "archivePath": "references/blobs/85346e06effababd93632dcaaccb20542aeb61655bc64b7af53d2887fc6bf32c"
+    },
+    {
+      "reference": "file:build.sbt#sha256:dfb3be3da2c8923e336de4e879994ee3ad43f7dc6da190f9610f8a2583256457",
+      "sourcePath": "build.sbt",
+      "digest": "sha256:dfb3be3da2c8923e336de4e879994ee3ad43f7dc6da190f9610f8a2583256457",
+      "archivePath": "references/blobs/dfb3be3da2c8923e336de4e879994ee3ad43f7dc6da190f9610f8a2583256457"
+    },
+    {
+      "reference": "file:openspec%2Fchanges%2Fintroduce-versioned-boundary-codecs%2Fcorgi%2Ftraceability.yaml#sha256:c7545d03bf6039543fee8aab7947aa9c10c46923f8e0ee9cc716a12ab66ac44f",
+      "sourcePath": "openspec/changes/introduce-versioned-boundary-codecs/corgi/traceability.yaml",
+      "digest": "sha256:c7545d03bf6039543fee8aab7947aa9c10c46923f8e0ee9cc716a12ab66ac44f",
+      "archivePath": "references/blobs/c7545d03bf6039543fee8aab7947aa9c10c46923f8e0ee9cc716a12ab66ac44f"
+    },
+    {
+      "reference": "file:openspec%2Fchanges%2Fintroduce-versioned-boundary-codecs%2Fimplementation-notes%2Ftask-group-3.md#sha256:e0c457343d340bf556268e19d36f70480cbbb8678b009511911876cf793d57d4",
+      "sourcePath": "openspec/changes/introduce-versioned-boundary-codecs/implementation-notes/task-group-3.md",
+      "digest": "sha256:e0c457343d340bf556268e19d36f70480cbbb8678b009511911876cf793d57d4",
+      "archivePath": "references/blobs/e0c457343d340bf556268e19d36f70480cbbb8678b009511911876cf793d57d4"
+    },
+    {
+      "reference": "file:openspec%2Fchanges%2Fintroduce-versioned-boundary-codecs%2Ftasks.md#sha256:43c12a4cfb46ad1f54a5a1e7b64d0eb82b224deb1798014bbad985c40c5c34d2",
+      "sourcePath": "openspec/changes/introduce-versioned-boundary-codecs/tasks.md",
+      "digest": "sha256:43c12a4cfb46ad1f54a5a1e7b64d0eb82b224deb1798014bbad985c40c5c34d2",
+      "archivePath": "references/blobs/43c12a4cfb46ad1f54a5a1e7b64d0eb82b224deb1798014bbad985c40c5c34d2"
+    }
+  ]
+}
