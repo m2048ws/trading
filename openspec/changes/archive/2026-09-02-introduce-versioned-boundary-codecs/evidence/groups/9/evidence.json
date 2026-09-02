@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 3,
+  "groupId": "9",
+  "checks": [
+    {
+      "name": "focused scenario codec and compiler boundaries: 82 boundary tests and 16 compiler-boundary tests passed",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:boundary-codecs%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fcodec%2FScenarioRecordSuite.scala#sha256:8e5443fc09c0b50cc75320e157a666d103453d76aaf8af2a3f9cf3e42ee6efda",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FBoundaryCodecCompilerBoundarySuite.scala#sha256:ed71b65a7430186be502b86ceed8014c169b7c880720c0b9744be1fde014687c"
+      ]
+    },
+    {
+      "name": "repository and focused Scala/SBT formatting checks passed",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:.scalafmt.conf#sha256:efecb2eaad5b314fc053f173f899c8c87f9a468432c8444593c0dcb386a3207f",
+        "file:build.sbt#sha256:dfb3be3da2c8923e336de4e879994ee3ad43f7dc6da190f9610f8a2583256457"
+      ]
+    },
+    {
+      "name": "full repository regression: 1011 tests passed",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:memory%2Fsession-bridge.md#sha256:b9360d63ad006f44a48d4666f82c4e60f2c268902a6613becc55b1a74c5e5824"
+      ]
+    }
+  ],
+  "automatedReview": {
+    "verdict": "pass",
+    "findings": []
+  },
+  "artifacts": [
+    "file:boundary-codecs%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fcodec%2FScenarioRecords.scala#sha256:4f61fdfd5f2dd946eff94805425cbe69ef645068732802d88f2107c5eb3c37c7",
+    "file:boundary-codecs%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fcodec%2FScenarioRecordSuite.scala#sha256:8e5443fc09c0b50cc75320e157a666d103453d76aaf8af2a3f9cf3e42ee6efda",
+    "file:boundary-codecs%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fcodec%2FScenarioRecordPropertiesSuite.scala#sha256:a38a72326eda43af0f909be730637eab29b262240b789f23da6148de2c6f2a29",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fboundary-codec-compiler%2Fpositive%2FScenarioRecordClient.scala#sha256:9f185c90442ef293c9eb7bf78103263f8f5ce91f167d26701be7c66ab0a38f97",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fboundary-codec-compiler%2Fnegative%2FScenarioRecordAuthorityEscapesAreUnavailable.scala#sha256:7b3dd9d257a62c4f6abb25160031278b00eb06793339f1cad26a0f1f99928685"
+  ],
+  "summary": "Added frozen V1 hypothetical order-scenario and entry-times-exit round-trip codecs with typed branch-sensitive evidence replay, one-snapshot exact market reconstruction, canonical scenario validation, deterministic staged failures, and golden/property/model/compiler coverage."
+}

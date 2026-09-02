@@ -1,0 +1,151 @@
+{
+  "schemaVersion": 3,
+  "scope": "group-11",
+  "runId": "run-2b01f872-e634-4491-acd3-b1454c94b59e",
+  "references": [
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FBoundaryCodecCompilerBoundarySuite.scala#sha256:235c62f7161a92051180255e293dc6cfbb9992d509f1eaeb2abd2e788689acce",
+      "sourcePath": "adversarial-boundary/src/test/scala/external/BoundaryCodecCompilerBoundarySuite.scala",
+      "digest": "sha256:235c62f7161a92051180255e293dc6cfbb9992d509f1eaeb2abd2e788689acce",
+      "archivePath": "references/blobs/235c62f7161a92051180255e293dc6cfbb9992d509f1eaeb2abd2e788689acce"
+    },
+    {
+      "reference": "file:boundary-codecs%2FREADME.md#sha256:c34af73a955d79a6c549ad64c020839b865445b1a5474328e0b8add9550d0afd",
+      "sourcePath": "boundary-codecs/README.md",
+      "digest": "sha256:c34af73a955d79a6c549ad64c020839b865445b1a5474328e0b8add9550d0afd",
+      "archivePath": "references/blobs/c34af73a955d79a6c549ad64c020839b865445b1a5474328e0b8add9550d0afd"
+    },
+    {
+      "reference": "file:boundary-codecs%2Fsrc%2Fmain%2Fresources%2Ftrading%2Fcodec%2Fschema%2Fasset-grid-coordinate-v1.schema.json#sha256:d5338b574797b2f06823393becc6964df22abe0792df385861caacabd593e81b",
+      "sourcePath": "boundary-codecs/src/main/resources/trading/codec/schema/asset-grid-coordinate-v1.schema.json",
+      "digest": "sha256:d5338b574797b2f06823393becc6964df22abe0792df385861caacabd593e81b",
+      "archivePath": "references/blobs/d5338b574797b2f06823393becc6964df22abe0792df385861caacabd593e81b"
+    },
+    {
+      "reference": "file:boundary-codecs%2Fsrc%2Fmain%2Fresources%2Ftrading%2Fcodec%2Fschema%2Fcatalog-journal-entry-v1.schema.json#sha256:d8a257b45f42195ede3a53a40155ce65c8727f6846b35131455844da0e60fca7",
+      "sourcePath": "boundary-codecs/src/main/resources/trading/codec/schema/catalog-journal-entry-v1.schema.json",
+      "digest": "sha256:d8a257b45f42195ede3a53a40155ce65c8727f6846b35131455844da0e60fca7",
+      "archivePath": "references/blobs/d8a257b45f42195ede3a53a40155ce65c8727f6846b35131455844da0e60fca7"
+    },
+    {
+      "reference": "file:boundary-codecs%2Fsrc%2Fmain%2Fresources%2Ftrading%2Fcodec%2Fschema%2Fgeneral-grid-coordinate-v1.schema.json#sha256:5ad159df189b5a16aaf5dd504977a6116f4d34a6b8c6a4821969f1cfde1089a7",
+      "sourcePath": "boundary-codecs/src/main/resources/trading/codec/schema/general-grid-coordinate-v1.schema.json",
+      "digest": "sha256:5ad159df189b5a16aaf5dd504977a6116f4d34a6b8c6a4821969f1cfde1089a7",
+      "archivePath": "references/blobs/5ad159df189b5a16aaf5dd504977a6116f4d34a6b8c6a4821969f1cfde1089a7"
+    },
+    {
+      "reference": "file:boundary-codecs%2Fsrc%2Fmain%2Fresources%2Ftrading%2Fcodec%2Fschema%2Finstrument-definition-v1.schema.json#sha256:e6c7e3ee3f72d67e13ae209e83a5e960da0059d724d2ca829b58129a3ab71abe",
+      "sourcePath": "boundary-codecs/src/main/resources/trading/codec/schema/instrument-definition-v1.schema.json",
+      "digest": "sha256:e6c7e3ee3f72d67e13ae209e83a5e960da0059d724d2ca829b58129a3ab71abe",
+      "archivePath": "references/blobs/e6c7e3ee3f72d67e13ae209e83a5e960da0059d724d2ca829b58129a3ab71abe"
+    },
+    {
+      "reference": "file:boundary-codecs%2Fsrc%2Fmain%2Fresources%2Ftrading%2Fcodec%2Fschema%2Forder-scenario-v1.schema.json#sha256:30eaa0427333f76c8e0ad4759fe9cfbcae2740a593072efb2f36a248dfc9ca89",
+      "sourcePath": "boundary-codecs/src/main/resources/trading/codec/schema/order-scenario-v1.schema.json",
+      "digest": "sha256:30eaa0427333f76c8e0ad4759fe9cfbcae2740a593072efb2f36a248dfc9ca89",
+      "archivePath": "references/blobs/30eaa0427333f76c8e0ad4759fe9cfbcae2740a593072efb2f36a248dfc9ca89"
+    },
+    {
+      "reference": "file:boundary-codecs%2Fsrc%2Fmain%2Fresources%2Ftrading%2Fcodec%2Fschema%2Forder-v1.schema.json#sha256:106258fe9173d9f4f0aab6ad1a0406b81bb7fa4b7988f852852f9db24897bdf7",
+      "sourcePath": "boundary-codecs/src/main/resources/trading/codec/schema/order-v1.schema.json",
+      "digest": "sha256:106258fe9173d9f4f0aab6ad1a0406b81bb7fa4b7988f852852f9db24897bdf7",
+      "archivePath": "references/blobs/106258fe9173d9f4f0aab6ad1a0406b81bb7fa4b7988f852852f9db24897bdf7"
+    },
+    {
+      "reference": "file:boundary-codecs%2Fsrc%2Fmain%2Fresources%2Ftrading%2Fcodec%2Fschema%2FREADME.md#sha256:87cd2e5bb6cc15248fb4443cc17285d34cdd47d8a8990a3b243b3b3233c2615d",
+      "sourcePath": "boundary-codecs/src/main/resources/trading/codec/schema/README.md",
+      "digest": "sha256:87cd2e5bb6cc15248fb4443cc17285d34cdd47d8a8990a3b243b3b3233c2615d",
+      "archivePath": "references/blobs/87cd2e5bb6cc15248fb4443cc17285d34cdd47d8a8990a3b243b3b3233c2615d"
+    },
+    {
+      "reference": "file:boundary-codecs%2Fsrc%2Fmain%2Fresources%2Ftrading%2Fcodec%2Fschema%2Fround-trip-scenario-v1.schema.json#sha256:db771e459b55e64024fc9a05341411a45e2ea095ab6174064b7cc2876d26b661",
+      "sourcePath": "boundary-codecs/src/main/resources/trading/codec/schema/round-trip-scenario-v1.schema.json",
+      "digest": "sha256:db771e459b55e64024fc9a05341411a45e2ea095ab6174064b7cc2876d26b661",
+      "archivePath": "references/blobs/db771e459b55e64024fc9a05341411a45e2ea095ab6174064b7cc2876d26b661"
+    },
+    {
+      "reference": "file:boundary-codecs%2Fsrc%2Ftest%2Fresources%2Ftrading%2Fcodec%2Fgolden%2Fasset-grid-coordinate-v1.json#sha256:cbc3ede37c3480fbd1c7aab52afc0c93590ce50d8275ab7d8b8683f9a6f09800",
+      "sourcePath": "boundary-codecs/src/test/resources/trading/codec/golden/asset-grid-coordinate-v1.json",
+      "digest": "sha256:cbc3ede37c3480fbd1c7aab52afc0c93590ce50d8275ab7d8b8683f9a6f09800",
+      "archivePath": "references/blobs/cbc3ede37c3480fbd1c7aab52afc0c93590ce50d8275ab7d8b8683f9a6f09800"
+    },
+    {
+      "reference": "file:boundary-codecs%2Fsrc%2Ftest%2Fresources%2Ftrading%2Fcodec%2Fgolden%2Fcatalog-journal-history-v1.jsonl#sha256:f3d141c1bccfbe21fd0c98e659829644be516a6642eb83f69506a5458e1a1474",
+      "sourcePath": "boundary-codecs/src/test/resources/trading/codec/golden/catalog-journal-history-v1.jsonl",
+      "digest": "sha256:f3d141c1bccfbe21fd0c98e659829644be516a6642eb83f69506a5458e1a1474",
+      "archivePath": "references/blobs/f3d141c1bccfbe21fd0c98e659829644be516a6642eb83f69506a5458e1a1474"
+    },
+    {
+      "reference": "file:boundary-codecs%2Fsrc%2Ftest%2Fresources%2Ftrading%2Fcodec%2Fgolden%2Fgeneral-grid-coordinate-v1.json#sha256:c121e88b0fda949949dc8ab4c7fed0954178b8236c5541c2c70383b8840c3f94",
+      "sourcePath": "boundary-codecs/src/test/resources/trading/codec/golden/general-grid-coordinate-v1.json",
+      "digest": "sha256:c121e88b0fda949949dc8ab4c7fed0954178b8236c5541c2c70383b8840c3f94",
+      "archivePath": "references/blobs/c121e88b0fda949949dc8ab4c7fed0954178b8236c5541c2c70383b8840c3f94"
+    },
+    {
+      "reference": "file:boundary-codecs%2Fsrc%2Ftest%2Fresources%2Ftrading%2Fcodec%2Fgolden%2Finstrument-definition-v1.json#sha256:8b5bff2c810feeab3a0189ddafc46d976dd77e0e70582d59071865deeb5b8b3d",
+      "sourcePath": "boundary-codecs/src/test/resources/trading/codec/golden/instrument-definition-v1.json",
+      "digest": "sha256:8b5bff2c810feeab3a0189ddafc46d976dd77e0e70582d59071865deeb5b8b3d",
+      "archivePath": "references/blobs/8b5bff2c810feeab3a0189ddafc46d976dd77e0e70582d59071865deeb5b8b3d"
+    },
+    {
+      "reference": "file:boundary-codecs%2Fsrc%2Ftest%2Fresources%2Ftrading%2Fcodec%2Fgolden%2Forder-scenarios-v1.jsonl#sha256:e691d82333f5c5383fad07fbc163731fdea7adb3ccddeeed4f1788e752b7ed02",
+      "sourcePath": "boundary-codecs/src/test/resources/trading/codec/golden/order-scenarios-v1.jsonl",
+      "digest": "sha256:e691d82333f5c5383fad07fbc163731fdea7adb3ccddeeed4f1788e752b7ed02",
+      "archivePath": "references/blobs/e691d82333f5c5383fad07fbc163731fdea7adb3ccddeeed4f1788e752b7ed02"
+    },
+    {
+      "reference": "file:boundary-codecs%2Fsrc%2Ftest%2Fresources%2Ftrading%2Fcodec%2Fgolden%2Forders-v1.jsonl#sha256:4a09892d2caeb8eef2d8416389c4407ed82bcc7cabb0d1713178520c793322b7",
+      "sourcePath": "boundary-codecs/src/test/resources/trading/codec/golden/orders-v1.jsonl",
+      "digest": "sha256:4a09892d2caeb8eef2d8416389c4407ed82bcc7cabb0d1713178520c793322b7",
+      "archivePath": "references/blobs/4a09892d2caeb8eef2d8416389c4407ed82bcc7cabb0d1713178520c793322b7"
+    },
+    {
+      "reference": "file:boundary-codecs%2Fsrc%2Ftest%2Fresources%2Ftrading%2Fcodec%2Fgolden%2FREADME.md#sha256:bd75372772d11b6a00803400c721f0c958deb9660e287585378156fa2abbf664",
+      "sourcePath": "boundary-codecs/src/test/resources/trading/codec/golden/README.md",
+      "digest": "sha256:bd75372772d11b6a00803400c721f0c958deb9660e287585378156fa2abbf664",
+      "archivePath": "references/blobs/bd75372772d11b6a00803400c721f0c958deb9660e287585378156fa2abbf664"
+    },
+    {
+      "reference": "file:boundary-codecs%2Fsrc%2Ftest%2Fresources%2Ftrading%2Fcodec%2Fgolden%2Fround-trip-scenario-v1.json#sha256:ac98b54bd90b6aad765c3e85c4fb07c448a5026378d986048560457b312d2a7e",
+      "sourcePath": "boundary-codecs/src/test/resources/trading/codec/golden/round-trip-scenario-v1.json",
+      "digest": "sha256:ac98b54bd90b6aad765c3e85c4fb07c448a5026378d986048560457b312d2a7e",
+      "archivePath": "references/blobs/ac98b54bd90b6aad765c3e85c4fb07c448a5026378d986048560457b312d2a7e"
+    },
+    {
+      "reference": "file:boundary-codecs%2Fsrc%2Ftest%2Fresources%2Ftrading%2Fcodec%2Finvalid%2Fgeneral-grid-coordinate-missing-payload.json#sha256:b8df4c8081c526ce8b263b08b8c54683e787fcabac6032c390ff832116573bb3",
+      "sourcePath": "boundary-codecs/src/test/resources/trading/codec/invalid/general-grid-coordinate-missing-payload.json",
+      "digest": "sha256:b8df4c8081c526ce8b263b08b8c54683e787fcabac6032c390ff832116573bb3",
+      "archivePath": "references/blobs/b8df4c8081c526ce8b263b08b8c54683e787fcabac6032c390ff832116573bb3"
+    },
+    {
+      "reference": "file:boundary-codecs%2Fsrc%2Ftest%2Fresources%2Ftrading%2Fcodec%2Finvalid%2Fgeneral-grid-coordinate-unknown-version.json#sha256:5cc83b71f272d78102845de681e489ec3c719c7b518de68fe59e87a0679c7458",
+      "sourcePath": "boundary-codecs/src/test/resources/trading/codec/invalid/general-grid-coordinate-unknown-version.json",
+      "digest": "sha256:5cc83b71f272d78102845de681e489ec3c719c7b518de68fe59e87a0679c7458",
+      "archivePath": "references/blobs/5cc83b71f272d78102845de681e489ec3c719c7b518de68fe59e87a0679c7458"
+    },
+    {
+      "reference": "file:boundary-codecs%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fcodec%2FBoundaryCodecCompatibilityResources.scala#sha256:a1667167a2c1213335387bcd34ec1b74726449eeb0b56d4bf85e7345ba2593cf",
+      "sourcePath": "boundary-codecs/src/test/scala/trading/codec/BoundaryCodecCompatibilityResources.scala",
+      "digest": "sha256:a1667167a2c1213335387bcd34ec1b74726449eeb0b56d4bf85e7345ba2593cf",
+      "archivePath": "references/blobs/a1667167a2c1213335387bcd34ec1b74726449eeb0b56d4bf85e7345ba2593cf"
+    },
+    {
+      "reference": "file:boundary-codecs%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fcodec%2FBoundaryCodecCompatibilitySuite.scala#sha256:283196b99c21af4a089f339a62c1fb844fe1e4205e7e97299db77c87b03a8525",
+      "sourcePath": "boundary-codecs/src/test/scala/trading/codec/BoundaryCodecCompatibilitySuite.scala",
+      "digest": "sha256:283196b99c21af4a089f339a62c1fb844fe1e4205e7e97299db77c87b03a8525",
+      "archivePath": "references/blobs/283196b99c21af4a089f339a62c1fb844fe1e4205e7e97299db77c87b03a8525"
+    },
+    {
+      "reference": "file:build.sbt#sha256:8ca7eb6d07cfef2edb6d38ec8602d7addee90e8b51c733b3b60702158b60ed0f",
+      "sourcePath": "build.sbt",
+      "digest": "sha256:8ca7eb6d07cfef2edb6d38ec8602d7addee90e8b51c733b3b60702158b60ed0f",
+      "archivePath": "references/blobs/8ca7eb6d07cfef2edb6d38ec8602d7addee90e8b51c733b3b60702158b60ed0f"
+    },
+    {
+      "reference": "file:memory%2Fsession-bridge.md#sha256:1e3943e351a1d380cc66dc9ebce1980b9f58b5553f2491a8ec51b5183d73b286",
+      "sourcePath": "memory/session-bridge.md",
+      "digest": "sha256:1e3943e351a1d380cc66dc9ebce1980b9f58b5553f2491a8ec51b5183d73b286",
+      "archivePath": "references/blobs/1e3943e351a1d380cc66dc9ebce1980b9f58b5553f2491a8ec51b5183d73b286"
+    }
+  ]
+}

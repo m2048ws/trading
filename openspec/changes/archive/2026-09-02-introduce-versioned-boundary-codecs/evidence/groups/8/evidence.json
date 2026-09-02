@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 3,
+  "groupId": "8",
+  "checks": [
+    {
+      "name": "immutable-order exhaustive runtime and property tests",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:boundary-codecs%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fcodec%2FOrderRecordSuite.scala#sha256:cad84d3e16ffc6701e325e5fdf9bf487a9053cc3e4362dd071357599d48230f0",
+        "file:boundary-codecs%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fcodec%2FOrderRecordPropertiesSuite.scala#sha256:1195351d35c79dc0428aacfea3c9feb47458be7fc8ffa9706e7ab12509b175a7"
+      ]
+    },
+    {
+      "name": "completed-JAR compiler bytecode and authority boundaries",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FBoundaryCodecCompilerBoundarySuite.scala#sha256:33f55bc03232c21eb4fc3fd3c7b0f229de9f12a2cdd30e78bad572f6b803a33b",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fboundary-codec-compiler%2Fnegative%2FOrderRecordAuthorityEscapesAreUnavailable.scala#sha256:60c49b11579968d91293ba107e62c7ac52330b43056e19a9e9fe4f584c3f98f5",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fboundary-codec-compiler%2Fpositive%2FOrderRecordClient.scala#sha256:09e291d12643fa4388e337330dde9efb7accf242298c23c25c90a401d9f35686"
+      ]
+    },
+    {
+      "name": "formatting clean compilation and 1002-test repository gate",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:openspec%2Fchanges%2Fintroduce-versioned-boundary-codecs%2Fimplementation-notes%2Ftask-group-8.md#sha256:a83a7a2e01c715fd8f811a7332716c438227a7c8cf776f01f1cb01c77e8a634a"
+      ]
+    },
+    {
+      "name": "all 12 deterministic strict readiness checks",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:openspec%2Fchanges%2Fintroduce-versioned-boundary-codecs%2Fimplementation-notes%2Ftask-group-8.md#sha256:a83a7a2e01c715fd8f811a7332716c438227a7c8cf776f01f1cb01c77e8a634a"
+      ]
+    }
+  ],
+  "automatedReview": {
+    "verdict": "pass",
+    "findings": []
+  },
+  "artifacts": [
+    "file:boundary-codecs%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fcodec%2FOrderRecord.scala#sha256:8526f859685b4fd137231e1ba0cf81ea0dfb7aefc3e423cea66de32cf2cc5e77",
+    "file:boundary-codecs%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fcodec%2FOrderRecordSuite.scala#sha256:cad84d3e16ffc6701e325e5fdf9bf487a9053cc3e4362dd071357599d48230f0",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FBoundaryCodecCompilerBoundarySuite.scala#sha256:33f55bc03232c21eb4fc3fd3c7b0f229de9f12a2cdd30e78bad572f6b803a33b",
+    "file:openspec%2Fchanges%2Fintroduce-versioned-boundary-codecs%2Fimplementation-notes%2Ftask-group-8.md#sha256:a83a7a2e01c715fd8f811a7332716c438227a7c8cf776f01f1cb01c77e8a634a"
+  ],
+  "summary": "Group 8 freezes the immutable order V1 coproduct, reconstructs only through one explicit assembled instrument and owning smart constructors, derives signed positions through canonical intent/order creation, retains deterministic structural/refinement/validation stages and atomic indexed batches, and closes the automated review's JVM-constructor finding before a finding-free final pass."
+}

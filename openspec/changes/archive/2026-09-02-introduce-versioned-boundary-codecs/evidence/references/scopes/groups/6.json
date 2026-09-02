@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 3,
+  "scope": "group-6",
+  "runId": "run-2b01f872-e634-4491-acd3-b1454c94b59e",
+  "references": [
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fboundary-codec-compiler%2Fnegative%2FCatalogJournalAuthorityEscapesAreUnavailable.scala#sha256:223397338eb1317041c8468527eff6c8cfca5bab6bc077c658e1a8b520936ead",
+      "sourcePath": "adversarial-boundary/src/test/resources/boundary-codec-compiler/negative/CatalogJournalAuthorityEscapesAreUnavailable.scala",
+      "digest": "sha256:223397338eb1317041c8468527eff6c8cfca5bab6bc077c658e1a8b520936ead",
+      "archivePath": "references/blobs/223397338eb1317041c8468527eff6c8cfca5bab6bc077c658e1a8b520936ead"
+    },
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FBoundaryCodecCompilerBoundarySuite.scala#sha256:84a5ea7e06b348468ed987587604638e19edfdd030e1dd5d6b372ff383131448",
+      "sourcePath": "adversarial-boundary/src/test/scala/external/BoundaryCodecCompilerBoundarySuite.scala",
+      "digest": "sha256:84a5ea7e06b348468ed987587604638e19edfdd030e1dd5d6b372ff383131448",
+      "archivePath": "references/blobs/84a5ea7e06b348468ed987587604638e19edfdd030e1dd5d6b372ff383131448"
+    },
+    {
+      "reference": "file:boundary-codecs%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fcodec%2FCatalogJournal.scala#sha256:4d81fa247170f4e23ee3ad9999458f0d8746b5bd74ead89cdd4b29d7f8dc5408",
+      "sourcePath": "boundary-codecs/src/main/scala/trading/codec/CatalogJournal.scala",
+      "digest": "sha256:4d81fa247170f4e23ee3ad9999458f0d8746b5bd74ead89cdd4b29d7f8dc5408",
+      "archivePath": "references/blobs/4d81fa247170f4e23ee3ad9999458f0d8746b5bd74ead89cdd4b29d7f8dc5408"
+    },
+    {
+      "reference": "file:boundary-codecs%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fcodec%2FCatalogJournalPropertiesSuite.scala#sha256:a359ff0bc31db6e45d2ab42fa8c3feb6a68b0f03e02c49df54cd6a1342f6ec40",
+      "sourcePath": "boundary-codecs/src/test/scala/trading/codec/CatalogJournalPropertiesSuite.scala",
+      "digest": "sha256:a359ff0bc31db6e45d2ab42fa8c3feb6a68b0f03e02c49df54cd6a1342f6ec40",
+      "archivePath": "references/blobs/a359ff0bc31db6e45d2ab42fa8c3feb6a68b0f03e02c49df54cd6a1342f6ec40"
+    },
+    {
+      "reference": "file:boundary-codecs%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fcodec%2FCatalogJournalSuite.scala#sha256:902e5d5fe8524df5aa828280fd3d1a3fb822195091e38e04a3d0b223e1b5c6bd",
+      "sourcePath": "boundary-codecs/src/test/scala/trading/codec/CatalogJournalSuite.scala",
+      "digest": "sha256:902e5d5fe8524df5aa828280fd3d1a3fb822195091e38e04a3d0b223e1b5c6bd",
+      "archivePath": "references/blobs/902e5d5fe8524df5aa828280fd3d1a3fb822195091e38e04a3d0b223e1b5c6bd"
+    },
+    {
+      "reference": "file:memory%2Fsession-bridge.md#sha256:edc8bc94bcc9b9851375caa5c006f1d0af26ebfd806b0b7f4dcb171aaadcbed0",
+      "sourcePath": "memory/session-bridge.md",
+      "digest": "sha256:edc8bc94bcc9b9851375caa5c006f1d0af26ebfd806b0b7f4dcb171aaadcbed0",
+      "archivePath": "references/blobs/edc8bc94bcc9b9851375caa5c006f1d0af26ebfd806b0b7f4dcb171aaadcbed0"
+    },
+    {
+      "reference": "file:openspec%2Fchanges%2Fintroduce-versioned-boundary-codecs%2Fimplementation-notes%2Ftask-group-6.md#sha256:862443f7de77957056e5c153d43d547c149fac125cf84c2d75a57c663395af68",
+      "sourcePath": "openspec/changes/introduce-versioned-boundary-codecs/implementation-notes/task-group-6.md",
+      "digest": "sha256:862443f7de77957056e5c153d43d547c149fac125cf84c2d75a57c663395af68",
+      "archivePath": "references/blobs/862443f7de77957056e5c153d43d547c149fac125cf84c2d75a57c663395af68"
+    }
+  ]
+}

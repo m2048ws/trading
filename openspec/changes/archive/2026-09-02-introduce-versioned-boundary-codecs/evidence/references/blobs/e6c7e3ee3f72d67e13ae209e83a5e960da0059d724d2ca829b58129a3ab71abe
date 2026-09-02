@@ -1,0 +1,202 @@
+{
+  "$defs": {
+    "InstrumentDefinitionRecordV1": {
+      "additionalProperties": false,
+      "properties": {
+        "payload": {
+          "additionalProperties": false,
+          "properties": {
+            "identity": {
+              "additionalProperties": false,
+              "properties": {
+                "instrumentId": {
+                  "type": "string"
+                },
+                "underlyingId": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "instrumentId",
+                "underlyingId"
+              ],
+              "type": "object"
+            },
+            "listing": {
+              "additionalProperties": false,
+              "properties": {
+                "positionLotGridIdentity": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "dimension": {
+                      "items": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "atom": {
+                            "type": "string"
+                          },
+                          "power": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "atom",
+                          "power"
+                        ],
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "gridId": {
+                      "type": "string"
+                    },
+                    "gridVersion": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "dimension",
+                    "gridId",
+                    "gridVersion"
+                  ],
+                  "type": "object"
+                },
+                "priceGridIdentity": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "dimension": {
+                      "items": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "atom": {
+                            "type": "string"
+                          },
+                          "power": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "atom",
+                          "power"
+                        ],
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "gridId": {
+                      "type": "string"
+                    },
+                    "gridVersion": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "dimension",
+                    "gridId",
+                    "gridVersion"
+                  ],
+                  "type": "object"
+                }
+              },
+              "required": [
+                "positionLotGridIdentity",
+                "priceGridIdentity"
+              ],
+              "type": "object"
+            },
+            "payoff": {
+              "additionalProperties": false,
+              "properties": {
+                "basePerPosition": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "denominator": {
+                      "type": "string"
+                    },
+                    "numerator": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "numerator",
+                    "denominator"
+                  ],
+                  "type": "object"
+                },
+                "quotePerPosition": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "denominator": {
+                      "type": "string"
+                    },
+                    "numerator": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "numerator",
+                    "denominator"
+                  ],
+                  "type": "object"
+                }
+              },
+              "required": [
+                "basePerPosition",
+                "quotePerPosition"
+              ],
+              "type": "object"
+            },
+            "roles": {
+              "additionalProperties": false,
+              "properties": {
+                "baseAssetId": {
+                  "type": "string"
+                },
+                "positionAssetId": {
+                  "type": "string"
+                },
+                "quoteAssetId": {
+                  "type": "string"
+                },
+                "settleAssetId": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "baseAssetId",
+                "quoteAssetId",
+                "positionAssetId",
+                "settleAssetId"
+              ],
+              "type": "object"
+            }
+          },
+          "required": [
+            "identity",
+            "roles",
+            "listing",
+            "payoff"
+          ],
+          "type": "object"
+        },
+        "recordType": {
+          "const": "trading.instrument-definition",
+          "type": "string"
+        },
+        "schemaVersion": {
+          "const": 1,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "payload",
+        "recordType",
+        "schemaVersion"
+      ],
+      "type": "object"
+    }
+  },
+  "$id": "urn:trading:codec:schema:instrument-definition:v1",
+  "$ref": "#/$defs/InstrumentDefinitionRecordV1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

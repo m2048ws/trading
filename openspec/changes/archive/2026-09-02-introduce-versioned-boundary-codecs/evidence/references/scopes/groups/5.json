@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 3,
+  "scope": "group-5",
+  "runId": "run-2b01f872-e634-4491-acd3-b1454c94b59e",
+  "references": [
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fboundary-codec-compiler%2Fnegative%2FGridCoordinateEscapesAreUnavailable.scala#sha256:f8429d6fd19182eb8c1a1150f621e5a2ad88eaee438706ebac052cf19dd13099",
+      "sourcePath": "adversarial-boundary/src/test/resources/boundary-codec-compiler/negative/GridCoordinateEscapesAreUnavailable.scala",
+      "digest": "sha256:f8429d6fd19182eb8c1a1150f621e5a2ad88eaee438706ebac052cf19dd13099",
+      "archivePath": "references/blobs/f8429d6fd19182eb8c1a1150f621e5a2ad88eaee438706ebac052cf19dd13099"
+    },
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fboundary-codec-compiler%2Fpositive%2FGridCoordinateRecordClient.scala#sha256:273cb9ce4da7c0a4657e6a09d4f82a6acc4e752ee5bb6f7474829554e0ee66ca",
+      "sourcePath": "adversarial-boundary/src/test/resources/boundary-codec-compiler/positive/GridCoordinateRecordClient.scala",
+      "digest": "sha256:273cb9ce4da7c0a4657e6a09d4f82a6acc4e752ee5bb6f7474829554e0ee66ca",
+      "archivePath": "references/blobs/273cb9ce4da7c0a4657e6a09d4f82a6acc4e752ee5bb6f7474829554e0ee66ca"
+    },
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FBoundaryCodecCompilerBoundarySuite.scala#sha256:669306655ce9db627932c051a387cbb2a92a73781f6f8d3d11d54abc8fd2b0bf",
+      "sourcePath": "adversarial-boundary/src/test/scala/external/BoundaryCodecCompilerBoundarySuite.scala",
+      "digest": "sha256:669306655ce9db627932c051a387cbb2a92a73781f6f8d3d11d54abc8fd2b0bf",
+      "archivePath": "references/blobs/669306655ce9db627932c051a387cbb2a92a73781f6f8d3d11d54abc8fd2b0bf"
+    },
+    {
+      "reference": "file:boundary-codecs%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fcodec%2FGridCoordinateRecords.scala#sha256:8b02959999e37dd9fbbe3bee1435949d4ac06c4bdebbd4fca2fdb2f15245f06d",
+      "sourcePath": "boundary-codecs/src/main/scala/trading/codec/GridCoordinateRecords.scala",
+      "digest": "sha256:8b02959999e37dd9fbbe3bee1435949d4ac06c4bdebbd4fca2fdb2f15245f06d",
+      "archivePath": "references/blobs/8b02959999e37dd9fbbe3bee1435949d4ac06c4bdebbd4fca2fdb2f15245f06d"
+    },
+    {
+      "reference": "file:boundary-codecs%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fcodec%2FGridCoordinateRecordPropertiesSuite.scala#sha256:d544fe70a8387577ccb0a67dfaa463c646e26ce975264ee57dd2c46c1148f34e",
+      "sourcePath": "boundary-codecs/src/test/scala/trading/codec/GridCoordinateRecordPropertiesSuite.scala",
+      "digest": "sha256:d544fe70a8387577ccb0a67dfaa463c646e26ce975264ee57dd2c46c1148f34e",
+      "archivePath": "references/blobs/d544fe70a8387577ccb0a67dfaa463c646e26ce975264ee57dd2c46c1148f34e"
+    },
+    {
+      "reference": "file:boundary-codecs%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fcodec%2FGridCoordinateRecordSuite.scala#sha256:494233201e1240d8d140c8892885561bf868627df8a4b504c371b1fc7c8716a4",
+      "sourcePath": "boundary-codecs/src/test/scala/trading/codec/GridCoordinateRecordSuite.scala",
+      "digest": "sha256:494233201e1240d8d140c8892885561bf868627df8a4b504c371b1fc7c8716a4",
+      "archivePath": "references/blobs/494233201e1240d8d140c8892885561bf868627df8a4b504c371b1fc7c8716a4"
+    },
+    {
+      "reference": "file:memory%2Fsession-bridge.md#sha256:5978369bb58e25c4e781a79047b05fee0929a321a765468b1e30bd4088c54fc4",
+      "sourcePath": "memory/session-bridge.md",
+      "digest": "sha256:5978369bb58e25c4e781a79047b05fee0929a321a765468b1e30bd4088c54fc4",
+      "archivePath": "references/blobs/5978369bb58e25c4e781a79047b05fee0929a321a765468b1e30bd4088c54fc4"
+    },
+    {
+      "reference": "file:openspec%2Fchanges%2Fintroduce-versioned-boundary-codecs%2Fimplementation-notes%2Ftask-group-5.md#sha256:77b2c9544be7a346173313b43dd0f2ce1819c96e7f05d919f2590b95bb7cca11",
+      "sourcePath": "openspec/changes/introduce-versioned-boundary-codecs/implementation-notes/task-group-5.md",
+      "digest": "sha256:77b2c9544be7a346173313b43dd0f2ce1819c96e7f05d919f2590b95bb7cca11",
+      "archivePath": "references/blobs/77b2c9544be7a346173313b43dd0f2ce1819c96e7f05d919f2590b95bb7cca11"
+    }
+  ]
+}

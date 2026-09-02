@@ -1,0 +1,27 @@
+schemaVersion: 1
+kind: rfc-slice
+deliveryRef: RFC-0002-architecture-portfolio/S-05-versioned-boundary-codecs
+rfc:
+  id: RFC-0002-architecture-portfolio
+  path: rfcs/RFC-0002-architecture-portfolio
+  acceptedCommit: 7b6f7a58f4dcbb8fb4bbdf3a8ba74ba66f222cce
+  digest: sha256:a00c0cf1e3a4440bfce7dc828ad4ac119414f10d72e8d8c52c613403ef5977e2
+slice:
+  id: S-05-versioned-boundary-codecs
+  digest: sha256:7fd037fa1f6e91063ffcf9c599df3626822fff3bdddd2fff670ad401b6c7813e
+acceptance:
+  - id: AC-017
+    evidence: automated
+  - id: AC-018
+    evidence: both
+  - id: AC-019
+    evidence: automated
+  - id: AC-020
+    evidence: both
+deliveryBindingDigest: sha256:a23768d34070738eded1f74e9351cd4286b4002ab7137cf8778daaa066e46793
+tracker:
+  provider: github
+  idempotencyKey: e77b236d5f666a87238069c9a1b46c085aa02562343e877f061358dea5aea96e
+  issue:
+    id: '10'
+    url: https://github.com/m2048ws/trading/issues/10

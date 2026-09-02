@@ -14,16 +14,16 @@ updated: 2026-09-01
 - **Issue**: 10 https://github.com/m2048ws/trading/issues/10
 - **Change**: introduce-versioned-boundary-codecs
 - **Worktree**: /Users/m/src/money/.worktrees/introduce-versioned-boundary-codecs
-- **Phase at Checkpoint**: awaiting_verify
-- **Task Group at Checkpoint**: 12
-- **Observed Run Revision**: 13
-- **Last Verified HEAD**: 1f0d324a552b9d5be5bc6a43bade4ac5676e0b56
+- **Phase at Checkpoint**: archiving
+- **Task Group at Checkpoint**: none
+- **Observed Run Revision**: 18
+- **Last Verified HEAD**: 4c93275e3ce5dfaae219d1a9567461951cbc79e1
 
 The phase and revision above are the required next checkpoint carried by Task Group 12. Live Run Contract authority
 remains `applying` at revision 12 until Corgi acknowledges that commit.
 
 ## Next Action
-- Commit and acknowledge `introduce-versioned-boundary-codecs` Task Group 12 and synchronize its draft PR, then run
+- Consult Run Contract v3: resume tracker closeout for `introduce-versioned-boundary-codecs` only if pending; otherwise select the next accepted Slice. Local delivery: `wiki/deliveries/RFC-0002-architecture-portfolio-S-05-versioned-boundary-codecs.md`.
   separate canonical Verify against the exact acknowledged commit. Human Review, Human QA, and Archive remain later
   separate gates.
 

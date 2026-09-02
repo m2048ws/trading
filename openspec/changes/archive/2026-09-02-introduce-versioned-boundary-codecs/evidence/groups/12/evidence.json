@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 3,
+  "groupId": "12",
+  "checks": [
+    {
+      "name": "clean dependency-ordered compilation and formatting",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:build.sbt#sha256:8ca7eb6d07cfef2edb6d38ec8602d7addee90e8b51c733b3b60702158b60ed0f",
+        "file:.scalafmt.conf#sha256:efecb2eaad5b314fc053f173f899c8c87f9a468432c8444593c0dcb386a3207f"
+      ]
+    },
+    {
+      "name": "full repository test and completed-JAR validation matrix",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:build.sbt#sha256:8ca7eb6d07cfef2edb6d38ec8602d7addee90e8b51c733b3b60702158b60ed0f",
+        "file:boundary-codecs%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fcodec%2FBoundaryCodecCompatibilitySuite.scala#sha256:283196b99c21af4a089f339a62c1fb844fe1e4205e7e97299db77c87b03a8525",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FBoundaryCodecCompilerBoundarySuite.scala#sha256:235c62f7161a92051180255e293dc6cfbb9992d509f1eaeb2abd2e788689acce"
+      ]
+    },
+    {
+      "name": "focused shared JMH compile and smoke",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:benchmarks%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fbenchmark%2FBoundaryCodecBenchmark.scala#sha256:fe57a56898e61668c0b1f174612495dbdfb3f492f3002f197fb1e0306e76b2ab"
+      ]
+    },
+    {
+      "name": "packaged API, dependency, precision, coordination, and authority audit",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:boundary-codecs%2FREADME.md#sha256:c34af73a955d79a6c549ad64c020839b865445b1a5474328e0b8add9550d0afd",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FBoundaryCodecCompilerBoundarySuite.scala#sha256:235c62f7161a92051180255e293dc6cfbb9992d509f1eaeb2abd2e788689acce",
+        "file:docs%2Fboundary-codecs-apply-evidence.md#sha256:8ee61c1be5ab806127d047f361a8c341734849d7ab8e2bedda18faa091eea381"
+      ]
+    },
+    {
+      "name": "strict planning and portfolio semantic readiness",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:openspec%2Fchanges%2Fintroduce-versioned-boundary-codecs%2Fproposal.md#sha256:464fab5521586bcbcd38515f93e3a9760bf58c78a19250982435ce0ca08250fb",
+        "file:openspec%2Fchanges%2Fintroduce-versioned-boundary-codecs%2Fdesign.md#sha256:506e16a31880ec78840e1e48d4b018a4400930ebc9d0dad3d10e6321944f2b67",
+        "file:openspec%2Fchanges%2Fintroduce-versioned-boundary-codecs%2Fspecs%2Fversioned-boundary-codecs%2Fspec.md#sha256:3f811828257e451e83223b9cfaea17858882cf3318caa9414e6c4fc77ab6d384",
+        "file:openspec%2Fchanges%2Fintroduce-versioned-boundary-codecs%2Fspecs%2Fcatalog-command-replay%2Fspec.md#sha256:f94e8c0656bb6f1c750e481d3c5ec5365bd765672253de5c3771db8c163bde18",
+        "file:openspec%2Fchanges%2Fintroduce-versioned-boundary-codecs%2Ftasks.md#sha256:43c12a4cfb46ad1f54a5a1e7b64d0eb82b224deb1798014bbad985c40c5c34d2",
+        "file:openspec%2Fchanges%2Fintroduce-versioned-boundary-codecs%2Fcorgi%2Fsource.yaml#sha256:625809aa552c0c3f4efd1a8e2d9982c76414f82ce405674ce6f91b475807cceb",
+        "file:openspec%2Fchanges%2Fintroduce-versioned-boundary-codecs%2Fcorgi%2Ftraceability.yaml#sha256:c7545d03bf6039543fee8aab7947aa9c10c46923f8e0ee9cc716a12ab66ac44f",
+        "file:rfcs%2FRFC-0002-architecture-portfolio%2Frfc.md#sha256:a00c0cf1e3a4440bfce7dc828ad4ac119414f10d72e8d8c52c613403ef5977e2"
+      ]
+    }
+  ],
+  "automatedReview": {
+    "verdict": "pass",
+    "findings": []
+  },
+  "artifacts": [
+    "file:docs%2Fboundary-codecs-apply-evidence.md#sha256:8ee61c1be5ab806127d047f361a8c341734849d7ab8e2bedda18faa091eea381",
+    "file:memory%2Fsession-bridge.md#sha256:9845bc4b1ebc19c17dc155b850cba6af5d9509b399acadafd61780d5f5d516e0"
+  ],
+  "summary": "Group 12 completes the Apply evidence handoff after clean dependency-ordered compilation, the full 1,024-test repository and completed-JAR matrix, formatting, compatibility resource checks, focused JMH smoke, packaged API/dependency/authority audits, and strict deterministic plus semantic readiness review. Automated Task Group review found no issues, and the handoff explicitly leaves canonical Verify, Human Review, Human QA, and Archive as separate gates."
+}

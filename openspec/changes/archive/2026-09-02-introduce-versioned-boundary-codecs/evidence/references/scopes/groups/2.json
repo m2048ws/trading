@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 3,
+  "scope": "group-2",
+  "runId": "run-2b01f872-e634-4491-acd3-b1454c94b59e",
+  "references": [
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fboundary-codec-compiler%2Fnegative%2FCodecHasNoForbiddenDependencies.scala#sha256:4876a3e35439e9e545be5eb66c57cccac7b9500f7e68ec0fb328e71533341ddf",
+      "sourcePath": "adversarial-boundary/src/test/resources/boundary-codec-compiler/negative/CodecHasNoForbiddenDependencies.scala",
+      "digest": "sha256:4876a3e35439e9e545be5eb66c57cccac7b9500f7e68ec0fb328e71533341ddf",
+      "archivePath": "references/blobs/4876a3e35439e9e545be5eb66c57cccac7b9500f7e68ec0fb328e71533341ddf"
+    },
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fboundary-codec-compiler%2Fpositive%2FBoundaryCodecClasspathClient.scala#sha256:f249c4dcc762597ee0acfc7570a3c931d578db984a764a2725fcb79e632dfab5",
+      "sourcePath": "adversarial-boundary/src/test/resources/boundary-codec-compiler/positive/BoundaryCodecClasspathClient.scala",
+      "digest": "sha256:f249c4dcc762597ee0acfc7570a3c931d578db984a764a2725fcb79e632dfab5",
+      "archivePath": "references/blobs/f249c4dcc762597ee0acfc7570a3c931d578db984a764a2725fcb79e632dfab5"
+    },
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FBoundaryCodecCompilerBoundarySuite.scala#sha256:9183e0acecf65f42bc26329d946b9cf664aa46403ce6a9fba16630d1a7c227d3",
+      "sourcePath": "adversarial-boundary/src/test/scala/external/BoundaryCodecCompilerBoundarySuite.scala",
+      "digest": "sha256:9183e0acecf65f42bc26329d946b9cf664aa46403ce6a9fba16630d1a7c227d3",
+      "archivePath": "references/blobs/9183e0acecf65f42bc26329d946b9cf664aa46403ce6a9fba16630d1a7c227d3"
+    },
+    {
+      "reference": "file:boundary-codecs%2FREADME.md#sha256:705626e3912da582e4c292ac9f5317051ae6ab4e6dc531296ea445e0743e4cf3",
+      "sourcePath": "boundary-codecs/README.md",
+      "digest": "sha256:705626e3912da582e4c292ac9f5317051ae6ab4e6dc531296ea445e0743e4cf3",
+      "archivePath": "references/blobs/705626e3912da582e4c292ac9f5317051ae6ab4e6dc531296ea445e0743e4cf3"
+    },
+    {
+      "reference": "file:boundary-codecs%2Fsrc%2Fmain%2Fresources%2Ftrading%2Fcodec%2Fschema%2FREADME.md#sha256:7a7808c0a552182fa26b0ad3b439dbf9273675918357792799638376504e79fc",
+      "sourcePath": "boundary-codecs/src/main/resources/trading/codec/schema/README.md",
+      "digest": "sha256:7a7808c0a552182fa26b0ad3b439dbf9273675918357792799638376504e79fc",
+      "archivePath": "references/blobs/7a7808c0a552182fa26b0ad3b439dbf9273675918357792799638376504e79fc"
+    },
+    {
+      "reference": "file:boundary-codecs%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fcodec%2Fpackage.scala#sha256:9f4920d9766138cef068c0f3f290cf6eff96b277cacefbd0cea710eec69125ea",
+      "sourcePath": "boundary-codecs/src/main/scala/trading/codec/package.scala",
+      "digest": "sha256:9f4920d9766138cef068c0f3f290cf6eff96b277cacefbd0cea710eec69125ea",
+      "archivePath": "references/blobs/9f4920d9766138cef068c0f3f290cf6eff96b277cacefbd0cea710eec69125ea"
+    },
+    {
+      "reference": "file:boundary-codecs%2Fsrc%2Ftest%2Fresources%2Ftrading%2Fcodec%2Fgolden%2FREADME.md#sha256:aba13a841e4740bda1772ca56b33ddbd6718e34c743193c4fabfa6582d5fe7ed",
+      "sourcePath": "boundary-codecs/src/test/resources/trading/codec/golden/README.md",
+      "digest": "sha256:aba13a841e4740bda1772ca56b33ddbd6718e34c743193c4fabfa6582d5fe7ed",
+      "archivePath": "references/blobs/aba13a841e4740bda1772ca56b33ddbd6718e34c743193c4fabfa6582d5fe7ed"
+    },
+    {
+      "reference": "file:boundary-codecs%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fcodec%2FBoundaryDependencyScopeSuite.scala#sha256:c9855e4eebb57cbfa01c86da6f95fdd3a8cdd9b248e4c3f95de3f8717dedc46b",
+      "sourcePath": "boundary-codecs/src/test/scala/trading/codec/BoundaryDependencyScopeSuite.scala",
+      "digest": "sha256:c9855e4eebb57cbfa01c86da6f95fdd3a8cdd9b248e4c3f95de3f8717dedc46b",
+      "archivePath": "references/blobs/c9855e4eebb57cbfa01c86da6f95fdd3a8cdd9b248e4c3f95de3f8717dedc46b"
+    },
+    {
+      "reference": "file:build.sbt#sha256:42ca2200d860f498c4f8e97214506b3275b28fd25e78b82fecb33977111f3738",
+      "sourcePath": "build.sbt",
+      "digest": "sha256:42ca2200d860f498c4f8e97214506b3275b28fd25e78b82fecb33977111f3738",
+      "archivePath": "references/blobs/42ca2200d860f498c4f8e97214506b3275b28fd25e78b82fecb33977111f3738"
+    },
+    {
+      "reference": "file:openspec%2Fchanges%2Fintroduce-versioned-boundary-codecs%2Fimplementation-notes%2Ftask-group-2.md#sha256:e946089c422007cbfc24c625bf58cd97d65a972adac6b9adb982a4377332c81f",
+      "sourcePath": "openspec/changes/introduce-versioned-boundary-codecs/implementation-notes/task-group-2.md",
+      "digest": "sha256:e946089c422007cbfc24c625bf58cd97d65a972adac6b9adb982a4377332c81f",
+      "archivePath": "references/blobs/e946089c422007cbfc24c625bf58cd97d65a972adac6b9adb982a4377332c81f"
+    }
+  ]
+}
