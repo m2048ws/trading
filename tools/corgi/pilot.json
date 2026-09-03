@@ -23,7 +23,8 @@
     "introduce-pure-fee-policy-module",
     "introduce-versioned-boundary-codecs",
     "establish-actual-execution-lifecycle",
-    "simplify-in-process-trust-boundary"
+    "simplify-in-process-trust-boundary",
+    "retire-trust-boundary-migration-scaffolding"
   ],
   "authority": {
     "localCorgiCommits": true,
