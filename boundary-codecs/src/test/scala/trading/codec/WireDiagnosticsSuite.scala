@@ -1,7 +1,5 @@
 package trading.codec
 
-import java.lang.reflect.Modifier
-
 import munit.FunSuite
 
 class WireDiagnosticsSuite extends FunSuite:
@@ -34,7 +32,4 @@ class WireDiagnosticsSuite extends FunSuite:
     assertEquals(first.concat(second).map(_.toString).toVector, Vector("1", "2", "3"))
     assertEquals(WireViolations.fromVector(Vector.empty[Int]), None)
 
-  test("validated policies, paths, and non-empty aggregates have JVM-private constructors"):
-    Vector(classOf[DecodeLimits], classOf[WirePath], classOf[WireViolations[?]]).foreach: owner =>
-      assert(owner.getDeclaredConstructors.toVector.forall(constructor => Modifier.isPrivate(constructor.getModifiers)))
 end WireDiagnosticsSuite

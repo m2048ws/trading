@@ -6,7 +6,6 @@ import trading.quantity.Dim
 import trading.quantity.GridQuantity
 import trading.quantity.Quantity
 import trading.reference.Asset
-import trading.reference.DimensionHandle
 import trading.reference.GridHandle
 
 object GridCoordinateEscapesAreUnavailable:
@@ -28,12 +27,6 @@ object GridCoordinateEscapesAreUnavailable:
     value: GridQuantity[D, right.G]
   ) =
     GeneralGridCoordinateRecord.pack(left)(value)
-
-  def forgeGeneral[D <: Dim](dimension: DimensionHandle[D], grid: GridHandle[D]) =
-    new trading.codec.DecodedGridQuantity(dimension)(grid)(grid.fromCoordinate(BigInt(1)))
-
-  def forgeAsset(asset: Asset)(grid: GridHandle[asset.D]) =
-    new trading.codec.DecodedAssetGridQuantity(asset)(grid)(grid.fromCoordinate(BigInt(1)))
 
   val packed: Class[trading.codec.PackedGridQuantity] = classOf[trading.codec.PackedGridQuantity]
   val packedAsset: Class[trading.codec.PackedAssetGridQuantity] =

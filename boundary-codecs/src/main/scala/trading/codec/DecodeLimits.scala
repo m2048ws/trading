@@ -1,12 +1,7 @@
 package trading.codec
 
-import java.lang.invoke.MethodHandles
-import java.lang.invoke.MethodType
-import scala.annotation.nowarn
-
 /** Immutable operational policy for bounded strict decoding. */
-@nowarn("msg=Ignoring.*qualifier")
-final class DecodeLimits private[this] (
+final class DecodeLimits private (
   val maxPayloadCharacters: Int,
   val maxPayloadUtf8Bytes: Int,
   val maxNestingDepth: Int,
@@ -70,15 +65,6 @@ final class DecodeLimits private[this] (
 end DecodeLimits
 
 object DecodeLimits:
-  private val constructor =
-    val owner = classOf[DecodeLimits]
-    MethodHandles
-      .privateLookupIn(owner, MethodHandles.lookup())
-      .findConstructor(
-        owner,
-        MethodType.methodType(java.lang.Void.TYPE, Array.fill[Class[?]](12)(java.lang.Integer.TYPE))
-      )
-
   val default: DecodeLimits =
     construct(
       maxPayloadCharacters = 1_000_000,
@@ -208,20 +194,18 @@ object DecodeLimits:
     maxScenarioSlices: Int,
     maxMarketConversions: Int
   ): DecodeLimits =
-    constructor
-      .invoke(
-        maxPayloadCharacters,
-        maxPayloadUtf8Bytes,
-        maxNestingDepth,
-        maxBatchRecords,
-        maxObjectMembers,
-        maxArrayEntries,
-        maxStringCharacters,
-        maxIntegerDigits,
-        maxDimensionFactors,
-        maxCatalogCommands,
-        maxScenarioSlices,
-        maxMarketConversions
-      )
-      .asInstanceOf[DecodeLimits]
+    new DecodeLimits(
+      maxPayloadCharacters,
+      maxPayloadUtf8Bytes,
+      maxNestingDepth,
+      maxBatchRecords,
+      maxObjectMembers,
+      maxArrayEntries,
+      maxStringCharacters,
+      maxIntegerDigits,
+      maxDimensionFactors,
+      maxCatalogCommands,
+      maxScenarioSlices,
+      maxMarketConversions
+    )
 end DecodeLimits

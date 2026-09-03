@@ -1,8 +1,1 @@
 # Production/benchmark migration allowance. Remove each row when its owner is migrated; the final file has no entries.
-boundary-codecs/src/main/scala/trading/codec/CatalogJournal.scala	12
-boundary-codecs/src/main/scala/trading/codec/DecodeLimits.scala	8
-boundary-codecs/src/main/scala/trading/codec/GridCoordinateRecords.scala	12
-boundary-codecs/src/main/scala/trading/codec/OrderRecord.scala	8
-boundary-codecs/src/main/scala/trading/codec/RecordEnvelope.scala	12
-boundary-codecs/src/main/scala/trading/codec/ScenarioRecords.scala	12
-boundary-codecs/src/main/scala/trading/codec/WireDiagnostics.scala	12

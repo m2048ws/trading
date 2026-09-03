@@ -1,9 +1,6 @@
 package trading.codec
 
-import java.lang.invoke.MethodHandles
-import java.lang.invoke.MethodType
 import java.util.Objects
-import scala.annotation.nowarn
 
 import trading.quantity.JavaSerializationUnsupported
 import trading.quantity.refinement.PositiveRational
@@ -19,8 +16,7 @@ import trading.reference.GridDefinition
 
 /** One immutable published catalog batch in the frozen V1 journal representation. */
 object CatalogJournalEntry:
-  @nowarn("msg=Ignoring.*qualifier")
-  final class V1 private[this] (
+  final class V1 private[CatalogJournalEntry] (
     val successorRevision: CatalogRevision,
     val batch: CatalogBatch)
     extends JavaSerializationUnsupported:
@@ -40,19 +36,6 @@ object CatalogJournalEntry:
     override def toString: String =
       s"CatalogJournalEntry.V1($successorRevision,$batch)"
   end V1
-
-  private val constructor =
-    val owner = classOf[V1]
-    MethodHandles
-      .privateLookupIn(owner, MethodHandles.lookup())
-      .findConstructor(
-        owner,
-        MethodType.methodType(
-          java.lang.Void.TYPE,
-          classOf[CatalogRevision],
-          classOf[CatalogBatch]
-        )
-      )
 
   val recordType: RecordType       = CodecRecordTypes.catalogJournalEntry
   val schemaVersion: SchemaVersion = SchemaVersion.one
@@ -183,9 +166,7 @@ object CatalogJournalEntry:
     codec.schema(id, definitionName)
 
   private def construct(successorRevision: CatalogRevision, batch: CatalogBatch): V1 =
-    constructor
-      .invoke(successorRevision, batch)
-      .asInstanceOf[V1]
+    new V1(successorRevision, batch)
 end CatalogJournalEntry
 
 /** State-independent versus sequential replay failure remains explicit at the journal boundary. */
@@ -269,8 +250,7 @@ enum CatalogReplayFailure extends JavaSerializationUnsupported:
 end CatalogReplayFailure
 
 /** Successful replay authority under exactly the caller-supplied fresh process-local lineage. */
-@nowarn("msg=Ignoring.*qualifier")
-final class CatalogReplayResult private[this] (val state: CatalogState) extends JavaSerializationUnsupported:
+final class CatalogReplayResult private[codec] (val state: CatalogState) extends JavaSerializationUnsupported:
   Objects.requireNonNull(state, "replayed catalog state")
 
   def snapshot                  = state.snapshot
@@ -279,12 +259,6 @@ end CatalogReplayResult
 
 /** Deterministic pure replay from a caller-owned fresh catalog state. */
 object CatalogReplay:
-  private val resultConstructor =
-    val owner = classOf[CatalogReplayResult]
-    MethodHandles
-      .privateLookupIn(owner, MethodHandles.lookup())
-      .findConstructor(owner, MethodType.methodType(java.lang.Void.TYPE, classOf[CatalogState]))
-
   def rebuild(
     fresh: CatalogState,
     entries: Vector[CatalogJournalEntry.V1]
@@ -384,5 +358,5 @@ object CatalogReplay:
     CatalogRevision.from(revision.value + 1).toOption.get
 
   private def resultFrom(state: CatalogState): CatalogReplayResult =
-    resultConstructor.invoke(state).asInstanceOf[CatalogReplayResult]
+    new CatalogReplayResult(state)
 end CatalogReplay

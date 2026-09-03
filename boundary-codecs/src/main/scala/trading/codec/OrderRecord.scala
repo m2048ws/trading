@@ -1,9 +1,6 @@
 package trading.codec
 
-import java.lang.invoke.MethodHandles
-import java.lang.invoke.MethodType
 import java.util.Objects
-import scala.annotation.nowarn
 
 import trading.economics.instrument.Instrument
 import trading.economics.instrument.InstrumentId
@@ -66,8 +63,7 @@ enum OrderRefinementFailure extends JavaSerializationUnsupported:
 end OrderRefinementFailure
 
 /** Non-empty deterministic collection of independent local order-refinement failures. */
-@nowarn("msg=Ignoring.*qualifier")
-final class OrderRefinementFailures private[this] (
+final class OrderRefinementFailures private (
   val head: OrderRefinementFailure,
   val tail: Vector[OrderRefinementFailure])
   extends JavaSerializationUnsupported:
@@ -84,19 +80,6 @@ final class OrderRefinementFailures private[this] (
 end OrderRefinementFailures
 
 object OrderRefinementFailures:
-  private val constructor =
-    val owner = classOf[OrderRefinementFailures]
-    MethodHandles
-      .privateLookupIn(owner, MethodHandles.lookup())
-      .findConstructor(
-        owner,
-        MethodType.methodType(
-          java.lang.Void.TYPE,
-          classOf[OrderRefinementFailure],
-          classOf[Vector[?]]
-        )
-      )
-
   def one(head: OrderRefinementFailure): OrderRefinementFailures =
     construct(head, Vector.empty)
 
@@ -109,12 +92,10 @@ object OrderRefinementFailures:
     head: OrderRefinementFailure,
     tail: Vector[OrderRefinementFailure]
   ): OrderRefinementFailures =
-    constructor
-      .invoke(
-        Objects.requireNonNull(head, "order refinement failure"),
-        Objects.requireNonNull(tail, "order refinement failure tail")
-      )
-      .asInstanceOf[OrderRefinementFailures]
+    new OrderRefinementFailures(
+      Objects.requireNonNull(head, "order refinement failure"),
+      Objects.requireNonNull(tail, "order refinement failure tail")
+    )
 end OrderRefinementFailures
 
 /** Closed stages from stable order syntax to one validated immutable instruction. */

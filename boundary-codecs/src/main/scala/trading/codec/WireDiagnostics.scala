@@ -1,9 +1,6 @@
 package trading.codec
 
-import java.lang.invoke.MethodHandles
-import java.lang.invoke.MethodType
 import java.util.Objects
-import scala.annotation.nowarn
 
 /** One immutable component of a wire location. */
 sealed trait WirePathSegment:
@@ -47,8 +44,7 @@ object WirePathSegment:
 end WirePathSegment
 
 /** Structured field/index location owned by the codec boundary. */
-@nowarn("msg=Ignoring.*qualifier")
-final class WirePath private[this] (val segments: Vector[WirePathSegment]):
+final class WirePath private (val segments: Vector[WirePathSegment]):
   private[codec] def field(name: String): WirePath =
     WirePath.construct(segments :+ WirePathSegment.field(name))
 
@@ -75,12 +71,6 @@ final class WirePath private[this] (val segments: Vector[WirePathSegment]):
 end WirePath
 
 object WirePath:
-  private val constructor =
-    val owner = classOf[WirePath]
-    MethodHandles
-      .privateLookupIn(owner, MethodHandles.lookup())
-      .findConstructor(owner, MethodType.methodType(java.lang.Void.TYPE, classOf[Vector[?]]))
-
   val root: WirePath = construct(Vector.empty)
 
   private[codec] val ordering: Ordering[WirePath] =
@@ -102,7 +92,7 @@ object WirePath:
           case (None, None) => Integer.compare(left.arrayIndex.getOrElse(0), right.arrayIndex.getOrElse(0))
 
   private def construct(segments: Vector[WirePathSegment]): WirePath =
-    constructor.invoke(segments).asInstanceOf[WirePath]
+    new WirePath(segments)
 end WirePath
 
 /** Source coordinates retained when the parser reports them. Line and column values are one-based. */
@@ -307,8 +297,7 @@ enum WireDecodeViolation:
 end WireDecodeViolation
 
 /** Domain-owned non-empty ordered aggregate used at codec boundaries. */
-@nowarn("msg=Ignoring.*qualifier")
-final class WireViolations[+E] private[this] (val head: E, val tail: Vector[E]):
+final class WireViolations[+E] private (val head: E, val tail: Vector[E]):
   def toVector: Vector[E] = head +: tail
 
   def map[E2](f: E => E2): WireViolations[E2] =
@@ -327,15 +316,6 @@ final class WireViolations[+E] private[this] (val head: E, val tail: Vector[E]):
 end WireViolations
 
 object WireViolations:
-  private val constructor =
-    val owner = classOf[WireViolations[?]]
-    MethodHandles
-      .privateLookupIn(owner, MethodHandles.lookup())
-      .findConstructor(
-        owner,
-        MethodType.methodType(java.lang.Void.TYPE, classOf[Object], classOf[Vector[?]])
-      )
-
   def one[E](head: E): WireViolations[E] =
     unsafe(head, Vector.empty)
 
@@ -361,5 +341,5 @@ object WireViolations:
     fromVector(sorted).getOrElse(throw new IllegalArgumentException("ordered encode violations must be non-empty"))
 
   private[codec] def unsafe[E](head: E, tail: Vector[E]): WireViolations[E] =
-    constructor.invoke(head.asInstanceOf[Object], tail).asInstanceOf[WireViolations[E]]
+    new WireViolations(head, tail)
 end WireViolations

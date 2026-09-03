@@ -1,9 +1,6 @@
 package trading.codec
 
-import java.lang.invoke.MethodHandles
-import java.lang.invoke.MethodType
 import java.util.Objects
-import scala.annotation.nowarn
 
 import trading.economics.instrument.*
 import trading.order.*
@@ -50,8 +47,7 @@ enum ScenarioPreparationFailure extends JavaSerializationUnsupported:
 end ScenarioPreparationFailure
 
 /** Stable non-empty ordering of independent scenario-preparation failures. */
-@nowarn("msg=Ignoring.*qualifier")
-final class ScenarioPreparationFailures private[this] (
+final class ScenarioPreparationFailures private (
   val head: ScenarioPreparationFailure,
   val tail: Vector[ScenarioPreparationFailure])
   extends JavaSerializationUnsupported:
@@ -68,19 +64,6 @@ final class ScenarioPreparationFailures private[this] (
 end ScenarioPreparationFailures
 
 object ScenarioPreparationFailures:
-  private val constructor =
-    val owner = classOf[ScenarioPreparationFailures]
-    MethodHandles
-      .privateLookupIn(owner, MethodHandles.lookup())
-      .findConstructor(
-        owner,
-        MethodType.methodType(
-          java.lang.Void.TYPE,
-          classOf[ScenarioPreparationFailure],
-          classOf[Vector[?]]
-        )
-      )
-
   def one(head: ScenarioPreparationFailure): ScenarioPreparationFailures =
     construct(head, Vector.empty)
 
@@ -93,12 +76,10 @@ object ScenarioPreparationFailures:
     head: ScenarioPreparationFailure,
     tail: Vector[ScenarioPreparationFailure]
   ): ScenarioPreparationFailures =
-    constructor
-      .invoke(
-        Objects.requireNonNull(head, "scenario preparation failure"),
-        Objects.requireNonNull(tail, "scenario preparation failure tail")
-      )
-      .asInstanceOf[ScenarioPreparationFailures]
+    new ScenarioPreparationFailures(
+      Objects.requireNonNull(head, "scenario preparation failure"),
+      Objects.requireNonNull(tail, "scenario preparation failure tail")
+    )
 end ScenarioPreparationFailures
 
 /** Closed stages from one hypothetical scenario record to canonical evaluation. */
@@ -135,8 +116,7 @@ final case class RoundTripLegReconstructionFailure(
 end RoundTripLegReconstructionFailure
 
 /** Stable non-empty entry-before-exit reconstruction diagnostics. */
-@nowarn("msg=Ignoring.*qualifier")
-final class RoundTripLegReconstructionFailures private[this] (
+final class RoundTripLegReconstructionFailures private (
   val head: RoundTripLegReconstructionFailure,
   val tail: Vector[RoundTripLegReconstructionFailure])
   extends JavaSerializationUnsupported:
@@ -153,19 +133,6 @@ final class RoundTripLegReconstructionFailures private[this] (
 end RoundTripLegReconstructionFailures
 
 object RoundTripLegReconstructionFailures:
-  private val constructor =
-    val owner = classOf[RoundTripLegReconstructionFailures]
-    MethodHandles
-      .privateLookupIn(owner, MethodHandles.lookup())
-      .findConstructor(
-        owner,
-        MethodType.methodType(
-          java.lang.Void.TYPE,
-          classOf[RoundTripLegReconstructionFailure],
-          classOf[Vector[?]]
-        )
-      )
-
   def from(
     failures: Vector[RoundTripLegReconstructionFailure]
   ): Option[RoundTripLegReconstructionFailures] =
@@ -177,12 +144,10 @@ object RoundTripLegReconstructionFailures:
     head: RoundTripLegReconstructionFailure,
     tail: Vector[RoundTripLegReconstructionFailure]
   ): RoundTripLegReconstructionFailures =
-    constructor
-      .invoke(
-        Objects.requireNonNull(head, "round-trip leg reconstruction failure"),
-        Objects.requireNonNull(tail, "round-trip leg reconstruction failure tail")
-      )
-      .asInstanceOf[RoundTripLegReconstructionFailures]
+    new RoundTripLegReconstructionFailures(
+      Objects.requireNonNull(head, "round-trip leg reconstruction failure"),
+      Objects.requireNonNull(tail, "round-trip leg reconstruction failure tail")
+    )
 end RoundTripLegReconstructionFailures
 
 /** Closed stages from entry × exit syntax to the canonical flat-position proof. */

@@ -15,15 +15,15 @@ updated: 2026-09-03
 - **Change**: simplify-in-process-trust-boundary
 - **Worktree**: /Users/m/src/money/.worktrees/simplify-in-process-trust-boundary
 - **Phase at Checkpoint**: applying
-- **Task Group at Checkpoint**: 8
-- **Observed Run Revision**: 9
-- **Last Verified HEAD**: 3d6c696a080623ece84c2d04ddd2abbb90ef9de3
+- **Task Group at Checkpoint**: 9
+- **Observed Run Revision**: 10
+- **Last Verified HEAD**: e0122e1616338c1ca515f39d14ea269ce5b52bf5
 
 ## Next Action
-- Commit and acknowledge Task Group 8, sync the draft PR, then continue with Task Group 9.
+- Commit and acknowledge Task Group 9, sync the draft PR, then continue with final Task Group 10.
 
 ## Blockers
-- Task Group 8 execution-fact/state/replay/effective-ledger static construction, fixture reconciliation, note, and bridge
+- Task Group 9 boundary-codec/catalog-replay static construction, fixture reconciliation, note, and bridge
   checkpoint are ready for their dedicated commit.
 
 ## Uncommitted Work
@@ -50,6 +50,9 @@ updated: 2026-09-03
 - Task Group 8 removed five execution fact/state/replay/effective-ledger allowances (185 tokens), staticized derived
   transitions and observations, and removed hostile implementation guards while retaining exact economics, conflicts,
   ordering, completeness, correction/bust, anomaly, permutation, and indexed-complexity semantics.
+- Task Group 9 removed the final seven codec/catalog-replay allowances (76 tokens), staticized boundary construction,
+  added an ordinary Java checked-factory client, and retained strict external-data, V1 compatibility, canonicalization,
+  reconstruction, publication, and replay semantics. The guard now reports no production or benchmark sites.
 
 ## Promotion Queue
 - none

@@ -1,9 +1,6 @@
 package trading.codec
 
-import java.lang.invoke.MethodHandles
-import java.lang.invoke.MethodType
 import java.util.Objects
-import scala.annotation.nowarn
 
 import trading.quantity.Dim
 import trading.quantity.DimKey
@@ -77,8 +74,7 @@ final case class IndexedGridCoordinateRecordReconstructionFailure(
 end IndexedGridCoordinateRecordReconstructionFailure
 
 /** Canonical dimension, full grid witness, and value rebuilt from one general coordinate record. */
-@nowarn("msg=Ignoring.*qualifier")
-final class DecodedGridQuantity private[this] (
+final class DecodedGridQuantity private (
   val dimension: DimensionHandle[? <: Dim]
 )(
   val grid: GridHandle[dimension.D]
@@ -87,20 +83,6 @@ final class DecodedGridQuantity private[this] (
   extends JavaSerializationUnsupported
 
 object DecodedGridQuantity:
-  private val constructor =
-    val owner = classOf[DecodedGridQuantity]
-    MethodHandles
-      .privateLookupIn(owner, MethodHandles.lookup())
-      .findConstructor(
-        owner,
-        MethodType.methodType(
-          java.lang.Void.TYPE,
-          classOf[DimensionHandle[?]],
-          classOf[GridHandle[?]],
-          classOf[BigInt]
-        )
-      )
-
   private[codec] def fromCoordinate[D <: Dim](
     dimension: DimensionHandle[D]
   )(
@@ -108,14 +90,11 @@ object DecodedGridQuantity:
   )(
     coordinate: BigInt
   ): DecodedGridQuantity =
-    constructor
-      .invoke(dimension, grid, grid.fromCoordinate(coordinate))
-      .asInstanceOf[DecodedGridQuantity]
+    new DecodedGridQuantity(dimension)(grid)(grid.fromCoordinate(coordinate))
 end DecodedGridQuantity
 
 /** Canonical asset, full grid witness, and value rebuilt from one asset-qualified coordinate record. */
-@nowarn("msg=Ignoring.*qualifier")
-final class DecodedAssetGridQuantity private[this] (
+final class DecodedAssetGridQuantity private (
   val asset: Asset
 )(
   val grid: GridHandle[asset.D]
@@ -124,20 +103,6 @@ final class DecodedAssetGridQuantity private[this] (
   extends JavaSerializationUnsupported
 
 object DecodedAssetGridQuantity:
-  private val constructor =
-    val owner = classOf[DecodedAssetGridQuantity]
-    MethodHandles
-      .privateLookupIn(owner, MethodHandles.lookup())
-      .findConstructor(
-        owner,
-        MethodType.methodType(
-          java.lang.Void.TYPE,
-          classOf[Asset],
-          classOf[GridHandle[?]],
-          classOf[BigInt]
-        )
-      )
-
   private[codec] def fromCoordinate(
     asset: Asset
   )(
@@ -145,9 +110,7 @@ object DecodedAssetGridQuantity:
   )(
     coordinate: BigInt
   ): DecodedAssetGridQuantity =
-    constructor
-      .invoke(asset, grid, grid.fromCoordinate(coordinate))
-      .asInstanceOf[DecodedAssetGridQuantity]
+    new DecodedAssetGridQuantity(asset)(grid)(grid.fromCoordinate(coordinate))
 end DecodedAssetGridQuantity
 
 /** V1 persistence family for a full stable grid identity and its exact signed coordinate. */

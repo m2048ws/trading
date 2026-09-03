@@ -3,7 +3,6 @@ package trading.codec
 import java.io.ByteArrayOutputStream
 import java.io.NotSerializableException
 import java.io.ObjectOutputStream
-import java.lang.reflect.Modifier
 
 import munit.FunSuite
 
@@ -32,10 +31,6 @@ class CatalogJournalSuite extends FunSuite:
       classOf[CatalogJournalEntry.V1].getDeclaredFields.map(_.getName).toSet,
       Set("successorRevision", "batch")
     )
-    assert(classOf[CatalogJournalEntry.V1].getDeclaredConstructors.forall(constructor =>
-      Modifier.isPrivate(constructor.getModifiers)
-    ))
-
     val encoded = CatalogJournalEntry.encode(entry).toOption.get
     assertEquals(CatalogJournalEntry.parse(encoded), Right(entry))
     assert(encoded.contains(s"\"numerator\":\"$huge\""))

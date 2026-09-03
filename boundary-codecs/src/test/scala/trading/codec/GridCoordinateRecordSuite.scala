@@ -3,7 +3,6 @@ package trading.codec
 import java.io.ByteArrayOutputStream
 import java.io.NotSerializableException
 import java.io.ObjectOutputStream
-import java.lang.reflect.Modifier
 
 import munit.FunSuite
 
@@ -291,10 +290,7 @@ class GridCoordinateRecordSuite extends FunSuite:
     assert(!generalSchema.contains("quantum"))
     assert(!assetSchema.contains("quantum"))
 
-  test("decoded dependent-package constructors are private and retired compatibility names stay absent"):
-    Vector(classOf[DecodedGridQuantity], classOf[DecodedAssetGridQuantity]).foreach: owner =>
-      assert(owner.getDeclaredConstructors.forall(constructor => Modifier.isPrivate(constructor.getModifiers)))
-
+  test("decoded dependent packages keep retired compatibility names absent"):
     val publicNames = Vector(
       classOf[DecodedGridQuantity].getName,
       classOf[DecodedAssetGridQuantity].getName,

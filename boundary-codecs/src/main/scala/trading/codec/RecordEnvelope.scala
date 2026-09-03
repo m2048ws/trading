@@ -1,9 +1,6 @@
 package trading.codec
 
-import java.lang.invoke.MethodHandles
-import java.lang.invoke.MethodType
 import java.util.Objects
-import scala.annotation.nowarn
 
 import trading.quantity.JavaSerializationUnsupported
 
@@ -13,8 +10,7 @@ enum RecordTypeViolation:
 end RecordTypeViolation
 
 /** Stable lower-ASCII dotted record-family identifier. */
-@nowarn("msg=Ignoring.*qualifier")
-final class RecordType private[this] (val value: String) extends JavaSerializationUnsupported:
+final class RecordType private (val value: String) extends JavaSerializationUnsupported:
   override def equals(other: Any): Boolean =
     other match
       case that: RecordType => value == that.value
@@ -25,12 +21,7 @@ final class RecordType private[this] (val value: String) extends JavaSerializati
 end RecordType
 
 object RecordType:
-  private val Pattern     = "[a-z][a-z0-9]*(?:\\.[a-z][a-z0-9-]*)+".r
-  private val constructor =
-    val owner = classOf[RecordType]
-    MethodHandles
-      .privateLookupIn(owner, MethodHandles.lookup())
-      .findConstructor(owner, MethodType.methodType(java.lang.Void.TYPE, classOf[String]))
+  private val Pattern = "[a-z][a-z0-9]*(?:\\.[a-z][a-z0-9-]*)+".r
 
   def from(value: String): Either[RecordTypeViolation, RecordType] =
     val supplied = Objects.requireNonNull(value, "record type")
@@ -41,14 +32,13 @@ object RecordType:
         case _         => Left(RecordTypeViolation.InvalidAsciiFormat)
 
   private def construct(value: String): RecordType =
-    constructor.invoke(value).asInstanceOf[RecordType]
+    new RecordType(value)
 end RecordType
 
 final case class NonPositiveSchemaVersion(value: BigInt)
 
 /** Positive arbitrary-precision version scoped to one record type, distinct from reference-data versions. */
-@nowarn("msg=Ignoring.*qualifier")
-final class SchemaVersion private[this] (val value: BigInt) extends JavaSerializationUnsupported:
+final class SchemaVersion private (val value: BigInt) extends JavaSerializationUnsupported:
   override def equals(other: Any): Boolean =
     other match
       case that: SchemaVersion => value == that.value
@@ -59,12 +49,6 @@ final class SchemaVersion private[this] (val value: BigInt) extends JavaSerializ
 end SchemaVersion
 
 object SchemaVersion:
-  private val constructor =
-    val owner = classOf[SchemaVersion]
-    MethodHandles
-      .privateLookupIn(owner, MethodHandles.lookup())
-      .findConstructor(owner, MethodType.methodType(java.lang.Void.TYPE, classOf[BigInt]))
-
   val one: SchemaVersion = construct(BigInt(1))
 
   def from(value: BigInt): Either[NonPositiveSchemaVersion, SchemaVersion] =
@@ -72,7 +56,7 @@ object SchemaVersion:
     Either.cond(supplied > 0, construct(supplied), NonPositiveSchemaVersion(supplied))
 
   private def construct(value: BigInt): SchemaVersion =
-    constructor.invoke(value).asInstanceOf[SchemaVersion]
+    new SchemaVersion(value)
 end SchemaVersion
 
 private[codec] final case class EnvelopeHeader(
