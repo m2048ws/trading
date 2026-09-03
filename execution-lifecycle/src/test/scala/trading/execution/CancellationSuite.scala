@@ -3,7 +3,6 @@ package trading.execution
 import java.io.ByteArrayOutputStream
 import java.io.NotSerializableException
 import java.io.ObjectOutputStream
-import java.lang.reflect.Modifier
 
 import munit.ScalaCheckSuite
 import org.scalacheck.Prop.forAll
@@ -337,7 +336,7 @@ final class CancellationSuite extends ScalaCheckSuite:
       )
     )
 
-  test("cancellation, anomalies, and lineage are private immutable values with structural replay equality"):
+  test("cancellation, anomalies, and lineage retain structural replay equality"):
     val predecessor = lifecycle(Side.Buy, 5, "representation-predecessor")
     val successor   = lifecycle(Side.Buy, 5, "representation-successor")
     val cancelled   = cancellation(predecessor, "cancelled", ordering(0))
@@ -353,19 +352,6 @@ final class CancellationSuite extends ScalaCheckSuite:
         record(successor, commands = Vector(successorSubmit))
       )
     )
-    val representations = List(
-      classOf[CancellationEvidence[?, ?, ?]],
-      classOf[CancellationRequested[?, ?, ?]],
-      classOf[CancellationConfirmed[?, ?, ?]],
-      classOf[CancellationConflicted[?, ?, ?]],
-      classOf[PostCancellationFillAnomaly[?, ?, ?]],
-      classOf[ExecutionAnomalies[?, ?, ?]]
-    )
-    representations.foreach: representation =>
-      assert(Modifier.isFinal(representation.getModifiers), s"${representation.getName} must be final")
-    List(classOf[LineageLinkViolations], classOf[OrderLineageLink]).foreach: representation =>
-      assert(Modifier.isFinal(representation.getModifiers), s"${representation.getName} must be final")
-
     assertEquals(first, replayed)
     assertEquals(first.hashCode, replayed.hashCode)
     val values = List[JavaSerializationUnsupported](

@@ -55,33 +55,6 @@ class ReferenceDataJavaBoundarySuite extends FunSuite:
         val _      = main.invoke(null, Array.empty[String])
     finally loader.close()
 
-  test("completed public artifact rejects Java constructor bypasses"):
-    val preludeOutput = Files.createTempDirectory("reference-data-java-prelude")
-    val prelude       = compile(
-      List(fixturesRoot.resolve("SharedReferenceDataJavaSetup.java")),
-      preludeOutput,
-      classpath
-    )
-    assert(prelude.succeeded, prelude.diagnostics)
-
-    val cases = List(
-      "AssetIdConstructor.java"            -> List("AssetId", "private access"),
-      "GridIdConstructor.java"             -> List("GridId", "private access"),
-      "GridVersionConstructor.java"        -> List("GridVersion", "private access"),
-      "GridDefinitionConstructor.java"     -> List("constructor GridDefinition", "cannot be applied"),
-      "GridReconciliationConstructor.java" -> List("Reconciliation", "cannot find symbol"),
-      "CatalogOutcomeConstructor.java"     -> List("Published", "CatalogTransition")
-    )
-    val negativeClasspath = s"$classpath${java.io.File.pathSeparator}$preludeOutput"
-
-    cases.foreach: (file, expected) =>
-      val output = Files.createTempDirectory("reference-data-java-negative")
-      val result = compile(List(fixturesRoot.resolve(s"negative/$file")), output, negativeClasspath)
-      assert(!result.succeeded, s"expected $file to fail Java compilation")
-      expected.foreach(fragment => assert(result.diagnostics.contains(fragment), result.diagnostics))
-      List("AssertionError", "Exception in thread", "StackOverflowError").foreach: fragment =>
-        assert(!result.diagnostics.contains(fragment), result.diagnostics)
-
   private def compile(sources: List[Path], output: Path, compileClasspath: String): Compilation =
     val compiler = Option(ToolProvider.getSystemJavaCompiler).getOrElse:
       throw new IllegalStateException("a full JDK is required for Java boundary fixtures")

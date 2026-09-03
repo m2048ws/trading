@@ -1,7 +1,6 @@
 package external
 
 import java.io.File
-import java.lang.reflect.Modifier
 import java.net.URLClassLoader
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
@@ -105,13 +104,7 @@ class RiskCompilerBoundarySuite extends FunSuite:
     assert(rejected.rendered.contains("Required:"), rejected.rendered)
     forbiddenDiagnostics.foreach(fragment => assert(!rejected.rendered.contains(fragment), rejected.rendered))
 
-  test("assessment and model representations stay final without exposing arbitrary certification"):
-    List(
-      Class.forName("trading.risk.LotRiskAssessment"),
-      Class.forName("trading.risk.ModelViolations"),
-      Class.forName("trading.risk.MonotoneLotRisk")
-    ).foreach: representation =>
-      assert(Modifier.isFinal(representation.getModifiers), s"${representation.getName} is not final")
+  test("the completed model exposes no arbitrary certification API"):
     val model = Class.forName("trading.risk.MonotoneLotRisk")
     assert(!model.getMethods.exists(_.getName == "makeLots"), "model exposes its total lot constructor to Java")
     assert(

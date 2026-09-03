@@ -42,17 +42,5 @@ public final class GridReconciliationAuthority extends SharedReferenceDataJavaSe
       throw new AssertionError("checked reconciliation did not preserve the coordinate");
     }
 
-    rejectsConstruction(() -> GridHandle.retype(new Object(), coordinate));
-    rejectsConstruction(() -> GridHandle.retype(asset.dimension(), coordinate));
-    rejectsConstruction(() -> GridHandle.retype(handle, coordinate));
-  }
-
-  private static void rejectsConstruction(Runnable attempt) {
-    try {
-      attempt.run();
-      throw new AssertionError("caller value became reconciliation authority");
-    } catch (IllegalArgumentException expected) {
-      // Visible handles and arbitrary values are not the opaque checked issuance token.
-    }
   }
 }

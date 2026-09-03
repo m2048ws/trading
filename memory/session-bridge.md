@@ -14,17 +14,16 @@ updated: 2026-09-03
 - **Issue**: 36 https://github.com/m2048ws/trading/issues/36
 - **Change**: simplify-in-process-trust-boundary
 - **Worktree**: /Users/m/src/money/.worktrees/simplify-in-process-trust-boundary
-- **Phase at Checkpoint**: applying
-- **Task Group at Checkpoint**: 9
-- **Observed Run Revision**: 10
-- **Last Verified HEAD**: e0122e1616338c1ca515f39d14ea269ce5b52bf5
+- **Phase at Checkpoint**: awaiting_verify
+- **Task Group at Checkpoint**: 10
+- **Observed Run Revision**: 11
+- **Last Verified HEAD**: aff014e3c3356d32699a4af3a09fa59d354946d3
 
 ## Next Action
-- Commit and acknowledge Task Group 9, sync the draft PR, then continue with final Task Group 10.
+- Run the separate canonical whole-change Verify gate, then proceed to explicit human Review.
 
 ## Blockers
-- Task Group 9 boundary-codec/catalog-replay static construction, fixture reconciliation, note, and bridge
-  checkpoint are ready for their dedicated commit.
+- none
 
 ## Uncommitted Work
 - none
@@ -53,6 +52,9 @@ updated: 2026-09-03
 - Task Group 9 removed the final seven codec/catalog-replay allowances (76 tokens), staticized boundary construction,
   added an ordinary Java checked-factory client, and retained strict external-data, V1 compatibility, canonicalization,
   reconstruction, publication, and replay semantics. The guard now reports no production or benchmark sites.
+- Task Group 10 removed 25 hostile-only fixtures and the remaining constructor/finality assertions, simplified the
+  runtime bridge, expanded the zero-reflection guard to Java, retained supported semantic/external-data coverage, and
+  passed the clean 1,043-test aggregate plus representative risk, codec, and runtime measurements.
 
 ## Promotion Queue
 - none

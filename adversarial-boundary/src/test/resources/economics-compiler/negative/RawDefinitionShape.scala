@@ -8,8 +8,6 @@ object RawDefinitionShape:
   val supported: AssetId = baseDefinition.id
 
   // OFFENDING-BEGIN
-  val directId = new InstrumentId("")
-  val directUnderlying = new UnderlyingId("")
   val rawId: InstrumentId = "raw-instrument"
   val trustedHandle: AssetId = base
   val snapshotListing: ListingDefinition = snapshot

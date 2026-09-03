@@ -6,7 +6,7 @@ The production artifact depends only on `trading-quantities`, `trading-instrumen
 utilities. It does not own order construction, execution scenarios, fee policies, catalogs, application/runtime
 effects, persistence, telemetry, or benchmarks.
 
-The current boundary owns exact refined downside measurement, unforgeable lot-risk assessments, and constructive
+The current boundary owns exact refined downside measurement, checked lot-risk assessments, and constructive
 monotone models. Its closed exact loss vocabulary provides:
 
 - affine loss with a signed first-lot value and refined nonnegative marginal loss;

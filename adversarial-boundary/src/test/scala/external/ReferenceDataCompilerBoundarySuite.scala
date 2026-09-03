@@ -105,27 +105,12 @@ class ReferenceDataCompilerBoundarySuite extends FunSuite:
 
   private val negativeFixtures = List(
     NegativeFixture(
-      "TrustedHandleImplementation.scala",
-      List("cannot be accessed", "DimensionHandle", "Asset", "GridHandle"),
-      minimumErrors = 3
-    ),
-    NegativeFixture(
-      "InternalImplementationAccess.scala",
-      List("cannot be accessed", "handlePermit", "lineage", "CatalogState", "CatalogSnapshot", "Reconciliation"),
-      minimumErrors = 5
-    ),
-    NegativeFixture(
       "AnonymousGridStablePromotion.scala",
       List("Found:", "Required:", "GridHandle")
     ),
     NegativeFixture(
       "RemovedStableGridFactory.scala",
       List("method create in object UniformGrid", "too many arguments")
-    ),
-    NegativeFixture(
-      "StableIdentityConstructors.scala",
-      List("cannot be accessed", "AssetId", "GridId", "GridVersion"),
-      minimumErrors = 3
     ),
     NegativeFixture(
       "StableIdentityApply.scala",
@@ -140,16 +125,6 @@ class ReferenceDataCompilerBoundarySuite extends FunSuite:
     NegativeFixture(
       "GridDefinitionProductBypass.scala",
       List("Found:", "Positive", "copy", "fromProduct", "is not a member"),
-      minimumErrors = 3
-    ),
-    NegativeFixture(
-      "CatalogGuardedConstruction.scala",
-      List("cannot be accessed", "CatalogBatch", "CatalogRevision", "CatalogDelta", "CatalogViolations"),
-      minimumErrors = 4
-    ),
-    NegativeFixture(
-      "CatalogOutcomeConstruction.scala",
-      List("cannot be accessed", "CatalogTransition", "Published", "Unchanged"),
       minimumErrors = 3
     )
   )

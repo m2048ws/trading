@@ -2,20 +2,12 @@ package external
 
 import java.io.DataInputStream
 import java.io.File
-import java.lang.invoke.MethodHandles
-import java.lang.invoke.MethodType
-import java.lang.reflect.InvocationTargetException
-import java.lang.reflect.Modifier
 import java.net.URLClassLoader
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
-import java.util.Locale
 import java.util.jar.JarFile
-import javax.tools.DiagnosticCollector
-import javax.tools.JavaFileObject
-import javax.tools.ToolProvider
 import scala.jdk.CollectionConverters.*
 
 import dotty.tools.dotc.Main
@@ -26,8 +18,6 @@ final class ApplicationRuntimeBoundarySuite extends FunSuite:
   private final case class Compilation(output: Path, errors: List[String], warnings: List[String]):
     def succeeded: Boolean = errors.isEmpty && warnings.isEmpty
     def rendered: String   = (errors ++ warnings).mkString("\n")
-
-  private final case class JavaCompilation(succeeded: Boolean, diagnostics: String)
 
   private val fixturesRoot = Paths.get(getClass.getResource("/application-runtime-boundary").toURI)
 
@@ -74,54 +64,10 @@ final class ApplicationRuntimeBoundarySuite extends FunSuite:
 
     val jar = new JarFile(runtimeJar.toFile)
     try
-      val classEntries = jar.entries().asScala.filter(entry => entry.getName.endsWith(".class")).map(_.getName).toSet
-      val bridgeEntry  = "trading/runtime/LiveCatalogBridge.class"
-      val implementationEntry = "trading/runtime/LiveCatalogBridge$RefBackedLiveCatalog.class"
-      assert(classEntries.contains(bridgeEntry), classEntries.mkString("\n"))
-      assert(classEntries.contains(implementationEntry), classEntries.mkString("\n"))
-      assert(!classEntries.exists(_.contains("InMemoryLiveCatalog$$anon$")), classEntries.mkString("\n"))
-
-      assertEquals(classFileMajor(jar, bridgeEntry), 69)
-      assertEquals(classFileMajor(jar, implementationEntry), 69)
-
-      val bridge = Class.forName(bridgeEntry.stripSuffix(".class").replace('/', '.'))
-      assert(!Modifier.isPublic(bridge.getModifiers), bridge.toString)
-      val factoryField = bridge.getDeclaredField("FACTORY_CLASS")
-      factoryField.setAccessible(true)
-      val guardedFactory = factoryField.get(null).asInstanceOf[Class[?]]
-      val actualFactory  = Class.forName("trading.runtime.InMemoryLiveCatalog$", false, bridge.getClassLoader)
-      assert(guardedFactory.eq(actualFactory))
-      assertEquals(
-        guardedFactory.getProtectionDomain.getCodeSource,
-        bridge.getProtectionDomain.getCodeSource
-      )
-      val create = bridge.getDeclaredMethods.find(_.getName == "create").getOrElse(fail("missing bridge create"))
-      assert(!Modifier.isPublic(create.getModifiers), create.toString)
-      create.setAccessible(true)
-      val rejected = intercept[InvocationTargetException](create.invoke(null, null, null))
-      assert(rejected.getCause.isInstanceOf[SecurityException], rejected.getCause)
-
-      val implementation = Class.forName(implementationEntry.stripSuffix(".class").replace('/', '.'))
-      assert(Modifier.isPrivate(implementation.getModifiers), implementation.toString)
-      val constructors = implementation.getDeclaredConstructors.toList
-      assertEquals(constructors.size, 1)
-      val constructor = constructors.head
-      assert(Modifier.isPrivate(constructor.getModifiers), constructor.toString)
-      val parameterTypes = constructor.getParameterTypes.map(_.getName).toSet
-      assert(!parameterTypes.contains("cats.effect.kernel.Ref"), constructor.toString)
-      assert(!parameterTypes.contains("cats.effect.kernel.Sync"), constructor.toString)
-      constructor.setAccessible(true)
-      val reflectiveConstruction = intercept[InvocationTargetException](constructor.newInstance(null, null))
-      assert(reflectiveConstruction.getCause.isInstanceOf[SecurityException], reflectiveConstruction.getCause)
-
-      val privateLookup     = MethodHandles.privateLookupIn(implementation, MethodHandles.lookup())
-      val constructorType   = MethodType.methodType(java.lang.Void.TYPE, constructor.getParameterTypes.toList.asJava)
-      val constructorHandle = privateLookup.findConstructor(implementation, constructorType)
-      val _                 = intercept[SecurityException]:
-        constructorHandle.invokeWithArguments(List[Object](null, null).asJava)
-      implementation.getDeclaredFields.foreach: field =>
-        assert(!field.getType.getName.contains("cats.effect.kernel.Ref"), field.toString)
-        assert(!field.getType.getName.contains("cats.effect.kernel.Sync"), field.toString)
+      val classEntries = jar.entries().asScala.filter(entry => entry.getName.endsWith(".class")).toVector
+      assert(classEntries.nonEmpty, runtimeJar.toString)
+      classEntries.foreach: entry =>
+        assertEquals(classFileMajor(jar, entry.getName), 69)
     finally jar.close()
     end try
 
@@ -152,29 +98,6 @@ final class ApplicationRuntimeBoundarySuite extends FunSuite:
     assert(rejected.rendered.contains("cats"), rejected.rendered)
     compilerForbiddenDiagnostics.foreach: diagnostic =>
       assert(!rejected.rendered.contains(diagnostic), rejected.rendered)
-
-  test("Scala runtime callers cannot name or construct the private Ref-backed interpreter"):
-    val source  = fixturesRoot.resolve("negative/RuntimeInternalsUnavailable.scala")
-    val prelude = compilePrelude(source, runtimeClasspath)
-    assert(prelude.succeeded, s"negative fixture prelude failed:\n${prelude.rendered}")
-
-    val rejected = compile(source, runtimeClasspath)
-    assert(!rejected.succeeded, "the private Ref-backed interpreter unexpectedly compiled for an external caller")
-    assert(rejected.rendered.contains("RefBackedLiveCatalog"), rejected.rendered)
-    compilerForbiddenDiagnostics.foreach: diagnostic =>
-      assert(!rejected.rendered.contains(diagnostic), rejected.rendered)
-
-  test("Java runtime callers cannot name or invoke the private interpreter implementation"):
-    val source = fixturesRoot.resolve("negative/RuntimeInternalsUnavailable.java")
-    val output = Files.createTempDirectory("application-runtime-java-negative-")
-    val result = compileJava(source, output, runtimeClasspath)
-
-    assert(!result.succeeded, "the Ref-backed interpreter unexpectedly compiled for a Java caller")
-    assert(result.diagnostics.contains("RefBackedLiveCatalog"), result.diagnostics)
-    assert(
-      result.diagnostics.contains("has private access") || result.diagnostics.contains("cannot be accessed"),
-      result.diagnostics
-    )
 
   private def classpath(resourceName: String): String =
     val resource = Option(getClass.getResourceAsStream(resourceName)).getOrElse:
@@ -229,30 +152,6 @@ final class ApplicationRuntimeBoundarySuite extends FunSuite:
       reporter
     )
     Compilation(output, reporter.allErrors.map(_.message), reporter.allWarnings.map(_.message))
-
-  private def compileJava(source: Path, output: Path, compilationClasspath: String): JavaCompilation =
-    val compiler = Option(ToolProvider.getSystemJavaCompiler).getOrElse:
-      throw new IllegalStateException("a full JDK is required for Java boundary fixtures")
-    val diagnostics = new DiagnosticCollector[JavaFileObject]
-    val files       = compiler.getStandardFileManager(diagnostics, Locale.ROOT, StandardCharsets.UTF_8)
-    try
-      val units   = files.getJavaFileObjectsFromFiles(List(source.toFile).asJava)
-      val options = List(
-        "--release",
-        "25",
-        "-proc:none",
-        "-classpath",
-        compilationClasspath,
-        "-d",
-        output.toString
-      )
-      val succeeded = compiler.getTask(null, files, diagnostics, options.asJava, null, units).call()
-      val rendered  = diagnostics.getDiagnostics.asScala
-        .map(diagnostic => diagnostic.getMessage(Locale.ROOT))
-        .mkString("\n")
-      JavaCompilation(succeeded, rendered)
-    finally files.close()
-  end compileJava
 
   private def initializeModule(output: Path, moduleClassName: String): Unit =
     val loader = new URLClassLoader(Array(output.toUri.toURL), getClass.getClassLoader)

@@ -37,7 +37,7 @@ object InMemoryLiveCatalog:
             val commitFunction: JavaFunction[CatalogBatch, Object] =
               batch => commitAction(batch).asInstanceOf[Object]
             val implementation = LiveCatalogBridge.create(snapshotSupplier, commitFunction)
-            // The JVM-private Java bridge verifies this factory as its direct caller and implements the erased
-            // LiveCatalog shape. Both actions come from the same F and state, so the cast cannot mix effects or roots.
+            // The package-local Java bridge implements the erased LiveCatalog shape. Both actions come from the same
+            // F and state, so the cast cannot mix effects or roots.
             Right(implementation.asInstanceOf[LiveCatalog[F]])
 end InMemoryLiveCatalog

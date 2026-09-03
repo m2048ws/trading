@@ -436,7 +436,7 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
     val prelude = compileFilteredPrelude(source, compileOrder)
     assert(prelude.succeeded, s"fixture prelude must compile independently:\n${prelude.rendered}")
     val rejected = compileOrder(source)
-    assert(rejected.errors.size >= 8, rejected.rendered)
+    assert(rejected.errors.size >= 7, rejected.rendered)
     assert(rejected.rendered.contains("Found:"), rejected.rendered)
     assert(rejected.rendered.contains("Required:"), rejected.rendered)
     economicsForbiddenDiagnostics.foreach(fragment => assert(!rejected.rendered.contains(fragment), rejected.rendered))
@@ -472,12 +472,6 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
     assert(rejected.rendered.contains("is not a member"), rejected.rendered)
     assert(rejected.rendered.contains("ScenarioLeg"), rejected.rendered)
 
-  test("completed order JAR exposes no raw side sign to same-package Java"):
-    val source = javaFixturesRoot.resolve("negative/RemovedSideSign.java")
-    val result = compileJava(source, orderCompilationClasspath)
-    assert(!result.succeeded, "same-package Java unexpectedly accessed a raw side sign")
-    assert(result.diagnostics.contains("sign"), result.diagnostics)
-
   test("ordinary Java uses checked order factories and closed alternatives without reflection"):
     val source = javaFixturesRoot.resolve("positive/OrderFactoryClient.java")
     val result = compileJava(source, orderCompilationClasspath)
@@ -504,9 +498,7 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
     initializeModule(result.output, "external.economics.positive.SameShapeReplayClient$")
 
   private val negativeFixtures = List(
-    NegativeFixture("InstrumentSpecAuthority.scala", List("Cannot extend sealed trait"), 1),
-    NegativeFixture("PackageSpoofInstrumentSpec.scala", List("Cannot extend sealed trait"), 1),
-    NegativeFixture("RawDefinitionShape.scala", List("cannot be accessed", "Found:", "Required:"), 6),
+    NegativeFixture("RawDefinitionShape.scala", List("Found:", "Required:"), 4),
     NegativeFixture("RawInstrumentConstruction.scala", List("Found:", "Required:", "is not a member"), 3),
     NegativeFixture("ReversedPayoffEndpoint.scala", List("Found:", "Required:"), 1, Some(1)),
     NegativeFixture("SpecAuthorityExtraction.scala", List("is not a member"), 4, Some(4)),
@@ -520,8 +512,7 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
     NegativeFixture("ReversedSettlementRate.scala", List("Found:", "Required:"), 1, Some(1)),
     NegativeFixture("RefinementLoss.scala", List("Found:", "Required:"), 4, Some(4)),
     NegativeFixture("CoreSideAbsent.scala", List("is not a member"), 2, Some(2)),
-    NegativeFixture("UnlawfulAlgebra.scala", List("No given instance"), 2, Some(2)),
-    NegativeFixture("RawCoreConstruction.scala", List("cannot be accessed"), 3, Some(3))
+    NegativeFixture("UnlawfulAlgebra.scala", List("No given instance"), 2, Some(2))
   )
 
   negativeFixtures.foreach: fixture =>

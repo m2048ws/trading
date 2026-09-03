@@ -3,13 +3,13 @@
 This Scala 3 module owns stable asset and grid identity above the mathematical `trading-quantities` foundation.
 
 Its public package `trading.reference` provides `AssetId`, `GridId`, `GridVersion`, dimension-scoped `GridIdentity`,
-immutable definitions, and non-forgeable `Asset`, `DimensionHandle`, and `GridHandle` capabilities. A grid handle wraps
+immutable definitions, and catalog-issued `Asset`, `DimensionHandle`, and `GridHandle` capabilities. A grid handle wraps
 exactly one anonymous quantity `GridRef`, delegates coordinate and embedding operations to it, and adds stable identity
 plus opaque issuer lineage without changing quantity arithmetic.
 
-Stable IDs are private immutable value roots. `AssetId.from`, `GridId.from`, and `GridVersion.from` return precise typed
-failures for empty or nonpositive input; no public constructor, case-class `apply`, or `copy` path bypasses validation.
-Null is rejected before a result is returned.
+Stable IDs are validated immutable value roots. `AssetId.from`, `GridId.from`, and `GridVersion.from` return precise
+typed failures for empty or nonpositive input; documented construction does not bypass that validation. Constructor
+visibility is not an in-process security boundary. Null is rejected before a result is returned.
 
 The dependency is one way:
 

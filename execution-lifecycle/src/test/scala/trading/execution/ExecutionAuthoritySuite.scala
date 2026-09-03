@@ -3,7 +3,6 @@ package trading.execution
 import java.io.ByteArrayOutputStream
 import java.io.NotSerializableException
 import java.io.ObjectOutputStream
-import java.lang.reflect.Modifier
 
 import munit.FunSuite
 
@@ -165,26 +164,6 @@ final class ExecutionAuthoritySuite extends FunSuite:
         )
       )
     )
-
-  test("authority representations remain final"):
-    val representations = List(
-      classOf[ExecutionConstructionErrors],
-      classOf[ExecutionTarget],
-      classOf[QualifiedSourceEventId],
-      classOf[QualifiedSourceOrderId],
-      classOf[QualifiedFillId],
-      classOf[QualifiedSourceStreamId],
-      classOf[QualifiedStreamPosition],
-      classOf[SourceContinuation.StreamOrigin],
-      classOf[SourceContinuation.ContinuesAfter],
-      classOf[AuthoritativelySequenced],
-      classOf[SourceCheckpoint],
-      classOf[SourceCompleteness],
-      classOf[ExecutionLifecycle[?, ?, ?]]
-    )
-
-    representations.foreach: representation =>
-      assert(Modifier.isFinal(representation.getModifiers), s"${representation.getName} must be final")
 
   test("qualified authority, ordering, lifecycle, and construction errors reject Java serialization"):
     val executionTarget = target()

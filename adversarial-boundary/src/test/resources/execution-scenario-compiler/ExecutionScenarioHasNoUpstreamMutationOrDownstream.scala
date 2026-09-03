@@ -27,7 +27,7 @@ object ExecutionScenarioHasNoUpstreamMutationOrDownstream:
     slice.lots = replacement
     val copied = slice.copy(lots = replacement)
 
-  def forgeScenario[D <: Dim, B <: Dim, Q <: Dim, M](
+  def mutateScenario[D <: Dim, B <: Dim, Q <: Dim, M](
     scenario: OrderScenario[D, B, Q, M],
     replacement: PositionLots[D]
   ): Unit =

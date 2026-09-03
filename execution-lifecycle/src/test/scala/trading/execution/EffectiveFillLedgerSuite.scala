@@ -3,7 +3,6 @@ package trading.execution
 import java.io.ByteArrayOutputStream
 import java.io.NotSerializableException
 import java.io.ObjectOutputStream
-import java.lang.reflect.Modifier
 
 import munit.ScalaCheckSuite
 import org.scalacheck.Prop.forAll
@@ -312,22 +311,12 @@ final class EffectiveFillLedgerSuite extends ScalaCheckSuite:
       left.knownExposure == position(value, -7)
     }
 
-  test("effective ledger representations are closed immutable values with structural equality"):
-    val value           = lifecycle(Side.Buy, 10, "representation")
-    val original        = fill(value, "fill", "fill", 2)
-    val ledger          = record(value, Vector(original)).observation.effectiveFillLedger
-    val active          = ledger.byFillId(original.fillId)
-    val repeated        = replay(value, Vector(original)).state.observation.effectiveFillLedger
-    val representations = List(
-      classOf[ModifierAmbiguity],
-      classOf[ActiveEffectiveFill[?, ?, ?]],
-      classOf[BustedEffectiveFill[?, ?, ?]],
-      classOf[AmbiguousEffectiveFill[?, ?, ?]],
-      classOf[ConflictingEffectiveFill[?, ?, ?]],
-      classOf[EffectiveFillLedger[?, ?, ?]]
-    )
-    representations.foreach: representation =>
-      assert(Modifier.isFinal(representation.getModifiers), s"${representation.getName} must be final")
+  test("effective ledger values retain structural equality and reject Java serialization"):
+    val value    = lifecycle(Side.Buy, 10, "representation")
+    val original = fill(value, "fill", "fill", 2)
+    val ledger   = record(value, Vector(original)).observation.effectiveFillLedger
+    val active   = ledger.byFillId(original.fillId)
+    val repeated = replay(value, Vector(original)).state.observation.effectiveFillLedger
 
     assertEquals(ledger, repeated)
     assertEquals(ledger.hashCode, repeated.hashCode)

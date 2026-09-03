@@ -3,7 +3,6 @@ package trading.execution
 import java.io.ByteArrayOutputStream
 import java.io.NotSerializableException
 import java.io.ObjectOutputStream
-import java.lang.reflect.Modifier
 
 import munit.ScalaCheckSuite
 import org.scalacheck.Prop.forAll
@@ -257,7 +256,7 @@ final class CommandStateSuite extends ScalaCheckSuite:
       result.conflicts.isEmpty && result.cancellationRequests.isEmpty
     }
 
-  test("command representations are final, non-serializable, and expose no native amendment API"):
+  test("commands reject Java serialization and expose no native amendment API"):
     val original      = submit("submit")
     val transition    = initial.record(original)
     val notDispatched = required(ProvenNotDispatched.forSubmit(original))
@@ -266,7 +265,7 @@ final class CommandStateSuite extends ScalaCheckSuite:
     val conflicted    = observed.state.record(cancelReuse)
     val errors        = SubmitOrderCommand.create(lifecycle)(null).swap.toOption.get
 
-    val representations = List(
+    val apiTypes = List(
       classOf[CommandViolations],
       classOf[SubmitOrderCommand[?, ?, ?]],
       classOf[CancelOrderCommand[?, ?, ?]],
@@ -276,12 +275,8 @@ final class CommandStateSuite extends ScalaCheckSuite:
       classOf[CommandTransition[?, ?, ?]],
       classOf[CommandState[?, ?, ?]]
     )
-    representations.foreach: representation =>
-      assert(Modifier.isFinal(representation.getModifiers), s"${representation.getName} must be final")
-
-    val publicMethodNames =
-      (representations :+ classOf[ExecutionCommand[?, ?, ?]] :+ classOf[DispatchEvidence[?, ?, ?]])
-        .flatMap(_.getMethods.map(_.getName.toLowerCase))
+    val publicMethodNames = (apiTypes :+ classOf[ExecutionCommand[?, ?, ?]] :+ classOf[DispatchEvidence[?, ?, ?]])
+      .flatMap(_.getMethods.map(_.getName.toLowerCase))
     List("amend", "cancelreplace", "atomicreplace", "transportattempt", "receiptid").foreach: forbidden =>
       assert(!publicMethodNames.exists(_.contains(forbidden)), clues(forbidden, publicMethodNames))
 

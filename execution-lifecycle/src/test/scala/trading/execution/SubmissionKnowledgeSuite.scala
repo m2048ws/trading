@@ -3,7 +3,6 @@ package trading.execution
 import java.io.ByteArrayOutputStream
 import java.io.NotSerializableException
 import java.io.ObjectOutputStream
-import java.lang.reflect.Modifier
 
 import munit.ScalaCheckSuite
 import org.scalacheck.Prop.forAll
@@ -348,23 +347,9 @@ final class SubmissionKnowledgeSuite extends ScalaCheckSuite:
       knowledge(first.state).isInstanceOf[AcceptedSubmission[?, ?, ?]]
     }
 
-  test("submission evidence and closed knowledge representations are immutable values"):
-    val command         = submit()
-    val value           = knowledge(issued(command))
-    val representations = List(
-      classOf[SubmissionEvidence[?, ?, ?]],
-      classOf[SubmissionConflicts],
-      classOf[IssuedPendingSubmission[?, ?, ?]],
-      classOf[AcceptedSubmission[?, ?, ?]],
-      classOf[RejectedSubmission[?, ?, ?]],
-      classOf[ProvenNotDispatchedSubmission[?, ?, ?]],
-      classOf[IndeterminateSubmission[?, ?, ?]],
-      classOf[ExecutionProvenSubmission[?, ?, ?]],
-      classOf[AuthoritativelyAbsentSubmission[?, ?, ?]],
-      classOf[ConflictingSubmission[?, ?, ?]]
-    )
-    representations.foreach: representation =>
-      assert(Modifier.isFinal(representation.getModifiers), s"${representation.getName} must be final")
+  test("submission evidence and knowledge values reject Java serialization"):
+    val command = submit()
+    val value   = knowledge(issued(command))
 
     List[JavaSerializationUnsupported](value, value.evidence).foreach(assertSerializationRejected)
 

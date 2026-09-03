@@ -77,28 +77,20 @@ class ReferenceDataRuntimeBoundarySuite extends FunSuite:
     assertEquals(validGridId("equal"), validGridId("equal"))
     assertEquals(validGridVersion(3).toString, "GridVersion(3)")
 
-  test("packaged products and stable identities expose no unchecked construction bypass"):
+  test("packaged products and stable identities expose no product-copy bypass"):
     List(classOf[AssetId], classOf[GridId], classOf[GridVersion]).foreach: identityClass =>
       assert(!classOf[Product].isAssignableFrom(identityClass))
-      assert(identityClass.getDeclaredConstructors.forall(constructor =>
-        java.lang.reflect.Modifier.isPrivate(constructor.getModifiers)
-      ))
 
     List(classOf[GridDefinition], classOf[CatalogBatch], classOf[CatalogDelta], classOf[CatalogRevision]).foreach:
       domainClass => assert(!classOf[Product].isAssignableFrom(domainClass))
 
-  test("packaged catalog issues final handles through pure transitions and direct snapshots"):
+  test("packaged catalog issues handles through pure transitions and direct snapshots"):
     val result       = catalog("private-jvm", "private-jvm-grid")
     val snapshot     = result.state.snapshot
     val definition   = assetDefinition("private-jvm")
     val asset        = snapshot.resolveAsset(definition.id).toOption.get
     val gridIdentity = gridDefinition(asset.dimension.key, "private-jvm-grid").identity
     val grid         = snapshot.resolveGrid(asset.dimension)(gridIdentity.key).toOption.get
-
-    List(asset.dimension, asset, grid).foreach: handle =>
-      val modifiers = handle.getClass.getModifiers
-      assert(java.lang.reflect.Modifier.isFinal(modifiers))
-      assert(!java.lang.reflect.Modifier.isAbstract(modifiers))
 
     assert(snapshot.resolveAsset(asset.id).contains(asset))
     assert(snapshot.resolveGrid(grid.identity).contains(grid))

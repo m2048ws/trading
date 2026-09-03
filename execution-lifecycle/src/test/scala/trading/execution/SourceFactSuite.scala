@@ -3,7 +3,6 @@ package trading.execution
 import java.io.ByteArrayOutputStream
 import java.io.NotSerializableException
 import java.io.ObjectOutputStream
-import java.lang.reflect.Modifier
 
 import munit.ScalaCheckSuite
 import org.scalacheck.Prop.forAll
@@ -398,7 +397,7 @@ final class SourceFactSuite extends ScalaCheckSuite:
       state.eventConflicts.isEmpty && state.fillConflicts.isEmpty
     }
 
-  test("source fact representations are final values that reject Java serialization"):
+  test("source fact values reject Java serialization"):
     val executionFill = fill("fill", "fill")
     val correction    = required(
       FillCorrected.create(lifecycle)(
@@ -411,29 +410,7 @@ final class SourceFactSuite extends ScalaCheckSuite:
         SourceOrdering.unsequenced
       )
     )
-    val transition      = recorded(initial.record(correction))
-    val representations = List(
-      classOf[SourceFactViolations],
-      classOf[OrderAccepted[?, ?, ?]],
-      classOf[OrderRejected[?, ?, ?]],
-      classOf[ExecutionFill[?, ?, ?]],
-      classOf[FillCorrected[?, ?, ?]],
-      classOf[FillBusted[?, ?, ?]],
-      classOf[CancellationEffective[?, ?, ?]],
-      classOf[ReconciliationCheckpoint[?, ?, ?]],
-      classOf[SourceOrderCompleted[?, ?, ?]],
-      classOf[SourceOrderAbsent[?, ?, ?]],
-      classOf[SourceFactClassifications],
-      classOf[SourceFactConflict[?, ?, ?]],
-      classOf[FillIdentityConflict[?, ?, ?]],
-      classOf[StreamPositionConflict[?, ?, ?]],
-      classOf[UnresolvedFillReference[?, ?, ?]],
-      classOf[SourceFactRecorded[?, ?, ?]],
-      classOf[SourceFactRejected[?, ?, ?]],
-      classOf[SourceEvidenceState[?, ?, ?]]
-    )
-    representations.foreach: representation =>
-      assert(Modifier.isFinal(representation.getModifiers), s"${representation.getName} must be final")
+    val transition = recorded(initial.record(correction))
 
     val values: List[JavaSerializationUnsupported] = List(
       executionFill,
