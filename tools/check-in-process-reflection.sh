@@ -3,34 +3,38 @@
 set -eu
 
 repository_root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
-baseline="$repository_root/tools/in-process-reflection-baseline.tsv"
 forbidden='MethodHandle|MethodHandles|MethodType|privateLookupIn|java\.lang\.invoke|java\.lang\.reflect|Class\.forName|StackWalker|setAccessible|trySetAccessible|getDeclared(Constructor|Method|Field)'
-failed=0
-remaining=0
+scratch=$(mktemp -d "${TMPDIR:-/tmp}/in-process-reflection.XXXXXX")
+sources="$scratch/sources"
+matches="$scratch/matches"
+
+cleanup() {
+  rm -rf "$scratch"
+}
+
+trap cleanup 0 HUP INT TERM
 
 cd "$repository_root"
 
-for source in $(rg --files -g '*/src/main/**/*.scala' -g '*/src/main/**/*.java' | LC_ALL=C sort); do
-  count=$(rg -o "$forbidden" "$source" 2>/dev/null | wc -l | tr -d ' ')
-  allowed=$(awk -F '\t' -v source="$source" '$1 == source { print $2 }' "$baseline")
-  if [ -z "$allowed" ]; then
-    allowed=0
-  fi
+rg --files -g '*/src/main/**/*.scala' -g '*/src/main/**/*.java' | LC_ALL=C sort > "$sources"
+: > "$matches"
 
-  if [ "$count" -gt "$allowed" ]; then
-    printf '%s: found %s forbidden reflective tokens; migration allowance is %s\n' "$source" "$count" "$allowed" >&2
-    rg -n "$forbidden" "$source" >&2 || true
-    failed=1
+while IFS= read -r source; do
+  if rg -n --with-filename "$forbidden" -- "$source" >> "$matches"; then
+    :
+  else
+    status=$?
+    if [ "$status" -ne 1 ]; then
+      printf 'in-process reflection guard: scan failed for %s (exit %s)\n' "$source" "$status" >&2
+      exit "$status"
+    fi
   fi
-  remaining=$((remaining + count))
-done
+done < "$sources"
 
-if [ "$failed" -ne 0 ]; then
+if [ -s "$matches" ]; then
+  printf 'in-process reflection guard: fail (prohibited production or benchmark token found)\n' >&2
+  cat "$matches" >&2
   exit 1
 fi
 
-if [ "$remaining" -eq 0 ]; then
-  printf 'in-process reflection guard: pass (no production or benchmark sites)\n'
-else
-  printf 'in-process reflection guard: pass (%s reviewed migration tokens remain; no regression)\n' "$remaining"
-fi
+printf 'in-process reflection guard: pass (no production or benchmark sites)\n'
