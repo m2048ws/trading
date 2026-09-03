@@ -1,10 +1,5 @@
 package trading.execution
 
-import java.lang.invoke.MethodHandle
-import java.lang.invoke.MethodHandles
-import java.lang.invoke.MethodType
-import scala.annotation.nowarn
-
 import trading.economics.instrument.InstrumentId
 import trading.economics.instrument.Lots
 import trading.economics.instrument.Price
@@ -53,8 +48,7 @@ final case class SourceFactGridMismatch(
   supplied: GridIdentity)
   extends SourceFactViolation
 
-@nowarn("msg=Ignoring.*qualifier")
-final class SourceFactViolations private[this] (private val values: Vector[SourceFactViolation])
+final class SourceFactViolations private (private val values: Vector[SourceFactViolation])
   extends JavaSerializationUnsupported:
 
   def head: SourceFactViolation             = values.head
@@ -69,13 +63,8 @@ final class SourceFactViolations private[this] (private val values: Vector[Sourc
   override def toString: String = values.mkString("SourceFactViolations(", ",", ")")
 
 object SourceFactViolations:
-  private val constructor: MethodHandle =
-    MethodHandles
-      .privateLookupIn(classOf[SourceFactViolations], MethodHandles.lookup())
-      .findConstructor(classOf[SourceFactViolations], MethodType.methodType(classOf[Unit], classOf[Vector[?]]))
-
   private def construct(values: Vector[SourceFactViolation]): SourceFactViolations =
-    constructor.invoke(values).asInstanceOf[SourceFactViolations]
+    new SourceFactViolations(values)
 
   def one(value: SourceFactViolation): SourceFactViolations = construct(Vector(value))
 
@@ -215,8 +204,6 @@ private object SourceFactValidation:
 end SourceFactValidation
 
 sealed abstract class SourceFact[D <: Dim, B <: Dim, Q <: Dim] protected () extends JavaSerializationUnsupported:
-  SourceFact.requireBuiltin(this)
-
   def eventId: QualifiedSourceEventId
   def executionOrderId: ExecutionOrderId
   def sourceOrderId: QualifiedSourceOrderId
@@ -229,22 +216,6 @@ sealed abstract class SourceFact[D <: Dim, B <: Dim, Q <: Dim] protected () exte
 
 sealed abstract class FillModifier[D <: Dim, B <: Dim, Q <: Dim] protected () extends SourceFact[D, B, Q]():
   def referencedFillId: QualifiedFillId
-
-object SourceFact:
-  private[execution] def requireBuiltin(value: SourceFact[?, ?, ?]): Unit =
-    val runtimeClass = value.getClass
-    val supported    =
-      runtimeClass == classOf[OrderAccepted[?, ?, ?]] ||
-        runtimeClass == classOf[OrderRejected[?, ?, ?]] ||
-        runtimeClass == classOf[ExecutionFill[?, ?, ?]] ||
-        runtimeClass == classOf[FillCorrected[?, ?, ?]] ||
-        runtimeClass == classOf[FillBusted[?, ?, ?]] ||
-        runtimeClass == classOf[CancellationEffective[?, ?, ?]] ||
-        runtimeClass == classOf[ReconciliationCheckpoint[?, ?, ?]] ||
-        runtimeClass == classOf[SourceOrderCompleted[?, ?, ?]] ||
-        runtimeClass == classOf[SourceOrderAbsent[?, ?, ?]]
-    if !supported then
-      throw new IllegalAccessError(s"unsupported SourceFact implementation: ${runtimeClass.getName}")
 
 private object SourceFactEquality:
   def common(left: SourceFact[?, ?, ?], right: SourceFact[?, ?, ?]): Boolean =
@@ -259,8 +230,7 @@ private object SourceFactEquality:
       left.fillId == right.fillId && left.lots == right.lots && left.price == right.price &&
       left.ordering == right.ordering
 
-@nowarn("msg=Ignoring.*qualifier")
-final class OrderAccepted[D <: Dim, B <: Dim, Q <: Dim] private[this] (
+final class OrderAccepted[D <: Dim, B <: Dim, Q <: Dim] private (
   val eventId: QualifiedSourceEventId,
   val executionOrderId: ExecutionOrderId,
   val sourceOrderId: QualifiedSourceOrderId,
@@ -273,29 +243,13 @@ final class OrderAccepted[D <: Dim, B <: Dim, Q <: Dim] private[this] (
   override def hashCode(): Int = ("accepted", SourceFactEquality.commonHash(this)).hashCode
 
 object OrderAccepted:
-  private val constructor: MethodHandle =
-    MethodHandles
-      .privateLookupIn(classOf[OrderAccepted[?, ?, ?]], MethodHandles.lookup())
-      .findConstructor(
-        classOf[OrderAccepted[?, ?, ?]],
-        MethodType.methodType(
-          classOf[Unit],
-          classOf[QualifiedSourceEventId],
-          classOf[ExecutionOrderId],
-          classOf[QualifiedSourceOrderId],
-          classOf[SourceOrdering]
-        )
-      )
-
   private def construct[D <: Dim, B <: Dim, Q <: Dim](
     eventId: QualifiedSourceEventId,
     executionOrderId: ExecutionOrderId,
     sourceOrderId: QualifiedSourceOrderId,
     ordering: SourceOrdering
   ): OrderAccepted[D, B, Q] =
-    constructor
-      .invoke(eventId, executionOrderId, sourceOrderId, ordering)
-      .asInstanceOf[OrderAccepted[D, B, Q]]
+    new OrderAccepted(eventId, executionOrderId, sourceOrderId, ordering)
 
   def create[D <: Dim, B <: Dim, Q <: Dim](
     lifecycle: ExecutionLifecycle[D, B, Q]
@@ -310,8 +264,7 @@ object OrderAccepted:
       .toLeft(construct(eventId, executionOrderId, sourceOrderId, ordering))
 end OrderAccepted
 
-@nowarn("msg=Ignoring.*qualifier")
-final class OrderRejected[D <: Dim, B <: Dim, Q <: Dim] private[this] (
+final class OrderRejected[D <: Dim, B <: Dim, Q <: Dim] private (
   val eventId: QualifiedSourceEventId,
   val executionOrderId: ExecutionOrderId,
   val sourceOrderId: QualifiedSourceOrderId,
@@ -324,29 +277,13 @@ final class OrderRejected[D <: Dim, B <: Dim, Q <: Dim] private[this] (
   override def hashCode(): Int = ("rejected", SourceFactEquality.commonHash(this)).hashCode
 
 object OrderRejected:
-  private val constructor: MethodHandle =
-    MethodHandles
-      .privateLookupIn(classOf[OrderRejected[?, ?, ?]], MethodHandles.lookup())
-      .findConstructor(
-        classOf[OrderRejected[?, ?, ?]],
-        MethodType.methodType(
-          classOf[Unit],
-          classOf[QualifiedSourceEventId],
-          classOf[ExecutionOrderId],
-          classOf[QualifiedSourceOrderId],
-          classOf[SourceOrdering]
-        )
-      )
-
   private def construct[D <: Dim, B <: Dim, Q <: Dim](
     eventId: QualifiedSourceEventId,
     executionOrderId: ExecutionOrderId,
     sourceOrderId: QualifiedSourceOrderId,
     ordering: SourceOrdering
   ): OrderRejected[D, B, Q] =
-    constructor
-      .invoke(eventId, executionOrderId, sourceOrderId, ordering)
-      .asInstanceOf[OrderRejected[D, B, Q]]
+    new OrderRejected(eventId, executionOrderId, sourceOrderId, ordering)
 
   def create[D <: Dim, B <: Dim, Q <: Dim](
     lifecycle: ExecutionLifecycle[D, B, Q]
@@ -361,8 +298,7 @@ object OrderRejected:
       .toLeft(construct(eventId, executionOrderId, sourceOrderId, ordering))
 end OrderRejected
 
-@nowarn("msg=Ignoring.*qualifier")
-final class ExecutionFill[D <: Dim, B <: Dim, Q <: Dim] private[this] (
+final class ExecutionFill[D <: Dim, B <: Dim, Q <: Dim] private (
   val eventId: QualifiedSourceEventId,
   val executionOrderId: ExecutionOrderId,
   val sourceOrderId: QualifiedSourceOrderId,
@@ -381,23 +317,6 @@ final class ExecutionFill[D <: Dim, B <: Dim, Q <: Dim] private[this] (
 end ExecutionFill
 
 object ExecutionFill:
-  private val constructor: MethodHandle =
-    MethodHandles
-      .privateLookupIn(classOf[ExecutionFill[?, ?, ?]], MethodHandles.lookup())
-      .findConstructor(
-        classOf[ExecutionFill[?, ?, ?]],
-        MethodType.methodType(
-          classOf[Unit],
-          classOf[QualifiedSourceEventId],
-          classOf[ExecutionOrderId],
-          classOf[QualifiedSourceOrderId],
-          classOf[QualifiedFillId],
-          classOf[Lots[?]],
-          classOf[Price[?, ?]],
-          classOf[SourceOrdering]
-        )
-      )
-
   private def construct[D <: Dim, B <: Dim, Q <: Dim](
     eventId: QualifiedSourceEventId,
     executionOrderId: ExecutionOrderId,
@@ -407,9 +326,7 @@ object ExecutionFill:
     price: Price[B, Q],
     ordering: SourceOrdering
   ): ExecutionFill[D, B, Q] =
-    constructor
-      .invoke(eventId, executionOrderId, sourceOrderId, fillId, lots, price, ordering)
-      .asInstanceOf[ExecutionFill[D, B, Q]]
+    new ExecutionFill(eventId, executionOrderId, sourceOrderId, fillId, lots, price, ordering)
 
   def create[D <: Dim, B <: Dim, Q <: Dim](
     lifecycle: ExecutionLifecycle[D, B, Q]
@@ -439,8 +356,7 @@ object ExecutionFill:
   end create
 end ExecutionFill
 
-@nowarn("msg=Ignoring.*qualifier")
-final class FillCorrected[D <: Dim, B <: Dim, Q <: Dim] private[this] (
+final class FillCorrected[D <: Dim, B <: Dim, Q <: Dim] private (
   val eventId: QualifiedSourceEventId,
   val executionOrderId: ExecutionOrderId,
   val sourceOrderId: QualifiedSourceOrderId,
@@ -459,23 +375,6 @@ final class FillCorrected[D <: Dim, B <: Dim, Q <: Dim] private[this] (
     ("correction", SourceFactEquality.commonHash(this), referencedFillId, replacementLots, replacementPrice).hashCode
 
 object FillCorrected:
-  private val constructor: MethodHandle =
-    MethodHandles
-      .privateLookupIn(classOf[FillCorrected[?, ?, ?]], MethodHandles.lookup())
-      .findConstructor(
-        classOf[FillCorrected[?, ?, ?]],
-        MethodType.methodType(
-          classOf[Unit],
-          classOf[QualifiedSourceEventId],
-          classOf[ExecutionOrderId],
-          classOf[QualifiedSourceOrderId],
-          classOf[QualifiedFillId],
-          classOf[Lots[?]],
-          classOf[Price[?, ?]],
-          classOf[SourceOrdering]
-        )
-      )
-
   private def construct[D <: Dim, B <: Dim, Q <: Dim](
     eventId: QualifiedSourceEventId,
     executionOrderId: ExecutionOrderId,
@@ -485,9 +384,8 @@ object FillCorrected:
     replacementPrice: Price[B, Q],
     ordering: SourceOrdering
   ): FillCorrected[D, B, Q] =
-    constructor
-      .invoke(eventId, executionOrderId, sourceOrderId, referencedFillId, replacementLots, replacementPrice, ordering)
-      .asInstanceOf[FillCorrected[D, B, Q]]
+    new FillCorrected(eventId, executionOrderId, sourceOrderId, referencedFillId, replacementLots, replacementPrice,
+      ordering)
 
   def create[D <: Dim, B <: Dim, Q <: Dim](
     lifecycle: ExecutionLifecycle[D, B, Q]
@@ -525,8 +423,7 @@ object FillCorrected:
   end create
 end FillCorrected
 
-@nowarn("msg=Ignoring.*qualifier")
-final class FillBusted[D <: Dim, B <: Dim, Q <: Dim] private[this] (
+final class FillBusted[D <: Dim, B <: Dim, Q <: Dim] private (
   val eventId: QualifiedSourceEventId,
   val executionOrderId: ExecutionOrderId,
   val sourceOrderId: QualifiedSourceOrderId,
@@ -541,21 +438,6 @@ final class FillBusted[D <: Dim, B <: Dim, Q <: Dim] private[this] (
   override def hashCode(): Int = ("bust", SourceFactEquality.commonHash(this), referencedFillId).hashCode
 
 object FillBusted:
-  private val constructor: MethodHandle =
-    MethodHandles
-      .privateLookupIn(classOf[FillBusted[?, ?, ?]], MethodHandles.lookup())
-      .findConstructor(
-        classOf[FillBusted[?, ?, ?]],
-        MethodType.methodType(
-          classOf[Unit],
-          classOf[QualifiedSourceEventId],
-          classOf[ExecutionOrderId],
-          classOf[QualifiedSourceOrderId],
-          classOf[QualifiedFillId],
-          classOf[SourceOrdering]
-        )
-      )
-
   private def construct[D <: Dim, B <: Dim, Q <: Dim](
     eventId: QualifiedSourceEventId,
     executionOrderId: ExecutionOrderId,
@@ -563,9 +445,7 @@ object FillBusted:
     referencedFillId: QualifiedFillId,
     ordering: SourceOrdering
   ): FillBusted[D, B, Q] =
-    constructor
-      .invoke(eventId, executionOrderId, sourceOrderId, referencedFillId, ordering)
-      .asInstanceOf[FillBusted[D, B, Q]]
+    new FillBusted(eventId, executionOrderId, sourceOrderId, referencedFillId, ordering)
 
   def create[D <: Dim, B <: Dim, Q <: Dim](
     lifecycle: ExecutionLifecycle[D, B, Q]
@@ -588,8 +468,7 @@ object FillBusted:
     )
 end FillBusted
 
-@nowarn("msg=Ignoring.*qualifier")
-final class CancellationEffective[D <: Dim, B <: Dim, Q <: Dim] private[this] (
+final class CancellationEffective[D <: Dim, B <: Dim, Q <: Dim] private (
   val eventId: QualifiedSourceEventId,
   val executionOrderId: ExecutionOrderId,
   val sourceOrderId: QualifiedSourceOrderId,
@@ -602,29 +481,13 @@ final class CancellationEffective[D <: Dim, B <: Dim, Q <: Dim] private[this] (
   override def hashCode(): Int = ("cancellation-effective", SourceFactEquality.commonHash(this)).hashCode
 
 object CancellationEffective:
-  private val constructor: MethodHandle =
-    MethodHandles
-      .privateLookupIn(classOf[CancellationEffective[?, ?, ?]], MethodHandles.lookup())
-      .findConstructor(
-        classOf[CancellationEffective[?, ?, ?]],
-        MethodType.methodType(
-          classOf[Unit],
-          classOf[QualifiedSourceEventId],
-          classOf[ExecutionOrderId],
-          classOf[QualifiedSourceOrderId],
-          classOf[SourceOrdering]
-        )
-      )
-
   private def construct[D <: Dim, B <: Dim, Q <: Dim](
     eventId: QualifiedSourceEventId,
     executionOrderId: ExecutionOrderId,
     sourceOrderId: QualifiedSourceOrderId,
     ordering: SourceOrdering
   ): CancellationEffective[D, B, Q] =
-    constructor
-      .invoke(eventId, executionOrderId, sourceOrderId, ordering)
-      .asInstanceOf[CancellationEffective[D, B, Q]]
+    new CancellationEffective(eventId, executionOrderId, sourceOrderId, ordering)
 
   def create[D <: Dim, B <: Dim, Q <: Dim](
     lifecycle: ExecutionLifecycle[D, B, Q]
@@ -639,8 +502,7 @@ object CancellationEffective:
       .toLeft(construct(eventId, executionOrderId, sourceOrderId, ordering))
 end CancellationEffective
 
-@nowarn("msg=Ignoring.*qualifier")
-final class ReconciliationCheckpoint[D <: Dim, B <: Dim, Q <: Dim] private[this] (
+final class ReconciliationCheckpoint[D <: Dim, B <: Dim, Q <: Dim] private (
   val eventId: QualifiedSourceEventId,
   val executionOrderId: ExecutionOrderId,
   val sourceOrderId: QualifiedSourceOrderId,
@@ -655,21 +517,6 @@ final class ReconciliationCheckpoint[D <: Dim, B <: Dim, Q <: Dim] private[this]
   override def hashCode(): Int = ("reconciliation", SourceFactEquality.commonHash(this), checkpoint).hashCode
 
 object ReconciliationCheckpoint:
-  private val constructor: MethodHandle =
-    MethodHandles
-      .privateLookupIn(classOf[ReconciliationCheckpoint[?, ?, ?]], MethodHandles.lookup())
-      .findConstructor(
-        classOf[ReconciliationCheckpoint[?, ?, ?]],
-        MethodType.methodType(
-          classOf[Unit],
-          classOf[QualifiedSourceEventId],
-          classOf[ExecutionOrderId],
-          classOf[QualifiedSourceOrderId],
-          classOf[SourceCheckpoint],
-          classOf[SourceOrdering]
-        )
-      )
-
   private def construct[D <: Dim, B <: Dim, Q <: Dim](
     eventId: QualifiedSourceEventId,
     executionOrderId: ExecutionOrderId,
@@ -677,9 +524,7 @@ object ReconciliationCheckpoint:
     checkpoint: SourceCheckpoint,
     ordering: SourceOrdering
   ): ReconciliationCheckpoint[D, B, Q] =
-    constructor
-      .invoke(eventId, executionOrderId, sourceOrderId, checkpoint, ordering)
-      .asInstanceOf[ReconciliationCheckpoint[D, B, Q]]
+    new ReconciliationCheckpoint(eventId, executionOrderId, sourceOrderId, checkpoint, ordering)
 
   def create[D <: Dim, B <: Dim, Q <: Dim](
     lifecycle: ExecutionLifecycle[D, B, Q]
@@ -708,8 +553,7 @@ object ReconciliationCheckpoint:
   end create
 end ReconciliationCheckpoint
 
-@nowarn("msg=Ignoring.*qualifier")
-final class SourceOrderCompleted[D <: Dim, B <: Dim, Q <: Dim] private[this] (
+final class SourceOrderCompleted[D <: Dim, B <: Dim, Q <: Dim] private (
   val eventId: QualifiedSourceEventId,
   val executionOrderId: ExecutionOrderId,
   val sourceOrderId: QualifiedSourceOrderId,
@@ -724,21 +568,6 @@ final class SourceOrderCompleted[D <: Dim, B <: Dim, Q <: Dim] private[this] (
   override def hashCode(): Int = ("complete", SourceFactEquality.commonHash(this), completeness).hashCode
 
 object SourceOrderCompleted:
-  private val constructor: MethodHandle =
-    MethodHandles
-      .privateLookupIn(classOf[SourceOrderCompleted[?, ?, ?]], MethodHandles.lookup())
-      .findConstructor(
-        classOf[SourceOrderCompleted[?, ?, ?]],
-        MethodType.methodType(
-          classOf[Unit],
-          classOf[QualifiedSourceEventId],
-          classOf[ExecutionOrderId],
-          classOf[QualifiedSourceOrderId],
-          classOf[SourceCompleteness],
-          classOf[SourceOrdering]
-        )
-      )
-
   private def construct[D <: Dim, B <: Dim, Q <: Dim](
     eventId: QualifiedSourceEventId,
     executionOrderId: ExecutionOrderId,
@@ -746,9 +575,7 @@ object SourceOrderCompleted:
     completeness: SourceCompleteness,
     ordering: SourceOrdering
   ): SourceOrderCompleted[D, B, Q] =
-    constructor
-      .invoke(eventId, executionOrderId, sourceOrderId, completeness, ordering)
-      .asInstanceOf[SourceOrderCompleted[D, B, Q]]
+    new SourceOrderCompleted(eventId, executionOrderId, sourceOrderId, completeness, ordering)
 
   def create[D <: Dim, B <: Dim, Q <: Dim](
     lifecycle: ExecutionLifecycle[D, B, Q]
@@ -778,8 +605,7 @@ object SourceOrderCompleted:
 end SourceOrderCompleted
 
 /** An explicit source lookup reporting that the qualified source order is absent through a declared boundary. */
-@nowarn("msg=Ignoring.*qualifier")
-final class SourceOrderAbsent[D <: Dim, B <: Dim, Q <: Dim] private[this] (
+final class SourceOrderAbsent[D <: Dim, B <: Dim, Q <: Dim] private (
   val eventId: QualifiedSourceEventId,
   val executionOrderId: ExecutionOrderId,
   val sourceOrderId: QualifiedSourceOrderId,
@@ -794,21 +620,6 @@ final class SourceOrderAbsent[D <: Dim, B <: Dim, Q <: Dim] private[this] (
   override def hashCode(): Int = ("absent", SourceFactEquality.commonHash(this), completeness).hashCode
 
 object SourceOrderAbsent:
-  private val constructor: MethodHandle =
-    MethodHandles
-      .privateLookupIn(classOf[SourceOrderAbsent[?, ?, ?]], MethodHandles.lookup())
-      .findConstructor(
-        classOf[SourceOrderAbsent[?, ?, ?]],
-        MethodType.methodType(
-          classOf[Unit],
-          classOf[QualifiedSourceEventId],
-          classOf[ExecutionOrderId],
-          classOf[QualifiedSourceOrderId],
-          classOf[SourceCompleteness],
-          classOf[SourceOrdering]
-        )
-      )
-
   private def construct[D <: Dim, B <: Dim, Q <: Dim](
     eventId: QualifiedSourceEventId,
     executionOrderId: ExecutionOrderId,
@@ -816,9 +627,7 @@ object SourceOrderAbsent:
     completeness: SourceCompleteness,
     ordering: SourceOrdering
   ): SourceOrderAbsent[D, B, Q] =
-    constructor
-      .invoke(eventId, executionOrderId, sourceOrderId, completeness, ordering)
-      .asInstanceOf[SourceOrderAbsent[D, B, Q]]
+    new SourceOrderAbsent(eventId, executionOrderId, sourceOrderId, completeness, ordering)
 
   def create[D <: Dim, B <: Dim, Q <: Dim](
     lifecycle: ExecutionLifecycle[D, B, Q]

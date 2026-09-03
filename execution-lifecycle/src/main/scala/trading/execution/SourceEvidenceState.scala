@@ -1,10 +1,5 @@
 package trading.execution
 
-import java.lang.invoke.MethodHandle
-import java.lang.invoke.MethodHandles
-import java.lang.invoke.MethodType
-import scala.annotation.nowarn
-
 import trading.quantity.Dim
 import trading.quantity.JavaSerializationUnsupported
 
@@ -16,8 +11,7 @@ enum SourceFactClassification extends JavaSerializationUnsupported:
   case ConflictingFillIdentity
   case ConflictingStreamPosition
 
-@nowarn("msg=Ignoring.*qualifier")
-final class SourceFactClassifications private[this] (private val values: Vector[SourceFactClassification])
+final class SourceFactClassifications private (private val values: Vector[SourceFactClassification])
   extends JavaSerializationUnsupported:
 
   def head: SourceFactClassification                     = values.head
@@ -30,20 +24,14 @@ final class SourceFactClassifications private[this] (private val values: Vector[
   override def hashCode(): Int = values.hashCode
 
 object SourceFactClassifications:
-  private val constructor: MethodHandle =
-    MethodHandles
-      .privateLookupIn(classOf[SourceFactClassifications], MethodHandles.lookup())
-      .findConstructor(classOf[SourceFactClassifications], MethodType.methodType(classOf[Unit], classOf[Vector[?]]))
-
   private def construct(values: Vector[SourceFactClassification]): SourceFactClassifications =
-    constructor.invoke(values).asInstanceOf[SourceFactClassifications]
+    new SourceFactClassifications(values)
 
   private[execution] def from(values: Vector[SourceFactClassification]): SourceFactClassifications =
     if values.isEmpty then throw new IllegalArgumentException("source fact classifications must be non-empty")
     else construct(values.distinct)
 
-@nowarn("msg=Ignoring.*qualifier")
-final class SourceFactConflict[D <: Dim, B <: Dim, Q <: Dim] private[this] (
+final class SourceFactConflict[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
   val original: SourceFact[D, B, Q],
   val conflicting: SourceFact[D, B, Q])
   extends JavaSerializationUnsupported:
@@ -56,8 +44,7 @@ final class SourceFactConflict[D <: Dim, B <: Dim, Q <: Dim] private[this] (
     case _ => false
   override def hashCode(): Int = (original, conflicting).hashCode
 
-@nowarn("msg=Ignoring.*qualifier")
-final class FillIdentityConflict[D <: Dim, B <: Dim, Q <: Dim] private[this] (
+final class FillIdentityConflict[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
   val original: ExecutionFill[D, B, Q],
   val conflicting: ExecutionFill[D, B, Q])
   extends JavaSerializationUnsupported:
@@ -70,8 +57,7 @@ final class FillIdentityConflict[D <: Dim, B <: Dim, Q <: Dim] private[this] (
     case _ => false
   override def hashCode(): Int = (original, conflicting).hashCode
 
-@nowarn("msg=Ignoring.*qualifier")
-final class StreamPositionConflict[D <: Dim, B <: Dim, Q <: Dim] private[this] (
+final class StreamPositionConflict[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
   val position: QualifiedStreamPosition,
   val claimants: Vector[SourceFact[D, B, Q]])
   extends JavaSerializationUnsupported:
@@ -82,8 +68,7 @@ final class StreamPositionConflict[D <: Dim, B <: Dim, Q <: Dim] private[this] (
     case _ => false
   override def hashCode(): Int = (position, claimants).hashCode
 
-@nowarn("msg=Ignoring.*qualifier")
-final class UnresolvedFillReference[D <: Dim, B <: Dim, Q <: Dim] private[this] (
+final class UnresolvedFillReference[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
   val referencedFillId: QualifiedFillId,
   val modifier: FillModifier[D, B, Q])
   extends JavaSerializationUnsupported:
@@ -96,11 +81,9 @@ final class UnresolvedFillReference[D <: Dim, B <: Dim, Q <: Dim] private[this] 
 
 sealed abstract class SourceFactTransition[D <: Dim, B <: Dim, Q <: Dim] protected ()
   extends JavaSerializationUnsupported:
-  SourceFactTransition.requireBuiltin(this)
   def state: SourceEvidenceState[D, B, Q]
 
-@nowarn("msg=Ignoring.*qualifier")
-final class SourceFactRecorded[D <: Dim, B <: Dim, Q <: Dim] private[this] (
+final class SourceFactRecorded[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
   val state: SourceEvidenceState[D, B, Q],
   val classifications: SourceFactClassifications)
   extends SourceFactTransition[D, B, Q]():
@@ -111,8 +94,7 @@ final class SourceFactRecorded[D <: Dim, B <: Dim, Q <: Dim] private[this] (
     case _ => false
   override def hashCode(): Int = (state, classifications).hashCode
 
-@nowarn("msg=Ignoring.*qualifier")
-final class SourceFactRejected[D <: Dim, B <: Dim, Q <: Dim] private[this] (
+final class SourceFactRejected[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
   val state: SourceEvidenceState[D, B, Q],
   val violations: SourceFactViolations)
   extends SourceFactTransition[D, B, Q]():
@@ -123,15 +105,7 @@ final class SourceFactRejected[D <: Dim, B <: Dim, Q <: Dim] private[this] (
     case _ => false
   override def hashCode(): Int = (state, violations).hashCode
 
-object SourceFactTransition:
-  private[execution] def requireBuiltin(value: SourceFactTransition[?, ?, ?]): Unit =
-    val runtimeClass = value.getClass
-    if runtimeClass != classOf[SourceFactRecorded[?, ?, ?]] &&
-      runtimeClass != classOf[SourceFactRejected[?, ?, ?]]
-    then throw new IllegalAccessError(s"unsupported SourceFactTransition implementation: ${runtimeClass.getName}")
-
-@nowarn("msg=Ignoring.*qualifier")
-final class SourceEvidenceState[D <: Dim, B <: Dim, Q <: Dim] private[this] (
+final class SourceEvidenceState[D <: Dim, B <: Dim, Q <: Dim] private (
   val lifecycle: ExecutionLifecycle[D, B, Q],
   val factsByEvent: Map[QualifiedSourceEventId, SourceFact[D, B, Q]],
   val fillsById: Map[QualifiedFillId, ExecutionFill[D, B, Q]],
@@ -167,72 +141,6 @@ final class SourceEvidenceState[D <: Dim, B <: Dim, Q <: Dim] private[this] (
 end SourceEvidenceState
 
 object SourceEvidenceState:
-  private val stateConstructor: MethodHandle =
-    MethodHandles
-      .privateLookupIn(classOf[SourceEvidenceState[?, ?, ?]], MethodHandles.lookup())
-      .findConstructor(
-        classOf[SourceEvidenceState[?, ?, ?]],
-        MethodType.methodType(
-          classOf[Unit],
-          classOf[ExecutionLifecycle[?, ?, ?]],
-          classOf[Map[?, ?]],
-          classOf[Map[?, ?]],
-          classOf[Vector[?]],
-          classOf[Vector[?]],
-          classOf[Map[?, ?]],
-          classOf[Map[?, ?]],
-          classOf[Map[?, ?]]
-        )
-      )
-
-  private val eventConflictConstructor: MethodHandle =
-    MethodHandles
-      .privateLookupIn(classOf[SourceFactConflict[?, ?, ?]], MethodHandles.lookup())
-      .findConstructor(
-        classOf[SourceFactConflict[?, ?, ?]],
-        MethodType.methodType(classOf[Unit], classOf[SourceFact[?, ?, ?]], classOf[SourceFact[?, ?, ?]])
-      )
-
-  private val fillConflictConstructor: MethodHandle =
-    MethodHandles
-      .privateLookupIn(classOf[FillIdentityConflict[?, ?, ?]], MethodHandles.lookup())
-      .findConstructor(
-        classOf[FillIdentityConflict[?, ?, ?]],
-        MethodType.methodType(classOf[Unit], classOf[ExecutionFill[?, ?, ?]], classOf[ExecutionFill[?, ?, ?]])
-      )
-
-  private val positionConflictConstructor: MethodHandle =
-    MethodHandles
-      .privateLookupIn(classOf[StreamPositionConflict[?, ?, ?]], MethodHandles.lookup())
-      .findConstructor(
-        classOf[StreamPositionConflict[?, ?, ?]],
-        MethodType.methodType(classOf[Unit], classOf[QualifiedStreamPosition], classOf[Vector[?]])
-      )
-
-  private val unresolvedConstructor: MethodHandle =
-    MethodHandles
-      .privateLookupIn(classOf[UnresolvedFillReference[?, ?, ?]], MethodHandles.lookup())
-      .findConstructor(
-        classOf[UnresolvedFillReference[?, ?, ?]],
-        MethodType.methodType(classOf[Unit], classOf[QualifiedFillId], classOf[FillModifier[?, ?, ?]])
-      )
-
-  private val recordedConstructor: MethodHandle =
-    MethodHandles
-      .privateLookupIn(classOf[SourceFactRecorded[?, ?, ?]], MethodHandles.lookup())
-      .findConstructor(
-        classOf[SourceFactRecorded[?, ?, ?]],
-        MethodType.methodType(classOf[Unit], classOf[SourceEvidenceState[?, ?, ?]], classOf[SourceFactClassifications])
-      )
-
-  private val rejectedConstructor: MethodHandle =
-    MethodHandles
-      .privateLookupIn(classOf[SourceFactRejected[?, ?, ?]], MethodHandles.lookup())
-      .findConstructor(
-        classOf[SourceFactRejected[?, ?, ?]],
-        MethodType.methodType(classOf[Unit], classOf[SourceEvidenceState[?, ?, ?]], classOf[SourceFactViolations])
-      )
-
   private def constructState[D <: Dim, B <: Dim, Q <: Dim](
     lifecycle: ExecutionLifecycle[D, B, Q],
     factsByEvent: Map[QualifiedSourceEventId, SourceFact[D, B, Q]],
@@ -243,57 +151,51 @@ object SourceEvidenceState:
     positionConflicts: Map[QualifiedStreamPosition, StreamPositionConflict[D, B, Q]],
     unresolvedFillReferences: Map[QualifiedFillId, Vector[UnresolvedFillReference[D, B, Q]]]
   ): SourceEvidenceState[D, B, Q] =
-    stateConstructor
-      .invoke(
-        lifecycle,
-        factsByEvent,
-        fillsById,
-        eventConflicts,
-        fillConflicts,
-        positionClaimants,
-        positionConflicts,
-        unresolvedFillReferences
-      )
-      .asInstanceOf[SourceEvidenceState[D, B, Q]]
+    new SourceEvidenceState(
+      lifecycle,
+      factsByEvent,
+      fillsById,
+      eventConflicts,
+      fillConflicts,
+      positionClaimants,
+      positionConflicts,
+      unresolvedFillReferences
+    )
 
   private def constructEventConflict[D <: Dim, B <: Dim, Q <: Dim](
     original: SourceFact[D, B, Q],
     conflicting: SourceFact[D, B, Q]
   ): SourceFactConflict[D, B, Q] =
-    eventConflictConstructor.invoke(original, conflicting).asInstanceOf[SourceFactConflict[D, B, Q]]
+    new SourceFactConflict(original, conflicting)
 
   private def constructFillConflict[D <: Dim, B <: Dim, Q <: Dim](
     original: ExecutionFill[D, B, Q],
     conflicting: ExecutionFill[D, B, Q]
   ): FillIdentityConflict[D, B, Q] =
-    fillConflictConstructor.invoke(original, conflicting).asInstanceOf[FillIdentityConflict[D, B, Q]]
+    new FillIdentityConflict(original, conflicting)
 
   private def constructPositionConflict[D <: Dim, B <: Dim, Q <: Dim](
     position: QualifiedStreamPosition,
     claimants: Vector[SourceFact[D, B, Q]]
   ): StreamPositionConflict[D, B, Q] =
-    positionConflictConstructor.invoke(position, claimants).asInstanceOf[StreamPositionConflict[D, B, Q]]
+    new StreamPositionConflict(position, claimants)
 
   private def constructUnresolved[D <: Dim, B <: Dim, Q <: Dim](
     modifier: FillModifier[D, B, Q]
   ): UnresolvedFillReference[D, B, Q] =
-    unresolvedConstructor
-      .invoke(modifier.referencedFillId, modifier)
-      .asInstanceOf[UnresolvedFillReference[D, B, Q]]
+    new UnresolvedFillReference(modifier.referencedFillId, modifier)
 
   private def recorded[D <: Dim, B <: Dim, Q <: Dim](
     state: SourceEvidenceState[D, B, Q],
     classifications: Vector[SourceFactClassification]
   ): SourceFactRecorded[D, B, Q] =
-    recordedConstructor
-      .invoke(state, SourceFactClassifications.from(classifications))
-      .asInstanceOf[SourceFactRecorded[D, B, Q]]
+    new SourceFactRecorded(state, SourceFactClassifications.from(classifications))
 
   private def rejected[D <: Dim, B <: Dim, Q <: Dim](
     state: SourceEvidenceState[D, B, Q],
     violations: SourceFactViolations
   ): SourceFactRejected[D, B, Q] =
-    rejectedConstructor.invoke(state, violations).asInstanceOf[SourceFactRejected[D, B, Q]]
+    new SourceFactRejected(state, violations)
 
   def initial[D <: Dim, B <: Dim, Q <: Dim](
     lifecycle: ExecutionLifecycle[D, B, Q]

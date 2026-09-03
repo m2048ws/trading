@@ -1,10 +1,5 @@
 package trading.execution
 
-import java.lang.invoke.MethodHandle
-import java.lang.invoke.MethodHandles
-import java.lang.invoke.MethodType
-import scala.annotation.nowarn
-
 import trading.economics.instrument.Lots
 import trading.economics.instrument.PositionLots
 import trading.economics.instrument.Price
@@ -18,8 +13,7 @@ enum ModifierAmbiguityKind extends JavaSerializationUnsupported:
   case ConflictingAuthoritativePosition
   case ModifierAfterBust
 
-@nowarn("msg=Ignoring.*qualifier")
-final class ModifierAmbiguity private[this] (private val values: Vector[ModifierAmbiguityKind])
+final class ModifierAmbiguity private (private val values: Vector[ModifierAmbiguityKind])
   extends JavaSerializationUnsupported:
 
   def head: ModifierAmbiguityKind             = values.head
@@ -32,24 +26,17 @@ final class ModifierAmbiguity private[this] (private val values: Vector[Modifier
   override def hashCode(): Int = values.hashCode
 
 object ModifierAmbiguity:
-  private val constructor: MethodHandle =
-    MethodHandles
-      .privateLookupIn(classOf[ModifierAmbiguity], MethodHandles.lookup())
-      .findConstructor(classOf[ModifierAmbiguity], MethodType.methodType(classOf[Unit], classOf[Vector[?]]))
-
   private def construct(values: Vector[ModifierAmbiguityKind]): ModifierAmbiguity =
-    constructor.invoke(values).asInstanceOf[ModifierAmbiguity]
+    new ModifierAmbiguity(values)
 
   private[execution] def from(values: Vector[ModifierAmbiguityKind]): Option[ModifierAmbiguity] =
     Option.when(values.nonEmpty)(construct(values.distinct))
 
 sealed abstract class EffectiveFill[D <: Dim, B <: Dim, Q <: Dim] protected () extends JavaSerializationUnsupported:
-  EffectiveFill.requireBuiltin(this)
   def original: ExecutionFill[D, B, Q]
   def modifiers: Vector[FillModifier[D, B, Q]]
 
-@nowarn("msg=Ignoring.*qualifier")
-final class ActiveEffectiveFill[D <: Dim, B <: Dim, Q <: Dim] private[this] (
+final class ActiveEffectiveFill[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
   val original: ExecutionFill[D, B, Q],
   val effectiveLots: Lots[D],
   val effectivePrice: Price[B, Q],
@@ -63,8 +50,7 @@ final class ActiveEffectiveFill[D <: Dim, B <: Dim, Q <: Dim] private[this] (
     case _ => false
   override def hashCode(): Int = (original, effectiveLots, effectivePrice, modifiers).hashCode
 
-@nowarn("msg=Ignoring.*qualifier")
-final class BustedEffectiveFill[D <: Dim, B <: Dim, Q <: Dim] private[this] (
+final class BustedEffectiveFill[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
   val original: ExecutionFill[D, B, Q],
   val bust: FillBusted[D, B, Q],
   val modifiers: Vector[FillModifier[D, B, Q]])
@@ -76,8 +62,7 @@ final class BustedEffectiveFill[D <: Dim, B <: Dim, Q <: Dim] private[this] (
     case _ => false
   override def hashCode(): Int = (original, bust, modifiers).hashCode
 
-@nowarn("msg=Ignoring.*qualifier")
-final class AmbiguousEffectiveFill[D <: Dim, B <: Dim, Q <: Dim] private[this] (
+final class AmbiguousEffectiveFill[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
   val original: ExecutionFill[D, B, Q],
   val modifiers: Vector[FillModifier[D, B, Q]],
   val ambiguity: ModifierAmbiguity)
@@ -89,8 +74,7 @@ final class AmbiguousEffectiveFill[D <: Dim, B <: Dim, Q <: Dim] private[this] (
     case _ => false
   override def hashCode(): Int = (original, modifiers, ambiguity).hashCode
 
-@nowarn("msg=Ignoring.*qualifier")
-final class ConflictingEffectiveFill[D <: Dim, B <: Dim, Q <: Dim] private[this] (
+final class ConflictingEffectiveFill[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
   val original: ExecutionFill[D, B, Q],
   val modifiers: Vector[FillModifier[D, B, Q]],
   val eventConflicts: Vector[SourceFactConflict[D, B, Q]],
@@ -104,25 +88,13 @@ final class ConflictingEffectiveFill[D <: Dim, B <: Dim, Q <: Dim] private[this]
     case _ => false
   override def hashCode(): Int = (original, modifiers, eventConflicts, identityConflicts).hashCode
 
-object EffectiveFill:
-  private[execution] def requireBuiltin(value: EffectiveFill[?, ?, ?]): Unit =
-    val runtimeClass = value.getClass
-    val supported    =
-      runtimeClass == classOf[ActiveEffectiveFill[?, ?, ?]] ||
-        runtimeClass == classOf[BustedEffectiveFill[?, ?, ?]] ||
-        runtimeClass == classOf[AmbiguousEffectiveFill[?, ?, ?]] ||
-        runtimeClass == classOf[ConflictingEffectiveFill[?, ?, ?]]
-    if !supported then
-      throw new IllegalAccessError(s"unsupported EffectiveFill implementation: ${runtimeClass.getName}")
-
 final case class OverfillAnomaly[D <: Dim](
   orderedLots: Lots[D],
   effectiveExposure: PositionLots[D],
   excessExposure: PositionLots[D])
   extends JavaSerializationUnsupported
 
-@nowarn("msg=Ignoring.*qualifier")
-final class EffectiveFillLedger[D <: Dim, B <: Dim, Q <: Dim] private[this] (
+final class EffectiveFillLedger[D <: Dim, B <: Dim, Q <: Dim] private (
   val byFillId: Map[QualifiedFillId, EffectiveFill[D, B, Q]],
   val knownExposure: PositionLots[D],
   val overfill: Option[OverfillAnomaly[D]],
@@ -137,97 +109,27 @@ final class EffectiveFillLedger[D <: Dim, B <: Dim, Q <: Dim] private[this] (
   override def hashCode(): Int = (byFillId, knownExposure, overfill, unresolvedReferences).hashCode
 
 object EffectiveFillLedger:
-  private val activeConstructor: MethodHandle =
-    MethodHandles
-      .privateLookupIn(classOf[ActiveEffectiveFill[?, ?, ?]], MethodHandles.lookup())
-      .findConstructor(
-        classOf[ActiveEffectiveFill[?, ?, ?]],
-        MethodType.methodType(
-          classOf[Unit],
-          classOf[ExecutionFill[?, ?, ?]],
-          classOf[Lots[?]],
-          classOf[Price[?, ?]],
-          classOf[Vector[?]]
-        )
-      )
-
-  private val bustedConstructor: MethodHandle =
-    MethodHandles
-      .privateLookupIn(classOf[BustedEffectiveFill[?, ?, ?]], MethodHandles.lookup())
-      .findConstructor(
-        classOf[BustedEffectiveFill[?, ?, ?]],
-        MethodType.methodType(
-          classOf[Unit],
-          classOf[ExecutionFill[?, ?, ?]],
-          classOf[FillBusted[?, ?, ?]],
-          classOf[Vector[?]]
-        )
-      )
-
-  private val ambiguousConstructor: MethodHandle =
-    MethodHandles
-      .privateLookupIn(classOf[AmbiguousEffectiveFill[?, ?, ?]], MethodHandles.lookup())
-      .findConstructor(
-        classOf[AmbiguousEffectiveFill[?, ?, ?]],
-        MethodType.methodType(
-          classOf[Unit],
-          classOf[ExecutionFill[?, ?, ?]],
-          classOf[Vector[?]],
-          classOf[ModifierAmbiguity]
-        )
-      )
-
-  private val conflictingConstructor: MethodHandle =
-    MethodHandles
-      .privateLookupIn(classOf[ConflictingEffectiveFill[?, ?, ?]], MethodHandles.lookup())
-      .findConstructor(
-        classOf[ConflictingEffectiveFill[?, ?, ?]],
-        MethodType.methodType(
-          classOf[Unit],
-          classOf[ExecutionFill[?, ?, ?]],
-          classOf[Vector[?]],
-          classOf[Vector[?]],
-          classOf[Vector[?]]
-        )
-      )
-
-  private val ledgerConstructor: MethodHandle =
-    MethodHandles
-      .privateLookupIn(classOf[EffectiveFillLedger[?, ?, ?]], MethodHandles.lookup())
-      .findConstructor(
-        classOf[EffectiveFillLedger[?, ?, ?]],
-        MethodType.methodType(
-          classOf[Unit],
-          classOf[Map[?, ?]],
-          classOf[PositionLots[?]],
-          classOf[Option[?]],
-          classOf[Map[?, ?]]
-        )
-      )
-
   private def active[D <: Dim, B <: Dim, Q <: Dim](
     original: ExecutionFill[D, B, Q],
     lots: Lots[D],
     price: Price[B, Q],
     modifiers: Vector[FillModifier[D, B, Q]]
   ): ActiveEffectiveFill[D, B, Q] =
-    activeConstructor.invoke(original, lots, price, modifiers).asInstanceOf[ActiveEffectiveFill[D, B, Q]]
+    new ActiveEffectiveFill(original, lots, price, modifiers)
 
   private def busted[D <: Dim, B <: Dim, Q <: Dim](
     original: ExecutionFill[D, B, Q],
     bust: FillBusted[D, B, Q],
     modifiers: Vector[FillModifier[D, B, Q]]
   ): BustedEffectiveFill[D, B, Q] =
-    bustedConstructor.invoke(original, bust, modifiers).asInstanceOf[BustedEffectiveFill[D, B, Q]]
+    new BustedEffectiveFill(original, bust, modifiers)
 
   private def ambiguous[D <: Dim, B <: Dim, Q <: Dim](
     original: ExecutionFill[D, B, Q],
     modifiers: Vector[FillModifier[D, B, Q]],
     ambiguity: ModifierAmbiguity
   ): AmbiguousEffectiveFill[D, B, Q] =
-    ambiguousConstructor
-      .invoke(original, modifiers, ambiguity)
-      .asInstanceOf[AmbiguousEffectiveFill[D, B, Q]]
+    new AmbiguousEffectiveFill(original, modifiers, ambiguity)
 
   private def conflicting[D <: Dim, B <: Dim, Q <: Dim](
     original: ExecutionFill[D, B, Q],
@@ -235,9 +137,7 @@ object EffectiveFillLedger:
     eventConflicts: Vector[SourceFactConflict[D, B, Q]],
     identityConflicts: Vector[FillIdentityConflict[D, B, Q]]
   ): ConflictingEffectiveFill[D, B, Q] =
-    conflictingConstructor
-      .invoke(original, modifiers, eventConflicts, identityConflicts)
-      .asInstanceOf[ConflictingEffectiveFill[D, B, Q]]
+    new ConflictingEffectiveFill(original, modifiers, eventConflicts, identityConflicts)
 
   private[execution] def derive[D <: Dim, B <: Dim, Q <: Dim](
     state: ExecutionState[D, B, Q]
@@ -277,9 +177,7 @@ object EffectiveFillLedger:
     val overfill = Option.when(excess > 0):
       OverfillAnomaly(state.lifecycle.orderedLots, exposure, position(state.lifecycle, excess))
 
-    ledgerConstructor
-      .invoke(effective, exposure, overfill, state.source.unresolvedFillReferences)
-      .asInstanceOf[EffectiveFillLedger[D, B, Q]]
+    new EffectiveFillLedger(effective, exposure, overfill, state.source.unresolvedFillReferences)
   end derive
 
   private def resolve[D <: Dim, B <: Dim, Q <: Dim](

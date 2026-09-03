@@ -1,7 +1,6 @@
 package external
 
 import java.io.File
-import java.lang.reflect.Modifier
 import java.net.URLClassLoader
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
@@ -101,6 +100,15 @@ class ExecutionLifecycleCompilerBoundarySuite extends FunSuite:
     assert(result.succeeded, result.rendered)
     runModule(result.output, "external.execution.positive.ExecutionIdentityBoundaryClient$", "run")
 
+  test("completed execution-lifecycle JAR compiles and runs an ordinary Java checked-factory client"):
+    val result = compileJava(javaRoot.resolve("positive/ExecutionFactoryClient.java"))
+    assert(result.succeeded, result.diagnostics)
+    val loader = new URLClassLoader(Array(result.output.toUri.toURL), getClass.getClassLoader)
+    try
+      val fixture = Class.forName("external.execution.positive.ExecutionFactoryClient", true, loader)
+      assertEquals(fixture.getMethod("checkedFactoriesPreserveSemantics").invoke(null), java.lang.Boolean.TRUE)
+    finally loader.close()
+
   test("completed execution-lifecycle JAR compiles and runs authority, lifecycle, and closed command transitions"):
     val result = compile(
       List(
@@ -139,78 +147,6 @@ class ExecutionLifecycleCompilerBoundarySuite extends FunSuite:
           rejected.rendered.contains("execution is not a member of trading") ||
           rejected.rendered.contains("ApplicationCommandId"),
         clues(owner, rejected.rendered)
-      )
-
-  test("completed JAR rejects same-package constructors, copies, and unknown alternatives"):
-    val source  = fixturesRoot.resolve("negative/PackageSpoofExecutionAuthority.scala")
-    val prelude = compilePrelude(source, executionClasspath)
-    assert(prelude.succeeded, s"fixture prelude must compile independently:\n${prelude.rendered}")
-    val rejected = compile(source, executionClasspath)
-    assert(rejected.errors.size >= 11, rejected.rendered)
-    assert(rejected.rendered.contains("cannot be accessed"), rejected.rendered)
-    assert(rejected.rendered.contains("value copy is not a member"), rejected.rendered)
-
-  test("remaining migration representations are final with JVM-private constructors"):
-    List(
-      Class.forName("trading.execution.ExecutionLifecycle"),
-      Class.forName("trading.execution.SourceFactViolations"),
-      Class.forName("trading.execution.OrderAccepted"),
-      Class.forName("trading.execution.OrderRejected"),
-      Class.forName("trading.execution.ExecutionFill"),
-      Class.forName("trading.execution.FillCorrected"),
-      Class.forName("trading.execution.FillBusted"),
-      Class.forName("trading.execution.CancellationEffective"),
-      Class.forName("trading.execution.ReconciliationCheckpoint"),
-      Class.forName("trading.execution.SourceOrderCompleted"),
-      Class.forName("trading.execution.SourceOrderAbsent"),
-      Class.forName("trading.execution.SourceFactClassifications"),
-      Class.forName("trading.execution.SourceFactConflict"),
-      Class.forName("trading.execution.FillIdentityConflict"),
-      Class.forName("trading.execution.StreamPositionConflict"),
-      Class.forName("trading.execution.UnresolvedFillReference"),
-      Class.forName("trading.execution.SourceFactRecorded"),
-      Class.forName("trading.execution.SourceFactRejected"),
-      Class.forName("trading.execution.SourceEvidenceState"),
-      Class.forName("trading.execution.ModifierAmbiguity"),
-      Class.forName("trading.execution.ActiveEffectiveFill"),
-      Class.forName("trading.execution.BustedEffectiveFill"),
-      Class.forName("trading.execution.AmbiguousEffectiveFill"),
-      Class.forName("trading.execution.ConflictingEffectiveFill"),
-      Class.forName("trading.execution.EffectiveFillLedger"),
-      Class.forName("trading.execution.ExecutionState"),
-      Class.forName("trading.execution.LifecycleAccepted"),
-      Class.forName("trading.execution.LifecycleRejected"),
-      Class.forName("trading.execution.LifecycleDiagnostics"),
-      Class.forName("trading.execution.LifecycleObservation"),
-      Class.forName("trading.execution.LifecycleReplayResult")
-    ).foreach: representation =>
-      assert(Modifier.isFinal(representation.getModifiers), s"${representation.getName} is not final")
-      assert(
-        representation.getDeclaredConstructors.forall(constructor => Modifier.isPrivate(constructor.getModifiers)),
-        s"${representation.getName} exposes a non-private JVM constructor"
-      )
-
-  test("completed JAR rejects remaining unknown Java execution alternatives at construction"):
-    val result = compileJava(javaRoot.resolve("positive/RejectedExecutionAlternatives.java"))
-    assert(result.succeeded, result.diagnostics)
-    val loader = new URLClassLoader(Array(result.output.toUri.toURL), getClass.getClassLoader)
-    try
-      val fixture = Class.forName("external.execution.positive.RejectedExecutionAlternatives", true, loader)
-      assertEquals(
-        fixture.getMethod("guardsRejectUnknownAlternatives").invoke(null),
-        java.lang.Boolean.TRUE
-      )
-    finally loader.close()
-
-    val rejected = compileJava(javaRoot.resolve("negative/RejectedExecutionIdentityConstruction.java"))
-    assert(!rejected.succeeded, "same-package Java unexpectedly forged execution identities")
-    assert(rejected.diagnostics.toLowerCase(Locale.ROOT).contains("private"), rejected.diagnostics)
-
-    val representationHelper = Class.forName("trading.execution.IdentityRepresentation$")
-    List("constructor", "construct").foreach: forbidden =>
-      assert(
-        !representationHelper.getMethods.exists(_.getName == forbidden),
-        s"identity representation helper exposed public JVM method $forbidden"
       )
 
   private def loadClasspath(resourceName: String): String =

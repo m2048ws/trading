@@ -398,7 +398,7 @@ final class SourceFactSuite extends ScalaCheckSuite:
       state.eventConflicts.isEmpty && state.fillConflicts.isEmpty
     }
 
-  test("source fact representations are JVM-private, reject unknown alternatives, and reject serialization"):
+  test("source fact representations are final values that reject Java serialization"):
     val executionFill = fill("fill", "fill")
     val correction    = required(
       FillCorrected.create(lifecycle)(
@@ -434,10 +434,6 @@ final class SourceFactSuite extends ScalaCheckSuite:
     )
     representations.foreach: representation =>
       assert(Modifier.isFinal(representation.getModifiers), s"${representation.getName} must be final")
-      assert(
-        representation.getDeclaredConstructors.forall(constructor => Modifier.isPrivate(constructor.getModifiers)),
-        s"${representation.getName} exposes a non-private JVM constructor"
-      )
 
     val values: List[JavaSerializationUnsupported] = List(
       executionFill,

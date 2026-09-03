@@ -336,7 +336,7 @@ final class ExecutionStateSuite extends ScalaCheckSuite:
     assertEquals(replayed.work, TransitionWork(2, 0, 0))
     assertEquals(replayed.state, applied.state)
 
-  test("lifecycle state, transitions, observations, and replay results are guarded immutable values"):
+  test("lifecycle state, transitions, observations, and replay results are final immutable values"):
     val original        = fill("event", "fill", 1, ordering(2, None))
     val transition      = accepted(initial.record(original))
     val replay          = required(ExecutionState.replay(lifecycle)(Vector.empty, Vector.empty, Vector(original)))
@@ -351,10 +351,6 @@ final class ExecutionStateSuite extends ScalaCheckSuite:
     )
     representations.foreach: representation =>
       assert(Modifier.isFinal(representation.getModifiers), s"${representation.getName} must be final")
-      assert(
-        representation.getDeclaredConstructors.forall(constructor => Modifier.isPrivate(constructor.getModifiers)),
-        s"${representation.getName} exposes a non-private JVM constructor"
-      )
 
     val values: List[JavaSerializationUnsupported] = List(
       transition.state,

@@ -15,15 +15,15 @@ updated: 2026-09-03
 - **Change**: simplify-in-process-trust-boundary
 - **Worktree**: /Users/m/src/money/.worktrees/simplify-in-process-trust-boundary
 - **Phase at Checkpoint**: applying
-- **Task Group at Checkpoint**: 7
-- **Observed Run Revision**: 8
-- **Last Verified HEAD**: 97099809d7a0509da2ec256878979e0be69d3878
+- **Task Group at Checkpoint**: 8
+- **Observed Run Revision**: 9
+- **Last Verified HEAD**: 3d6c696a080623ece84c2d04ddd2abbb90ef9de3
 
 ## Next Action
-- Commit and acknowledge Task Group 7, sync the draft PR, then continue with Task Group 8.
+- Commit and acknowledge Task Group 8, sync the draft PR, then continue with Task Group 9.
 
 ## Blockers
-- Task Group 7 command/submission/cancellation static construction, fixture reconciliation, note, and bridge
+- Task Group 8 execution-fact/state/replay/effective-ledger static construction, fixture reconciliation, note, and bridge
   checkpoint are ready for their dedicated commit.
 
 ## Uncommitted Work
@@ -47,6 +47,9 @@ updated: 2026-09-03
   construction, and removed hostile exact-class gates while retaining qualification, ordering, and lineage predicates.
 - Task Group 7 removed three execution command/submission/cancellation allowances (102 tokens), staticized derived
   evidence and state, and removed hostile implementation guards while retaining idempotency, conflicts, and race semantics.
+- Task Group 8 removed five execution fact/state/replay/effective-ledger allowances (185 tokens), staticized derived
+  transitions and observations, and removed hostile implementation guards while retaining exact economics, conflicts,
+  ordering, completeness, correction/bust, anomaly, permutation, and indexed-complexity semantics.
 
 ## Promotion Queue
 - none

@@ -312,7 +312,7 @@ final class EffectiveFillLedgerSuite extends ScalaCheckSuite:
       left.knownExposure == position(value, -7)
     }
 
-  test("effective ledger representations are closed, JVM-private immutable values with structural equality"):
+  test("effective ledger representations are closed immutable values with structural equality"):
     val value           = lifecycle(Side.Buy, 10, "representation")
     val original        = fill(value, "fill", "fill", 2)
     val ledger          = record(value, Vector(original)).observation.effectiveFillLedger
@@ -328,10 +328,6 @@ final class EffectiveFillLedgerSuite extends ScalaCheckSuite:
     )
     representations.foreach: representation =>
       assert(Modifier.isFinal(representation.getModifiers), s"${representation.getName} must be final")
-      assert(
-        representation.getDeclaredConstructors.forall(constructor => Modifier.isPrivate(constructor.getModifiers)),
-        s"${representation.getName} exposes a non-private JVM constructor"
-      )
 
     assertEquals(ledger, repeated)
     assertEquals(ledger.hashCode, repeated.hashCode)

@@ -1,10 +1,5 @@
 package trading.execution
 
-import java.lang.invoke.MethodHandle
-import java.lang.invoke.MethodHandles
-import java.lang.invoke.MethodType
-import scala.annotation.nowarn
-
 import trading.quantity.Dim
 import trading.quantity.JavaSerializationUnsupported
 
@@ -22,12 +17,10 @@ final case class SourceInputRejected(violations: SourceFactViolations) extends L
 
 sealed abstract class LifecycleTransition[D <: Dim, B <: Dim, Q <: Dim] protected ()
   extends JavaSerializationUnsupported:
-  LifecycleTransition.requireBuiltin(this)
   def state: ExecutionState[D, B, Q]
   def work: TransitionWork
 
-@nowarn("msg=Ignoring.*qualifier")
-final class LifecycleAccepted[D <: Dim, B <: Dim, Q <: Dim] private[this] (
+final class LifecycleAccepted[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
   val state: ExecutionState[D, B, Q],
   val kind: LifecycleTransitionKind,
   val work: TransitionWork)
@@ -39,8 +32,7 @@ final class LifecycleAccepted[D <: Dim, B <: Dim, Q <: Dim] private[this] (
     case _ => false
   override def hashCode(): Int = (state, kind, work).hashCode
 
-@nowarn("msg=Ignoring.*qualifier")
-final class LifecycleRejected[D <: Dim, B <: Dim, Q <: Dim] private[this] (
+final class LifecycleRejected[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
   val state: ExecutionState[D, B, Q],
   val rejection: LifecycleRejection,
   val work: TransitionWork)
@@ -51,13 +43,6 @@ final class LifecycleRejected[D <: Dim, B <: Dim, Q <: Dim] private[this] (
       state == that.state && rejection == that.rejection && work == that.work
     case _ => false
   override def hashCode(): Int = (state, rejection, work).hashCode
-
-object LifecycleTransition:
-  private[execution] def requireBuiltin(value: LifecycleTransition[?, ?, ?]): Unit =
-    val runtimeClass = value.getClass
-    if runtimeClass != classOf[LifecycleAccepted[?, ?, ?]] &&
-      runtimeClass != classOf[LifecycleRejected[?, ?, ?]]
-    then throw new IllegalAccessError(s"unsupported LifecycleTransition implementation: ${runtimeClass.getName}")
 
 sealed abstract class LifecycleDiagnostic extends JavaSerializationUnsupported with Product with Serializable:
   def location: LifecycleDiagnosticLocation
@@ -105,8 +90,7 @@ final case class UnresolvedFillObserved(fillId: QualifiedFillId, modifierEventId
 final case class CompletenessNotEstablished(stream: QualifiedSourceStreamId) extends LifecycleDiagnostic:
   val location: LifecycleDiagnosticLocation = LifecycleDiagnosticLocation.Completeness
 
-@nowarn("msg=Ignoring.*qualifier")
-final class LifecycleDiagnostics private[this] (private val values: Vector[LifecycleDiagnostic])
+final class LifecycleDiagnostics private (private val values: Vector[LifecycleDiagnostic])
   extends JavaSerializationUnsupported:
 
   def head: LifecycleDiagnostic             = values.head
@@ -119,19 +103,13 @@ final class LifecycleDiagnostics private[this] (private val values: Vector[Lifec
   override def hashCode(): Int = values.hashCode
 
 object LifecycleDiagnostics:
-  private val constructor: MethodHandle =
-    MethodHandles
-      .privateLookupIn(classOf[LifecycleDiagnostics], MethodHandles.lookup())
-      .findConstructor(classOf[LifecycleDiagnostics], MethodType.methodType(classOf[Unit], classOf[Vector[?]]))
-
   private def construct(values: Vector[LifecycleDiagnostic]): LifecycleDiagnostics =
-    constructor.invoke(values).asInstanceOf[LifecycleDiagnostics]
+    new LifecycleDiagnostics(values)
 
   private[execution] def from(values: Vector[LifecycleDiagnostic]): Option[LifecycleDiagnostics] =
     Option.when(values.nonEmpty)(construct(values))
 
-@nowarn("msg=Ignoring.*qualifier")
-final class LifecycleObservation[D <: Dim, B <: Dim, Q <: Dim] private[this] (
+final class LifecycleObservation[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
   val lifecycle: ExecutionLifecycle[D, B, Q],
   val submissionKnowledge: Option[SubmissionKnowledge[D, B, Q]],
   val cancellationKnowledge: Option[CancellationKnowledge[D, B, Q]],
@@ -189,8 +167,7 @@ final class LifecycleObservation[D <: Dim, B <: Dim, Q <: Dim] private[this] (
     ).hashCode
 end LifecycleObservation
 
-@nowarn("msg=Ignoring.*qualifier")
-final class ExecutionState[D <: Dim, B <: Dim, Q <: Dim] private[this] (
+final class ExecutionState[D <: Dim, B <: Dim, Q <: Dim] private (
   val lifecycle: ExecutionLifecycle[D, B, Q],
   val commands: CommandState[D, B, Q],
   val source: SourceEvidenceState[D, B, Q],
@@ -216,8 +193,7 @@ final class ExecutionState[D <: Dim, B <: Dim, Q <: Dim] private[this] (
   override def hashCode(): Int = (lifecycle, commands, source).hashCode
 end ExecutionState
 
-@nowarn("msg=Ignoring.*qualifier")
-final class LifecycleReplayResult[D <: Dim, B <: Dim, Q <: Dim] private[this] (
+final class LifecycleReplayResult[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
   val state: ExecutionState[D, B, Q],
   val rejections: Vector[LifecycleRejection])
   extends JavaSerializationUnsupported:
@@ -229,102 +205,27 @@ final class LifecycleReplayResult[D <: Dim, B <: Dim, Q <: Dim] private[this] (
   override def hashCode(): Int = (state, rejections).hashCode
 
 object ExecutionState:
-  private val stateConstructor: MethodHandle =
-    MethodHandles
-      .privateLookupIn(classOf[ExecutionState[?, ?, ?]], MethodHandles.lookup())
-      .findConstructor(
-        classOf[ExecutionState[?, ?, ?]],
-        MethodType.methodType(
-          classOf[Unit],
-          classOf[ExecutionLifecycle[?, ?, ?]],
-          classOf[CommandState[?, ?, ?]],
-          classOf[SourceEvidenceState[?, ?, ?]],
-          classOf[TransitionWork]
-        )
-      )
-
-  private val acceptedConstructor: MethodHandle =
-    MethodHandles
-      .privateLookupIn(classOf[LifecycleAccepted[?, ?, ?]], MethodHandles.lookup())
-      .findConstructor(
-        classOf[LifecycleAccepted[?, ?, ?]],
-        MethodType.methodType(
-          classOf[Unit],
-          classOf[ExecutionState[?, ?, ?]],
-          classOf[LifecycleTransitionKind],
-          classOf[TransitionWork]
-        )
-      )
-
-  private val rejectedConstructor: MethodHandle =
-    MethodHandles
-      .privateLookupIn(classOf[LifecycleRejected[?, ?, ?]], MethodHandles.lookup())
-      .findConstructor(
-        classOf[LifecycleRejected[?, ?, ?]],
-        MethodType.methodType(
-          classOf[Unit],
-          classOf[ExecutionState[?, ?, ?]],
-          classOf[LifecycleRejection],
-          classOf[TransitionWork]
-        )
-      )
-
-  private val diagnosticsConstructor: MethodHandle =
-    MethodHandles
-      .privateLookupIn(classOf[LifecycleObservation[?, ?, ?]], MethodHandles.lookup())
-      .findConstructor(
-        classOf[LifecycleObservation[?, ?, ?]],
-        MethodType.methodType(
-          classOf[Unit],
-          classOf[ExecutionLifecycle[?, ?, ?]],
-          classOf[Option[?]],
-          classOf[Option[?]],
-          classOf[Map[?, ?]],
-          classOf[Map[?, ?]],
-          classOf[Map[?, ?]],
-          classOf[EffectiveFillLedger[?, ?, ?]],
-          classOf[ExecutionAnomalies[?, ?, ?]],
-          classOf[Vector[?]],
-          classOf[Vector[?]],
-          classOf[Vector[?]],
-          classOf[Map[?, ?]],
-          classOf[Map[?, ?]],
-          classOf[Set[?]],
-          classOf[Vector[?]],
-          classOf[Map[?, ?]],
-          classOf[Option[?]]
-        )
-      )
-
-  private val replayConstructor: MethodHandle =
-    MethodHandles
-      .privateLookupIn(classOf[LifecycleReplayResult[?, ?, ?]], MethodHandles.lookup())
-      .findConstructor(
-        classOf[LifecycleReplayResult[?, ?, ?]],
-        MethodType.methodType(classOf[Unit], classOf[ExecutionState[?, ?, ?]], classOf[Vector[?]])
-      )
-
   private def construct[D <: Dim, B <: Dim, Q <: Dim](
     lifecycle: ExecutionLifecycle[D, B, Q],
     commands: CommandState[D, B, Q],
     source: SourceEvidenceState[D, B, Q],
     work: TransitionWork
   ): ExecutionState[D, B, Q] =
-    stateConstructor.invoke(lifecycle, commands, source, work).asInstanceOf[ExecutionState[D, B, Q]]
+    new ExecutionState(lifecycle, commands, source, work)
 
   private def accepted[D <: Dim, B <: Dim, Q <: Dim](
     state: ExecutionState[D, B, Q],
     kind: LifecycleTransitionKind,
     work: TransitionWork
   ): LifecycleAccepted[D, B, Q] =
-    acceptedConstructor.invoke(state, kind, work).asInstanceOf[LifecycleAccepted[D, B, Q]]
+    new LifecycleAccepted(state, kind, work)
 
   private def rejected[D <: Dim, B <: Dim, Q <: Dim](
     state: ExecutionState[D, B, Q],
     rejection: LifecycleRejection,
     work: TransitionWork
   ): LifecycleRejected[D, B, Q] =
-    rejectedConstructor.invoke(state, rejection, work).asInstanceOf[LifecycleRejected[D, B, Q]]
+    new LifecycleRejected(state, rejection, work)
 
   def initial[D <: Dim, B <: Dim, Q <: Dim](
     lifecycle: ExecutionLifecycle[D, B, Q]
@@ -443,7 +344,7 @@ object ExecutionState:
           case value: LifecycleRejected[D, B, Q] =>
             state = value.state
             rejections += value.rejection
-      replayConstructor.invoke(state, rejections.result()).asInstanceOf[LifecycleReplayResult[D, B, Q]]
+      new LifecycleReplayResult(state, rejections.result())
 
   private def observe[D <: Dim, B <: Dim, Q <: Dim](
     state: ExecutionState[D, B, Q]
@@ -523,27 +424,25 @@ object ExecutionState:
     .sortBy(eventKey)
 
     val effectiveFillLedger = EffectiveFillLedger.derive(state)
-    diagnosticsConstructor
-      .invoke(
-        state.lifecycle,
-        SubmissionKnowledge.derive(state, authoritativeCompleteness.keySet),
-        CancellationKnowledge.derive(state),
-        state.commands.issuedCommands,
-        state.source.factsByEvent,
-        state.source.fillsById,
-        effectiveFillLedger,
-        ExecutionAnomalies.derive(state),
-        state.commands.conflicts,
-        state.source.eventConflicts,
-        state.source.fillConflicts,
-        state.source.positionConflicts,
-        authoritativeCompleteness,
-        incompleteStreams,
-        unsequenced,
-        state.source.unresolvedFillReferences,
-        LifecycleDiagnostics.from(diagnostics)
-      )
-      .asInstanceOf[LifecycleObservation[D, B, Q]]
+    new LifecycleObservation(
+      state.lifecycle,
+      SubmissionKnowledge.derive(state, authoritativeCompleteness.keySet),
+      CancellationKnowledge.derive(state),
+      state.commands.issuedCommands,
+      state.source.factsByEvent,
+      state.source.fillsById,
+      effectiveFillLedger,
+      ExecutionAnomalies.derive(state),
+      state.commands.conflicts,
+      state.source.eventConflicts,
+      state.source.fillConflicts,
+      state.source.positionConflicts,
+      authoritativeCompleteness,
+      incompleteStreams,
+      unsequenced,
+      state.source.unresolvedFillReferences,
+      LifecycleDiagnostics.from(diagnostics)
+    )
   end observe
 
   private def addContinuationRange(

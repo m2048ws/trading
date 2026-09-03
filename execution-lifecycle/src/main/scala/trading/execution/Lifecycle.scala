@@ -1,10 +1,5 @@
 package trading.execution
 
-import java.lang.invoke.MethodHandle
-import java.lang.invoke.MethodHandles
-import java.lang.invoke.MethodType
-import scala.annotation.nowarn
-
 import trading.economics.instrument.Instrument
 import trading.economics.instrument.InstrumentId
 import trading.economics.instrument.Lots
@@ -63,8 +58,7 @@ private object LifecycleValueSemantics:
 end LifecycleValueSemantics
 
 /** Trusted configuration for the actual-execution evidence of one immutable order. */
-@nowarn("msg=Ignoring.*qualifier")
-final class ExecutionLifecycle[D <: Dim, B <: Dim, Q <: Dim] private[this] (
+final class ExecutionLifecycle[D <: Dim, B <: Dim, Q <: Dim] private (
   val instrument: Instrument,
   val order: Order[D, B, Q],
   val executionOrderId: ExecutionOrderId,
@@ -102,22 +96,6 @@ final class ExecutionLifecycle[D <: Dim, B <: Dim, Q <: Dim] private[this] (
 end ExecutionLifecycle
 
 object ExecutionLifecycle:
-  private val constructor: MethodHandle =
-    MethodHandles
-      .privateLookupIn(classOf[ExecutionLifecycle[?, ?, ?]], MethodHandles.lookup())
-      .findConstructor(
-        classOf[ExecutionLifecycle[?, ?, ?]],
-        MethodType.methodType(
-          classOf[Unit],
-          classOf[Instrument],
-          classOf[Order[?, ?, ?]],
-          classOf[ExecutionOrderId],
-          classOf[OrderLineageId],
-          classOf[ExecutionTarget],
-          classOf[GridHandle[?]]
-        )
-      )
-
   private def construct[
     I <: Instrument,
     D <: Dim,
@@ -134,15 +112,16 @@ object ExecutionLifecycle:
     instrument.roles.base.D,
     instrument.roles.quote.D
   ] =
-    constructor
-      .invoke(instrument, order, executionOrderId, lineageId, target, instrument.positionLotGrid)
-      .asInstanceOf[
-        ExecutionLifecycle[
-          instrument.roles.position.D,
-          instrument.roles.base.D,
-          instrument.roles.quote.D
-        ]
+    // `create` checks the order, intent, and lots instrument identities before this private strengthening step.
+    val checkedOrder = order.asInstanceOf[
+      Order[
+        instrument.roles.position.D,
+        instrument.roles.base.D,
+        instrument.roles.quote.D
       ]
+    ]
+    new ExecutionLifecycle(instrument, checkedOrder, executionOrderId, lineageId, target, instrument.positionLotGrid)
+  end construct
 
   def create[
     I <: Instrument,
