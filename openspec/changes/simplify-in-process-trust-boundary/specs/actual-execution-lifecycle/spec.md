@@ -25,4 +25,3 @@ completeness, cancellation, lineage, and exact-exposure predicates before return
 - **WHEN** ordering, acknowledgement, referenced facts, or completeness authority is absent or conflicting
 - **THEN** the lifecycle returns the corresponding typed uncertainty or diagnostic rather than manufacturing stronger
   evidence
-

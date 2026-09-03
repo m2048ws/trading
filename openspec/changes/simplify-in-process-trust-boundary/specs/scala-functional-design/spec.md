@@ -49,4 +49,3 @@ authority SHALL establish their required semantic predicates.
 
 - **WHEN** the completed production and benchmark source sets are scanned
 - **THEN** no method-handle or reflective private-member construction mechanism is present
-

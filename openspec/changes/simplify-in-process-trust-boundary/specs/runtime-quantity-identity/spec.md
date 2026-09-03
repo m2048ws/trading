@@ -21,4 +21,3 @@ deliberate reflection, unsafe bytecode, casts, or constructor bypass by code alr
 
 - **WHEN** ordinary Scala or Java code uses the documented runtime-witness operations
 - **THEN** it cannot independently select contradictory static and runtime identities
-

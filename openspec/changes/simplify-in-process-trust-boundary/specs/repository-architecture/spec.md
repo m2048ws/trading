@@ -29,4 +29,3 @@ the semantic predicate that distinguishes data from trusted domain evidence.
 - **WHEN** a future design requires plugins or another executable component not trusted by the application
 - **THEN** a separate design establishes a real isolation and authentication boundary instead of relying on domain
   constructor secrecy
-

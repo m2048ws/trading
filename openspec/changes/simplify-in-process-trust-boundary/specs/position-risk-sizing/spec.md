@@ -23,4 +23,3 @@ NOT substitute for that predicate.
 - **WHEN** maximum-affordable or exhaustive sizing evaluates a model
 - **THEN** it observes exact assessments through a static domain operation and returns the same witness assessment used
   for the decision
-

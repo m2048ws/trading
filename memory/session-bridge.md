@@ -14,13 +14,13 @@ updated: 2026-09-03
 - **Issue**: 36 https://github.com/m2048ws/trading/issues/36
 - **Change**: simplify-in-process-trust-boundary
 - **Worktree**: /Users/m/src/money/.worktrees/simplify-in-process-trust-boundary
-- **Phase at Checkpoint**: awaiting_verify
-- **Task Group at Checkpoint**: 10
-- **Observed Run Revision**: 11
-- **Last Verified HEAD**: aff014e3c3356d32699a4af3a09fa59d354946d3
+- **Phase at Checkpoint**: planning_ready
+- **Task Group at Checkpoint**: 11
+- **Observed Run Revision**: none
+- **Last Verified HEAD**: c5c2e90d7f9ceede40db22816e9794818416762f
 
 ## Next Action
-- Run the separate canonical whole-change Verify gate, then proceed to explicit human Review.
+- Start Apply for `simplify-in-process-trust-boundary` Task Group 11.
 
 ## Blockers
 - none

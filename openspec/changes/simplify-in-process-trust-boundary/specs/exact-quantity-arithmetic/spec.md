@@ -23,4 +23,3 @@ already executing in the process.
 
 - **WHEN** code already executing in the JVM deliberately bypasses the supported construction surface
 - **THEN** resistance to that action is outside the quantity capability's contract
-

@@ -23,4 +23,3 @@ returning trusted results.
 
 - **WHEN** a valid record is encoded, decoded against its required coherent snapshot, and re-encoded
 - **THEN** its canonical bytes and reconstructed semantic value remain unchanged by the construction simplification
-

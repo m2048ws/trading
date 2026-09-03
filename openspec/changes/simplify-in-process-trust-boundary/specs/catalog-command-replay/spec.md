@@ -22,4 +22,3 @@ catalog transition; failures SHALL retain their exact index, revision context, a
 
 - **WHEN** cooperative in-process code constructs structurally valid journal data without a publication transition
 - **THEN** the value carries no assertion that the batch was published and checked replay still establishes authority
-

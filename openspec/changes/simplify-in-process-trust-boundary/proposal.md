@@ -58,8 +58,8 @@ and replay data must remain explicitly checked before becoming trusted domain st
 
 ## Impact
 
-- Affects production construction and observation internals in `order-model`, `execution-scenario`, `fee-policy`,
-  `risk`, `execution-lifecycle`, and `boundary-codecs`, plus the risk benchmark.
+- Affects production construction and observation internals in `reference-data`, `runtime`, `order-model`,
+  `execution-scenario`, `fee-policy`, `risk`, `execution-lifecycle`, and `boundary-codecs`, plus the risk benchmark.
 - Reconciles the architecture guide, affected canonical specifications, module documentation, Java/Scala client
   fixtures, adversarial-boundary coverage, and completed-artifact inspection rules.
 - Removes dynamic invocation descriptors and erased casts used only after dynamic calls; it does not add dependencies,

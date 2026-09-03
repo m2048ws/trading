@@ -150,3 +150,18 @@
 - [ ] 10.5 Record AC-001 through AC-006 evidence, complete the Scala/Java and malformed-external-data walkthrough,
   validate OpenSpec and Corgi source/traceability at the final planning revision, and prepare the final acknowledged Task
   Group commit for separate whole-change Verify and human gates.
+
+## 11. Verify Repair — Reference Authority and Final Hygiene
+
+- [ ] 11.1 Remove the `GridDefinition`, catalog-handle, and grid-reconciliation singleton permit machinery while
+  preserving private/owner-local construction, positive grid validation, real catalog lineage, stable identity,
+  dimension reconciliation, and the checked predicate that justifies grid retyping.
+- [ ] 11.2 Replace the erased Java `LiveCatalogBridge` with a direct Scala `LiveCatalog[F]` implementation over the same
+  `Ref`, eliminating the Java functional-interface detour and its authority-recovery casts without changing bootstrap,
+  atomic commit, snapshot, or concurrency behavior.
+- [ ] 11.3 Repair every `git diff --check` finding in the change specification deltas without changing their normative
+  text, acceptance scope, anchors, or OpenSpec structure.
+- [ ] 11.4 Run focused reference-data, runtime, application, codec/replay, ordinary Scala/Java, reflection-guard, and
+  OpenSpec checks; inspect the remaining casts and opaque evidence so only checked semantic strengthening remains.
+- [ ] 11.5 Run the clean whole-repository format/test/JMH-compile matrix and automated Task Group review, record the Verify
+  repair evidence and bridge checkpoint, commit exactly this repair group, and synchronize the existing draft PR.

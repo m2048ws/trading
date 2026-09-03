@@ -24,4 +24,3 @@ and exact flatness predicates applicable to that result.
 - **WHEN** entry and exit scenarios are combined
 - **THEN** checked construction verifies shared instrument identity and exact flat signed position before returning the
   round trip
-

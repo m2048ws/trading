@@ -22,4 +22,3 @@ SHALL NOT be advertised as resistance to deliberate same-JVM visibility or bytec
 
 - **WHEN** in-process code possesses a `GridQuantity` without its witness or stable handle
 - **THEN** the value supplies no mathematical witness, stable identity, lineage, or encoding authority
-
