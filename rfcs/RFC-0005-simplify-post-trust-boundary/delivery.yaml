@@ -1,6 +1,14 @@
 schemaVersion: 1
 rfcId: RFC-0005-simplify-post-trust-boundary
-revision: 0
+revision: 1
 slices:
-  S-01-simplify-post-trust-boundary:
+  S-01-retire-trust-boundary-migration-scaffolding:
+    status: unbound
+  S-02-total-and-deterministic-execution-transitions:
+    status: unbound
+  S-03-use-direct-scala-derived-models:
+    status: unbound
+  S-04-use-scala-first-quantity-and-reference-data:
+    status: unbound
+  S-05-remove-java-api-compatibility:
     status: unbound

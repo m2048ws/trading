@@ -1,7 +1,11 @@
 schemaVersion: 1
 id: RFC-0005-simplify-post-trust-boundary
 type: amendment
-status: draft
+status: accepted
 author: m@2048.ws
 createdAt: '2026-09-03T22:54:16.840Z'
 amends: RFC-0004-simplify-in-process-trust-boundary
+acceptance:
+  approver: m2048ws
+  approvedAt: '2026-09-03T23:09:33.014Z'
+  digest: 31336459ac68c4a188388bb58cf59fe8c84830a0b72aa66d29fdcff4f90657a3
