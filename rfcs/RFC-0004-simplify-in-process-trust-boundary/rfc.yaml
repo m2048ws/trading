@@ -1,0 +1,7 @@
+schemaVersion: 1
+id: RFC-0004-simplify-in-process-trust-boundary
+type: amendment
+status: draft
+author: m@2048.ws
+createdAt: '2026-09-03T16:45:28.877Z'
+amends: RFC-0001-project-foundation
