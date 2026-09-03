@@ -6,7 +6,10 @@ Complete the simplification enabled by RFC-0004 now that constructor secrecy and
 treated as domain authority. Remove obsolete Java-build and reflection-migration scaffolding, make actual-execution
 transition results total, express deterministic replay ordering with typed values instead of encoded strings, avoid
 recomputing derived execution state, and replace repetitive derived-result class machinery with direct Scala 3 sums
-and products where construction establishes no additional semantic authority.
+and products where construction establishes no additional semantic authority. Make Scala 3 the sole supported source
+API, remove Java-specific construction and compatibility machinery from quantities, reference data, order/scenario,
+execution, and codecs, and retain Java interoperability only where the JVM platform or an external dependency requires
+it.
 
 The resulting code SHALL be smaller and easier for one maintainer to read while preserving exact arithmetic,
 dimension and grid safety, execution identity and provenance, validation, deterministic replay, exposure,
@@ -18,18 +21,23 @@ uncertainty, and anomaly semantics.
   externally observable execution outcomes.
 - Do not weaken checked construction for commands, source facts, execution lifecycles, refinements, non-empty
   collections, catalog lineage, dimension/grid associations, or values whose construction establishes a predicate.
-- Do not preserve Java source or JVM binary compatibility for the execution-lifecycle derived result and observation
-  types changed by this RFC. Java API ergonomics for those types are not a current design priority.
-- Do not remove the JDK 25 baseline, Java compilation tests that protect still-supported boundary factories, or
-  fail-closed Java object-serialization behavior.
+- Do not provide or preserve a supported Java source API or JVM binary API shape for repository domain artifacts.
+  Scala source shapes MAY change where a more direct Scala 3 model preserves the documented domain semantics.
+- Do not remove the JDK 25 baseline, JVM execution, Java-library integration, exact `java.math.BigDecimal` conversion,
+  or fail-closed Java object-serialization behavior.
+- Do not enable Scala explicit nulls or mechanically remove runtime null checks. External-data, Java-library,
+  construction-invariant, and useful public-boundary checks remain governed by their owning semantics.
 - Do not convert every domain class to a case class, expose unchecked `apply` or `copy` operations for
   invariant-bearing values, or perform unrelated naming and formatting churn.
 - Do not add a general ordering framework, effect abstraction, cache, mutable optimization, or cross-module facade.
 
 ## Boundary
 
-This amendment applies the cooperative in-process model from RFC-0004 to migration tooling, the runtime build, and the
-pure actual-execution lifecycle. It covers three independently deliverable slices.
+This amendment applies the cooperative in-process model from RFC-0004 to migration tooling, the runtime build, the
+pure actual-execution lifecycle, quantity/reference-data construction, and order/scenario composition. It covers five
+independently deliverable slices. Well-typed Scala 3 is the sole supported repository source API. Java source callers,
+generated static forwarders, Java-facing constructor shapes, and JVM binary compatibility are not contracts. This does
+not change the JDK platform baseline or turn Java object serialization into a supported data format.
 
 The repository-wide production and benchmark reflection guard SHALL become a permanent zero-tolerance invariant. Its
 implementation SHALL not retain an allowance baseline or migration accounting after the final allowance has been
@@ -59,9 +67,32 @@ and product support. Such conversions SHALL remove hand-written equality, constr
 where the owning derivation already establishes every semantic predicate.
 
 Scala source shapes and exhaustiveness patterns for these derived outputs MAY change. Java source shape and JVM binary
-signatures for them are explicitly not compatibility commitments. Their domain meaning, public field information,
-closed alternatives, structural equality, and Java-serialization rejection SHALL remain observable. Existing Java
-support outside this boundary, especially checked external-data and boundary-codec construction, remains unchanged.
+signatures are explicitly not compatibility commitments. Their domain meaning, public field information, closed
+alternatives, structural equality, and Java-serialization rejection SHALL remain observable.
+
+Quantity and reference-data APIs SHALL accept already refined Scala values at trusted construction points without
+revalidating them solely because their representation erases for Java callers. Raw checked factories with no
+production Scala consumer and whose only purpose is a Java/JVM alternative to an existing refinement SHALL be removed.
+External-data reconstruction SHALL continue to refine raw values before invoking trusted construction. Stable
+`AssetId`, `GridId`, and `GridVersion` values SHALL move from hand-written Java implementations to Scala-owned checked
+values while retaining their precise expected failures, value equality, hashing, display, and serialization rejection.
+
+Reference-data commit and transition observations SHALL use direct Scala sums and products where construction conveys
+no authority consumed by a later transition. Catalog state, delta, lineage, revision, conflict, and non-empty
+invariants SHALL remain owned and checked by the catalog model. Changing a generated JVM class shape SHALL not weaken
+those semantic checks.
+
+Order/scenario composition SHALL rely on its path-dependent Scala evidence and resolution types instead of additional
+`Any`-based hooks whose sole purpose is rejecting erased Java calls. Construction from an already non-empty
+`MatchedSlices` SHALL be direct; construction from an ordinary vector SHALL retain its typed empty failure. Activation
+verification, pricing resolution, same-shape semantic association, scenario identity, and boundary-codec
+reconstruction SHALL remain checked by their current owners.
+
+Ordinary-Java positive and negative API fixtures and their dynamic compiler/classloader harnesses SHALL be removed.
+Completed-artifact Scala clients, negative Scala compiler fixtures, dependency-boundary checks, semantic tests, and
+external wire/null cases SHALL remain. Runtime null checks MAY be removed only as a local consequence of replacing a
+Java-only adapter or duplicated erased-input path; this RFC does not establish a repository-wide assumption that every
+JVM reference is non-null.
 
 ## Slices
 
@@ -106,6 +137,36 @@ support outside this boundary, especially checked external-data and boundary-cod
   non-empty wrappers, identity/refinement values, and external reconstruction remain present and retain their focused
   positive and negative coverage.
 
+### S-04-use-scala-first-quantity-and-reference-data: Remove Java-owned construction and catalog result boilerplate
+
+- AC-012 [evidence: automated]: `AssetId`, `GridId`, and `GridVersion` are Scala-owned checked values and the repository
+  contains no production Java source; their valid construction, precise empty/nonpositive failures, value equality,
+  hashing, domain-readable display, and Java-object-serialization rejection remain covered.
+- AC-013 [evidence: automated]: `UniformGrid` and `GridDefinition` expose refined Scala construction without a
+  Java-only raw factory or defensive revalidation of an already established `PositiveRational`; raw nonpositive values
+  still fail at the owning refinement or external reconstruction boundary before grid authority is returned.
+- AC-014 [evidence: automated]: Catalog commit and transition observations use exhaustive direct Scala sums/products
+  without hand-written `Product`, extractor, equality, hash, or rendering machinery, while publication, unchanged,
+  revision, delta, lineage, and structural-equality semantics remain unchanged.
+- AC-015 [evidence: automated]: Quantity and reference-data specifications and completed-artifact Scala fixtures state
+  the Scala-only source boundary and retain dimension, generative grid identity, stable identity, catalog conflict,
+  reconciliation, null-boundary, and serialization coverage.
+
+### S-05-remove-java-api-compatibility: Simplify order/scenario composition and retire Java API fixtures
+
+- AC-016 [evidence: automated]: Order activation, pricing, and execution types contain no `Any`-based evidence or
+  resolution acceptance hooks used only for erased Java calls; associated-evidence negative Scala fixtures still fail
+  to compile and semantic activation/pricing mismatches still return their typed failures.
+- AC-017 [evidence: automated]: `ScenarioAssumptions.create`, `one`, and `many` construct directly from associated
+  Scala evidence and already non-empty slices, while `fromVector` retains its typed empty-slice result and downstream
+  scenario, fee, and codec behavior remains unchanged.
+- AC-018 [evidence: automated]: Ordinary-Java domain API fixtures and their dedicated dynamic compiler/classloader
+  harnesses are removed from reference data, order/scenario, execution lifecycle, and boundary codecs; completed-JAR
+  Scala API, negative compiler, dependency, wire, and semantic coverage remains in the clean aggregate test matrix.
+- AC-019 [evidence: automated]: Active architecture, quantity-grid, reference-data, order/scenario, execution, and codec
+  specifications consistently describe Scala 3 as the supported source API without changing the JDK baseline,
+  external representations, Java-library integration, exact decimal conversion, or serialization rejection.
+
 ## Risks
 
 - A case-class or enum conversion could accidentally expose `apply` or `copy` as unchecked construction authority.
@@ -119,9 +180,21 @@ support outside this boundary, especially checked external-data and boundary-cod
   permutations, gaps, conflicts, corrections, busts, and unsequenced facts.
 - Reusing a derived ledger could couple anomaly logic to an incomplete projection. Mitigation: keep ledger derivation
   pure, pass the complete value explicitly, and compare all observations against characterized pre-change results.
-- Dropping Java compatibility could inadvertently remove useful Java coverage outside execution-derived outputs.
-  Mitigation: scope compatibility changes to the named lifecycle representations and retain completed-artifact Java
-  tests for checked boundary, codec, quantity, catalog, order, scenario, risk, and fee APIs.
-- Combining cleanup with semantic refactoring could make failures difficult to localize. Mitigation: deliver the three
+- Removing raw JVM factories could strand a legitimate Scala caller or move invalidity past its owning boundary.
+  Mitigation: prove the removed entries have no production Scala consumer, retain the canonical refinement, and keep
+  raw validation in external reconstruction.
+- Removing erased Java shape checks could accidentally remove a semantic association check. Mitigation: distinguish
+  type-shape acceptance from activation/pricing verification, preserve the latter, and retain same-shape mismatch and
+  negative associated-type coverage.
+- Retiring Java fixtures could remove useful semantic or artifact evidence along with compatibility evidence.
+  Mitigation: map every removed assertion to retained Scala compiler, focused behavioral, completed-JAR, or external-
+  boundary coverage before deleting the fixture or harness.
+- Scala-owned identifiers or direct result sums could accidentally alter equality, rendering, serialization rejection,
+  or catalog authority. Mitigation: characterize those behaviors before conversion and verify them from completed
+  artifacts without asserting a generated JVM layout.
+- A broad null-check deletion would conflate unsupported Java source compatibility with external-data safety.
+  Mitigation: retain the hybrid null policy, exclude explicit-nulls adoption from this RFC, and require an owning
+  semantic reason for every removed runtime check.
+- Combining cleanup with semantic refactoring could make failures difficult to localize. Mitigation: deliver the five
   slices separately and keep every Task Group buildable with focused characterization tests before representation
   changes.
