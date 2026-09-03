@@ -69,6 +69,7 @@ OPEN_PHASES = {
     "ready_for_archive",
     "archiving",
 }
+MANUAL_CI_WORKFLOW = "ci.yml"
 
 
 class PilotError(RuntimeError):
@@ -480,9 +481,23 @@ class Adapter:
         if not self.config.authority.draft_pr_create_or_update:
             raise PilotError("draft_pr_not_authorized", "Draft PR authority is disabled")
         with DescriptorLock(self.root, f"writer for {change}"):
-            status = self.corgi_status(change, require_checkpoint=True)
-            branch, head = self.git_identity(change)
-            self.fast_forward_push(branch, head)
+            archived_local = False
+            try:
+                status = self.corgi_status(change, require_checkpoint=True)
+                branch, head = self.git_identity(change)
+            except PilotError as exc:
+                if create or exc.code != "corgi_contract_error":
+                    raise
+                branch = self.config.branch(change)
+                status, head, _, _ = self.archived_status(
+                    change, branch, worktree_state="present"
+                )
+                archived_local = True
+            self.require_open_issue(status.issue_id)
+            if archived_local:
+                self.fast_forward_push_ref(branch, head)
+            else:
+                self.fast_forward_push(branch, head)
             prs = self.find_prs(branch)
             body = render_body(status, self.config, branch, head)
             assert_safe_projection(body, self.root)
@@ -691,8 +706,9 @@ class Adapter:
                     "ready_phase_invalid",
                     "Ready requires the locally materialized Archive head",
                 )
+            self.require_open_issue(status.issue_id)
             self.require_dependencies_closed(status.issue_id)
-            require_review_and_checks(
+            self.final_check_detail(
                 self.pr_detail(pr.number),
                 head,
                 allow_draft=True,
@@ -721,10 +737,17 @@ class Adapter:
                 raise PilotError("merge_phase_invalid", "Merge requires the Archive head")
             if pr.is_draft:
                 raise PilotError("pr_is_draft", "PR must be explicitly marked ready first")
+            self.require_open_issue(status.issue_id)
             self.require_dependencies_closed(status.issue_id)
             detail = self.pr_detail(pr.number)
-            require_mergeable(
+            validated_detail = self.final_check_detail(
                 detail,
+                head,
+                allow_draft=False,
+                canonical_review_approved=status.review_approved,
+            )
+            require_mergeable(
+                validated_detail,
                 head,
                 canonical_review_approved=status.review_approved,
             )
@@ -762,28 +785,36 @@ class Adapter:
             )
         with self.integration_lock():
             status, pr, head = self.integration_identity(change, allow_merged=True)
+            branch = self.config.branch(change)
+            delivery_root = self.archive_worktree(change, branch, head) or self.root
             detail = self.pr_detail(pr.number)
             if detail.get("state") != "MERGED" or detail.get("headRefOid") != head:
                 raise PilotError(
                     "merge_not_confirmed", "Exact Corgi head is not confirmed merged"
                 )
             self.require_dependencies_closed(status.issue_id)
-            require_review_and_checks(
+            self.final_check_detail(
                 detail,
                 head,
                 allow_draft=False,
                 canonical_review_approved=status.review_approved,
             )
             resolved_token_file = inside(
-                self.root,
-                token_file if token_file.is_absolute() else self.root / token_file,
+                delivery_root,
+                token_file
+                if token_file.is_absolute()
+                else delivery_root / token_file,
                 "token file",
             )
-            token = load_token_file(resolved_token_file, self.root)
-            confirmed = self.corgi_archive(change, "--confirm-tracker", token)
+            token = load_token_file(resolved_token_file, delivery_root)
+            confirmed = self.corgi_archive(
+                change, "--confirm-tracker", token, path=delivery_root
+            )
             next_token = token_from_corgi(confirmed)
-            write_token_file(resolved_token_file, next_token, self.root)
-            finished = self.corgi_archive(change, "--finish", next_token)
+            write_token_file(resolved_token_file, next_token, delivery_root)
+            finished = self.corgi_archive(
+                change, "--finish", next_token, path=delivery_root
+            )
             state = mapping(finished.get("state"), "Corgi archive state")
             if state.get("phase") != "archived":
                 raise PilotError("archive_not_finished", "Corgi did not reach archived")
@@ -908,19 +939,27 @@ class Adapter:
         )
 
     def archived_status(
-        self, change: str, branch: str
+        self, change: str, branch: str, *, worktree_state: str = "absent"
     ) -> tuple[DeliveryStatus, str, str, str]:
+        if worktree_state not in {"absent", "present"}:
+            raise PilotError(
+                "archive_worktree_state_invalid",
+                "Archive worktree state must be absent or present",
+            )
         local_ref = f"refs/heads/{branch}"
         head = self.git("rev-parse", "--verify", local_ref).stdout.strip()
         if not SHA_RE.fullmatch(head):
             raise PilotError("head_invalid", "Local archive branch head is invalid")
-        worktrees = parse_worktrees(
-            self.git("worktree", "list", "--porcelain").stdout
-        )
-        if any(item.branch == branch for item in worktrees):
+        archive_worktree = self.archive_worktree(change, branch, head)
+        if worktree_state == "absent" and archive_worktree is not None:
             raise PilotError(
                 "archived_worktree_present",
                 "Use ordinary sync while the delivery worktree is registered",
+            )
+        if worktree_state == "present" and archive_worktree is None:
+            raise PilotError(
+                "archive_worktree_missing",
+                "Local Archive integration requires the registered delivery worktree",
             )
         tree = self.git(
             "ls-tree",
@@ -1056,7 +1095,7 @@ class Adapter:
         status = DeliveryStatus(
             raw={"archiveRoot": archive_root, "manifestHash": manifest_hash},
             change=change,
-            phase="archived",
+            phase="archiving" if archive_worktree is not None else "archived",
             final_revision=final_revision,
             integration_revision=head,
             review_approved=True,
@@ -1066,6 +1105,43 @@ class Adapter:
             groups_total=len(groups),
         )
         return status, head, archive_root, manifest_hash
+
+    def archive_worktree(
+        self, change: str, branch: str, head: str
+    ) -> pathlib.Path | None:
+        worktrees = parse_worktrees(
+            self.git("worktree", "list", "--porcelain").stdout
+        )
+        matches = [item for item in worktrees if item.branch == branch]
+        if len(matches) > 1:
+            raise PilotError(
+                "archive_worktree_ambiguous",
+                "Archive branch is registered in multiple worktrees",
+            )
+        if not matches:
+            return None
+        worktree = matches[0]
+        expected = (self.config.worktree_root / change).resolve()
+        if worktree.path != expected:
+            raise PilotError(
+                "archive_worktree_identity_mismatch",
+                "Archive branch is not registered at the configured delivery worktree",
+            )
+        if worktree.head != head:
+            raise PilotError(
+                "archive_worktree_head_mismatch",
+                "Registered delivery worktree does not match the archive branch head",
+            )
+        status = self.runner.run(
+            ("git", "status", "--porcelain=v1", "--untracked-files=all"),
+            cwd=worktree.path,
+        ).stdout
+        if status:
+            raise PilotError(
+                "worktree_dirty",
+                "Local Archive integration requires a clean delivery worktree",
+            )
+        return worktree.path
 
     def git_identity(self, change: str) -> tuple[str, str]:
         branch, head = self.git_branch_identity(change)
@@ -1171,6 +1247,40 @@ class Adapter:
         }:
             raise PilotError(
                 "archive_issue_invalid", "Archived Issue lacks the done label"
+            )
+
+    def require_open_issue(self, issue_id: int) -> None:
+        raw = mapping(
+            parse_json(
+                self.gh(
+                    "issue",
+                    "view",
+                    str(issue_id),
+                    "--repo",
+                    self.config.repository,
+                    "--json",
+                    "number,state,labels",
+                ).stdout,
+                "open Issue",
+            ),
+            "open Issue",
+        )
+        if raw.get("number") != issue_id or raw.get("state") != "OPEN":
+            raise PilotError(
+                "archive_issue_invalid",
+                "Local Archive integration requires the open bound Issue",
+            )
+        labels = raw.get("labels")
+        if not isinstance(labels, list):
+            raise PilotError("archive_issue_invalid", "Issue labels are invalid")
+        if "done" in {
+            str(label.get("name") or "")
+            for label in labels
+            if isinstance(label, dict)
+        }:
+            raise PilotError(
+                "archive_issue_invalid",
+                "Local Archive integration rejects an Issue already marked done",
             )
 
     def remote_sha(self, ref: str) -> str | None:
@@ -1317,8 +1427,16 @@ class Adapter:
     def integration_identity(
         self, change: str, *, allow_merged: bool = False
     ) -> tuple[DeliveryStatus, PullRequest, str]:
-        status = self.corgi_status(change, require_checkpoint=True)
-        branch, head = self.git_identity(change)
+        try:
+            status = self.corgi_status(change, require_checkpoint=True)
+            branch, head = self.git_identity(change)
+        except PilotError as exc:
+            if exc.code != "corgi_contract_error":
+                raise
+            branch = self.config.branch(change)
+            status, head, _, _ = self.archived_status(
+                change, branch, worktree_state="present"
+            )
         pr = require_one_pr(self.find_prs(branch), self.config, status, branch)
         allowed_states = {"OPEN", "MERGED"} if allow_merged else {"OPEN"}
         if pr.state not in allowed_states:
@@ -1392,15 +1510,70 @@ class Adapter:
             "pull request",
         )
 
-    def corgi_archive(
-        self, change: str, phase_flag: str, token: dict[str, Any]
+    def final_check_detail(
+        self,
+        detail: dict[str, Any],
+        head: str,
+        *,
+        allow_draft: bool,
+        canonical_review_approved: bool = False,
     ) -> dict[str, Any]:
+        try:
+            require_review_and_checks(
+                detail,
+                head,
+                allow_draft=allow_draft,
+                canonical_review_approved=canonical_review_approved,
+            )
+            return detail
+        except PilotError as exc:
+            if exc.code != "checks_missing":
+                raise
+
+        endpoint = (
+            f"repos/{self.config.repository}/actions/workflows/"
+            f"{MANUAL_CI_WORKFLOW}/runs"
+        )
+        raw = parse_json(
+            self.gh(
+                "api",
+                "--method",
+                "GET",
+                endpoint,
+                "-f",
+                "event=workflow_dispatch",
+                "-f",
+                f"head_sha={head}",
+                "-f",
+                "per_page=100",
+            ).stdout,
+            "manual CI workflow runs",
+        )
+        require_exact_manual_ci(raw, head)
+        validated = dict(detail)
+        validated["statusCheckRollup"] = [
+            {
+                "name": f"{MANUAL_CI_WORKFLOW} workflow_dispatch",
+                "conclusion": "SUCCESS",
+            }
+        ]
+        return validated
+
+    def corgi_archive(
+        self,
+        change: str,
+        phase_flag: str,
+        token: dict[str, Any],
+        *,
+        path: pathlib.Path | None = None,
+    ) -> dict[str, Any]:
+        operation_root = (path or self.root).resolve()
         args = [
             str(self.corgi_binary()),
             "archive",
             change,
             "--path",
-            str(self.root),
+            str(operation_root),
             "--json",
             phase_flag,
             "--run-id",
@@ -1413,7 +1586,7 @@ class Adapter:
             str(token["nonce"]),
         ]
         raw = parse_json(
-            self.runner.run(args, cwd=self.root, accepted=(0, 1)).stdout,
+            self.runner.run(args, cwd=operation_root, accepted=(0, 1)).stdout,
             "Corgi archive",
         )
         if raw.get("status") != "ok":
@@ -1780,6 +1953,35 @@ def require_review_and_checks(
             failing.append(str(item.get("name") or item.get("context") or "unknown"))
     if failing:
         raise PilotError("checks_not_green", f"Checks not green: {', '.join(failing)}")
+
+
+def require_exact_manual_ci(value: Any, head: str) -> None:
+    response = mapping(value, "manual CI workflow runs")
+    runs = response.get("workflow_runs")
+    if not isinstance(runs, list) or not runs:
+        raise PilotError("checks_missing", "No exact-head manual CI run was reported")
+    total_count = response.get("total_count")
+    if not isinstance(total_count, int) or total_count != len(runs):
+        raise PilotError(
+            "checks_ambiguous",
+            "Exact-head manual CI runs exceed or disagree with the bounded response",
+        )
+    failing = []
+    for run in runs:
+        item = mapping(run, "manual CI workflow run")
+        if item.get("head_sha") != head or item.get("event") != "workflow_dispatch":
+            raise PilotError(
+                "checks_identity_mismatch",
+                "Manual CI response does not match the sealed head and event",
+            )
+        status = str(item.get("status") or "").lower()
+        conclusion = str(item.get("conclusion") or "").lower()
+        if status != "completed" or conclusion != "success":
+            failing.append(str(item.get("name") or item.get("id") or "manual CI"))
+    if failing:
+        raise PilotError(
+            "checks_not_green", f"Manual CI not green: {', '.join(failing)}"
+        )
 
 
 def load_token_file(path: pathlib.Path, root: pathlib.Path) -> dict[str, Any]:

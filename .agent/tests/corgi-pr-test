@@ -147,6 +147,9 @@ class ScriptedRunner:
                 }
             ]
             return corgi_pr.Completed(command, 0, json.dumps(payload), "")
+        if command[:3] == ("gh", "issue", "view"):
+            payload = {"number": 17, "state": "OPEN", "labels": []}
+            return corgi_pr.Completed(command, 0, json.dumps(payload), "")
         raise AssertionError(f"unexpected command: {command}")
 
 
@@ -207,11 +210,11 @@ class CorgiPrTest(unittest.TestCase):
             (SOURCE_ROOT / "tools/corgi/package-lock.json").read_text()
         )
         package = lock["packages"]["node_modules/corgispec"]
-        self.assertEqual(package["version"], "4.0.0-rc2-money.2")
+        self.assertEqual(package["version"], "4.0.0-rc2-money.3")
         self.assertEqual(package["license"], "MIT")
         self.assertEqual(
             package["integrity"],
-            "sha512-Gs9kVgOg+rezg8sVojrgqZ85htTQTL/3gEqvAThwVpAYIFKkqJRyIbj0hfnplE0hsYiX22cEOqVAo8uVl1iOZg==",
+            "sha512-fD0HZAhy310gFnYse/WO2R+Q5JS78blCykk3UsUbvBRvf7GtDmXj292tL62o9BZlMak+DfOCc1dhkx8yP+LLCQ==",
         )
 
     def test_cas_handoff_is_local_bounded_and_owner_only(self):
@@ -512,6 +515,52 @@ class CorgiPrTest(unittest.TestCase):
         with self.assertRaises(corgi_pr.PilotError) as caught:
             corgi_pr.require_mergeable(detail, HEAD)
         self.assertEqual(caught.exception.code, "checks_not_green")
+
+    def test_manual_ci_gate_requires_complete_success_at_exact_head(self):
+        response = {
+            "total_count": 1,
+            "workflow_runs": [
+                {
+                    "id": 42,
+                    "name": "CI",
+                    "event": "workflow_dispatch",
+                    "head_sha": HEAD,
+                    "status": "completed",
+                    "conclusion": "success",
+                }
+            ],
+        }
+        corgi_pr.require_exact_manual_ci(response, HEAD)
+
+        response["workflow_runs"][0]["status"] = "in_progress"
+        response["workflow_runs"][0]["conclusion"] = None
+        with self.assertRaises(corgi_pr.PilotError) as caught:
+            corgi_pr.require_exact_manual_ci(response, HEAD)
+        self.assertEqual(caught.exception.code, "checks_not_green")
+
+    def test_manual_ci_gate_rejects_wrong_identity_and_unbounded_results(self):
+        wrong_head = {
+            "total_count": 1,
+            "workflow_runs": [
+                {
+                    "id": 42,
+                    "name": "CI",
+                    "event": "workflow_dispatch",
+                    "head_sha": "2" * 40,
+                    "status": "completed",
+                    "conclusion": "success",
+                }
+            ],
+        }
+        with self.assertRaises(corgi_pr.PilotError) as caught:
+            corgi_pr.require_exact_manual_ci(wrong_head, HEAD)
+        self.assertEqual(caught.exception.code, "checks_identity_mismatch")
+
+        wrong_head["workflow_runs"][0]["head_sha"] = HEAD
+        wrong_head["total_count"] = 101
+        with self.assertRaises(corgi_pr.PilotError) as caught:
+            corgi_pr.require_exact_manual_ci(wrong_head, HEAD)
+        self.assertEqual(caught.exception.code, "checks_ambiguous")
 
 
 if __name__ == "__main__":
