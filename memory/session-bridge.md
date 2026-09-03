@@ -14,13 +14,13 @@ updated: 2026-09-03
 - **Issue**: 36 https://github.com/m2048ws/trading/issues/36
 - **Change**: simplify-in-process-trust-boundary
 - **Worktree**: /Users/m/src/money/.worktrees/simplify-in-process-trust-boundary
-- **Phase at Checkpoint**: planning_ready
+- **Phase at Checkpoint**: awaiting_verify
 - **Task Group at Checkpoint**: 11
-- **Observed Run Revision**: none
-- **Last Verified HEAD**: c5c2e90d7f9ceede40db22816e9794818416762f
+- **Observed Run Revision**: 2
+- **Last Verified HEAD**: b1b2d6b7b79b02ae9308eb2f5a5241e831a07b86
 
 ## Next Action
-- Start Apply for `simplify-in-process-trust-boundary` Task Group 11.
+- Run the separate canonical whole-change Verify gate, then proceed to explicit human Review.
 
 ## Blockers
 - none
@@ -55,6 +55,9 @@ updated: 2026-09-03
 - Task Group 10 removed 25 hostile-only fixtures and the remaining constructor/finality assertions, simplified the
   runtime bridge, expanded the zero-reflection guard to Java, retained supported semantic/external-data coverage, and
   passed the clean 1,043-test aggregate plus representative risk, codec, and runtime measurements.
+- Task Group 11 repaired the failed whole-change Verify by removing the remaining reference-data singleton permits and
+  erased Java runtime bridge, preserving semantic lineage/reconciliation and erased-input checks, repairing change-spec
+  whitespace, and passing the clean 1,043-test aggregate plus ordinary Scala/Java and runtime performance checks.
 
 ## Promotion Queue
 - none

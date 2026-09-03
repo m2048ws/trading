@@ -406,13 +406,10 @@ class ReferenceDataSuite extends FunSuite:
     val _ = intercept[NullPointerException](UnknownDimension(nullDimension))
     val _ = intercept[NullPointerException](UnknownGrid(nullGridIdentity))
     val _ = intercept[NullPointerException](ForeignDimensionHandle(nullDimension))
-    val _ = intercept[NullPointerException](new CatalogCommit.Unchanged(new AnyRef, null))
-    val _ = intercept[NullPointerException](new CatalogCommit.Published(new AnyRef, snapshot, null))
-    val _ = intercept[IllegalArgumentException](new CatalogCommit.Unchanged(new AnyRef, snapshot))
-    val _ = intercept[IllegalArgumentException](new CatalogCommit.Published(new AnyRef, snapshot, validDelta))
-    val _ = intercept[NullPointerException](new CatalogTransition(new AnyRef, null, transition.outcome))
-    val _ = intercept[NullPointerException](new CatalogTransition(new AnyRef, transition.state, null))
-    val _ = intercept[IllegalArgumentException](new CatalogTransition(new AnyRef, transition.state, transition.outcome))
+    val _ = intercept[NullPointerException](new CatalogCommit.Unchanged(null))
+    val _ = intercept[NullPointerException](new CatalogCommit.Published(snapshot, null))
+    val _ = intercept[NullPointerException](new CatalogTransition(null, transition.outcome))
+    val _ = intercept[NullPointerException](new CatalogTransition(transition.state, null))
 
   test("mixed batches are order independent, atomic, revisioned once, and idempotent"):
     val root      = CatalogRoot.create()

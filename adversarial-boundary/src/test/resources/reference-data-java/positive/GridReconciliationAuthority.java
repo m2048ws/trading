@@ -42,5 +42,11 @@ public final class GridReconciliationAuthority extends SharedReferenceDataJavaSe
       throw new AssertionError("checked reconciliation did not preserve the coordinate");
     }
 
+    try {
+      GridHandle.retype(null, coordinate);
+      throw new AssertionError("null reconciliation evidence was accepted");
+    } catch (NullPointerException expected) {
+      // Ordinary erased Java misuse still fails at the supported operation boundary.
+    }
   }
 }

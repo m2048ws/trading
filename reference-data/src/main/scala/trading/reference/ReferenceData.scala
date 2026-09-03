@@ -38,14 +38,9 @@ final case class AssetDefinition(id: AssetId, dimensionAtom: AtomId) extends Jav
 
 /** Immutable stable grid definition over one anonymous mathematical quantum. */
 final class GridDefinition private (
-  permit: AnyRef,
   identityValue: GridIdentity,
   quantumValue: PositiveRational)
   extends JavaSerializationUnsupported:
-  private val _ =
-    if GridDefinition.isConstructionPermit(permit) then ()
-    else throw new IllegalArgumentException("grid definitions require checked construction")
-
   final val identity: GridIdentity    = Objects.requireNonNull(identityValue, "grid identity")
   final val quantum: PositiveRational = GridDefinition.requirePositive(quantumValue)
 
@@ -65,11 +60,6 @@ final class GridDefinition private (
 end GridDefinition
 
 object GridDefinition:
-  private val constructionPermit: AnyRef = new AnyRef
-
-  private def isConstructionPermit(candidate: AnyRef): Boolean =
-    constructionPermit.eq(candidate)
-
   private def requirePositive(value: PositiveRational): PositiveRational =
     val checked = Objects.requireNonNull(value, "grid quantum")
     PositiveRational(checked.unrefined).fold(
@@ -79,7 +69,7 @@ object GridDefinition:
 
   /** Construct from an already refined quantum; erased JVM calls are defensively revalidated. */
   def apply(identity: GridIdentity, quantum: PositiveRational): GridDefinition =
-    new GridDefinition(constructionPermit, Objects.requireNonNull(identity, "grid identity"), requirePositive(quantum))
+    new GridDefinition(Objects.requireNonNull(identity, "grid identity"), requirePositive(quantum))
 
   /** Checked raw/JVM boundary for expected invalid quantum input. */
   def from(
@@ -91,7 +81,7 @@ object GridDefinition:
     PositiveRational(checkedQuantum)
       .left
       .map(_ => NonPositiveGridQuantum(checkedQuantum))
-      .map(positive => new GridDefinition(constructionPermit, checkedIdentity, positive))
+      .map(positive => new GridDefinition(checkedIdentity, positive))
 end GridDefinition
 
 final case class ForeignLineage(left: DimKey, right: DimKey)                         extends ReferenceDataError
@@ -107,21 +97,18 @@ final case class ImmutableGridDefinitionConflict(
 
 /** Trusted reference-data handle retaining one authoritative mathematical dimension and opaque issuer lineage. */
 final class DimensionHandle[D0 <: Dim] private (
-  permit: AnyRef,
   lineage: AnyRef,
   refValue: DimRef[D0])
   extends JavaSerializationUnsupported:
-  private final val lineageToken: AnyRef =
-    if CatalogState.isHandlePermit(permit) then Objects.requireNonNull(lineage, "issuer lineage")
-    else throw new IllegalArgumentException("dimension handles require catalog issuance")
+  private final val lineageToken: AnyRef = Objects.requireNonNull(lineage, "issuer lineage")
 
   type D = D0
   final val ref: DimRef[D] = Objects.requireNonNull(refValue, "dimension witness")
   final val key: DimKey    = ref.key
 
 object DimensionHandle:
-  private[reference] def issue[D <: Dim](permit: AnyRef, lineage: AnyRef, ref: DimRef[D]): DimensionHandle[D] =
-    new DimensionHandle(permit, lineage, ref)
+  private[reference] def issue[D <: Dim](lineage: AnyRef, ref: DimRef[D]): DimensionHandle[D] =
+    new DimensionHandle(lineage, ref)
 
   /** Pure issuer-lineage check that grants no dimension or construction authority. */
   def sameLineage[A <: Dim, B <: Dim](
@@ -146,14 +133,11 @@ end DimensionHandle
 
 /** Trusted stable asset identity with one path-dependent dimension handle. */
 final class Asset private (
-  permit: AnyRef,
   lineage: AnyRef,
   idValue: AssetId,
   dimensionValue: DimensionHandle[? <: Dim])
   extends JavaSerializationUnsupported:
-  private final val lineageToken: AnyRef =
-    if CatalogState.isHandlePermit(permit) then Objects.requireNonNull(lineage, "issuer lineage")
-    else throw new IllegalArgumentException("asset handles require catalog issuance")
+  private final val lineageToken: AnyRef = Objects.requireNonNull(lineage, "issuer lineage")
 
   final val dimensionBasis: DimensionHandle[? <: Dim] =
     Objects.requireNonNull(dimensionValue, "asset dimension")
@@ -163,12 +147,11 @@ final class Asset private (
 
 object Asset:
   private[reference] def issue(
-    permit: AnyRef,
     lineage: AnyRef,
     id: AssetId,
     dimension: DimensionHandle[? <: Dim]
   ): Asset =
-    new Asset(permit, lineage, id, dimension)
+    new Asset(lineage, id, dimension)
 
   /** Reconcile stable asset identity and dimension without consulting live state. */
   def reconcile(left: Asset, right: Asset): Either[ReferenceDataError, SameDimension[left.D, right.D]] =
@@ -183,15 +166,12 @@ object Asset:
 
 /** Trusted stable grid identity composed around one retained anonymous mathematical grid. */
 final class GridHandle[D0 <: Dim] private (
-  permit: AnyRef,
   lineage: AnyRef,
   identityValue: GridIdentity,
   dimensionValue: DimensionHandle[D0],
   gridValue: AnyRef)
   extends JavaSerializationUnsupported:
-  private final val lineageToken: AnyRef =
-    if CatalogState.isHandlePermit(permit) then Objects.requireNonNull(lineage, "issuer lineage")
-    else throw new IllegalArgumentException("grid handles require catalog issuance")
+  private final val lineageToken: AnyRef = Objects.requireNonNull(lineage, "issuer lineage")
 
   type D = D0
   final val identity: GridIdentity        = Objects.requireNonNull(identityValue, "grid identity")
@@ -220,21 +200,18 @@ object GridHandle:
   type Grid[D <: Dim, G0]                              = GridHandle[D] { type G = G0 }
   opaque type Reconciliation[A <: Dim, G, B <: Dim, H] = AnyRef
 
-  private val reconciliationPermit: AnyRef = new AnyRef
-
   extension [A <: Dim, G, B <: Dim, H](evidence: Reconciliation[A, G, B, H])
     def retype(value: GridQuantity[A, G]): GridQuantity[B, H] =
-      if reconciliationPermit.eq(evidence) then value.asInstanceOf[GridQuantity[B, H]]
-      else throw new IllegalArgumentException("grid reconciliation requires checked issuance")
+      val _ = Objects.requireNonNull(evidence, "grid reconciliation evidence")
+      value.asInstanceOf[GridQuantity[B, H]]
 
   private[reference] def issue[D <: Dim](
-    permit: AnyRef,
     lineage: AnyRef,
     identity: GridIdentity,
     dimension: DimensionHandle[D],
     grid: GridRef[D]
   ): GridHandle[D] =
-    new GridHandle(permit, lineage, identity, dimension, grid)
+    new GridHandle(lineage, identity, dimension, grid)
 
   /** Reconcile lineage, full stable identity, dimension, and immutable definition before same-grid retyping. */
   def reconcile[A <: Dim, B <: Dim](
@@ -258,7 +235,7 @@ object GridHandle:
           None
         )
       )
-    else Right(reconciliationPermit)
+    else Right(left.identity)
     end if
   end reconcile
 end GridHandle

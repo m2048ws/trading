@@ -274,7 +274,6 @@ final case class IndexedCatalogViolation(
 
 /** Domain-owned, ordered, non-empty catalog failure collection. */
 final class CatalogViolations private (
-  permit: AnyRef,
   val head: IndexedCatalogViolation,
   val tail: Vector[IndexedCatalogViolation])
   extends JavaSerializationUnsupported:
@@ -287,9 +286,6 @@ final class CatalogViolations private (
   private val positions = violations.map(violation => (violation.commandIndex, violation.ruleOrdinal))
   require(positions == positions.sorted, "catalog violations must be in command and rule order")
   require(positions.distinct.size == positions.size, "catalog violation positions must be unique")
-  private val _ =
-    if CatalogState.isHandlePermit(permit) then ()
-    else throw new IllegalArgumentException("catalog violation collections require model issuance")
 
   override def equals(other: Any): Boolean =
     other match
@@ -301,13 +297,10 @@ final class CatalogViolations private (
 end CatalogViolations
 
 object CatalogViolations:
-  private[reference] def ordered(
-    permit: AnyRef,
-    values: Vector[IndexedCatalogViolation]
-  ): CatalogViolations =
+  private[reference] def ordered(values: Vector[IndexedCatalogViolation]): CatalogViolations =
     val sorted = values.sortBy(value => (value.commandIndex, value.ruleOrdinal))
     sorted.headOption match
-      case Some(head) => new CatalogViolations(permit, head, sorted.tail)
+      case Some(head) => new CatalogViolations(head, sorted.tail)
       case None       => throw new IllegalStateException("catalog validation failures must be non-empty")
 end CatalogViolations
 
@@ -323,14 +316,7 @@ final case class ForeignDimensionHandle(key: DimKey) extends CatalogLookupError:
   Objects.requireNonNull(key, "foreign dimension key")
 
 /** A generative catalog root. Calling [[initialState]] never changes its lineage. */
-final class CatalogRoot private (
-  permit: AnyRef,
-  initialStateValue: CatalogState)
-  extends JavaSerializationUnsupported:
-  private val _ =
-    if CatalogState.isHandlePermit(permit) then ()
-    else throw new IllegalArgumentException("catalog roots require controlled creation")
-
+final class CatalogRoot private (initialStateValue: CatalogState) extends JavaSerializationUnsupported:
   val initialState: CatalogState = Objects.requireNonNull(initialStateValue, "initial catalog state")
 end CatalogRoot
 
@@ -338,13 +324,12 @@ object CatalogRoot:
   /** Establish a fresh in-memory lineage at an explicit outer boundary. */
   def create(): CatalogRoot = CatalogState.newRoot()
 
-  private[reference] def issue(permit: AnyRef, initialState: CatalogState): CatalogRoot =
-    new CatalogRoot(permit, initialState)
+  private[reference] def issue(initialState: CatalogState): CatalogRoot =
+    new CatalogRoot(initialState)
 end CatalogRoot
 
 /** One immutable catalog state in a root's append-only lineage. */
 final class CatalogState private (
-  permit: AnyRef,
   private val lineage: AnyRef,
   val revision: CatalogRevision,
   private val dimensions: Map[DimKey, DimensionHandle[? <: Dim]],
@@ -353,10 +338,6 @@ final class CatalogState private (
   private val assetByDimension: Map[DimKey, AssetId],
   private val grids: Map[GridIdentity, GridHandle[? <: Dim]])
   extends JavaSerializationUnsupported:
-  private val _ =
-    if CatalogState.isHandlePermit(permit) then ()
-    else throw new IllegalArgumentException("catalog states require controlled creation")
-
   Objects.requireNonNull(lineage, "catalog lineage")
   Objects.requireNonNull(revision, "catalog revision")
   Objects.requireNonNull(dimensions, "catalog dimensions")
@@ -371,7 +352,6 @@ final class CatalogState private (
 
   def snapshot: CatalogSnapshot =
     CatalogSnapshot.issue(
-      permit,
       lineage,
       revision,
       dimensions,
@@ -382,7 +362,6 @@ final class CatalogState private (
   private[reference] def evaluate(batch: CatalogBatch): Either[CatalogViolations, CatalogTransition] =
     CatalogState.commitValues(
       this,
-      permit,
       lineage,
       revision,
       dimensions,
@@ -395,15 +374,9 @@ final class CatalogState private (
 end CatalogState
 
 object CatalogState:
-  private val handlePermit: AnyRef = new AnyRef
-
-  private[reference] def isHandlePermit(candidate: AnyRef): Boolean =
-    handlePermit.eq(candidate)
-
   private[reference] def newRoot(): CatalogRoot =
     val lineage = new AnyRef
     val initial = new CatalogState(
-      handlePermit,
       lineage,
       CatalogRevision.zero,
       Map.empty,
@@ -412,11 +385,10 @@ object CatalogState:
       Map.empty,
       Map.empty
     )
-    CatalogRoot.issue(handlePermit, initial)
+    CatalogRoot.issue(initial)
 
   private def commitValues(
     state: CatalogState,
-    permit: AnyRef,
     lineage: AnyRef,
     revision: CatalogRevision,
     dimensions: Map[DimKey, DimensionHandle[? <: Dim]],
@@ -599,7 +571,7 @@ object CatalogState:
       duplicateAssetViolations ++ duplicateGridViolations ++ currentAssetViolations ++ currentGridViolations ++
         stateBindingViolations ++ batchBindingViolations ++ missingDimensionViolations
 
-    if violations.nonEmpty then Left(CatalogViolations.ordered(handlePermit, violations))
+    if violations.nonEmpty then Left(CatalogViolations.ordered(violations))
     else
       val dimensionOrigins =
         (standaloneDimensions ++ validAssetProposals.map((index, definition) =>
@@ -615,7 +587,7 @@ object CatalogState:
       val successorDimensions = newDimensionOrigins.foldLeft(dimensions):
         case (all, (_, key)) =>
           val generated = DimRef.fresh(key).dimension
-          all.updated(key, DimensionHandle.issue(permit, lineage, generated))
+          all.updated(key, DimensionHandle.issue(lineage, generated))
 
       val newAssetProposals = validAssetProposals.filterNot((_, definition) => assets.contains(definition.id))
       val (successorAssets, successorAssetDefinitions, successorAssetByDimension) = newAssetProposals.foldLeft(
@@ -624,7 +596,7 @@ object CatalogState:
         case ((allAssets, allDefinitions, allBindings), (_, definition)) =>
           val dimensionKey = DimKey.atom(definition.dimensionAtom)
           val dimension    = successorDimensions(dimensionKey)
-          val asset        = Asset.issue(permit, lineage, definition.id, dimension)
+          val asset        = Asset.issue(lineage, definition.id, dimension)
           (
             allAssets.updated(definition.id, asset),
             allDefinitions.updated(definition.id, definition),
@@ -635,7 +607,7 @@ object CatalogState:
       val successorGrids   = newGridProposals.foldLeft(grids):
         case (all, (_, definition)) =>
           val dimension = successorDimensions(definition.dimension)
-          all.updated(definition.identity, issueGrid(permit, lineage, dimension, definition))
+          all.updated(definition.identity, issueGrid(lineage, dimension, definition))
 
       val additions =
         (newDimensionOrigins.map((index, key) => (index, 0, CatalogAddition.Dimension(key))) ++
@@ -648,14 +620,12 @@ object CatalogState:
         val snapshot = state.snapshot
         Right(
           CatalogTransition.issue(
-            handlePermit,
             state,
-            CatalogCommit.unchanged(handlePermit, snapshot)
+            CatalogCommit.unchanged(snapshot)
           )
         )
       else
         val successor = new CatalogState(
-          handlePermit,
           lineage,
           CatalogRevision.next(revision),
           successorDimensions,
@@ -667,9 +637,8 @@ object CatalogState:
         val snapshot = successor.snapshot
         Right(
           CatalogTransition.issue(
-            handlePermit,
             successor,
-            CatalogCommit.published(handlePermit, snapshot, CatalogDelta.nonEmpty(additions))
+            CatalogCommit.published(snapshot, CatalogDelta.nonEmpty(additions))
           )
         )
       end if
@@ -677,28 +646,22 @@ object CatalogState:
   end commitValues
 
   private def issueGrid[D <: Dim](
-    permit: AnyRef,
     lineage: AnyRef,
     dimension: DimensionHandle[D],
     definition: GridDefinition
   ): GridHandle[D] =
     val grid = UniformGrid.create(dimension.ref, definition.quantum)
-    GridHandle.issue(permit, lineage, definition.identity, dimension, grid)
+    GridHandle.issue(lineage, definition.identity, dimension, grid)
 end CatalogState
 
 /** Immutable direct-lookup view of exactly one catalog revision. */
 final class CatalogSnapshot private (
-  permit: AnyRef,
   private val lineage: AnyRef,
   val revision: CatalogRevision,
   private val dimensions: Map[DimKey, DimensionHandle[? <: Dim]],
   private val assets: Map[AssetId, Asset],
   private val grids: Map[GridIdentity, GridHandle[? <: Dim]])
   extends JavaSerializationUnsupported:
-  private val _ =
-    if CatalogState.isHandlePermit(permit) then ()
-    else throw new IllegalArgumentException("catalog snapshots require state issuance")
-
   Objects.requireNonNull(lineage, "catalog lineage")
   Objects.requireNonNull(revision, "catalog revision")
   Objects.requireNonNull(dimensions, "catalog dimensions")
@@ -744,14 +707,13 @@ end CatalogSnapshot
 
 object CatalogSnapshot:
   private[reference] def issue(
-    permit: AnyRef,
     lineage: AnyRef,
     revision: CatalogRevision,
     dimensions: Map[DimKey, DimensionHandle[? <: Dim]],
     assets: Map[AssetId, Asset],
     grids: Map[GridIdentity, GridHandle[? <: Dim]]
   ): CatalogSnapshot =
-    new CatalogSnapshot(permit, lineage, revision, dimensions, assets, grids)
+    new CatalogSnapshot(lineage, revision, dimensions, assets, grids)
 end CatalogSnapshot
 
 /** Observable result of a successful catalog commit. Construction remains owned by the pure catalog model. */
@@ -762,13 +724,8 @@ end CatalogCommit
 
 object CatalogCommit:
   final class Unchanged private[reference] (
-    permit: AnyRef,
     val snapshotValue: CatalogSnapshot)
     extends CatalogCommit(snapshotValue):
-    private val _ =
-      if CatalogState.isHandlePermit(permit) then ()
-      else throw new IllegalArgumentException("unchanged catalog commits require model issuance")
-
     override def canEqual(other: Any): Boolean   = other.isInstanceOf[Unchanged]
     override def productArity: Int               = 1
     override def productPrefix: String           = "Unchanged"
@@ -791,15 +748,10 @@ object CatalogCommit:
   end Unchanged
 
   final class Published private[reference] (
-    permit: AnyRef,
     val snapshotValue: CatalogSnapshot,
     val delta: CatalogDelta)
     extends CatalogCommit(snapshotValue):
     Objects.requireNonNull(delta, "catalog delta")
-
-    private val _ =
-      if CatalogState.isHandlePermit(permit) then ()
-      else throw new IllegalArgumentException("published catalog commits require model issuance")
 
     override def canEqual(other: Any): Boolean   = other.isInstanceOf[Published]
     override def productArity: Int               = 2
@@ -824,29 +776,23 @@ object CatalogCommit:
     def unapply(value: Published): Some[(CatalogSnapshot, CatalogDelta)] = Some((value.snapshotValue, value.delta))
   end Published
 
-  private[reference] def unchanged(permit: AnyRef, snapshot: CatalogSnapshot): Unchanged =
-    new Unchanged(permit, snapshot)
+  private[reference] def unchanged(snapshot: CatalogSnapshot): Unchanged =
+    new Unchanged(snapshot)
 
   private[reference] def published(
-    permit: AnyRef,
     snapshot: CatalogSnapshot,
     delta: CatalogDelta
   ): Published =
-    new Published(permit, snapshot, delta)
+    new Published(snapshot, delta)
 end CatalogCommit
 
 /** Successful pure transition with the state to retain and its publication outcome. */
 final class CatalogTransition private[reference] (
-  permit: AnyRef,
   val state: CatalogState,
   val outcome: CatalogCommit)
   extends JavaSerializationUnsupported with Product:
   Objects.requireNonNull(state, "catalog transition state")
   Objects.requireNonNull(outcome, "catalog transition outcome")
-
-  private val _ =
-    if CatalogState.isHandlePermit(permit) then ()
-    else throw new IllegalArgumentException("catalog transitions require model issuance")
 
   override def canEqual(other: Any): Boolean   = other.isInstanceOf[CatalogTransition]
   override def productArity: Int               = 2
@@ -870,11 +816,10 @@ object CatalogTransition:
   def unapply(value: CatalogTransition): Some[(CatalogState, CatalogCommit)] = Some((value.state, value.outcome))
 
   private[reference] def issue(
-    permit: AnyRef,
     state: CatalogState,
     outcome: CatalogCommit
   ): CatalogTransition =
-    new CatalogTransition(permit, state, outcome)
+    new CatalogTransition(state, outcome)
 end CatalogTransition
 
 /** Normative pure catalog transition model. */
