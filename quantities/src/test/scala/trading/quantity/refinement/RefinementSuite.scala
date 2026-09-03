@@ -105,16 +105,4 @@ class RefinementSuite extends FunSuite:
       val forged: NonZero[GridQuantity[One, G]] = raw
       """
 
-  test("the sign capability is closed to downstream implementations"):
-    assertDoesNotCompile:
-      """
-      import trading.quantity.refinement.*
-      val forged = new Sign[Int](value => -java.lang.Integer.signum(value))
-      """
-    assertDoesNotCompile:
-      """
-      import trading.quantity.refinement.*
-      given Sign[String] = new Sign[String](_ => 1)
-      """
-
 end RefinementSuite

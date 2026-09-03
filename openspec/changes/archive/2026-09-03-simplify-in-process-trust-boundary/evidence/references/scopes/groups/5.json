@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 3,
+  "scope": "group-5",
+  "runId": "run-60752c8c-717b-4c6b-9307-ae6faecd9ae3",
+  "references": [
+    {
+      "reference": "file:benchmarks%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fbenchmark%2FRiskSizingBenchmark.scala#sha256:fed7607e2c1b97ae6c15722b43543e71557d9858e3d8269ef9f64bc88bdd651d",
+      "sourcePath": "benchmarks/src/main/scala/trading/benchmark/RiskSizingBenchmark.scala",
+      "digest": "sha256:fed7607e2c1b97ae6c15722b43543e71557d9858e3d8269ef9f64bc88bdd651d",
+      "archivePath": "references/blobs/fed7607e2c1b97ae6c15722b43543e71557d9858e3d8269ef9f64bc88bdd651d"
+    },
+    {
+      "reference": "file:openspec%2Fchanges%2Fsimplify-in-process-trust-boundary%2Fimplementation-notes%2Ftask-group-5.md#sha256:6cf6d6bdea42b8b9f8d289ac60481ad1dcade0b61689f004b9434449b576d916",
+      "sourcePath": "openspec/changes/simplify-in-process-trust-boundary/implementation-notes/task-group-5.md",
+      "digest": "sha256:6cf6d6bdea42b8b9f8d289ac60481ad1dcade0b61689f004b9434449b576d916",
+      "archivePath": "references/blobs/6cf6d6bdea42b8b9f8d289ac60481ad1dcade0b61689f004b9434449b576d916"
+    },
+    {
+      "reference": "file:risk%2Fsrc%2Fmain%2Fscala%2Ftrading%2Frisk%2FExhaustiveSizing.scala#sha256:9bf4eb83acfdda67f8baa7b0a2039bbab07eaac0ab9232f55c7bd00dc9d2adf4",
+      "sourcePath": "risk/src/main/scala/trading/risk/ExhaustiveSizing.scala",
+      "digest": "sha256:9bf4eb83acfdda67f8baa7b0a2039bbab07eaac0ab9232f55c7bd00dc9d2adf4",
+      "archivePath": "references/blobs/9bf4eb83acfdda67f8baa7b0a2039bbab07eaac0ab9232f55c7bd00dc9d2adf4"
+    },
+    {
+      "reference": "file:risk%2Fsrc%2Fmain%2Fscala%2Ftrading%2Frisk%2FModel.scala#sha256:757ce5ac1f7ba00d27acc76b6e2505ad6acecdccdd35316e3b141230eb20a2b2",
+      "sourcePath": "risk/src/main/scala/trading/risk/Model.scala",
+      "digest": "sha256:757ce5ac1f7ba00d27acc76b6e2505ad6acecdccdd35316e3b141230eb20a2b2",
+      "archivePath": "references/blobs/757ce5ac1f7ba00d27acc76b6e2505ad6acecdccdd35316e3b141230eb20a2b2"
+    },
+    {
+      "reference": "file:risk%2Fsrc%2Fmain%2Fscala%2Ftrading%2Frisk%2FSizing.scala#sha256:f3ad2d23a4576d967fd8faf80979e2ff0ed68572b902e06ace6a702e92ccb5a2",
+      "sourcePath": "risk/src/main/scala/trading/risk/Sizing.scala",
+      "digest": "sha256:f3ad2d23a4576d967fd8faf80979e2ff0ed68572b902e06ace6a702e92ccb5a2",
+      "archivePath": "references/blobs/f3ad2d23a4576d967fd8faf80979e2ff0ed68572b902e06ace6a702e92ccb5a2"
+    },
+    {
+      "reference": "file:tools%2Fcheck-in-process-reflection.sh#sha256:2edec62eea6e4c973cd3623a0238258dc6442da36df2e74da0fba6ca55f8bdb6",
+      "sourcePath": "tools/check-in-process-reflection.sh",
+      "digest": "sha256:2edec62eea6e4c973cd3623a0238258dc6442da36df2e74da0fba6ca55f8bdb6",
+      "archivePath": "references/blobs/2edec62eea6e4c973cd3623a0238258dc6442da36df2e74da0fba6ca55f8bdb6"
+    },
+    {
+      "reference": "file:tools%2Fin-process-reflection-baseline.tsv#sha256:bddc51a10e10d059dfe8f2a19f1a44f814ca7c266f12f6b20d769896fe963511",
+      "sourcePath": "tools/in-process-reflection-baseline.tsv",
+      "digest": "sha256:bddc51a10e10d059dfe8f2a19f1a44f814ca7c266f12f6b20d769896fe963511",
+      "archivePath": "references/blobs/bddc51a10e10d059dfe8f2a19f1a44f814ca7c266f12f6b20d769896fe963511"
+    }
+  ]
+}

@@ -150,11 +150,6 @@ class StaticDimensionCompilerBoundarySuite extends FunSuite:
       minimumErrors = 3),
     NegativeFixture("NullCarrierConstruction.scala", List("Found:", "Required:"), minimumErrors = 2),
     NegativeFixture(
-      "PackageSpoofCarrierConstruction.scala",
-      List("fromCoefficient", "fromCoordinate", "Normalize", "sealed trait DimRef"),
-      minimumErrors = 6
-    ),
-    NegativeFixture(
       "RemovedExplicitNormalizationArguments.scala",
       List("does not take more parameters"),
       minimumErrors = 4
@@ -168,22 +163,6 @@ class StaticDimensionCompilerBoundarySuite extends FunSuite:
       "AmbiguousDimensionAuthority.scala",
       List("ambiguous", "DimRef"),
       minimumErrors = 5
-    ),
-    NegativeFixture(
-      "StaticEvidenceForgery.scala",
-      List("Normalize")
-    ),
-    NegativeFixture(
-      "SameDimensionForgery.scala",
-      List("sealed trait SameDimension")
-    ),
-    NegativeFixture(
-      "DimRefForgery.scala",
-      List("sealed trait DimRef")
-    ),
-    NegativeFixture(
-      "RuntimeOpaquePackageSpoof.scala",
-      List("runtimeOpaque")
     ),
     NegativeFixture(
       "ContradictoryNominalAuthority.scala",

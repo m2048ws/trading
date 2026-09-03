@@ -23,6 +23,6 @@ remain implementation details and do not appear in application signatures.
 Runtime tests instantiate the application test-source `LiveCatalogContract[IO]` directly with the public in-memory
 constructor. Those shared, framework-neutral cases compare observable results with the pure catalog model and prove
 that equal independently constructed catalogs are structurally equivalent but retain distinct lineages. Cats Effect
-TestKit cancellation checks, real-runtime race/stress checks, private implementation scans, and JMH measurements remain
+TestKit cancellation checks, real-runtime race/stress checks, packaged dependency/JDK scans, and JMH measurements remain
 interpreter-specific coverage. Future database, actor, simulation, backtest, or venue interpreters should reuse the
 shared cases and add only the lifecycle and integration evidence required by their mechanism.

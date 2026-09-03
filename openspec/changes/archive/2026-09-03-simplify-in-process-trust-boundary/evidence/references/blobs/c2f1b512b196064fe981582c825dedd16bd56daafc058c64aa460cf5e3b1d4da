@@ -1,0 +1,25 @@
+# Production/benchmark migration allowance. Remove each row when its owner is migrated; the final file has no entries.
+benchmarks/src/main/scala/trading/benchmark/RiskSizingBenchmark.scala	8
+boundary-codecs/src/main/scala/trading/codec/CatalogJournal.scala	12
+boundary-codecs/src/main/scala/trading/codec/DecodeLimits.scala	8
+boundary-codecs/src/main/scala/trading/codec/GridCoordinateRecords.scala	12
+boundary-codecs/src/main/scala/trading/codec/OrderRecord.scala	8
+boundary-codecs/src/main/scala/trading/codec/RecordEnvelope.scala	12
+boundary-codecs/src/main/scala/trading/codec/ScenarioRecords.scala	12
+boundary-codecs/src/main/scala/trading/codec/WireDiagnostics.scala	12
+execution-lifecycle/src/main/scala/trading/execution/Authority.scala	41
+execution-lifecycle/src/main/scala/trading/execution/Cancellation.scala	29
+execution-lifecycle/src/main/scala/trading/execution/Commands.scala	46
+execution-lifecycle/src/main/scala/trading/execution/EffectiveFillLedger.scala	36
+execution-lifecycle/src/main/scala/trading/execution/ExecutionState.scala	36
+execution-lifecycle/src/main/scala/trading/execution/Identity.scala	56
+execution-lifecycle/src/main/scala/trading/execution/Lifecycle.scala	11
+execution-lifecycle/src/main/scala/trading/execution/OrderLineage.scala	16
+execution-lifecycle/src/main/scala/trading/execution/Ordering.scala	31
+execution-lifecycle/src/main/scala/trading/execution/SourceEvidenceState.scala	46
+execution-lifecycle/src/main/scala/trading/execution/SourceFacts.scala	56
+execution-lifecycle/src/main/scala/trading/execution/SubmissionKnowledge.scala	27
+fee-policy/src/main/scala/trading/fee/Assessment.scala	12
+fee-policy/src/main/scala/trading/fee/FeeInclusivePnl.scala	12
+risk/src/main/scala/trading/risk/Model.scala	24
+risk/src/main/scala/trading/risk/Sizing.scala	8

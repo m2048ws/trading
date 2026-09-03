@@ -10,12 +10,6 @@ object CatalogJournalAuthorityEscapesAreUnavailable:
     CatalogJournalEntry.fromPublished(batch, published)
 
   // OFFENDING-BEGIN
-  def forge(revision: CatalogRevision, batch: CatalogBatch) =
-    new CatalogJournalEntry.V1(revision, batch)
-
-  def packageForge(revision: CatalogRevision, batch: CatalogBatch) =
-    CatalogJournalEntry.construct(revision, batch)
-
   def retainUnchanged(batch: CatalogBatch, unchanged: CatalogCommit.Unchanged) =
     CatalogJournalEntry.fromPublished(batch, unchanged)
 
@@ -24,12 +18,6 @@ object CatalogJournalAuthorityEscapesAreUnavailable:
 
   def replayRoot(root: CatalogRoot, entries: Vector[CatalogJournalEntry.V1]) =
     CatalogReplay.rebuild(root, entries)
-
-  def forgeResult(state: CatalogState) =
-    new CatalogReplayResult(state)
-
-  def packageForgeResult(state: CatalogState) =
-    CatalogReplayResult.from(state)
 
   def authority(entry: CatalogJournalEntry.V1) =
     (

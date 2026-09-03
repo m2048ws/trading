@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 3,
+  "scope": "group-1",
+  "runId": "run-60752c8c-717b-4c6b-9307-ae6faecd9ae3",
+  "references": [
+    {
+      "reference": "file:docs%2Farchitecture-charter-audit.md#sha256:d888a0883449e4d12195c2bb1622a62096d9231825e6717f7ab75ee1d79973cb",
+      "sourcePath": "docs/architecture-charter-audit.md",
+      "digest": "sha256:d888a0883449e4d12195c2bb1622a62096d9231825e6717f7ab75ee1d79973cb",
+      "archivePath": "references/blobs/d888a0883449e4d12195c2bb1622a62096d9231825e6717f7ab75ee1d79973cb"
+    },
+    {
+      "reference": "file:docs%2Fdesign-principles.md#sha256:4caf82a903ba53c16948d32d6ff3f30cb150fda19a4b88a770cc920c9eaec99f",
+      "sourcePath": "docs/design-principles.md",
+      "digest": "sha256:4caf82a903ba53c16948d32d6ff3f30cb150fda19a4b88a770cc920c9eaec99f",
+      "archivePath": "references/blobs/4caf82a903ba53c16948d32d6ff3f30cb150fda19a4b88a770cc920c9eaec99f"
+    },
+    {
+      "reference": "file:openspec%2Fchanges%2Fsimplify-in-process-trust-boundary%2Fimplementation-notes%2Ftask-group-1.md#sha256:9bad3cd0db0d74af4f7be2b8c50c2892f97fac76c5e8b6e308f9b57f4e3325ec",
+      "sourcePath": "openspec/changes/simplify-in-process-trust-boundary/implementation-notes/task-group-1.md",
+      "digest": "sha256:9bad3cd0db0d74af4f7be2b8c50c2892f97fac76c5e8b6e308f9b57f4e3325ec",
+      "archivePath": "references/blobs/9bad3cd0db0d74af4f7be2b8c50c2892f97fac76c5e8b6e308f9b57f4e3325ec"
+    },
+    {
+      "reference": "file:README.md#sha256:dc63a7e1fb2a5c540665fc287276ede65146da63d7a9439f51e0eef3a7c9672c",
+      "sourcePath": "README.md",
+      "digest": "sha256:dc63a7e1fb2a5c540665fc287276ede65146da63d7a9439f51e0eef3a7c9672c",
+      "archivePath": "references/blobs/dc63a7e1fb2a5c540665fc287276ede65146da63d7a9439f51e0eef3a7c9672c"
+    },
+    {
+      "reference": "file:tools%2Fcheck-in-process-reflection.sh#sha256:2edec62eea6e4c973cd3623a0238258dc6442da36df2e74da0fba6ca55f8bdb6",
+      "sourcePath": "tools/check-in-process-reflection.sh",
+      "digest": "sha256:2edec62eea6e4c973cd3623a0238258dc6442da36df2e74da0fba6ca55f8bdb6",
+      "archivePath": "references/blobs/2edec62eea6e4c973cd3623a0238258dc6442da36df2e74da0fba6ca55f8bdb6"
+    },
+    {
+      "reference": "file:tools%2Fin-process-reflection-baseline.tsv#sha256:c86976359582ffb8230167bc3a7b3ae5edb17bd4a2d2668cb11b79a5ec1c0901",
+      "sourcePath": "tools/in-process-reflection-baseline.tsv",
+      "digest": "sha256:c86976359582ffb8230167bc3a7b3ae5edb17bd4a2d2668cb11b79a5ec1c0901",
+      "archivePath": "references/blobs/c86976359582ffb8230167bc3a7b3ae5edb17bd4a2d2668cb11b79a5ec1c0901"
+    }
+  ]
+}

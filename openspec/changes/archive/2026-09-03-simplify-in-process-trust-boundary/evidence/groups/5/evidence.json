@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 3,
+  "groupId": "5",
+  "checks": [
+    {
+      "name": "risk tests and compiler boundary suite",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:openspec%2Fchanges%2Fsimplify-in-process-trust-boundary%2Fimplementation-notes%2Ftask-group-5.md#sha256:6cf6d6bdea42b8b9f8d289ac60481ad1dcade0b61689f004b9434449b576d916"
+      ]
+    },
+    {
+      "name": "risk sizing benchmark compile and short run",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:openspec%2Fchanges%2Fsimplify-in-process-trust-boundary%2Fimplementation-notes%2Ftask-group-5.md#sha256:6cf6d6bdea42b8b9f8d289ac60481ad1dcade0b61689f004b9434449b576d916"
+      ]
+    },
+    {
+      "name": "in-process reflection regression guard",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:tools%2Fcheck-in-process-reflection.sh#sha256:2edec62eea6e4c973cd3623a0238258dc6442da36df2e74da0fba6ca55f8bdb6",
+        "file:tools%2Fin-process-reflection-baseline.tsv#sha256:bddc51a10e10d059dfe8f2a19f1a44f814ca7c266f12f6b20d769896fe963511"
+      ]
+    }
+  ],
+  "automatedReview": {
+    "verdict": "pass",
+    "findings": []
+  },
+  "artifacts": [
+    "file:risk%2Fsrc%2Fmain%2Fscala%2Ftrading%2Frisk%2FModel.scala#sha256:757ce5ac1f7ba00d27acc76b6e2505ad6acecdccdd35316e3b141230eb20a2b2",
+    "file:risk%2Fsrc%2Fmain%2Fscala%2Ftrading%2Frisk%2FSizing.scala#sha256:f3ad2d23a4576d967fd8faf80979e2ff0ed68572b902e06ace6a702e92ccb5a2",
+    "file:risk%2Fsrc%2Fmain%2Fscala%2Ftrading%2Frisk%2FExhaustiveSizing.scala#sha256:9bf4eb83acfdda67f8baa7b0a2039bbab07eaac0ab9232f55c7bd00dc9d2adf4",
+    "file:benchmarks%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fbenchmark%2FRiskSizingBenchmark.scala#sha256:fed7607e2c1b97ae6c15722b43543e71557d9858e3d8269ef9f64bc88bdd651d",
+    "file:openspec%2Fchanges%2Fsimplify-in-process-trust-boundary%2Fimplementation-notes%2Ftask-group-5.md#sha256:6cf6d6bdea42b8b9f8d289ac60481ad1dcade0b61689f004b9434449b576d916"
+  ],
+  "summary": "Replaced reflective risk construction and observation with narrow static operations, removed hostile exact-class gates, retained checked semantic casts, and verified correctness plus sizing complexity evidence."
+}

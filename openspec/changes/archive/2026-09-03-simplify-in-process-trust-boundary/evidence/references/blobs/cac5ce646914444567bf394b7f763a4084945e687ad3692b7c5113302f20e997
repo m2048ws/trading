@@ -1,0 +1,20 @@
+Change 'simplify-in-process-trust-boundary' is valid
+✓ spec/actual-execution-lifecycle
+✓ spec/application-runtime-foundation
+✓ spec/catalog-command-replay
+✓ spec/exact-quantity-arithmetic
+✓ spec/fee-inclusive-pnl
+✓ spec/instrument-assembly
+✓ spec/instrument-economics
+✓ spec/live-catalog-capability
+✓ spec/order-scenarios
+✓ spec/position-risk-sizing
+✓ spec/quantity-grid-projection
+✓ spec/reference-data-catalog
+✓ spec/reference-data-identity
+✓ spec/repository-architecture
+✓ spec/runtime-quantity-identity
+✓ spec/scala-functional-design
+✓ spec/versioned-boundary-codecs
+Totals: 17 passed, 0 failed (17 items)
+in-process reflection guard: pass (no production or benchmark sites)

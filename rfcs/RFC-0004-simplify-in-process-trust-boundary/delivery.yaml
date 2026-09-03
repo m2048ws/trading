@@ -1,6 +1,18 @@
 schemaVersion: 1
 rfcId: RFC-0004-simplify-in-process-trust-boundary
-revision: 1
+revision: 3
 slices:
   S-01-simplify-in-process-trust-boundary:
-    status: unbound
+    status: archived
+    binding:
+      change: simplify-in-process-trust-boundary
+      sourceDigest: sha256:9c8d459b6066675a3128ef4974967a1f199bbd3b0e4871179110e0fe57337880
+      plannedAt: '2026-09-03T18:01:00.349Z'
+      issue:
+        provider: github
+        id: '36'
+        url: https://github.com/m2048ws/trading/issues/36
+    archive:
+      archivedAt: '2026-09-03T21:40:22.082Z'
+      commit: 1833257ee0fed4941e59d3482d8bf5cef85e7933
+      evidenceManifest: sha256:77f7954a068af43ca196f8e88262efca7c1b782ca20ebfa860cf2ef3847ef022

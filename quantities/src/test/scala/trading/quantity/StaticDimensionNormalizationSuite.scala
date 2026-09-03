@@ -164,18 +164,11 @@ class StaticDimensionNormalizationSuite extends FunSuite:
       """
     )
 
-  test("the removed public normalization family and evidence constructors are unavailable"):
+  test("the removed public normalization family is unavailable"):
     assertDoesNotCompile(
       """
       import trading.quantity.*
       summon[Normalize[One]]
       """
     )
-    assertDoesNotCompile:
-      """
-      import trading.quantity.*
-      type X = Atom["forge:X"]
-      val forged = new SameDimension[X, X] {}
-      """
-
 end StaticDimensionNormalizationSuite

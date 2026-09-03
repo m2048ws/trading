@@ -33,8 +33,8 @@ lookups, two index updates, and zero full-history scans; exact duplicate detecti
 and zero full-history scans. Replay, delivery-permutation, correction/bust, gap/rewind, source conflict, completeness,
 submission recovery, cancel race, and lineage behavior run in the complete suite.
 
-Packaged inspection confirms JVM-private constructors for trusted concrete representations, closed alternatives guarded
-against unknown JVM subclasses, Java serialization rejection, no native amend/cancel-replace member, and no downstream
+Packaged inspection confirms the supported public lifecycle surface, Java serialization rejection, no native
+amend/cancel-replace member, and no downstream
 scenario, fee, risk, application, runtime, codec, effect, stream, client, persistence, telemetry, or venue-SDK import or
 public signature. The packaged production classpath contains only instrument economics, quantities, reference data,
 order model, Scala, and the admitted Cats/Algebra mathematical dependencies.

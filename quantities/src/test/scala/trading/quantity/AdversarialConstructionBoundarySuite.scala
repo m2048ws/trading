@@ -37,22 +37,7 @@ class AdversarialConstructionBoundarySuite extends FunSuite:
     assert(SameDimension.between(first.dimension, second.dimension).nonEmpty)
     assertEquals(SameDimension.between(first.dimension, different.dimension), None)
 
-  test("same-dimension evidence cannot be implemented by downstream source"):
-    assertDoesNotCompile:
-      """
-      import trading.quantity.*
-
-      val forged = new SameDimension[One, One]
-    """
-
-  test("private and opaque construction paths are unavailable to package-spoofing source"):
-    assertDoesNotCompile:
-      """
-      import trading.quantity.*
-      import trading.quantity.refinement.*
-      val forged = new Sign[Rational](_ => 1)
-    """
-
+  test("opaque quantity carriers reject raw-value assignment"):
     assertDoesNotCompile:
       """
       import trading.quantity.*

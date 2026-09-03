@@ -5,27 +5,6 @@ import munit.FunSuite
 import trading.quantity.testkit.CompileAssertions.*
 
 class PublicApiBoundarySuite extends FunSuite:
-  test("client code cannot implement dimension or grid witnesses"):
-    assertDoesNotCompile:
-      """
-      import trading.quantity.*
-
-      val forged = new DimRef[One]:
-        val key = DimKey.one
-    """
-
-    assertDoesNotCompile:
-      """
-      import trading.quantity.*
-      import trading.quantity.refinement.*
-
-      val asset = trading.quantity.testkit.TestAsset.runtime(AtomId("forged-grid-asset"))
-      val forged = new GridRef[asset.D]:
-        type G = this.type
-        val dimension = asset.dimension
-        val quantum = PositiveRational.exact(1, 100).toOption.get
-    """
-
   test("uniform mathematical grid construction has no stable-identity overload"):
     assertDoesNotCompile:
       """
@@ -34,17 +13,6 @@ class PublicApiBoundarySuite extends FunSuite:
       val dimension = DimRef.atomic(AtomId("anonymous-grid-signature"))
       val quantum = PositiveRational.exact(1, 100).toOption.get
       val invalid = UniformGrid.create(dimension.dimension, quantum, 1)
-    """
-
-  test("client code cannot supply an unchecked quantization policy"):
-    assertDoesNotCompile:
-      """
-      import trading.quantity.*
-      import trading.quantity.grid.*
-
-      val unchecked = new QuantizationPolicy:
-        def roundCoordinate(v: Rational): BigInt = 0
-        def acceptsResidual(v: Rational, c: BigInt): Boolean = true
     """
 
   test("canonical value constructors cannot be bypassed through case-class helpers"):
@@ -61,30 +29,6 @@ class PublicApiBoundarySuite extends FunSuite:
         Tuple1(Vector(AtomId("duplicate") -> 1, AtomId("duplicate") -> 1))
       )
     """
-
-  test("client code cannot instantiate the closed dimension grammar or normalization proofs"):
-    assertDoesNotCompile:
-      """
-      import trading.quantity.*
-      val forged = new Power["forged", 1] {}
-      """
-    assertDoesNotCompile:
-      """
-      import trading.quantity.*
-      type Entry = Power["forged", 1]
-      val forged = new Canonical[Entry *: EmptyTuple] {}
-      """
-    assertDoesNotCompile:
-      """
-      import trading.quantity.*
-      val forged = new Normalize[One]:
-        type Out = One
-      """
-    assertDoesNotCompile:
-      """
-      import trading.quantity.*
-      val forged = new SameDimension[One, One] {}
-      """
 
   test("client code cannot forge normalized operation results or obtain an unequal conversion"):
     assertDoesNotCompile:

@@ -1,0 +1,622 @@
+{
+  "schemaVersion": 1,
+  "changeName": "simplify-in-process-trust-boundary",
+  "schemaName": "spec-driven",
+  "planningRevision": "sha256:f7e50395afcf0531965ac1859002ce18e1163103f0e74dd96941ce2eb1f967d4",
+  "status": "ready",
+  "taskArtifactId": "tasks",
+  "artifactPaths": {
+    "design": {
+      "outputPath": "design.md",
+      "resolvedOutputPath": "/Users/m/src/money/.worktrees/simplify-in-process-trust-boundary/openspec/changes/simplify-in-process-trust-boundary/design.md",
+      "existingOutputPaths": [
+        "/Users/m/src/money/.worktrees/simplify-in-process-trust-boundary/openspec/changes/simplify-in-process-trust-boundary/design.md"
+      ]
+    },
+    "proposal": {
+      "outputPath": "proposal.md",
+      "resolvedOutputPath": "/Users/m/src/money/.worktrees/simplify-in-process-trust-boundary/openspec/changes/simplify-in-process-trust-boundary/proposal.md",
+      "existingOutputPaths": [
+        "/Users/m/src/money/.worktrees/simplify-in-process-trust-boundary/openspec/changes/simplify-in-process-trust-boundary/proposal.md"
+      ]
+    },
+    "specs": {
+      "outputPath": "specs/**/*.md",
+      "resolvedOutputPath": "/Users/m/src/money/.worktrees/simplify-in-process-trust-boundary/openspec/changes/simplify-in-process-trust-boundary/specs/**/*.md",
+      "existingOutputPaths": [
+        "/Users/m/src/money/.worktrees/simplify-in-process-trust-boundary/openspec/changes/simplify-in-process-trust-boundary/specs/actual-execution-lifecycle/spec.md",
+        "/Users/m/src/money/.worktrees/simplify-in-process-trust-boundary/openspec/changes/simplify-in-process-trust-boundary/specs/catalog-command-replay/spec.md",
+        "/Users/m/src/money/.worktrees/simplify-in-process-trust-boundary/openspec/changes/simplify-in-process-trust-boundary/specs/exact-quantity-arithmetic/spec.md",
+        "/Users/m/src/money/.worktrees/simplify-in-process-trust-boundary/openspec/changes/simplify-in-process-trust-boundary/specs/order-scenarios/spec.md",
+        "/Users/m/src/money/.worktrees/simplify-in-process-trust-boundary/openspec/changes/simplify-in-process-trust-boundary/specs/position-risk-sizing/spec.md",
+        "/Users/m/src/money/.worktrees/simplify-in-process-trust-boundary/openspec/changes/simplify-in-process-trust-boundary/specs/quantity-grid-projection/spec.md",
+        "/Users/m/src/money/.worktrees/simplify-in-process-trust-boundary/openspec/changes/simplify-in-process-trust-boundary/specs/reference-data-identity/spec.md",
+        "/Users/m/src/money/.worktrees/simplify-in-process-trust-boundary/openspec/changes/simplify-in-process-trust-boundary/specs/repository-architecture/spec.md",
+        "/Users/m/src/money/.worktrees/simplify-in-process-trust-boundary/openspec/changes/simplify-in-process-trust-boundary/specs/runtime-quantity-identity/spec.md",
+        "/Users/m/src/money/.worktrees/simplify-in-process-trust-boundary/openspec/changes/simplify-in-process-trust-boundary/specs/scala-functional-design/spec.md",
+        "/Users/m/src/money/.worktrees/simplify-in-process-trust-boundary/openspec/changes/simplify-in-process-trust-boundary/specs/versioned-boundary-codecs/spec.md"
+      ]
+    },
+    "tasks": {
+      "outputPath": "tasks.md",
+      "resolvedOutputPath": "/Users/m/src/money/.worktrees/simplify-in-process-trust-boundary/openspec/changes/simplify-in-process-trust-boundary/tasks.md",
+      "existingOutputPaths": [
+        "/Users/m/src/money/.worktrees/simplify-in-process-trust-boundary/openspec/changes/simplify-in-process-trust-boundary/tasks.md"
+      ]
+    }
+  },
+  "checks": [
+    {
+      "code": "ARTIFACTS_COMPLETE",
+      "status": "pass",
+      "severity": "info",
+      "message": "All planning artifacts are complete"
+    },
+    {
+      "code": "OPENSPEC_STRICT_VALIDATION",
+      "status": "pass",
+      "severity": "info",
+      "message": "OpenSpec strict validation passed"
+    },
+    {
+      "code": "TASK_ARTIFACT_CONFIGURED",
+      "status": "pass",
+      "severity": "info",
+      "message": "Task artifact 'tasks' exists in the schema"
+    },
+    {
+      "code": "TASK_ARTIFACT_UNIQUE",
+      "status": "pass",
+      "severity": "info",
+      "message": "Exactly one concrete task artifact was resolved",
+      "paths": [
+        "/Users/m/src/money/.worktrees/simplify-in-process-trust-boundary/openspec/changes/simplify-in-process-trust-boundary/tasks.md"
+      ]
+    },
+    {
+      "code": "TASK_GROUP_STRUCTURE",
+      "status": "pass",
+      "severity": "info",
+      "message": "11 Task Group(s) have stable unique ids",
+      "paths": [
+        "/Users/m/src/money/.worktrees/simplify-in-process-trust-boundary/openspec/changes/simplify-in-process-trust-boundary/tasks.md"
+      ]
+    },
+    {
+      "code": "NO_PLACEHOLDERS",
+      "status": "pass",
+      "severity": "info",
+      "message": "Planning artifacts contain no unresolved placeholders"
+    },
+    {
+      "code": "NO_OPEN_QUESTIONS",
+      "status": "pass",
+      "severity": "info",
+      "message": "No unresolved Open Questions sections remain"
+    },
+    {
+      "code": "CAPABILITY_SPEC_PARITY",
+      "status": "pass",
+      "severity": "info",
+      "message": "Proposal capability names match concrete delta specs",
+      "paths": [
+        "/Users/m/src/money/.worktrees/simplify-in-process-trust-boundary/openspec/changes/simplify-in-process-trust-boundary/proposal.md",
+        "/Users/m/src/money/.worktrees/simplify-in-process-trust-boundary/openspec/changes/simplify-in-process-trust-boundary/specs/actual-execution-lifecycle/spec.md",
+        "/Users/m/src/money/.worktrees/simplify-in-process-trust-boundary/openspec/changes/simplify-in-process-trust-boundary/specs/catalog-command-replay/spec.md",
+        "/Users/m/src/money/.worktrees/simplify-in-process-trust-boundary/openspec/changes/simplify-in-process-trust-boundary/specs/exact-quantity-arithmetic/spec.md",
+        "/Users/m/src/money/.worktrees/simplify-in-process-trust-boundary/openspec/changes/simplify-in-process-trust-boundary/specs/order-scenarios/spec.md",
+        "/Users/m/src/money/.worktrees/simplify-in-process-trust-boundary/openspec/changes/simplify-in-process-trust-boundary/specs/position-risk-sizing/spec.md",
+        "/Users/m/src/money/.worktrees/simplify-in-process-trust-boundary/openspec/changes/simplify-in-process-trust-boundary/specs/quantity-grid-projection/spec.md",
+        "/Users/m/src/money/.worktrees/simplify-in-process-trust-boundary/openspec/changes/simplify-in-process-trust-boundary/specs/reference-data-identity/spec.md",
+        "/Users/m/src/money/.worktrees/simplify-in-process-trust-boundary/openspec/changes/simplify-in-process-trust-boundary/specs/repository-architecture/spec.md",
+        "/Users/m/src/money/.worktrees/simplify-in-process-trust-boundary/openspec/changes/simplify-in-process-trust-boundary/specs/runtime-quantity-identity/spec.md",
+        "/Users/m/src/money/.worktrees/simplify-in-process-trust-boundary/openspec/changes/simplify-in-process-trust-boundary/specs/scala-functional-design/spec.md",
+        "/Users/m/src/money/.worktrees/simplify-in-process-trust-boundary/openspec/changes/simplify-in-process-trust-boundary/specs/versioned-boundary-codecs/spec.md"
+      ]
+    },
+    {
+      "code": "ARCHIVE_DELTA_COMPATIBLE",
+      "status": "pass",
+      "severity": "info",
+      "message": "Every MODIFIED requirement preserves canonical scenario identities"
+    },
+    {
+      "code": "CHANGE_CONTRACT_PRESENT",
+      "status": "pass",
+      "severity": "info",
+      "message": "Change is bound to RFC-0004-simplify-in-process-trust-boundary/S-01-simplify-in-process-trust-boundary",
+      "paths": [
+        "/Users/m/src/money/.worktrees/simplify-in-process-trust-boundary/openspec/changes/simplify-in-process-trust-boundary/corgi/source.yaml",
+        "/Users/m/src/money/.worktrees/simplify-in-process-trust-boundary/openspec/changes/simplify-in-process-trust-boundary/corgi/traceability.yaml"
+      ]
+    },
+    {
+      "code": "TRACEABILITY_COMPLETE",
+      "status": "pass",
+      "severity": "info",
+      "message": "Every acceptance criterion maps to planning artifacts and Task Groups",
+      "paths": [
+        "/Users/m/src/money/.worktrees/simplify-in-process-trust-boundary/openspec/changes/simplify-in-process-trust-boundary/corgi/traceability.yaml"
+      ]
+    },
+    {
+      "code": "SOURCE_PROVENANCE_CURRENT",
+      "status": "pass",
+      "severity": "info",
+      "message": "RFC acceptance, branch ancestry, Slice binding, and tracker source are current",
+      "paths": []
+    }
+  ],
+  "taskGroups": [
+    {
+      "number": 1,
+      "name": "Trust Contract, Inventory, and Regression Guard",
+      "tasks": [
+        {
+          "id": "1.1",
+          "description": "Confirm the effective RFC/source/traceability binding, isolated delivery worktree and branch, exact",
+          "done": false,
+          "line": 3
+        },
+        {
+          "id": "1.2",
+          "description": "Inventory every production/benchmark method handle, reflective private-member call, erased recovery cast,",
+          "done": false,
+          "line": 5
+        },
+        {
+          "id": "1.3",
+          "description": "Reconcile `docs/design-principles.md`, architecture/audit/module guidance, and representative examples so",
+          "done": false,
+          "line": 8
+        },
+        {
+          "id": "1.4",
+          "description": "Add a deterministic repository regression check proving production and benchmark source contains no",
+          "done": false,
+          "line": 11
+        },
+        {
+          "id": "1.5",
+          "description": "Run formatting, documentation/spec validation, the new source guard, dependency checks, and focused",
+          "done": false,
+          "line": 14
+        }
+      ],
+      "totalTasks": 5,
+      "completedTasks": 0,
+      "status": "pending",
+      "line": 1
+    },
+    {
+      "number": 2,
+      "name": "Order Model Static Construction and Semantic Evidence",
+      "tasks": [
+        {
+          "id": "2.1",
+          "description": "Replace dynamic construction of checked activation, fixed/trailing trigger evidence, peg resolution, order",
+          "done": false,
+          "line": 19
+        },
+        {
+          "id": "2.2",
+          "description": "Preserve trigger satisfaction and instruction/evidence agreement, peg offset and instruction agreement,",
+          "done": false,
+          "line": 22
+        },
+        {
+          "id": "2.3",
+          "description": "Remove hostile foreign-subclass/exact-runtime-class guards from order activation, pricing, execution, and",
+          "done": false,
+          "line": 25
+        },
+        {
+          "id": "2.4",
+          "description": "Rewrite order unit and completed-artifact fixtures around domain factory behavior, same-shape semantic",
+          "done": false,
+          "line": 28
+        },
+        {
+          "id": "2.5",
+          "description": "Format and run order-model compilation/tests plus dependent scenario, fee, risk, codec, lifecycle, and packaged",
+          "done": false,
+          "line": 31
+        }
+      ],
+      "totalTasks": 5,
+      "completedTasks": 0,
+      "status": "pending",
+      "line": 17
+    },
+    {
+      "number": 3,
+      "name": "Execution Scenario Static Construction",
+      "tasks": [
+        {
+          "id": "3.1",
+          "description": "Replace dynamic construction of liquidity slices, non-empty matched slices, assumptions, complete order",
+          "done": false,
+          "line": 36
+        },
+        {
+          "id": "3.2",
+          "description": "Preserve positive lots, instrument/grid identity, associated activation and pricing evidence, slice ordering and",
+          "done": false,
+          "line": 38
+        },
+        {
+          "id": "3.3",
+          "description": "Remove invocation-only casts and descriptors while retaining only casts immediately justified by checked",
+          "done": false,
+          "line": 41
+        },
+        {
+          "id": "3.4",
+          "description": "Add or adapt scenario examples, properties, negative compiler cases, serialization checks, equality/hash tests,",
+          "done": false,
+          "line": 43
+        },
+        {
+          "id": "3.5",
+          "description": "Format and run execution-scenario tests with order/instrument prerequisites and fee, risk, codec, and packaged",
+          "done": false,
+          "line": 45
+        }
+      ],
+      "totalTasks": 5,
+      "completedTasks": 0,
+      "status": "pending",
+      "line": 34
+    },
+    {
+      "number": 4,
+      "name": "Fee Policy and Attribution Static Construction",
+      "tasks": [
+        {
+          "id": "4.1",
+          "description": "Replace dynamic construction in assessed fee values, scenario-fee aggregates, attributed contributions, and",
+          "done": false,
+          "line": 50
+        },
+        {
+          "id": "4.2",
+          "description": "Preserve denomination/instrument identity, grid amount and residual, source leg and market-state attribution,",
+          "done": false,
+          "line": 53
+        },
+        {
+          "id": "4.3",
+          "description": "Keep policy selection and directive validation independent of core fee/PnL ownership, introduce no unchecked",
+          "done": false,
+          "line": 55
+        },
+        {
+          "id": "4.4",
+          "description": "Add or adapt fee-policy unit/property/client tests covering charges, rebates, multi-asset settlement, entry/exit",
+          "done": false,
+          "line": 57
+        },
+        {
+          "id": "4.5",
+          "description": "Format and run fee-policy compilation/tests plus its instrument/order/scenario prerequisites and packaged",
+          "done": false,
+          "line": 59
+        }
+      ],
+      "totalTasks": 5,
+      "completedTasks": 0,
+      "status": "pending",
+      "line": 48
+    },
+    {
+      "number": 5,
+      "name": "Risk Model, Sizing, and Benchmark Static Access",
+      "tasks": [
+        {
+          "id": "5.1",
+          "description": "Replace dynamic construction and observation for lot-risk assessments, non-empty model violations, monotone",
+          "done": false,
+          "line": 64
+        },
+        {
+          "id": "5.2",
+          "description": "Preserve checked assessment identity/dimensions, closed-form and complete-table monotonicity, curve",
+          "done": false,
+          "line": 67
+        },
+        {
+          "id": "5.3",
+          "description": "Remove hostile subclass/exact-class guards from primary and exhaustive sizing result families while retaining",
+          "done": false,
+          "line": 70
+        },
+        {
+          "id": "5.4",
+          "description": "Adapt risk unit/property/completed-JAR/Java fixtures and JMH setup to ordinary factories and static observation;",
+          "done": false,
+          "line": 72
+        },
+        {
+          "id": "5.5",
+          "description": "Format and run risk compilation/tests, the source guard, benchmark compilation, and representative sizing",
+          "done": false,
+          "line": 74
+        }
+      ],
+      "totalTasks": 5,
+      "completedTasks": 0,
+      "status": "pending",
+      "line": 62
+    },
+    {
+      "number": 6,
+      "name": "Execution Identity, Authority, Ordering, and Lineage",
+      "tasks": [
+        {
+          "id": "6.1",
+          "description": "Replace dynamic construction of application/logical/source/account/native identities and qualified event,",
+          "done": false,
+          "line": 79
+        },
+        {
+          "id": "6.2",
+          "description": "Replace dynamic construction of ordering origins/continuations, authoritative sequencing, checkpoints,",
+          "done": false,
+          "line": 82
+        },
+        {
+          "id": "6.3",
+          "description": "Preserve qualification scope, source/account/native provenance, sequence positivity and continuation rules,",
+          "done": false,
+          "line": 84
+        },
+        {
+          "id": "6.4",
+          "description": "Remove hostile exact-class guards and bytecode-constructor expectations from these closed execution values;",
+          "done": false,
+          "line": 86
+        },
+        {
+          "id": "6.5",
+          "description": "Format and run focused execution identity/authority/ordering/lineage suites, packaged boundaries, source guard,",
+          "done": false,
+          "line": 88
+        }
+      ],
+      "totalTasks": 5,
+      "completedTasks": 0,
+      "status": "pending",
+      "line": 77
+    },
+    {
+      "number": 7,
+      "name": "Execution Commands, Submission Knowledge, and Cancellation",
+      "tasks": [
+        {
+          "id": "7.1",
+          "description": "Replace dynamic construction for command violations, submit/cancel commands, dispatch evidence, command state,",
+          "done": false,
+          "line": 93
+        },
+        {
+          "id": "7.2",
+          "description": "Preserve command identity/body idempotency, conflicting reuse, target/order/lineage scope, proven-not-dispatched",
+          "done": false,
+          "line": 96
+        },
+        {
+          "id": "7.3",
+          "description": "Preserve cancel request versus effective cancellation, source-supported confirmation, partial-fill and",
+          "done": false,
+          "line": 98
+        },
+        {
+          "id": "7.4",
+          "description": "Remove hostile implementation-class guards while retaining closed knowledge alternatives, checked erased",
+          "done": false,
+          "line": 100
+        },
+        {
+          "id": "7.5",
+          "description": "Format and run command, submission, cancellation, lineage, race/permutation, packaged-boundary, and source-guard",
+          "done": false,
+          "line": 102
+        }
+      ],
+      "totalTasks": 5,
+      "completedTasks": 0,
+      "status": "pending",
+      "line": 91
+    },
+    {
+      "number": 8,
+      "name": "Execution Facts, State, Replay, and Effective Fill Ledger",
+      "tasks": [
+        {
+          "id": "8.1",
+          "description": "Replace dynamic construction for source-fact violations and all fact cases, classifications, source-evidence",
+          "done": false,
+          "line": 107
+        },
+        {
+          "id": "8.2",
+          "description": "Preserve qualified identity and target checks, exact fill economics, duplicate/conflict classification,",
+          "done": false,
+          "line": 110
+        },
+        {
+          "id": "8.3",
+          "description": "Preserve effective fill replacement/bust semantics, ambiguity retention, exact signed exposure, overfill and",
+          "done": false,
+          "line": 113
+        },
+        {
+          "id": "8.4",
+          "description": "Replace hostile constructor/subclass fixtures with least-trusted supported-input tests for every strengthening",
+          "done": false,
+          "line": 115
+        },
+        {
+          "id": "8.5",
+          "description": "Format and run all execution-lifecycle unit/property/replay/race/complexity and completed-artifact checks, the",
+          "done": false,
+          "line": 117
+        }
+      ],
+      "totalTasks": 5,
+      "completedTasks": 0,
+      "status": "pending",
+      "line": 105
+    },
+    {
+      "number": 9,
+      "name": "Boundary Codec and Catalog Replay Static Construction",
+      "tasks": [
+        {
+          "id": "9.1",
+          "description": "Replace dynamic construction of envelopes, decode limits, paths, non-empty wire violations, grid-coordinate",
+          "done": false,
+          "line": 122
+        },
+        {
+          "id": "9.2",
+          "description": "Preserve strict syntax and duplicate handling, decode limits, exact primitive/refinement decoding, explicit V1",
+          "done": false,
+          "line": 125
+        },
+        {
+          "id": "9.3",
+          "description": "Preserve order/scenario associated shapes and aggregate checks, journal publication/revision/no-op/conflict",
+          "done": false,
+          "line": 128
+        },
+        {
+          "id": "9.4",
+          "description": "Adapt codec/journal unit, law, golden-vector, independent-JCS, malformed/limit, replay, serialization, and",
+          "done": false,
+          "line": 131
+        },
+        {
+          "id": "9.5",
+          "description": "Format and run boundary-codec/catalog-replay tests with all domain prerequisites, source/API scans, schema",
+          "done": false,
+          "line": 133
+        }
+      ],
+      "totalTasks": 5,
+      "completedTasks": 0,
+      "status": "pending",
+      "line": 120
+    },
+    {
+      "number": 10,
+      "name": "Adversarial Reconciliation and Whole-Repository Evidence",
+      "tasks": [
+        {
+          "id": "10.1",
+          "description": "Classify every adversarial-boundary and completed-JAR fixture: remove hostile same-package, subclass,",
+          "done": false,
+          "line": 138
+        },
+        {
+          "id": "10.2",
+          "description": "Rework representative ordinary Scala and Java clients so quantity/reference handles, orders/scenarios, fees,",
+          "done": false,
+          "line": 141
+        },
+        {
+          "id": "10.3",
+          "description": "Run formatting and a clean dependency-ordered compile/test matrix for every SBT project, the root aggregate,",
+          "done": false,
+          "line": 144
+        },
+        {
+          "id": "10.4",
+          "description": "Inspect final source, packaged APIs, classpaths, closed-match warnings, casts, docs, schemas, golden vectors,",
+          "done": false,
+          "line": 147
+        },
+        {
+          "id": "10.5",
+          "description": "Record AC-001 through AC-006 evidence, complete the Scala/Java and malformed-external-data walkthrough,",
+          "done": false,
+          "line": 150
+        }
+      ],
+      "totalTasks": 5,
+      "completedTasks": 0,
+      "status": "pending",
+      "line": 136
+    },
+    {
+      "number": 11,
+      "name": "Verify Repair — Reference Authority and Final Hygiene",
+      "tasks": [
+        {
+          "id": "11.1",
+          "description": "Remove the `GridDefinition`, catalog-handle, and grid-reconciliation singleton permit machinery while",
+          "done": false,
+          "line": 156
+        },
+        {
+          "id": "11.2",
+          "description": "Replace the erased Java `LiveCatalogBridge` with a direct Scala `LiveCatalog[F]` implementation over the same",
+          "done": false,
+          "line": 159
+        },
+        {
+          "id": "11.3",
+          "description": "Repair every `git diff --check` finding in the change specification deltas without changing their normative",
+          "done": false,
+          "line": 162
+        },
+        {
+          "id": "11.4",
+          "description": "Run focused reference-data, runtime, application, codec/replay, ordinary Scala/Java, reflection-guard, and",
+          "done": false,
+          "line": 164
+        },
+        {
+          "id": "11.5",
+          "description": "Run the clean whole-repository format/test/JMH-compile matrix and automated Task Group review, record the Verify",
+          "done": false,
+          "line": 166
+        }
+      ],
+      "totalTasks": 5,
+      "completedTasks": 0,
+      "status": "pending",
+      "line": 154
+    }
+  ],
+  "contract": {
+    "schemaVersion": 1,
+    "pathConvention": "project-relative-posix",
+    "kind": "rfc-slice",
+    "deliveryRef": "RFC-0004-simplify-in-process-trust-boundary/S-01-simplify-in-process-trust-boundary",
+    "rfcId": "RFC-0004-simplify-in-process-trust-boundary",
+    "rfcDigest": "sha256:7eaf8391404d174836ff35e429e1618cc5ee06e15c5ec3eeebdc9289ebd3a8e5",
+    "acceptedCommit": "24090e8f0af2b04c733f8bffd2b394f232084877",
+    "sliceId": "S-01-simplify-in-process-trust-boundary",
+    "acceptanceIds": [
+      "AC-001",
+      "AC-002",
+      "AC-003",
+      "AC-004",
+      "AC-005",
+      "AC-006"
+    ],
+    "sourcePath": "openspec/changes/simplify-in-process-trust-boundary/corgi/source.yaml",
+    "sourceDigest": "sha256:9c8d459b6066675a3128ef4974967a1f199bbd3b0e4871179110e0fe57337880",
+    "traceabilityPath": "openspec/changes/simplify-in-process-trust-boundary/corgi/traceability.yaml",
+    "traceabilityDigest": "sha256:31952a7384c61bba43d4c9498a68703047d3a93902c05c7e328122087bae5dc2",
+    "tracker": {
+      "provider": "github",
+      "idempotencyKey": "cfb4c5937e3381e3b886eec1ceef24a63e991e7555220cf0a913da796f3ce744",
+      "issue": {
+        "id": "36",
+        "url": "https://github.com/m2048ws/trading/issues/36"
+      }
+    }
+  }
+}

@@ -1,0 +1,44 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<testsuite hostname="mbp" name="external.BoundaryCodecCompilerBoundarySuite" tests="17" errors="0" failures="0" skipped="0" time="14.93" timestamp="2026-09-03T21:31:13">
+          <properties>
+      <property name="java.specification.version" value="26"/><property name="sun.jnu.encoding" value="UTF-8"/><property name="java.class.path" value="/opt/homebrew/Cellar/sbt/2.0.4/libexec/bin/sbt-launch.jar"/><property name="java.vm.vendor" value="Homebrew"/><property name="sun.arch.data.model" value="64"/><property name="jline.shutdownhook" value="false"/><property name="java.vendor.url" value="https://github.com/Homebrew/homebrew-core/issues"/><property name="user.timezone" value="Europe/Stockholm"/><property name="jline.terminal" value="none"/><property name="java.vm.specification.version" value="26"/><property name="os.name" value="Mac OS X"/><property name="sun.java.launcher" value="SUN_STANDARD"/><property name="user.country" value="US"/><property name="sun.boot.library.path" value="/opt/homebrew/Cellar/openjdk/26.0.2/libexec/openjdk.jdk/Contents/Home/lib"/><property name="sun.java.command" value="/opt/homebrew/Cellar/sbt/2.0.4/libexec/bin/sbt-launch.jar adversarialBoundary/scalafmtAll adversarialBoundary/testOnly external.BoundaryCodecCompilerBoundarySuite"/><property name="http.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/><property name="jdk.debug" value="release"/><property name="sun.cpu.endian" value="little"/><property name="user.home" value="/Users/m"/><property name="user.language" value="en"/><property name="sbt.script" value="/opt/homebrew/Cellar/sbt/2.0.4/libexec/bin/sbt"/><property name="java.specification.vendor" value="Oracle Corporation"/><property name="sbt.ipcsocket.tmpdir" value="/var/folders/xq/jvfswlyx06q052vsyz0dfct80000gr/T/.sbta85b608a/ipcsocket"/><property name="swoval.tmpdir" value="/var/folders/xq/jvfswlyx06q052vsyz0dfct80000gr/T/.sbta85b608a/swoval"/><property name="java.version.date" value="2026-07-21"/><property name="java.home" value="/opt/homebrew/Cellar/openjdk/26.0.2/libexec/openjdk.jdk/Contents/Home"/><property name="file.separator" value="/"/><property name="java.vm.compressedOopsMode" value="Zero based"/><property name="line.separator" value="
+"/><property name="java.vm.specification.vendor" value="Oracle Corporation"/><property name="java.specification.name" value="Java Platform API Specification"/><property name="apple.awt.application.name" value="Boot"/><property name="jline.esc.timeout" value="0"/><property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/><property name="ftp.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/><property name="java.runtime.version" value="26.0.2"/><property name="user.name" value="m"/><property name="stdout.encoding" value="UTF-8"/><property name="path.separator" value=":"/><property name="os.version" value="26.4.1"/><property name="jna.nosys" value="true"/><property name="java.runtime.name" value="OpenJDK Runtime Environment"/><property name="log4j.ignoreTCL" value="true"/><property name="file.encoding" value="UTF-8"/><property name="java.vm.name" value="OpenJDK 64-Bit Server VM"/><property name="java.vendor.version" value="Homebrew"/><property name="java.vendor.url.bug" value="https://github.com/Homebrew/homebrew-core/issues"/><property name="java.io.tmpdir" value="/var/folders/xq/jvfswlyx06q052vsyz0dfct80000gr/T/"/><property name="java.version" value="26.0.2"/><property name="user.dir" value="/Users/m/src/money/.worktrees/simplify-in-process-trust-boundary"/><property name="os.arch" value="aarch64"/><property name="sun.misc.unsafe.memory.access" value="allow"/><property name="java.vm.specification.name" value="Java Virtual Machine Specification"/><property name="native.encoding" value="UTF-8"/><property name="java.library.path" value="/Users/m/Library/Java/Extensions:/Library/Java/Extensions:/Network/Library/Java/Extensions:/System/Library/Java/Extensions:/usr/lib/java:."/><property name="java.vm.info" value="mixed mode, sharing"/><property name="stderr.encoding" value="UTF-8"/><property name="java.vendor" value="Homebrew"/><property name="java.vm.version" value="26.0.2"/><property name="stdin.encoding" value="UTF-8"/><property name="scala.ext.dirs" value="/Users/m/.sbt/1.0/java9-rt-ext-homebrew_26_0_2"/><property name="sun.io.unicode.encoding" value="UnicodeBig"/><property name="socksNonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/><property name="java.class.version" value="70.0"/>
+    </properties>
+          <testcase classname="external.BoundaryCodecCompilerBoundarySuite" name="completed boundary-codec classpath contains exactly its one-way production graph" time="0.007">
+                      
+                    </testcase><testcase classname="external.BoundaryCodecCompilerBoundarySuite" name="completed boundary-codec JAR contains the public foundation and confined parser/schema internals" time="0.041">
+                      
+                    </testcase><testcase classname="external.BoundaryCodecCompilerBoundarySuite" name="completed boundary-codec classpath compiles a direct-domain and Jackson-Core client" time="1.444">
+                      
+                    </testcase><testcase classname="external.BoundaryCodecCompilerBoundarySuite" name="completed boundary-codec JAR compiles the domain-owned public codec foundation" time="0.275">
+                      
+                    </testcase><testcase classname="external.BoundaryCodecCompilerBoundarySuite" name="completed boundary-codec JAR compiles and runs an ordinary Java checked-factory client" time="0.315">
+                      
+                    </testcase><testcase classname="external.BoundaryCodecCompilerBoundarySuite" name="completed boundary-codec JAR compiles exact grid packing and dependent reconstruction clients" time="0.384">
+                      
+                    </testcase><testcase classname="external.BoundaryCodecCompilerBoundarySuite" name="catalog journal clients can retain published batches and replay only from fresh state" time="0.301">
+                      
+                    </testcase><testcase classname="external.BoundaryCodecCompilerBoundarySuite" name="instrument-definition clients can decode stable data and assemble through one explicit snapshot" time="0.209">
+                      
+                    </testcase><testcase classname="external.BoundaryCodecCompilerBoundarySuite" name="immutable-order clients can retain stable records and reconstruct through one explicit instrument" time="0.251">
+                      
+                    </testcase><testcase classname="external.BoundaryCodecCompilerBoundarySuite" name="hypothetical-scenario clients reconstruct associated evidence through one instrument and snapshot" time="0.236">
+                      
+                    </testcase><testcase classname="external.BoundaryCodecCompilerBoundarySuite" name="completed boundary-codec classpath rejects downstream, effect, mapping, and test-oracle concerns" time="2.325">
+                      
+                    </testcase><testcase classname="external.BoundaryCodecCompilerBoundarySuite" name="completed boundary-codec JAR hides parser, AST, and schema-algebra internals" time="0.127">
+                      
+                    </testcase><testcase classname="external.BoundaryCodecCompilerBoundarySuite" name="grid-coordinate families reject off-grid and cross-grid values and retired names" time="1.619">
+                      
+                    </testcase><testcase classname="external.BoundaryCodecCompilerBoundarySuite" name="catalog journal rejects broader outcomes, authority leaks, and durability concerns" time="1.91">
+                      
+                    </testcase><testcase classname="external.BoundaryCodecCompilerBoundarySuite" name="instrument-definition records reject trusted authority revision market and live-context escapes" time="2.119">
+                      
+                    </testcase><testcase classname="external.BoundaryCodecCompilerBoundarySuite" name="order records reject trusted authority derived state execution facts and untyped decoding" time="1.797">
+                      
+                    </testcase><testcase classname="external.BoundaryCodecCompilerBoundarySuite" name="scenario records reject execution facts fees valuation lifecycle targets and untyped evidence" time="1.57">
+                      
+                    </testcase>
+          <system-out><![CDATA[]]></system-out>
+          <system-err><![CDATA[]]></system-err>
+        </testsuite>

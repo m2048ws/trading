@@ -3,7 +3,6 @@ package trading.execution
 import java.io.ByteArrayOutputStream
 import java.io.NotSerializableException
 import java.io.ObjectOutputStream
-import java.lang.reflect.Modifier
 
 import munit.FunSuite
 
@@ -59,28 +58,6 @@ class ExecutionIdentitySuite extends FunSuite:
       Left(MissingExecutionIdentity(ExecutionIdentityKind.SourceSequence))
     )
     assertEquals(SourceSequence.from(BigInt(-1)), Left(NegativeSourceSequence(BigInt(-1))))
-
-  test("identity representations are final with JVM-private constructors"):
-    val representations = List(
-      classOf[ApplicationCommandId],
-      classOf[ExecutionOrderId],
-      classOf[OrderLineageId],
-      classOf[ExecutionSourceId],
-      classOf[ExecutionAccountId],
-      classOf[NativeSourceEventId],
-      classOf[NativeSourceOrderId],
-      classOf[NativeFillId],
-      classOf[SourceStreamId],
-      classOf[SourceSequence]
-    )
-
-    representations.foreach: representation =>
-      assert(Modifier.isFinal(representation.getModifiers), s"${representation.getName} must be final")
-      assert(representation.getDeclaredConstructors.nonEmpty)
-      assert(
-        representation.getDeclaredConstructors.forall(constructor => Modifier.isPrivate(constructor.getModifiers)),
-        s"${representation.getName} exposes a non-private JVM constructor"
-      )
 
   test("identity companions expose validation but no generation, clock, hash, or receipt authority"):
     val companions = List(

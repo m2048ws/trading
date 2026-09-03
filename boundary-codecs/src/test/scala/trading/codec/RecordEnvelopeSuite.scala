@@ -3,7 +3,6 @@ package trading.codec
 import java.io.ByteArrayOutputStream
 import java.io.NotSerializableException
 import java.io.ObjectOutputStream
-import java.lang.reflect.Modifier
 import scala.jdk.CollectionConverters.*
 
 import com.networknt.schema.InputFormat
@@ -66,7 +65,7 @@ class RecordEnvelopeSuite extends FunSuite:
   private val golden =
     """{"payload":{"exact":{"denominator":"3","numerator":"-2"},"grid":{"dimension":[{"atom":"usd","power":"1"}],"gridId":"price","gridVersion":"7"}},"recordType":"trading.sample","schemaVersion":1}"""
 
-  test("record and schema versions are exact checked values with inaccessible constructors"):
+  test("record and schema versions are exact checked values"):
     val huge = BigInt(10).pow(200)
 
     assertEquals(RecordType.from("trading.sample-v2").map(_.value), Right("trading.sample-v2"))
@@ -75,12 +74,6 @@ class RecordEnvelopeSuite extends FunSuite:
     assertEquals(SchemaVersion.from(huge).map(_.value), Right(huge))
     assert(SchemaVersion.from(BigInt(0)).isLeft)
     assert(SchemaVersion.from(BigInt(-1)).isLeft)
-    assert(
-      classOf[RecordType].getDeclaredConstructors.forall(constructor => !Modifier.isPublic(constructor.getModifiers))
-    )
-    assert(
-      classOf[SchemaVersion].getDeclaredConstructors.forall(constructor => !Modifier.isPublic(constructor.getModifiers))
-    )
     rejectSerialization(recordType)
     rejectSerialization(version)
 

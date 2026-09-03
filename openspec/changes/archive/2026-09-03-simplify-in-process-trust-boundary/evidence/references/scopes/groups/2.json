@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 3,
+  "scope": "group-2",
+  "runId": "run-60752c8c-717b-4c6b-9307-ae6faecd9ae3",
+  "references": [
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Forder-scenario-java%2Fpositive%2FOrderFactoryClient.java#sha256:7b414b5d3b7978535e1119cbd16a0c107c9548e0e123772460569c2be88afbb7",
+      "sourcePath": "adversarial-boundary/src/test/resources/order-scenario-java/positive/OrderFactoryClient.java",
+      "digest": "sha256:7b414b5d3b7978535e1119cbd16a0c107c9548e0e123772460569c2be88afbb7",
+      "archivePath": "references/blobs/7b414b5d3b7978535e1119cbd16a0c107c9548e0e123772460569c2be88afbb7"
+    },
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FEconomicsCompilerBoundarySuite.scala#sha256:e51eaaa5db436d06156b1cb89e84c170d583e8e6e1e404dea5066af7aae0e56b",
+      "sourcePath": "adversarial-boundary/src/test/scala/external/EconomicsCompilerBoundarySuite.scala",
+      "digest": "sha256:e51eaaa5db436d06156b1cb89e84c170d583e8e6e1e404dea5066af7aae0e56b",
+      "archivePath": "references/blobs/e51eaaa5db436d06156b1cb89e84c170d583e8e6e1e404dea5066af7aae0e56b"
+    },
+    {
+      "reference": "file:openspec%2Fchanges%2Fsimplify-in-process-trust-boundary%2Fimplementation-notes%2Ftask-group-2.md#sha256:065161d7ee1f9f3394f0cd8c641de0215e26fbc62bcd8a17edd72e1dc1a40247",
+      "sourcePath": "openspec/changes/simplify-in-process-trust-boundary/implementation-notes/task-group-2.md",
+      "digest": "sha256:065161d7ee1f9f3394f0cd8c641de0215e26fbc62bcd8a17edd72e1dc1a40247",
+      "archivePath": "references/blobs/065161d7ee1f9f3394f0cd8c641de0215e26fbc62bcd8a17edd72e1dc1a40247"
+    },
+    {
+      "reference": "file:order-model%2Fsrc%2Fmain%2Fscala%2Ftrading%2Forder%2FOrder.scala#sha256:7632f5e5c663468a0f08df94801f88f129f27700ef2c70be8b370f2c3d20950e",
+      "sourcePath": "order-model/src/main/scala/trading/order/Order.scala",
+      "digest": "sha256:7632f5e5c663468a0f08df94801f88f129f27700ef2c70be8b370f2c3d20950e",
+      "archivePath": "references/blobs/7632f5e5c663468a0f08df94801f88f129f27700ef2c70be8b370f2c3d20950e"
+    },
+    {
+      "reference": "file:tools%2Fin-process-reflection-baseline.tsv#sha256:f27e966d8910752da041161edd0475cce4adad2bbd121d9f900f2ed6a2d79220",
+      "sourcePath": "tools/in-process-reflection-baseline.tsv",
+      "digest": "sha256:f27e966d8910752da041161edd0475cce4adad2bbd121d9f900f2ed6a2d79220",
+      "archivePath": "references/blobs/f27e966d8910752da041161edd0475cce4adad2bbd121d9f900f2ed6a2d79220"
+    }
+  ]
+}

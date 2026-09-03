@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 3,
+  "groupId": "11",
+  "checks": [
+    {
+      "name": "Focused reference-data, application, runtime, codec/replay, and ordinary Scala/Java tests",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:reference-data%2Fsrc%2Ftest%2Fscala%2Ftrading%2Freference%2FReferenceDataSuite.scala#sha256:c0ea239f0f1bed95109f656c0a060424833194e359e1519853552b8f8aea5608",
+        "file:runtime%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fruntime%2FInMemoryLiveCatalogContractSuite.scala#sha256:80178bda163b07a7f76d81d857ce81be67bfe2a76feaa7f89eaeef3430397392",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Freference-data-java%2Fpositive%2FGridReconciliationAuthority.java#sha256:171bbc81400b2f959cb9b34dc8be771d5019a5f9f7aae94d00802d4e5d547e41"
+      ]
+    },
+    {
+      "name": "Clean whole-repository formatting, 1043-test, and JMH compile matrix",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:openspec%2Fchanges%2Fsimplify-in-process-trust-boundary%2Fimplementation-notes%2Ftask-group-11.md#sha256:7af6bd0ccb7836d94c30d17c8b2c089c0be2a20815290d51a687cafe04a8621c"
+      ]
+    },
+    {
+      "name": "Reflection and residual permit/bridge source scans plus whitespace inspection",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:tools%2Fcheck-in-process-reflection.sh#sha256:12bd5296f3c5e613f7a47389122323f81c3723371fb059e87610ee99802662df",
+        "file:reference-data%2Fsrc%2Fmain%2Fscala%2Ftrading%2Freference%2FReferenceData.scala#sha256:a82c7eed539e0a5f3380a2618e2ce67f8622cf2383e536df7ef56e4a2fc6969e",
+        "file:reference-data%2Fsrc%2Fmain%2Fscala%2Ftrading%2Freference%2FCatalog.scala#sha256:0a8967f217cced68dd49fc8a25971cf6fd9736971f9dfa3618010de7569d5845",
+        "file:runtime%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fruntime%2FInMemoryLiveCatalog.scala#sha256:a546823e9193fc09718abbd49091772be16fbfcda80f7383ffc86aa8ee3184b9"
+      ]
+    },
+    {
+      "name": "Strict OpenSpec change and all 17 repository specification validation",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:openspec%2Fchanges%2Fsimplify-in-process-trust-boundary%2Fspecs%2Freference-data-identity%2Fspec.md#sha256:d3344cf2d95cfdddb06902335fa7ec50f06ce7bd5c7dfa95f425761c3f9b8b87",
+        "file:openspec%2Fchanges%2Fsimplify-in-process-trust-boundary%2Fspecs%2Frepository-architecture%2Fspec.md#sha256:fd298a38a7ec00fc2a47c52b130aaa2bd0987c2a03dbf8996ba974663cfe165f",
+        "file:openspec%2Fchanges%2Fsimplify-in-process-trust-boundary%2Fspecs%2Fscala-functional-design%2Fspec.md#sha256:ea4bdd5b676e586b4c4819296100eb27075ccbf2a3bf42d80eea55d7edadf2d2"
+      ]
+    },
+    {
+      "name": "Short runtime snapshot JMH smoke measurement",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:benchmarks%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fbenchmark%2FLiveCatalogRuntimeBenchmark.scala#sha256:47f88c9aa2fa53339f71067750a21c631fa84b324ee7ff9b228170aded125056",
+        "file:openspec%2Fchanges%2Fsimplify-in-process-trust-boundary%2Fimplementation-notes%2Ftask-group-11.md#sha256:7af6bd0ccb7836d94c30d17c8b2c089c0be2a20815290d51a687cafe04a8621c"
+      ]
+    }
+  ],
+  "automatedReview": {
+    "verdict": "pass",
+    "findings": []
+  },
+  "artifacts": [
+    "file:reference-data%2Fsrc%2Fmain%2Fscala%2Ftrading%2Freference%2FReferenceData.scala#sha256:a82c7eed539e0a5f3380a2618e2ce67f8622cf2383e536df7ef56e4a2fc6969e",
+    "file:reference-data%2Fsrc%2Fmain%2Fscala%2Ftrading%2Freference%2FCatalog.scala#sha256:0a8967f217cced68dd49fc8a25971cf6fd9736971f9dfa3618010de7569d5845",
+    "file:runtime%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fruntime%2FInMemoryLiveCatalog.scala#sha256:a546823e9193fc09718abbd49091772be16fbfcda80f7383ffc86aa8ee3184b9",
+    "file:reference-data%2Fsrc%2Ftest%2Fscala%2Ftrading%2Freference%2FReferenceDataSuite.scala#sha256:c0ea239f0f1bed95109f656c0a060424833194e359e1519853552b8f8aea5608",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Freference-data-java%2Fpositive%2FGridReconciliationAuthority.java#sha256:171bbc81400b2f959cb9b34dc8be771d5019a5f9f7aae94d00802d4e5d547e41",
+    "file:openspec%2Fchanges%2Fsimplify-in-process-trust-boundary%2Fimplementation-notes%2Ftask-group-11.md#sha256:7af6bd0ccb7836d94c30d17c8b2c089c0be2a20815290d51a687cafe04a8621c",
+    "file:memory%2Fsession-bridge.md#sha256:b9521610ceb063dcad6f28467c708b53d5072a317e69dff6900e48cc472f19b8"
+  ],
+  "summary": "Removed the remaining reference-data singleton construction and reconciliation permits and the erased Java LiveCatalog bridge, retained catalog lineage and semantic strengthening checks, repaired accidental null handling and change-spec whitespace, and passed focused, whole-repository, reflection, OpenSpec, Java, and performance checks."
+}

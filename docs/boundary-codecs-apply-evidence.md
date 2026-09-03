@@ -63,9 +63,8 @@ seven V1 schema resources.
 
 Production-source inspection found no floating conversion or raw-number precision narrowing, live snapshot selection,
 monitor/atomic coordination, file/network operation, repository/checkpoint implementation, or serialized authority.
-The remaining `asInstanceOf` sites are lexical return casts from checked, exact-signature private-constructor method
-handles used to preserve JVM construction authority; no cast selects a record alternative or makes incompatible domain
-evidence fit.
+Production codec construction is statically callable and contains no reflective construction or invocation-recovery
+casts. No cast selects a record alternative or makes incompatible domain evidence fit.
 
 ## Scope and gate separation
 
