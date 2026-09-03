@@ -1,17 +1,10 @@
 package trading.execution
 
-import java.lang.invoke.MethodHandle
-import java.lang.invoke.MethodHandles
-import java.lang.invoke.MethodType
-import scala.annotation.nowarn
-
 import trading.economics.instrument.PositionLots
 import trading.order.Side
 import trading.quantity.Dim
 import trading.quantity.JavaSerializationUnsupported
-
-@nowarn("msg=Ignoring.*qualifier")
-final class CancellationEvidence[D <: Dim, B <: Dim, Q <: Dim] private[this] (
+final class CancellationEvidence[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
   val issuedRequests: Set[CancelOrderCommand[D, B, Q]],
   val reportedRequests: Set[CancelOrderCommand[D, B, Q]],
   val referencedSubmissions: Set[SubmitOrderCommand[D, B, Q]],
@@ -44,11 +37,8 @@ end CancellationEvidence
 
 sealed abstract class CancellationKnowledge[D <: Dim, B <: Dim, Q <: Dim] protected ()
   extends JavaSerializationUnsupported:
-  CancellationKnowledge.requireBuiltin(this)
   def evidence: CancellationEvidence[D, B, Q]
-
-@nowarn("msg=Ignoring.*qualifier")
-final class CancellationRequested[D <: Dim, B <: Dim, Q <: Dim] private[this] (
+final class CancellationRequested[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
   val evidence: CancellationEvidence[D, B, Q])
   extends CancellationKnowledge[D, B, Q]():
 
@@ -56,9 +46,7 @@ final class CancellationRequested[D <: Dim, B <: Dim, Q <: Dim] private[this] (
     case that: CancellationRequested[?, ?, ?] => evidence == that.evidence
     case _                                    => false
   override def hashCode(): Int = ("cancellation-requested", evidence).hashCode
-
-@nowarn("msg=Ignoring.*qualifier")
-final class CancellationConfirmed[D <: Dim, B <: Dim, Q <: Dim] private[this] (
+final class CancellationConfirmed[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
   val evidence: CancellationEvidence[D, B, Q])
   extends CancellationKnowledge[D, B, Q]():
 
@@ -66,9 +54,7 @@ final class CancellationConfirmed[D <: Dim, B <: Dim, Q <: Dim] private[this] (
     case that: CancellationConfirmed[?, ?, ?] => evidence == that.evidence
     case _                                    => false
   override def hashCode(): Int = ("cancellation-confirmed", evidence).hashCode
-
-@nowarn("msg=Ignoring.*qualifier")
-final class CancellationConflicted[D <: Dim, B <: Dim, Q <: Dim] private[this] (
+final class CancellationConflicted[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
   val evidence: CancellationEvidence[D, B, Q])
   extends CancellationKnowledge[D, B, Q]():
 
@@ -78,37 +64,6 @@ final class CancellationConflicted[D <: Dim, B <: Dim, Q <: Dim] private[this] (
   override def hashCode(): Int = ("cancellation-conflicted", evidence).hashCode
 
 object CancellationKnowledge:
-  private val evidenceConstructor: MethodHandle =
-    MethodHandles
-      .privateLookupIn(classOf[CancellationEvidence[?, ?, ?]], MethodHandles.lookup())
-      .findConstructor(
-        classOf[CancellationEvidence[?, ?, ?]],
-        MethodType.methodType(
-          classOf[Unit],
-          classOf[Set[?]],
-          classOf[Set[?]],
-          classOf[Set[?]],
-          classOf[Set[?]],
-          classOf[Set[?]],
-          classOf[Set[?]],
-          classOf[Set[?]]
-        )
-      )
-
-  private val requestedConstructor: MethodHandle =
-    knowledgeConstructor(classOf[CancellationRequested[?, ?, ?]])
-
-  private val confirmedConstructor: MethodHandle =
-    knowledgeConstructor(classOf[CancellationConfirmed[?, ?, ?]])
-
-  private val conflictedConstructor: MethodHandle =
-    knowledgeConstructor(classOf[CancellationConflicted[?, ?, ?]])
-
-  private def knowledgeConstructor(owner: Class[?]): MethodHandle =
-    MethodHandles
-      .privateLookupIn(owner, MethodHandles.lookup())
-      .findConstructor(owner, MethodType.methodType(classOf[Unit], classOf[CancellationEvidence[?, ?, ?]]))
-
   private def constructEvidence[D <: Dim, B <: Dim, Q <: Dim](
     issuedRequests: Set[CancelOrderCommand[D, B, Q]],
     reportedRequests: Set[CancelOrderCommand[D, B, Q]],
@@ -118,39 +73,30 @@ object CancellationKnowledge:
     commandConflicts: Set[CommandConflict[D, B, Q]],
     sourceConflicts: Set[SourceFactConflict[D, B, Q]]
   ): CancellationEvidence[D, B, Q] =
-    evidenceConstructor
-      .invoke(
-        issuedRequests,
-        reportedRequests,
-        referencedSubmissions,
-        reportedConfirmations,
-        authoritativeConfirmations,
-        commandConflicts,
-        sourceConflicts
-      )
-      .asInstanceOf[CancellationEvidence[D, B, Q]]
+    new CancellationEvidence(
+      issuedRequests,
+      reportedRequests,
+      referencedSubmissions,
+      reportedConfirmations,
+      authoritativeConfirmations,
+      commandConflicts,
+      sourceConflicts
+    )
 
   private def requested[D <: Dim, B <: Dim, Q <: Dim](
     evidence: CancellationEvidence[D, B, Q]
   ): CancellationRequested[D, B, Q] =
-    requestedConstructor.invoke(evidence).asInstanceOf[CancellationRequested[D, B, Q]]
+    new CancellationRequested(evidence)
 
   private def confirmed[D <: Dim, B <: Dim, Q <: Dim](
     evidence: CancellationEvidence[D, B, Q]
   ): CancellationConfirmed[D, B, Q] =
-    confirmedConstructor.invoke(evidence).asInstanceOf[CancellationConfirmed[D, B, Q]]
+    new CancellationConfirmed(evidence)
 
   private def conflicted[D <: Dim, B <: Dim, Q <: Dim](
     evidence: CancellationEvidence[D, B, Q]
   ): CancellationConflicted[D, B, Q] =
-    conflictedConstructor.invoke(evidence).asInstanceOf[CancellationConflicted[D, B, Q]]
-
-  private[execution] def requireBuiltin(value: CancellationKnowledge[?, ?, ?]): Unit =
-    val runtimeClass = value.getClass
-    if runtimeClass != classOf[CancellationRequested[?, ?, ?]] &&
-      runtimeClass != classOf[CancellationConfirmed[?, ?, ?]] &&
-      runtimeClass != classOf[CancellationConflicted[?, ?, ?]]
-    then throw new IllegalAccessError(s"unsupported CancellationKnowledge implementation: ${runtimeClass.getName}")
+    new CancellationConflicted(evidence)
 
   private[execution] def derive[D <: Dim, B <: Dim, Q <: Dim](
     state: ExecutionState[D, B, Q]
@@ -207,9 +153,7 @@ object CancellationKnowledge:
   private def isCancellation(value: SourceFact[?, ?, ?]): Boolean =
     value.isInstanceOf[CancellationEffective[?, ?, ?]]
 end CancellationKnowledge
-
-@nowarn("msg=Ignoring.*qualifier")
-final class PostCancellationFillAnomaly[D <: Dim, B <: Dim, Q <: Dim] private[this] (
+final class PostCancellationFillAnomaly[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
   val effectiveFill: ActiveEffectiveFill[D, B, Q],
   val priorCancellations: Vector[CancellationEffective[D, B, Q]],
   val exactExposure: PositionLots[D])
@@ -223,9 +167,7 @@ final class PostCancellationFillAnomaly[D <: Dim, B <: Dim, Q <: Dim] private[th
       exactExposure == that.exactExposure
     case _ => false
   override def hashCode(): Int = (effectiveFill, priorCancellations, exactExposure).hashCode
-
-@nowarn("msg=Ignoring.*qualifier")
-final class ExecutionAnomalies[D <: Dim, B <: Dim, Q <: Dim] private[this] (
+final class ExecutionAnomalies[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
   val overfill: Option[OverfillAnomaly[D]],
   val postCancellationFills: Vector[PostCancellationFillAnomaly[D, B, Q]],
   val sourceEventConflicts: Set[SourceFactConflict[D, B, Q]],
@@ -248,42 +190,12 @@ final class ExecutionAnomalies[D <: Dim, B <: Dim, Q <: Dim] private[this] (
 end ExecutionAnomalies
 
 object ExecutionAnomalies:
-  private val anomalyConstructor: MethodHandle =
-    MethodHandles
-      .privateLookupIn(classOf[PostCancellationFillAnomaly[?, ?, ?]], MethodHandles.lookup())
-      .findConstructor(
-        classOf[PostCancellationFillAnomaly[?, ?, ?]],
-        MethodType.methodType(
-          classOf[Unit],
-          classOf[ActiveEffectiveFill[?, ?, ?]],
-          classOf[Vector[?]],
-          classOf[PositionLots[?]]
-        )
-      )
-
-  private val anomaliesConstructor: MethodHandle =
-    MethodHandles
-      .privateLookupIn(classOf[ExecutionAnomalies[?, ?, ?]], MethodHandles.lookup())
-      .findConstructor(
-        classOf[ExecutionAnomalies[?, ?, ?]],
-        MethodType.methodType(
-          classOf[Unit],
-          classOf[Option[?]],
-          classOf[Vector[?]],
-          classOf[Set[?]],
-          classOf[Set[?]],
-          classOf[Map[?, ?]]
-        )
-      )
-
   private def postCancellation[D <: Dim, B <: Dim, Q <: Dim](
     effectiveFill: ActiveEffectiveFill[D, B, Q],
     priorCancellations: Vector[CancellationEffective[D, B, Q]],
     exactExposure: PositionLots[D]
   ): PostCancellationFillAnomaly[D, B, Q] =
-    anomalyConstructor
-      .invoke(effectiveFill, priorCancellations, exactExposure)
-      .asInstanceOf[PostCancellationFillAnomaly[D, B, Q]]
+    new PostCancellationFillAnomaly(effectiveFill, priorCancellations, exactExposure)
 
   private[execution] def derive[D <: Dim, B <: Dim, Q <: Dim](
     state: ExecutionState[D, B, Q]
@@ -322,15 +234,13 @@ object ExecutionAnomalies:
       val position = anomaly.effectiveFill.original.authoritativePosition.get
       (streamKey(position.stream), position.sequence.value, fillKey(anomaly.fillId))
 
-    anomaliesConstructor
-      .invoke(
-        ledger.overfill,
-        postCancellationFills,
-        state.source.eventConflicts.toSet,
-        state.source.fillConflicts.toSet,
-        state.source.positionConflicts
-      )
-      .asInstanceOf[ExecutionAnomalies[D, B, Q]]
+    new ExecutionAnomalies(
+      ledger.overfill,
+      postCancellationFills,
+      state.source.eventConflicts.toSet,
+      state.source.fillConflicts.toSet,
+      state.source.positionConflicts
+    )
   end derive
 
   private def eventKey(value: QualifiedSourceEventId): String =

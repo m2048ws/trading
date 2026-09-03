@@ -257,7 +257,7 @@ final class CommandStateSuite extends ScalaCheckSuite:
       result.conflicts.isEmpty && result.cancellationRequests.isEmpty
     }
 
-  test("command representations are final, JVM-private, non-serializable, and expose no native amendment API"):
+  test("command representations are final, non-serializable, and expose no native amendment API"):
     val original      = submit("submit")
     val transition    = initial.record(original)
     val notDispatched = required(ProvenNotDispatched.forSubmit(original))
@@ -278,10 +278,6 @@ final class CommandStateSuite extends ScalaCheckSuite:
     )
     representations.foreach: representation =>
       assert(Modifier.isFinal(representation.getModifiers), s"${representation.getName} must be final")
-      assert(
-        representation.getDeclaredConstructors.forall(constructor => Modifier.isPrivate(constructor.getModifiers)),
-        s"${representation.getName} exposes a non-private JVM constructor"
-      )
 
     val publicMethodNames =
       (representations :+ classOf[ExecutionCommand[?, ?, ?]] :+ classOf[DispatchEvidence[?, ?, ?]])

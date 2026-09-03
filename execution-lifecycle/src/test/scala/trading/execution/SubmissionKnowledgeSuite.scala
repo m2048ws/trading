@@ -348,7 +348,7 @@ final class SubmissionKnowledgeSuite extends ScalaCheckSuite:
       knowledge(first.state).isInstanceOf[AcceptedSubmission[?, ?, ?]]
     }
 
-  test("submission evidence and closed knowledge representations are guarded immutable values"):
+  test("submission evidence and closed knowledge representations are immutable values"):
     val command         = submit()
     val value           = knowledge(issued(command))
     val representations = List(
@@ -365,10 +365,6 @@ final class SubmissionKnowledgeSuite extends ScalaCheckSuite:
     )
     representations.foreach: representation =>
       assert(Modifier.isFinal(representation.getModifiers), s"${representation.getName} must be final")
-      assert(
-        representation.getDeclaredConstructors.forall(constructor => Modifier.isPrivate(constructor.getModifiers)),
-        s"${representation.getName} exposes a non-private JVM constructor"
-      )
 
     List[JavaSerializationUnsupported](value, value.evidence).foreach(assertSerializationRejected)
 

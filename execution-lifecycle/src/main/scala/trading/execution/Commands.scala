@@ -1,10 +1,5 @@
 package trading.execution
 
-import java.lang.invoke.MethodHandle
-import java.lang.invoke.MethodHandles
-import java.lang.invoke.MethodType
-import scala.annotation.nowarn
-
 import trading.quantity.Dim
 import trading.quantity.JavaSerializationUnsupported
 
@@ -44,9 +39,7 @@ final case class FreshSubmitBlockedByIndeterminate(
   existingCommandId: ApplicationCommandId,
   attemptedCommandId: ApplicationCommandId)
   extends CommandViolation
-
-@nowarn("msg=Ignoring.*qualifier")
-final class CommandViolations private[this] (private val values: Vector[CommandViolation])
+final class CommandViolations private (private val values: Vector[CommandViolation])
   extends JavaSerializationUnsupported:
 
   def head: CommandViolation             = values.head
@@ -61,13 +54,8 @@ final class CommandViolations private[this] (private val values: Vector[CommandV
   override def toString: String = values.mkString("CommandViolations(", ",", ")")
 
 object CommandViolations:
-  private val constructor: MethodHandle =
-    MethodHandles
-      .privateLookupIn(classOf[CommandViolations], MethodHandles.lookup())
-      .findConstructor(classOf[CommandViolations], MethodType.methodType(classOf[Unit], classOf[Vector[?]]))
-
   private def construct(values: Vector[CommandViolation]): CommandViolations =
-    constructor.invoke(values).asInstanceOf[CommandViolations]
+    new CommandViolations(values)
 
   def one(value: CommandViolation): CommandViolations = construct(Vector(value))
 
@@ -75,8 +63,6 @@ object CommandViolations:
     Option.when(values.nonEmpty)(construct(values))
 
 sealed abstract class ExecutionCommand[D <: Dim, B <: Dim, Q <: Dim] protected () extends JavaSerializationUnsupported:
-  ExecutionCommand.requireBuiltin(this)
-
   def commandId: ApplicationCommandId
   def lifecycle: ExecutionLifecycle[D, B, Q]
 
@@ -84,14 +70,7 @@ sealed abstract class ExecutionCommand[D <: Dim, B <: Dim, Q <: Dim] protected (
   final def lineageId: OrderLineageId          = lifecycle.lineageId
   final def target: ExecutionTarget            = lifecycle.target
 
-object ExecutionCommand:
-  private[execution] def requireBuiltin(value: ExecutionCommand[?, ?, ?]): Unit =
-    val runtimeClass = value.getClass
-    if runtimeClass != classOf[SubmitOrderCommand[?, ?, ?]] && runtimeClass != classOf[CancelOrderCommand[?, ?, ?]]
-    then throw new IllegalAccessError(s"unsupported ExecutionCommand implementation: ${runtimeClass.getName}")
-
-@nowarn("msg=Ignoring.*qualifier")
-final class SubmitOrderCommand[D <: Dim, B <: Dim, Q <: Dim] private[this] (
+final class SubmitOrderCommand[D <: Dim, B <: Dim, Q <: Dim] private (
   val commandId: ApplicationCommandId,
   val lifecycle: ExecutionLifecycle[D, B, Q])
   extends ExecutionCommand[D, B, Q]():
@@ -105,19 +84,11 @@ final class SubmitOrderCommand[D <: Dim, B <: Dim, Q <: Dim] private[this] (
   override def toString: String = s"SubmitOrderCommand($commandId,$executionOrderId,$target)"
 
 object SubmitOrderCommand:
-  private val constructor: MethodHandle =
-    MethodHandles
-      .privateLookupIn(classOf[SubmitOrderCommand[?, ?, ?]], MethodHandles.lookup())
-      .findConstructor(
-        classOf[SubmitOrderCommand[?, ?, ?]],
-        MethodType.methodType(classOf[Unit], classOf[ApplicationCommandId], classOf[ExecutionLifecycle[?, ?, ?]])
-      )
-
   private def construct[D <: Dim, B <: Dim, Q <: Dim](
     commandId: ApplicationCommandId,
     lifecycle: ExecutionLifecycle[D, B, Q]
   ): SubmitOrderCommand[D, B, Q] =
-    constructor.invoke(commandId, lifecycle).asInstanceOf[SubmitOrderCommand[D, B, Q]]
+    new SubmitOrderCommand(commandId, lifecycle)
 
   def create[D <: Dim, B <: Dim, Q <: Dim](
     lifecycle: ExecutionLifecycle[D, B, Q]
@@ -130,9 +101,7 @@ object SubmitOrderCommand:
     ).flatten
     CommandViolations.from(violations).toLeft(construct(commandId, lifecycle))
 end SubmitOrderCommand
-
-@nowarn("msg=Ignoring.*qualifier")
-final class CancelOrderCommand[D <: Dim, B <: Dim, Q <: Dim] private[this] (
+final class CancelOrderCommand[D <: Dim, B <: Dim, Q <: Dim] private (
   val commandId: ApplicationCommandId,
   val lifecycle: ExecutionLifecycle[D, B, Q],
   val originalSubmitCommandId: ApplicationCommandId)
@@ -149,27 +118,12 @@ final class CancelOrderCommand[D <: Dim, B <: Dim, Q <: Dim] private[this] (
     s"CancelOrderCommand($commandId,$executionOrderId,$target,$originalSubmitCommandId)"
 
 object CancelOrderCommand:
-  private val constructor: MethodHandle =
-    MethodHandles
-      .privateLookupIn(classOf[CancelOrderCommand[?, ?, ?]], MethodHandles.lookup())
-      .findConstructor(
-        classOf[CancelOrderCommand[?, ?, ?]],
-        MethodType.methodType(
-          classOf[Unit],
-          classOf[ApplicationCommandId],
-          classOf[ExecutionLifecycle[?, ?, ?]],
-          classOf[ApplicationCommandId]
-        )
-      )
-
   private def construct[D <: Dim, B <: Dim, Q <: Dim](
     commandId: ApplicationCommandId,
     lifecycle: ExecutionLifecycle[D, B, Q],
     originalSubmitCommandId: ApplicationCommandId
   ): CancelOrderCommand[D, B, Q] =
-    constructor
-      .invoke(commandId, lifecycle, originalSubmitCommandId)
-      .asInstanceOf[CancelOrderCommand[D, B, Q]]
+    new CancelOrderCommand(commandId, lifecycle, originalSubmitCommandId)
 
   def create[D <: Dim, B <: Dim, Q <: Dim](
     lifecycle: ExecutionLifecycle[D, B, Q]
@@ -186,20 +140,10 @@ object CancelOrderCommand:
 end CancelOrderCommand
 
 sealed abstract class DispatchEvidence[D <: Dim, B <: Dim, Q <: Dim] protected () extends JavaSerializationUnsupported:
-  DispatchEvidence.requireBuiltin(this)
-
   def submit: SubmitOrderCommand[D, B, Q]
   final def submitCommandId: ApplicationCommandId = submit.commandId
 
-object DispatchEvidence:
-  private[execution] def requireBuiltin(value: DispatchEvidence[?, ?, ?]): Unit =
-    val runtimeClass = value.getClass
-    if runtimeClass != classOf[ProvenNotDispatched[?, ?, ?]] &&
-      runtimeClass != classOf[IndeterminateDispatch[?, ?, ?]]
-    then throw new IllegalAccessError(s"unsupported DispatchEvidence implementation: ${runtimeClass.getName}")
-
-@nowarn("msg=Ignoring.*qualifier")
-final class ProvenNotDispatched[D <: Dim, B <: Dim, Q <: Dim] private[this] (
+final class ProvenNotDispatched[D <: Dim, B <: Dim, Q <: Dim] private (
   val submit: SubmitOrderCommand[D, B, Q])
   extends DispatchEvidence[D, B, Q]():
 
@@ -210,18 +154,10 @@ final class ProvenNotDispatched[D <: Dim, B <: Dim, Q <: Dim] private[this] (
   override def hashCode(): Int = ("proven-not-dispatched", submit).hashCode
 
 object ProvenNotDispatched:
-  private val constructor: MethodHandle =
-    MethodHandles
-      .privateLookupIn(classOf[ProvenNotDispatched[?, ?, ?]], MethodHandles.lookup())
-      .findConstructor(
-        classOf[ProvenNotDispatched[?, ?, ?]],
-        MethodType.methodType(classOf[Unit], classOf[SubmitOrderCommand[?, ?, ?]])
-      )
-
   private def construct[D <: Dim, B <: Dim, Q <: Dim](
     submit: SubmitOrderCommand[D, B, Q]
   ): ProvenNotDispatched[D, B, Q] =
-    constructor.invoke(submit).asInstanceOf[ProvenNotDispatched[D, B, Q]]
+    new ProvenNotDispatched(submit)
 
   def forSubmit[D <: Dim, B <: Dim, Q <: Dim](
     submit: SubmitOrderCommand[D, B, Q]
@@ -229,9 +165,7 @@ object ProvenNotDispatched:
     if submit == null then
       Left(CommandViolations.one(MissingCommandValue(CommandViolationLocation.OriginalSubmit)))
     else Right(construct(submit))
-
-@nowarn("msg=Ignoring.*qualifier")
-final class IndeterminateDispatch[D <: Dim, B <: Dim, Q <: Dim] private[this] (
+final class IndeterminateDispatch[D <: Dim, B <: Dim, Q <: Dim] private (
   val submit: SubmitOrderCommand[D, B, Q])
   extends DispatchEvidence[D, B, Q]():
 
@@ -242,18 +176,10 @@ final class IndeterminateDispatch[D <: Dim, B <: Dim, Q <: Dim] private[this] (
   override def hashCode(): Int = ("indeterminate-dispatch", submit).hashCode
 
 object IndeterminateDispatch:
-  private val constructor: MethodHandle =
-    MethodHandles
-      .privateLookupIn(classOf[IndeterminateDispatch[?, ?, ?]], MethodHandles.lookup())
-      .findConstructor(
-        classOf[IndeterminateDispatch[?, ?, ?]],
-        MethodType.methodType(classOf[Unit], classOf[SubmitOrderCommand[?, ?, ?]])
-      )
-
   private def construct[D <: Dim, B <: Dim, Q <: Dim](
     submit: SubmitOrderCommand[D, B, Q]
   ): IndeterminateDispatch[D, B, Q] =
-    constructor.invoke(submit).asInstanceOf[IndeterminateDispatch[D, B, Q]]
+    new IndeterminateDispatch(submit)
 
   def forSubmit[D <: Dim, B <: Dim, Q <: Dim](
     submit: SubmitOrderCommand[D, B, Q]
@@ -261,9 +187,7 @@ object IndeterminateDispatch:
     if submit == null then
       Left(CommandViolations.one(MissingCommandValue(CommandViolationLocation.OriginalSubmit)))
     else Right(construct(submit))
-
-@nowarn("msg=Ignoring.*qualifier")
-final class CommandConflict[D <: Dim, B <: Dim, Q <: Dim] private[this] (
+final class CommandConflict[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
   val original: ExecutionCommand[D, B, Q],
   val conflicting: ExecutionCommand[D, B, Q])
   extends JavaSerializationUnsupported:
@@ -283,9 +207,7 @@ enum CommandTransitionKind extends JavaSerializationUnsupported:
   case ConflictingCommand
   case ConflictingDispatchEvidence
   case Rejected
-
-@nowarn("msg=Ignoring.*qualifier")
-final class CommandTransition[D <: Dim, B <: Dim, Q <: Dim] private[this] (
+final class CommandTransition[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
   val state: CommandState[D, B, Q],
   val kind: CommandTransitionKind,
   val violations: Option[CommandViolations])
@@ -297,9 +219,7 @@ final class CommandTransition[D <: Dim, B <: Dim, Q <: Dim] private[this] (
     case _ => false
 
   override def hashCode(): Int = (state, kind, violations).hashCode
-
-@nowarn("msg=Ignoring.*qualifier")
-final class CommandState[D <: Dim, B <: Dim, Q <: Dim] private[this] (
+final class CommandState[D <: Dim, B <: Dim, Q <: Dim] private (
   val lifecycle: ExecutionLifecycle[D, B, Q],
   val issuedCommands: Map[ApplicationCommandId, ExecutionCommand[D, B, Q]],
   val dispatchKnowledge: Map[ApplicationCommandId, Vector[DispatchEvidence[D, B, Q]]],
@@ -325,42 +245,6 @@ final class CommandState[D <: Dim, B <: Dim, Q <: Dim] private[this] (
 end CommandState
 
 object CommandState:
-  private val stateConstructor: MethodHandle =
-    MethodHandles
-      .privateLookupIn(classOf[CommandState[?, ?, ?]], MethodHandles.lookup())
-      .findConstructor(
-        classOf[CommandState[?, ?, ?]],
-        MethodType.methodType(
-          classOf[Unit],
-          classOf[ExecutionLifecycle[?, ?, ?]],
-          classOf[Map[?, ?]],
-          classOf[Map[?, ?]],
-          classOf[Vector[?]],
-          classOf[Vector[?]]
-        )
-      )
-
-  private val conflictConstructor: MethodHandle =
-    MethodHandles
-      .privateLookupIn(classOf[CommandConflict[?, ?, ?]], MethodHandles.lookup())
-      .findConstructor(
-        classOf[CommandConflict[?, ?, ?]],
-        MethodType.methodType(classOf[Unit], classOf[ExecutionCommand[?, ?, ?]], classOf[ExecutionCommand[?, ?, ?]])
-      )
-
-  private val transitionConstructor: MethodHandle =
-    MethodHandles
-      .privateLookupIn(classOf[CommandTransition[?, ?, ?]], MethodHandles.lookup())
-      .findConstructor(
-        classOf[CommandTransition[?, ?, ?]],
-        MethodType.methodType(
-          classOf[Unit],
-          classOf[CommandState[?, ?, ?]],
-          classOf[CommandTransitionKind],
-          classOf[Option[?]]
-        )
-      )
-
   private def constructState[D <: Dim, B <: Dim, Q <: Dim](
     lifecycle: ExecutionLifecycle[D, B, Q],
     issuedCommands: Map[ApplicationCommandId, ExecutionCommand[D, B, Q]],
@@ -368,22 +252,20 @@ object CommandState:
     conflicts: Vector[CommandConflict[D, B, Q]],
     cancellationRequests: Vector[CancelOrderCommand[D, B, Q]]
   ): CommandState[D, B, Q] =
-    stateConstructor
-      .invoke(lifecycle, issuedCommands, dispatchKnowledge, conflicts, cancellationRequests)
-      .asInstanceOf[CommandState[D, B, Q]]
+    new CommandState(lifecycle, issuedCommands, dispatchKnowledge, conflicts, cancellationRequests)
 
   private def constructConflict[D <: Dim, B <: Dim, Q <: Dim](
     original: ExecutionCommand[D, B, Q],
     conflicting: ExecutionCommand[D, B, Q]
   ): CommandConflict[D, B, Q] =
-    conflictConstructor.invoke(original, conflicting).asInstanceOf[CommandConflict[D, B, Q]]
+    new CommandConflict(original, conflicting)
 
   private def transition[D <: Dim, B <: Dim, Q <: Dim](
     state: CommandState[D, B, Q],
     kind: CommandTransitionKind,
     violations: Option[CommandViolations] = None
   ): CommandTransition[D, B, Q] =
-    transitionConstructor.invoke(state, kind, violations).asInstanceOf[CommandTransition[D, B, Q]]
+    new CommandTransition(state, kind, violations)
 
   def initial[D <: Dim, B <: Dim, Q <: Dim](
     lifecycle: ExecutionLifecycle[D, B, Q]

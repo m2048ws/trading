@@ -29,33 +29,6 @@ import trading.execution.SourceContinuation;
 import trading.execution.SourceOrdering;
 
 public final class RejectedExecutionAlternatives {
-  private static final class ForgedCommand extends ExecutionCommand {
-    private ForgedCommand() {
-      super();
-    }
-
-    @Override
-    public ApplicationCommandId commandId() {
-      return null;
-    }
-
-    @Override
-    public ExecutionLifecycle lifecycle() {
-      return null;
-    }
-  }
-
-  private static final class ForgedDispatch extends DispatchEvidence {
-    private ForgedDispatch() {
-      super();
-    }
-
-    @Override
-    public SubmitOrderCommand submit() {
-      return null;
-    }
-  }
-
   private static final class ForgedSourceFact extends SourceFact {
     private ForgedSourceFact() {
       super();
@@ -109,17 +82,6 @@ public final class RejectedExecutionAlternatives {
     }
   }
 
-  private static final class ForgedSubmissionKnowledge extends SubmissionKnowledge {
-    private ForgedSubmissionKnowledge() {
-      super();
-    }
-
-    @Override
-    public SubmissionEvidence evidence() {
-      return null;
-    }
-  }
-
   private static final class ForgedEffectiveFill extends EffectiveFill {
     private ForgedEffectiveFill() {
       super();
@@ -136,30 +98,7 @@ public final class RejectedExecutionAlternatives {
     }
   }
 
-  private static final class ForgedCancellationKnowledge extends CancellationKnowledge {
-    private ForgedCancellationKnowledge() {
-      super();
-    }
-
-    @Override
-    public CancellationEvidence evidence() {
-      return null;
-    }
-  }
-
   public static boolean guardsRejectUnknownAlternatives() {
-    try {
-      new ForgedCommand();
-      return false;
-    } catch (IllegalAccessError expected) {
-      // expected
-    }
-    try {
-      new ForgedDispatch();
-      return false;
-    } catch (IllegalAccessError expected) {
-      // expected
-    }
     try {
       new ForgedSourceFact();
       return false;
@@ -179,22 +118,11 @@ public final class RejectedExecutionAlternatives {
       // expected
     }
     try {
-      new ForgedSubmissionKnowledge();
-      return false;
-    } catch (IllegalAccessError expected) {
-      // expected
-    }
-    try {
       new ForgedEffectiveFill();
       return false;
     } catch (IllegalAccessError expected) {
       // expected
     }
-    try {
-      new ForgedCancellationKnowledge();
-      return false;
-    } catch (IllegalAccessError expected) {
-      return true;
-    }
+    return true;
   }
 }

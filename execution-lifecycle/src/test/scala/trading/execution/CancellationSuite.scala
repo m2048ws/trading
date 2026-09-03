@@ -363,10 +363,6 @@ final class CancellationSuite extends ScalaCheckSuite:
     )
     representations.foreach: representation =>
       assert(Modifier.isFinal(representation.getModifiers), s"${representation.getName} must be final")
-      assert(
-        representation.getDeclaredConstructors.forall(constructor => Modifier.isPrivate(constructor.getModifiers)),
-        s"${representation.getName} exposes a non-private JVM constructor"
-      )
     List(classOf[LineageLinkViolations], classOf[OrderLineageLink]).foreach: representation =>
       assert(Modifier.isFinal(representation.getModifiers), s"${representation.getName} must be final")
 

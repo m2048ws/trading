@@ -1,10 +1,5 @@
 package trading.execution
 
-import java.lang.invoke.MethodHandle
-import java.lang.invoke.MethodHandles
-import java.lang.invoke.MethodType
-import scala.annotation.nowarn
-
 import trading.quantity.Dim
 import trading.quantity.JavaSerializationUnsupported
 
@@ -16,9 +11,7 @@ enum SubmissionConflictKind extends JavaSerializationUnsupported:
   case RejectionVersusExecution
   case RejectionVersusAuthoritativeAbsence
   case ExecutionVersusAuthoritativeAbsence
-
-@nowarn("msg=Ignoring.*qualifier")
-final class SubmissionConflicts private[this] (private val values: Vector[SubmissionConflictKind])
+final class SubmissionConflicts private (private val values: Vector[SubmissionConflictKind])
   extends JavaSerializationUnsupported:
 
   def head: SubmissionConflictKind             = values.head
@@ -31,19 +24,12 @@ final class SubmissionConflicts private[this] (private val values: Vector[Submis
   override def hashCode(): Int = values.hashCode
 
 object SubmissionConflicts:
-  private val constructor: MethodHandle =
-    MethodHandles
-      .privateLookupIn(classOf[SubmissionConflicts], MethodHandles.lookup())
-      .findConstructor(classOf[SubmissionConflicts], MethodType.methodType(classOf[Unit], classOf[Vector[?]]))
-
   private def construct(values: Vector[SubmissionConflictKind]): SubmissionConflicts =
-    constructor.invoke(values).asInstanceOf[SubmissionConflicts]
+    new SubmissionConflicts(values)
 
   private[execution] def from(values: Vector[SubmissionConflictKind]): Option[SubmissionConflicts] =
     Option.when(values.nonEmpty)(construct(values.distinct))
-
-@nowarn("msg=Ignoring.*qualifier")
-final class SubmissionEvidence[D <: Dim, B <: Dim, Q <: Dim] private[this] (
+final class SubmissionEvidence[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
   val submitCommands: Set[SubmitOrderCommand[D, B, Q]],
   val dispatchEvidence: Set[DispatchEvidence[D, B, Q]],
   val acceptances: Set[OrderAccepted[D, B, Q]],
@@ -63,74 +49,57 @@ final class SubmissionEvidence[D <: Dim, B <: Dim, Q <: Dim] private[this] (
 
 sealed abstract class SubmissionKnowledge[D <: Dim, B <: Dim, Q <: Dim] protected ()
   extends JavaSerializationUnsupported:
-  SubmissionKnowledge.requireBuiltin(this)
   def evidence: SubmissionEvidence[D, B, Q]
-
-@nowarn("msg=Ignoring.*qualifier")
-final class IssuedPendingSubmission[D <: Dim, B <: Dim, Q <: Dim] private[this] (
+final class IssuedPendingSubmission[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
   val evidence: SubmissionEvidence[D, B, Q])
   extends SubmissionKnowledge[D, B, Q]():
   override def equals(other: Any): Boolean = other match
     case that: IssuedPendingSubmission[?, ?, ?] => evidence == that.evidence
     case _                                      => false
   override def hashCode(): Int = ("issued-pending", evidence).hashCode
-
-@nowarn("msg=Ignoring.*qualifier")
-final class AcceptedSubmission[D <: Dim, B <: Dim, Q <: Dim] private[this] (
+final class AcceptedSubmission[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
   val evidence: SubmissionEvidence[D, B, Q])
   extends SubmissionKnowledge[D, B, Q]():
   override def equals(other: Any): Boolean = other match
     case that: AcceptedSubmission[?, ?, ?] => evidence == that.evidence
     case _                                 => false
   override def hashCode(): Int = ("accepted", evidence).hashCode
-
-@nowarn("msg=Ignoring.*qualifier")
-final class RejectedSubmission[D <: Dim, B <: Dim, Q <: Dim] private[this] (
+final class RejectedSubmission[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
   val evidence: SubmissionEvidence[D, B, Q])
   extends SubmissionKnowledge[D, B, Q]():
   override def equals(other: Any): Boolean = other match
     case that: RejectedSubmission[?, ?, ?] => evidence == that.evidence
     case _                                 => false
   override def hashCode(): Int = ("rejected", evidence).hashCode
-
-@nowarn("msg=Ignoring.*qualifier")
-final class ProvenNotDispatchedSubmission[D <: Dim, B <: Dim, Q <: Dim] private[this] (
+final class ProvenNotDispatchedSubmission[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
   val evidence: SubmissionEvidence[D, B, Q])
   extends SubmissionKnowledge[D, B, Q]():
   override def equals(other: Any): Boolean = other match
     case that: ProvenNotDispatchedSubmission[?, ?, ?] => evidence == that.evidence
     case _                                            => false
   override def hashCode(): Int = ("proven-not-dispatched", evidence).hashCode
-
-@nowarn("msg=Ignoring.*qualifier")
-final class IndeterminateSubmission[D <: Dim, B <: Dim, Q <: Dim] private[this] (
+final class IndeterminateSubmission[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
   val evidence: SubmissionEvidence[D, B, Q])
   extends SubmissionKnowledge[D, B, Q]():
   override def equals(other: Any): Boolean = other match
     case that: IndeterminateSubmission[?, ?, ?] => evidence == that.evidence
     case _                                      => false
   override def hashCode(): Int = ("indeterminate", evidence).hashCode
-
-@nowarn("msg=Ignoring.*qualifier")
-final class ExecutionProvenSubmission[D <: Dim, B <: Dim, Q <: Dim] private[this] (
+final class ExecutionProvenSubmission[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
   val evidence: SubmissionEvidence[D, B, Q])
   extends SubmissionKnowledge[D, B, Q]():
   override def equals(other: Any): Boolean = other match
     case that: ExecutionProvenSubmission[?, ?, ?] => evidence == that.evidence
     case _                                        => false
   override def hashCode(): Int = ("execution-proven", evidence).hashCode
-
-@nowarn("msg=Ignoring.*qualifier")
-final class AuthoritativelyAbsentSubmission[D <: Dim, B <: Dim, Q <: Dim] private[this] (
+final class AuthoritativelyAbsentSubmission[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
   val evidence: SubmissionEvidence[D, B, Q])
   extends SubmissionKnowledge[D, B, Q]():
   override def equals(other: Any): Boolean = other match
     case that: AuthoritativelyAbsentSubmission[?, ?, ?] => evidence == that.evidence
     case _                                              => false
   override def hashCode(): Int = ("authoritatively-absent", evidence).hashCode
-
-@nowarn("msg=Ignoring.*qualifier")
-final class ConflictingSubmission[D <: Dim, B <: Dim, Q <: Dim] private[this] (
+final class ConflictingSubmission[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
   val evidence: SubmissionEvidence[D, B, Q],
   val conflicts: SubmissionConflicts)
   extends SubmissionKnowledge[D, B, Q]():
@@ -140,49 +109,6 @@ final class ConflictingSubmission[D <: Dim, B <: Dim, Q <: Dim] private[this] (
   override def hashCode(): Int = ("conflicting", evidence, conflicts).hashCode
 
 object SubmissionKnowledge:
-  private val evidenceConstructor: MethodHandle =
-    MethodHandles
-      .privateLookupIn(classOf[SubmissionEvidence[?, ?, ?]], MethodHandles.lookup())
-      .findConstructor(
-        classOf[SubmissionEvidence[?, ?, ?]],
-        MethodType.methodType(
-          classOf[Unit],
-          classOf[Set[?]],
-          classOf[Set[?]],
-          classOf[Set[?]],
-          classOf[Set[?]],
-          classOf[Set[?]],
-          classOf[Set[?]]
-        )
-      )
-
-  private def oneArgumentConstructor(runtimeClass: Class[?]): MethodHandle =
-    MethodHandles
-      .privateLookupIn(runtimeClass, MethodHandles.lookup())
-      .findConstructor(
-        runtimeClass,
-        MethodType.methodType(classOf[Unit], classOf[SubmissionEvidence[?, ?, ?]])
-      )
-
-  private val issuedConstructor        = oneArgumentConstructor(classOf[IssuedPendingSubmission[?, ?, ?]])
-  private val acceptedConstructor      = oneArgumentConstructor(classOf[AcceptedSubmission[?, ?, ?]])
-  private val rejectedConstructor      = oneArgumentConstructor(classOf[RejectedSubmission[?, ?, ?]])
-  private val notDispatchedConstructor = oneArgumentConstructor(classOf[ProvenNotDispatchedSubmission[?, ?, ?]])
-  private val indeterminateConstructor = oneArgumentConstructor(classOf[IndeterminateSubmission[?, ?, ?]])
-  private val executionConstructor     = oneArgumentConstructor(classOf[ExecutionProvenSubmission[?, ?, ?]])
-  private val absentConstructor        = oneArgumentConstructor(classOf[AuthoritativelyAbsentSubmission[?, ?, ?]])
-  private val conflictingConstructor: MethodHandle =
-    MethodHandles
-      .privateLookupIn(classOf[ConflictingSubmission[?, ?, ?]], MethodHandles.lookup())
-      .findConstructor(
-        classOf[ConflictingSubmission[?, ?, ?]],
-        MethodType.methodType(
-          classOf[Unit],
-          classOf[SubmissionEvidence[?, ?, ?]],
-          classOf[SubmissionConflicts]
-        )
-      )
-
   private def constructEvidence[D <: Dim, B <: Dim, Q <: Dim](
     submits: Set[SubmitOrderCommand[D, B, Q]],
     dispatch: Set[DispatchEvidence[D, B, Q]],
@@ -191,14 +117,7 @@ object SubmissionKnowledge:
     fills: Set[ExecutionFill[D, B, Q]],
     absences: Set[SourceOrderAbsent[D, B, Q]]
   ): SubmissionEvidence[D, B, Q] =
-    evidenceConstructor
-      .invoke(submits, dispatch, acceptances, rejections, fills, absences)
-      .asInstanceOf[SubmissionEvidence[D, B, Q]]
-
-  private def constructOne[D <: Dim, B <: Dim, Q <: Dim, A <: SubmissionKnowledge[D, B, Q]](
-    constructor: MethodHandle,
-    evidence: SubmissionEvidence[D, B, Q]
-  ): A = constructor.invoke(evidence).asInstanceOf[A]
+    new SubmissionEvidence(submits, dispatch, acceptances, rejections, fills, absences)
 
   private[execution] def derive[D <: Dim, B <: Dim, Q <: Dim](
     state: ExecutionState[D, B, Q],
@@ -246,40 +165,22 @@ object SubmissionKnowledge:
 
     SubmissionConflicts.from(conflicts) match
       case Some(values) =>
-        Some(
-          conflictingConstructor
-            .invoke(evidence, values)
-            .asInstanceOf[ConflictingSubmission[D, B, Q]]
-        )
+        Some(new ConflictingSubmission(evidence, values))
       case None if acceptances.nonEmpty =>
-        Some(constructOne(acceptedConstructor, evidence))
+        Some(new AcceptedSubmission(evidence))
       case None if rejections.nonEmpty =>
-        Some(constructOne(rejectedConstructor, evidence))
+        Some(new RejectedSubmission(evidence))
       case None if fills.nonEmpty =>
-        Some(constructOne(executionConstructor, evidence))
+        Some(new ExecutionProvenSubmission(evidence))
       case None if proven =>
-        Some(constructOne(notDispatchedConstructor, evidence))
+        Some(new ProvenNotDispatchedSubmission(evidence))
       case None if authoritativeAbsence =>
-        Some(constructOne(absentConstructor, evidence))
+        Some(new AuthoritativelyAbsentSubmission(evidence))
       case None if indeterminate =>
-        Some(constructOne(indeterminateConstructor, evidence))
+        Some(new IndeterminateSubmission(evidence))
       case None if submits.nonEmpty =>
-        Some(constructOne(issuedConstructor, evidence))
+        Some(new IssuedPendingSubmission(evidence))
       case None => None
     end match
   end derive
-
-  private[execution] def requireBuiltin(value: SubmissionKnowledge[?, ?, ?]): Unit =
-    val runtimeClass = value.getClass
-    val supported    =
-      runtimeClass == classOf[IssuedPendingSubmission[?, ?, ?]] ||
-        runtimeClass == classOf[AcceptedSubmission[?, ?, ?]] ||
-        runtimeClass == classOf[RejectedSubmission[?, ?, ?]] ||
-        runtimeClass == classOf[ProvenNotDispatchedSubmission[?, ?, ?]] ||
-        runtimeClass == classOf[IndeterminateSubmission[?, ?, ?]] ||
-        runtimeClass == classOf[ExecutionProvenSubmission[?, ?, ?]] ||
-        runtimeClass == classOf[AuthoritativelyAbsentSubmission[?, ?, ?]] ||
-        runtimeClass == classOf[ConflictingSubmission[?, ?, ?]]
-    if !supported then
-      throw new IllegalAccessError(s"unsupported SubmissionKnowledge implementation: ${runtimeClass.getName}")
 end SubmissionKnowledge
