@@ -1,0 +1,7 @@
+schemaVersion: 1
+id: RFC-0005-simplify-post-trust-boundary
+type: amendment
+status: draft
+author: m@2048.ws
+createdAt: '2026-09-03T22:54:16.840Z'
+amends: RFC-0004-simplify-in-process-trust-boundary
