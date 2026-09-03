@@ -1,0 +1,25 @@
+schemaVersion: 1
+kind: rfc-slice
+deliveryRef: RFC-0005-simplify-post-trust-boundary/S-01-retire-trust-boundary-migration-scaffolding
+rfc:
+  id: RFC-0005-simplify-post-trust-boundary
+  path: rfcs/RFC-0005-simplify-post-trust-boundary
+  acceptedCommit: 7f1d1ab9eb88d0912d3219920eacadea4d01aa2e
+  digest: sha256:31336459ac68c4a188388bb58cf59fe8c84830a0b72aa66d29fdcff4f90657a3
+slice:
+  id: S-01-retire-trust-boundary-migration-scaffolding
+  digest: sha256:72e0ca46897d86da3fef14edf080e2ca93fc02b34de377d960d64829aaa0a521
+acceptance:
+  - id: AC-001
+    evidence: automated
+  - id: AC-002
+    evidence: automated
+  - id: AC-003
+    evidence: automated
+deliveryBindingDigest: sha256:463d28160819a9a43d8f77155494ca44a281f65ce4dec510ae0ab6848093d47a
+tracker:
+  provider: github
+  idempotencyKey: df7661c17182cfd79a3ab2d7b67614529d953aab13d79665a93bfa49f68b7237
+  issue:
+    id: '38'
+    url: https://github.com/m2048ws/trading/issues/38

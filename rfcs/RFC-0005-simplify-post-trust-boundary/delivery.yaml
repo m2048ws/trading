@@ -1,9 +1,17 @@
 schemaVersion: 1
 rfcId: RFC-0005-simplify-post-trust-boundary
-revision: 1
+revision: 2
 slices:
   S-01-retire-trust-boundary-migration-scaffolding:
-    status: unbound
+    status: planned
+    binding:
+      change: retire-trust-boundary-migration-scaffolding
+      issue:
+        provider: github
+        id: '38'
+        url: https://github.com/m2048ws/trading/issues/38
+      sourceDigest: sha256:dfac56dc14fb55e286cd1493adb5014f44a2dba9858e8bb8e75e4314d6e58782
+      plannedAt: '2026-09-03T23:22:15.591Z'
   S-02-total-and-deterministic-execution-transitions:
     status: unbound
   S-03-use-direct-scala-derived-models:

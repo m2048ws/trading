@@ -1,0 +1,24 @@
+schemaVersion: 1
+sourceDigest: sha256:dfac56dc14fb55e286cd1493adb5014f44a2dba9858e8bb8e75e4314d6e58782
+acceptance:
+  - id: AC-001
+    evidence: automated
+    planningRefs:
+      - path: specs/scala-functional-design/spec.md
+        anchor: requirement-static-construction-expresses-in-process-collaboration
+    taskGroups:
+      - '1'
+  - id: AC-002
+    evidence: automated
+    planningRefs:
+      - path: specs/repository-architecture/spec.md
+        anchor: requirement-build-configuration-follows-active-source-ownership
+    taskGroups:
+      - '2'
+  - id: AC-003
+    evidence: automated
+    planningRefs:
+      - path: specs/scala-functional-design/spec.md
+        anchor: requirement-static-construction-expresses-in-process-collaboration
+    taskGroups:
+      - '1'

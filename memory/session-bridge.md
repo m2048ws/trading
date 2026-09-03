@@ -8,19 +8,19 @@ updated: 2026-09-03
 > Durable checkpoint mirror. Read first at startup; `.corgi/loop` remains lifecycle authority. `corgispec archive --local` alone writes archive closeout fields.
 
 ## Delivery Pointer
-- **RFC**: RFC-0004-simplify-in-process-trust-boundary
-- **RFC Revision**: 24090e8f0af2b04c733f8bffd2b394f232084877
-- **Slice**: S-01-simplify-in-process-trust-boundary
-- **Issue**: 36 https://github.com/m2048ws/trading/issues/36
-- **Change**: simplify-in-process-trust-boundary
-- **Worktree**: /Users/m/src/money/.worktrees/simplify-in-process-trust-boundary
-- **Phase at Checkpoint**: archiving
-- **Task Group at Checkpoint**: none
-- **Observed Run Revision**: 7
-- **Last Verified HEAD**: 1833257ee0fed4941e59d3482d8bf5cef85e7933
+- **RFC**: RFC-0005-simplify-post-trust-boundary
+- **RFC Revision**: 7f1d1ab9eb88d0912d3219920eacadea4d01aa2e
+- **Slice**: S-01-retire-trust-boundary-migration-scaffolding
+- **Issue**: 38 https://github.com/m2048ws/trading/issues/38
+- **Change**: retire-trust-boundary-migration-scaffolding
+- **Worktree**: /Users/m/src/money/.worktrees/retire-trust-boundary-migration-scaffolding
+- **Phase at Checkpoint**: planning_ready
+- **Task Group at Checkpoint**: 1
+- **Observed Run Revision**: none
+- **Last Verified HEAD**: c3de8a8ca2b1edc89fbbeb5e93d54f52d63be2f3
 
 ## Next Action
-- Consult Run Contract v3: resume tracker closeout for `simplify-in-process-trust-boundary` only if pending; otherwise select the next accepted Slice. Local delivery: `wiki/deliveries/RFC-0004-simplify-in-process-trust-boundary-S-01-simplify-in-process-trust-boundary.md`.
+- Start Apply for `retire-trust-boundary-migration-scaffolding` Task Group 1.
 
 ## Blockers
 - none
