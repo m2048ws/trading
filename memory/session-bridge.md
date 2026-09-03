@@ -14,13 +14,13 @@ updated: 2026-09-03
 - **Issue**: 38 https://github.com/m2048ws/trading/issues/38
 - **Change**: retire-trust-boundary-migration-scaffolding
 - **Worktree**: /Users/m/src/money/.worktrees/retire-trust-boundary-migration-scaffolding
-- **Phase at Checkpoint**: applying
-- **Task Group at Checkpoint**: 1
-- **Observed Run Revision**: 2
-- **Last Verified HEAD**: 9c4d64340678d43c71d90e6b8e4504763570bbe2
+- **Phase at Checkpoint**: awaiting_verify
+- **Task Group at Checkpoint**: 2
+- **Observed Run Revision**: 3
+- **Last Verified HEAD**: 847a532f595bbe63e796f480c7d1eb61a812a04a
 
 ## Next Action
-- Acknowledge Task Group 1, open the draft PR, then implement Task Group 2.
+- Run the separate canonical whole-change Verify gate, then proceed to explicit human Review.
 
 ## Blockers
 - none
@@ -60,6 +60,9 @@ updated: 2026-09-03
   whitespace, and passing the clean 1,043-test aggregate plus ordinary Scala/Java and runtime performance checks.
 - RFC-0005/S-01 Task Group 1 replaced migration allowance accounting with a permanent zero-tolerance reflection guard,
   added an isolated deterministic regression fixture, and made the normal CI workflow execute both checks.
+- RFC-0005/S-01 Task Group 2 removed the runtime-only Java-first compile order, stale bridge explanation, and duplicate
+  release option; the runtime inherits mixed compilation and repository `--release 25`, with 1,043 tests and benchmark
+  compilation passing after a clean build.
 
 ## Promotion Queue
 - none

@@ -308,10 +308,6 @@ lazy val runtime =
       moduleName := "trading-runtime",
 
       Compile / exportJars := true,
-      // Compile the JVM-privacy bridge before its Scala factory instead of relying on Scala metadata that emits a
-      // public implementation class. Target the repository's minimum JDK explicitly for this Java-owned boundary.
-      Compile / compileOrder := CompileOrder.JavaThenScala,
-      Compile / javacOptions ++= Seq("--release", jdkRelease),
 
       Test / classLoaderLayeringStrategy := ClassLoaderLayeringStrategy.Flat,
       Test / fork                        := true,
