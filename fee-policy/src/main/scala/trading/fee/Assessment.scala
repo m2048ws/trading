@@ -1,9 +1,6 @@
 package trading.fee
 
-import java.lang.invoke.MethodHandles
-import java.lang.invoke.MethodType
 import java.util.Objects
-import scala.annotation.nowarn
 
 import trading.economics.instrument.*
 import trading.quantity.*
@@ -142,8 +139,7 @@ sealed trait AssessedFee[PosD <: Dim, B <: Dim, Q <: Dim, S <: Dim] extends Java
   def sourceSlice: LiquiditySlice[Lots[PosD], MarketState[B, Q, S]]
 end AssessedFee
 
-@nowarn("msg=Ignoring.*qualifier")
-private[fee] final class AssessedFeeValue[D0 <: Dim, PosD <: Dim, B <: Dim, Q <: Dim, S <: Dim] private[this] (
+private[fee] final class AssessedFeeValue[D0 <: Dim, PosD <: Dim, B <: Dim, Q <: Dim, S <: Dim] private[fee] (
   val fee: Fee[D0],
   val sourceIndex: SliceIndex,
   val sourceSlice: LiquiditySlice[Lots[PosD], MarketState[B, Q, S]])
@@ -162,8 +158,7 @@ private[fee] final class AssessedFeeValue[D0 <: Dim, PosD <: Dim, B <: Dim, Q <:
 end AssessedFeeValue
 
 /** One scenario retained exactly once together with every centrally attributed fee. */
-@nowarn("msg=Ignoring.*qualifier")
-final class ScenarioFees[PosD <: Dim, B <: Dim, Q <: Dim, S <: Dim] private[this] (
+final class ScenarioFees[PosD <: Dim, B <: Dim, Q <: Dim, S <: Dim] private[fee] (
   val scenario: OrderScenario[PosD, B, Q, MarketState[B, Q, S]],
   val fees: Vector[AssessedFee[PosD, B, Q, S]])
   extends JavaSerializationUnsupported:
@@ -181,33 +176,6 @@ end ScenarioFees
 
 /** Canonical pure boundary from one instrument/scenario/policy context to validated fee attribution. */
 object FeeAssessment:
-  private val assessedFeeConstructor =
-    val owner = classOf[AssessedFeeValue[?, ?, ?, ?, ?]]
-    MethodHandles
-      .privateLookupIn(owner, MethodHandles.lookup())
-      .findConstructor(
-        owner,
-        MethodType.methodType(
-          java.lang.Void.TYPE,
-          classOf[Fee[?]],
-          classOf[SliceIndex],
-          classOf[LiquiditySlice[?, ?]]
-        )
-      )
-
-  private val scenarioFeesConstructor =
-    val owner = classOf[ScenarioFees[?, ?, ?, ?]]
-    MethodHandles
-      .privateLookupIn(owner, MethodHandles.lookup())
-      .findConstructor(
-        owner,
-        MethodType.methodType(
-          java.lang.Void.TYPE,
-          classOf[OrderScenario[?, ?, ?, ?]],
-          classOf[Vector[?]]
-        )
-      )
-
   def evaluate[E, I <: Instrument](
     instrument: I
   )(
@@ -333,15 +301,11 @@ object FeeAssessment:
     directive: FeeDirective { type D = D0 },
     sourceSlice: LiquiditySlice[Lots[PosD], MarketState[B, Q, S]]
   ): AssessedFee[PosD, B, Q, S] =
-    assessedFeeConstructor
-      .invoke(directive.fee, directive.sourceSlice, sourceSlice)
-      .asInstanceOf[AssessedFeeValue[D0, PosD, B, Q, S]]
+    new AssessedFeeValue[D0, PosD, B, Q, S](directive.fee, directive.sourceSlice, sourceSlice)
 
   private def constructScenarioFees[PosD <: Dim, B <: Dim, Q <: Dim, S <: Dim](
     scenario: OrderScenario[PosD, B, Q, MarketState[B, Q, S]],
     fees: Vector[AssessedFee[PosD, B, Q, S]]
   ): ScenarioFees[PosD, B, Q, S] =
-    scenarioFeesConstructor
-      .invoke(scenario, fees)
-      .asInstanceOf[ScenarioFees[PosD, B, Q, S]]
+    new ScenarioFees(scenario, fees)
 end FeeAssessment

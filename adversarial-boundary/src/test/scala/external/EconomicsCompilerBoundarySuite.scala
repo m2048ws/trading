@@ -1,7 +1,6 @@
 package external
 
 import java.io.File
-import java.lang.reflect.Modifier
 import java.net.URLClassLoader
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
@@ -417,17 +416,6 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
     )
       .foreach(fragment => assert(rejected.rendered.contains(fragment), rejected.rendered))
 
-  test("completed fee-policy API rejects caller construction of final scenario attribution"):
-    val source  = feePolicyFixturesRoot.resolve("negative/ForgedAssessment.scala")
-    val prelude = compileFilteredPrelude(source, compileFeePolicy)
-    assert(prelude.succeeded, s"fixture prelude must compile independently:\n${prelude.rendered}")
-    val rejected = compileFeePolicy(source)
-    assert(rejected.errors.size >= 4, rejected.rendered)
-    assert(rejected.rendered.contains("cannot be accessed"), rejected.rendered)
-    List("ScenarioFees", "AssessedFeeValue", "AttributedFeeContributionValue", "FeeInclusivePnl").foreach(fragment =>
-      assert(rejected.rendered.contains(fragment), rejected.rendered)
-    )
-
   test("completed fee-policy classpath cannot access downstream or effect concerns"):
     val source  = feePolicyFixturesRoot.resolve("negative/FeePolicyHasNoDownstream.scala")
     val prelude = compileFilteredPrelude(source, compileFeePolicy)
@@ -504,21 +492,6 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
     val source = javaFixturesRoot.resolve("negative/ErasedScenarioAssumptions.java")
     val result = compileJava(source, scenarioCompilationClasspath)
     assert(result.succeeded, result.diagnostics)
-
-  test("completed JAR final fee attribution and scenario-PnL constructors are JVM-private"):
-    List(
-      "trading.fee.AssessedFeeValue",
-      "trading.fee.ScenarioFees",
-      "trading.fee.AttributedFeeContributionValue",
-      "trading.fee.FeeInclusivePnl"
-    ).foreach: name =>
-      val representation = Class.forName(name)
-      assert(Modifier.isFinal(representation.getModifiers), name)
-      assert(representation.getDeclaredConstructors.nonEmpty, name)
-      assert(
-        representation.getDeclaredConstructors.forall(constructor => Modifier.isPrivate(constructor.getModifiers)),
-        name
-      )
 
   test("positive downstream composition fixture compiles without warnings and runs"):
     val result = compile(fixturesRoot.resolve("positive/CompleteCompositionClient.scala"))

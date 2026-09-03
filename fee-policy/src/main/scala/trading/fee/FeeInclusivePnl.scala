@@ -1,9 +1,6 @@
 package trading.fee
 
-import java.lang.invoke.MethodHandles
-import java.lang.invoke.MethodType
 import java.util.Objects
-import scala.annotation.nowarn
 
 import trading.economics.instrument.*
 import trading.quantity.*
@@ -147,14 +144,13 @@ sealed trait AttributedFeeContribution[PosD <: Dim, B <: Dim, Q <: Dim, S <: Dim
   final def originalFee: Fee[D]                                           = assessedFee.fee
 end AttributedFeeContribution
 
-@nowarn("msg=Ignoring.*qualifier")
 private[fee] final class AttributedFeeContributionValue[
   D0 <: Dim,
   PosD <: Dim,
   B <: Dim,
   Q <: Dim,
   S <: Dim
-] private[this] (
+] private[fee] (
   val leg: RoundTripLeg,
   val directiveOrdinal: Int,
   val assessedFee: AssessedFee[PosD, B, Q, S] { type D = D0 },
@@ -175,8 +171,7 @@ private[fee] final class AttributedFeeContributionValue[
 end AttributedFeeContributionValue
 
 /** Exact scenario-level PnL retaining scenario, fee-assessment, and conversion provenance. */
-@nowarn("msg=Ignoring.*qualifier")
-final class FeeInclusivePnl[PosD <: Dim, B <: Dim, Q <: Dim, S <: Dim] private[this] (
+final class FeeInclusivePnl[PosD <: Dim, B <: Dim, Q <: Dim, S <: Dim] private[fee] (
   val roundTrip: RoundTripScenario[PosD, B, Q, MarketState[B, Q, S]],
   val entryFees: ScenarioFees[PosD, B, Q, S],
   val exitFees: ScenarioFees[PosD, B, Q, S],
@@ -203,37 +198,6 @@ end FeeInclusivePnl
 
 /** Pure staged composition from one checked round trip and explicit leg policies to exact fee-inclusive PnL. */
 object FeeInclusivePnl:
-  private val attributedContributionConstructor =
-    val owner = classOf[AttributedFeeContributionValue[?, ?, ?, ?, ?]]
-    MethodHandles
-      .privateLookupIn(owner, MethodHandles.lookup())
-      .findConstructor(
-        owner,
-        MethodType.methodType(
-          java.lang.Void.TYPE,
-          classOf[RoundTripLeg],
-          java.lang.Integer.TYPE,
-          classOf[AssessedFee[?, ?, ?, ?]],
-          classOf[SettledFeeContribution[?]]
-        )
-      )
-
-  private val resultConstructor =
-    val owner = classOf[FeeInclusivePnl[?, ?, ?, ?]]
-    MethodHandles
-      .privateLookupIn(owner, MethodHandles.lookup())
-      .findConstructor(
-        owner,
-        MethodType.methodType(
-          java.lang.Void.TYPE,
-          classOf[RoundTripScenario[?, ?, ?, ?]],
-          classOf[ScenarioFees[?, ?, ?, ?]],
-          classOf[ScenarioFees[?, ?, ?, ?]],
-          classOf[Vector[?]],
-          classOf[Pnl[?]]
-        )
-      )
-
   def evaluate[E, I <: Instrument](
     instrument: I
   )(
@@ -504,9 +468,7 @@ object FeeInclusivePnl:
     assessed: AssessedFee[PosD, B, Q, S] { type D = D0 },
     contribution: SettledFeeContribution[S]
   ): AttributedFeeContribution[PosD, B, Q, S] =
-    attributedContributionConstructor
-      .invoke(leg, directiveOrdinal, assessed, contribution)
-      .asInstanceOf[AttributedFeeContributionValue[D0, PosD, B, Q, S]]
+    new AttributedFeeContributionValue[D0, PosD, B, Q, S](leg, directiveOrdinal, assessed, contribution)
 
   private def constructResult[PosD <: Dim, B <: Dim, Q <: Dim, S <: Dim](
     roundTrip: RoundTripScenario[PosD, B, Q, MarketState[B, Q, S]],
@@ -515,7 +477,5 @@ object FeeInclusivePnl:
     attributed: Vector[AttributedFeeContribution[PosD, B, Q, S]],
     pnl: Pnl[S]
   ): FeeInclusivePnl[PosD, B, Q, S] =
-    resultConstructor
-      .invoke(roundTrip, entryFees, exitFees, attributed, pnl)
-      .asInstanceOf[FeeInclusivePnl[PosD, B, Q, S]]
+    new FeeInclusivePnl(roundTrip, entryFees, exitFees, attributed, pnl)
 end FeeInclusivePnl
