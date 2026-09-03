@@ -26,7 +26,6 @@ object ExecutionScenarioHasNoUpstreamMutationOrDownstream:
   def mutateSlice[L, M](slice: LiquiditySlice[L, M], replacement: L): Unit =
     slice.lots = replacement
     val copied = slice.copy(lots = replacement)
-    val raw = new LiquiditySlice(slice.instrumentId, replacement, slice.market, slice.role)
 
   def forgeScenario[D <: Dim, B <: Dim, Q <: Dim, M](
     scenario: OrderScenario[D, B, Q, M],
@@ -34,10 +33,4 @@ object ExecutionScenarioHasNoUpstreamMutationOrDownstream:
   ): Unit =
     scenario.positionChange = replacement
     val copied = scenario.copy(positionChange = replacement)
-    val raw = new OrderScenario(
-      scenario.assumptions,
-      scenario.checkedActivation,
-      scenario.effectivePricing,
-      replacement
-    )
   // OFFENDING-END

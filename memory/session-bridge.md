@@ -15,15 +15,15 @@ updated: 2026-09-03
 - **Change**: simplify-in-process-trust-boundary
 - **Worktree**: /Users/m/src/money/.worktrees/simplify-in-process-trust-boundary
 - **Phase at Checkpoint**: applying
-- **Task Group at Checkpoint**: 2
-- **Observed Run Revision**: 3
-- **Last Verified HEAD**: cec75317dae5efb557e2ffaebe0e90270c7edab7
+- **Task Group at Checkpoint**: 3
+- **Observed Run Revision**: 4
+- **Last Verified HEAD**: ddd81d7a7eeabe46e6f091677cfe20683267b6df
 
 ## Next Action
-- Commit and acknowledge Task Group 2, then continue with Task Group 3.
+- Commit and acknowledge Task Group 3, then continue with Task Group 4.
 
 ## Blockers
-- Task Group 2 order-model static construction, semantic fixture reconciliation, implementation note, and this bridge
+- Task Group 3 scenario static construction, semantic fixture reconciliation, implementation note, and this bridge
   checkpoint are ready for their dedicated commit.
 
 ## Uncommitted Work
@@ -37,6 +37,8 @@ updated: 2026-09-03
   ceiling will be removed owner by owner and must reach zero in Task Group 10.
 - Task Group 2 removed the order-model allowance (28 tokens), all six reflective construction sites, invocation
   recovery casts, and hostile exact-class gates while retaining order evidence and aggregate validation.
+- Task Group 3 removed the scenario allowance (24 tokens), all five reflective construction sites and invocation-only
+  casts while retaining associated evidence, ordered validation, non-empty slices, and round-trip flatness.
 
 ## Promotion Queue
 - none

@@ -19,7 +19,6 @@ execution-lifecycle/src/main/scala/trading/execution/Ordering.scala	31
 execution-lifecycle/src/main/scala/trading/execution/SourceEvidenceState.scala	46
 execution-lifecycle/src/main/scala/trading/execution/SourceFacts.scala	56
 execution-lifecycle/src/main/scala/trading/execution/SubmissionKnowledge.scala	27
-execution-scenario/src/main/scala/trading/scenario/Scenario.scala	24
 fee-policy/src/main/scala/trading/fee/Assessment.scala	12
 fee-policy/src/main/scala/trading/fee/FeeInclusivePnl.scala	12
 risk/src/main/scala/trading/risk/Model.scala	24
