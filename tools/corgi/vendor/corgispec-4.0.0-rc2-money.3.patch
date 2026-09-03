@@ -1,0 +1,1919 @@
+diff --git a/.claude/skills/compounds/corgispec-apply/SKILL.md b/.claude/skills/compounds/corgispec-apply/SKILL.md
+index e29ad5bdf952acb326a59b802b8aff52d4388748..68cb7d9c5cad55d2038fada33d5b4d1043afd6c5 100644
+--- a/.claude/skills/compounds/corgispec-apply/SKILL.md
++++ b/.claude/skills/compounds/corgispec-apply/SKILL.md
+@@ -1,9 +1,6 @@
+ ---
+ name: corgispec-apply
+ description: Execute or resume the sole user-facing CorgiSpec implementation workflow through canonical Run Contract v3, with one checked and acknowledged commit per Task Group. Use after RFC-first planning is strict-ready; stop at awaiting_verify and never perform final Verify, human review, QA, or Archive inside Apply.
+-disable-model-invocation: true
+-metadata:
+-  opencode/autoinvoke: "false"
+ hooks:
+   PreToolUse:
+     - matcher: "Edit|Write"
+@@ -20,9 +17,10 @@ Apply is the only public implementation entry. `.corgi/loop` Run Contract v3 is
+ 
+ 1. Require an explicit user request and resolve the authoritative delivery worktree.
+ 2. Run strict status/ready and require the same RFC or maintenance source, traceability, tracker binding, planning revision, and Task Groups created by Propose.
+-3. If only approved planning artifacts, source/traceability, delivery binding, and bridge pointer are dirty, create one planning-baseline commit. The planning artifacts, including task checkboxes, are frozen after that commit. If unrelated changes are mixed in, stop.
+-4. Start a new run with `corgispec apply "<change>" --session "<session-id>" --owner "<agent-id>" --owner-kind agent --json`. Persist the returned `token.runId`, `token.sessionId`, `token.stateRevision`, and `token.nonce`. If a run already exists, read its current JSON/hook context and continue it; do not submit `apply_started` twice.
+-5. Reject an active v2 run. A terminal v2 history is read-only and must not be resumed by v4.
++3. Do not pre-emptively recover a stale handoff or edit its ignored transaction. Apply start automatically accepts a HEAD advance only when the completed handoff/source identity and strict-ready plan still match, the original HEAD is an ancestor, and the current HEAD is already on the configured integration branch. A rejected non-integrated advance stops closed. The explicit `propose --reanchor-handoff --expected-head "<old-sha>" --current-head "<current-sha>" --finalize` command remains only for a deliberate pre-Run Propose retry.
++4. If only approved planning artifacts, source/traceability, delivery binding, and bridge pointer are dirty, let Apply create one planning-baseline commit. The planning artifacts, including task checkboxes, are frozen after that commit. If unrelated changes are mixed in, stop.
++5. Start a new run with `corgispec apply "<change>" --session "<session-id>" --owner "<agent-id>" --owner-kind agent --json`. Persist the returned `token.runId`, `token.sessionId`, `token.stateRevision`, and `token.nonce`. If a run already exists, read its current JSON/hook context and continue it; do not submit `apply_started` twice.
++6. Reject an active v2 run. A terminal v2 history is read-only and must not be resumed by v4.
+ 
+ ## Execute Each Task Group
+ 
+@@ -33,7 +31,7 @@ For the current CLI-selected group only:
+ 3. Run the group's targeted tests/checks and a structured automated review. Keep commands, exit codes, findings, and evidence paths truthful.
+ 4. Resolve important findings before approval; do not dismiss or accept risk for a human.
+ 5. Update Session Bridge checkpoint fields and Promotion Queue immediately before the dedicated group commit.
+-6. Create exactly one new commit for the approved Task Group. Never combine multiple Task Groups in one commit.
++6. Create exactly one new commit for the approved Task Group. Never combine multiple Task Groups in one commit. Normally it has the previous checkpoint as its sole parent. Only the first Task Group may use one two-parent integration merge, with the planning baseline first and the exact configured integration revision second; the CLI rejects every other merge topology.
+ 7. Write a temporary Task Group evidence JSON file with this exact contract (the CLI validates and stores canonical evidence):
+ 
+    ```json
+@@ -55,6 +53,7 @@ Task Groups remain within the one Slice Issue. Never create a child Issue or inv
+ ## Repairs and Contract Gaps
+ 
+ - A local group failure stays in the current group attempt until corrected.
++- An ordinary integrated pre-Run HEAD advance is admitted by Apply start itself. A rejected handoff is not an implementation repair and may not cross a delivery-only commit.
+ - A later Verify/Review/QA implementation failure creates explicit repair work and a successor run using the same Issue.
+ - Any requested Goal, Boundary, Slice, AC, public contract, data, security, or migration change requires a human-authored accepted Amendment RFC. Stop implementation until the dedicated adoption command creates a new source/planning revision.
+ 
+diff --git a/.claude/skills/compounds/corgispec-apply/agents/openai.yaml b/.claude/skills/compounds/corgispec-apply/agents/openai.yaml
+index ae5d944a8c82f1b3fadb38f1ee4d2e047dfdb398..852bc27b548cfc45170e7d72586060bc640370a2 100644
+--- a/.claude/skills/compounds/corgispec-apply/agents/openai.yaml
++++ b/.claude/skills/compounds/corgispec-apply/agents/openai.yaml
+@@ -3,4 +3,4 @@ interface:
+   short_description: "Run all Task Groups with per-group commits"
+   default_prompt: "Use $corgispec-apply to implement this change through every Task Group with a separate verified commit for each."
+ policy:
+-  allow_implicit_invocation: false
++  allow_implicit_invocation: true
+diff --git a/.claude/skills/compounds/corgispec-apply/skill.meta.json b/.claude/skills/compounds/corgispec-apply/skill.meta.json
+index c8029c039f6dd75811c2323729a9f7692df63ce5..43467128363aa88a0e9db7cf8dbe2af523fb60cb 100644
+--- a/.claude/skills/compounds/corgispec-apply/skill.meta.json
++++ b/.claude/skills/compounds/corgispec-apply/skill.meta.json
+@@ -1,7 +1,7 @@
+ {
+   "slug": "corgispec-apply",
+   "tier": "compound",
+-  "version": "4.0.0-rc2",
++  "version": "4.0.0-rc2-money.3",
+   "platform": "universal",
+   "description": "Run Contract v3 Apply with one checked commit per Task Group, stopping at canonical Verify",
+   "depends_on": [
+diff --git a/.claude/skills/molecules/corgispec-archive-change/SKILL.md b/.claude/skills/molecules/corgispec-archive-change/SKILL.md
+index cbd265d050f6e0c4fa1baf95b5e02e953277e51a..57a71f4429373f221376c053e4399a5d0a9bc40c 100644
+--- a/.claude/skills/molecules/corgispec-archive-change/SKILL.md
++++ b/.claude/skills/molecules/corgispec-archive-change/SKILL.md
+@@ -24,6 +24,8 @@ Require:
+ - canonical Verify PASS with full automated AC coverage;
+ - explicit Human Review approval;
+ - Human QA PASS or a valid human-confirmed no-runtime skip;
++- deterministic readiness including `ARCHIVE_DELTA_COMPATIBLE`, so every `MODIFIED` requirement preserves current
++  canonical scenario identities before Archive intent is created;
+ - exactly one Slice binding, Change, archive destination, and single Issue/provider-none binding.
+ 
+ Any blocker stops before mutation.
+@@ -32,14 +34,33 @@ Any blocker stops before mutation.
+ 
+ 1. From the Human QA JSON token, run `corgispec archive "<change>" --begin --run-id "<runId>" --session "<sessionId>" --state-revision "<revision>" --nonce "<nonce>" --json`.
+ 2. Copy the newly returned four-field token unchanged into `corgispec archive "<change>" --local --run-id "<runId>" --session "<sessionId>" --state-revision "<revision>" --nonce "<nonce>" --json`. Retry that exact operation/token after an unknown outcome.
+-3. For GitHub/GitLab, use the next token with `--confirm-tracker`; provider `none` skips this operation. Then use the latest token with `--finish`. Each invocation performs exactly one resumable phase; never reuse a superseded token.
+-4. Require canonical evidence materialized into the archived Change, including manifest, per-group evidence, whole-change Verify, Human Review, Human QA, and run binding.
+-5. Require the actual OpenSpec archived root returned by the CLI; never guess or overwrite it.
+-6. `corgispec archive --local` is the sole write transaction for the immutable `wiki/deliveries/<RFC-ID>-<Slice-ID>.md`, managed hot/architecture/pattern regions, MEMORY/pitfall provenance, and the archive bridge checkpoint. Use **corgispec-memory-extract** only for read-only preparation or verification; never use it to create, promote, or repair those files.
+-7. Require RFC `delivery.yaml` archive evidence and local archive closeout commit.
+-8. Let the CLI outbox move the one Issue to done and close it idempotently. Never invoke `gh`/`glab`.
+-9. Require `--finish` to report worktree cleanup only after local and tracker closeout succeed. Preserve the branch by default.
+-
+-If local archive succeeds but tracker closeout fails, keep the intent and worktree and resume tracker closeout without repeating the local archive or rewriting history.
++3. Before tracker closeout, inspect the project-local integration adapter and policy. When the project requires the
++   archive closeout commit to pass a PR/MR merge gate, synchronize that exact commit through the guarded adapter while
++   the Run remains `archiving`; stop when ready/merge authority is unavailable. After the provider confirms that exact
++   commit merged, use the guarded finalizer to run tracker confirmation and Archive finish. Never call
++   `--confirm-tracker` or `--finish` directly to bypass a required integration gate.
++4. When no project integration gate exists, use the next token with `--confirm-tracker` for GitHub/GitLab, then the
++   latest token with `--finish`; provider `none` proceeds directly to `--finish`. Each invocation performs exactly one
++   resumable phase; never reuse a superseded token.
++5. Require canonical evidence materialized into the archived Change, including manifest, per-group evidence, whole-change Verify, Human Review, Human QA, and run binding.
++6. Require the actual OpenSpec archived root returned by the CLI; never guess or overwrite it.
++7. `corgispec archive --local` is the sole write transaction for the immutable `wiki/deliveries/<RFC-ID>-<Slice-ID>.md`, managed hot/architecture/pattern regions, MEMORY/pitfall provenance, and the archive bridge checkpoint. Use **corgispec-memory-extract** only for read-only preparation or verification; never use it to create, promote, or repair those files.
++8. Require RFC `delivery.yaml` archive evidence and local archive closeout commit.
++9. Let the CLI outbox or guarded finalizer move the one Issue to done and close it idempotently. Never invoke
++   `gh`/`glab` directly.
++10. Require `--finish` to report worktree cleanup only after required integration, local closeout, and tracker closeout
++    succeed. Preserve the branch by default.
++
++If local archive succeeds but integration or tracker closeout cannot proceed, keep the intent and worktree and resume
++from that boundary without repeating the local archive or rewriting history. If an older workflow prematurely finished
++and removed the worktree before publishing its archive commit, use a project-provided guarded archived-sync recovery
++that verifies immutable archive evidence; never replace that proof with a raw push or direct provider edit.
++
++If `--local` returns a known deterministic failure before local closeout completes, do not retry it unchanged and do
++not edit `.corgi/loop`. Use the same current token with `corgispec archive "<change>" --request-repair --reason
++"<specific failure>" ... --json`. This command may remove only reproducible untracked Change evidence and the pending
++archive journal, then transitions the Run to `repair_required`. Reconcile planning through **corgispec-update**, append
++exactly one Repair Task Group, create the successor through `corgispec change repair`, and repeat Apply, Verify, Human
++Review, Human QA, and Archive. Never request repair after local closeout succeeds.
+ 
+ Report archived root, evidence manifest, delivery page, promoted knowledge, archive commit, Issue result, final `archived` phase, worktree cleanup, and any retained branch.
+diff --git a/.opencode/skills/compounds/corgispec-apply/SKILL.md b/.opencode/skills/compounds/corgispec-apply/SKILL.md
+index e29ad5bdf952acb326a59b802b8aff52d4388748..68cb7d9c5cad55d2038fada33d5b4d1043afd6c5 100644
+--- a/.opencode/skills/compounds/corgispec-apply/SKILL.md
++++ b/.opencode/skills/compounds/corgispec-apply/SKILL.md
+@@ -1,9 +1,6 @@
+ ---
+ name: corgispec-apply
+ description: Execute or resume the sole user-facing CorgiSpec implementation workflow through canonical Run Contract v3, with one checked and acknowledged commit per Task Group. Use after RFC-first planning is strict-ready; stop at awaiting_verify and never perform final Verify, human review, QA, or Archive inside Apply.
+-disable-model-invocation: true
+-metadata:
+-  opencode/autoinvoke: "false"
+ hooks:
+   PreToolUse:
+     - matcher: "Edit|Write"
+@@ -20,9 +17,10 @@ Apply is the only public implementation entry. `.corgi/loop` Run Contract v3 is
+ 
+ 1. Require an explicit user request and resolve the authoritative delivery worktree.
+ 2. Run strict status/ready and require the same RFC or maintenance source, traceability, tracker binding, planning revision, and Task Groups created by Propose.
+-3. If only approved planning artifacts, source/traceability, delivery binding, and bridge pointer are dirty, create one planning-baseline commit. The planning artifacts, including task checkboxes, are frozen after that commit. If unrelated changes are mixed in, stop.
+-4. Start a new run with `corgispec apply "<change>" --session "<session-id>" --owner "<agent-id>" --owner-kind agent --json`. Persist the returned `token.runId`, `token.sessionId`, `token.stateRevision`, and `token.nonce`. If a run already exists, read its current JSON/hook context and continue it; do not submit `apply_started` twice.
+-5. Reject an active v2 run. A terminal v2 history is read-only and must not be resumed by v4.
++3. Do not pre-emptively recover a stale handoff or edit its ignored transaction. Apply start automatically accepts a HEAD advance only when the completed handoff/source identity and strict-ready plan still match, the original HEAD is an ancestor, and the current HEAD is already on the configured integration branch. A rejected non-integrated advance stops closed. The explicit `propose --reanchor-handoff --expected-head "<old-sha>" --current-head "<current-sha>" --finalize` command remains only for a deliberate pre-Run Propose retry.
++4. If only approved planning artifacts, source/traceability, delivery binding, and bridge pointer are dirty, let Apply create one planning-baseline commit. The planning artifacts, including task checkboxes, are frozen after that commit. If unrelated changes are mixed in, stop.
++5. Start a new run with `corgispec apply "<change>" --session "<session-id>" --owner "<agent-id>" --owner-kind agent --json`. Persist the returned `token.runId`, `token.sessionId`, `token.stateRevision`, and `token.nonce`. If a run already exists, read its current JSON/hook context and continue it; do not submit `apply_started` twice.
++6. Reject an active v2 run. A terminal v2 history is read-only and must not be resumed by v4.
+ 
+ ## Execute Each Task Group
+ 
+@@ -33,7 +31,7 @@ For the current CLI-selected group only:
+ 3. Run the group's targeted tests/checks and a structured automated review. Keep commands, exit codes, findings, and evidence paths truthful.
+ 4. Resolve important findings before approval; do not dismiss or accept risk for a human.
+ 5. Update Session Bridge checkpoint fields and Promotion Queue immediately before the dedicated group commit.
+-6. Create exactly one new commit for the approved Task Group. Never combine multiple Task Groups in one commit.
++6. Create exactly one new commit for the approved Task Group. Never combine multiple Task Groups in one commit. Normally it has the previous checkpoint as its sole parent. Only the first Task Group may use one two-parent integration merge, with the planning baseline first and the exact configured integration revision second; the CLI rejects every other merge topology.
+ 7. Write a temporary Task Group evidence JSON file with this exact contract (the CLI validates and stores canonical evidence):
+ 
+    ```json
+@@ -55,6 +53,7 @@ Task Groups remain within the one Slice Issue. Never create a child Issue or inv
+ ## Repairs and Contract Gaps
+ 
+ - A local group failure stays in the current group attempt until corrected.
++- An ordinary integrated pre-Run HEAD advance is admitted by Apply start itself. A rejected handoff is not an implementation repair and may not cross a delivery-only commit.
+ - A later Verify/Review/QA implementation failure creates explicit repair work and a successor run using the same Issue.
+ - Any requested Goal, Boundary, Slice, AC, public contract, data, security, or migration change requires a human-authored accepted Amendment RFC. Stop implementation until the dedicated adoption command creates a new source/planning revision.
+ 
+diff --git a/.opencode/skills/compounds/corgispec-apply/agents/openai.yaml b/.opencode/skills/compounds/corgispec-apply/agents/openai.yaml
+index ae5d944a8c82f1b3fadb38f1ee4d2e047dfdb398..852bc27b548cfc45170e7d72586060bc640370a2 100644
+--- a/.opencode/skills/compounds/corgispec-apply/agents/openai.yaml
++++ b/.opencode/skills/compounds/corgispec-apply/agents/openai.yaml
+@@ -3,4 +3,4 @@ interface:
+   short_description: "Run all Task Groups with per-group commits"
+   default_prompt: "Use $corgispec-apply to implement this change through every Task Group with a separate verified commit for each."
+ policy:
+-  allow_implicit_invocation: false
++  allow_implicit_invocation: true
+diff --git a/.opencode/skills/compounds/corgispec-apply/skill.meta.json b/.opencode/skills/compounds/corgispec-apply/skill.meta.json
+index c8029c039f6dd75811c2323729a9f7692df63ce5..43467128363aa88a0e9db7cf8dbe2af523fb60cb 100644
+--- a/.opencode/skills/compounds/corgispec-apply/skill.meta.json
++++ b/.opencode/skills/compounds/corgispec-apply/skill.meta.json
+@@ -1,7 +1,7 @@
+ {
+   "slug": "corgispec-apply",
+   "tier": "compound",
+-  "version": "4.0.0-rc2",
++  "version": "4.0.0-rc2-money.3",
+   "platform": "universal",
+   "description": "Run Contract v3 Apply with one checked commit per Task Group, stopping at canonical Verify",
+   "depends_on": [
+diff --git a/.opencode/skills/molecules/corgispec-archive-change/SKILL.md b/.opencode/skills/molecules/corgispec-archive-change/SKILL.md
+index cbd265d050f6e0c4fa1baf95b5e02e953277e51a..57a71f4429373f221376c053e4399a5d0a9bc40c 100644
+--- a/.opencode/skills/molecules/corgispec-archive-change/SKILL.md
++++ b/.opencode/skills/molecules/corgispec-archive-change/SKILL.md
+@@ -24,6 +24,8 @@ Require:
+ - canonical Verify PASS with full automated AC coverage;
+ - explicit Human Review approval;
+ - Human QA PASS or a valid human-confirmed no-runtime skip;
++- deterministic readiness including `ARCHIVE_DELTA_COMPATIBLE`, so every `MODIFIED` requirement preserves current
++  canonical scenario identities before Archive intent is created;
+ - exactly one Slice binding, Change, archive destination, and single Issue/provider-none binding.
+ 
+ Any blocker stops before mutation.
+@@ -32,14 +34,33 @@ Any blocker stops before mutation.
+ 
+ 1. From the Human QA JSON token, run `corgispec archive "<change>" --begin --run-id "<runId>" --session "<sessionId>" --state-revision "<revision>" --nonce "<nonce>" --json`.
+ 2. Copy the newly returned four-field token unchanged into `corgispec archive "<change>" --local --run-id "<runId>" --session "<sessionId>" --state-revision "<revision>" --nonce "<nonce>" --json`. Retry that exact operation/token after an unknown outcome.
+-3. For GitHub/GitLab, use the next token with `--confirm-tracker`; provider `none` skips this operation. Then use the latest token with `--finish`. Each invocation performs exactly one resumable phase; never reuse a superseded token.
+-4. Require canonical evidence materialized into the archived Change, including manifest, per-group evidence, whole-change Verify, Human Review, Human QA, and run binding.
+-5. Require the actual OpenSpec archived root returned by the CLI; never guess or overwrite it.
+-6. `corgispec archive --local` is the sole write transaction for the immutable `wiki/deliveries/<RFC-ID>-<Slice-ID>.md`, managed hot/architecture/pattern regions, MEMORY/pitfall provenance, and the archive bridge checkpoint. Use **corgispec-memory-extract** only for read-only preparation or verification; never use it to create, promote, or repair those files.
+-7. Require RFC `delivery.yaml` archive evidence and local archive closeout commit.
+-8. Let the CLI outbox move the one Issue to done and close it idempotently. Never invoke `gh`/`glab`.
+-9. Require `--finish` to report worktree cleanup only after local and tracker closeout succeed. Preserve the branch by default.
+-
+-If local archive succeeds but tracker closeout fails, keep the intent and worktree and resume tracker closeout without repeating the local archive or rewriting history.
++3. Before tracker closeout, inspect the project-local integration adapter and policy. When the project requires the
++   archive closeout commit to pass a PR/MR merge gate, synchronize that exact commit through the guarded adapter while
++   the Run remains `archiving`; stop when ready/merge authority is unavailable. After the provider confirms that exact
++   commit merged, use the guarded finalizer to run tracker confirmation and Archive finish. Never call
++   `--confirm-tracker` or `--finish` directly to bypass a required integration gate.
++4. When no project integration gate exists, use the next token with `--confirm-tracker` for GitHub/GitLab, then the
++   latest token with `--finish`; provider `none` proceeds directly to `--finish`. Each invocation performs exactly one
++   resumable phase; never reuse a superseded token.
++5. Require canonical evidence materialized into the archived Change, including manifest, per-group evidence, whole-change Verify, Human Review, Human QA, and run binding.
++6. Require the actual OpenSpec archived root returned by the CLI; never guess or overwrite it.
++7. `corgispec archive --local` is the sole write transaction for the immutable `wiki/deliveries/<RFC-ID>-<Slice-ID>.md`, managed hot/architecture/pattern regions, MEMORY/pitfall provenance, and the archive bridge checkpoint. Use **corgispec-memory-extract** only for read-only preparation or verification; never use it to create, promote, or repair those files.
++8. Require RFC `delivery.yaml` archive evidence and local archive closeout commit.
++9. Let the CLI outbox or guarded finalizer move the one Issue to done and close it idempotently. Never invoke
++   `gh`/`glab` directly.
++10. Require `--finish` to report worktree cleanup only after required integration, local closeout, and tracker closeout
++    succeed. Preserve the branch by default.
++
++If local archive succeeds but integration or tracker closeout cannot proceed, keep the intent and worktree and resume
++from that boundary without repeating the local archive or rewriting history. If an older workflow prematurely finished
++and removed the worktree before publishing its archive commit, use a project-provided guarded archived-sync recovery
++that verifies immutable archive evidence; never replace that proof with a raw push or direct provider edit.
++
++If `--local` returns a known deterministic failure before local closeout completes, do not retry it unchanged and do
++not edit `.corgi/loop`. Use the same current token with `corgispec archive "<change>" --request-repair --reason
++"<specific failure>" ... --json`. This command may remove only reproducible untracked Change evidence and the pending
++archive journal, then transitions the Run to `repair_required`. Reconcile planning through **corgispec-update**, append
++exactly one Repair Task Group, create the successor through `corgispec change repair`, and repeat Apply, Verify, Human
++Review, Human QA, and Archive. Never request repair after local closeout succeeds.
+ 
+ Report archived root, evidence manifest, delivery page, promoted knowledge, archive commit, Issue result, final `archived` phase, worktree cleanup, and any retained branch.
+diff --git a/packages/corgispec/CHANGELOG.md b/packages/corgispec/CHANGELOG.md
+index 7fcd849b64fb4b389c2bc3d50be7899e5e996cc3..fa059a691503a414adb754fb0d3b926682cea1a2 100644
+--- a/packages/corgispec/CHANGELOG.md
++++ b/packages/corgispec/CHANGELOG.md
+@@ -2,6 +2,37 @@
+ 
+ All notable changes to this project will be documented in this file.
+ 
++## [Unreleased]
++
++### Added
++
++- Admit an ordinary pre-Run HEAD advance automatically when the completed Propose handoff still matches the strict-ready
++  source/plan and the advance is proven to lie on the configured integration branch; retain an explicit guarded,
++  idempotent Propose refresh only for deliberate pre-Run retries.
++- Allow only the first current Task Group to use an exact two-parent integration merge, preserving both the planning
++  baseline and configured integration branch ancestry without weakening later per-group commit isolation.
++- Add `ARCHIVE_DELTA_COMPATIBLE` to deterministic readiness so a `MODIFIED` requirement cannot silently omit current
++  canonical scenario identities and fail only during Archive.
++- Add `archive --request-repair --reason <text>` to roll back only reproducible evidence and a pending pre-closeout
++  journal before creating a formal repair successor.
++
++### Changed
++
++- Publish the Apply skill as an implicitly invokable Codex workflow and document the guarded handoff-refresh and
++  first-group integration-merge paths.
++- Make Archive begin consume the same compatibility check through lifecycle readiness, while allowing the repair
++  request to preserve binding and recover a known-bad plan without requiring that plan to pass the new check.
++- Make the Archive skill honor project-local PR/MR integration gates after local closeout: synchronize the exact
++  archive commit while the Run remains `archiving`, and defer tracker closeout, finish, and worktree removal until the
++  guarded finalizer confirms the required merge.
++
++### Fixed
++
++- Validate archived acceptance evidence by table-row identity, so narrative QA references do not create false
++  duplicate-criterion findings while missing or genuinely duplicated rows still fail closed.
++- Normalize Git and filesystem paths through their physical locations before RFC ancestry checks, avoiding false
++  outside-repository failures on systems where temporary directories traverse a symlink.
++
+ ## [4.0.0-rc2] - 2026-08-19
+ 
+ ### Fixed
+diff --git a/packages/corgispec/package-lock.json b/packages/corgispec/package-lock.json
+index 574ec8e9d71de76b20b6c8989b984625c10f4d67..6dadacd071457151359441020f6ae5cd562d3057 100644
+--- a/packages/corgispec/package-lock.json
++++ b/packages/corgispec/package-lock.json
+@@ -1,12 +1,12 @@
+ {
+   "name": "corgispec",
+-  "version": "4.0.0-rc2",
++  "version": "4.0.0-rc2-money.3",
+   "lockfileVersion": 3,
+   "requires": true,
+   "packages": {
+     "": {
+       "name": "corgispec",
+-      "version": "4.0.0-rc2",
++      "version": "4.0.0-rc2-money.3",
+       "license": "MIT",
+       "dependencies": {
+         "ajv": "^8.17.1",
+diff --git a/packages/corgispec/package.json b/packages/corgispec/package.json
+index a8b2225ed7a45fc8a4cd9198a9504d2e15b16a82..1d97d578ca5bc17cc3a8151005ce31551704d037 100644
+--- a/packages/corgispec/package.json
++++ b/packages/corgispec/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "corgispec",
+-  "version": "4.0.0-rc2",
++  "version": "4.0.0-rc2-money.3",
+   "description": "RFC-first engineering workflow with traceable delivery, evidence, and AI session continuity",
+   "type": "module",
+   "bin": {
+diff --git a/packages/corgispec/src/commands/archive-v3.ts b/packages/corgispec/src/commands/archive-v3.ts
+index e3172f405396800dc45630dfb7388ae6e26d293c..bcad740cfe7d84b6c3bc249ba394b5e2a030d1f8 100644
+--- a/packages/corgispec/src/commands/archive-v3.ts
++++ b/packages/corgispec/src/commands/archive-v3.ts
+@@ -23,6 +23,7 @@ import {
+   finishArchiveV3,
+   LifecycleV3Error,
+   materializeArchiveEvidenceV3,
++  requestArchiveRepairV3,
+   type LifecycleV3Dependencies,
+   type LifecycleTokenV3,
+ } from "../lib/lifecycle-v3.js";
+@@ -47,6 +48,8 @@ interface ArchiveOptionsV3 extends LifecycleCasOptionsV3 {
+   local?: boolean;
+   confirmTracker?: boolean;
+   finish?: boolean;
++  requestRepair?: boolean;
++  reason?: string;
+   store?: string;
+ }
+ 
+@@ -75,6 +78,8 @@ export function createArchiveV3Command(dependencies: ArchiveV3CommandDependencie
+     .option("--local", "Execute the resumable OpenSpec, delivery, knowledge, and closeout-commit transaction")
+     .option("--confirm-tracker", "Move the bound Issue to done and close it through the provider adapter")
+     .option("--finish", "Mark the run archived after local and tracker closeout")
++    .option("--request-repair", "Roll back a failed pre-closeout Archive attempt and require one repair successor")
++    .option("--reason <text>", "Reason for an Archive repair request")
+     .action(async (name: string, options: ArchiveOptionsV3) => {
+       try {
+         const projectRoot = resolve(options.path);
+@@ -89,16 +94,18 @@ export function createArchiveV3Command(dependencies: ArchiveV3CommandDependencie
+           options.local,
+           options.confirmTracker,
+           options.finish,
++          options.requestRepair,
+         ].filter(Boolean).length;
+         if (explicit > 1) {
+           throw Object.assign(new Error("Choose only one archive operation per invocation"), { code: "ARCHIVE_OPERATION_AMBIGUOUS" });
+         }
+-        let operation: "begin" | "local" | "tracker" | "finish" | "cleanup";
++        let operation: "begin" | "local" | "tracker" | "finish" | "cleanup" | "repair";
+         let inspectedState: RunStateV3 | undefined;
+         if (options.begin) operation = "begin";
+         else if (options.local) operation = "local";
+         else if (options.confirmTracker) operation = "tracker";
+         else if (options.finish) operation = "finish";
++        else if (options.requestRepair) operation = "repair";
+         else {
+           const state = inspectArchiveRunV3(projectRoot, name, token.runId, dependencies);
+           if (!state) throw Object.assign(new Error(`Run '${token.runId}' was not found`), { code: "RUN_NOT_FOUND" });
+@@ -137,6 +144,24 @@ export function createArchiveV3Command(dependencies: ArchiveV3CommandDependencie
+           }), options.json);
+           return;
+         }
++        if (operation === "repair") {
++          if (!options.reason?.trim()) {
++            throw Object.assign(new Error("--request-repair requires --reason"), { code: "RUN_ARCHIVE_REPAIR_REASON_REQUIRED" });
++          }
++          const evidence = await materializeArchiveEvidenceV3({ projectRoot, changeName: name, token }, dependencies);
++          const result = await requestArchiveRepairV3({
++            projectRoot,
++            changeName: name,
++            token,
++            evidenceManifestHash: evidence.evidenceManifestHash,
++            reason: options.reason,
++          }, dependencies);
++          await syncTrackerStateV3(projectRoot, result.state, dependencies);
++          emitLifecycleResult(lifecycleCommandOutputV3("archive-repair-requested", result.state, {
++            rollback: result.rollback,
++          }), options.json);
++          return;
++        }
+         if (operation === "cleanup") {
+           const state = inspectedState
+             ?? requireArchiveRunV3(projectRoot, name, token.runId, dependencies);
+diff --git a/packages/corgispec/src/commands/propose.ts b/packages/corgispec/src/commands/propose.ts
+index 13152b90d14df5b2e7aa7f24783291258f9320f3..c717263bfccca6842fc7f659a032aebe8e817b6e 100644
+--- a/packages/corgispec/src/commands/propose.ts
++++ b/packages/corgispec/src/commands/propose.ts
+@@ -51,6 +51,7 @@ import {
+   advanceProposeIntent,
+   acquireWorkflowLock,
+   loadProposeIntent,
++  refreshCompletedProposeHandoff,
+   releaseWorkflowLock,
+   writeProposeIntent,
+   type ProposeIntent,
+@@ -72,6 +73,9 @@ interface ProposeOptions {
+   maintenance?: boolean;
+   contractRef?: string[];
+   finalize?: boolean;
++  reanchorHandoff?: boolean;
++  expectedHead?: string;
++  currentHead?: string;
+   json?: boolean;
+   path: string;
+ }
+@@ -118,6 +122,9 @@ export function createProposeCommand(
+     .option("--maintenance", "Use the closed maintenance exemption classifier")
+     .option("--contract-ref <ref...>", "Existing RFC AC or canonical spec references")
+     .option("--finalize", "Require strict readiness and synchronize the single Issue dashboard")
++    .option("--reanchor-handoff", "Refresh a completed pre-Run handoff across already-integrated commits")
++    .option("--expected-head <sha>", "Acknowledge the full SHA recorded by the completed Propose handoff")
++    .option("--current-head <sha>", "Acknowledge the full current integrated delivery HEAD")
+     .option("--store <id>", "OpenSpec Store id")
+     .option("--json", "Output as JSON")
+     .option("--path <dir>", "Working directory", ".")
+@@ -146,8 +153,7 @@ export function createProposeCommand(
+         const prepared = prepareSource({ cwd, name, opts, tracking, repository });
+         const proposeHead = currentGitHead(cwd);
+         workflowLock = acquireWorkflowLock(cwd, `propose:${prepared.key}`);
+-        const existingIntent = loadProposeIntent(cwd, prepared.key);
+-        preflightIntentAndDelivery(cwd, name, prepared, existingIntent, proposeHead);
++        let existingIntent = loadProposeIntent(cwd, prepared.key);
+         const adapter = adapterFactory(cwd);
+         const resolver = resolverFactory(adapter);
+         const existingChange = await resolveExisting(adapter, resolver, name, opts.store);
+@@ -158,6 +164,61 @@ export function createProposeCommand(
+           );
+         }
+         assertProposeWorktreePreflight(cwd, prepared, existingIntent, existingChange);
++        const reanchorArguments = [
++          opts.reanchorHandoff === true,
++          Boolean(opts.expectedHead),
++          Boolean(opts.currentHead),
++        ].filter(Boolean).length;
++        if (reanchorArguments !== 0 && reanchorArguments !== 3) {
++          throw contractError(
++            "PROPOSE_HANDOFF_ACKNOWLEDGEMENT_REQUIRED",
++            "--reanchor-handoff requires both --expected-head and --current-head.",
++          );
++        }
++        if (opts.reanchorHandoff) {
++          if (!opts.finalize) {
++            throw contractError(
++              "PROPOSE_HANDOFF_FINALIZE_REQUIRED",
++              "--reanchor-handoff requires --finalize so strict readiness and tracker identity are revalidated.",
++            );
++          }
++          if (!existingIntent || !existingChange?.resolved?.contract) {
++            throw contractError(
++              "PROPOSE_HANDOFF_INCOMPLETE",
++              "Handoff refresh requires an existing completed Change with source and traceability.",
++            );
++          }
++          const ready = await buildLifecycleReadyReport(
++            adapter,
++            existingChange.resolved,
++            config,
++            true,
++            { store: opts.store },
++            cwd,
++            { allowUnboundDelivery: prepared.rfcBinding !== undefined },
++          );
++          if (ready.report.status !== "ready") {
++            throw contractError(
++              "PROPOSE_NOT_READY",
++              ready.report.checks
++                .filter((check) => check.status !== "pass")
++                .map((check) => `${check.code}: ${check.message}`)
++                .join("; "),
++            );
++          }
++          existingIntent = refreshCompletedProposeHandoff({
++            projectDir: cwd,
++            key: prepared.key,
++            changeName: name,
++            deliveryRef: prepared.source.deliveryRef,
++            sourceDigest: existingChange.resolved.contract.sourceDigest,
++            expectedHead: opts.expectedHead!,
++            currentHead: opts.currentHead!,
++            integrationBranch: config.corgi.governance!.integrationBranch,
++            refreshedAt: now().toISOString(),
++          });
++        }
++        preflightIntentAndDelivery(cwd, name, prepared, existingIntent, proposeHead);
+         let intent: ProposeIntent = existingIntent ?? {
+           schemaVersion: 1,
+           operation: "propose",
+diff --git a/packages/corgispec/src/lib/archive-closeout-v3.ts b/packages/corgispec/src/lib/archive-closeout-v3.ts
+index 089aeba77f6f30a77bab2b1c259f27eba91f8487..a6d833061f69596cc3ff4e5a0dc53c2f4266d139 100644
+--- a/packages/corgispec/src/lib/archive-closeout-v3.ts
++++ b/packages/corgispec/src/lib/archive-closeout-v3.ts
+@@ -65,6 +65,114 @@ export interface SealedArchiveCheckpointV3 {
+   specsDigest: string;
+ }
+ 
++export interface PendingArchiveRollbackV3 {
++  removedEvidencePath: string;
++  removedJournalPath: string | null;
++}
++
++/**
++ * Roll back only the reproducible local artifacts from a failed, pre-move
++ * Archive attempt. Run Contract state is transitioned separately through the
++ * Loop store after this function proves that no durable closeout occurred.
++ */
++export function rollbackPendingArchiveCloseoutV3(input: {
++  projectRoot: string;
++  changeName: string;
++  state: RunStateV3;
++  evidenceManifestHash: ArtifactHashV3;
++}, dependencies: ArchiveCloseoutV3Dependencies = {}): PendingArchiveRollbackV3 {
++  const root = resolve(input.projectRoot);
++  const state = input.state;
++  if (state.phase !== "archiving" || !state.archive || state.archive.localCompleted) {
++    throw new ArchiveCloseoutV3Error(
++      "Pending Archive rollback requires an active intent before local closeout",
++      "ARCHIVE_ROLLBACK_NOT_PENDING",
++    );
++  }
++  if (!state.finalRevision) {
++    throw new ArchiveCloseoutV3Error("Pending Archive rollback requires a verified final revision", "ARCHIVE_FINAL_REVISION_CHANGED");
++  }
++
++  const runGit = dependencies.git ?? git;
++  if (runGit(root, ["rev-parse", "HEAD"]) !== state.finalRevision) {
++    throw new ArchiveCloseoutV3Error(
++      "Pending Archive rollback requires the verified final revision at HEAD",
++      "ARCHIVE_FINAL_REVISION_CHANGED",
++    );
++  }
++
++  const activeSource = resolve(root, state.contract.sourcePath);
++  const activeChangeRoot = dirname(dirname(activeSource));
++  const activeRelative = relative(root, activeChangeRoot).replace(/\\/gu, "/");
++  if (
++    !activeRelative
++    || activeRelative === ".."
++    || activeRelative.startsWith("../")
++    || isAbsolute(activeRelative)
++    || !existsSync(activeSource)
++  ) {
++    throw new ArchiveCloseoutV3Error("Active Change is unavailable for pending Archive rollback", "ARCHIVE_CHANGE_NOT_FOUND");
++  }
++  const active = loadChangeContract(activeChangeRoot, { required: true })!;
++  assertContractBinding(active, state);
++  assertChangeEvidence(activeChangeRoot, state, input.evidenceManifestHash);
++
++  if (findArchivedCandidates(activeChangeRoot, input.changeName, state).length > 0) {
++    throw new ArchiveCloseoutV3Error(
++      "Pending Archive rollback refuses an existing matching archive target",
++      "ARCHIVE_ROLLBACK_TARGET_EXISTS",
++    );
++  }
++
++  const evidencePath = resolve(activeChangeRoot, "evidence");
++  const evidenceRelative = relative(root, evidencePath).replace(/\\/gu, "/");
++  const trackedEvidence = runGit(root, ["ls-files", "-z", "--", evidenceRelative])
++    .split("\0").filter(Boolean);
++  if (trackedEvidence.length > 0) {
++    throw new ArchiveCloseoutV3Error(
++      "Pending Archive rollback refuses tracked Change evidence",
++      "ARCHIVE_ROLLBACK_EVIDENCE_TRACKED",
++    );
++  }
++  const dirty = gitDirtyPaths(root, runGit);
++  const unrelated = dirty.filter((path) => path !== evidenceRelative && !path.startsWith(`${evidenceRelative}/`));
++  if (unrelated.length > 0) {
++    throw new ArchiveCloseoutV3Error(
++      `Pending Archive rollback found unrelated dirty paths: ${unrelated.join(", ")}`,
++      "ARCHIVE_ROLLBACK_MIXED_DIRTY",
++    );
++  }
++
++  const journalPath = archiveJournalPath(root, state);
++  let removedJournalPath: string | null = null;
++  if (existsSync(journalPath)) {
++    const journal = loadArchiveJournal(journalPath, state);
++    if (journal.stage !== "pending") {
++      throw new ArchiveCloseoutV3Error(
++        "Pending Archive rollback refuses a sealed closeout journal",
++        "ARCHIVE_ROLLBACK_JOURNAL_SEALED",
++      );
++    }
++    if (journal.activeChangeDigest !== directoryDigest(activeChangeRoot)) {
++      throw new ArchiveCloseoutV3Error(
++        "Active Change differs from the pending Archive journal",
++        "ARCHIVE_DIGEST_CHANGED",
++      );
++    }
++    removedJournalPath = journalPath;
++  }
++
++  rmSync(evidencePath, { recursive: true, force: false });
++  if (gitDirtyPaths(root, runGit).length > 0) {
++    throw new ArchiveCloseoutV3Error(
++      "Pending Archive rollback did not restore a clean verified worktree",
++      "ARCHIVE_ROLLBACK_INCOMPLETE",
++    );
++  }
++  if (removedJournalPath) rmSync(removedJournalPath, { force: false });
++  return { removedEvidencePath: evidencePath, removedJournalPath };
++}
++
+ /**
+  * Re-validate the durable boundary created immediately after OpenSpec moves a
+  * Change.  Tracker closeout and run finalization both call this so a later
+diff --git a/packages/corgispec/src/lib/git-workspace-v2.ts b/packages/corgispec/src/lib/git-workspace-v2.ts
+index 21e0fc417c153397c973da525e49596ebb2f9c36..0b9d4f2d579ffd099bf65381b0f379813e1ecd24 100644
+--- a/packages/corgispec/src/lib/git-workspace-v2.ts
++++ b/packages/corgispec/src/lib/git-workspace-v2.ts
+@@ -111,6 +111,31 @@ export class GitWorkspaceV2 {
+     return parents;
+   }
+ 
++  async resolveRevision(revision: string): Promise<string> {
++    await this.assertRepository();
++    if (!revision.trim()) {
++      throw new GitWorkspaceError("Git revision must not be empty", "git_command_failed");
++    }
++    return nonEmpty(
++      await this.git(["rev-parse", "--verify", `${revision}^{commit}`]),
++      `${revision} revision`,
++    );
++  }
++
++  async isAncestor(ancestor: string, descendant: string): Promise<boolean> {
++    await this.assertRepository();
++    if (!ancestor.trim() || !descendant.trim()) {
++      throw new GitWorkspaceError("Git revisions must not be empty", "git_command_failed");
++    }
++    const result = await this.gitResult([
++      "merge-base",
++      "--is-ancestor",
++      ancestor,
++      descendant,
++    ], [0, 1]);
++    return result.exitCode === 0;
++  }
++
+   async statusPorcelain(): Promise<string> {
+     await this.assertRepository();
+     return await this.git([
+diff --git a/packages/corgispec/src/lib/lifecycle-v3.ts b/packages/corgispec/src/lib/lifecycle-v3.ts
+index aa5c033b19c254089c81a257d0d809958f1106fb..aa666c8aefff42eb4a0ed8e0567e4d82f185e8ed 100644
+--- a/packages/corgispec/src/lib/lifecycle-v3.ts
++++ b/packages/corgispec/src/lib/lifecycle-v3.ts
+@@ -26,7 +26,11 @@ import {
+   type LoadedChangeContract,
+   type TrackerBinding,
+ } from "./change-contract.js";
+-import { verifySealedArchiveCheckpointV3 } from "./archive-closeout-v3.js";
++import {
++  rollbackPendingArchiveCloseoutV3,
++  verifySealedArchiveCheckpointV3,
++  type PendingArchiveRollbackV3,
++} from "./archive-closeout-v3.js";
+ import { loadConfigFromDir } from "./config.js";
+ import { validateMaintenanceDiffScope } from "./maintenance.js";
+ import {
+@@ -111,6 +115,12 @@ export interface LifecycleV3Dependencies {
+     currentSliceId: string | null,
+   ) => EffectiveAmendmentV3;
+   verifyArchiveCheckpoint?: (projectRoot: string, state: RunStateV3) => { archivedRoot: string };
++  rollbackPendingArchive?: (input: {
++    projectRoot: string;
++    changeName: string;
++    state: RunStateV3;
++    evidenceManifestHash: ArtifactHashV3;
++  }) => PendingArchiveRollbackV3;
+   assertGroupBridgeCheckpoint?: (input: {
+     projectRoot: string;
+     state: RunStateV3;
+@@ -460,13 +470,25 @@ async function requireState(
+   changeName: string,
+   token: LifecycleTokenV3,
+   dependencies: LifecycleV3Dependencies,
++): Promise<{ state: RunStateV3; plan: LifecyclePlanV3; store: LoopStoreV3; git: GitWorkspaceV2; now: () => string; nonce: () => string }> {
++  const context = await requireBoundState(projectRoot, changeName, token, dependencies);
++  if (context.plan.blockers.length > 0) {
++    throw new LifecycleV3Error("PLANNING_NOT_READY", context.plan.blockers.join("; "));
++  }
++  return context;
++}
++
++async function requireBoundState(
++  projectRoot: string,
++  changeName: string,
++  token: LifecycleTokenV3,
++  dependencies: LifecycleV3Dependencies,
+ ): Promise<{ state: RunStateV3; plan: LifecyclePlanV3; store: LoopStoreV3; git: GitWorkspaceV2; now: () => string; nonce: () => string }> {
+   const service = services(projectRoot, dependencies);
+   const inspection = service.store.inspect(changeName, token.runId);
+   if (!inspection.state) throw new LifecycleV3Error("RUN_NOT_FOUND", `Run '${token.runId}' was not found`);
+   tokenMatches(inspection.state, token);
+   const plan = await (dependencies.inspectPlan ?? inspectLifecyclePlanV3)(projectRoot, changeName);
+-  if (plan.blockers.length > 0) throw new LifecycleV3Error("PLANNING_NOT_READY", plan.blockers.join("; "));
+   if (
+     plan.planningRevision !== inspection.state.planningRevision
+     || plan.binding.sourceDigest !== inspection.state.contract.sourceDigest
+@@ -519,10 +541,20 @@ export async function startApplyV3(input: {
+       );
+     }
+     if (snapshot.headRevision !== handoff.headRevision) {
+-      throw new LifecycleV3Error(
+-        "PLANNING_HANDOFF_HEAD_CHANGED",
+-        `HEAD changed after Propose: expected '${handoff.headRevision}', found '${snapshot.headRevision}'`,
+-      );
++      const integrationBranch = loadConfigFromDir(root)
++        .corgi?.governance?.integrationBranch;
++      const integrationRevision = integrationBranch
++        ? await service.git.resolveRevision(integrationBranch)
++        : null;
++      const integratedAdvance = integrationRevision !== null
++        && await service.git.isAncestor(handoff.headRevision, snapshot.headRevision)
++        && await service.git.isAncestor(snapshot.headRevision, integrationRevision);
++      if (!integratedAdvance) {
++        throw new LifecycleV3Error(
++          "PLANNING_HANDOFF_HEAD_CHANGED",
++          `HEAD changed after Propose: expected '${handoff.headRevision}', found '${snapshot.headRevision}', and the advance is not on the configured integration branch`,
++        );
++      }
+     }
+     (dependencies.writePlanningBridgeCheckpoint ?? writePlanningBridgeCheckpointV3)(
+       root,
+@@ -604,10 +636,17 @@ export async function completeTaskGroupV3(input: {
+     baselineRevision: previous,
+   });
+   const commitParents = await context.git.commitParents(acknowledgement.headRevision);
+-  if (commitParents.length !== 1 || commitParents[0] !== previous) {
++  if (!await isAtomicTaskGroupCommit({
++    projectRoot: input.projectRoot,
++    state: context.state,
++    currentGroupId: input.groupId,
++    previous,
++    parents: commitParents,
++    git: context.git,
++  })) {
+     throw new LifecycleV3Error(
+       "GROUP_COMMIT_NOT_ATOMIC",
+-      `Task Group '${input.groupId}' must be exactly one commit whose parent is '${previous}'`,
++      `Task Group '${input.groupId}' must be one commit whose first parent is '${previous}'; only the first Task Group may add the exact configured integration revision as a second parent`,
+     );
+   }
+   enforceMaintenanceDiffScope(
+@@ -669,6 +708,37 @@ export async function completeTaskGroupV3(input: {
+   return mutate(context.state, context.store, event);
+ }
+ 
++async function isAtomicTaskGroupCommit(input: {
++  projectRoot: string;
++  state: RunStateV3;
++  currentGroupId: string;
++  previous: string;
++  parents: string[];
++  git: GitWorkspaceV2;
++}): Promise<boolean> {
++  if (input.parents.length === 1 && input.parents[0] === input.previous) return true;
++  if (
++    input.parents.length !== 2
++    || input.parents[0] !== input.previous
++    || input.previous !== input.state.baselineRevision
++  ) return false;
++
++  const firstGroup = Object.values(input.state.groups)
++    .sort((left, right) => left.ordinal - right.ordinal)[0];
++  if (
++    !firstGroup
++    || firstGroup.id !== input.currentGroupId
++    || firstGroup.status !== "in_progress"
++    || Object.values(input.state.groups).some((group) => group.status === "completed")
++  ) return false;
++
++  const integrationBranch = loadConfigFromDir(input.projectRoot)
++    .corgi?.governance?.integrationBranch;
++  if (!integrationBranch) return false;
++  const integrationRevision = await input.git.resolveRevision(integrationBranch);
++  return input.parents[1] === integrationRevision;
++}
++
+ export function assertGroupBridgeCheckpointV3(input: {
+   projectRoot: string;
+   state: RunStateV3;
+@@ -964,6 +1034,53 @@ export async function beginArchiveV3(input: {
+   return mutate(context.state, context.store, event);
+ }
+ 
++export async function requestArchiveRepairV3(input: {
++  projectRoot: string;
++  changeName: string;
++  token: LifecycleTokenV3;
++  evidenceManifestHash: ArtifactHashV3;
++  reason: string;
++}, dependencies: LifecycleV3Dependencies = {}): Promise<{
++  state: RunStateV3;
++  rollback: PendingArchiveRollbackV3;
++}> {
++  const reason = input.reason.trim();
++  if (!reason) throw new LifecycleV3Error("RUN_ARCHIVE_REPAIR_REASON_REQUIRED", "archive repair requires a reason");
++  // Archive repair exists specifically to recover a planning defect discovered
++  // after Archive begin. Preserve the exact planning/source binding, but do not
++  // require the known-bad plan to pass current readiness before it can be
++  // rolled back into the formal repair lifecycle.
++  const context = await requireBoundState(input.projectRoot, input.changeName, input.token, dependencies);
++  if (context.state.phase !== "archiving" || context.state.archive?.localCompleted !== false) {
++    throw new LifecycleV3Error(
++      "RUN_ARCHIVE_REPAIR_INVALID",
++      "archive repair may be requested only before local archive closeout completes",
++    );
++  }
++  const rollback = (dependencies.rollbackPendingArchive ?? rollbackPendingArchiveCloseoutV3)({
++    projectRoot: input.projectRoot,
++    changeName: input.changeName,
++    state: context.state,
++    evidenceManifestHash: input.evidenceManifestHash,
++  });
++  const snapshot = await context.git.snapshot();
++  if (!snapshot.clean || snapshot.headRevision !== context.state.finalRevision) {
++    throw new LifecycleV3Error(
++      "ARCHIVE_ROLLBACK_INCOMPLETE",
++      "archive rollback must restore the clean verified final revision",
++    );
++  }
++  const event: RunEventV3 = {
++    ...eventBaseV3(context.state, "archive_repair_requested", {
++      occurredAt: context.now(),
++      nextNonce: nextNonce(context.state.nonce, context.nonce),
++    }),
++    type: "archive_repair_requested",
++    reason,
++  };
++  return { state: mutate(context.state, context.store, event), rollback };
++}
++
+ export function canonicalEvidenceFilesV3(
+   state: RunStateV3,
+   groupEvidence: Record<string, Record<string, unknown>> = {},
+diff --git a/packages/corgispec/src/lib/lifecycle.ts b/packages/corgispec/src/lib/lifecycle.ts
+index 8f80dc4c36121bcdc13eda272aedaa8356a63cbb..342a7a3731d6464747e8b907209427060a57a3d9 100644
+--- a/packages/corgispec/src/lib/lifecycle.ts
++++ b/packages/corgispec/src/lib/lifecycle.ts
+@@ -9,6 +9,7 @@ import type {
+   OpenSpecValidationResponse,
+ } from "./openspec-adapter.js";
+ import type { ResolvedChangeArtifacts } from "./artifact-resolver.js";
++import { archiveDeltaCompatibilityCheck } from "./archive-compatibility-v3.js";
+ import { buildReadyReport, type ReadyReport } from "./readiness.js";
+ import {
+   findNextTaskGroup,
+@@ -211,6 +212,7 @@ export async function buildLifecycleReadyReport(
+     taskArtifactId,
+     strict: strictWarnings,
+   });
++  report.checks.push(archiveDeltaCompatibilityCheck(resolved));
+   const contractRequired =
+     (config.corgi as (typeof config.corgi & { contract?: string }) | undefined)?.contract ===
+     "rfc-v1";
+diff --git a/packages/corgispec/src/lib/memory-lint-v4.ts b/packages/corgispec/src/lib/memory-lint-v4.ts
+index b9056a6ecf0a91dcc33ab3270fbb334915b0d131..f39b90f5523b6349e96dacb1ca699a4f00527364 100644
+--- a/packages/corgispec/src/lib/memory-lint-v4.ts
++++ b/packages/corgispec/src/lib/memory-lint-v4.ts
+@@ -565,9 +565,11 @@ function checkDeliveryCompleteness(root: string): CheckEvaluation {
+     if (manifest.finalRevision !== slice.commit) findings.push(finding("error", manifest.path, "Evidence manifest final revision does not match delivery binding.", `Manifest=${String(manifest.finalRevision)}; binding=${slice.commit}.`, "Restore canonical evidence from the archived run."));
+     const acIds = archivedAcceptanceIds(root, manifest.directory);
+     if (acIds.length === 0) findings.push(finding("error", manifest.path, "Canonical archived evidence contains no RFC acceptance criteria.", `${slice.rfc}/${slice.slice} must carry AC evidence into closeout.`, "Restore the Verify/QA acceptance evidence materialized by archive closeout."));
++    const acceptanceRows = Array.from(markdownSection(content, "Acceptance Evidence").matchAll(/^\s*\|\s*(AC-\d{3})\s*\|/gmu))
++      .map((match) => match[1]!);
+     for (const ac of acIds) {
+-      const count = Array.from(content.matchAll(new RegExp(`\\b${escapeRegExp(ac)}\\b`, "gu"))).length;
+-      if (count !== 1) findings.push(finding("error", pagePath, "Delivery AC evidence is missing or duplicated.", `${ac} occurs ${count} time(s); expected exactly once.`, "Restore one acceptance-evidence row per archived AC."));
++      const count = acceptanceRows.filter((row) => row === ac).length;
++      if (count !== 1) findings.push(finding("error", pagePath, "Delivery AC evidence is missing or duplicated.", `${ac} has ${count} acceptance-evidence row(s); expected exactly one.`, "Restore one acceptance-evidence row per archived AC."));
+     }
+   }
+   return { summary: findings.length === 0 ? `All ${archived.length} archived RFC Slice binding(s) have complete delivery evidence.` : "Archived delivery traceability is incomplete or contradictory.", findings };
+diff --git a/packages/corgispec/src/lib/rfc.ts b/packages/corgispec/src/lib/rfc.ts
+index 5c45e096a4fbbf0a6bb175d85e65ebdb88dfc2e5..e5a177a087201e87fb6dc84437920be8433e024b 100644
+--- a/packages/corgispec/src/lib/rfc.ts
++++ b/packages/corgispec/src/lib/rfc.ts
+@@ -5,6 +5,7 @@ import {
+   lstatSync,
+   mkdirSync,
+   readFileSync,
++  realpathSync,
+   readdirSync,
+   renameSync,
+   rmSync,
+@@ -1250,7 +1251,7 @@ function resolveGitAuthor(projectDir: string): string {
+ 
+ function gitRelativePath(projectDir: string, path: string): string {
+   const top = runGit(projectDir, ["rev-parse", "--show-toplevel"]);
+-  const result = relative(top, path).replace(/\\/g, "/");
++  const result = relative(realpathSync(top), realpathSync(path)).replace(/\\/g, "/");
+   if (result.startsWith("../") || result === "..") {
+     throw new RfcError("RFC_PATH_OUTSIDE_REPO", `RFC path is outside git repository: ${path}`);
+   }
+diff --git a/packages/corgispec/src/lib/run-contract-v3.ts b/packages/corgispec/src/lib/run-contract-v3.ts
+index 19cccc39d96d91f3de20181d189e21f75b157713..f8d74266fda7f48e5a8e49686cae6ca94aaa3be9 100644
+--- a/packages/corgispec/src/lib/run-contract-v3.ts
++++ b/packages/corgispec/src/lib/run-contract-v3.ts
+@@ -117,7 +117,7 @@ export interface HumanQaEvidenceV3 {
+ export interface RepairRequirementV3 {
+   kind: "implementation" | "rfc_amendment";
+   reason: string;
+-  failedPhase: "verify" | "human_review" | "human_qa";
++  failedPhase: "verify" | "human_review" | "human_qa" | "archive";
+   requestedAt: string;
+ }
+ 
+@@ -213,6 +213,11 @@ export interface ArchiveStartedEventV3 extends EventBaseV3 {
+   intentId: string;
+ }
+ 
++export interface ArchiveRepairRequestedEventV3 extends EventBaseV3 {
++  type: "archive_repair_requested";
++  reason: string;
++}
++
+ export interface ArchiveLocalCompletedEventV3 extends EventBaseV3 {
+   type: "archive_local_completed";
+   evidenceManifestHash: ArtifactHashV3;
+@@ -243,6 +248,7 @@ export type RunEventV3 =
+   | HumanReviewSubmittedEventV3
+   | HumanQaSubmittedEventV3
+   | ArchiveStartedEventV3
++  | ArchiveRepairRequestedEventV3
+   | ArchiveLocalCompletedEventV3
+   | ArchiveTrackerCompletedEventV3
+   | RunArchivedEventV3
+@@ -577,6 +583,15 @@ export function reduceRunEventV3(state: RunStateV3 | null, event: RunEventV3): R
+       };
+       next.phase = "archiving";
+       break;
++    case "archive_repair_requested":
++      requireCondition(
++        next.phase === "archiving" && next.archive?.localCompleted === false,
++        "RUN_ARCHIVE_REPAIR_INVALID",
++        "archive repair may be requested only before local archive closeout completes",
++      );
++      requireCondition(nonEmpty(event.reason), "RUN_ARCHIVE_REPAIR_REASON_REQUIRED", "archive repair requires a reason");
++      setRepair(next, "implementation", "archive", event.reason.trim());
++      break;
+     case "archive_local_completed":
+       requireCondition(next.phase === "archiving" && next.archive !== null, "RUN_PHASE_INVALID", "archive has not started");
+       requireCondition(isArtifactHashV3(event.evidenceManifestHash), "RUN_ARCHIVE_EVIDENCE_INVALID", "archive evidence manifest hash is invalid");
+diff --git a/packages/corgispec/src/lib/workflow-intent.ts b/packages/corgispec/src/lib/workflow-intent.ts
+index 4c6e9ec2d7ebedc8916b5757519bc00cbd2bb35e..af6f7749dbe704f75f24523ca13ce156ea74c4e9 100644
+--- a/packages/corgispec/src/lib/workflow-intent.ts
++++ b/packages/corgispec/src/lib/workflow-intent.ts
+@@ -3,6 +3,8 @@ import { spawnSync } from "node:child_process";
+ import { mkdirSync, readFileSync, renameSync, rmSync, writeFileSync } from "node:fs";
+ import { dirname, resolve } from "node:path";
+ 
++import { LoopStoreV3 } from "./loop-store-v3.js";
++
+ export type ProposeIntentStage =
+   | "prepared"
+   | "issue_created"
+@@ -22,6 +24,12 @@ export interface ProposeIntent {
+   issue?: { id: string; url: string };
+   changeRoot?: string;
+   sourceDigest?: string;
++  handoffRefresh?: {
++    fromHead: string;
++    toHead: string;
++    integrationRevision: string;
++    refreshedAt: string;
++  };
+   updatedAt: string;
+ }
+ 
+@@ -146,6 +154,103 @@ export function advanceProposeIntent(
+   return next;
+ }
+ 
++export interface RefreshCompletedProposeHandoffInput {
++  projectDir: string;
++  key: string;
++  changeName: string;
++  deliveryRef: string;
++  sourceDigest: string;
++  expectedHead: string;
++  currentHead: string;
++  integrationBranch: string;
++  refreshedAt?: string;
++}
++
++/**
++ * Re-anchor a completed pre-Run Propose handoff after only already-integrated
++ * commits advanced the delivery branch.
++ *
++ * This is deliberately narrower than a generic retry: the original HEAD must
++ * reach the acknowledged current HEAD, that HEAD must already be on the
++ * configured integration branch, the source identity must be unchanged, and
++ * no Run Contract may exist. The caller must hold the Propose workflow lock
++ * and must have completed strict readiness before invoking this mutation.
++ */
++export function refreshCompletedProposeHandoff(
++  input: RefreshCompletedProposeHandoffInput,
++): ProposeIntent {
++  const expectedHead = requireGitRevision(input.expectedHead, "expected HEAD");
++  const currentHead = requireGitRevision(input.currentHead, "current HEAD");
++  const intent = loadProposeIntent(input.projectDir, input.key);
++  if (!intent) {
++    throw new WorkflowIntentError("Completed Propose intent is missing", "PROPOSE_HANDOFF_MISSING");
++  }
++  if (
++    intent.changeName !== input.changeName
++    || intent.deliveryRef !== input.deliveryRef
++    || intent.sourceDigest !== input.sourceDigest
++  ) {
++    throw new WorkflowIntentError(
++      "Propose handoff identity differs from the current Change source",
++      "PROPOSE_HANDOFF_IDENTITY_CHANGED",
++    );
++  }
++  if (intent.stage !== "complete") {
++    throw new WorkflowIntentError(
++      `Propose handoff is '${intent.stage}', not complete`,
++      "PROPOSE_HANDOFF_NOT_COMPLETE",
++    );
++  }
++
++  const actualHead = gitRevision(input.projectDir, "HEAD");
++  if (actualHead !== currentHead) {
++    throw new WorkflowIntentError(
++      `Current HEAD is '${actualHead}', expected acknowledged HEAD '${currentHead}'`,
++      "PROPOSE_HANDOFF_CURRENT_HEAD_CHANGED",
++    );
++  }
++  const integrationRevision = gitRevision(input.projectDir, input.integrationBranch);
++  if (new LoopStoreV3(input.projectDir).inspect(input.changeName).state) {
++    throw new WorkflowIntentError(
++      "A Run Contract already owns this Change; pre-Run handoff refresh is forbidden",
++      "PROPOSE_HANDOFF_RUN_EXISTS",
++    );
++  }
++  const repeated = intent.headRevision === currentHead
++    && intent.handoffRefresh?.fromHead === expectedHead
++    && intent.handoffRefresh.toHead === currentHead
++    && intent.handoffRefresh.integrationRevision === integrationRevision;
++  if (repeated) return intent;
++  if (intent.headRevision !== expectedHead) {
++    throw new WorkflowIntentError(
++      `Propose handoff records '${intent.headRevision}', expected '${expectedHead}'`,
++      "PROPOSE_HANDOFF_EXPECTED_HEAD_CHANGED",
++    );
++  }
++  requireGitAncestor(
++    input.projectDir,
++    expectedHead,
++    currentHead,
++    "The acknowledged current HEAD does not descend from the completed Propose HEAD",
++  );
++  requireGitAncestor(
++    input.projectDir,
++    currentHead,
++    integrationRevision,
++    `The acknowledged current HEAD is not integrated into '${input.integrationBranch}'`,
++  );
++
++  return advanceProposeIntent(input.projectDir, intent, {
++    headRevision: currentHead,
++    handoffRefresh: {
++      fromHead: expectedHead,
++      toHead: currentHead,
++      integrationRevision,
++      refreshedAt: input.refreshedAt ?? new Date().toISOString(),
++    },
++  });
++}
++
+ function validateIntent(value: unknown): asserts value is ProposeIntent {
+   if (!value || typeof value !== "object" || Array.isArray(value)) throw invalid("must be an object");
+   const record = value as Record<string, unknown>;
+@@ -155,6 +260,52 @@ function validateIntent(value: unknown): asserts value is ProposeIntent {
+   }
+   if (!(["prepared", "issue_created", "change_created", "source_written", "tracker_sync_pending", "complete"] as unknown[])
+     .includes(record.stage)) throw invalid("has invalid stage");
++  if (record.handoffRefresh !== undefined) {
++    if (!record.handoffRefresh || typeof record.handoffRefresh !== "object" || Array.isArray(record.handoffRefresh)) {
++      throw invalid("has invalid handoffRefresh");
++    }
++    const refresh = record.handoffRefresh as Record<string, unknown>;
++    for (const field of ["fromHead", "toHead", "integrationRevision", "refreshedAt"] as const) {
++      if (typeof refresh[field] !== "string" || !refresh[field]) {
++        throw invalid(`has invalid handoffRefresh.${field}`);
++      }
++    }
++  }
++}
++
++function requireGitRevision(value: string, label: string): string {
++  const revision = value.trim();
++  if (!/^[0-9a-f]{40}$/u.test(revision)) {
++    throw new WorkflowIntentError(`${label} must be a full 40-character Git SHA`, "PROPOSE_HANDOFF_REVISION_INVALID");
++  }
++  return revision;
++}
++
++function gitRevision(projectDir: string, revision: string): string {
++  const result = spawnSync("git", ["rev-parse", "--verify", `${revision}^{commit}`], {
++    cwd: projectDir,
++    encoding: "utf8",
++    timeout: 5_000,
++  });
++  const resolved = result.stdout.trim();
++  if (result.status !== 0 || !/^[0-9a-f]{40}$/u.test(resolved)) {
++    throw new WorkflowIntentError(
++      result.stderr.trim() || `Could not resolve Git revision '${revision}'`,
++      "PROPOSE_HANDOFF_REVISION_INVALID",
++    );
++  }
++  return resolved;
++}
++
++function requireGitAncestor(projectDir: string, ancestor: string, descendant: string, message: string): void {
++  const result = spawnSync("git", ["merge-base", "--is-ancestor", ancestor, descendant], {
++    cwd: projectDir,
++    encoding: "utf8",
++    timeout: 5_000,
++  });
++  if (result.status !== 0) {
++    throw new WorkflowIntentError(message, "PROPOSE_HANDOFF_NOT_INTEGRATED");
++  }
+ }
+ 
+ function invalid(message: string): WorkflowIntentError {
+diff --git a/packages/corgispec/test/archive-closeout-v3.test.ts b/packages/corgispec/test/archive-closeout-v3.test.ts
+index 5fe0ce8cecc5f0713e4b05263a1148a03e381870..5d31dcd0fde45d3d882d5d9be7bf39e638fa5886 100644
+--- a/packages/corgispec/test/archive-closeout-v3.test.ts
++++ b/packages/corgispec/test/archive-closeout-v3.test.ts
+@@ -1,6 +1,7 @@
+ import { execFileSync } from "node:child_process";
+ import { createHash } from "node:crypto";
+ import {
++  existsSync,
+   mkdirSync,
+   mkdtempSync,
+   readFileSync,
+@@ -14,6 +15,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
+ 
+ import {
+   performLocalArchiveCloseoutV3,
++  rollbackPendingArchiveCloseoutV3,
+   verifySealedArchiveCheckpointV3,
+ } from "../src/lib/archive-closeout-v3.js";
+ import {
+@@ -41,6 +43,138 @@ describe("strong local Archive v3 closeout", () => {
+     if (root) rmSync(root, { recursive: true, force: true });
+   });
+ 
++  it("removes only validated untracked evidence and a pending journal before repair", async () => {
++    root = mkdtempSync(resolve(tmpdir(), "corgispec-archive-rollback-"));
++    initializeProject(root);
++    const changeName = "guide-repair";
++    const changeRoot = resolve(root, "openspec/changes", changeName);
++    const source: MaintenanceSource = {
++      schemaVersion: 1,
++      kind: "maintenance",
++      deliveryRef: `maintenance/${changeName}`,
++      maintenance: {
++        category: "docs-only",
++        description: "Repair a delta before Archive.",
++        reason: "Archive preflight found an incomplete delta.",
++        boundary: "Planning repair only.",
++        contractRefs: [],
++      },
++      acceptance: [{ id: "MC-001", evidence: "automated" }],
++      tracker: { provider: "none", idempotencyKey: "maintenance-guide-repair" },
++    };
++    const sourceDigest = writeChangeSource(changeRoot, source) as ArtifactHashV3;
++    const traceabilityDigest = writeChangeTraceability(changeRoot, {
++      schemaVersion: 1,
++      sourceDigest,
++      acceptance: [{
++        id: "MC-001",
++        evidence: "automated",
++        planningRefs: [{ path: "tasks.md", anchor: "guide" }],
++        taskGroups: ["1"],
++      }],
++    }) as ArtifactHashV3;
++    writeFileSync(resolve(changeRoot, "tasks.md"), "## 1. Guide\n- [ ] 1.1 clarify\n");
++    git(root, ["add", "."]);
++    git(root, ["commit", "-m", "verified maintenance"]);
++    const finalRevision = git(root, ["rev-parse", "HEAD"]);
++    const state = maintenanceArchiveState({ changeName, sourceDigest, traceabilityDigest, finalRevision });
++    const evidencePath = resolve(changeRoot, "evidence");
++    mkdirSync(evidencePath, { recursive: true });
++    writeFileSync(resolve(evidencePath, "manifest.json"), `${JSON.stringify({
++      schemaVersion: 3,
++      changeName,
++      runId: state.runId,
++      finalRevision,
++      planningRevision: state.planningRevision,
++      sourceDigest,
++      traceabilityDigest,
++      files: [],
++      manifestHash: HASH,
++    }, null, 2)}\n`);
++
++    await expect(performLocalArchiveCloseoutV3({
++      projectRoot: root,
++      changeName,
++      state,
++      evidenceManifestHash: HASH,
++    }, { archiveChange: async () => { throw new Error("delta conflict"); } })).rejects.toThrow("delta conflict");
++    const journal = archiveJournalPath(root, state);
++    expect(existsSync(journal)).toBe(true);
++
++    const result = rollbackPendingArchiveCloseoutV3({
++      projectRoot: root,
++      changeName,
++      state,
++      evidenceManifestHash: HASH,
++    });
++    expect(result).toEqual({ removedEvidencePath: evidencePath, removedJournalPath: journal });
++    expect(existsSync(evidencePath)).toBe(false);
++    expect(existsSync(journal)).toBe(false);
++    expect(git(root, ["status", "--porcelain"])).toBe("");
++  });
++
++  it("fails closed when pending Archive evidence is tracked or unrelated work is dirty", async () => {
++    root = mkdtempSync(resolve(tmpdir(), "corgispec-archive-rollback-guards-"));
++    initializeProject(root);
++    const changeName = "guarded-repair";
++    const changeRoot = resolve(root, "openspec/changes", changeName);
++    const source: MaintenanceSource = {
++      schemaVersion: 1,
++      kind: "maintenance",
++      deliveryRef: `maintenance/${changeName}`,
++      maintenance: {
++        category: "test-only",
++        description: "Exercise rollback guards.",
++        reason: "Test recovery safety.",
++        boundary: "Test fixture only.",
++        contractRefs: [],
++      },
++      acceptance: [{ id: "MC-001", evidence: "automated" }],
++      tracker: { provider: "none", idempotencyKey: "maintenance-guarded-repair" },
++    };
++    const sourceDigest = writeChangeSource(changeRoot, source) as ArtifactHashV3;
++    const traceabilityDigest = writeChangeTraceability(changeRoot, {
++      schemaVersion: 1,
++      sourceDigest,
++      acceptance: [{ id: "MC-001", evidence: "automated", planningRefs: [{ path: "tasks.md" }], taskGroups: ["1"] }],
++    }) as ArtifactHashV3;
++    writeFileSync(resolve(changeRoot, "tasks.md"), "## 1. Guard\n- [ ] 1.1 guard\n");
++    git(root, ["add", "."]);
++    git(root, ["commit", "-m", "verified maintenance"]);
++    const finalRevision = git(root, ["rev-parse", "HEAD"]);
++    const state = maintenanceArchiveState({ changeName, sourceDigest, traceabilityDigest, finalRevision });
++    const evidencePath = resolve(changeRoot, "evidence");
++    mkdirSync(evidencePath, { recursive: true });
++    writeFileSync(resolve(evidencePath, "manifest.json"), `${JSON.stringify({
++      schemaVersion: 3,
++      changeName,
++      runId: state.runId,
++      finalRevision,
++      planningRevision: state.planningRevision,
++      sourceDigest,
++      traceabilityDigest,
++      files: [],
++      manifestHash: HASH,
++    }, null, 2)}\n`);
++    writeFileSync(resolve(root, "unrelated.tmp"), "user work\n");
++
++    expect(() => rollbackPendingArchiveCloseoutV3({
++      projectRoot: root,
++      changeName,
++      state,
++      evidenceManifestHash: HASH,
++    })).toThrowError(expect.objectContaining({ code: "ARCHIVE_ROLLBACK_MIXED_DIRTY" }));
++    rmSync(resolve(root, "unrelated.tmp"));
++    git(root, ["add", "--", relative(root, evidencePath)]);
++    expect(() => rollbackPendingArchiveCloseoutV3({
++      projectRoot: root,
++      changeName,
++      state,
++      evidenceManifestHash: HASH,
++    })).toThrowError(expect.objectContaining({ code: "ARCHIVE_ROLLBACK_EVIDENCE_TRACKED" }));
++    expect(existsSync(evidencePath)).toBe(true);
++  });
++
+   it("resumes after OpenSpec moved the Change and commits delivery, Wiki, and Bridge exactly once", async () => {
+     root = mkdtempSync(resolve(tmpdir(), "corgispec-archive-closeout-"));
+     initializeProject(root);
+@@ -497,6 +631,7 @@ function initializeProject(root: string): void {
+   git(root, ["init", "-b", "main"]);
+   git(root, ["config", "user.email", "human@example.test"]);
+   git(root, ["config", "user.name", "Human Reviewer"]);
++  git(root, ["config", "commit.gpgsign", "false"]);
+   ensureFoundationRfc({ projectDir: root });
+   completeRfc(root, "RFC-0001-project-foundation", "S-01-project-foundation");
+   acceptRfc({
+diff --git a/packages/corgispec/test/git-workspace-v2.test.ts b/packages/corgispec/test/git-workspace-v2.test.ts
+index 78c8cf171c3bda32e847720d2b9dc99760248615..2f1f266978356dc3997e4c58e4a0b26af41a71c3 100644
+--- a/packages/corgispec/test/git-workspace-v2.test.ts
++++ b/packages/corgispec/test/git-workspace-v2.test.ts
+@@ -86,6 +86,20 @@ describe("GitWorkspaceV2", () => {
+     expect(await workspace.commitParents(acknowledged.headRevision)).toEqual([baselineRevision]);
+   });
+ 
++  it("resolves configured revisions and distinguishes integrated ancestry from divergence", async () => {
++    const root = repo("ancestry");
++    const workspace = createGitWorkspaceV2(root);
++    const baseline = await workspace.headRevision();
++    writeFileSync(resolve(root, "README.md"), "integrated\n");
++    git(root, "add", "README.md");
++    git(root, "commit", "-m", "integrated advance");
++    const integrated = await workspace.headRevision();
++
++    expect(await workspace.resolveRevision("main")).toBe(integrated);
++    expect(await workspace.isAncestor(baseline, integrated)).toBe(true);
++    expect(await workspace.isAncestor(integrated, baseline)).toBe(false);
++  });
++
+   it("binds a tested deletion to the commit tree that omits the deleted path", async () => {
+     const root = repo("delete");
+     const workspace = createGitWorkspaceV2(root);
+diff --git a/packages/corgispec/test/lifecycle-v3.test.ts b/packages/corgispec/test/lifecycle-v3.test.ts
+index b9d81487688df93245be31d57b20d9072f47a29f..781d73ee1b44191e0a6cb6b31f7b34d0df198677 100644
+--- a/packages/corgispec/test/lifecycle-v3.test.ts
++++ b/packages/corgispec/test/lifecycle-v3.test.ts
+@@ -29,6 +29,7 @@ import {
+   finishArchiveV3,
+   lifecycleTokenV3,
+   materializeArchiveEvidenceV3,
++  requestArchiveRepairV3,
+   startApplyV3,
+   submitHumanQaV3,
+   submitHumanReviewV3,
+@@ -187,6 +188,11 @@ function harness(tracked = false): Harness {
+     }),
+     changedPaths: async () => changedPaths,
+     commitParents: async (revision: string) => parents.get(revision) ?? [],
++    resolveRevision: async (revision: string) =>
++      revision === "origin/main" ? "integration-head" : revision,
++    isAncestor: async (ancestor: string, descendant: string) =>
++      (ancestor === "base" && descendant === "integrated-head")
++      || (ancestor === "integrated-head" && descendant === "integration-head"),
+   } as unknown as GitWorkspaceV2;
+   let sequence = 0;
+   const dependencies: LifecycleV3Dependencies = {
+@@ -296,6 +302,46 @@ async function archiving(h: Harness): Promise<RunStateV3> {
+ }
+ 
+ describe("Run Contract v3 lifecycle services", () => {
++  it("rolls back pending Archive artifacts before recording repair_required", async () => {
++    const h = harness();
++    const state = await archiving(h);
++    let rollbackCalls = 0;
++    h.dependencies.rollbackPendingArchive = (input) => {
++      rollbackCalls += 1;
++      expect(input).toMatchObject({
++        projectRoot: h.root,
++        changeName: "change-a",
++        evidenceManifestHash: H,
++        state: { runId: state.runId, phase: "archiving" },
++      });
++      return {
++        removedEvidencePath: resolve(h.root, "openspec/changes/change-a/evidence"),
++        removedJournalPath: resolve(h.root, ".corgi/loop/change-a/archive-closeout/archive.json"),
++      };
++    };
++    h.plan.blockers.push("ARCHIVE_DELTA_COMPATIBLE: canonical scenario identity is missing");
++
++    const result = await requestArchiveRepairV3({
++      projectRoot: h.root,
++      changeName: "change-a",
++      token: lifecycleTokenV3(state),
++      evidenceManifestHash: H,
++      reason: " delta would drop canonical scenarios ",
++    }, h.dependencies);
++
++    expect(rollbackCalls).toBe(1);
++    expect(result.state).toMatchObject({
++      phase: "repair_required",
++      repair: {
++        kind: "implementation",
++        failedPhase: "archive",
++        reason: "delta would drop canonical scenarios",
++      },
++      archive: { intentId: "archive-a", localCompleted: false },
++    });
++    expect(h.store.inspect("change-a", state.runId).state).toEqual(result.state);
++  });
++
+   it("requires the Task Group commit bridge checkpoint to name the next Run state", async () => {
+     const h = harness();
+     const state = await startApplyV3({
+@@ -427,6 +473,81 @@ describe("Run Contract v3 lifecycle services", () => {
+     }, h.dependencies)).rejects.toMatchObject({ code: "GROUP_COMMIT_NOT_ATOMIC" });
+   });
+ 
++  it("accepts one exact integration merge as the first Task Group commit", async () => {
++    const h = harness();
++    writeFileSync(resolve(h.root, "openspec/config.yaml"), [
++      "schema: custom",
++      "corgi:",
++      "  governance:",
++      "    integrationBranch: origin/main",
++      "",
++    ].join("\n"));
++    let state = await startApplyV3({
++      projectRoot: h.root,
++      changeName: "change-a",
++      sessionId: "session-a",
++      owner: { id: "agent", kind: "agent" },
++    }, h.dependencies);
++    h.setHead("integration-merge");
++    h.setParents("integration-merge", ["base", "integration-head"]);
++
++    state = await completeTaskGroupV3({
++      projectRoot: h.root,
++      changeName: "change-a",
++      token: lifecycleTokenV3(state),
++      groupId: "1",
++      workspaceFingerprint: H,
++      evidence: {
++        schemaVersion: 3,
++        groupId: "1",
++        checks: [{ name: "integration", status: "pass", evidenceRefs: ["integration.log"] }],
++        automatedReview: { verdict: "pass", findings: [] },
++        artifacts: ["integration.log"],
++        summary: "Integrated the exact configured baseline",
++      },
++    }, h.dependencies);
++
++    expect(state).toMatchObject({
++      phase: "awaiting_verify",
++      groups: { "1": { status: "completed", commitRevision: "integration-merge" } },
++    });
++  });
++
++  it("rejects a first-group merge that does not target the configured integration revision", async () => {
++    const h = harness();
++    writeFileSync(resolve(h.root, "openspec/config.yaml"), [
++      "schema: custom",
++      "corgi:",
++      "  governance:",
++      "    integrationBranch: origin/main",
++      "",
++    ].join("\n"));
++    const state = await startApplyV3({
++      projectRoot: h.root,
++      changeName: "change-a",
++      sessionId: "session-a",
++      owner: { id: "agent", kind: "agent" },
++    }, h.dependencies);
++    h.setHead("stale-integration-merge");
++    h.setParents("stale-integration-merge", ["base", "older-main"]);
++
++    await expect(completeTaskGroupV3({
++      projectRoot: h.root,
++      changeName: "change-a",
++      token: lifecycleTokenV3(state),
++      groupId: "1",
++      workspaceFingerprint: H,
++      evidence: {
++        schemaVersion: 3,
++        groupId: "1",
++        checks: [{ name: "integration", status: "pass", evidenceRefs: ["integration.log"] }],
++        automatedReview: { verdict: "pass", findings: [] },
++        artifacts: ["integration.log"],
++        summary: "Stale integration must fail",
++      },
++    }, h.dependencies)).rejects.toMatchObject({ code: "GROUP_COMMIT_NOT_ATOMIC" });
++  });
++
+   it("turns missing Verify AC coverage into canonical implementation repair", async () => {
+     const h = harness();
+     const state = await applied(h);
+@@ -927,7 +1048,7 @@ describe("Run Contract v3 lifecycle services", () => {
+     expect(git("rev-parse", "HEAD")).toBe(baseline);
+   });
+ 
+-  it("fails closed when the Propose handoff is incomplete, drifted, or its HEAD moved", async () => {
++  it("fails closed when the Propose handoff is incomplete, drifted, or HEAD moved off integration", async () => {
+     const incomplete = harness();
+     rmSync(resolve(incomplete.root, ".corgi/transactions/propose", `${INTENT_KEY}.json`));
+     await expect(startApplyV3({
+@@ -965,6 +1086,13 @@ describe("Run Contract v3 lifecycle services", () => {
+     }
+ 
+     const moved = harness();
++    writeFileSync(resolve(moved.root, "openspec/config.yaml"), [
++      "schema: custom",
++      "corgi:",
++      "  governance:",
++      "    integrationBranch: origin/main",
++      "",
++    ].join("\n"));
+     moved.setHead("other-commit");
+     await expect(startApplyV3({
+       projectRoot: moved.root,
+@@ -973,6 +1101,25 @@ describe("Run Contract v3 lifecycle services", () => {
+       owner: { id: "agent", kind: "agent" },
+     }, moved.dependencies)).rejects.toMatchObject({ code: "PLANNING_HANDOFF_HEAD_CHANGED" });
+ 
++    const integrated = harness();
++    writeFileSync(resolve(integrated.root, "openspec/config.yaml"), [
++      "schema: custom",
++      "corgi:",
++      "  governance:",
++      "    integrationBranch: origin/main",
++      "",
++    ].join("\n"));
++    integrated.setHead("integrated-head");
++    await expect(startApplyV3({
++      projectRoot: integrated.root,
++      changeName: "change-a",
++      sessionId: "session-a",
++      owner: { id: "agent", kind: "agent" },
++    }, integrated.dependencies)).resolves.toMatchObject({
++      phase: "applying",
++      baselineRevision: "integrated-head",
++    });
++
+     const blocked = harness();
+     blocked.plan.blockers = ["TRACEABILITY_MISSING_TASK_GROUP: AC-001"];
+     await expect(startApplyV3({
+diff --git a/packages/corgispec/test/memory-lint-v4.test.ts b/packages/corgispec/test/memory-lint-v4.test.ts
+index 85abfbd8a5c28c8425c75b232825182bd3871a52..2c6576c8f1ae93fa457ff0d8082309fa962029a0 100644
+--- a/packages/corgispec/test/memory-lint-v4.test.ts
++++ b/packages/corgispec/test/memory-lint-v4.test.ts
+@@ -325,6 +325,9 @@ describe("RFC-first v4 Memory/Wiki lint", () => {
+       "",
+       "## Implementation",
+       "- Final HEAD: `final-commit`",
++      "",
++      "## Review and QA",
++      "- Human QA confirmed AC-001 through a real user path.",
+     ].join("\n"));
+     const deliveryIndex = resolve(root, "wiki/deliveries/_index.md");
+     writeFileSync(deliveryIndex, readFileSync(deliveryIndex, "utf8").replace("- none", "- [[wiki/deliveries/RFC-0002-feature-S-01-slice|delivery]]"));
+@@ -342,7 +345,16 @@ describe("RFC-first v4 Memory/Wiki lint", () => {
+     expect(check(lintMemoryWikiV4({ projectRoot: root, now: NOW }), 12).status).toBe("pass");
+ 
+     const page = resolve(root, "wiki/deliveries/RFC-0002-feature-S-01-slice.md");
+-    writeFileSync(page, readFileSync(page, "utf8").replace("final-commit", "wrong-head"));
++    const validPage = readFileSync(page, "utf8");
++    writeFileSync(page, validPage.replace(
++      "| AC-001 | evidence/verify.json | PASS |",
++      "| AC-001 | evidence/verify.json | PASS |\n| AC-001 | duplicate.json | PASS |",
++    ));
++    const duplicate = check(lintMemoryWikiV4({ projectRoot: root, now: NOW }), 12);
++    expect(duplicate.status).toBe("error");
++    expect(duplicate.findings.some((finding) => finding.evidence.includes("2 acceptance-evidence row(s)"))).toBe(true);
++
++    writeFileSync(page, validPage.replace("final-commit", "wrong-head"));
+     const invalid = check(lintMemoryWikiV4({ projectRoot: root, now: NOW }), 12);
+     expect(invalid.status).toBe("error");
+     expect(invalid.findings.some((finding) => finding.message.includes("final HEAD"))).toBe(true);
+diff --git a/packages/corgispec/test/planning-commands.test.ts b/packages/corgispec/test/planning-commands.test.ts
+index a9efe6dbb8940b7c3799cccf5e41406c04eb0210..ab67a12892f5e99097385f7a0a58b979bab54e4d 100644
+--- a/packages/corgispec/test/planning-commands.test.ts
++++ b/packages/corgispec/test/planning-commands.test.ts
+@@ -161,6 +161,62 @@ describe("planning CLI JSON contracts", () => {
+     }));
+   });
+ 
++  it("blocks ready when a MODIFIED requirement would drop a canonical scenario", async () => {
++    const changeRoot = String(status.changeRoot);
++    const planningHome = status.planningHome as { changesDir: string };
++    const deltaSpec = resolve(changeRoot, "specs/cap-a/spec.md");
++    const canonicalSpec = resolve(planningHome.changesDir, "../specs/cap-a/spec.md");
++    mkdirSync(resolve(deltaSpec, ".."), { recursive: true });
++    mkdirSync(resolve(canonicalSpec, ".."), { recursive: true });
++    writeFileSync(resolve(changeRoot, "proposal.md"), [
++      "## Capabilities",
++      "### Modified Capabilities",
++      "- `cap-a`: capability",
++      "",
++    ].join("\n"));
++    writeFileSync(canonicalSpec, [
++      "### Requirement: Existing behavior",
++      "#### Scenario: Keep this identity",
++      "",
++    ].join("\n"));
++    writeFileSync(deltaSpec, [
++      "## MODIFIED Requirements",
++      "### Requirement: Existing behavior",
++      "#### Scenario: Replacement identity",
++      "",
++    ].join("\n"));
++    (status.artifactPaths as Record<string, unknown>).specs = {
++      outputPath: "specs/**/*.md",
++      resolvedOutputPath: resolve(changeRoot, "specs/**/*.md"),
++      existingOutputPaths: [deltaSpec],
++    };
++    (status.artifacts as Array<Record<string, unknown>>).push({
++      id: "specs",
++      outputPath: "specs/**/*.md",
++      status: "done",
++    });
++    const validation = {
++      items: [{ id: "change-a", type: "change", valid: true, issues: [], durationMs: 1 }],
++      summary: { valid: 1, invalid: 0 },
++      version: "1.6",
++    };
++    const runner = new QueueRunner([result(status), result(validation)]);
++    const adapter = createOpenSpecAdapter(root, runner, { verifyRuntime: false });
++
++    await createReadyCommand({ createAdapter: () => adapter }).parseAsync(
++      ["change-a", "--strict", "--json", "--path", root],
++      { from: "user" },
++    );
++
++    expect(process.exitCode).toBe(1);
++    const output = JSON.parse(String(log.mock.calls[0]![0]));
++    expect(output.checks).toContainEqual(expect.objectContaining({
++      code: "ARCHIVE_DELTA_COMPATIBLE",
++      status: "fail",
++      message: expect.stringContaining("Keep this identity"),
++    }));
++  });
++
+   it("maps malformed OpenSpec output to contract_error/exit 2", async () => {
+     const runner = new QueueRunner([result("not-json")]);
+     const adapter = createOpenSpecAdapter(root, runner, { verifyRuntime: false });
+diff --git a/packages/corgispec/test/planning-skill-assets.test.ts b/packages/corgispec/test/planning-skill-assets.test.ts
+index 64fd29b3eb937a5b65c4297e4dc3afbbd1d9ffeb..48f10690db1e856714ee72272605b4917b11b0dc 100644
+--- a/packages/corgispec/test/planning-skill-assets.test.ts
++++ b/packages/corgispec/test/planning-skill-assets.test.ts
+@@ -125,10 +125,7 @@ describe("workflow skill hook frontmatter", () => {
+           : { PreToolUse: PRE_WRITE_HOOK },
+       );
+       if (slug === "corgispec-apply") {
+-        expect(readFrontmatter(canonical).metadata).toMatchObject({
+-          "opencode/autoinvoke": "false",
+-        });
+-        expect(readFrontmatter(canonical)["disable-model-invocation"]).toBe(true);
++        expect(readFrontmatter(canonical)["disable-model-invocation"]).toBeUndefined();
+       }
+     });
+   }
+diff --git a/packages/corgispec/test/run-contract-skill-assets.test.ts b/packages/corgispec/test/run-contract-skill-assets.test.ts
+index 018b1059e0afb98e5cb6e9ab7f34c8ffe544a134..ee02125de1840b06d372a9cfb64305619ec07a99 100644
+--- a/packages/corgispec/test/run-contract-skill-assets.test.ts
++++ b/packages/corgispec/test/run-contract-skill-assets.test.ts
+@@ -24,8 +24,9 @@ describe("Run Contract v3 public skill chain", () => {
+     expect(read("packages/corgispec/assets/skills/compounds/corgispec-apply/SKILL.md")).toBe(apply);
+     expect(apply).toContain("Run Contract v3");
+     expect(apply).toContain("only public implementation entry");
+-    expect(apply).toContain('opencode/autoinvoke: "false"');
+-    expect(apply).toContain("disable-model-invocation: true");
++    expect(apply).not.toContain("disable-model-invocation");
++    expect(apply).toContain("--reanchor-handoff");
++    expect(apply).toContain("two-parent integration merge");
+     expect(apply).toContain("Never combine multiple Task Groups in one commit");
+     expect(apply).toContain("stateRevision");
+     expect(apply).toContain("nonce");
+@@ -59,6 +60,13 @@ describe("Run Contract v3 public skill chain", () => {
+     for (const operation of ["--begin", "--local", "--confirm-tracker", "--finish"]) {
+       expect(archive).toContain(operation);
+     }
++    expect(archive).toContain("synchronize that exact commit through the guarded adapter");
++    expect(archive).toContain("stop when ready/merge authority is unavailable");
++    expect(archive).toContain("Never call");
++    expect(archive).toContain("to bypass a required integration gate");
++    expect(archive.indexOf("synchronize that exact commit"))
++      .toBeLessThan(archive.indexOf("After the provider confirms that exact"));
++    expect(archive).toContain("never replace that proof with a raw push or direct provider edit");
+   });
+ 
+   it("keeps archive knowledge materialization in the CLI and extraction read-only", () => {
+@@ -105,11 +113,11 @@ describe("Run Contract v3 public skill chain", () => {
+ 
+   it("ships v4 metadata and Codex discovery policy", () => {
+     const metadata = JSON.parse(read(".opencode/skills/compounds/corgispec-apply/skill.meta.json"));
+-    expect(metadata.version).toBe("4.0.0-rc2");
++    expect(metadata.version).toBe("4.0.0-rc2-money.3");
+     expect(metadata.installation.targets).toEqual(["opencode", "claude", "codex"]);
+     const openAi = read(".opencode/skills/compounds/corgispec-apply/agents/openai.yaml");
+     expect(openAi).toContain("$corgispec-apply");
+-    expect(openAi).toContain("allow_implicit_invocation: false");
++    expect(openAi).toContain("allow_implicit_invocation: true");
+   });
+ 
+   it("contains no public Run Contract v2 workflow claim", () => {
+diff --git a/packages/corgispec/test/run-contract-v3.test.ts b/packages/corgispec/test/run-contract-v3.test.ts
+index 234f71dcda41cf309de4686c7ce6cb8fe40eec22..d0cc91ece80ab197799d769126764f427dfd6e9f 100644
+--- a/packages/corgispec/test/run-contract-v3.test.ts
++++ b/packages/corgispec/test/run-contract-v3.test.ts
+@@ -101,6 +101,64 @@ function verifyAcceptance(): CriterionEvidenceV3[] {
+ }
+ 
+ describe("Run Contract v3", () => {
++  it("routes a failed pre-closeout Archive into one implementation repair successor", () => {
++    let state = throughApply();
++    state = applyEvent(state, "verify_submitted", {
++      evidence: {
++        verdict: "pass",
++        finalRevision: "commit-2",
++        planningRevision: state.planningRevision,
++        sourceDigest: state.contract.sourceDigest,
++        traceabilityDigest: state.contract.traceabilityDigest,
++        reportHash: hashes[8]!,
++        checks: [{ name: "test", status: "pass", evidenceRefs: ["test.log"] }],
++        acceptance: verifyAcceptance(),
++        verifiedAt: "2026-08-14T00:00:04.000Z",
++      },
++    });
++    state = applyEvent(state, "human_review_submitted", {
++      evidence: {
++        decision: "approve",
++        reviewer: "human-a",
++        reason: null,
++        finalRevision: "commit-2",
++        planningRevision: state.planningRevision,
++        verifyReportHash: state.verify!.reportHash,
++        reviewedAt: "2026-08-14T00:00:05.000Z",
++      },
++    });
++    state = applyEvent(state, "human_qa_submitted", {
++      evidence: {
++        verdict: "pass",
++        reviewer: "human-a",
++        reason: null,
++        noRuntimeImpact: false,
++        finalRevision: "commit-2",
++        planningRevision: state.planningRevision,
++        reportHash: hashes[7]!,
++        acceptance: [
++          { id: "AC-001", automated: "not_applicable", human: "not_applicable", evidenceRefs: [] },
++          { id: "AC-002", automated: "not_applicable", human: "pass", evidenceRefs: ["qa:walkthrough"] },
++        ],
++        evidenceRefs: ["qa:walkthrough"],
++        reviewedAt: "2026-08-14T00:00:06.000Z",
++      },
++    });
++    state = applyEvent(state, "archive_started", { intentId: "archive-a" });
++    state = applyEvent(state, "archive_repair_requested", { reason: "delta would drop canonical scenarios" });
++
++    expect(state.phase).toBe("repair_required");
++    expect(state.repair).toMatchObject({
++      kind: "implementation",
++      failedPhase: "archive",
++      reason: "delta would drop canonical scenarios",
++    });
++    expect(state.archive).toMatchObject({ intentId: "archive-a", localCompleted: false });
++    expect(Object.values(state.groups).every((group) => group.status === "completed")).toBe(true);
++    expect(() => applyEvent(state, "archive_repair_requested", { reason: "again" }))
++      .toThrowError(expect.objectContaining({ code: "RUN_ARCHIVE_REPAIR_INVALID" }));
++  });
++
+   it("moves Apply only to awaiting_verify and gates the complete quality chain", () => {
+     let state = throughApply();
+     expect(state.phase).toBe("awaiting_verify");
+diff --git a/packages/corgispec/test/workflow-intent.test.ts b/packages/corgispec/test/workflow-intent.test.ts
+index 6ad12f3ae75af8a6e09a6c85017f4cea6646c200..95567eb79fbf3b3205a30cac45d1d6c34978ea06 100644
+--- a/packages/corgispec/test/workflow-intent.test.ts
++++ b/packages/corgispec/test/workflow-intent.test.ts
+@@ -3,10 +3,17 @@ import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+ import { tmpdir } from "node:os";
+ import { resolve } from "node:path";
+ import { afterEach, describe, expect, it } from "vitest";
++import { LoopStoreV3 } from "../src/lib/loop-store-v3.js";
++import {
++  createInitialRunStateV3,
++  createRunInitializedEventV3,
++  type ArtifactHashV3,
++} from "../src/lib/run-contract-v3.js";
+ import {
+   acquireWorkflowLock,
+   advanceProposeIntent,
+   loadProposeIntent,
++  refreshCompletedProposeHandoff,
+   releaseWorkflowLock,
+   writeProposeIntent,
+   type ProposeIntent,
+@@ -80,4 +87,134 @@ describe("durable propose intent", () => {
+     const recovered = acquireWorkflowLock(worktree, "rfc-delivery:RFC-0002-example");
+     releaseWorkflowLock(recovered);
+   });
++
++  it("refreshes a completed pre-Run handoff only across integrated commits and is idempotent", () => {
++    root = mkdtempSync(resolve(tmpdir(), "corgispec-intent-refresh-"));
++    const git = (args: string[]) =>
++      execFileSync("git", args, { cwd: root, encoding: "utf8" }).trim();
++    git(["init", "-b", "main"]);
++    git(["config", "user.email", "corgi@example.test"]);
++    git(["config", "user.name", "Coding Corgi"]);
++    writeFileSync(resolve(root, "README.md"), "base\n");
++    git(["add", "README.md"]);
++    git(["commit", "-m", "base"]);
++    const original = git(["rev-parse", "HEAD"]);
++    const intent: ProposeIntent = {
++      schemaVersion: 1,
++      operation: "propose",
++      key: "b".repeat(64),
++      deliveryRef: "RFC-0002-export/S-01-csv",
++      changeName: "export-csv",
++      headRevision: original,
++      stage: "complete",
++      sourceDigest: `sha256:${"c".repeat(64)}`,
++      updatedAt: new Date(0).toISOString(),
++    };
++    writeProposeIntent(root, intent);
++    writeFileSync(resolve(root, "README.md"), "integrated pilot activation\n");
++    git(["add", "README.md"]);
++    git(["commit", "-m", "activate pilot"]);
++    const current = git(["rev-parse", "HEAD"]);
++
++    const refreshed = refreshCompletedProposeHandoff({
++      projectDir: root,
++      key: intent.key,
++      changeName: intent.changeName,
++      deliveryRef: intent.deliveryRef,
++      sourceDigest: intent.sourceDigest!,
++      expectedHead: original,
++      currentHead: current,
++      integrationBranch: "main",
++      refreshedAt: "2026-08-15T00:00:00.000Z",
++    });
++    expect(refreshed).toMatchObject({
++      headRevision: current,
++      handoffRefresh: {
++        fromHead: original,
++        toHead: current,
++        integrationRevision: current,
++      },
++    });
++    const retry = {
++      projectDir: root,
++      key: intent.key,
++      changeName: intent.changeName,
++      deliveryRef: intent.deliveryRef,
++      sourceDigest: intent.sourceDigest!,
++      expectedHead: original,
++      currentHead: current,
++      integrationBranch: "main",
++    };
++    expect(refreshCompletedProposeHandoff(retry)).toEqual(refreshed);
++
++    const digest = `sha256:${"f".repeat(64)}` as ArtifactHashV3;
++    const run = createInitialRunStateV3({
++      changeName: intent.changeName,
++      runId: "run-a",
++      owner: { id: "agent", kind: "agent" },
++      sessionId: "session-a",
++      nonce: "nonce-a",
++      planningRevision: digest,
++      baselineRevision: current,
++      contract: {
++        kind: "rfc-slice",
++        deliveryRef: intent.deliveryRef,
++        rfcId: "RFC-0002-export",
++        rfcDigest: digest,
++        acceptedCommit: original,
++        sliceId: "S-01-csv",
++        sourcePath: "openspec/changes/export-csv/corgi/source.yaml",
++        sourceDigest: intent.sourceDigest as ArtifactHashV3,
++        traceabilityPath: "openspec/changes/export-csv/corgi/traceability.yaml",
++        traceabilityDigest: digest,
++        acceptance: [{ id: "AC-001", evidence: "both", taskGroups: ["1"] }],
++        tracker: { provider: "none", idempotencyKey: intent.key },
++      },
++      groups: [{ id: "1", fingerprint: digest }],
++      startedAt: "2026-08-15T00:00:00.000Z",
++    });
++    new LoopStoreV3(root).initialize(run, createRunInitializedEventV3(run));
++    expect(() => refreshCompletedProposeHandoff(retry))
++      .toThrowError(expect.objectContaining({ code: "PROPOSE_HANDOFF_RUN_EXISTS" }));
++  });
++
++  it("rejects a handoff refresh across a delivery-only commit", () => {
++    root = mkdtempSync(resolve(tmpdir(), "corgispec-intent-refresh-"));
++    const git = (args: string[]) =>
++      execFileSync("git", args, { cwd: root, encoding: "utf8" }).trim();
++    git(["init", "-b", "main"]);
++    git(["config", "user.email", "corgi@example.test"]);
++    git(["config", "user.name", "Coding Corgi"]);
++    writeFileSync(resolve(root, "README.md"), "base\n");
++    git(["add", "README.md"]);
++    git(["commit", "-m", "base"]);
++    const original = git(["rev-parse", "HEAD"]);
++    writeProposeIntent(root, {
++      schemaVersion: 1,
++      operation: "propose",
++      key: "d".repeat(64),
++      deliveryRef: "RFC-0002-export/S-01-json",
++      changeName: "export-json",
++      headRevision: original,
++      stage: "complete",
++      sourceDigest: `sha256:${"e".repeat(64)}`,
++      updatedAt: new Date(0).toISOString(),
++    });
++    git(["checkout", "-b", "delivery"]);
++    writeFileSync(resolve(root, "delivery.txt"), "implementation\n");
++    git(["add", "delivery.txt"]);
++    git(["commit", "-m", "delivery-only"]);
++    const current = git(["rev-parse", "HEAD"]);
++
++    expect(() => refreshCompletedProposeHandoff({
++      projectDir: root,
++      key: "d".repeat(64),
++      changeName: "export-json",
++      deliveryRef: "RFC-0002-export/S-01-json",
++      sourceDigest: `sha256:${"e".repeat(64)}`,
++      expectedHead: original,
++      currentHead: current,
++      integrationBranch: "main",
++    })).toThrowError(expect.objectContaining({ code: "PROPOSE_HANDOFF_NOT_INTEGRATED" }));
++  });
+ });

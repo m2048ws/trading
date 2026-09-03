@@ -20,11 +20,12 @@ changes; checks the Codex skill target; checks GitHub CLI authentication; and re
 admission switch is enabled. In a sandbox that cannot read the macOS credential store, run GitHub-dependent checks in
 the normal user shell.
 
-The current `4.0.0-rc2-money.2` pin is a repository-local recovery build documented under `vendor/`. It makes Apply
+The current `4.0.0-rc2-money.3` pin is a repository-local recovery build documented under `vendor/`. It makes Apply
 accept ordinary integrated pre-Run HEAD advances automatically, admits an exact first-Task-Group integration-merge
 topology, adds deterministic canonical Archive-delta compatibility in readiness, and provides a guarded pre-closeout
-`archive --request-repair` transition. Keep the local version and integrity qualification until an upstream release
-contains these behaviors; do not silently replace it with a registry build.
+`archive --request-repair` transition. It also validates archived AC evidence by table-row identity so narrative QA
+references do not become false duplicates. Keep the local version and integrity qualification until an upstream
+release contains these behaviors; do not silently replace it with a registry build.
 
 ## Activation evidence
 
