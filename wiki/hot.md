@@ -21,6 +21,7 @@ pinned: true
 
 ## Recently Shipped
 <!-- corgi:managed:start recently-shipped -->
+- [[wiki/deliveries/RFC-0001-project-foundation-S-01-project-foundation|RFC-0001-project-foundation/S-01-project-foundation]]
 - [[wiki/deliveries/RFC-0002-architecture-portfolio-S-01-application-runtime-foundation|RFC-0002-architecture-portfolio/S-01-application-runtime-foundation]]
 - [[wiki/deliveries/RFC-0002-architecture-portfolio-S-02-order-execution-scenarios|RFC-0002-architecture-portfolio/S-02-order-execution-scenarios]]
 - [[wiki/deliveries/RFC-0002-architecture-portfolio-S-03-pure-risk|RFC-0002-architecture-portfolio/S-03-pure-risk]]

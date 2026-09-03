@@ -1,0 +1,112 @@
+{
+  "schemaVersion": 1,
+  "kind": "legacy-openspec-delivery-reconciliation",
+  "rfcId": "RFC-0001-project-foundation",
+  "sliceId": "S-01-project-foundation",
+  "legacyChange": "establish-architecture-and-functional-design-charter",
+  "legacyWorkflow": "OpenSpec",
+  "plannedAt": "2026-08-28T02:09:22Z",
+  "archivedAt": "2026-08-28T03:16:13Z",
+  "deliveryCommit": "3901ec2bca5f2b3ea36496ccb0a239d6d794f8a4",
+  "sourceTreeDigest": "sha256:8515cbb2322cbdb58a9f914bb4308cc19d1f34c624973594646be806200767b0",
+  "reconciledAt": "2026-09-03T17:04:43Z",
+  "reconciledBy": "m2048ws",
+  "provenance": "RFC-0001 was created and accepted during the Corgi v4 transition after this OpenSpec change had already been implemented and archived. This record backfills that historical delivery; it does not claim that a Run Contract v3 run existed.",
+  "acceptance": [
+    {
+      "id": "AC-001",
+      "evidence": "both",
+      "result": "pass",
+      "basis": [
+        "The archived design and repository-architecture specification assign primary owners and define an acyclic dependency direction.",
+        "The accepted foundation RFC was approved by m2048ws on 2026-08-29."
+      ],
+      "artifacts": [
+        {
+          "path": "openspec/specs/repository-architecture/spec.md",
+          "commit": "3901ec2bca5f2b3ea36496ccb0a239d6d794f8a4",
+          "digest": "sha256:2a1bf09ced4c6a17e10554846807019b3b698ebef09ea43885da2efb2d17481f"
+        },
+        {
+          "path": "docs/architecture-charter-audit.md",
+          "commit": "3901ec2bca5f2b3ea36496ccb0a239d6d794f8a4",
+          "digest": "sha256:ba3d6a33bd28b01ce4698da947086f6ec40879c4e8ec316ea07b604da7633859"
+        }
+      ]
+    },
+    {
+      "id": "AC-002",
+      "evidence": "both",
+      "result": "pass",
+      "basis": [
+        "The two normative specifications define explicit trust transitions, validation stages, retained evidence, deterministic accumulation, and typed failures.",
+        "The accepted foundation RFC was approved by m2048ws on 2026-08-29."
+      ],
+      "artifacts": [
+        {
+          "path": "openspec/specs/repository-architecture/spec.md",
+          "commit": "3901ec2bca5f2b3ea36496ccb0a239d6d794f8a4",
+          "digest": "sha256:2a1bf09ced4c6a17e10554846807019b3b698ebef09ea43885da2efb2d17481f"
+        },
+        {
+          "path": "openspec/specs/scala-functional-design/spec.md",
+          "commit": "3901ec2bca5f2b3ea36496ccb0a239d6d794f8a4",
+          "digest": "sha256:e17a2d1faf34b77fd0b783b10d61ca6562e728d77941382973a9d8325203bae4"
+        }
+      ]
+    },
+    {
+      "id": "AC-003",
+      "evidence": "automated",
+      "result": "pass",
+      "basis": [
+        "The archived task record reports strict OpenSpec validation, formatting checks, and a clean SBT test run for the governance-only delivery.",
+        "The delivery commit added no production dependency or runtime implementation."
+      ],
+      "artifacts": [
+        {
+          "path": "openspec/changes/archive/2026-08-28-establish-architecture-and-functional-design-charter/tasks.md",
+          "commit": "3901ec2bca5f2b3ea36496ccb0a239d6d794f8a4",
+          "digest": "sha256:d7185c42f793376d3811bb147f55a93edbba32555018e7188d561177a4143144"
+        }
+      ]
+    },
+    {
+      "id": "AC-004",
+      "evidence": "both",
+      "result": "pass",
+      "basis": [
+        "The charter defines claim-proportional law, compiler-boundary, interpreter, concurrency, complexity, and performance evidence.",
+        "The archived task record includes a completed independent review."
+      ],
+      "artifacts": [
+        {
+          "path": "docs/design-principles.md",
+          "commit": "3901ec2bca5f2b3ea36496ccb0a239d6d794f8a4",
+          "digest": "sha256:96bd65516a2965c78af831ed14ac41777638b86d1704ab34260a8c4acedff0c9"
+        },
+        {
+          "path": "openspec/changes/archive/2026-08-28-establish-architecture-and-functional-design-charter/tasks.md",
+          "commit": "3901ec2bca5f2b3ea36496ccb0a239d6d794f8a4",
+          "digest": "sha256:d7185c42f793376d3811bb147f55a93edbba32555018e7188d561177a4143144"
+        }
+      ]
+    },
+    {
+      "id": "AC-005",
+      "evidence": "human",
+      "result": "pass",
+      "basis": [
+        "The archived change includes the domain-readable API and quarantined-unsafety review criteria.",
+        "m2048ws accepted the foundation RFC on 2026-08-29 and confirmed the legacy Slice delivery during reconciliation on 2026-09-03."
+      ],
+      "artifacts": [
+        {
+          "path": "docs/design-principles.md",
+          "commit": "3901ec2bca5f2b3ea36496ccb0a239d6d794f8a4",
+          "digest": "sha256:96bd65516a2965c78af831ed14ac41777638b86d1704ab34260a8c4acedff0c9"
+        }
+      ]
+    }
+  ]
+}

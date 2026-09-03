@@ -1,6 +1,14 @@
 schemaVersion: 1
 rfcId: RFC-0001-project-foundation
-revision: 1
+revision: 2
 slices:
   S-01-project-foundation:
-    status: unbound
+    status: archived
+    binding:
+      change: establish-architecture-and-functional-design-charter
+      sourceDigest: sha256:8515cbb2322cbdb58a9f914bb4308cc19d1f34c624973594646be806200767b0
+      plannedAt: '2026-08-28T02:09:22.000Z'
+    archive:
+      archivedAt: '2026-08-28T03:16:13.000Z'
+      commit: 3901ec2bca5f2b3ea36496ccb0a239d6d794f8a4
+      evidenceManifest: sha256:1f5cb11d10470ab8db46b0d0d8641fa30dacf366cde53d00f54981c40af8263e

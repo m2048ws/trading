@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "kind": "legacy-openspec-delivery-reconciliation",
+  "changeName": "establish-architecture-and-functional-design-charter",
+  "runId": "legacy-openspec-3901ec2bca5f2b3e",
+  "finalRevision": "3901ec2bca5f2b3ea36496ccb0a239d6d794f8a4",
+  "planningRevision": "sha256:8515cbb2322cbdb58a9f914bb4308cc19d1f34c624973594646be806200767b0",
+  "sourceDigest": "sha256:8515cbb2322cbdb58a9f914bb4308cc19d1f34c624973594646be806200767b0",
+  "traceabilityDigest": "sha256:90ecde9a25df1ace05eab96b9b356735e9b56746510eacf82f17a3744f274458",
+  "files": [
+    {
+      "path": "legacy-reconciliation.json",
+      "digest": "sha256:90ecde9a25df1ace05eab96b9b356735e9b56746510eacf82f17a3744f274458"
+    }
+  ],
+  "manifestHash": "sha256:1f5cb11d10470ab8db46b0d0d8641fa30dacf366cde53d00f54981c40af8263e"
+}

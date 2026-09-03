@@ -11,6 +11,16 @@
       "disposition": "implemented-in-separate-clone-and-integrated-later-as-archived"
     }
   ],
+  "legacyDeliveries": [
+    {
+      "rfc": "RFC-0001-project-foundation",
+      "slice": "S-01-project-foundation",
+      "change": "establish-architecture-and-functional-design-charter",
+      "commit": "3901ec2bca5f2b3ea36496ccb0a239d6d794f8a4",
+      "treeDigest": "sha256:8515cbb2322cbdb58a9f914bb4308cc19d1f34c624973594646be806200767b0",
+      "disposition": "reconciled-as-archived-after-corgi-bootstrap"
+    }
+  ],
   "convertedChanges": [
     {
       "name": "introduce-application-and-runtime-foundation",
