@@ -1,0 +1,126 @@
+{
+  "verdict": "pass",
+  "finalRevision": "1833257ee0fed4941e59d3482d8bf5cef85e7933",
+  "planningRevision": "sha256:f7e50395afcf0531965ac1859002ce18e1163103f0e74dd96941ce2eb1f967d4",
+  "sourceDigest": "sha256:9c8d459b6066675a3128ef4974967a1f199bbd3b0e4871179110e0fe57337880",
+  "traceabilityDigest": "sha256:31952a7384c61bba43d4c9498a68703047d3a93902c05c7e328122087bae5dc2",
+  "reportHash": "sha256:8e4da8885990c720af2100ec322e334d9eecd4e4628f48d4903ca9a8095bec5a",
+  "checks": [
+    {
+      "name": "clean exact-HEAD repository formatting, all 1043 tests across 12 projects, completed-artifact boundaries, and JMH compilation passed",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:target%2Fcorgi-verify%2Ftrust-canonical-verify.log#sha256:b9f8727239366ad8160af8f6ace7327c018c88372c8f0735341f914cfa48cf2d",
+        "file:build.sbt#sha256:3f6a4ac80a23b6c00ba7592074ff2291b71b35d05753f0e2a3f4550c8eb1d12b"
+      ]
+    },
+    {
+      "name": "strict Corgi planning readiness, RFC provenance, exact AC traceability, 11 acknowledged Task Groups, and all 17 OpenSpec specifications passed",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:target%2Fcorgi-verify%2Ftrust-ready-verify.json#sha256:7a48e65d5982dd8646c630781c445f4a6dd3477beb6997ecfcb40b7b53aec14b",
+        "file:target%2Fcorgi-verify%2Ftrust-static-verify.log#sha256:cac5ce646914444567bf394b7f763a4084945e687ad3692b7c5113302f20e997",
+        "file:openspec%2Fchanges%2Fsimplify-in-process-trust-boundary%2Fcorgi%2Fsource.yaml#sha256:9c8d459b6066675a3128ef4974967a1f199bbd3b0e4871179110e0fe57337880",
+        "file:openspec%2Fchanges%2Fsimplify-in-process-trust-boundary%2Fcorgi%2Ftraceability.yaml#sha256:31952a7384c61bba43d4c9498a68703047d3a93902c05c7e328122087bae5dc2",
+        "file:openspec%2Fchanges%2Fsimplify-in-process-trust-boundary%2Ftasks.md#sha256:de769071c311d4ded9c8ba44dcb2840728d2daee0f8b4625f1b8b8055fb48174"
+      ]
+    },
+    {
+      "name": "production and benchmark reflection, residual singleton-permit, erased runtime bridge, whitespace, dependency, schema, and golden-resource checks passed",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:target%2Fcorgi-verify%2Ftrust-static-verify.log#sha256:cac5ce646914444567bf394b7f763a4084945e687ad3692b7c5113302f20e997",
+        "file:tools%2Fcheck-in-process-reflection.sh#sha256:12bd5296f3c5e613f7a47389122323f81c3723371fb059e87610ee99802662df",
+        "file:reference-data%2Fsrc%2Fmain%2Fscala%2Ftrading%2Freference%2FReferenceData.scala#sha256:a82c7eed539e0a5f3380a2618e2ce67f8622cf2383e536df7ef56e4a2fc6969e",
+        "file:reference-data%2Fsrc%2Fmain%2Fscala%2Ftrading%2Freference%2FCatalog.scala#sha256:0a8967f217cced68dd49fc8a25971cf6fd9736971f9dfa3618010de7569d5845",
+        "file:runtime%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fruntime%2FInMemoryLiveCatalog.scala#sha256:a546823e9193fc09718abbd49091772be16fbfcda80f7383ffc86aa8ee3184b9"
+      ]
+    },
+    {
+      "name": "focused runtime snapshot JMH smoke completed at 103425.283 operations per second",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:target%2Fcorgi-verify%2Ftrust-runtime-jmh-verify.log#sha256:a60d31e9f1dab828e02a0769e406dc721d0e24e0ef77bf50a49eb9c018b9f80a",
+        "file:benchmarks%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fbenchmark%2FLiveCatalogRuntimeBenchmark.scala#sha256:47f88c9aa2fa53339f71067750a21c631fa84b324ee7ff9b228170aded125056"
+      ]
+    }
+  ],
+  "acceptance": [
+    {
+      "id": "AC-001",
+      "automated": "pass",
+      "human": "not_applicable",
+      "evidenceRefs": [
+        "file:rfcs%2FRFC-0004-simplify-in-process-trust-boundary%2Frfc.md#sha256:7eaf8391404d174836ff35e429e1618cc5ee06e15c5ec3eeebdc9289ebd3a8e5",
+        "file:docs%2Fdesign-principles.md#sha256:4caf82a903ba53c16948d32d6ff3f30cb150fda19a4b88a770cc920c9eaec99f",
+        "file:docs%2Farchitecture-charter-audit.md#sha256:d888a0883449e4d12195c2bb1622a62096d9231825e6717f7ab75ee1d79973cb",
+        "file:openspec%2Fchanges%2Fsimplify-in-process-trust-boundary%2Fspecs%2Frepository-architecture%2Fspec.md#sha256:fd298a38a7ec00fc2a47c52b130aaa2bd0987c2a03dbf8996ba974663cfe165f",
+        "file:openspec%2Fchanges%2Fsimplify-in-process-trust-boundary%2Fspecs%2Fscala-functional-design%2Fspec.md#sha256:ea4bdd5b676e586b4c4819296100eb27075ccbf2a3bf42d80eea55d7edadf2d2",
+        "file:target%2Fcorgi-verify%2Ftrust-ready-verify.json#sha256:7a48e65d5982dd8646c630781c445f4a6dd3477beb6997ecfcb40b7b53aec14b"
+      ]
+    },
+    {
+      "id": "AC-002",
+      "automated": "pass",
+      "human": "not_applicable",
+      "evidenceRefs": [
+        "file:target%2Fcorgi-verify%2Ftrust-static-verify.log#sha256:cac5ce646914444567bf394b7f763a4084945e687ad3692b7c5113302f20e997",
+        "file:tools%2Fcheck-in-process-reflection.sh#sha256:12bd5296f3c5e613f7a47389122323f81c3723371fb059e87610ee99802662df",
+        "file:openspec%2Fchanges%2Fsimplify-in-process-trust-boundary%2Fimplementation-notes%2Ftask-group-10.md#sha256:98d5993714cb1976471639f674ef8e2e3a442a60c3e622533335c8c5711acc61",
+        "file:openspec%2Fchanges%2Fsimplify-in-process-trust-boundary%2Fimplementation-notes%2Ftask-group-11.md#sha256:7af6bd0ccb7836d94c30d17c8b2c089c0be2a20815290d51a687cafe04a8621c"
+      ]
+    },
+    {
+      "id": "AC-003",
+      "automated": "pass",
+      "human": "not_applicable",
+      "evidenceRefs": [
+        "file:target%2Fcorgi-verify%2Ftrust-canonical-verify.log#sha256:b9f8727239366ad8160af8f6ace7327c018c88372c8f0735341f914cfa48cf2d",
+        "file:reference-data%2Fsrc%2Ftest%2Fscala%2Ftrading%2Freference%2FReferenceDataSuite.scala#sha256:c0ea239f0f1bed95109f656c0a060424833194e359e1519853552b8f8aea5608",
+        "file:order-model%2Fsrc%2Ftest%2Fscala%2Ftrading%2Forder%2FOrderPropertiesSuite.scala#sha256:cdb9b4691bb9bb1c0373737d636e7c01e3a34e3a71c36f8e7619059e4d3638b9",
+        "file:risk%2Fsrc%2Ftest%2Fscala%2Ftrading%2Frisk%2FRiskCurvePropertiesSuite.scala#sha256:6720707bd528182e6708d91cec760854f65562a985138b13fd8ac2a4d4b765fc",
+        "file:execution-lifecycle%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fexecution%2FExecutionStateSuite.scala#sha256:d437f7204700a1de676ca0939684d50a1ee481d909216d01ce34444a8f24da49",
+        "file:boundary-codecs%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fcodec%2FBoundaryCodecRobustnessPropertiesSuite.scala#sha256:35a95427a9746348fc7c5e69a118f1cb428ba64856d62c62bba083aa24997ebf"
+      ]
+    },
+    {
+      "id": "AC-004",
+      "automated": "pass",
+      "human": "not_applicable",
+      "evidenceRefs": [
+        "file:target%2Fcorgi-verify%2Ftrust-canonical-verify.log#sha256:b9f8727239366ad8160af8f6ace7327c018c88372c8f0735341f914cfa48cf2d",
+        "file:openspec%2Fchanges%2Fsimplify-in-process-trust-boundary%2Fimplementation-notes%2Ftask-group-10.md#sha256:98d5993714cb1976471639f674ef8e2e3a442a60c3e622533335c8c5711acc61",
+        "file:openspec%2Fchanges%2Fsimplify-in-process-trust-boundary%2Fimplementation-notes%2Ftask-group-11.md#sha256:7af6bd0ccb7836d94c30d17c8b2c089c0be2a20815290d51a687cafe04a8621c",
+        "file:boundary-codecs%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fcodec%2FBoundaryCodecCompatibilitySuite.scala#sha256:283196b99c21af4a089f339a62c1fb844fe1e4205e7e97299db77c87b03a8525",
+        "file:execution-lifecycle%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fexecution%2FEffectiveFillLedgerSuite.scala#sha256:3e0faa08a6c884ecc2e023c40f6f2e4a767f4f445b80cc51a3f6ca19808e3065"
+      ]
+    },
+    {
+      "id": "AC-005",
+      "automated": "pass",
+      "human": "not_applicable",
+      "evidenceRefs": [
+        "file:target%2Fcorgi-verify%2Ftrust-static-verify.log#sha256:cac5ce646914444567bf394b7f763a4084945e687ad3692b7c5113302f20e997",
+        "file:target%2Fcorgi-verify%2Ftrust-canonical-verify.log#sha256:b9f8727239366ad8160af8f6ace7327c018c88372c8f0735341f914cfa48cf2d",
+        "file:openspec%2Fchanges%2Fsimplify-in-process-trust-boundary%2Fimplementation-notes%2Ftask-group-10.md#sha256:98d5993714cb1976471639f674ef8e2e3a442a60c3e622533335c8c5711acc61",
+        "file:openspec%2Fchanges%2Fsimplify-in-process-trust-boundary%2Fimplementation-notes%2Ftask-group-11.md#sha256:7af6bd0ccb7836d94c30d17c8b2c089c0be2a20815290d51a687cafe04a8621c",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FReferenceDataCompilerBoundarySuite.scala#sha256:7f47be784c51936201eab814ac885dba2bd9c88d8b4256cf1e75d0101bc4a56d",
+        "file:build.sbt#sha256:3f6a4ac80a23b6c00ba7592074ff2291b71b35d05753f0e2a3f4550c8eb1d12b"
+      ]
+    },
+    {
+      "id": "AC-006",
+      "automated": "pass",
+      "human": "not_applicable",
+      "evidenceRefs": [
+        "file:target%2Fcorgi-verify%2Ftrust-canonical-verify.log#sha256:b9f8727239366ad8160af8f6ace7327c018c88372c8f0735341f914cfa48cf2d",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Freference-data-java%2Fpositive%2FGridReconciliationAuthority.java#sha256:171bbc81400b2f959cb9b34dc8be771d5019a5f9f7aae94d00802d4e5d547e41",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FApplicationRuntimeBoundarySuite.scala#sha256:a4d3fce39644762c0d79c17bd63e775ea50cb0f1464cd051093835ddd1fad412",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FBoundaryCodecCompilerBoundarySuite.scala#sha256:5423928c7246a027131db466ecf045b39ca2f859b75edfd164e77759414e6549",
+        "file:boundary-codecs%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fcodec%2FStrictJsonSuite.scala#sha256:cd2f7ea1532765ce8b2b710836e7e610be96ea1a33dd9bf214240158ebc6fa62",
+        "file:boundary-codecs%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fcodec%2FCatalogJournalSuite.scala#sha256:bd31152f99c6a796c5f0961a775dccb15c00fa11f0f7777b835b07087d23583f"
+      ]
+    }
+  ],
+  "verifiedAt": "2026-09-03T21:05:13.366Z"
+}

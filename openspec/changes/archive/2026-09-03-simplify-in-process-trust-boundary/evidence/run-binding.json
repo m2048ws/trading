@@ -1,0 +1,109 @@
+{
+  "schemaVersion": 3,
+  "changeName": "simplify-in-process-trust-boundary",
+  "runId": "run-2e4ac7fb-4c73-4018-a4cd-3c1f4518eee0",
+  "finalRevision": "1833257ee0fed4941e59d3482d8bf5cef85e7933",
+  "planningRevision": "sha256:f7e50395afcf0531965ac1859002ce18e1163103f0e74dd96941ce2eb1f967d4",
+  "contract": {
+    "kind": "rfc-slice",
+    "deliveryRef": "RFC-0004-simplify-in-process-trust-boundary/S-01-simplify-in-process-trust-boundary",
+    "rfcId": "RFC-0004-simplify-in-process-trust-boundary",
+    "rfcDigest": "sha256:7eaf8391404d174836ff35e429e1618cc5ee06e15c5ec3eeebdc9289ebd3a8e5",
+    "acceptedCommit": "24090e8f0af2b04c733f8bffd2b394f232084877",
+    "sliceId": "S-01-simplify-in-process-trust-boundary",
+    "sourcePath": "openspec/changes/simplify-in-process-trust-boundary/corgi/source.yaml",
+    "sourceDigest": "sha256:9c8d459b6066675a3128ef4974967a1f199bbd3b0e4871179110e0fe57337880",
+    "traceabilityPath": "openspec/changes/simplify-in-process-trust-boundary/corgi/traceability.yaml",
+    "traceabilityDigest": "sha256:31952a7384c61bba43d4c9498a68703047d3a93902c05c7e328122087bae5dc2",
+    "acceptance": [
+      {
+        "id": "AC-001",
+        "evidence": "both",
+        "taskGroups": [
+          "1",
+          "10"
+        ]
+      },
+      {
+        "id": "AC-002",
+        "evidence": "automated",
+        "taskGroups": [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8",
+          "9",
+          "10"
+        ]
+      },
+      {
+        "id": "AC-003",
+        "evidence": "automated",
+        "taskGroups": [
+          "2",
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8",
+          "9",
+          "10"
+        ]
+      },
+      {
+        "id": "AC-004",
+        "evidence": "automated",
+        "taskGroups": [
+          "2",
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8",
+          "9",
+          "10"
+        ]
+      },
+      {
+        "id": "AC-005",
+        "evidence": "automated",
+        "taskGroups": [
+          "2",
+          "5",
+          "6",
+          "7",
+          "8",
+          "10"
+        ]
+      },
+      {
+        "id": "AC-006",
+        "evidence": "both",
+        "taskGroups": [
+          "2",
+          "3",
+          "6",
+          "7",
+          "8",
+          "9",
+          "10"
+        ]
+      }
+    ],
+    "tracker": {
+      "provider": "github",
+      "idempotencyKey": "cfb4c5937e3381e3b886eec1ceef24a63e991e7555220cf0a913da796f3ce744",
+      "issue": {
+        "id": "36",
+        "url": "https://github.com/m2048ws/trading/issues/36"
+      }
+    }
+  },
+  "archiveIntentId": "archive-b99d2e27-a08c-42de-b66b-fbf0eb5f9a68"
+}

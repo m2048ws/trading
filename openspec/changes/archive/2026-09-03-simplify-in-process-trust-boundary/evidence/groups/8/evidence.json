@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 3,
+  "groupId": "8",
+  "checks": [
+    {
+      "name": "sbt -batch executionLifecycle/test",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:execution-lifecycle%2Ftarget%2Ftest-reports%2FTEST-trading.execution.ExecutionStateSuite.xml#sha256:01fcceffcb40bb8f498f3b24764534c4c9acefb9e42a3e920310ee479f4bb831",
+        "file:execution-lifecycle%2Ftarget%2Ftest-reports%2FTEST-trading.execution.SourceFactSuite.xml#sha256:80b7f233051c67536ee7f120100ef3a3b4ddeac6c1479757d3864d86f6c9d610",
+        "file:execution-lifecycle%2Ftarget%2Ftest-reports%2FTEST-trading.execution.EffectiveFillLedgerSuite.xml#sha256:2d606990ac30fca1e67dc7cf288c02ae5bcdff5c8d4f470a9d9804839384e3f8"
+      ]
+    },
+    {
+      "name": "sbt -batch adversarialBoundary/testOnly external.ExecutionLifecycleCompilerBoundarySuite",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:adversarial-boundary%2Ftarget%2Ftest-reports%2FTEST-external.ExecutionLifecycleCompilerBoundarySuite.xml#sha256:7f90064793d5cb9e8094860f4f1f6ce965e454b18cbe120edfa88d23b77af23f"
+      ]
+    },
+    {
+      "name": "sbt -batch boundaryCodecs/compile",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:build.sbt#sha256:3f6a4ac80a23b6c00ba7592074ff2291b71b35d05753f0e2a3f4550c8eb1d12b"
+      ]
+    },
+    {
+      "name": "tools/check-in-process-reflection.sh",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:tools%2Fcheck-in-process-reflection.sh#sha256:2edec62eea6e4c973cd3623a0238258dc6442da36df2e74da0fba6ca55f8bdb6",
+        "file:tools%2Fin-process-reflection-baseline.tsv#sha256:c76ebceb7bf41b84af62cb0d5bc736559b9e19779060578ba97583a8ad525bd0"
+      ]
+    },
+    {
+      "name": "git diff --check and execution source scan",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:openspec%2Fchanges%2Fsimplify-in-process-trust-boundary%2Fimplementation-notes%2Ftask-group-8.md#sha256:addbb859db8eb6108a06f9228ae120acaaa7a913591e651fda07fa86a1530e97"
+      ]
+    }
+  ],
+  "automatedReview": {
+    "verdict": "pass",
+    "findings": []
+  },
+  "artifacts": [
+    "file:execution-lifecycle%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fexecution%2FSourceFacts.scala#sha256:f7c8ea3a31c08d8408568a3ecf1414944065068a9d48caf446063de6b9676354",
+    "file:execution-lifecycle%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fexecution%2FSourceEvidenceState.scala#sha256:988d77c54e158c88544e8bff4566b6b248be04a0e8ed044513d3ef12b74e26e0",
+    "file:execution-lifecycle%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fexecution%2FExecutionState.scala#sha256:68d12362e545f956493cb28da031f4c22cf3d017cec32454306e9b62d60f1a83",
+    "file:execution-lifecycle%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fexecution%2FEffectiveFillLedger.scala#sha256:783a3df461fa31bbc26fe691c8cdd94e30d32ba8f023721ea7ab642d051a0ab3",
+    "file:execution-lifecycle%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fexecution%2FLifecycle.scala#sha256:9ccd2e3bf45259d33616bc7f0a5efa6580fb24d43b1d5ad27ba0075c06dea47a",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FExecutionLifecycleCompilerBoundarySuite.scala#sha256:8cdd472bffc55acc96549c8c2c86e4865b5bf43f94d5c3ebbc98eadb23b8beb8",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fexecution-lifecycle-java%2Fpositive%2FExecutionFactoryClient.java#sha256:4c6ada632913ad5e4949a4b109f5f1788aafa6031ace5938e0ece40ce61f4a30",
+    "file:openspec%2Fchanges%2Fsimplify-in-process-trust-boundary%2Fimplementation-notes%2Ftask-group-8.md#sha256:addbb859db8eb6108a06f9228ae120acaaa7a913591e651fda07fa86a1530e97",
+    "file:tools%2Fin-process-reflection-baseline.tsv#sha256:c76ebceb7bf41b84af62cb0d5bc736559b9e19779060578ba97583a8ad525bd0"
+  ],
+  "summary": "Execution facts, source and lifecycle state, replay, and effective-fill derivation now construct directly while preserving validation, exact economics, deterministic conflicts, replay, anomalies, and indexed behavior; hostile fixtures were replaced by supported Scala and Java client coverage."
+}

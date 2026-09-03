@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 3,
+  "groupId": "9",
+  "checks": [
+    {
+      "name": "sbt -batch boundaryCodecs/test",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:boundary-codecs%2Ftarget%2Ftest-reports%2FTEST-trading.codec.BoundaryCodecCompatibilitySuite.xml#sha256:19a674f0c8043f4eb26922b12129fceee98590dc727f2bbba404f8c1426df51f",
+        "file:boundary-codecs%2Ftarget%2Ftest-reports%2FTEST-trading.codec.CatalogJournalSuite.xml#sha256:580270ae4731a074e74d489c546982375d34037cb27357cdeea163d01968b290",
+        "file:boundary-codecs%2Ftarget%2Ftest-reports%2FTEST-trading.codec.RecordEnvelopeSuite.xml#sha256:d7c583743bdd255eb78f0b351cd99b833922b0c0cd5910cbc09ce302d2dfc60c",
+        "file:boundary-codecs%2Ftarget%2Ftest-reports%2FTEST-trading.codec.ScenarioRecordSuite.xml#sha256:1ecc9ed6b5f18222848f8edcaeb1f03b5d4dceb772729b1bedd264426bcdc838"
+      ]
+    },
+    {
+      "name": "sbt -batch adversarialBoundary/testOnly external.BoundaryCodecCompilerBoundarySuite",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:adversarial-boundary%2Ftarget%2Ftest-reports%2FTEST-external.BoundaryCodecCompilerBoundarySuite.xml#sha256:0f6c22a0423e88c2a0d2132ed592e7a1cd568d1f2233dc56d9829c3afa3d2bcc"
+      ]
+    },
+    {
+      "name": "sbt -batch benchmarks/Jmh/compile and short BoundaryCodecBenchmark.reconstructParsedBatch run",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:benchmarks%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fbenchmark%2FBoundaryCodecBenchmark.scala#sha256:fe57a56898e61668c0b1f174612495dbdfb3f492f3002f197fb1e0306e76b2ab"
+      ]
+    },
+    {
+      "name": "tools/check-in-process-reflection.sh",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:tools%2Fcheck-in-process-reflection.sh#sha256:2edec62eea6e4c973cd3623a0238258dc6442da36df2e74da0fba6ca55f8bdb6",
+        "file:tools%2Fin-process-reflection-baseline.tsv#sha256:a2532f8d0fe7770a500b929221f2c431ebf60c225fbd72cf3ca6531f21fe6351"
+      ]
+    },
+    {
+      "name": "git diff --check and boundary-codec production scan",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:openspec%2Fchanges%2Fsimplify-in-process-trust-boundary%2Fimplementation-notes%2Ftask-group-9.md#sha256:5923edf7cc15b369dbc535990b80143a8ff8ab128d03fc6a915c2afafc033d2f"
+      ]
+    }
+  ],
+  "automatedReview": {
+    "verdict": "pass",
+    "findings": []
+  },
+  "artifacts": [
+    "file:boundary-codecs%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fcodec%2FCatalogJournal.scala#sha256:28adf0ab608cfc7b6c6939baa27b69e4799a0fb857072975b2006ed8942bed4c",
+    "file:boundary-codecs%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fcodec%2FDecodeLimits.scala#sha256:38eb00f4d78d646a755cfc687beb59cd23720c7c3cb9dab2129691a33a81ddf6",
+    "file:boundary-codecs%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fcodec%2FGridCoordinateRecords.scala#sha256:13b7065573aad9cf98d55010d8385cd58f8eed4920366340109aa658ab8cfec5",
+    "file:boundary-codecs%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fcodec%2FOrderRecord.scala#sha256:fd62f6cae1fadb566e41e8c91b5803c2a9e5e804aaccc24ad8159e2660d2b063",
+    "file:boundary-codecs%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fcodec%2FRecordEnvelope.scala#sha256:f2f7b765fb2d278bd475ba130729bbdb35447785ce155199773fa6cb9ac4f00a",
+    "file:boundary-codecs%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fcodec%2FScenarioRecords.scala#sha256:fd3024a5f9e3afae6182ec81ef62784d1f3255081faaae37ebd25b7f3a52114d",
+    "file:boundary-codecs%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fcodec%2FWireDiagnostics.scala#sha256:9199e34087094d1dde25437ff17b84dbedc7a67e5f8c901aeb1803521a9bbbd9",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fboundary-codec-compiler%2Fpositive%2FBoundaryCodecJavaClient.java#sha256:93692a85fd0b8f4bee826d2ad87a911e40c3352ff786a8a987e68b7527dd2c2a",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FBoundaryCodecCompilerBoundarySuite.scala#sha256:5423928c7246a027131db466ecf045b39ca2f859b75edfd164e77759414e6549",
+    "file:openspec%2Fchanges%2Fsimplify-in-process-trust-boundary%2Fimplementation-notes%2Ftask-group-9.md#sha256:5923edf7cc15b369dbc535990b80143a8ff8ab128d03fc6a915c2afafc033d2f",
+    "file:tools%2Fin-process-reflection-baseline.tsv#sha256:a2532f8d0fe7770a500b929221f2c431ebf60c225fbd72cf3ca6531f21fe6351"
+  ],
+  "summary": "Boundary codecs and catalog replay now construct checked values directly with no production or benchmark reflection while preserving strict parsing, exact refinements, deterministic diagnostics, V1 canonical bytes and schemas, coherent reconstruction, publication, and replay behavior."
+}
