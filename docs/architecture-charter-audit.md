@@ -228,13 +228,15 @@ model, execution-scenario, and downstream fee/risk migration. Conflicts were res
 `main` owns application/runtime and repository infrastructure; S-02 owns order/scenario sources, completed-JAR
 compiler fixtures, and the transitional fee/risk consumers.
 
-Scala package-qualified constructor privacy is not a JVM access boundary. Invariant-bearing order intent,
-activation/peg evidence, liquidity slices, assumptions, checked scenarios, and round trips therefore use JVM-private
-constructors; their owning companions alone cache privileged construction access after the existing typed validation
-paths succeed through a private JDK method handle. The completed order/scenario JARs are exercised by same-package
-Scala and Java negative fixtures, which
-also confirm that removed case-class `copy`/`apply` paths cannot recreate those values. Domain-readable checked factory
-calls and the associated evidence/resolution relationships remain unchanged.
+Scala constructor privacy is not a JVM security boundary. The earlier S-02
+delivery used JVM-private constructors and cached JDK method handles for order
+and scenario construction, together with same-package hostile fixtures. RFC-0004
+S-01 supersedes that implementation policy: cooperative owners use statically
+callable companion/member construction, while domain-readable checked factories
+and associated evidence/resolution predicates remain authoritative. Completed-artifact
+fixtures protect supported semantic, type, dependency, erased-input,
+and serialization boundaries rather than constructor modifiers or deliberate
+same-JVM bypass resistance.
 
 ## 2026-08-31 S-03 delivery refresh
 
@@ -270,3 +272,21 @@ telemetry integration, durable codec, native amend/cancel-replace, multi-order c
 behavior. Later RFC Slices may add effect-polymorphic ports in application, concrete interpreters in runtime, and
 versioned records in the codec boundary. Those are one-way consumers of the pure lifecycle and do not relocate its
 domain authority. The minimum build/runtime JDK remains 25.
+
+## 2026-09-03 RFC-0004 S-01 trust-boundary clarification
+
+The physical module graph and public domain vocabulary are unchanged. Production
+and benchmark code is migrating from method-handle construction and observation
+to direct owner-defined Scala calls. This is an implementation simplification,
+not a weakening of the wire, database, configuration, venue-fact, erased-input,
+catalog-resolution, replay, or serialization boundaries.
+
+Invariant ownership remains semantic: refinements own field validity; checked
+factories own ordinary raw-input validation; strengthening operations own
+identity, evidence, lineage, non-empty, monotonicity, ordering, and state-
+transition predicates; narrow observers expose already-valid state. Exact
+runtime-class and hostile-subclass checks are retired where they only attempted
+to distinguish deliberate in-process implementations. A real future isolation
+requirement must introduce and verify an explicit process, module, class-loader,
+sandbox, or service boundary rather than reconstructing access-control ceremony
+inside these pure modules.

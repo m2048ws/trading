@@ -14,16 +14,17 @@ updated: 2026-09-03
 - **Issue**: 36 https://github.com/m2048ws/trading/issues/36
 - **Change**: simplify-in-process-trust-boundary
 - **Worktree**: /Users/m/src/money/.worktrees/simplify-in-process-trust-boundary
-- **Phase at Checkpoint**: planning_ready
+- **Phase at Checkpoint**: applying
 - **Task Group at Checkpoint**: 1
-- **Observed Run Revision**: none
-- **Last Verified HEAD**: b8cb04bfe19c5681621ab7066ac1473875f341a5
+- **Observed Run Revision**: 2
+- **Last Verified HEAD**: e46eaaba970aeba2d9b4e9aa0239082837940823
 
 ## Next Action
-- Start Apply for `simplify-in-process-trust-boundary` Task Group 1.
+- Commit and acknowledge Task Group 1, then continue with Task Group 2.
 
 ## Blockers
-- none
+- Task Group 1 trust documentation, reviewed inventory, migration source guard, implementation note, and this bridge
+  checkpoint are ready for their dedicated commit.
 
 ## Uncommitted Work
 - none
@@ -32,6 +33,8 @@ updated: 2026-09-03
 - No active Corgi Run Contract or OpenSpec Change exists on primary `main`.
 - RFC-0003/S-01 is archived; its delivery record is `wiki/deliveries/RFC-0003-execution-lifecycle-foundation-S-01-actual-execution-lifecycle.md`.
 - The registered `introduce-application-and-runtime-foundation` worktree has no active Change and remains cleanup-only.
+- Task Group 1 classifies 623 method-handle/reflection tokens in 26 production/benchmark files; the checked regression
+  ceiling will be removed owner by owner and must reach zero in Task Group 10.
 
 ## Promotion Queue
 - none

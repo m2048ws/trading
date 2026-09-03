@@ -83,6 +83,31 @@ values retain that evidence and do not repeatedly consult a live registry.
 Possessing a trusted value does not reveal construction authority, mutable
 catalog access, or runtime provenance that its public contract does not grant.
 
+### In-process trust and supported boundaries
+
+The repository protects cooperative code from mistakes; it does not treat code
+already executing in the JVM as an adversary. Constructor bytecode modifiers,
+package access, reflection, method handles, unsafe bytecode, instrumentation,
+and constructor-bypassing deserialization are therefore not security
+boundaries. A future requirement to isolate mutually distrustful code must name
+a real process, class-loader, module, sandbox, or service boundary and receive
+its own design and threat model.
+
+Within one process, statically callable owner-defined operations are preferred
+to reflective construction or observation. Narrow companion or package access
+may connect cooperating owners, while the documented public API remains made
+of domain-named factories and transitions. Authority comes from semantic
+checks: refined fields, checked smart constructors, coherent identity and
+lineage, associated evidence, non-empty structure, and validated state
+transitions. Merely hiding a constructor does not establish those facts.
+
+External and least-trusted supported inputs remain fully checked. Wire records,
+database rows, configuration, venue facts, erased Java values, and replayed
+events do not become trusted because they entered cooperative code; their
+owning parser, resolver, assembler, or transition must still validate them.
+Tests should attack those supported ingress paths and semantic relationships,
+not claim resistance to a deliberate same-JVM bypass.
+
 ## Layer-specific functional profile
 
 | Layer | Required profile |
@@ -268,7 +293,9 @@ cost, and rejected snapshot/caching alternatives.
 | Pure domain behavior | Focused examples and unit/property tests |
 | Algebraic law | Property or discipline law tests |
 | Refinement closure | Boundary examples plus closure properties |
-| Type-level rejection or authority | Packaged downstream negative fixture and nearby positive fixture |
+| Type-level rejection or semantic authority | Packaged downstream negative fixture and nearby positive fixture |
+| Cooperative in-process construction | Ordinary Scala/Java client plus source scan excluding reflective production access |
+| External or erased input | Least-trusted supported-input tests at the owning checked boundary |
 | Static/runtime coherence | Tests of both the static result and runtime identity/value |
 | Multiple interpreters | Shared contract suite plus interpreter-specific tests |
 | Concurrent transition | Atomicity/coherence tests appropriate to the interpreter |

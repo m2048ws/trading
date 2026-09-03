@@ -53,6 +53,14 @@ separation, dependency admission, Scala API ergonomics, and claim-proportional v
 [portfolio audit](docs/architecture-charter-audit.md) records the current module graph, transitional exceptions, and
 the proposed target architecture separately.
 
+Code within one JVM is treated as cooperative. Domain safety comes from
+refinements, checked factories, associated evidence, stable identity and
+lineage, and pure state transitions—not from reflective access to hidden
+constructors or resistance to deliberate same-process bypass. External records,
+erased inputs, catalog reconstruction, and execution replay remain checked at
+their owning boundaries. The repository source guard is available as
+`tools/check-in-process-reflection.sh`.
+
 The catalog, snapshot, application-port, runtime-interpreter, instrument-economics, and shared benchmark
 responsibilities now have concrete owners. Order intent, actual-execution evidence, execution-scenario interpretation,
 fee-policy composition and scenario-owned attribution, risk, and boundary representation are separate physical pure
