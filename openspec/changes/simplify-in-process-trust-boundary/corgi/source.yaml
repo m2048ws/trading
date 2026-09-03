@@ -1,0 +1,31 @@
+schemaVersion: 1
+kind: rfc-slice
+deliveryRef: RFC-0004-simplify-in-process-trust-boundary/S-01-simplify-in-process-trust-boundary
+rfc:
+  id: RFC-0004-simplify-in-process-trust-boundary
+  path: rfcs/RFC-0004-simplify-in-process-trust-boundary
+  acceptedCommit: 24090e8f0af2b04c733f8bffd2b394f232084877
+  digest: sha256:7eaf8391404d174836ff35e429e1618cc5ee06e15c5ec3eeebdc9289ebd3a8e5
+slice:
+  id: S-01-simplify-in-process-trust-boundary
+  digest: sha256:ba9360f536a450ffef4f98bdc17762bb812326f04f3e822be2f3d048635f4c4d
+acceptance:
+  - id: AC-001
+    evidence: both
+  - id: AC-002
+    evidence: automated
+  - id: AC-003
+    evidence: automated
+  - id: AC-004
+    evidence: automated
+  - id: AC-005
+    evidence: automated
+  - id: AC-006
+    evidence: both
+deliveryBindingDigest: sha256:f1296d96baf9e7ae89fc917e25a8e007f443eef22f41ff894efa57edb0d9dd3b
+tracker:
+  provider: github
+  idempotencyKey: cfb4c5937e3381e3b886eec1ceef24a63e991e7555220cf0a913da796f3ce744
+  issue:
+    id: '36'
+    url: https://github.com/m2048ws/trading/issues/36

@@ -1,6 +1,14 @@
 schemaVersion: 1
 rfcId: RFC-0004-simplify-in-process-trust-boundary
-revision: 1
+revision: 2
 slices:
   S-01-simplify-in-process-trust-boundary:
-    status: unbound
+    status: planned
+    binding:
+      change: simplify-in-process-trust-boundary
+      issue:
+        provider: github
+        id: '36'
+        url: https://github.com/m2048ws/trading/issues/36
+      sourceDigest: sha256:9c8d459b6066675a3128ef4974967a1f199bbd3b0e4871179110e0fe57337880
+      plannedAt: '2026-09-03T18:01:00.349Z'

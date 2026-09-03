@@ -1,0 +1,118 @@
+schemaVersion: 1
+sourceDigest: sha256:9c8d459b6066675a3128ef4974967a1f199bbd3b0e4871179110e0fe57337880
+acceptance:
+  - id: AC-001
+    evidence: both
+    planningRefs:
+      - path: specs/repository-architecture/spec.md
+        anchor: requirement-cooperative-code-and-untrusted-data-have-distinct-boundaries
+      - path: specs/scala-functional-design/spec.md
+        anchor: requirement-static-construction-expresses-in-process-collaboration
+    taskGroups:
+      - '1'
+      - '10'
+  - id: AC-002
+    evidence: automated
+    planningRefs:
+      - path: specs/scala-functional-design/spec.md
+        anchor: requirement-static-construction-expresses-in-process-collaboration
+      - path: specs/actual-execution-lifecycle/spec.md
+        anchor: requirement-execution-authority-is-semantic-rather-than-constructor-secret
+      - path: specs/versioned-boundary-codecs/spec.md
+        anchor: requirement-codec-records-remain-data-until-static-checked-reconstruction-succeeds
+    taskGroups:
+      - '1'
+      - '2'
+      - '3'
+      - '4'
+      - '5'
+      - '6'
+      - '7'
+      - '8'
+      - '9'
+      - '10'
+  - id: AC-003
+    evidence: automated
+    planningRefs:
+      - path: specs/order-scenarios/spec.md
+        anchor: requirement-scenario-authority-follows-from-checked-semantics
+      - path: specs/position-risk-sizing/spec.md
+        anchor: requirement-monotone-risk-evidence-is-established-without-reflective-authority
+      - path: specs/actual-execution-lifecycle/spec.md
+        anchor: requirement-execution-authority-is-semantic-rather-than-constructor-secret
+      - path: specs/catalog-command-replay/spec.md
+        anchor: requirement-replay-authority-follows-from-publication-checks
+    taskGroups:
+      - '2'
+      - '3'
+      - '4'
+      - '5'
+      - '6'
+      - '7'
+      - '8'
+      - '9'
+      - '10'
+  - id: AC-004
+    evidence: automated
+    planningRefs:
+      - path: specs/exact-quantity-arithmetic/spec.md
+        anchor: requirement-quantity-authority-protects-supported-construction-not-hostile-same-jvm-access
+      - path: specs/quantity-grid-projection/spec.md
+        anchor: requirement-grid-provenance-is-semantic-rather-than-constructor-secret
+      - path: specs/runtime-quantity-identity/spec.md
+        anchor: requirement-runtime-witness-authority-is-checked-at-supported-roots
+      - path: specs/reference-data-identity/spec.md
+        anchor: requirement-trusted-dimension-and-asset-handles-retain-authority
+      - path: specs/order-scenarios/spec.md
+        anchor: requirement-scenario-authority-follows-from-checked-semantics
+      - path: specs/position-risk-sizing/spec.md
+        anchor: requirement-monotone-risk-evidence-is-established-without-reflective-authority
+      - path: specs/actual-execution-lifecycle/spec.md
+        anchor: requirement-execution-authority-is-semantic-rather-than-constructor-secret
+      - path: specs/versioned-boundary-codecs/spec.md
+        anchor: requirement-codec-records-remain-data-until-static-checked-reconstruction-succeeds
+      - path: specs/catalog-command-replay/spec.md
+        anchor: requirement-replay-authority-follows-from-publication-checks
+    taskGroups:
+      - '2'
+      - '3'
+      - '4'
+      - '5'
+      - '6'
+      - '7'
+      - '8'
+      - '9'
+      - '10'
+  - id: AC-005
+    evidence: automated
+    planningRefs:
+      - path: specs/repository-architecture/spec.md
+        anchor: requirement-cooperative-code-and-untrusted-data-have-distinct-boundaries
+      - path: specs/scala-functional-design/spec.md
+        anchor: requirement-public-domain-apis-are-total-for-expected-inputs
+      - path: specs/runtime-quantity-identity/spec.md
+        anchor: requirement-runtime-witness-authority-is-checked-at-supported-roots
+    taskGroups:
+      - '2'
+      - '5'
+      - '6'
+      - '7'
+      - '8'
+      - '10'
+  - id: AC-006
+    evidence: both
+    planningRefs:
+      - path: specs/reference-data-identity/spec.md
+        anchor: requirement-stable-identity-is-explicit-and-dimension-scoped
+      - path: specs/order-scenarios/spec.md
+        anchor: requirement-scenario-authority-follows-from-checked-semantics
+      - path: specs/versioned-boundary-codecs/spec.md
+        anchor: requirement-codec-records-remain-data-until-static-checked-reconstruction-succeeds
+    taskGroups:
+      - '2'
+      - '3'
+      - '6'
+      - '7'
+      - '8'
+      - '9'
+      - '10'
