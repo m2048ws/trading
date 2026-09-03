@@ -60,7 +60,7 @@ class ExecutionIdentitySuite extends FunSuite:
     )
     assertEquals(SourceSequence.from(BigInt(-1)), Left(NegativeSourceSequence(BigInt(-1))))
 
-  test("identity representations are final with JVM-private constructors"):
+  test("identity representations remain final"):
     val representations = List(
       classOf[ApplicationCommandId],
       classOf[ExecutionOrderId],
@@ -76,11 +76,6 @@ class ExecutionIdentitySuite extends FunSuite:
 
     representations.foreach: representation =>
       assert(Modifier.isFinal(representation.getModifiers), s"${representation.getName} must be final")
-      assert(representation.getDeclaredConstructors.nonEmpty)
-      assert(
-        representation.getDeclaredConstructors.forall(constructor => Modifier.isPrivate(constructor.getModifiers)),
-        s"${representation.getName} exposes a non-private JVM constructor"
-      )
 
   test("identity companions expose validation but no generation, clock, hash, or receipt authority"):
     val companions = List(

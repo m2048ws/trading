@@ -13,13 +13,6 @@ object PackageSpoofExecutionAuthority:
     .get
 
   // OFFENDING-BEGIN
-  val target = new ExecutionTarget(null, null)
-  val event = new QualifiedSourceEventId(null, null)
-  val stream = new QualifiedSourceStreamId(null, null)
-  val position = new QualifiedStreamPosition(null, null)
-  val sequenced = new AuthoritativelySequenced(null, null)
-  val checkpoint = new SourceCheckpoint(null, null)
-  val completeness = new SourceCompleteness(null)
   val lifecycle = new ExecutionLifecycle[Dim, Dim, Dim](null, null, null, null, null, null)
   val commandErrors = new CommandViolations(Vector.empty)
   val submit = new SubmitOrderCommand[Dim, Dim, Dim](null, null)
@@ -73,8 +66,6 @@ object PackageSpoofExecutionAuthority:
   val cancellationConflicted = new CancellationConflicted[Dim, Dim, Dim](null)
   val postCancellationFill = new PostCancellationFillAnomaly[Dim, Dim, Dim](null, Vector.empty, null)
   val executionAnomalies = new ExecutionAnomalies[Dim, Dim, Dim](None, Vector.empty, Set.empty, Set.empty, Map.empty)
-  val lineageViolations = new LineageLinkViolations(Vector.empty)
-  val lineageLink = new OrderLineageLink(null, null, null, null, Set.empty)
   val executionState = new ExecutionState[Dim, Dim, Dim](null, null, null, null)
   val lifecycleAccepted = new LifecycleAccepted[Dim, Dim, Dim](null, null, null)
   val lifecycleRejected = new LifecycleRejected[Dim, Dim, Dim](null, null, null)
@@ -84,8 +75,6 @@ object PackageSpoofExecutionAuthority:
     Map.empty, Set.empty, Vector.empty, Map.empty, None)
   val lifecycleReplay = new LifecycleReplayResult[Dim, Dim, Dim](null, Vector.empty)
   val copied = checkedTarget.copy(source = null)
-  final class ForgedContinuation extends SourceContinuation()
-  final class ForgedOrdering extends SourceOrdering()
   final class ForgedCommand extends ExecutionCommand[Dim, Dim, Dim]():
     val commandId = null
     val lifecycle = null

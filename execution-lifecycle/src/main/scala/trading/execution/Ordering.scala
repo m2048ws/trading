@@ -1,21 +1,13 @@
 package trading.execution
 
-import java.lang.invoke.MethodHandle
-import java.lang.invoke.MethodHandles
-import java.lang.invoke.MethodType
-import scala.annotation.nowarn
-
 import trading.quantity.JavaSerializationUnsupported
 
 sealed abstract class SourceContinuation protected () extends JavaSerializationUnsupported:
-  SourceContinuation.requireBuiltin(this)
-
   def stream: QualifiedSourceStreamId
   def previous: Option[QualifiedStreamPosition]
 
 object SourceContinuation:
-  @nowarn("msg=Ignoring.*qualifier")
-  final class StreamOrigin private[this] (val stream: QualifiedSourceStreamId) extends SourceContinuation():
+  final class StreamOrigin private[execution] (val stream: QualifiedSourceStreamId) extends SourceContinuation():
     val previous: Option[QualifiedStreamPosition] = None
 
     override def equals(other: Any): Boolean = other match
@@ -25,8 +17,7 @@ object SourceContinuation:
     override def hashCode(): Int  = stream.hashCode
     override def toString: String = s"StreamOrigin($stream)"
 
-  @nowarn("msg=Ignoring.*qualifier")
-  final class ContinuesAfter private[this] (val value: QualifiedStreamPosition) extends SourceContinuation():
+  final class ContinuesAfter private[execution] (val value: QualifiedStreamPosition) extends SourceContinuation():
     val stream: QualifiedSourceStreamId           = value.stream
     val previous: Option[QualifiedStreamPosition] = Some(value)
 
@@ -37,27 +28,11 @@ object SourceContinuation:
     override def hashCode(): Int  = value.hashCode
     override def toString: String = s"ContinuesAfter($value)"
 
-  private val originConstructor: MethodHandle =
-    MethodHandles
-      .privateLookupIn(classOf[StreamOrigin], MethodHandles.lookup())
-      .findConstructor(
-        classOf[StreamOrigin],
-        MethodType.methodType(classOf[Unit], classOf[QualifiedSourceStreamId])
-      )
-
-  private val continuationConstructor: MethodHandle =
-    MethodHandles
-      .privateLookupIn(classOf[ContinuesAfter], MethodHandles.lookup())
-      .findConstructor(
-        classOf[ContinuesAfter],
-        MethodType.methodType(classOf[Unit], classOf[QualifiedStreamPosition])
-      )
-
   private def constructOrigin(stream: QualifiedSourceStreamId): StreamOrigin =
-    originConstructor.invoke(stream).asInstanceOf[StreamOrigin]
+    new StreamOrigin(stream)
 
   private def constructContinuation(previous: QualifiedStreamPosition): ContinuesAfter =
-    continuationConstructor.invoke(previous).asInstanceOf[ContinuesAfter]
+    new ContinuesAfter(previous)
 
   def origin(
     stream: QualifiedSourceStreamId
@@ -73,19 +48,13 @@ object SourceContinuation:
       Left(ExecutionConstructionErrors.one(MissingExecutionValue(ExecutionConstructionLocation.Continuation)))
     else Right(constructContinuation(previous))
 
-  private[execution] def requireBuiltin(value: SourceContinuation): Unit =
-    val runtimeClass = value.getClass
-    if runtimeClass != classOf[StreamOrigin] && runtimeClass != classOf[ContinuesAfter] then
-      throw new IllegalAccessError(s"unsupported SourceContinuation implementation: ${runtimeClass.getName}")
 end SourceContinuation
 
-sealed abstract class SourceOrdering protected () extends JavaSerializationUnsupported:
-  SourceOrdering.requireBuiltin(this)
+sealed abstract class SourceOrdering protected () extends JavaSerializationUnsupported
 
 case object ExplicitlyUnsequenced extends SourceOrdering()
 
-@nowarn("msg=Ignoring.*qualifier")
-final class AuthoritativelySequenced private[this] (
+final class AuthoritativelySequenced private[execution] (
   val position: QualifiedStreamPosition,
   val continuation: SourceContinuation)
   extends SourceOrdering():
@@ -99,19 +68,11 @@ final class AuthoritativelySequenced private[this] (
   override def toString: String = s"AuthoritativelySequenced($position,$continuation)"
 
 object SourceOrdering:
-  private val constructor: MethodHandle =
-    MethodHandles
-      .privateLookupIn(classOf[AuthoritativelySequenced], MethodHandles.lookup())
-      .findConstructor(
-        classOf[AuthoritativelySequenced],
-        MethodType.methodType(classOf[Unit], classOf[QualifiedStreamPosition], classOf[SourceContinuation])
-      )
-
   private def construct(
     position: QualifiedStreamPosition,
     continuation: SourceContinuation
   ): AuthoritativelySequenced =
-    constructor.invoke(position, continuation).asInstanceOf[AuthoritativelySequenced]
+    new AuthoritativelySequenced(position, continuation)
 
   val unsequenced: SourceOrdering = ExplicitlyUnsequenced
 
@@ -135,16 +96,9 @@ object SourceOrdering:
       )
     ExecutionConstructionErrors.from(missing ++ scope).toLeft(construct(position, continuation))
 
-  private[execution] def requireBuiltin(value: SourceOrdering): Unit =
-    val runtimeClass = value.getClass
-    if
-      runtimeClass.getName != "trading.execution.ExplicitlyUnsequenced$" &&
-      runtimeClass != classOf[AuthoritativelySequenced]
-    then throw new IllegalAccessError(s"unsupported SourceOrdering implementation: ${runtimeClass.getName}")
 end SourceOrdering
 
-@nowarn("msg=Ignoring.*qualifier")
-final class SourceCheckpoint private[this] (
+final class SourceCheckpoint private (
   val position: QualifiedStreamPosition,
   val continuation: SourceContinuation)
   extends JavaSerializationUnsupported:
@@ -157,19 +111,11 @@ final class SourceCheckpoint private[this] (
   override def toString: String = s"SourceCheckpoint($position,$continuation)"
 
 object SourceCheckpoint:
-  private val constructor: MethodHandle =
-    MethodHandles
-      .privateLookupIn(classOf[SourceCheckpoint], MethodHandles.lookup())
-      .findConstructor(
-        classOf[SourceCheckpoint],
-        MethodType.methodType(classOf[Unit], classOf[QualifiedStreamPosition], classOf[SourceContinuation])
-      )
-
   private def construct(
     position: QualifiedStreamPosition,
     continuation: SourceContinuation
   ): SourceCheckpoint =
-    constructor.invoke(position, continuation).asInstanceOf[SourceCheckpoint]
+    new SourceCheckpoint(position, continuation)
 
   def create(
     position: QualifiedStreamPosition,
@@ -192,8 +138,7 @@ object SourceCheckpoint:
     ExecutionConstructionErrors.from(missing ++ scope).toLeft(construct(position, continuation))
 end SourceCheckpoint
 
-@nowarn("msg=Ignoring.*qualifier")
-final class SourceCompleteness private[this] (val completeThrough: QualifiedStreamPosition)
+final class SourceCompleteness private (val completeThrough: QualifiedStreamPosition)
   extends JavaSerializationUnsupported:
 
   override def equals(other: Any): Boolean = other match
@@ -204,16 +149,8 @@ final class SourceCompleteness private[this] (val completeThrough: QualifiedStre
   override def toString: String = s"SourceCompleteness($completeThrough)"
 
 object SourceCompleteness:
-  private val constructor: MethodHandle =
-    MethodHandles
-      .privateLookupIn(classOf[SourceCompleteness], MethodHandles.lookup())
-      .findConstructor(
-        classOf[SourceCompleteness],
-        MethodType.methodType(classOf[Unit], classOf[QualifiedStreamPosition])
-      )
-
   private def construct(completeThrough: QualifiedStreamPosition): SourceCompleteness =
-    constructor.invoke(completeThrough).asInstanceOf[SourceCompleteness]
+    new SourceCompleteness(completeThrough)
 
   def create(
     completeThrough: QualifiedStreamPosition

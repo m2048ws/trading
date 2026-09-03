@@ -1,10 +1,5 @@
 package trading.execution
 
-import java.lang.invoke.MethodHandle
-import java.lang.invoke.MethodHandles
-import java.lang.invoke.MethodType
-import scala.annotation.nowarn
-
 import trading.economics.instrument.InstrumentId
 import trading.quantity.JavaSerializationUnsupported
 
@@ -29,8 +24,7 @@ final case class PredecessorCancellationNotConfirmed(executionOrderId: Execution
 
 final case class SuccessorSubmissionNotRecorded(executionOrderId: ExecutionOrderId) extends LineageLinkViolation
 
-@nowarn("msg=Ignoring.*qualifier")
-final class LineageLinkViolations private[this] (private val values: Vector[LineageLinkViolation])
+final class LineageLinkViolations private[execution] (private val values: Vector[LineageLinkViolation])
   extends JavaSerializationUnsupported:
 
   def head: LineageLinkViolation             = values.head
@@ -42,8 +36,7 @@ final class LineageLinkViolations private[this] (private val values: Vector[Line
     case _                           => false
   override def hashCode(): Int = values.hashCode
 
-@nowarn("msg=Ignoring.*qualifier")
-final class OrderLineageLink private[this] (
+final class OrderLineageLink private (
   val lineageId: OrderLineageId,
   val predecessor: ExecutionLifecycle[?, ?, ?],
   val successor: ExecutionLifecycle[?, ?, ?],
@@ -64,28 +57,8 @@ final class OrderLineageLink private[this] (
 end OrderLineageLink
 
 object OrderLineageLink:
-  private val violationsConstructor: MethodHandle =
-    MethodHandles
-      .privateLookupIn(classOf[LineageLinkViolations], MethodHandles.lookup())
-      .findConstructor(classOf[LineageLinkViolations], MethodType.methodType(classOf[Unit], classOf[Vector[?]]))
-
-  private val linkConstructor: MethodHandle =
-    MethodHandles
-      .privateLookupIn(classOf[OrderLineageLink], MethodHandles.lookup())
-      .findConstructor(
-        classOf[OrderLineageLink],
-        MethodType.methodType(
-          classOf[Unit],
-          classOf[OrderLineageId],
-          classOf[ExecutionLifecycle[?, ?, ?]],
-          classOf[ExecutionLifecycle[?, ?, ?]],
-          classOf[CancellationConfirmed[?, ?, ?]],
-          classOf[Set[?]]
-        )
-      )
-
   private def violations(values: Vector[LineageLinkViolation]): LineageLinkViolations =
-    violationsConstructor.invoke(values).asInstanceOf[LineageLinkViolations]
+    new LineageLinkViolations(values)
 
   private def construct(
     lineageId: OrderLineageId,
@@ -94,9 +67,7 @@ object OrderLineageLink:
     predecessorCancellation: CancellationConfirmed[?, ?, ?],
     successorSubmissions: Set[SubmitOrderCommand[?, ?, ?]]
   ): OrderLineageLink =
-    linkConstructor
-      .invoke(lineageId, predecessor, successor, predecessorCancellation, successorSubmissions)
-      .asInstanceOf[OrderLineageLink]
+    new OrderLineageLink(lineageId, predecessor, successor, predecessorCancellation, successorSubmissions)
 
   def create(
     predecessorState: ExecutionState[?, ?, ?],

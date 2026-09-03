@@ -1,10 +1,5 @@
 package trading.execution
 
-import java.lang.invoke.MethodHandle
-import java.lang.invoke.MethodHandles
-import java.lang.invoke.MethodType
-import scala.annotation.nowarn
-
 import trading.economics.instrument.InstrumentId
 import trading.quantity.JavaSerializationUnsupported
 
@@ -44,8 +39,7 @@ final case class StreamScopeMismatch(
   extends ExecutionConstructionViolation
 
 /** Public deterministic non-empty construction failures. */
-@nowarn("msg=Ignoring.*qualifier")
-final class ExecutionConstructionErrors private[this] (
+final class ExecutionConstructionErrors private (
   private val values: Vector[ExecutionConstructionViolation])
   extends JavaSerializationUnsupported:
 
@@ -61,16 +55,8 @@ final class ExecutionConstructionErrors private[this] (
   override def toString: String = values.mkString("ExecutionConstructionErrors(", ",", ")")
 
 object ExecutionConstructionErrors:
-  private val constructor: MethodHandle =
-    MethodHandles
-      .privateLookupIn(classOf[ExecutionConstructionErrors], MethodHandles.lookup())
-      .findConstructor(
-        classOf[ExecutionConstructionErrors],
-        MethodType.methodType(classOf[Unit], classOf[Vector[?]])
-      )
-
   private def construct(values: Vector[ExecutionConstructionViolation]): ExecutionConstructionErrors =
-    constructor.invoke(values).asInstanceOf[ExecutionConstructionErrors]
+    new ExecutionConstructionErrors(values)
 
   def one(value: ExecutionConstructionViolation): ExecutionConstructionErrors =
     construct(Vector(value))
@@ -80,8 +66,7 @@ object ExecutionConstructionErrors:
   ): Option[ExecutionConstructionErrors] =
     Option.when(values.nonEmpty)(construct(values))
 
-@nowarn("msg=Ignoring.*qualifier")
-final class ExecutionTarget private[this] (
+final class ExecutionTarget private (
   val source: ExecutionSourceId,
   val account: ExecutionAccountId)
   extends JavaSerializationUnsupported:
@@ -94,16 +79,8 @@ final class ExecutionTarget private[this] (
   override def toString: String = s"ExecutionTarget($source,$account)"
 
 object ExecutionTarget:
-  private val constructor: MethodHandle =
-    MethodHandles
-      .privateLookupIn(classOf[ExecutionTarget], MethodHandles.lookup())
-      .findConstructor(
-        classOf[ExecutionTarget],
-        MethodType.methodType(classOf[Unit], classOf[ExecutionSourceId], classOf[ExecutionAccountId])
-      )
-
   private def construct(source: ExecutionSourceId, account: ExecutionAccountId): ExecutionTarget =
-    constructor.invoke(source, account).asInstanceOf[ExecutionTarget]
+    new ExecutionTarget(source, account)
 
   def create(
     source: ExecutionSourceId,
@@ -117,8 +94,7 @@ object ExecutionTarget:
     ExecutionConstructionErrors.from(violations).toLeft(construct(source, account))
 end ExecutionTarget
 
-@nowarn("msg=Ignoring.*qualifier")
-final class QualifiedSourceEventId private[this] (
+final class QualifiedSourceEventId private (
   val target: ExecutionTarget,
   val native: NativeSourceEventId)
   extends JavaSerializationUnsupported:
@@ -131,16 +107,8 @@ final class QualifiedSourceEventId private[this] (
   override def toString: String = s"QualifiedSourceEventId($target,$native)"
 
 object QualifiedSourceEventId:
-  private val constructor: MethodHandle =
-    MethodHandles
-      .privateLookupIn(classOf[QualifiedSourceEventId], MethodHandles.lookup())
-      .findConstructor(
-        classOf[QualifiedSourceEventId],
-        MethodType.methodType(classOf[Unit], classOf[ExecutionTarget], classOf[NativeSourceEventId])
-      )
-
   private def construct(target: ExecutionTarget, native: NativeSourceEventId): QualifiedSourceEventId =
-    constructor.invoke(target, native).asInstanceOf[QualifiedSourceEventId]
+    new QualifiedSourceEventId(target, native)
 
   def create(
     target: ExecutionTarget,
@@ -154,8 +122,7 @@ object QualifiedSourceEventId:
     ExecutionConstructionErrors.from(violations).toLeft(construct(target, native))
 end QualifiedSourceEventId
 
-@nowarn("msg=Ignoring.*qualifier")
-final class QualifiedSourceOrderId private[this] (
+final class QualifiedSourceOrderId private (
   val target: ExecutionTarget,
   val native: NativeSourceOrderId)
   extends JavaSerializationUnsupported:
@@ -168,16 +135,8 @@ final class QualifiedSourceOrderId private[this] (
   override def toString: String = s"QualifiedSourceOrderId($target,$native)"
 
 object QualifiedSourceOrderId:
-  private val constructor: MethodHandle =
-    MethodHandles
-      .privateLookupIn(classOf[QualifiedSourceOrderId], MethodHandles.lookup())
-      .findConstructor(
-        classOf[QualifiedSourceOrderId],
-        MethodType.methodType(classOf[Unit], classOf[ExecutionTarget], classOf[NativeSourceOrderId])
-      )
-
   private def construct(target: ExecutionTarget, native: NativeSourceOrderId): QualifiedSourceOrderId =
-    constructor.invoke(target, native).asInstanceOf[QualifiedSourceOrderId]
+    new QualifiedSourceOrderId(target, native)
 
   def create(
     target: ExecutionTarget,
@@ -191,8 +150,7 @@ object QualifiedSourceOrderId:
     ExecutionConstructionErrors.from(violations).toLeft(construct(target, native))
 end QualifiedSourceOrderId
 
-@nowarn("msg=Ignoring.*qualifier")
-final class QualifiedFillId private[this] (
+final class QualifiedFillId private (
   val target: ExecutionTarget,
   val native: NativeFillId)
   extends JavaSerializationUnsupported:
@@ -205,16 +163,8 @@ final class QualifiedFillId private[this] (
   override def toString: String = s"QualifiedFillId($target,$native)"
 
 object QualifiedFillId:
-  private val constructor: MethodHandle =
-    MethodHandles
-      .privateLookupIn(classOf[QualifiedFillId], MethodHandles.lookup())
-      .findConstructor(
-        classOf[QualifiedFillId],
-        MethodType.methodType(classOf[Unit], classOf[ExecutionTarget], classOf[NativeFillId])
-      )
-
   private def construct(target: ExecutionTarget, native: NativeFillId): QualifiedFillId =
-    constructor.invoke(target, native).asInstanceOf[QualifiedFillId]
+    new QualifiedFillId(target, native)
 
   def create(
     target: ExecutionTarget,
@@ -228,8 +178,7 @@ object QualifiedFillId:
     ExecutionConstructionErrors.from(violations).toLeft(construct(target, native))
 end QualifiedFillId
 
-@nowarn("msg=Ignoring.*qualifier")
-final class QualifiedSourceStreamId private[this] (
+final class QualifiedSourceStreamId private (
   val target: ExecutionTarget,
   val native: SourceStreamId)
   extends JavaSerializationUnsupported:
@@ -242,16 +191,8 @@ final class QualifiedSourceStreamId private[this] (
   override def toString: String = s"QualifiedSourceStreamId($target,$native)"
 
 object QualifiedSourceStreamId:
-  private val constructor: MethodHandle =
-    MethodHandles
-      .privateLookupIn(classOf[QualifiedSourceStreamId], MethodHandles.lookup())
-      .findConstructor(
-        classOf[QualifiedSourceStreamId],
-        MethodType.methodType(classOf[Unit], classOf[ExecutionTarget], classOf[SourceStreamId])
-      )
-
   private def construct(target: ExecutionTarget, native: SourceStreamId): QualifiedSourceStreamId =
-    constructor.invoke(target, native).asInstanceOf[QualifiedSourceStreamId]
+    new QualifiedSourceStreamId(target, native)
 
   def create(
     target: ExecutionTarget,
@@ -265,8 +206,7 @@ object QualifiedSourceStreamId:
     ExecutionConstructionErrors.from(violations).toLeft(construct(target, native))
 end QualifiedSourceStreamId
 
-@nowarn("msg=Ignoring.*qualifier")
-final class QualifiedStreamPosition private[this] (
+final class QualifiedStreamPosition private (
   val stream: QualifiedSourceStreamId,
   val sequence: SourceSequence)
   extends JavaSerializationUnsupported:
@@ -279,19 +219,11 @@ final class QualifiedStreamPosition private[this] (
   override def toString: String = s"QualifiedStreamPosition($stream,$sequence)"
 
 object QualifiedStreamPosition:
-  private val constructor: MethodHandle =
-    MethodHandles
-      .privateLookupIn(classOf[QualifiedStreamPosition], MethodHandles.lookup())
-      .findConstructor(
-        classOf[QualifiedStreamPosition],
-        MethodType.methodType(classOf[Unit], classOf[QualifiedSourceStreamId], classOf[SourceSequence])
-      )
-
   private def construct(
     stream: QualifiedSourceStreamId,
     sequence: SourceSequence
   ): QualifiedStreamPosition =
-    constructor.invoke(stream, sequence).asInstanceOf[QualifiedStreamPosition]
+    new QualifiedStreamPosition(stream, sequence)
 
   def create(
     stream: QualifiedSourceStreamId,

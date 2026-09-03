@@ -150,30 +150,8 @@ class ExecutionLifecycleCompilerBoundarySuite extends FunSuite:
     assert(rejected.rendered.contains("cannot be accessed"), rejected.rendered)
     assert(rejected.rendered.contains("value copy is not a member"), rejected.rendered)
 
-  test("identity constructors are JVM-private and unavailable to same-package Java"):
+  test("remaining migration representations are final with JVM-private constructors"):
     List(
-      Class.forName("trading.execution.ApplicationCommandId"),
-      Class.forName("trading.execution.ExecutionOrderId"),
-      Class.forName("trading.execution.OrderLineageId"),
-      Class.forName("trading.execution.ExecutionSourceId"),
-      Class.forName("trading.execution.ExecutionAccountId"),
-      Class.forName("trading.execution.NativeSourceEventId"),
-      Class.forName("trading.execution.NativeSourceOrderId"),
-      Class.forName("trading.execution.NativeFillId"),
-      Class.forName("trading.execution.SourceStreamId"),
-      Class.forName("trading.execution.SourceSequence"),
-      Class.forName("trading.execution.ExecutionConstructionErrors"),
-      Class.forName("trading.execution.ExecutionTarget"),
-      Class.forName("trading.execution.QualifiedSourceEventId"),
-      Class.forName("trading.execution.QualifiedSourceOrderId"),
-      Class.forName("trading.execution.QualifiedFillId"),
-      Class.forName("trading.execution.QualifiedSourceStreamId"),
-      Class.forName("trading.execution.QualifiedStreamPosition"),
-      Class.forName("trading.execution.SourceContinuation$StreamOrigin"),
-      Class.forName("trading.execution.SourceContinuation$ContinuesAfter"),
-      Class.forName("trading.execution.AuthoritativelySequenced"),
-      Class.forName("trading.execution.SourceCheckpoint"),
-      Class.forName("trading.execution.SourceCompleteness"),
       Class.forName("trading.execution.ExecutionLifecycle"),
       Class.forName("trading.execution.CommandViolations"),
       Class.forName("trading.execution.SubmitOrderCommand"),
@@ -223,8 +201,6 @@ class ExecutionLifecycleCompilerBoundarySuite extends FunSuite:
       Class.forName("trading.execution.CancellationConflicted"),
       Class.forName("trading.execution.PostCancellationFillAnomaly"),
       Class.forName("trading.execution.ExecutionAnomalies"),
-      Class.forName("trading.execution.LineageLinkViolations"),
-      Class.forName("trading.execution.OrderLineageLink"),
       Class.forName("trading.execution.ExecutionState"),
       Class.forName("trading.execution.LifecycleAccepted"),
       Class.forName("trading.execution.LifecycleRejected"),
@@ -238,7 +214,7 @@ class ExecutionLifecycleCompilerBoundarySuite extends FunSuite:
         s"${representation.getName} exposes a non-private JVM constructor"
       )
 
-  test("completed JAR rejects unknown Java ordering alternatives at construction"):
+  test("completed JAR rejects remaining unknown Java execution alternatives at construction"):
     val result = compileJava(javaRoot.resolve("positive/RejectedExecutionAlternatives.java"))
     assert(result.succeeded, result.diagnostics)
     val loader = new URLClassLoader(Array(result.output.toUri.toURL), getClass.getClassLoader)

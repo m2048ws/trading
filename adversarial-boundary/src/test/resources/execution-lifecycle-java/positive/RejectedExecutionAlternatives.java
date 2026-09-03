@@ -29,28 +29,6 @@ import trading.execution.SourceContinuation;
 import trading.execution.SourceOrdering;
 
 public final class RejectedExecutionAlternatives {
-  private static final class ForgedContinuation extends SourceContinuation {
-    private ForgedContinuation() {
-      super();
-    }
-
-    @Override
-    public QualifiedSourceStreamId stream() {
-      return null;
-    }
-
-    @Override
-    public Option<QualifiedStreamPosition> previous() {
-      return Option.empty();
-    }
-  }
-
-  private static final class ForgedOrdering extends SourceOrdering {
-    private ForgedOrdering() {
-      super();
-    }
-  }
-
   private static final class ForgedCommand extends ExecutionCommand {
     private ForgedCommand() {
       super();
@@ -170,18 +148,6 @@ public final class RejectedExecutionAlternatives {
   }
 
   public static boolean guardsRejectUnknownAlternatives() {
-    try {
-      new ForgedContinuation();
-      return false;
-    } catch (IllegalAccessError expected) {
-      // expected
-    }
-    try {
-      new ForgedOrdering();
-      return false;
-    } catch (IllegalAccessError expected) {
-      // expected
-    }
     try {
       new ForgedCommand();
       return false;

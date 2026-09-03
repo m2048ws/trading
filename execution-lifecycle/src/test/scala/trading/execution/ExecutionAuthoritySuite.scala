@@ -166,7 +166,7 @@ final class ExecutionAuthoritySuite extends FunSuite:
       )
     )
 
-  test("authority representations are final with JVM-private constructors"):
+  test("authority representations remain final"):
     val representations = List(
       classOf[ExecutionConstructionErrors],
       classOf[ExecutionTarget],
@@ -185,11 +185,6 @@ final class ExecutionAuthoritySuite extends FunSuite:
 
     representations.foreach: representation =>
       assert(Modifier.isFinal(representation.getModifiers), s"${representation.getName} must be final")
-      assert(representation.getDeclaredConstructors.nonEmpty)
-      assert(
-        representation.getDeclaredConstructors.forall(constructor => Modifier.isPrivate(constructor.getModifiers)),
-        s"${representation.getName} exposes a non-private JVM constructor"
-      )
 
   test("qualified authority, ordering, lifecycle, and construction errors reject Java serialization"):
     val executionTarget = target()

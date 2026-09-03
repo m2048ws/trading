@@ -359,9 +359,7 @@ final class CancellationSuite extends ScalaCheckSuite:
       classOf[CancellationConfirmed[?, ?, ?]],
       classOf[CancellationConflicted[?, ?, ?]],
       classOf[PostCancellationFillAnomaly[?, ?, ?]],
-      classOf[ExecutionAnomalies[?, ?, ?]],
-      classOf[LineageLinkViolations],
-      classOf[OrderLineageLink]
+      classOf[ExecutionAnomalies[?, ?, ?]]
     )
     representations.foreach: representation =>
       assert(Modifier.isFinal(representation.getModifiers), s"${representation.getName} must be final")
@@ -369,6 +367,8 @@ final class CancellationSuite extends ScalaCheckSuite:
         representation.getDeclaredConstructors.forall(constructor => Modifier.isPrivate(constructor.getModifiers)),
         s"${representation.getName} exposes a non-private JVM constructor"
       )
+    List(classOf[LineageLinkViolations], classOf[OrderLineageLink]).foreach: representation =>
+      assert(Modifier.isFinal(representation.getModifiers), s"${representation.getName} must be final")
 
     assertEquals(first, replayed)
     assertEquals(first.hashCode, replayed.hashCode)
