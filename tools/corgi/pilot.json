@@ -22,7 +22,8 @@
     "introduce-pure-risk-module",
     "introduce-pure-fee-policy-module",
     "introduce-versioned-boundary-codecs",
-    "establish-actual-execution-lifecycle"
+    "establish-actual-execution-lifecycle",
+    "simplify-in-process-trust-boundary"
   ],
   "authority": {
     "localCorgiCommits": true,
