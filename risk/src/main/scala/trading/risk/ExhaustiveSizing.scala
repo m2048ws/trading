@@ -10,23 +10,12 @@ import trading.quantity.algebra.exactOrders.given
 import trading.quantity.refinement.*
 
 /** Closed reasons why an arbitrary exhaustive observation could not be completed. */
-sealed abstract class ExhaustiveLotEvaluationCause[+E] protected () extends JavaSerializationUnsupported:
-  ExhaustiveLotEvaluationCause.requireBuiltin(this)
+sealed abstract class ExhaustiveLotEvaluationCause[+E] protected () extends JavaSerializationUnsupported
 
 object ExhaustiveLotEvaluationCause:
   final case class CallerEvaluation[E](cause: E)            extends ExhaustiveLotEvaluationCause[E]()
   final case class LotConstruction(cause: LotError)         extends ExhaustiveLotEvaluationCause[Nothing]()
   final case class RiskAssessment(cause: RiskIdentityError) extends ExhaustiveLotEvaluationCause[Nothing]()
-
-  private def requireBuiltin(value: ExhaustiveLotEvaluationCause[?]): Unit =
-    val runtimeClass = value.getClass
-    val supported    =
-      runtimeClass == classOf[CallerEvaluation[?]] ||
-        runtimeClass == classOf[LotConstruction] ||
-        runtimeClass == classOf[RiskAssessment]
-    if !supported then
-      throw new IllegalAccessError(s"unsupported ExhaustiveLotEvaluationCause implementation: ${runtimeClass.getName}")
-end ExhaustiveLotEvaluationCause
 
 /** The exact positive coordinate and typed cause of the first failed ascending observation. */
 final case class LocatedLotEvaluationFailure[+E](
@@ -39,8 +28,6 @@ final case class LocatedLotEvaluationFailure[+E](
  * This evidence is intentionally distinct from the adjacent-boundary evidence of [[MaxAffordableLots]].
  */
 sealed abstract class ExhaustiveLotDecision[D <: Dim, S <: Dim] protected () extends JavaSerializationUnsupported:
-  ExhaustiveLotDecision.requireBuiltin(this)
-
   def evaluatedThrough: PositiveWhole
 end ExhaustiveLotDecision
 
@@ -54,14 +41,6 @@ object ExhaustiveLotDecision:
     best: LotRiskAssessment[D, S],
     evaluatedThrough: PositiveWhole)
     extends ExhaustiveLotDecision[D, S]()
-
-  private def requireBuiltin(value: ExhaustiveLotDecision[?, ?]): Unit =
-    val runtimeClass = value.getClass
-    val supported    =
-      runtimeClass == classOf[NoAffordable[?, ?]] || runtimeClass == classOf[Selected[?, ?]]
-    if !supported then
-      throw new IllegalAccessError(s"unsupported ExhaustiveLotDecision implementation: ${runtimeClass.getName}")
-end ExhaustiveLotDecision
 
 /** Explicit `O(cap)` sizing for genuinely arbitrary deterministic pure lot-to-PnL evaluation. */
 object ExhaustiveLotSizing:

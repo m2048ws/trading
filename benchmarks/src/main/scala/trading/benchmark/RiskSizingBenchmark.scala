@@ -1,7 +1,5 @@
 package trading.benchmark
 
-import java.lang.invoke.MethodHandles
-import java.lang.invoke.MethodType
 import java.util.concurrent.TimeUnit
 
 import org.openjdk.jmh.annotations.*
@@ -12,24 +10,6 @@ import trading.quantity.*
 import trading.quantity.refinement.*
 import trading.reference.*
 import trading.risk.*
-
-private object RiskBenchmarkObserver:
-  private val observer =
-    val owner = classOf[MonotoneLotRisk[?, ?]]
-    MethodHandles
-      .privateLookupIn(owner, MethodHandles.lookup())
-      .findVirtual(
-        owner,
-        "assess",
-        MethodType.methodType(classOf[LotRiskAssessment[?, ?]], classOf[BigInt])
-      )
-
-  def apply[D <: Dim, S <: Dim](
-    model: MonotoneLotRisk[D, S],
-    count: PositiveWhole
-  ): LotRiskAssessment[D, S] =
-    observer.invoke(model, count).asInstanceOf[LotRiskAssessment[D, S]]
-end RiskBenchmarkObserver
 
 private trait RiskBenchmarkInputs:
   def directLookup: LotRiskAssessment[? <: Dim, ? <: Dim]
@@ -60,7 +40,7 @@ class RiskSizingBenchmarkState:
 
     initialized = Some(new RiskBenchmarkInputs:
       def directLookup: LotRiskAssessment[? <: Dim, ? <: Dim] =
-        RiskBenchmarkObserver(model, directCoordinate)
+        model.assess(directCoordinate)
 
       def maximumSizing: MaxAffordableLots[? <: Dim, ? <: Dim] =
         MaxAffordableLots.select(model)(budget)
@@ -69,7 +49,7 @@ class RiskSizingBenchmarkState:
         var coordinate                                                                              = BigInt(1)
         var best: Option[LotRiskAssessment[instrument.roles.position.D, instrument.roles.settle.D]] = None
         while coordinate <= checkedCap.unrefined do
-          val assessment = RiskBenchmarkObserver(model, PositiveWhole(coordinate).toOption.get)
+          val assessment = model.assess(PositiveWhole(coordinate).toOption.get)
           if assessment.downsideRisk.unrefined.coefficient.compare(budget.unrefined.coefficient) <= 0 then
             best = Some(assessment)
           coordinate += 1

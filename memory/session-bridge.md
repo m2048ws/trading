@@ -15,15 +15,15 @@ updated: 2026-09-03
 - **Change**: simplify-in-process-trust-boundary
 - **Worktree**: /Users/m/src/money/.worktrees/simplify-in-process-trust-boundary
 - **Phase at Checkpoint**: applying
-- **Task Group at Checkpoint**: 4
-- **Observed Run Revision**: 5
-- **Last Verified HEAD**: 26e7e18d6ba907cf33c2c99f09cdfbd81968eaa7
+- **Task Group at Checkpoint**: 5
+- **Observed Run Revision**: 6
+- **Last Verified HEAD**: 2183827046526520b1531d8334266e6823dd52c1
 
 ## Next Action
-- Commit and acknowledge Task Group 4, then continue with Task Group 5.
+- Commit and acknowledge Task Group 5, then continue with Task Group 6.
 
 ## Blockers
-- Task Group 4 fee/attribution static construction, fixture reconciliation, implementation note, and this bridge
+- Task Group 5 risk/sizing/benchmark static access, fixture reconciliation, implementation note, and this bridge
   checkpoint are ready for their dedicated commit.
 
 ## Uncommitted Work
@@ -41,6 +41,8 @@ updated: 2026-09-03
   casts while retaining associated evidence, ordered validation, non-empty slices, and round-trip flatness.
 - Task Group 4 removed both fee allowances (24 tokens) and all four reflective construction/result casts while retaining
   identity, source-slice/leg attribution, deterministic errors, exact settlement composition, and serialization policy.
+- Task Group 5 removed all three risk/benchmark allowances (40 tokens), staticized construction and observation, and
+  removed hostile decision guards while retaining checked casts, monotonicity, exactness, witness and complexity bounds.
 
 ## Promotion Queue
 - none

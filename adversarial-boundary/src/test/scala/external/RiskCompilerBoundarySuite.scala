@@ -7,11 +7,7 @@ import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
-import java.util.Locale
 import java.util.jar.JarFile
-import javax.tools.DiagnosticCollector
-import javax.tools.JavaFileObject
-import javax.tools.ToolProvider
 import scala.jdk.CollectionConverters.*
 
 import dotty.tools.dotc.Main
@@ -23,9 +19,8 @@ class RiskCompilerBoundarySuite extends FunSuite:
     def succeeded: Boolean = errors.isEmpty && warnings.isEmpty
     def rendered: String   = (errors ++ warnings).mkString("\n")
 
-  private val fixturesRoot     = Paths.get(getClass.getResource("/risk-compiler").toURI)
-  private val javaFixturesRoot = Paths.get(getClass.getResource("/risk-java").toURI)
-  private val classpath        =
+  private val fixturesRoot = Paths.get(getClass.getResource("/risk-compiler").toURI)
+  private val classpath    =
     val resource = Option(getClass.getResourceAsStream("/risk-compiler.classpath")).getOrElse:
       throw new IllegalStateException("missing generated risk compiler classpath")
     try new String(resource.readAllBytes(), StandardCharsets.UTF_8).trim
@@ -110,49 +105,19 @@ class RiskCompilerBoundarySuite extends FunSuite:
     assert(rejected.rendered.contains("Required:"), rejected.rendered)
     forbiddenDiagnostics.foreach(fragment => assert(!rejected.rendered.contains(fragment), rejected.rendered))
 
-  test("completed risk JAR rejects same-package assessment/model construction and subtyping"):
-    val source  = fixturesRoot.resolve("negative/PackageSpoofRiskConstruction.scala")
-    val prelude = compilePrelude(source)
-    assert(prelude.succeeded, s"fixture prelude must compile independently:\n${prelude.rendered}")
-    val rejected = compile(source)
-    assert(rejected.errors.size >= 5, rejected.rendered)
-    assert(rejected.rendered.contains("cannot be accessed"), rejected.rendered)
-    assert(rejected.rendered.contains("value copy is not a member"), rejected.rendered)
-    forbiddenDiagnostics.foreach(fragment => assert(!rejected.rendered.contains(fragment), rejected.rendered))
-
-  test("assessment and model constructors are JVM-private and representations are final"):
+  test("assessment and model representations stay final without exposing arbitrary certification"):
     List(
       Class.forName("trading.risk.LotRiskAssessment"),
       Class.forName("trading.risk.ModelViolations"),
       Class.forName("trading.risk.MonotoneLotRisk")
     ).foreach: representation =>
       assert(Modifier.isFinal(representation.getModifiers), s"${representation.getName} is not final")
-      assert(representation.getDeclaredConstructors.nonEmpty)
-      assert(
-        representation.getDeclaredConstructors.forall(constructor => Modifier.isPrivate(constructor.getModifiers)),
-        s"${representation.getName} exposes a non-private JVM constructor"
-      )
     val model = Class.forName("trading.risk.MonotoneLotRisk")
-    assert(!model.getMethods.exists(_.getName == "assess"), "model exposes its refined internal observer to Java")
-    assert(!model.getMethods.exists(_.getName == "lossAt"), "model exposes its closed signed-loss observer to Java")
-    assert(!model.getMethods.exists(_.getName == "formula"), "model exposes its closed formula representation to Java")
     assert(!model.getMethods.exists(_.getName == "makeLots"), "model exposes its total lot constructor to Java")
     assert(
       !model.getMethods.exists(_.getParameterTypes.contains(classOf[Function1[?, ?]])),
       "model exposes a public arbitrary-function certification path"
     )
-
-  test("completed risk JAR rejects unknown Java decision alternatives at construction"):
-    val result = compileJava(javaFixturesRoot.resolve("negative/RejectedRiskDecisionImplementations.java"))
-    assert(result.succeeded, result.diagnostics)
-    val loader = new URLClassLoader(Array(result.output.toUri.toURL), getClass.getClassLoader)
-    try
-      val fixture = Class.forName("external.risk.negative.RejectedRiskDecisionImplementations", true, loader)
-      assertEquals(
-        fixture.getMethod("guardsRejectUnknownAlternatives").invoke(null),
-        java.lang.Boolean.TRUE
-      )
-    finally loader.close()
 
   private def compilePrelude(source: Path): Compilation =
     val lines    = Files.readAllLines(source, StandardCharsets.UTF_8)
@@ -176,33 +141,6 @@ class RiskCompilerBoundarySuite extends FunSuite:
       reporter
     )
     Compilation(output, reporter.allErrors.map(_.message), reporter.allWarnings.map(_.message))
-
-  private final case class JavaCompilation(output: Path, succeeded: Boolean, diagnostics: String)
-
-  private def compileJava(source: Path): JavaCompilation =
-    val compiler = Option(ToolProvider.getSystemJavaCompiler).getOrElse:
-      throw new IllegalStateException("a full JDK is required for Java boundary fixtures")
-    val diagnostics = new DiagnosticCollector[JavaFileObject]
-    val files       = compiler.getStandardFileManager(diagnostics, Locale.ROOT, StandardCharsets.UTF_8)
-    val output      = Files.createTempDirectory("risk-java-")
-    try
-      val units   = files.getJavaFileObjects(source.toFile)
-      val options = List(
-        "--release",
-        "25",
-        "-proc:none",
-        "-classpath",
-        classpath,
-        "-d",
-        output.toString
-      )
-      val succeeded = compiler.getTask(null, files, diagnostics, options.asJava, null, units).call()
-      val rendered  = diagnostics.getDiagnostics.asScala
-        .map(diagnostic => diagnostic.getMessage(Locale.ROOT))
-        .mkString("\n")
-      JavaCompilation(output, succeeded, rendered)
-    finally files.close()
-  end compileJava
 
   private def packagedRiskJar: Path =
     classpath

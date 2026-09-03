@@ -1,8 +1,5 @@
 package trading.risk
 
-import java.lang.invoke.MethodHandles
-import java.lang.invoke.MethodType
-
 import munit.FunSuite
 
 import trading.economics.instrument.*
@@ -10,23 +7,11 @@ import trading.quantity.*
 import trading.quantity.refinement.*
 
 private object ModelTestAccess:
-  private val observer =
-    val owner = classOf[MonotoneLotRisk[?, ?]]
-    MethodHandles
-      .privateLookupIn(owner, MethodHandles.lookup())
-      .findVirtual(
-        owner,
-        "assess",
-        MethodType.methodType(classOf[LotRiskAssessment[?, ?]], classOf[BigInt])
-      )
-
   def observe[D <: Dim, S <: Dim](
     model: MonotoneLotRisk[D, S],
     count: BigInt
   ): LotRiskAssessment[D, S] =
-    observer
-      .invoke(model, PositiveWhole(count).toOption.get)
-      .asInstanceOf[LotRiskAssessment[D, S]]
+    model.assess(PositiveWhole(count).toOption.get)
 end ModelTestAccess
 
 class RiskCurveSuite extends FunSuite:

@@ -1,7 +1,5 @@
 package trading.risk
 
-import java.lang.invoke.MethodHandles
-import java.lang.invoke.MethodType
 import scala.annotation.tailrec
 
 import cats.kernel.Order
@@ -11,26 +9,15 @@ import trading.quantity.algebra.exactOrders.given
 import trading.quantity.refinement.*
 
 /** Evidence for why a selected affordable assessment is maximal in its declared model domain. */
-sealed abstract class AffordableUpperBoundary[D <: Dim, S <: Dim] protected () extends JavaSerializationUnsupported:
-  AffordableUpperBoundary.requireBuiltin(this)
+sealed abstract class AffordableUpperBoundary[D <: Dim, S <: Dim] protected () extends JavaSerializationUnsupported
 
 object AffordableUpperBoundary:
   final case class AtCap[D <: Dim, S <: Dim]() extends AffordableUpperBoundary[D, S]()
   final case class NextUnaffordable[D <: Dim, S <: Dim](next: LotRiskAssessment[D, S])
     extends AffordableUpperBoundary[D, S]()
 
-  private def requireBuiltin(value: AffordableUpperBoundary[?, ?]): Unit =
-    val runtimeClass = value.getClass
-    val supported    =
-      runtimeClass == classOf[AtCap[?, ?]] || runtimeClass == classOf[NextUnaffordable[?, ?]]
-    if !supported then
-      throw new IllegalAccessError(s"unsupported AffordableUpperBoundary implementation: ${runtimeClass.getName}")
-end AffordableUpperBoundary
-
 /** Closed maximum-affordable decision with every distinct model observation retained in probe order. */
 sealed abstract class MaxAffordableLots[D <: Dim, S <: Dim] protected () extends JavaSerializationUnsupported:
-  MaxAffordableLots.requireBuiltin(this)
-
   def observations: Vector[LotRiskAssessment[D, S]]
 
   final def observationCount: Int = observations.size
@@ -51,28 +38,11 @@ object MaxAffordableLots:
     observations: Vector[LotRiskAssessment[D, S]])
     extends MaxAffordableLots[D, S]()
 
-  private def requireBuiltin(value: MaxAffordableLots[?, ?]): Unit =
-    val runtimeClass = value.getClass
-    val supported    =
-      runtimeClass == classOf[NoAffordable[?, ?]] || runtimeClass == classOf[Selected[?, ?]]
-    if !supported then
-      throw new IllegalAccessError(s"unsupported MaxAffordableLots implementation: ${runtimeClass.getName}")
-
-  private val observer =
-    val owner = classOf[MonotoneLotRisk[?, ?]]
-    MethodHandles
-      .privateLookupIn(owner, MethodHandles.lookup())
-      .findVirtual(
-        owner,
-        "assess",
-        MethodType.methodType(classOf[LotRiskAssessment[?, ?]], classOf[BigInt])
-      )
-
   private def observe[D <: Dim, S <: Dim](
     model: MonotoneLotRisk[D, S],
     count: PositiveWhole
   ): LotRiskAssessment[D, S] =
-    observer.invoke(model, count).asInstanceOf[LotRiskAssessment[D, S]]
+    model.assess(count)
 
   private def affordable[S <: Dim](
     assessment: LotRiskAssessment[? <: Dim, S],

@@ -1,9 +1,5 @@
 package trading.risk
 
-import java.lang.invoke.MethodHandles
-import java.lang.invoke.MethodType
-import scala.annotation.nowarn
-
 import cats.data.Validated
 import cats.data.ValidatedNec
 import cats.syntax.all.*
@@ -13,8 +9,7 @@ import trading.quantity.*
 import trading.quantity.refinement.*
 
 /** One checked positive lot coordinate and its exact downside risk. */
-@nowarn("msg=Ignoring.*qualifier")
-final class LotRiskAssessment[D <: Dim, S <: Dim] private[this] (
+final class LotRiskAssessment[D <: Dim, S <: Dim] private (
   val lots: Lots[D],
   val downsideRisk: NonNegative[Quantity[S]],
   val positionDimension: DimRef[D],
@@ -40,30 +35,13 @@ final class LotRiskAssessment[D <: Dim, S <: Dim] private[this] (
 end LotRiskAssessment
 
 object LotRiskAssessment:
-  private val constructor =
-    val owner = classOf[LotRiskAssessment[?, ?]]
-    MethodHandles
-      .privateLookupIn(owner, MethodHandles.lookup())
-      .findConstructor(
-        owner,
-        MethodType.methodType(
-          java.lang.Void.TYPE,
-          classOf[Lots[?]],
-          classOf[Rational],
-          classOf[DimRef[?]],
-          classOf[DimRef[?]]
-        )
-      )
-
-  private def construct[D <: Dim, S <: Dim](
+  private[risk] def construct[D <: Dim, S <: Dim](
     lots: Lots[D],
     downsideRisk: NonNegative[Quantity[S]],
     positionDimension: DimRef[D],
     settlementDimension: DimRef[S]
   ): LotRiskAssessment[D, S] =
-    constructor
-      .invoke(lots, downsideRisk, positionDimension, settlementDimension)
-      .asInstanceOf[LotRiskAssessment[D, S]]
+    new LotRiskAssessment(lots, downsideRisk, positionDimension, settlementDimension)
 
   def fromPnl(
     instrument: Instrument
@@ -143,8 +121,7 @@ final case class ObservationDimensionMismatch[S <: Dim](
   extends ModelViolation[S]
 
 /** Public non-empty deterministic model-construction failures. */
-@nowarn("msg=Ignoring.*qualifier")
-final class ModelViolations[S <: Dim] private[this] (private val values: Vector[ModelViolation[S]])
+final class ModelViolations[S <: Dim] private (private val values: Vector[ModelViolation[S]])
   extends JavaSerializationUnsupported:
 
   def head: ModelViolation[S]             = values.head
@@ -159,9 +136,13 @@ final class ModelViolations[S <: Dim] private[this] (private val values: Vector[
   override def hashCode: Int = values.hashCode
 end ModelViolations
 
+object ModelViolations:
+  private[risk] def of[S <: Dim](head: ModelViolation[S], tail: Vector[ModelViolation[S]]): ModelViolations[S] =
+    new ModelViolations(head +: tail)
+end ModelViolations
+
 /** An immutable library-certified exact nondecreasing lot-risk capability over `1..cap`. */
-@nowarn("msg=Ignoring.*qualifier")
-final class MonotoneLotRisk[D <: Dim, S <: Dim] private[this] (
+final class MonotoneLotRisk[D <: Dim, S <: Dim] private (
   val instrumentId: InstrumentId,
   val positionDimension: DimRef[D],
   val settlementDimension: DimRef[S],
@@ -171,8 +152,7 @@ final class MonotoneLotRisk[D <: Dim, S <: Dim] private[this] (
   private val formula: LotLossFormula[S])
   extends JavaSerializationUnsupported:
 
-  @nowarn("msg=unused private member")
-  private[this] def assess(count: PositiveWhole): LotRiskAssessment[D, S] =
+  private[trading] def assess(count: PositiveWhole): LotRiskAssessment[D, S] =
     if count.unrefined > cap.unrefined then
       throw new IllegalArgumentException(
         s"lot coordinate ${count.unrefined} exceeds model cap ${cap.unrefined}"
@@ -183,29 +163,21 @@ final class MonotoneLotRisk[D <: Dim, S <: Dim] private[this] (
         if loss.coefficient.signum <= 0 then
           NonNegative(Quantity.zero[S](using settlementDimension)).toOption.get
         else NonNegative(loss).toOption.get
-      MonotoneLotRisk.constructAssessment(
+      LotRiskAssessment.construct(
         makeLots(count),
         downside,
         positionDimension,
         settlementDimension
       )
 
-  @nowarn("msg=unused private member")
-  private[this] def lossAt(count: PositiveWhole): Quantity[S] = formula.lossAt(count)
 end MonotoneLotRisk
 
 object MonotoneLotRisk:
-  private val violationsConstructor =
-    val owner = classOf[ModelViolations[?]]
-    MethodHandles
-      .privateLookupIn(owner, MethodHandles.lookup())
-      .findConstructor(owner, MethodType.methodType(java.lang.Void.TYPE, classOf[Vector[?]]))
-
   private def constructViolations[S <: Dim](
     head: ModelViolation[S],
     tail: Vector[ModelViolation[S]]
   ): ModelViolations[S] =
-    violationsConstructor.invoke(head +: tail).asInstanceOf[ModelViolations[S]]
+    ModelViolations.of(head, tail)
 
   private def violationsFrom[S <: Dim](values: Vector[ModelViolation[S]]): ModelViolations[S] =
     values match
@@ -225,73 +197,14 @@ object MonotoneLotRisk:
       .toEither
       .map(_ => result)
 
-  private val assessmentConstructor =
-    val owner = classOf[LotRiskAssessment[?, ?]]
-    MethodHandles
-      .privateLookupIn(owner, MethodHandles.lookup())
-      .findConstructor(
-        owner,
-        MethodType.methodType(
-          java.lang.Void.TYPE,
-          classOf[Lots[?]],
-          classOf[Rational],
-          classOf[DimRef[?]],
-          classOf[DimRef[?]]
-        )
-      )
-
-  private def constructAssessment[D <: Dim, S <: Dim](
-    lots: Lots[D],
-    downsideRisk: NonNegative[Quantity[S]],
-    positionDimension: DimRef[D],
-    settlementDimension: DimRef[S]
-  ): LotRiskAssessment[D, S] =
-    assessmentConstructor
-      .invoke(lots, downsideRisk, positionDimension, settlementDimension)
-      .asInstanceOf[LotRiskAssessment[D, S]]
-
-  private val constructor =
-    val owner = classOf[MonotoneLotRisk[?, ?]]
-    MethodHandles
-      .privateLookupIn(owner, MethodHandles.lookup())
-      .findConstructor(
-        owner,
-        MethodType.methodType(
-          java.lang.Void.TYPE,
-          classOf[InstrumentId],
-          classOf[DimRef[?]],
-          classOf[DimRef[?]],
-          classOf[BigInt],
-          classOf[CurveConstructionCost],
-          classOf[Function1[?, ?]],
-          classOf[LotLossFormula[?]]
-        )
-      )
-
-  private val modelLookup = MethodHandles.privateLookupIn(classOf[MonotoneLotRisk[?, ?]], MethodHandles.lookup())
-
-  private val assessmentObserver =
-    modelLookup.findVirtual(
-      classOf[MonotoneLotRisk[?, ?]],
-      "assess",
-      MethodType.methodType(classOf[LotRiskAssessment[?, ?]], classOf[BigInt])
-    )
-
-  private val formulaObserver =
-    modelLookup.findGetter(
-      classOf[MonotoneLotRisk[?, ?]],
-      "formula",
-      classOf[LotLossFormula[?]]
-    )
-
   private def observe[D <: Dim, S <: Dim](
     model: MonotoneLotRisk[D, S],
     count: PositiveWhole
   ): LotRiskAssessment[D, S] =
-    assessmentObserver.invoke(model, count).asInstanceOf[LotRiskAssessment[D, S]]
+    model.assess(count)
 
   private def formulaOf[S <: Dim](model: MonotoneLotRisk[? <: Dim, S]): LotLossFormula[S] =
-    formulaObserver.invoke(model).asInstanceOf[LotLossFormula[S]]
+    model.formula
 
   private def construct[D <: Dim, S <: Dim](
     instrumentId: InstrumentId,
@@ -302,17 +215,15 @@ object MonotoneLotRisk:
     makeLots: PositiveWhole => Lots[D],
     formula: LotLossFormula[S]
   ): MonotoneLotRisk[D, S] =
-    constructor
-      .invoke(
-        instrumentId,
-        positionDimension,
-        settlementDimension,
-        cap,
-        constructionCost,
-        makeLots,
-        formula
-      )
-      .asInstanceOf[MonotoneLotRisk[D, S]]
+    new MonotoneLotRisk(
+      instrumentId,
+      positionDimension,
+      settlementDimension,
+      cap,
+      constructionCost,
+      makeLots,
+      formula
+    )
 
   private def lotsFromInstrument(instrument: Instrument)(count: PositiveWhole): instrument.Lots =
     Lots
