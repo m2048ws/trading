@@ -453,16 +453,6 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
     assert(rejected.rendered.contains("Required:"), rejected.rendered)
     economicsForbiddenDiagnostics.foreach(fragment => assert(!rejected.rendered.contains(fragment), rejected.rendered))
 
-  test("completed order-model JAR rejects same-package Scala construction bypasses"):
-    val source  = orderFixturesRoot.resolve("negative/PackageSpoofOrderConstruction.scala")
-    val prelude = compileFilteredPrelude(source, compileOrder)
-    assert(prelude.succeeded, s"fixture prelude must compile independently:\n${prelude.rendered}")
-    val rejected = compileOrder(source)
-    assert(rejected.errors.size >= 6, rejected.rendered)
-    assert(rejected.rendered.contains("cannot be accessed"), rejected.rendered)
-    assert(rejected.rendered.contains("value copy is not a member"), rejected.rendered)
-    economicsForbiddenDiagnostics.foreach(fragment => assert(!rejected.rendered.contains(fragment), rejected.rendered))
-
   test("completed execution-scenario classpath cannot compile downstream concerns or mutation"):
     val source = Paths.get(
       getClass
@@ -511,51 +501,30 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
     assert(rejected.rendered.contains("value copy is not a member"), rejected.rendered)
     economicsForbiddenDiagnostics.foreach(fragment => assert(!rejected.rendered.contains(fragment), rejected.rendered))
 
-  test("completed order and scenario JARs reject same-package Java constructor bypasses"):
-    val cases = List(
-      (
-        javaFixturesRoot.resolve("negative/PackageSpoofOrderConstruction.java"),
-        orderCompilationClasspath,
-        List(
-          "CheckedActivation",
-          "FixedTriggerEvidence",
-          "TrailingTriggerEvidence",
-          "PegResolution",
-          "OrderIntent",
-          "ConstructedOrder"
-        )
-      ),
-      (
-        javaFixturesRoot.resolve("negative/PackageSpoofScenarioConstruction.java"),
-        scenarioCompilationClasspath,
-        List("LiquiditySlice", "ScenarioAssumptions", "MatchedSlices", "OrderScenario", "RoundTripScenario")
-      )
-    )
-    cases.foreach: (source, classpath, protectedRepresentations) =>
-      val result = compileJava(source, classpath)
-      assert(!result.succeeded, s"expected ${source.getFileName} to fail Java compilation")
-      assert(result.diagnostics.contains("private access"), result.diagnostics)
-      protectedRepresentations.foreach(fragment => assert(result.diagnostics.contains(fragment), result.diagnostics))
-
-  test("completed order-model JAR rejects instantiated Java algebra implementations"):
-    val source = javaFixturesRoot.resolve("negative/RejectedAlgebraImplementations.java")
+  test("ordinary Java uses checked order factories and closed alternatives without reflection"):
+    val source = javaFixturesRoot.resolve("positive/OrderFactoryClient.java")
     val result = compileJava(source, orderCompilationClasspath)
     assert(result.succeeded, result.diagnostics)
     assertJavaBoolean(
       result.output,
-      "external.order.negative.RejectedAlgebraImplementations",
-      "guardsRejectEveryUnknownImplementation"
+      "external.order.positive.OrderFactoryClient",
+      "checkedFactoriesPreserveSemantics"
     )
+
+  test("completed execution-scenario JAR rejects same-package Java constructor bypasses"):
+    val source = javaFixturesRoot.resolve("negative/PackageSpoofScenarioConstruction.java")
+    val result = compileJava(source, scenarioCompilationClasspath)
+    assert(!result.succeeded, s"expected ${source.getFileName} to fail Java compilation")
+    assert(result.diagnostics.contains("private access"), result.diagnostics)
+    List("LiquiditySlice", "ScenarioAssumptions", "MatchedSlices", "OrderScenario", "RoundTripScenario")
+      .foreach(fragment => assert(result.diagnostics.contains(fragment), result.diagnostics))
 
   test("completed scenario JAR exposes erased Java assumptions construction only as a typed result"):
     val source = javaFixturesRoot.resolve("negative/ErasedScenarioAssumptions.java")
     val result = compileJava(source, scenarioCompilationClasspath)
     assert(result.succeeded, result.diagnostics)
 
-  test("completed JAR concrete order and matched-slice constructors are JVM-private"):
-    val orderClass = Class.forName("trading.order.Order$ConstructedOrder")
-    assert(orderClass.getDeclaredConstructors.nonEmpty)
-    assert(orderClass.getDeclaredConstructors.forall(constructor => Modifier.isPrivate(constructor.getModifiers)))
+  test("completed JAR matched-slice constructor remains JVM-private"):
     val slicesClass = Class.forName("trading.scenario.MatchedSlices")
     assert(slicesClass.getDeclaredConstructors.nonEmpty)
     assert(slicesClass.getDeclaredConstructors.forall(constructor => Modifier.isPrivate(constructor.getModifiers)))

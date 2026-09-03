@@ -15,15 +15,15 @@ updated: 2026-09-03
 - **Change**: simplify-in-process-trust-boundary
 - **Worktree**: /Users/m/src/money/.worktrees/simplify-in-process-trust-boundary
 - **Phase at Checkpoint**: applying
-- **Task Group at Checkpoint**: 1
-- **Observed Run Revision**: 2
-- **Last Verified HEAD**: e46eaaba970aeba2d9b4e9aa0239082837940823
+- **Task Group at Checkpoint**: 2
+- **Observed Run Revision**: 3
+- **Last Verified HEAD**: cec75317dae5efb557e2ffaebe0e90270c7edab7
 
 ## Next Action
-- Commit and acknowledge Task Group 1, then continue with Task Group 2.
+- Commit and acknowledge Task Group 2, then continue with Task Group 3.
 
 ## Blockers
-- Task Group 1 trust documentation, reviewed inventory, migration source guard, implementation note, and this bridge
+- Task Group 2 order-model static construction, semantic fixture reconciliation, implementation note, and this bridge
   checkpoint are ready for their dedicated commit.
 
 ## Uncommitted Work
@@ -35,6 +35,8 @@ updated: 2026-09-03
 - The registered `introduce-application-and-runtime-foundation` worktree has no active Change and remains cleanup-only.
 - Task Group 1 classifies 623 method-handle/reflection tokens in 26 production/benchmark files; the checked regression
   ceiling will be removed owner by owner and must reach zero in Task Group 10.
+- Task Group 2 removed the order-model allowance (28 tokens), all six reflective construction sites, invocation
+  recovery casts, and hostile exact-class gates while retaining order evidence and aggregate validation.
 
 ## Promotion Queue
 - none

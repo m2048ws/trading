@@ -1,9 +1,5 @@
 package trading.order
 
-import java.lang.invoke.MethodHandles
-import java.lang.invoke.MethodType
-import scala.annotation.nowarn
-
 import trading.economics.instrument.*
 import trading.quantity.*
 import trading.quantity.refinement.PositiveWhole
@@ -43,8 +39,7 @@ enum PriceReference:
 enum TriggerComparison:
   case AtOrAbove, AtOrBelow
 
-@nowarn("msg=Ignoring.*qualifier")
-final class CheckedActivation[B <: Dim, Q <: Dim] private[this] (
+final class CheckedActivation[B <: Dim, Q <: Dim] private (
   val observations: Vector[(ActivationObservation, Price[B, Q])]):
 
   override def equals(other: Any): Boolean =
@@ -58,16 +53,10 @@ final class CheckedActivation[B <: Dim, Q <: Dim] private[this] (
 end CheckedActivation
 
 object CheckedActivation:
-  private val constructor =
-    val owner = classOf[CheckedActivation[?, ?]]
-    MethodHandles
-      .privateLookupIn(owner, MethodHandles.lookup())
-      .findConstructor(owner, MethodType.methodType(java.lang.Void.TYPE, classOf[Vector[?]]))
-
   private def construct[B <: Dim, Q <: Dim](
     observations: Vector[(ActivationObservation, Price[B, Q])]
   ): CheckedActivation[B, Q] =
-    constructor.invoke(observations).asInstanceOf[CheckedActivation[B, Q]]
+    new CheckedActivation(observations)
 
   private[order] def immediate[B <: Dim, Q <: Dim]: CheckedActivation[B, Q] =
     construct(Vector.empty)
@@ -111,8 +100,6 @@ enum PricingObservation:
   case ReferencePrice, ResolvedLimit
 
 sealed abstract class OrderActivation[B <: Dim, Q <: Dim] protected ():
-  OrderActivation.requireBuiltin(this)
-
   type Evidence
 
   def verify(evidence: Evidence): Either[ActivationViolation, CheckedActivation[B, Q]]
@@ -206,15 +193,6 @@ object TrailingActivation:
       .map(new TrailingActivation(reference, comparison, _))
 
 object OrderActivation:
-  private[order] def requireBuiltin(value: OrderActivation[?, ?]): Unit =
-    val runtimeClass = value.getClass
-    val supported    =
-      runtimeClass == classOf[ImmediateActivation[?, ?]] ||
-        runtimeClass == classOf[FixedActivation[?, ?]] ||
-        runtimeClass == classOf[TrailingActivation[?, ?]]
-    if !supported then
-      throw new IllegalAccessError(s"unsupported OrderActivation implementation: ${runtimeClass.getName}")
-
   private[order] def comparisonSatisfied(
     comparison: TriggerComparison,
     observed: BigInt,
@@ -224,41 +202,23 @@ object OrderActivation:
       case TriggerComparison.AtOrAbove => observed >= threshold
       case TriggerComparison.AtOrBelow => observed <= threshold
 
-@nowarn("msg=Ignoring.*qualifier")
-final class FixedTriggerEvidence[B <: Dim, Q <: Dim] private[this] (
+final class FixedTriggerEvidence[B <: Dim, Q <: Dim] private (
   val reference: PriceReference,
   private[order] val comparison: TriggerComparison,
   private[order] val triggerPrice: Price[B, Q],
   val observedPrice: Price[B, Q])
 
 object FixedTriggerEvidence:
-  private val constructor =
-    val owner = classOf[FixedTriggerEvidence[?, ?]]
-    MethodHandles
-      .privateLookupIn(owner, MethodHandles.lookup())
-      .findConstructor(
-        owner,
-        MethodType.methodType(
-          java.lang.Void.TYPE,
-          classOf[PriceReference],
-          classOf[TriggerComparison],
-          classOf[Price[?, ?]],
-          classOf[Price[?, ?]]
-        )
-      )
-
   private def construct[B <: Dim, Q <: Dim](
     activation: FixedActivation[B, Q],
     observedPrice: Price[B, Q]
   ): FixedTriggerEvidence[B, Q] =
-    constructor
-      .invoke(
-        activation.reference,
-        activation.comparison,
-        activation.triggerPrice,
-        observedPrice
-      )
-      .asInstanceOf[FixedTriggerEvidence[B, Q]]
+    new FixedTriggerEvidence(
+      activation.reference,
+      activation.comparison,
+      activation.triggerPrice,
+      observedPrice
+    )
 
   private[order] def create[B <: Dim, Q <: Dim](
     activation: FixedActivation[B, Q],
@@ -275,8 +235,7 @@ object FixedTriggerEvidence:
     else Left(ActivationViolation.FixedTriggerUnsatisfied)
 end FixedTriggerEvidence
 
-@nowarn("msg=Ignoring.*qualifier")
-final class TrailingTriggerEvidence[B <: Dim, Q <: Dim] private[this] (
+final class TrailingTriggerEvidence[B <: Dim, Q <: Dim] private (
   val reference: PriceReference,
   private[order] val comparison: TriggerComparison,
   private[order] val offsetTicks: PositiveWhole,
@@ -284,36 +243,18 @@ final class TrailingTriggerEvidence[B <: Dim, Q <: Dim] private[this] (
   val observedPrice: Price[B, Q])
 
 object TrailingTriggerEvidence:
-  private val constructor =
-    val owner = classOf[TrailingTriggerEvidence[?, ?]]
-    MethodHandles
-      .privateLookupIn(owner, MethodHandles.lookup())
-      .findConstructor(
-        owner,
-        MethodType.methodType(
-          java.lang.Void.TYPE,
-          classOf[PriceReference],
-          classOf[TriggerComparison],
-          classOf[BigInt],
-          classOf[Price[?, ?]],
-          classOf[Price[?, ?]]
-        )
-      )
-
   private def construct[B <: Dim, Q <: Dim](
     activation: TrailingActivation[B, Q],
     favorableExtreme: Price[B, Q],
     observedPrice: Price[B, Q]
   ): TrailingTriggerEvidence[B, Q] =
-    constructor
-      .invoke(
-        activation.reference,
-        activation.comparison,
-        activation.offsetTicks.unrefined,
-        favorableExtreme,
-        observedPrice
-      )
-      .asInstanceOf[TrailingTriggerEvidence[B, Q]]
+    new TrailingTriggerEvidence(
+      activation.reference,
+      activation.comparison,
+      activation.offsetTicks,
+      favorableExtreme,
+      observedPrice
+    )
 
   private[order] def create[B <: Dim, Q <: Dim](
     activation: TrailingActivation[B, Q],
@@ -344,37 +285,19 @@ object EffectivePricing:
 
 case object DirectPricingResolution
 
-@nowarn("msg=Ignoring.*qualifier")
-final class PegResolution[B <: Dim, Q <: Dim] private[this] (
+final class PegResolution[B <: Dim, Q <: Dim] private (
   val reference: PriceReference,
   private[order] val offsetTicks: BigInt,
   val referencePrice: Price[B, Q],
   val resolvedLimit: Price[B, Q])
 
 object PegResolution:
-  private val constructor =
-    val owner = classOf[PegResolution[?, ?]]
-    MethodHandles
-      .privateLookupIn(owner, MethodHandles.lookup())
-      .findConstructor(
-        owner,
-        MethodType.methodType(
-          java.lang.Void.TYPE,
-          classOf[PriceReference],
-          classOf[BigInt],
-          classOf[Price[?, ?]],
-          classOf[Price[?, ?]]
-        )
-      )
-
   private def construct[B <: Dim, Q <: Dim](
     pricing: PeggedPricing[B, Q],
     referencePrice: Price[B, Q],
     resolvedLimit: Price[B, Q]
   ): PegResolution[B, Q] =
-    constructor
-      .invoke(pricing.reference, pricing.offsetTicks, referencePrice, resolvedLimit)
-      .asInstanceOf[PegResolution[B, Q]]
+    new PegResolution(pricing.reference, pricing.offsetTicks, referencePrice, resolvedLimit)
 
   private[order] def create[B <: Dim, Q <: Dim](
     pricing: PeggedPricing[B, Q],
@@ -388,21 +311,11 @@ object PegResolution:
 end PegResolution
 
 sealed abstract class OrderPricing[B <: Dim, Q <: Dim] protected ():
-  OrderPricing.requireBuiltin(this)
-
   type Resolution
 
   def resolve(resolution: Resolution): Either[PricingViolation, EffectivePricing[B, Q]]
   private[trading] def acceptsResolution(resolution: Any): Boolean
   private[trading] def observations(resolution: Resolution): Vector[(PricingObservation, Price[B, Q])]
-
-object OrderPricing:
-  private[order] def requireBuiltin(value: OrderPricing[?, ?]): Unit =
-    val runtimeClass = value.getClass
-    val supported    =
-      runtimeClass == classOf[LimitPricing[?, ?]] || runtimeClass == classOf[PeggedPricing[?, ?]]
-    if !supported then
-      throw new IllegalAccessError(s"unsupported OrderPricing implementation: ${runtimeClass.getName}")
 
 final case class LimitPricing[B <: Dim, Q <: Dim](limit: Price[B, Q]) extends OrderPricing[B, Q]():
   type Resolution = DirectPricingResolution.type
@@ -446,41 +359,19 @@ final case class PeggedPricing[B <: Dim, Q <: Dim](reference: PriceReference, of
     )
 end PeggedPricing
 
-sealed abstract class PricedVisibility[+D <: Dim] protected ():
-  PricedVisibility.requireBuiltin(this)
-
-object PricedVisibility:
-  private[order] def requireBuiltin(value: PricedVisibility[?]): Unit =
-    val runtimeClass = value.getClass
-    val supported    =
-      runtimeClass.getName == "trading.order.DisplayedVisibility$" ||
-        runtimeClass.getName == "trading.order.HiddenVisibility$" ||
-        runtimeClass == classOf[IcebergVisibility[?]]
-    if !supported then
-      throw new IllegalAccessError(s"unsupported PricedVisibility implementation: ${runtimeClass.getName}")
+sealed abstract class PricedVisibility[+D <: Dim] protected ()
 
 case object DisplayedVisibility                                      extends PricedVisibility[Nothing]()
 case object HiddenVisibility                                         extends PricedVisibility[Nothing]()
 final case class IcebergVisibility[D <: Dim](displayedLots: Lots[D]) extends PricedVisibility[D]()
 
 sealed abstract class OrderExecution[D <: Dim, B <: Dim, Q <: Dim] protected ():
-  OrderExecution.requireBuiltin(this)
-
   type Resolution
 
   def resolve(resolution: Resolution): Either[PricingViolation, EffectivePricing[B, Q]]
   private[trading] def acceptsResolution(resolution: Any): Boolean
   private[trading] def requiresMaker: Boolean
   private[trading] def observations(resolution: Resolution): Vector[(PricingObservation, Price[B, Q])]
-
-object OrderExecution:
-  private[order] def requireBuiltin(value: OrderExecution[?, ?, ?]): Unit =
-    val runtimeClass = value.getClass
-    val supported    =
-      runtimeClass == classOf[MarketExecution[?, ?, ?]] ||
-        runtimeClass == classOf[PricedExecution[?, ?, ?, ?]]
-    if !supported then
-      throw new IllegalAccessError(s"unsupported OrderExecution implementation: ${runtimeClass.getName}")
 
 final case class MarketExecution[D <: Dim, B <: Dim, Q <: Dim](timeInForce: NonRestingTimeInForce)
   extends OrderExecution[D, B, Q]():
@@ -523,8 +414,7 @@ final case class PricedExecution[D <: Dim, B <: Dim, Q <: Dim, PR <: OrderPricin
     pricing.observations(resolution)
 end PricedExecution
 
-@nowarn("msg=Ignoring.*qualifier")
-final class OrderIntent[D <: Dim] private[this] (
+final class OrderIntent[D <: Dim] private (
   val instrumentId: InstrumentId,
   val side: Side,
   val lots: Lots[D],
@@ -566,22 +456,6 @@ final class OrderIntent[D <: Dim] private[this] (
 end OrderIntent
 
 object OrderIntent:
-  private val constructor =
-    val owner = classOf[OrderIntent[?]]
-    MethodHandles
-      .privateLookupIn(owner, MethodHandles.lookup())
-      .findConstructor(
-        owner,
-        MethodType.methodType(
-          java.lang.Void.TYPE,
-          classOf[InstrumentId],
-          classOf[Side],
-          classOf[Lots[?]],
-          classOf[PositionEffect],
-          classOf[PositionLots[?]]
-        )
-      )
-
   private def construct[D <: Dim](
     instrumentId: InstrumentId,
     side: Side,
@@ -589,9 +463,7 @@ object OrderIntent:
     positionEffect: PositionEffect,
     positionChange: PositionLots[D]
   ): OrderIntent[D] =
-    constructor
-      .invoke(instrumentId, side, lots, positionEffect, positionChange)
-      .asInstanceOf[OrderIntent[D]]
+    new OrderIntent(instrumentId, side, lots, positionEffect, positionChange)
 
   def create[I <: Instrument](
     instrument: I
@@ -621,8 +493,6 @@ object OrderIntent:
 end OrderIntent
 
 sealed abstract class Order[D <: Dim, B <: Dim, Q <: Dim] protected ():
-  Order.requireBuiltin(this)
-
   type Activation <: OrderActivation[B, Q]
   type Execution <: OrderExecution[D, B, Q]
 
@@ -632,14 +502,13 @@ sealed abstract class Order[D <: Dim, B <: Dim, Q <: Dim] protected ():
   val execution: Execution
 
 object Order:
-  @nowarn("msg=Ignoring.*qualifier")
   private final class ConstructedOrder[
     D <: Dim,
     B <: Dim,
     Q <: Dim,
     A <: OrderActivation[B, Q],
     E <: OrderExecution[D, B, Q]
-  ] private[this] (
+  ](
     val instrumentId: InstrumentId,
     val intent: OrderIntent[D],
     val activation: A,
@@ -647,21 +516,6 @@ object Order:
     extends Order[D, B, Q]():
     type Activation = A
     type Execution  = E
-
-  private val constructor =
-    val owner = classOf[ConstructedOrder[?, ?, ?, ?, ?]]
-    MethodHandles
-      .privateLookupIn(owner, MethodHandles.lookup())
-      .findConstructor(
-        owner,
-        MethodType.methodType(
-          java.lang.Void.TYPE,
-          classOf[InstrumentId],
-          classOf[OrderIntent[?]],
-          classOf[OrderActivation[?, ?]],
-          classOf[OrderExecution[?, ?, ?]]
-        )
-      )
 
   private def construct[
     D <: Dim,
@@ -675,13 +529,7 @@ object Order:
     activation: A,
     execution: E
   ): Order.Aux[D, B, Q, A, E] =
-    constructor
-      .invoke(instrumentId, intent, activation, execution)
-      .asInstanceOf[Order.Aux[D, B, Q, A, E]]
-
-  private[order] def requireBuiltin(value: Order[?, ?, ?]): Unit =
-    if value.getClass != classOf[ConstructedOrder[?, ?, ?, ?, ?]] then
-      throw new IllegalAccessError(s"unsupported Order implementation: ${value.getClass.getName}")
+    new ConstructedOrder[D, B, Q, A, E](instrumentId, intent, activation, execution)
 
   type Aux[
     D <: Dim,
