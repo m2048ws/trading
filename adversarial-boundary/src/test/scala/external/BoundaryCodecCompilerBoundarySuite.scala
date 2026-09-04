@@ -135,6 +135,9 @@ class BoundaryCodecCompilerBoundarySuite extends FunSuite:
         "trading/codec/RoundTripScenarioRecord$V1.class",
         "trading/codec/RoundTripScenarioReconstructionFailure.class",
         "trading/codec/IndexedRoundTripScenarioReconstructionFailure.class",
+        "trading/codec/ScenarioRecord$.class",
+        "trading/codec/ScenarioRecord$Encoder.class",
+        "trading/codec/ScenarioRecord$Decoder.class",
         "trading/codec/WirePath.class",
         "trading/codec/WireViolations.class",
         "trading/codec/StrictJson$.class",
@@ -192,6 +195,8 @@ class BoundaryCodecCompilerBoundarySuite extends FunSuite:
         "trading/codec/RoundTripScenarioRecord$V1.class",
         "trading/codec/RoundTripScenarioReconstructionFailure.class",
         "trading/codec/IndexedRoundTripScenarioReconstructionFailure.class",
+        "trading/codec/ScenarioRecord$Encoder.class",
+        "trading/codec/ScenarioRecord$Decoder.class",
         "trading/codec/ExactNumberProblem.class",
         "trading/codec/StableIdentifierProblem.class",
         "trading/codec/DimensionProblem.class",
@@ -253,6 +258,10 @@ class BoundaryCodecCompilerBoundarySuite extends FunSuite:
 
   test("hypothetical-scenario clients reconstruct associated evidence through one instrument and snapshot"):
     val result = compile(fixturesRoot.resolve("positive/ScenarioRecordClient.scala"))
+    assert(result.succeeded, result.rendered)
+
+  test("completed scenario-record clients reuse separate bound encoder and snapshot decoder contexts"):
+    val result = compile(fixturesRoot.resolve("positive/ScenarioRecordScopeClient.scala"))
     assert(result.succeeded, result.rendered)
 
   test("completed boundary-codec classpath rejects downstream, effect, mapping, and test-oracle concerns"):
@@ -402,6 +411,17 @@ class BoundaryCodecCompilerBoundarySuite extends FunSuite:
       "reconstruct",
       "evidence"
     ).foreach: fragment =>
+      assert(rejected.rendered.contains(fragment), s"missing '$fragment' rejection:\n${rejected.rendered}")
+    boundaryForbiddenDiagnostics.foreach(fragment => assert(!rejected.rendered.contains(fragment), rejected.rendered))
+
+  test("bound scenario encoders reject order and round-trip scenarios from incompatible dimensions"):
+    val source  = fixturesRoot.resolve("negative/ScenarioRecordScopeMismatch.scala")
+    val prelude = compilePrelude(source)
+    assert(prelude.succeeded, s"fixture prelude must compile independently:\n${prelude.rendered}")
+
+    val rejected = compile(source)
+    assertEquals(rejected.errors.size, 2, rejected.rendered)
+    List("Found:", "Required:", "foreign").foreach: fragment =>
       assert(rejected.rendered.contains(fragment), s"missing '$fragment' rejection:\n${rejected.rendered}")
     boundaryForbiddenDiagnostics.foreach(fragment => assert(!rejected.rendered.contains(fragment), rejected.rendered))
 

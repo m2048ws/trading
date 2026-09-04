@@ -14,13 +14,13 @@ updated: 2026-09-04
 - **Issue**: 59 https://github.com/m2048ws/trading/issues/59
 - **Change**: bind-scenario-record-codecs
 - **Worktree**: /Users/m/src/money/.worktrees/bind-scenario-record-codecs
-- **Phase at Checkpoint**: planning_ready
+- **Phase at Checkpoint**: awaiting_verify
 - **Task Group at Checkpoint**: 1
-- **Observed Run Revision**: none
-- **Last Verified HEAD**: 83917db0fa723922467e7b4f1b5277e2bb3b2230
+- **Observed Run Revision**: 2
+- **Last Verified HEAD**: 4c55d417f3a2d580fcbba578c063ef6765a1a294
 
 ## Next Action
-- Start Apply for `bind-scenario-record-codecs` Task Group 1.
+- Run canonical Verify for `bind-scenario-record-codecs` after Task Group 1 acknowledgement.
 
 ## Blockers
 - none
@@ -106,6 +106,10 @@ updated: 2026-09-04
   and strict readiness.
 
 ## Promotion Queue
+- RFC-0008/S-04 Task Group 1 adds final codec-owned `ScenarioRecord` encoder and immutable-snapshot decoder contexts
+  whose ten methods delegate to the canonical order- and round-trip-scenario record operations; focused and
+  completed-artifact evidence preserves exact dependent types, canonical wire and diagnostic behavior, coherent
+  snapshot use, incompatible-shape rejection, independent allocation, concurrent reuse, and the codec dependency cone.
 - RFC-0008/S-03 Task Group 1 adds a final `SourceFact`-owned lifecycle scope whose nine operations delegate to the
   canonical fact constructors; focused and completed-artifact evidence preserves exact types, deterministic validation,
   foreign identity/grid rejection, independent allocation, concurrent reuse, and the pure execution dependency cone.

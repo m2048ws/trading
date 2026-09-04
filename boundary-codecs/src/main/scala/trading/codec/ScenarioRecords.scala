@@ -1075,3 +1075,150 @@ object RoundTripScenarioRecord:
   ): Either[WireViolations[WireEncodeViolation], String] =
     codec.schema(id, definitionName)
 end RoundTripScenarioRecord
+
+/** Stable instrument and snapshot bindings for scenario-record translation. */
+object ScenarioRecord:
+  final class Encoder[I <: Instrument] private[codec] (val instrument: I):
+    def order(
+      scenario: OrderScenario[
+        instrument.PositionD,
+        instrument.BaseD,
+        instrument.QuoteD,
+        instrument.MarketState
+      ]
+    ): OrderScenarioRecord.V1 =
+      OrderScenarioRecord.fromScenario(instrument)(scenario)
+
+    def encodeOrder(
+      scenario: OrderScenario[
+        instrument.PositionD,
+        instrument.BaseD,
+        instrument.QuoteD,
+        instrument.MarketState
+      ]
+    ): Either[WireViolations[WireEncodeViolation], String] =
+      OrderScenarioRecord.encodeScenario(instrument)(scenario)
+
+    def roundTrip(
+      scenario: RoundTripScenario[
+        instrument.PositionD,
+        instrument.BaseD,
+        instrument.QuoteD,
+        instrument.MarketState
+      ]
+    ): RoundTripScenarioRecord.V1 =
+      RoundTripScenarioRecord.fromScenario(instrument)(scenario)
+
+    def encodeRoundTrip(
+      scenario: RoundTripScenario[
+        instrument.PositionD,
+        instrument.BaseD,
+        instrument.QuoteD,
+        instrument.MarketState
+      ]
+    ): Either[WireViolations[WireEncodeViolation], String] =
+      RoundTripScenarioRecord.encodeScenario(instrument)(scenario)
+  end Encoder
+
+  final class Decoder[I <: Instrument] private[codec] (
+    val instrument: I,
+    val snapshot: CatalogSnapshot):
+
+    def order(
+      record: OrderScenarioRecord.V1
+    ): Either[
+      OrderScenarioReconstructionFailure,
+      OrderScenario[
+        instrument.PositionD,
+        instrument.BaseD,
+        instrument.QuoteD,
+        instrument.MarketState
+      ]
+    ] =
+      OrderScenarioRecord.reconstruct(record, instrument, snapshot)
+
+    def decodeOrder(
+      input: String,
+      limits: DecodeLimits = DecodeLimits.default,
+      recordIndex: Int = 0
+    ): Either[
+      OrderScenarioReconstructionFailure,
+      OrderScenario[
+        instrument.PositionD,
+        instrument.BaseD,
+        instrument.QuoteD,
+        instrument.MarketState
+      ]
+    ] =
+      OrderScenarioRecord.decodeAndReconstruct(input, instrument, snapshot, limits, recordIndex)
+
+    def orderBatch(
+      inputs: Vector[String],
+      limits: DecodeLimits = DecodeLimits.default
+    ): Either[
+      WireViolations[IndexedOrderScenarioReconstructionFailure],
+      Vector[
+        OrderScenario[
+          instrument.PositionD,
+          instrument.BaseD,
+          instrument.QuoteD,
+          instrument.MarketState
+        ]
+      ]
+    ] =
+      OrderScenarioRecord.reconstructBatch(inputs, instrument, snapshot, limits)
+
+    def roundTrip(
+      record: RoundTripScenarioRecord.V1
+    ): Either[
+      RoundTripScenarioReconstructionFailure,
+      RoundTripScenario[
+        instrument.PositionD,
+        instrument.BaseD,
+        instrument.QuoteD,
+        instrument.MarketState
+      ]
+    ] =
+      RoundTripScenarioRecord.reconstruct(record, instrument, snapshot)
+
+    def decodeRoundTrip(
+      input: String,
+      limits: DecodeLimits = DecodeLimits.default,
+      recordIndex: Int = 0
+    ): Either[
+      RoundTripScenarioReconstructionFailure,
+      RoundTripScenario[
+        instrument.PositionD,
+        instrument.BaseD,
+        instrument.QuoteD,
+        instrument.MarketState
+      ]
+    ] =
+      RoundTripScenarioRecord.decodeAndReconstruct(input, instrument, snapshot, limits, recordIndex)
+
+    def roundTripBatch(
+      inputs: Vector[String],
+      limits: DecodeLimits = DecodeLimits.default
+    ): Either[
+      WireViolations[IndexedRoundTripScenarioReconstructionFailure],
+      Vector[
+        RoundTripScenario[
+          instrument.PositionD,
+          instrument.BaseD,
+          instrument.QuoteD,
+          instrument.MarketState
+        ]
+      ]
+    ] =
+      RoundTripScenarioRecord.reconstructBatch(inputs, instrument, snapshot, limits)
+  end Decoder
+
+  def encoder[I <: Instrument](instrument: I): Encoder[instrument.type] =
+    new Encoder[instrument.type](instrument)
+
+  def decoder[I <: Instrument](
+    instrument: I,
+    snapshot: CatalogSnapshot
+  ): Decoder[instrument.type] =
+    new Decoder[instrument.type](instrument, snapshot)
+end ScenarioRecord
