@@ -25,6 +25,7 @@
     "establish-actual-execution-lifecycle",
     "simplify-in-process-trust-boundary",
     "retire-trust-boundary-migration-scaffolding",
+    "remove-java-api-compatibility",
     "total-and-deterministic-execution-transitions",
     "use-direct-scala-derived-models"
   ],
