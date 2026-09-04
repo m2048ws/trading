@@ -1,0 +1,6 @@
+schemaVersion: 1
+rfcId: RFC-0006-establish-exact-trade-campaigns
+revision: 0
+slices:
+  S-01-establish-exact-trade-campaigns:
+    status: unbound
