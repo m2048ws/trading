@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 3,
+  "changeName": "retire-trust-boundary-migration-scaffolding",
+  "runId": "run-36260a45-2e85-4bdc-b4a0-fe7d620b0139",
+  "finalRevision": "522fad5d570c1a76da6c30b408c26f0991bee1af",
+  "planningRevision": "sha256:e6345fcbf01ddfa18310c5e492453711ef4e0616376546b633a64e391bebf544",
+  "contract": {
+    "kind": "rfc-slice",
+    "deliveryRef": "RFC-0005-simplify-post-trust-boundary/S-01-retire-trust-boundary-migration-scaffolding",
+    "rfcId": "RFC-0005-simplify-post-trust-boundary",
+    "rfcDigest": "sha256:31336459ac68c4a188388bb58cf59fe8c84830a0b72aa66d29fdcff4f90657a3",
+    "acceptedCommit": "7f1d1ab9eb88d0912d3219920eacadea4d01aa2e",
+    "sliceId": "S-01-retire-trust-boundary-migration-scaffolding",
+    "sourcePath": "openspec/changes/retire-trust-boundary-migration-scaffolding/corgi/source.yaml",
+    "sourceDigest": "sha256:dfac56dc14fb55e286cd1493adb5014f44a2dba9858e8bb8e75e4314d6e58782",
+    "traceabilityPath": "openspec/changes/retire-trust-boundary-migration-scaffolding/corgi/traceability.yaml",
+    "traceabilityDigest": "sha256:f4a220616972a5c04c61e60877a70829a0f4ae0cc8500f7f0913a62d6a24cdf2",
+    "acceptance": [
+      {
+        "id": "AC-001",
+        "evidence": "automated",
+        "taskGroups": [
+          "1"
+        ]
+      },
+      {
+        "id": "AC-002",
+        "evidence": "automated",
+        "taskGroups": [
+          "2"
+        ]
+      },
+      {
+        "id": "AC-003",
+        "evidence": "automated",
+        "taskGroups": [
+          "1"
+        ]
+      }
+    ],
+    "tracker": {
+      "provider": "github",
+      "idempotencyKey": "df7661c17182cfd79a3ab2d7b67614529d953aab13d79665a93bfa49f68b7237",
+      "issue": {
+        "id": "38",
+        "url": "https://github.com/m2048ws/trading/issues/38"
+      }
+    }
+  },
+  "archiveIntentId": "archive-e80473bb-f3ab-41af-a5d7-96f79c293ebb"
+}

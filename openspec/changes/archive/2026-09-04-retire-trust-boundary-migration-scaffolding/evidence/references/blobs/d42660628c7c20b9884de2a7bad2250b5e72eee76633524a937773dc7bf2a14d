@@ -1,0 +1,465 @@
+[info] welcome to sbt 1.12.15 (Homebrew Java 26.0.2)
+[info] loading settings for project retire-trust-boundary-migration-scaffolding-build from plugins.sbt...
+[info] loading project definition from /Users/m/src/money/.worktrees/retire-trust-boundary-migration-scaffolding/project
+[info] loading settings for project root from build.sbt...
+[info] resolving key references (12514 settings) ...
+[info] set current project to trading (in build file:/Users/m/src/money/.worktrees/retire-trust-boundary-migration-scaffolding/)
+[info] scalafmt: Checking 1 Scala sources (/Users/m/src/money/.worktrees/retire-trust-boundary-migration-scaffolding/application)...
+[info] scalafmt: Checking 2 Scala sources (/Users/m/src/money/.worktrees/retire-trust-boundary-migration-scaffolding/application)...
+[info] scalafmt: Checking 2 Scala sources (/Users/m/src/money/.worktrees/retire-trust-boundary-migration-scaffolding/reference-data)...
+[info] scalafmt: Checking 20 Scala sources (/Users/m/src/money/.worktrees/retire-trust-boundary-migration-scaffolding/quantities)...
+[info] scalafmt: Checking 2 Scala sources (/Users/m/src/money/.worktrees/retire-trust-boundary-migration-scaffolding/reference-data)...
+[info] scalafmt: Checking 3 Scala sources (/Users/m/src/money/.worktrees/retire-trust-boundary-migration-scaffolding/instrument-economics)...
+[info] scalafmt: Checking 8 Scala sources (/Users/m/src/money/.worktrees/retire-trust-boundary-migration-scaffolding/instrument-economics)...
+[info] scalafmt: Checking 51 Scala sources (/Users/m/src/money/.worktrees/retire-trust-boundary-migration-scaffolding/quantities)...
+[info] scalafmt: Checking 2 Scala sources (/Users/m/src/money/.worktrees/retire-trust-boundary-migration-scaffolding/order-model)...
+[info] scalafmt: Checking 2 Scala sources (/Users/m/src/money/.worktrees/retire-trust-boundary-migration-scaffolding/order-model)...
+[info] scalafmt: Checking 7 Scala sources (/Users/m/src/money/.worktrees/retire-trust-boundary-migration-scaffolding/risk)...
+[info] scalafmt: Checking 6 Scala sources (/Users/m/src/money/.worktrees/retire-trust-boundary-migration-scaffolding/risk)...
+[info] scalafmt: Checking 2 Scala sources (/Users/m/src/money/.worktrees/retire-trust-boundary-migration-scaffolding/runtime)...
+[info] scalafmt: Checking 4 Scala sources (/Users/m/src/money/.worktrees/retire-trust-boundary-migration-scaffolding/runtime)...
+[info] scalafmt: Checking 8 Scala sources (/Users/m/src/money/.worktrees/retire-trust-boundary-migration-scaffolding/execution-lifecycle)...
+[info] scalafmt: Checking 12 Scala sources (/Users/m/src/money/.worktrees/retire-trust-boundary-migration-scaffolding/execution-lifecycle)...
+[info] scalafmt: Checking 3 Scala sources (/Users/m/src/money/.worktrees/retire-trust-boundary-migration-scaffolding/execution-scenario)...
+[info] scalafmt: Checking 4 Scala sources (/Users/m/src/money/.worktrees/retire-trust-boundary-migration-scaffolding/execution-scenario)...
+[info] scalafmt: Checking 4 Scala sources (/Users/m/src/money/.worktrees/retire-trust-boundary-migration-scaffolding/fee-policy)...
+[info] scalafmt: Checking 6 Scala sources (/Users/m/src/money/.worktrees/retire-trust-boundary-migration-scaffolding/fee-policy)...
+[info] scalafmt: Checking 17 Scala sources (/Users/m/src/money/.worktrees/retire-trust-boundary-migration-scaffolding/boundary-codecs)...
+[info] scalafmt: Checking 22 Scala sources (/Users/m/src/money/.worktrees/retire-trust-boundary-migration-scaffolding/boundary-codecs)...
+[info] scalafmt: Checking 12 Scala sources (/Users/m/src/money/.worktrees/retire-trust-boundary-migration-scaffolding/adversarial-boundary)...
+[success] Total time: 5 s, completed Sep 4, 2026, 1:43:56 AM
+[info] scalafmt: Checking 2 Scala sources (/Users/m/src/money/.worktrees/retire-trust-boundary-migration-scaffolding)...
+[success] Total time: 0 s, completed Sep 4, 2026, 1:43:57 AM
+[success] Total time: 0 s, completed Sep 4, 2026, 1:43:57 AM
+[info] compiling 20 Scala sources to /Users/m/src/money/.worktrees/retire-trust-boundary-migration-scaffolding/quantities/target/scala-3.8.4/classes ...
+[info] done compiling
+[info] compiling 51 Scala sources to /Users/m/src/money/.worktrees/retire-trust-boundary-migration-scaffolding/quantities/target/scala-3.8.4/test-classes ...
+[info] done compiling
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by scala.runtime.LazyVals$ (file:/Users/m/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/scala-library/3.8.4/scala-library-3.8.4.jar)
+WARNING: Please consider reporting this to the maintainers of class scala.runtime.LazyVals$
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+Test run trading.quantity.grid.GridProjectionSuite started
+trading.quantity.grid.GridProjectionSuite: finished 0.13s
+Test run trading.quantity.grid.GridProjectionSuite finished: 0 failed, 0 ignored, 4 total 0.138s
+Test run trading.quantity.examples.NormalizedArithmeticExamplesSuite started
+trading.quantity.examples.NormalizedArithmeticExamplesSuite: finished 0.009s
+Test run trading.quantity.examples.NormalizedArithmeticExamplesSuite finished: 0 failed, 0 ignored, 4 total 0.009s
+Test run trading.quantity.examples.FoundationExamplesSuite started
+trading.quantity.examples.FoundationExamplesSuite: finished 0.012s
+Test run trading.quantity.examples.FoundationExamplesSuite finished: 0 failed, 0 ignored, 4 total 0.012s
+Test run trading.quantity.laws.DimensionDisciplineSuite started
+trading.quantity.laws.DimensionDisciplineSuite: finished 5.208s
+Test run trading.quantity.laws.DimensionDisciplineSuite finished: 0 failed, 0 ignored, 28 total 5.208s
+Test run trading.quantity.DimensionLawsSuite started
+trading.quantity.DimensionLawsSuite: finished 0.097s
+Test run trading.quantity.DimensionLawsSuite finished: 0 failed, 0 ignored, 7 total 0.097s
+Test run trading.quantity.grid.QuotRemSuite started
+trading.quantity.grid.QuotRemSuite: finished 0.004s
+Test run trading.quantity.grid.QuotRemSuite finished: 0 failed, 0 ignored, 2 total 0.004s
+Test run trading.quantity.RationalInvariantSuite started
+trading.quantity.RationalInvariantSuite: finished 0.022s
+Test run trading.quantity.RationalInvariantSuite finished: 0 failed, 0 ignored, 6 total 0.022s
+Test run trading.quantity.laws.DivisionAndAllocationDisciplineSuite started
+trading.quantity.laws.DivisionAndAllocationDisciplineSuite: finished 0.02s
+Test run trading.quantity.laws.DivisionAndAllocationDisciplineSuite finished: 0 failed, 0 ignored, 2 total 0.02s
+Test run trading.quantity.grid.ConversionLawsSuite started
+trading.quantity.grid.ConversionLawsSuite: finished 0.005s
+Test run trading.quantity.grid.ConversionLawsSuite finished: 0 failed, 0 ignored, 4 total 0.005s
+Test run trading.quantity.grid.SameGridArithmeticSuite started
+trading.quantity.grid.SameGridArithmeticSuite: finished 0.005s
+Test run trading.quantity.grid.SameGridArithmeticSuite finished: 0 failed, 0 ignored, 3 total 0.005s
+Test run trading.quantity.MultiplicativeArithmeticSuite started
+trading.quantity.MultiplicativeArithmeticSuite: finished 0.003s
+Test run trading.quantity.MultiplicativeArithmeticSuite finished: 0 failed, 0 ignored, 10 total 0.005s
+Test run trading.quantity.grid.CrossGridArithmeticSuite started
+trading.quantity.grid.CrossGridArithmeticSuite: finished 0.005s
+Test run trading.quantity.grid.CrossGridArithmeticSuite finished: 0 failed, 0 ignored, 4 total 0.005s
+Test run trading.quantity.laws.RefinementDisciplineSuite started
+trading.quantity.laws.RefinementDisciplineSuite: finished 0.011s
+Test run trading.quantity.laws.RefinementDisciplineSuite finished: 0 failed, 0 ignored, 9 total 0.011s
+Test run trading.quantity.algebra.AlgebraInstancesSuite started
+trading.quantity.algebra.AlgebraInstancesSuite: finished 0.01s
+Test run trading.quantity.algebra.AlgebraInstancesSuite finished: 0 failed, 0 ignored, 8 total 0.01s
+Test run trading.quantity.refinement.RefinementClosureBytecodeSuite started
+trading.quantity.refinement.RefinementClosureBytecodeSuite: finished 1.275s
+Test run trading.quantity.refinement.RefinementClosureBytecodeSuite finished: 0 failed, 0 ignored, 2 total 1.276s
+Test run trading.quantity.DimensionExponentBoundarySuite started
+trading.quantity.DimensionExponentBoundarySuite: finished 0.001s
+Test run trading.quantity.DimensionExponentBoundarySuite finished: 0 failed, 0 ignored, 3 total 0.001s
+Test run trading.quantity.grid.GridEvidenceSuite started
+trading.quantity.grid.GridEvidenceSuite: finished 0.002s
+Test run trading.quantity.grid.GridEvidenceSuite finished: 0 failed, 0 ignored, 7 total 0.002s
+Test run external.QuantityPublicTypeShapeSuite started
+external.QuantityPublicTypeShapeSuite: finished 0.001s
+Test run external.QuantityPublicTypeShapeSuite finished: 0 failed, 0 ignored, 6 total 0.001s
+Test run trading.quantity.laws.QuantityDisciplineSuite started
+trading.quantity.laws.QuantityDisciplineSuite: finished 0.512s
+Test run trading.quantity.laws.QuantityDisciplineSuite finished: 0 failed, 0 ignored, 99 total 0.512s
+Test run external.ConstructionAndProvenanceBoundarySuite started
+external.ConstructionAndProvenanceBoundarySuite: finished 0.0s
+Test run external.ConstructionAndProvenanceBoundarySuite finished: 0 failed, 0 ignored, 2 total 0.0s
+Test run trading.quantity.AdversarialConstructionBoundarySuite started
+trading.quantity.AdversarialConstructionBoundarySuite: finished 0.0s
+Test run trading.quantity.AdversarialConstructionBoundarySuite finished: 0 failed, 0 ignored, 6 total 0.001s
+Test run trading.quantity.ExactScalarDivisionSuite started
+trading.quantity.ExactScalarDivisionSuite: finished 0.002s
+Test run trading.quantity.ExactScalarDivisionSuite finished: 0 failed, 0 ignored, 4 total 0.002s
+Test run trading.quantity.testkit.TestSupportSuite started
+trading.quantity.testkit.TestSupportSuite: finished 0.003s
+Test run trading.quantity.testkit.TestSupportSuite finished: 0 failed, 0 ignored, 5 total 0.003s
+Test run trading.quantity.StaticDimensionNormalizationSuite started
+trading.quantity.StaticDimensionNormalizationSuite: finished 0.006s
+Test run trading.quantity.StaticDimensionNormalizationSuite finished: 0 failed, 0 ignored, 13 total 0.007s
+Test run trading.quantity.grid.QuantizationPolicySuite started
+trading.quantity.grid.QuantizationPolicySuite: finished 0.004s
+Test run trading.quantity.grid.QuantizationPolicySuite finished: 0 failed, 0 ignored, 3 total 0.004s
+Test run trading.quantity.laws.GridQuantityDisciplineSuite started
+trading.quantity.laws.GridQuantityDisciplineSuite: finished 0.038s
+Test run trading.quantity.laws.GridQuantityDisciplineSuite finished: 0 failed, 0 ignored, 103 total 0.038s
+Test run trading.quantity.laws.RationalDisciplineSuite started
+trading.quantity.laws.RationalDisciplineSuite: finished 0.391s
+Test run trading.quantity.laws.RationalDisciplineSuite finished: 0 failed, 0 ignored, 132 total 0.392s
+Test run trading.quantity.grid.QuantizationSuite started
+trading.quantity.grid.QuantizationSuite: finished 0.005s
+Test run trading.quantity.grid.QuantizationSuite finished: 0 failed, 0 ignored, 5 total 0.005s
+Test run trading.quantity.QuantitySuite started
+trading.quantity.QuantitySuite: finished 0.003s
+Test run trading.quantity.QuantitySuite finished: 0 failed, 0 ignored, 5 total 0.003s
+Test run trading.quantity.testkit.PublicApiSafetySuite started
+trading.quantity.testkit.PublicApiSafetySuite: finished 0.0s
+Test run trading.quantity.testkit.PublicApiSafetySuite finished: 0 failed, 0 ignored, 6 total 0.001s
+Test run trading.quantity.laws.RateDisciplineSuite started
+trading.quantity.laws.RateDisciplineSuite: finished 0.005s
+Test run trading.quantity.laws.RateDisciplineSuite finished: 0 failed, 0 ignored, 4 total 0.005s
+Test run trading.quantity.CompileTimeArithmeticSuite started
+trading.quantity.CompileTimeArithmeticSuite: finished 0.0s
+Test run trading.quantity.CompileTimeArithmeticSuite finished: 0 failed, 0 ignored, 4 total 0.0s
+Test run trading.quantity.runtime.JavaSerializationPolicySuite started
+trading.quantity.runtime.JavaSerializationPolicySuite: finished 0.008s
+Test run trading.quantity.runtime.JavaSerializationPolicySuite finished: 0 failed, 0 ignored, 1 total 0.008s
+Test run trading.quantity.laws.ProjectionDisciplineSuite started
+trading.quantity.laws.ProjectionDisciplineSuite: finished 0.02s
+Test run trading.quantity.laws.ProjectionDisciplineSuite finished: 0 failed, 0 ignored, 44 total 0.02s
+Test run trading.quantity.grid.AllocationSuite started
+trading.quantity.grid.AllocationSuite: finished 0.005s
+Test run trading.quantity.grid.AllocationSuite finished: 0 failed, 0 ignored, 3 total 0.005s
+Test run external.PublicApiBoundarySuite started
+external.PublicApiBoundarySuite: finished 0.0s
+Test run external.PublicApiBoundarySuite finished: 0 failed, 0 ignored, 3 total 0.0s
+Test run trading.quantity.refinementtests.RefinedOperationsSuite started
+trading.quantity.refinementtests.RefinedOperationsSuite: finished 0.002s
+Test run trading.quantity.refinementtests.RefinedOperationsSuite finished: 0 failed, 0 ignored, 8 total 0.002s
+Test run trading.quantity.GridQuantitySuite started
+trading.quantity.GridQuantitySuite: finished 0.003s
+Test run trading.quantity.GridQuantitySuite finished: 0 failed, 0 ignored, 6 total 0.003s
+Test run external.GridOperationImportBoundarySuite started
+external.GridOperationImportBoundarySuite: finished 0.001s
+Test run external.GridOperationImportBoundarySuite finished: 0 failed, 0 ignored, 4 total 0.001s
+Test run trading.quantity.refinement.RefinementSuite started
+trading.quantity.refinement.RefinementSuite: finished 0.003s
+Test run trading.quantity.refinement.RefinementSuite finished: 0 failed, 0 ignored, 6 total 0.003s
+Test run trading.quantity.QuantityDivisionSuite started
+trading.quantity.QuantityDivisionSuite: finished 0.003s
+Test run trading.quantity.QuantityDivisionSuite finished: 0 failed, 0 ignored, 8 total 0.003s
+Test run trading.quantity.WholeScalarsSuite started
+trading.quantity.WholeScalarsSuite: finished 0.007s
+Test run trading.quantity.WholeScalarsSuite finished: 0 failed, 0 ignored, 5 total 0.007s
+Test run external.GridQuantityPublicTypeShapeSuite started
+external.GridQuantityPublicTypeShapeSuite: finished 0.001s
+Test run external.GridQuantityPublicTypeShapeSuite finished: 0 failed, 0 ignored, 4 total 0.001s
+[info] Passed: Total 596, Failed 0, Errors 0, Passed 596
+[info] compiling 2 Scala sources and 3 Java sources to /Users/m/src/money/.worktrees/retire-trust-boundary-migration-scaffolding/reference-data/target/scala-3.8.4/classes ...
+[info] done compiling
+[info] compiling 2 Scala sources to /Users/m/src/money/.worktrees/retire-trust-boundary-migration-scaffolding/reference-data/target/scala-3.8.4/test-classes ...
+[info] done compiling
+Test run trading.reference.ReferenceDataSuite started
+trading.reference.ReferenceDataSuite: finished 0.126s
+Test run trading.reference.ReferenceDataSuite finished: 0 failed, 0 ignored, 11 total 0.138s
+Test run trading.reference.CatalogPropertiesSuite started
+trading.reference.CatalogPropertiesSuite: finished 0.23s
+Test run trading.reference.CatalogPropertiesSuite finished: 0 failed, 0 ignored, 2 total 0.241s
+[info] Passed: Total 13, Failed 0, Errors 0, Passed 13
+[info] compiling 1 Scala source to /Users/m/src/money/.worktrees/retire-trust-boundary-migration-scaffolding/application/target/scala-3.8.4/classes ...
+[info] done compiling
+[info] compiling 2 Scala sources to /Users/m/src/money/.worktrees/retire-trust-boundary-migration-scaffolding/application/target/scala-3.8.4/test-classes ...
+[info] done compiling
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by scala.runtime.LazyVals$ (file:/Users/m/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/scala-library/3.8.4/scala-library-3.8.4.jar)
+WARNING: Please consider reporting this to the maintainers of class scala.runtime.LazyVals$
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+Test run trading.application.LiveCatalogContractRejectionSuite started
+trading.application.LiveCatalogContractRejectionSuite: finished 0.14s
+Test run trading.application.LiveCatalogContractRejectionSuite finished: 0 failed, 0 ignored, 4 total 0.153s
+Test run trading.application.LiveCatalogContractSuite started
+trading.application.LiveCatalogContractSuite: finished 0.022s
+Test run trading.application.LiveCatalogContractSuite finished: 0 failed, 0 ignored, 5 total 0.022s
+[info] Passed: Total 9, Failed 0, Errors 0, Passed 9
+[info] compiling 2 Scala sources to /Users/m/src/money/.worktrees/retire-trust-boundary-migration-scaffolding/runtime/target/scala-3.8.4/classes ...
+[info] done compiling
+[info] compiling 4 Scala sources to /Users/m/src/money/.worktrees/retire-trust-boundary-migration-scaffolding/runtime/target/scala-3.8.4/test-classes ...
+[info] done compiling
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by scala.runtime.LazyVals$ (file:/Users/m/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/scala-library/3.8.4/scala-library-3.8.4.jar)
+WARNING: Please consider reporting this to the maintainers of class scala.runtime.LazyVals$
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+Test run trading.runtime.InMemoryLiveCatalogConcurrencySuite started
+trading.runtime.InMemoryLiveCatalogConcurrencySuite: finished 0.44s
+Test run trading.runtime.InMemoryLiveCatalogConcurrencySuite finished: 0 failed, 0 ignored, 4 total 0.444s
+Test run trading.runtime.InMemoryLiveCatalogContractSuite started
+trading.runtime.InMemoryLiveCatalogContractSuite: finished 0.04s
+Test run trading.runtime.InMemoryLiveCatalogContractSuite finished: 0 failed, 0 ignored, 7 total 0.041s
+Test run trading.runtime.InMemoryLiveCatalogConstructionSuite started
+trading.runtime.InMemoryLiveCatalogConstructionSuite: finished 0.016s
+Test run trading.runtime.InMemoryLiveCatalogConstructionSuite finished: 0 failed, 0 ignored, 5 total 0.016s
+Test run trading.runtime.InMemoryLiveCatalogAtomicSuite started
+trading.runtime.InMemoryLiveCatalogAtomicSuite: finished 0.014s
+Test run trading.runtime.InMemoryLiveCatalogAtomicSuite finished: 0 failed, 0 ignored, 2 total 0.014s
+[info] Passed: Total 18, Failed 0, Errors 0, Passed 18
+[info] compiling 8 Scala sources to /Users/m/src/money/.worktrees/retire-trust-boundary-migration-scaffolding/instrument-economics/target/scala-3.8.4/classes ...
+[info] done compiling
+[info] compiling 3 Scala sources to /Users/m/src/money/.worktrees/retire-trust-boundary-migration-scaffolding/instrument-economics/target/scala-3.8.4/test-classes ...
+[info] done compiling
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by scala.runtime.LazyVals$ (file:/Users/m/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/scala-library/3.8.4/scala-library-3.8.4.jar)
+WARNING: Please consider reporting this to the maintainers of class scala.runtime.LazyVals$
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+Test run trading.economics.instrument.PureInstrumentEconomicsSuite started
+trading.economics.instrument.PureInstrumentEconomicsSuite: finished 0.082s
+Test run trading.economics.instrument.PureInstrumentEconomicsSuite finished: 0 failed, 0 ignored, 11 total 0.094s
+Test run trading.economics.instrument.EconomicsPropertiesSuite started
+trading.economics.instrument.EconomicsPropertiesSuite: finished 0.116s
+Test run trading.economics.instrument.EconomicsPropertiesSuite finished: 0 failed, 0 ignored, 2 total 0.116s
+[info] Passed: Total 13, Failed 0, Errors 0, Passed 13
+[info] compiling 6 Scala sources to /Users/m/src/money/.worktrees/retire-trust-boundary-migration-scaffolding/risk/target/scala-3.8.4/classes ...
+[info] done compiling
+[info] compiling 7 Scala sources to /Users/m/src/money/.worktrees/retire-trust-boundary-migration-scaffolding/risk/target/scala-3.8.4/test-classes ...
+[info] done compiling
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by scala.runtime.LazyVals$ (file:/Users/m/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/scala-library/3.8.4/scala-library-3.8.4.jar)
+WARNING: Please consider reporting this to the maintainers of class scala.runtime.LazyVals$
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+Test run trading.risk.RiskCurvePropertiesSuite started
+trading.risk.RiskCurvePropertiesSuite: finished 0.21s
+Test run trading.risk.RiskCurvePropertiesSuite finished: 0 failed, 0 ignored, 3 total 0.215s
+Test run trading.risk.ExhaustiveLotSizingSuite started
+trading.risk.ExhaustiveLotSizingSuite: finished 0.111s
+Test run trading.risk.ExhaustiveLotSizingSuite finished: 0 failed, 0 ignored, 9 total 0.111s
+Test run trading.risk.RiskCurveSuite started
+trading.risk.RiskCurveSuite: finished 0.02s
+Test run trading.risk.RiskCurveSuite finished: 0 failed, 0 ignored, 11 total 0.02s
+Test run trading.risk.MaximumAffordablePropertiesSuite started
+trading.risk.MaximumAffordablePropertiesSuite: finished 0.01s
+Test run trading.risk.MaximumAffordablePropertiesSuite finished: 0 failed, 0 ignored, 1 total 0.01s
+Test run trading.risk.RiskModelBoundarySuite started
+trading.risk.RiskModelBoundarySuite: finished 0.012s
+Test run trading.risk.RiskModelBoundarySuite finished: 0 failed, 0 ignored, 5 total 0.012s
+Test run trading.risk.MaximumAffordableSuite started
+trading.risk.MaximumAffordableSuite: finished 0.019s
+Test run trading.risk.MaximumAffordableSuite finished: 0 failed, 0 ignored, 7 total 0.019s
+Test run trading.risk.RiskDownsideSuite started
+trading.risk.RiskDownsideSuite: finished 0.002s
+Test run trading.risk.RiskDownsideSuite finished: 0 failed, 0 ignored, 4 total 0.002s
+[info] Passed: Total 40, Failed 0, Errors 0, Passed 40
+[info] compiling 2 Scala sources to /Users/m/src/money/.worktrees/retire-trust-boundary-migration-scaffolding/order-model/target/scala-3.8.4/classes ...
+[info] done compiling
+[info] compiling 2 Scala sources to /Users/m/src/money/.worktrees/retire-trust-boundary-migration-scaffolding/order-model/target/scala-3.8.4/test-classes ...
+[info] done compiling
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by scala.runtime.LazyVals$ (file:/Users/m/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/scala-library/3.8.4/scala-library-3.8.4.jar)
+WARNING: Please consider reporting this to the maintainers of class scala.runtime.LazyVals$
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+Test run trading.order.OrderInstructionSuite started
+trading.order.OrderInstructionSuite: finished 0.049s
+Test run trading.order.OrderInstructionSuite finished: 0 failed, 0 ignored, 6 total 0.062s
+Test run trading.order.OrderPropertiesSuite started
+trading.order.OrderPropertiesSuite: finished 0.08s
+Test run trading.order.OrderPropertiesSuite finished: 0 failed, 0 ignored, 1 total 0.08s
+[info] Passed: Total 7, Failed 0, Errors 0, Passed 7
+[info] compiling 12 Scala sources to /Users/m/src/money/.worktrees/retire-trust-boundary-migration-scaffolding/execution-lifecycle/target/scala-3.8.4/classes ...
+[info] done compiling
+[info] compiling 8 Scala sources to /Users/m/src/money/.worktrees/retire-trust-boundary-migration-scaffolding/execution-lifecycle/target/scala-3.8.4/test-classes ...
+[info] done compiling
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by scala.runtime.LazyVals$ (file:/Users/m/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/scala-library/3.8.4/scala-library-3.8.4.jar)
+WARNING: Please consider reporting this to the maintainers of class scala.runtime.LazyVals$
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+Test run trading.execution.EffectiveFillLedgerSuite started
+trading.execution.EffectiveFillLedgerSuite: finished 0.315s
+Test run trading.execution.EffectiveFillLedgerSuite finished: 0 failed, 0 ignored, 9 total 0.322s
+Test run trading.execution.CancellationSuite started
+trading.execution.CancellationSuite: finished 0.072s
+Test run trading.execution.CancellationSuite finished: 0 failed, 0 ignored, 10 total 0.072s
+Test run trading.execution.SourceFactSuite started
+trading.execution.SourceFactSuite: finished 0.03s
+Test run trading.execution.SourceFactSuite finished: 0 failed, 0 ignored, 9 total 0.03s
+Test run trading.execution.ExecutionIdentitySuite started
+trading.execution.ExecutionIdentitySuite: finished 0.01s
+Test run trading.execution.ExecutionIdentitySuite finished: 0 failed, 0 ignored, 4 total 0.01s
+Test run trading.execution.ExecutionStateSuite started
+trading.execution.ExecutionStateSuite: finished 0.066s
+Test run trading.execution.ExecutionStateSuite finished: 0 failed, 0 ignored, 11 total 0.066s
+Test run trading.execution.CommandStateSuite started
+trading.execution.CommandStateSuite: finished 0.019s
+Test run trading.execution.CommandStateSuite finished: 0 failed, 0 ignored, 8 total 0.019s
+Test run trading.execution.ExecutionAuthoritySuite started
+trading.execution.ExecutionAuthoritySuite: finished 0.007s
+Test run trading.execution.ExecutionAuthoritySuite finished: 0 failed, 0 ignored, 5 total 0.007s
+Test run trading.execution.SubmissionKnowledgeSuite started
+trading.execution.SubmissionKnowledgeSuite: finished 0.042s
+Test run trading.execution.SubmissionKnowledgeSuite finished: 0 failed, 0 ignored, 8 total 0.042s
+[info] Passed: Total 64, Failed 0, Errors 0, Passed 64
+[info] compiling 4 Scala sources to /Users/m/src/money/.worktrees/retire-trust-boundary-migration-scaffolding/execution-scenario/target/scala-3.8.4/classes ...
+[info] done compiling
+[info] compiling 3 Scala sources to /Users/m/src/money/.worktrees/retire-trust-boundary-migration-scaffolding/execution-scenario/target/scala-3.8.4/test-classes ...
+[info] done compiling
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by scala.runtime.LazyVals$ (file:/Users/m/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/scala-library/3.8.4/scala-library-3.8.4.jar)
+WARNING: Please consider reporting this to the maintainers of class scala.runtime.LazyVals$
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+Test run trading.scenario.ScenarioPropertiesSuite started
+trading.scenario.ScenarioPropertiesSuite: finished 0.189s
+Test run trading.scenario.ScenarioPropertiesSuite finished: 0 failed, 0 ignored, 1 total 0.198s
+Test run trading.scenario.OrderScenarioSuite started
+trading.scenario.OrderScenarioSuite: finished 0.021s
+Test run trading.scenario.OrderScenarioSuite finished: 0 failed, 0 ignored, 9 total 0.021s
+Test run trading.scenario.ScenarioValuationSuite started
+trading.scenario.ScenarioValuationSuite: finished 0.014s
+Test run trading.scenario.ScenarioValuationSuite finished: 0 failed, 0 ignored, 6 total 0.014s
+[info] Passed: Total 16, Failed 0, Errors 0, Passed 16
+[info] compiling 17 Scala sources to /Users/m/src/money/.worktrees/retire-trust-boundary-migration-scaffolding/boundary-codecs/target/scala-3.8.4/classes ...
+[info] done compiling
+[info] compiling 22 Scala sources to /Users/m/src/money/.worktrees/retire-trust-boundary-migration-scaffolding/boundary-codecs/target/scala-3.8.4/test-classes ...
+[info] done compiling
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by scala.runtime.LazyVals$ (file:/Users/m/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/scala-library/3.8.4/scala-library-3.8.4.jar)
+WARNING: Please consider reporting this to the maintainers of class scala.runtime.LazyVals$
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+Test run trading.codec.BoundaryDependencyScopeSuite started
+trading.codec.BoundaryDependencyScopeSuite: finished 0.039s
+Test run trading.codec.BoundaryDependencyScopeSuite finished: 0 failed, 0 ignored, 1 total 0.054s
+Test run trading.codec.CanonicalJsonSuite started
+trading.codec.CanonicalJsonSuite: finished 0.069s
+Test run trading.codec.CanonicalJsonSuite finished: 0 failed, 0 ignored, 4 total 0.069s
+Test run trading.codec.WireDiagnosticsSuite started
+trading.codec.WireDiagnosticsSuite: finished 0.007s
+Test run trading.codec.WireDiagnosticsSuite finished: 0 failed, 0 ignored, 3 total 0.007s
+Test run trading.codec.GridCoordinateRecordPropertiesSuite started
+trading.codec.GridCoordinateRecordPropertiesSuite: finished 0.302s
+Test run trading.codec.GridCoordinateRecordPropertiesSuite finished: 0 failed, 0 ignored, 1 total 0.302s
+SLF4J(W): No SLF4J providers were found.
+SLF4J(W): Defaulting to no-operation (NOP) logger implementation
+SLF4J(W): See https://www.slf4j.org/codes.html#noProviders for further details.
+Test run trading.codec.WireSchemaLawsSuite started
+trading.codec.WireSchemaLawsSuite: finished 0.309s
+Test run trading.codec.WireSchemaLawsSuite finished: 0 failed, 0 ignored, 8 total 0.309s
+Test run trading.codec.OrderRecordPropertiesSuite started
+trading.codec.OrderRecordPropertiesSuite: finished 0.078s
+Test run trading.codec.OrderRecordPropertiesSuite finished: 0 failed, 0 ignored, 1 total 0.079s
+Test run trading.codec.RecordEnvelopeSuite started
+trading.codec.RecordEnvelopeSuite: finished 0.031s
+Test run trading.codec.RecordEnvelopeSuite finished: 0 failed, 0 ignored, 7 total 0.031s
+Test run trading.codec.OrderRecordSuite started
+trading.codec.OrderRecordSuite: finished 0.259s
+Test run trading.codec.OrderRecordSuite finished: 0 failed, 0 ignored, 6 total 0.259s
+Test run trading.codec.StrictJsonSuite started
+trading.codec.StrictJsonSuite: finished 0.008s
+Test run trading.codec.StrictJsonSuite finished: 0 failed, 0 ignored, 6 total 0.009s
+Test run trading.codec.DecodeLimitsSuite started
+trading.codec.DecodeLimitsSuite: finished 0.003s
+Test run trading.codec.DecodeLimitsSuite finished: 0 failed, 0 ignored, 4 total 0.003s
+Test run trading.codec.ExactPrimitivesSuite started
+trading.codec.ExactPrimitivesSuite: finished 0.018s
+Test run trading.codec.ExactPrimitivesSuite finished: 0 failed, 0 ignored, 9 total 0.018s
+Test run trading.codec.GridCoordinateRecordSuite started
+trading.codec.GridCoordinateRecordSuite: finished 0.025s
+Test run trading.codec.GridCoordinateRecordSuite finished: 0 failed, 0 ignored, 8 total 0.025s
+Test run trading.codec.BoundaryCodecRobustnessPropertiesSuite started
+trading.codec.BoundaryCodecRobustnessPropertiesSuite: finished 0.074s
+Test run trading.codec.BoundaryCodecRobustnessPropertiesSuite finished: 0 failed, 0 ignored, 6 total 0.074s
+Test run trading.codec.ScenarioRecordSuite started
+trading.codec.ScenarioRecordSuite: finished 0.059s
+Test run trading.codec.ScenarioRecordSuite finished: 0 failed, 0 ignored, 7 total 0.059s
+Test run trading.codec.CatalogJournalPropertiesSuite started
+trading.codec.CatalogJournalPropertiesSuite: finished 0.05s
+Test run trading.codec.CatalogJournalPropertiesSuite finished: 0 failed, 0 ignored, 1 total 0.05s
+Test run trading.codec.CatalogJournalSuite started
+trading.codec.CatalogJournalSuite: finished 0.029s
+Test run trading.codec.CatalogJournalSuite finished: 0 failed, 0 ignored, 8 total 0.029s
+Test run trading.codec.InstrumentDefinitionRecordPropertiesSuite started
+trading.codec.InstrumentDefinitionRecordPropertiesSuite: finished 0.025s
+Test run trading.codec.InstrumentDefinitionRecordPropertiesSuite finished: 0 failed, 0 ignored, 1 total 0.025s
+Test run trading.codec.InstrumentDefinitionRecordSuite started
+trading.codec.InstrumentDefinitionRecordSuite: finished 0.022s
+Test run trading.codec.InstrumentDefinitionRecordSuite finished: 0 failed, 0 ignored, 6 total 0.023s
+Test run trading.codec.ScenarioRecordPropertiesSuite started
+trading.codec.ScenarioRecordPropertiesSuite: finished 0.095s
+Test run trading.codec.ScenarioRecordPropertiesSuite finished: 0 failed, 0 ignored, 1 total 0.095s
+Test run trading.codec.BoundaryCodecCompatibilitySuite started
+trading.codec.BoundaryCodecCompatibilitySuite: finished 0.113s
+Test run trading.codec.BoundaryCodecCompatibilitySuite finished: 0 failed, 0 ignored, 6 total 0.114s
+[info] Passed: Total 94, Failed 0, Errors 0, Passed 94
+[info] compiling 4 Scala sources to /Users/m/src/money/.worktrees/retire-trust-boundary-migration-scaffolding/fee-policy/target/scala-3.8.4/classes ...
+[info] done compiling
+[info] compiling 6 Scala sources to /Users/m/src/money/.worktrees/retire-trust-boundary-migration-scaffolding/fee-policy/target/scala-3.8.4/test-classes ...
+[info] done compiling
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by scala.runtime.LazyVals$ (file:/Users/m/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/scala-library/3.8.4/scala-library-3.8.4.jar)
+WARNING: Please consider reporting this to the maintainers of class scala.runtime.LazyVals$
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+Test run trading.fee.FeeAssessmentSuite started
+trading.fee.FeeAssessmentSuite: finished 0.072s
+Test run trading.fee.FeeAssessmentSuite finished: 0 failed, 0 ignored, 7 total 0.084s
+Test run trading.FeePolicyIntegrationSuite started
+trading.FeePolicyIntegrationSuite: finished 0.147s
+Test run trading.FeePolicyIntegrationSuite finished: 0 failed, 0 ignored, 11 total 0.147s
+Test run trading.fee.FeeInclusivePnlSuite started
+trading.fee.FeeInclusivePnlSuite: finished 0.02s
+Test run trading.fee.FeeInclusivePnlSuite finished: 0 failed, 0 ignored, 7 total 0.02s
+Test run trading.fee.FeeCalculationSuite started
+trading.fee.FeeCalculationSuite: finished 0.078s
+Test run trading.fee.FeeCalculationSuite finished: 0 failed, 0 ignored, 6 total 0.078s
+Test run trading.fee.FeePolicyStrategySuite started
+trading.fee.FeePolicyStrategySuite: finished 0.02s
+Test run trading.fee.FeePolicyStrategySuite finished: 0 failed, 0 ignored, 7 total 0.02s
+[info] Passed: Total 38, Failed 0, Errors 0, Passed 38
+[info] compiling 12 Scala sources to /Users/m/src/money/.worktrees/retire-trust-boundary-migration-scaffolding/adversarial-boundary/target/scala-3.8.4/test-classes ...
+[info] done compiling
+Test run external.BoundaryCodecCompilerBoundarySuite started
+external.BoundaryCodecCompilerBoundarySuite: finished 14.581s
+Test run external.BoundaryCodecCompilerBoundarySuite finished: 0 failed, 0 ignored, 17 total 14.589s
+Test run external.QuantityArtifactBoundarySuite started
+external.QuantityArtifactBoundarySuite: finished 0.601s
+Test run external.QuantityArtifactBoundarySuite finished: 0 failed, 0 ignored, 2 total 0.601s
+Test run external.StaticDimensionCompilerBoundarySuite started
+external.StaticDimensionCompilerBoundarySuite: finished 8.534s
+Test run external.StaticDimensionCompilerBoundarySuite finished: 0 failed, 0 ignored, 40 total 8.534s
+Test run external.ReferenceDataJavaBoundarySuite started
+external.ReferenceDataJavaBoundarySuite: finished 0.29s
+Test run external.ReferenceDataJavaBoundarySuite finished: 0 failed, 0 ignored, 1 total 0.29s
+Test run external.ConstructionAndProvenanceBoundarySuite started
+external.ConstructionAndProvenanceBoundarySuite: finished 0.009s
+Test run external.ConstructionAndProvenanceBoundarySuite finished: 0 failed, 0 ignored, 4 total 0.009s
+Test run external.RiskCompilerBoundarySuite started
+external.RiskCompilerBoundarySuite: finished 1.578s
+Test run external.RiskCompilerBoundarySuite finished: 0 failed, 0 ignored, 6 total 1.578s
+Test run external.ExecutionLifecycleCompilerBoundarySuite started
+external.ExecutionLifecycleCompilerBoundarySuite: finished 2.168s
+Test run external.ExecutionLifecycleCompilerBoundarySuite finished: 0 failed, 0 ignored, 7 total 2.168s
+Test run external.EconomicsCompilerBoundarySuite started
+external.EconomicsCompilerBoundarySuite: finished 11.744s
+Test run external.EconomicsCompilerBoundarySuite finished: 0 failed, 0 ignored, 35 total 11.744s
+Test run external.ReferenceDataCompilerBoundarySuite started
+external.ReferenceDataCompilerBoundarySuite: finished 2.401s
+Test run external.ReferenceDataCompilerBoundarySuite finished: 0 failed, 0 ignored, 12 total 2.402s
+Test run external.ApplicationRuntimeBoundarySuite started
+external.ApplicationRuntimeBoundarySuite: finished 0.442s
+Test run external.ApplicationRuntimeBoundarySuite finished: 0 failed, 0 ignored, 5 total 0.442s
+Test run external.ReferenceDataRuntimeBoundarySuite started
+external.ReferenceDataRuntimeBoundarySuite: finished 0.021s
+Test run external.ReferenceDataRuntimeBoundarySuite finished: 0 failed, 0 ignored, 6 total 0.021s
+[info] Passed: Total 135, Failed 0, Errors 0, Passed 135
+[success] Total time: 94 s (0:01:34.0), completed Sep 4, 2026, 1:45:31 AM
+[info] compiling 1 Scala source to /Users/m/src/money/.worktrees/retire-trust-boundary-migration-scaffolding/benchmarks/target/scala-3.8.4/classes ...
+[info] done compiling
+[success] Total time: 2 s, completed Sep 4, 2026, 1:45:33 AM

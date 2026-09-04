@@ -14,13 +14,13 @@ updated: 2026-09-03
 - **Issue**: 38 https://github.com/m2048ws/trading/issues/38
 - **Change**: retire-trust-boundary-migration-scaffolding
 - **Worktree**: /Users/m/src/money/.worktrees/retire-trust-boundary-migration-scaffolding
-- **Phase at Checkpoint**: awaiting_verify
-- **Task Group at Checkpoint**: 2
-- **Observed Run Revision**: 3
-- **Last Verified HEAD**: 847a532f595bbe63e796f480c7d1eb61a812a04a
+- **Phase at Checkpoint**: archiving
+- **Task Group at Checkpoint**: none
+- **Observed Run Revision**: 8
+- **Last Verified HEAD**: 522fad5d570c1a76da6c30b408c26f0991bee1af
 
 ## Next Action
-- Run the separate canonical whole-change Verify gate, then proceed to explicit human Review.
+- Consult Run Contract v3: resume tracker closeout for `retire-trust-boundary-migration-scaffolding` only if pending; otherwise select the next accepted Slice. Local delivery: `wiki/deliveries/RFC-0005-simplify-post-trust-boundary-S-01-retire-trust-boundary-migration-scaffolding.md`.
 
 ## Blockers
 - none

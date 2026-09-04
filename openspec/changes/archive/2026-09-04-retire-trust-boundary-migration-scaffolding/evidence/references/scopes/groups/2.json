@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 3,
+  "scope": "group-2",
+  "runId": "run-36260a45-2e85-4bdc-b4a0-fe7d620b0139",
+  "references": [
+    {
+      "reference": "file:.github%2Fworkflows%2Fci.yml#sha256:8680ddc9cf71dc5c8b8ea8d7bdc66305f18c26578fd83defe96a9432ae3032c1",
+      "sourcePath": ".github/workflows/ci.yml",
+      "digest": "sha256:8680ddc9cf71dc5c8b8ea8d7bdc66305f18c26578fd83defe96a9432ae3032c1",
+      "archivePath": "references/blobs/8680ddc9cf71dc5c8b8ea8d7bdc66305f18c26578fd83defe96a9432ae3032c1"
+    },
+    {
+      "reference": "file:build.sbt#sha256:790e4ae7fa4ab9334b36c0273bc4d44d02d59cac352b50f5f0aeaadc026f5db8",
+      "sourcePath": "build.sbt",
+      "digest": "sha256:790e4ae7fa4ab9334b36c0273bc4d44d02d59cac352b50f5f0aeaadc026f5db8",
+      "archivePath": "references/blobs/790e4ae7fa4ab9334b36c0273bc4d44d02d59cac352b50f5f0aeaadc026f5db8"
+    },
+    {
+      "reference": "file:openspec%2Fchanges%2Fretire-trust-boundary-migration-scaffolding%2Fspecs%2Frepository-architecture%2Fspec.md#sha256:80bd7e8759f43f4bb72c092656264ef93467aad84892d068cb7fff98a3a64567",
+      "sourcePath": "openspec/changes/retire-trust-boundary-migration-scaffolding/specs/repository-architecture/spec.md",
+      "digest": "sha256:80bd7e8759f43f4bb72c092656264ef93467aad84892d068cb7fff98a3a64567",
+      "archivePath": "references/blobs/80bd7e8759f43f4bb72c092656264ef93467aad84892d068cb7fff98a3a64567"
+    },
+    {
+      "reference": "file:runtime%2FREADME.md#sha256:9892be755859ca09e735e4c20b955275abdccf996094d982ddb204d85baf3115",
+      "sourcePath": "runtime/README.md",
+      "digest": "sha256:9892be755859ca09e735e4c20b955275abdccf996094d982ddb204d85baf3115",
+      "archivePath": "references/blobs/9892be755859ca09e735e4c20b955275abdccf996094d982ddb204d85baf3115"
+    },
+    {
+      "reference": "file:tools%2Fcheck-in-process-reflection.sh#sha256:bca2729121ce2bde4dfe3e8db2af53d6129ea0db1162eaab0dd982d769ddf3d6",
+      "sourcePath": "tools/check-in-process-reflection.sh",
+      "digest": "sha256:bca2729121ce2bde4dfe3e8db2af53d6129ea0db1162eaab0dd982d769ddf3d6",
+      "archivePath": "references/blobs/bca2729121ce2bde4dfe3e8db2af53d6129ea0db1162eaab0dd982d769ddf3d6"
+    },
+    {
+      "reference": "file:tools%2Ftest-check-in-process-reflection.sh#sha256:0679a80193d81a4ab8836387de8054644fd1569e9b4275506cb3171fdbce9510",
+      "sourcePath": "tools/test-check-in-process-reflection.sh",
+      "digest": "sha256:0679a80193d81a4ab8836387de8054644fd1569e9b4275506cb3171fdbce9510",
+      "archivePath": "references/blobs/0679a80193d81a4ab8836387de8054644fd1569e9b4275506cb3171fdbce9510"
+    }
+  ]
+}
