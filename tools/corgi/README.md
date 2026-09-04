@@ -80,8 +80,11 @@ worktree, branch mismatch, remote divergence, ambiguous PR, stale head, marker m
 Apply checkpoint.
 
 For tracked deliveries, local Archive is not finalization. Keep the Run in `archiving` and the worktree registered,
-synchronize the archive closeout commit, then obtain the separately controlled ready/merge decisions. Only
-`finalize` may confirm tracker closeout and finish Archive after GitHub proves the exact archive commit merged.
+synchronize the archive closeout commit, then obtain the separately controlled ready/merge decisions. If GitHub's
+Update branch operation wraps that commit, ready/merge/finalize accept only a bounded first-parent chain of clean,
+deterministic two-parent merges whose second parents follow the configured base lineage and whose newest merge includes
+the current base head; the local Corgi worktree remains fixed at the sealed closeout commit. Only `finalize` may confirm
+tracker closeout and finish Archive after GitHub proves the validated integration head merged.
 `sync-archived` is a fail-closed recovery command for a historical premature finalization: it accepts only a preserved
 local branch whose exact closeout commit is a direct child of the verified revision and whose immutable archived run
 binding, evidence manifest, closed Issue, and draft PR identities all agree. It can fast-forward that draft PR and
@@ -105,9 +108,9 @@ Claim also accepts an existing `planning_ready` repair successor created by `cor
 admitted only in claim's explicit planning mode; publication and finalization continue to reject it until Apply starts.
 
 `ready`, `merge`, and `finalize` exist but require both an explicit command flag and enabled authority in `pilot.json`.
-The checked-in pilot grants neither ready nor merge authority. Merge rechecks the exact head, native issue dependencies,
-CI, review decision, and merge state. Finalize accepts a local token file only under ignored `.corgi/` and resumes
-tracker confirmation/Archive finish only after GitHub confirms the exact PR merged.
+Merge rechecks the sealed evidence head, any deterministic base-update wrappers, native issue dependencies, CI, review
+decision, and merge state. Finalize accepts a local token file only under ignored `.corgi/` and resumes tracker
+confirmation/Archive finish only after GitHub confirms the validated PR head merged.
 
 The optional PR review projection is separate from canonical Corgi Verify and Human Review. Its local JSON contract is:
 

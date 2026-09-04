@@ -70,6 +70,7 @@ OPEN_PHASES = {
     "archiving",
 }
 MANUAL_CI_WORKFLOW = "ci.yml"
+MAX_INTEGRATION_WRAPPERS = 8
 
 
 class PilotError(RuntimeError):
@@ -700,8 +701,13 @@ class Adapter:
                 "Ready-for-review requires both explicit invocation and enabled authority",
             )
         with self.integration_lock():
-            status, pr, head = self.integration_identity(change)
-            if status.phase != "archiving" or status.integration_revision != head:
+            status, pr, evidence_head, provider_head = self.integration_identity(
+                change
+            )
+            if (
+                status.phase != "archiving"
+                or status.integration_revision != evidence_head
+            ):
                 raise PilotError(
                     "ready_phase_invalid",
                     "Ready requires the locally materialized Archive head",
@@ -710,19 +716,19 @@ class Adapter:
             self.require_dependencies_closed(status.issue_id)
             self.final_check_detail(
                 self.pr_detail(pr.number),
-                head,
+                provider_head,
                 allow_draft=True,
                 canonical_review_approved=status.review_approved,
             )
             if not pr.is_draft:
-                return result_for("already-ready", pr, head)
+                return result_for("already-ready", pr, provider_head)
             self.gh(
                 "pr", "ready", str(pr.number), "--repo", self.config.repository
             )
             refreshed = require_one_pr(
                 self.find_prs(pr.head_ref), self.config, status, pr.head_ref
             )
-            return result_for("ready", refreshed, head)
+            return result_for("ready", refreshed, provider_head)
 
     def merge(self, change: str, *, authorized: bool) -> dict[str, Any]:
         self.config.require_admitted(change)
@@ -732,8 +738,13 @@ class Adapter:
                 "Merge requires both explicit invocation and enabled authority",
             )
         with self.integration_lock():
-            status, pr, head = self.integration_identity(change)
-            if status.phase != "archiving" or status.integration_revision != head:
+            status, pr, evidence_head, provider_head = self.integration_identity(
+                change
+            )
+            if (
+                status.phase != "archiving"
+                or status.integration_revision != evidence_head
+            ):
                 raise PilotError("merge_phase_invalid", "Merge requires the Archive head")
             if pr.is_draft:
                 raise PilotError("pr_is_draft", "PR must be explicitly marked ready first")
@@ -742,13 +753,13 @@ class Adapter:
             detail = self.pr_detail(pr.number)
             validated_detail = self.final_check_detail(
                 detail,
-                head,
+                provider_head,
                 allow_draft=False,
                 canonical_review_approved=status.review_approved,
             )
             require_mergeable(
                 validated_detail,
-                head,
+                provider_head,
                 canonical_review_approved=status.review_approved,
             )
             self.gh(
@@ -759,7 +770,7 @@ class Adapter:
                 self.config.repository,
                 "--merge",
                 "--match-head-commit",
-                head,
+                provider_head,
             )
             refreshed = self.pr_detail(pr.number)
             if refreshed.get("state") != "MERGED":
@@ -768,7 +779,8 @@ class Adapter:
                 "operation": "merged",
                 "pr": pr.number,
                 "url": pr.url,
-                "head": head,
+                "head": provider_head,
+                "evidenceHead": evidence_head,
             }
 
     def finalize(
@@ -784,18 +796,25 @@ class Adapter:
                 "finalize_not_authorized", "Finalize requires explicit invocation"
             )
         with self.integration_lock():
-            status, pr, head = self.integration_identity(change, allow_merged=True)
+            status, pr, evidence_head, provider_head = self.integration_identity(
+                change, allow_merged=True
+            )
             branch = self.config.branch(change)
-            delivery_root = self.archive_worktree(change, branch, head) or self.root
+            delivery_root = (
+                self.archive_worktree(change, branch, evidence_head) or self.root
+            )
             detail = self.pr_detail(pr.number)
-            if detail.get("state") != "MERGED" or detail.get("headRefOid") != head:
+            if (
+                detail.get("state") != "MERGED"
+                or detail.get("headRefOid") != provider_head
+            ):
                 raise PilotError(
                     "merge_not_confirmed", "Exact Corgi head is not confirmed merged"
                 )
             self.require_dependencies_closed(status.issue_id)
             self.final_check_detail(
                 detail,
-                head,
+                provider_head,
                 allow_draft=False,
                 canonical_review_approved=status.review_approved,
             )
@@ -823,7 +842,8 @@ class Adapter:
                 "operation": "finalized",
                 "pr": pr.number,
                 "url": pr.url,
-                "head": head,
+                "head": provider_head,
+                "evidenceHead": evidence_head,
                 "phase": "archived",
             }
 
@@ -1426,29 +1446,109 @@ class Adapter:
 
     def integration_identity(
         self, change: str, *, allow_merged: bool = False
-    ) -> tuple[DeliveryStatus, PullRequest, str]:
+    ) -> tuple[DeliveryStatus, PullRequest, str, str]:
         try:
             status = self.corgi_status(change, require_checkpoint=True)
-            branch, head = self.git_identity(change)
+            branch, evidence_head = self.git_identity(change)
         except PilotError as exc:
             if exc.code != "corgi_contract_error":
                 raise
             branch = self.config.branch(change)
-            status, head, _, _ = self.archived_status(
+            status, evidence_head, _, _ = self.archived_status(
                 change, branch, worktree_state="present"
             )
         pr = require_one_pr(self.find_prs(branch), self.config, status, branch)
         allowed_states = {"OPEN", "MERGED"} if allow_merged else {"OPEN"}
         if pr.state not in allowed_states:
             raise PilotError("pr_state_invalid", f"Unexpected PR state {pr.state}")
-        if pr.head_oid != head:
-            raise PilotError("pr_head_stale", "PR head does not match local HEAD")
-        if status.integration_revision != head:
+        if status.integration_revision != evidence_head:
             raise PilotError(
                 "integration_head_stale",
                 "Local HEAD does not match the Corgi integration revision",
             )
-        return status, pr, head
+        provider_head = self.validated_provider_integration_head(
+            branch, evidence_head, pr.head_oid
+        )
+        return status, pr, evidence_head, provider_head
+
+    def validated_provider_integration_head(
+        self, branch: str, evidence_head: str, provider_head: str
+    ) -> str:
+        if provider_head == evidence_head:
+            return provider_head
+
+        base_ref = f"refs/heads/{self.config.base_branch}"
+        branch_ref = f"refs/heads/{branch}"
+        base_head = self.remote_sha(base_ref)
+        remote_provider_head = self.remote_sha(branch_ref)
+        if base_head is None or remote_provider_head is None:
+            raise PilotError(
+                "integration_wrapper_ref_missing",
+                "Base or delivery branch is missing during integration validation",
+            )
+        if remote_provider_head != provider_head:
+            raise PilotError(
+                "pr_head_stale",
+                "PR head does not match the delivery branch on the configured remote",
+            )
+
+        self.git("fetch", "--no-tags", self.config.remote, base_ref, branch_ref)
+        if (
+            self.remote_sha(base_ref) != base_head
+            or self.remote_sha(branch_ref) != provider_head
+        ):
+            raise PilotError(
+                "remote_changed", "Remote integration refs changed during validation"
+            )
+
+        current = provider_head
+        allowed_base = base_head
+        for depth in range(MAX_INTEGRATION_WRAPPERS):
+            if current == evidence_head:
+                return provider_head
+
+            row = self.git("rev-list", "--parents", "-n", "1", current).stdout.split()
+            if len(row) != 3 or row[0] != current:
+                raise PilotError(
+                    "integration_wrapper_invalid",
+                    "PR head contains a non-merge commit after the sealed Archive head",
+                )
+            first_parent, base_parent = row[1], row[2]
+            if depth == 0 and base_parent != base_head:
+                raise PilotError(
+                    "integration_wrapper_base_stale",
+                    "The newest PR base-update merge does not include current main",
+                )
+            ancestry = self.git(
+                "merge-base",
+                "--is-ancestor",
+                base_parent,
+                allowed_base,
+                accepted=(0, 1),
+            )
+            if ancestry.returncode != 0:
+                raise PilotError(
+                    "integration_wrapper_base_invalid",
+                    "PR base-update merges do not follow the configured main lineage",
+                )
+
+            expected_tree = self.git(
+                "merge-tree", "--write-tree", first_parent, base_parent
+            ).stdout.strip()
+            actual_tree = self.git("show", "-s", "--format=%T", current).stdout.strip()
+            if not SHA_RE.fullmatch(expected_tree) or actual_tree != expected_tree:
+                raise PilotError(
+                    "integration_wrapper_tree_invalid",
+                    "PR base-update merge contains changes beyond the deterministic merge",
+                )
+
+            current = first_parent
+            allowed_base = base_parent
+
+        raise PilotError(
+            "integration_wrapper_depth_exceeded",
+            "PR head has too many base-update wrappers to validate safely",
+        )
 
     def require_dependencies_closed(self, issue_id: int) -> None:
         raw = parse_json(
