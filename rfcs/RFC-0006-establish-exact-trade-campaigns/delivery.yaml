@@ -13,10 +13,22 @@ slices:
       sourceDigest: sha256:64a528c4e464de33ac8f51425ad096c150426888bfc925bae206016de6b6c238
       plannedAt: '2026-09-04T07:08:51.354Z'
   S-02-create-append-only-campaigns:
-    status: unbound
+    status: superseded
+    supersededBy:
+      rfcId: RFC-0007-clarify-attributed-price-pnl-contract
+      sliceId: S-02-create-append-only-campaigns
   S-03-project-campaign-execution:
-    status: unbound
+    status: superseded
+    supersededBy:
+      rfcId: RFC-0007-clarify-attributed-price-pnl-contract
+      sliceId: S-03-project-campaign-execution
   S-04-value-campaign-price-pnl:
-    status: unbound
+    status: superseded
+    supersededBy:
+      rfcId: RFC-0007-clarify-attributed-price-pnl-contract
+      sliceId: S-04-value-campaign-price-pnl
   S-05-certify-campaign-closeout:
-    status: unbound
+    status: superseded
+    supersededBy:
+      rfcId: RFC-0007-clarify-attributed-price-pnl-contract
+      sliceId: S-05-certify-campaign-closeout

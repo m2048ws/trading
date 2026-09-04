@@ -1,0 +1,10 @@
+schemaVersion: 1
+id: RFC-0008-simplify-instrument-dependent-apis
+type: feature
+status: accepted
+author: m@2048.ws
+createdAt: '2026-09-04T11:37:11.432Z'
+acceptance:
+  approver: m2048ws
+  approvedAt: '2026-09-04T11:46:25.522Z'
+  digest: 77e1c4ac3d7629334f86695e07ffaf835549c5e0e05612314f0ca193e42139f3

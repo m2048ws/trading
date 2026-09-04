@@ -1,0 +1,16 @@
+schemaVersion: 1
+rfcId: RFC-0008-simplify-instrument-dependent-apis
+revision: 1
+slices:
+  S-01-name-instrument-dimensions:
+    status: unbound
+  S-02-bind-standard-order-construction:
+    status: unbound
+  S-03-bind-source-fact-construction:
+    status: unbound
+  S-04-bind-scenario-record-codecs:
+    status: unbound
+  S-05-bind-instrument-risk:
+    status: unbound
+  S-06-bind-market-state-construction:
+    status: unbound
