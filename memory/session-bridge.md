@@ -10,17 +10,17 @@ updated: 2026-09-04
 ## Delivery Pointer
 - **RFC**: RFC-0008-simplify-instrument-dependent-apis
 - **RFC Revision**: bf457296faa7d29aec0840a7e8f48d41ed0f7491
-- **Slice**: S-03-bind-source-fact-construction
-- **Issue**: 57 https://github.com/m2048ws/trading/issues/57
-- **Change**: bind-source-fact-construction
-- **Worktree**: /Users/m/src/money/.worktrees/bind-source-fact-construction
-- **Phase at Checkpoint**: archiving
-- **Task Group at Checkpoint**: none
-- **Observed Run Revision**: 7
-- **Last Verified HEAD**: ad69a9adf84eb56a80a5e09d07da1e487502530a
+- **Slice**: S-04-bind-scenario-record-codecs
+- **Issue**: 59 https://github.com/m2048ws/trading/issues/59
+- **Change**: bind-scenario-record-codecs
+- **Worktree**: /Users/m/src/money/.worktrees/bind-scenario-record-codecs
+- **Phase at Checkpoint**: planning_ready
+- **Task Group at Checkpoint**: 1
+- **Observed Run Revision**: none
+- **Last Verified HEAD**: 83917db0fa723922467e7b4f1b5277e2bb3b2230
 
 ## Next Action
-- Consult Run Contract v3: resume tracker closeout for `bind-source-fact-construction` only if pending; otherwise select the next accepted Slice. Local delivery: `wiki/deliveries/RFC-0008-simplify-instrument-dependent-apis-S-03-bind-source-fact-construction.md`.
+- Start Apply for `bind-scenario-record-codecs` Task Group 1.
 
 ## Blockers
 - none

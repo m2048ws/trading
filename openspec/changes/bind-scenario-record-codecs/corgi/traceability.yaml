@@ -1,0 +1,44 @@
+schemaVersion: 1
+sourceDigest: sha256:ed1e07a7dbeb06ac490bba7fe7fe7cd9de7e393bccb37d2db710b6a62119793a
+acceptance:
+  - id: AC-012
+    evidence: automated
+    planningRefs:
+      - path: specs/versioned-boundary-codecs/spec.md
+        anchor: requirement-scenario-records-expose-separate-bound-encoding-and-reconstruction-contexts
+      - path: specs/versioned-boundary-codecs/spec.md
+        anchor: requirement-bound-scenario-contexts-preserve-wire-compatibility-snapshot-coherence-and-codec-ownership
+    taskGroups:
+      - '1'
+  - id: AC-013
+    evidence: automated
+    planningRefs:
+      - path: specs/versioned-boundary-codecs/spec.md
+        anchor: requirement-scenario-records-expose-separate-bound-encoding-and-reconstruction-contexts
+    taskGroups:
+      - '1'
+  - id: AC-014
+    evidence: automated
+    planningRefs:
+      - path: specs/versioned-boundary-codecs/spec.md
+        anchor: requirement-bound-scenario-contexts-preserve-wire-compatibility-snapshot-coherence-and-codec-ownership
+    taskGroups:
+      - '1'
+  - id: AC-015
+    evidence: automated
+    planningRefs:
+      - path: specs/versioned-boundary-codecs/spec.md
+        anchor: requirement-scenario-records-expose-separate-bound-encoding-and-reconstruction-contexts
+      - path: specs/versioned-boundary-codecs/spec.md
+        anchor: requirement-bound-scenario-contexts-preserve-wire-compatibility-snapshot-coherence-and-codec-ownership
+    taskGroups:
+      - '1'
+  - id: AC-016
+    evidence: automated
+    planningRefs:
+      - path: specs/versioned-boundary-codecs/spec.md
+        anchor: requirement-scenario-records-expose-separate-bound-encoding-and-reconstruction-contexts
+      - path: specs/versioned-boundary-codecs/spec.md
+        anchor: requirement-bound-scenario-contexts-preserve-wire-compatibility-snapshot-coherence-and-codec-ownership
+    taskGroups:
+      - '1'
