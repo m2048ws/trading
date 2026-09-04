@@ -29,7 +29,8 @@
     "total-and-deterministic-execution-transitions",
     "use-direct-scala-derived-models",
     "use-scala-first-quantity-and-reference-data",
-    "generalize-attributed-price-pnl"
+    "generalize-attributed-price-pnl",
+    "name-instrument-dimensions"
   ],
   "authority": {
     "localCorgiCommits": true,
