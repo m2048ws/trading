@@ -57,6 +57,10 @@ final class CommandStateSuite extends ScalaCheckSuite:
       val _ = intercept[NotSerializableException](output.writeObject(value))
     finally output.close()
 
+  private def rejectedViolations(value: CommandTransition[?, ?, ?]): Vector[CommandViolation] = value match
+    case rejected: RejectedCommandTransition[?, ?, ?] => rejected.violations.toVector
+    case other                                        => fail(s"expected rejection, received $other")
+
   test("submit and cancel commands retain stable application, logical-order, target, order, and lineage identity"):
     val original = submit("submit")
     val cancel   = required(CancelOrderCommand.create(lifecycle)(commandId("cancel"), original.commandId))
@@ -83,10 +87,10 @@ final class CommandStateSuite extends ScalaCheckSuite:
     val conflict    = retry.state.record(cancelReuse)
     val repeated    = conflict.state.record(cancelReuse)
 
-    assertEquals(first.kind, CommandTransitionKind.Applied)
-    assertEquals(retry.kind, CommandTransitionKind.IdempotentDuplicate)
+    assert(first.isInstanceOf[AppliedCommandTransition[?, ?, ?]])
+    assert(retry.isInstanceOf[IdempotentCommandTransition[?, ?, ?]])
     assertEquals(retry.state, first.state)
-    assertEquals(conflict.kind, CommandTransitionKind.ConflictingCommand)
+    assert(conflict.isInstanceOf[ConflictingCommandTransition[?, ?, ?]])
     assertEquals(conflict.state.issuedCommands, Map(original.commandId -> original))
     assertEquals(conflict.state.conflicts.size, 1)
     assertEquals(conflict.state.conflicts.head.original, original)
@@ -106,13 +110,10 @@ final class CommandStateSuite extends ScalaCheckSuite:
     val foreign = required(SubmitOrderCommand.create(foreignLifecycle)(commandId("foreign")))
     val result  = initial.record(foreign)
 
-    assertEquals(result.kind, CommandTransitionKind.Rejected)
     assertEquals(
-      result.violations.map(_.toVector),
-      Some(
-        Vector(
-          CommandLogicalOrderMismatch(lifecycle.executionOrderId, foreignLifecycle.executionOrderId)
-        )
+      rejectedViolations(result),
+      Vector(
+        CommandLogicalOrderMismatch(lifecycle.executionOrderId, foreignLifecycle.executionOrderId)
       )
     )
     assertEquals(result.state, initial)
@@ -133,12 +134,10 @@ final class CommandStateSuite extends ScalaCheckSuite:
     )
     val scoped = required(SubmitOrderCommand.create(foreignScope)(commandId("foreign-scope")))
     assertEquals(
-      initial.record(scoped).violations.map(_.toVector),
-      Some(
-        Vector(
-          CommandLineageMismatch(lifecycle.lineageId, foreignScope.lineageId),
-          CommandTargetMismatch(lifecycle.target, foreignScope.target)
-        )
+      rejectedViolations(initial.record(scoped)),
+      Vector(
+        CommandLineageMismatch(lifecycle.lineageId, foreignScope.lineageId),
+        CommandTargetMismatch(lifecycle.target, foreignScope.target)
       )
     )
 
@@ -161,10 +160,9 @@ final class CommandStateSuite extends ScalaCheckSuite:
     val unknown  = required(CancelOrderCommand.create(lifecycle)(commandId("cancel-unknown"), commandId("missing")))
     val rejected = initial.record(unknown)
 
-    assertEquals(rejected.kind, CommandTransitionKind.Rejected)
     assertEquals(
-      rejected.violations.map(_.toVector),
-      Some(Vector(UnknownOriginalSubmit(commandId("missing"))))
+      rejectedViolations(rejected),
+      Vector(UnknownOriginalSubmit(commandId("missing")))
     )
 
     val submitted = initial.record(original).state
@@ -173,12 +171,12 @@ final class CommandStateSuite extends ScalaCheckSuite:
     val chained   = required(CancelOrderCommand.create(lifecycle)(commandId("cancel-2"), cancel.commandId))
     val invalid   = cancelled.state.record(chained)
 
-    assertEquals(cancelled.kind, CommandTransitionKind.Applied)
+    assert(cancelled.isInstanceOf[AppliedCommandTransition[?, ?, ?]])
     assertEquals(cancelled.state.cancellationRequests, Vector(cancel))
     assertEquals(cancelled.state.dispatchKnowledge, Map.empty)
     assertEquals(
-      invalid.violations.map(_.toVector),
-      Some(Vector(ReferencedCommandIsNotSubmit(cancel.commandId)))
+      rejectedViolations(invalid),
+      Vector(ReferencedCommandIsNotSubmit(cancel.commandId))
     )
 
   test("dispatch observations retain proven non-dispatch and indeterminacy independently on the original submit"):
@@ -190,9 +188,9 @@ final class CommandStateSuite extends ScalaCheckSuite:
     val retry         = first.state.observeDispatch(notDispatched)
     val conflict      = retry.state.observeDispatch(indeterminate)
 
-    assertEquals(first.kind, CommandTransitionKind.Applied)
-    assertEquals(retry.kind, CommandTransitionKind.IdempotentDuplicate)
-    assertEquals(conflict.kind, CommandTransitionKind.ConflictingDispatchEvidence)
+    assert(first.isInstanceOf[AppliedCommandTransition[?, ?, ?]])
+    assert(retry.isInstanceOf[IdempotentCommandTransition[?, ?, ?]])
+    assert(conflict.isInstanceOf[ConflictingDispatchTransition[?, ?, ?]])
     assertEquals(
       conflict.state.dispatchKnowledge,
       Map(original.commandId -> Vector(notDispatched, indeterminate))
@@ -202,7 +200,7 @@ final class CommandStateSuite extends ScalaCheckSuite:
     assertEquals(conflict.state.cancellationRequests, Vector.empty)
 
     val recovery = conflict.state.record(submit("submit"))
-    assertEquals(recovery.kind, CommandTransitionKind.IdempotentDuplicate)
+    assert(recovery.isInstanceOf[IdempotentCommandTransition[?, ?, ?]])
     assertEquals(recovery.state, conflict.state)
 
     val evidenceKinds = conflict.state.dispatchKnowledge(original.commandId).map:
@@ -213,10 +211,9 @@ final class CommandStateSuite extends ScalaCheckSuite:
   test("dispatch evidence rejects unknown and incompatible original submit references"):
     val original = submit("submit")
     val unknown  = initial.observeDispatch(required(IndeterminateDispatch.forSubmit(original)))
-    assertEquals(unknown.kind, CommandTransitionKind.Rejected)
     assertEquals(
-      unknown.violations.map(_.toVector),
-      Some(Vector(UnknownOriginalSubmit(original.commandId)))
+      rejectedViolations(unknown),
+      Vector(UnknownOriginalSubmit(original.commandId))
     )
 
     val otherOrder       = Order.market(instrument)(Side.Buy, fixtures.lots(instrument, 11)).toOption.get
@@ -234,16 +231,48 @@ final class CommandStateSuite extends ScalaCheckSuite:
       .state
       .observeDispatch(required(ProvenNotDispatched.forSubmit(incompatible)))
 
-    assertEquals(observed.kind, CommandTransitionKind.Rejected)
     assertEquals(
-      observed.violations.map(_.toVector),
-      Some(
-        Vector(
-          CommandImmutableOrderMismatch(original.commandId),
-          DispatchSubmitBodyMismatch(original.commandId)
-        )
+      rejectedViolations(observed),
+      Vector(
+        CommandImmutableOrderMismatch(original.commandId),
+        DispatchSubmitBodyMismatch(original.commandId)
       )
     )
+
+  test("command and dispatch transitions form a total payload-correct sum"):
+    val original           = submit("total-submit")
+    val applied            = initial.record(original)
+    val idempotent         = applied.state.record(original)
+    val cancelReuse        = required(CancelOrderCommand.create(lifecycle)(original.commandId, original.commandId))
+    val commandConflict    = idempotent.state.record(cancelReuse)
+    val rejectedCommand    = initial.record(null)
+    val notDispatched      = required(ProvenNotDispatched.forSubmit(original))
+    val indeterminate      = required(IndeterminateDispatch.forSubmit(original))
+    val dispatchApplied    = applied.state.observeDispatch(notDispatched)
+    val dispatchIdempotent = dispatchApplied.state.observeDispatch(notDispatched)
+    val dispatchConflict   = dispatchIdempotent.state.observeDispatch(indeterminate)
+    val rejectedDispatch   = applied.state.observeDispatch(null)
+
+    assert(applied.isInstanceOf[AppliedCommandTransition[?, ?, ?]])
+    assert(idempotent.isInstanceOf[IdempotentCommandTransition[?, ?, ?]])
+    assert(commandConflict.isInstanceOf[ConflictingCommandTransition[?, ?, ?]])
+    assert(dispatchApplied.isInstanceOf[AppliedCommandTransition[?, ?, ?]])
+    assert(dispatchIdempotent.isInstanceOf[IdempotentCommandTransition[?, ?, ?]])
+    assert(dispatchConflict.isInstanceOf[ConflictingDispatchTransition[?, ?, ?]])
+    assertEquals(
+      rejectedViolations(rejectedCommand),
+      Vector(MissingCommandValue(CommandViolationLocation.Command))
+    )
+    assertEquals(
+      rejectedViolations(rejectedDispatch),
+      Vector(MissingCommandValue(CommandViolationLocation.DispatchEvidence))
+    )
+
+    assertEquals(idempotent.state, applied.state)
+    assertEquals(rejectedCommand.state, initial)
+    assertEquals(rejectedDispatch.state, applied.state)
+    assertEquals(applied, initial.record(original))
+    assertNotEquals(applied, idempotent)
 
   property("arbitrarily many redeliveries of one command remain one business command"):
     forAll { (rawAttempts: Int) =>
@@ -257,13 +286,16 @@ final class CommandStateSuite extends ScalaCheckSuite:
     }
 
   test("commands reject Java serialization and expose no native amendment API"):
-    val original      = submit("submit")
-    val transition    = initial.record(original)
-    val notDispatched = required(ProvenNotDispatched.forSubmit(original))
-    val observed      = transition.state.observeDispatch(notDispatched)
-    val cancelReuse   = required(CancelOrderCommand.create(lifecycle)(original.commandId, original.commandId))
-    val conflicted    = observed.state.record(cancelReuse)
-    val errors        = SubmitOrderCommand.create(lifecycle)(null).swap.toOption.get
+    val original         = submit("submit")
+    val transition       = initial.record(original)
+    val replayed         = transition.state.record(original)
+    val notDispatched    = required(ProvenNotDispatched.forSubmit(original))
+    val observed         = transition.state.observeDispatch(notDispatched)
+    val dispatchConflict = observed.state.observeDispatch(required(IndeterminateDispatch.forSubmit(original)))
+    val cancelReuse      = required(CancelOrderCommand.create(lifecycle)(original.commandId, original.commandId))
+    val conflicted       = observed.state.record(cancelReuse)
+    val rejected         = initial.record(null)
+    val errors           = SubmitOrderCommand.create(lifecycle)(null).swap.toOption.get
 
     val apiTypes = List(
       classOf[CommandViolations],
@@ -287,9 +319,13 @@ final class CommandStateSuite extends ScalaCheckSuite:
       required(IndeterminateDispatch.forSubmit(original)),
       transition.state,
       transition,
+      replayed,
+      observed,
+      dispatchConflict,
+      conflicted,
+      rejected,
       conflicted.state.conflicts.head,
       errors,
-      CommandTransitionKind.Applied,
       MissingCommandValue(CommandViolationLocation.Command)
     )
     serializable.foreach(assertSerializationRejected)

@@ -258,14 +258,14 @@ object ExecutionState:
         val result = state.commands.record(command)
         val work   = TransitionWork(1, if result.state == state.commands then 0 else 1, 0)
         val next   = construct(state.lifecycle, result.state, state.source, work)
-        result.kind match
-          case CommandTransitionKind.Applied             => accepted(next, LifecycleTransitionKind.Applied, work)
-          case CommandTransitionKind.IdempotentDuplicate =>
+        result match
+          case _: AppliedCommandTransition[?, ?, ?]    => accepted(next, LifecycleTransitionKind.Applied, work)
+          case _: IdempotentCommandTransition[?, ?, ?] =>
             accepted(next, LifecycleTransitionKind.IdempotentDuplicate, work)
-          case CommandTransitionKind.ConflictingCommand | CommandTransitionKind.ConflictingDispatchEvidence =>
+          case _: ConflictingCommandTransition[?, ?, ?] | _: ConflictingDispatchTransition[?, ?, ?] =>
             accepted(next, LifecycleTransitionKind.ConflictingEvidence, work)
-          case CommandTransitionKind.Rejected =>
-            rejected(next, CommandInputRejected(result.violations.get), work)
+          case rejectedCommand: RejectedCommandTransition[?, ?, ?] =>
+            rejected(next, CommandInputRejected(rejectedCommand.violations), work)
     end match
   end recordCommand
 
@@ -276,14 +276,14 @@ object ExecutionState:
     val result = state.commands.observeDispatch(evidence)
     val work   = TransitionWork(1, if result.state == state.commands then 0 else 1, 0)
     val next   = construct(state.lifecycle, result.state, state.source, work)
-    result.kind match
-      case CommandTransitionKind.Applied             => accepted(next, LifecycleTransitionKind.Applied, work)
-      case CommandTransitionKind.IdempotentDuplicate =>
+    result match
+      case _: AppliedCommandTransition[?, ?, ?]    => accepted(next, LifecycleTransitionKind.Applied, work)
+      case _: IdempotentCommandTransition[?, ?, ?] =>
         accepted(next, LifecycleTransitionKind.IdempotentDuplicate, work)
-      case CommandTransitionKind.ConflictingCommand | CommandTransitionKind.ConflictingDispatchEvidence =>
+      case _: ConflictingCommandTransition[?, ?, ?] | _: ConflictingDispatchTransition[?, ?, ?] =>
         accepted(next, LifecycleTransitionKind.ConflictingEvidence, work)
-      case CommandTransitionKind.Rejected =>
-        rejected(next, CommandInputRejected(result.violations.get), work)
+      case rejectedCommand: RejectedCommandTransition[?, ?, ?] =>
+        rejected(next, CommandInputRejected(rejectedCommand.violations), work)
 
   private def recordSource[D <: Dim, B <: Dim, Q <: Dim](
     state: ExecutionState[D, B, Q],

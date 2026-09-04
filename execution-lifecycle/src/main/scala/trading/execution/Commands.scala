@@ -201,24 +201,60 @@ final class CommandConflict[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
 
   override def hashCode(): Int = (original, conflicting).hashCode
 
-enum CommandTransitionKind extends JavaSerializationUnsupported:
-  case Applied
-  case IdempotentDuplicate
-  case ConflictingCommand
-  case ConflictingDispatchEvidence
-  case Rejected
-final class CommandTransition[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
-  val state: CommandState[D, B, Q],
-  val kind: CommandTransitionKind,
-  val violations: Option[CommandViolations])
-  extends JavaSerializationUnsupported:
+sealed abstract class CommandTransition[D <: Dim, B <: Dim, Q <: Dim] protected () extends JavaSerializationUnsupported:
+  def state: CommandState[D, B, Q]
+
+final class AppliedCommandTransition[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
+  val state: CommandState[D, B, Q])
+  extends CommandTransition[D, B, Q]():
 
   override def equals(other: Any): Boolean = other match
-    case that: CommandTransition[?, ?, ?] =>
-      state == that.state && kind == that.kind && violations == that.violations
+    case that: AppliedCommandTransition[?, ?, ?] => state == that.state
+    case _                                       => false
+
+  override def hashCode(): Int = ("applied", state).hashCode
+
+final class IdempotentCommandTransition[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
+  val state: CommandState[D, B, Q])
+  extends CommandTransition[D, B, Q]():
+
+  override def equals(other: Any): Boolean = other match
+    case that: IdempotentCommandTransition[?, ?, ?] => state == that.state
+    case _                                          => false
+
+  override def hashCode(): Int = ("idempotent", state).hashCode
+
+final class ConflictingCommandTransition[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
+  val state: CommandState[D, B, Q])
+  extends CommandTransition[D, B, Q]():
+
+  override def equals(other: Any): Boolean = other match
+    case that: ConflictingCommandTransition[?, ?, ?] => state == that.state
+    case _                                           => false
+
+  override def hashCode(): Int = ("command-conflict", state).hashCode
+
+final class ConflictingDispatchTransition[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
+  val state: CommandState[D, B, Q])
+  extends CommandTransition[D, B, Q]():
+
+  override def equals(other: Any): Boolean = other match
+    case that: ConflictingDispatchTransition[?, ?, ?] => state == that.state
+    case _                                            => false
+
+  override def hashCode(): Int = ("dispatch-conflict", state).hashCode
+
+final class RejectedCommandTransition[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
+  val state: CommandState[D, B, Q],
+  val violations: CommandViolations)
+  extends CommandTransition[D, B, Q]():
+
+  override def equals(other: Any): Boolean = other match
+    case that: RejectedCommandTransition[?, ?, ?] =>
+      state == that.state && violations == that.violations
     case _ => false
 
-  override def hashCode(): Int = (state, kind, violations).hashCode
+  override def hashCode(): Int = (state, violations).hashCode
 final class CommandState[D <: Dim, B <: Dim, Q <: Dim] private (
   val lifecycle: ExecutionLifecycle[D, B, Q],
   val issuedCommands: Map[ApplicationCommandId, ExecutionCommand[D, B, Q]],
@@ -260,12 +296,31 @@ object CommandState:
   ): CommandConflict[D, B, Q] =
     new CommandConflict(original, conflicting)
 
-  private def transition[D <: Dim, B <: Dim, Q <: Dim](
+  private def applied[D <: Dim, B <: Dim, Q <: Dim](
+    state: CommandState[D, B, Q]
+  ): AppliedCommandTransition[D, B, Q] =
+    new AppliedCommandTransition(state)
+
+  private def idempotent[D <: Dim, B <: Dim, Q <: Dim](
+    state: CommandState[D, B, Q]
+  ): IdempotentCommandTransition[D, B, Q] =
+    new IdempotentCommandTransition(state)
+
+  private def commandConflict[D <: Dim, B <: Dim, Q <: Dim](
+    state: CommandState[D, B, Q]
+  ): ConflictingCommandTransition[D, B, Q] =
+    new ConflictingCommandTransition(state)
+
+  private def dispatchConflict[D <: Dim, B <: Dim, Q <: Dim](
+    state: CommandState[D, B, Q]
+  ): ConflictingDispatchTransition[D, B, Q] =
+    new ConflictingDispatchTransition(state)
+
+  private def rejected[D <: Dim, B <: Dim, Q <: Dim](
     state: CommandState[D, B, Q],
-    kind: CommandTransitionKind,
-    violations: Option[CommandViolations] = None
-  ): CommandTransition[D, B, Q] =
-    new CommandTransition(state, kind, violations)
+    violations: CommandViolations
+  ): RejectedCommandTransition[D, B, Q] =
+    new RejectedCommandTransition(state, violations)
 
   def initial[D <: Dim, B <: Dim, Q <: Dim](
     lifecycle: ExecutionLifecycle[D, B, Q]
@@ -302,28 +357,26 @@ object CommandState:
     command: ExecutionCommand[D, B, Q]
   ): CommandTransition[D, B, Q] =
     if command == null then
-      transition(
+      rejected(
         state,
-        CommandTransitionKind.Rejected,
-        Some(CommandViolations.one(MissingCommandValue(CommandViolationLocation.Command)))
+        CommandViolations.one(MissingCommandValue(CommandViolationLocation.Command))
       )
     else
       state.issuedCommands.get(command.commandId) match
         case Some(existing) if existing == command =>
-          transition(state, CommandTransitionKind.IdempotentDuplicate)
+          idempotent(state)
         case Some(existing) =>
           val conflict = constructConflict(existing, command)
           val retained =
             if state.conflicts.contains(conflict) then state.conflicts else state.conflicts :+ conflict
-          transition(
+          commandConflict(
             constructState(
               state.lifecycle,
               state.issuedCommands,
               state.dispatchKnowledge,
               retained,
               state.cancellationRequests
-            ),
-            CommandTransitionKind.ConflictingCommand
+            )
           )
         case None =>
           val scope     = scopeViolations(state.lifecycle, command.lifecycle, command.commandId)
@@ -335,7 +388,7 @@ object CommandState:
                 case Some(_) => Vector(ReferencedCommandIsNotSubmit(cancel.originalSubmitCommandId))
             case _: SubmitOrderCommand[D, B, Q] => Vector.empty
           CommandViolations.from(scope ++ reference) match
-            case Some(violations) => transition(state, CommandTransitionKind.Rejected, Some(violations))
+            case Some(violations) => rejected(state, violations)
             case None             =>
               val cancellations = command match
                 case cancel: CancelOrderCommand[D, B, Q] => state.cancellationRequests :+ cancel
@@ -347,17 +400,16 @@ object CommandState:
                 state.conflicts,
                 cancellations
               )
-              transition(next, CommandTransitionKind.Applied)
+              applied(next)
 
   private def observeDispatch[D <: Dim, B <: Dim, Q <: Dim](
     state: CommandState[D, B, Q],
     evidence: DispatchEvidence[D, B, Q]
   ): CommandTransition[D, B, Q] =
     if evidence == null then
-      transition(
+      rejected(
         state,
-        CommandTransitionKind.Rejected,
-        Some(CommandViolations.one(MissingCommandValue(CommandViolationLocation.DispatchEvidence)))
+        CommandViolations.one(MissingCommandValue(CommandViolationLocation.DispatchEvidence))
       )
     else
       val scope     = scopeViolations(state.lifecycle, evidence.submit.lifecycle, evidence.submitCommandId)
@@ -368,10 +420,10 @@ object CommandState:
         case Some(_: SubmitOrderCommand[?, ?, ?]) => Vector.empty
         case Some(_)                              => Vector(ReferencedCommandIsNotSubmit(evidence.submitCommandId))
       CommandViolations.from(scope ++ reference) match
-        case Some(violations) => transition(state, CommandTransitionKind.Rejected, Some(violations))
+        case Some(violations) => rejected(state, violations)
         case None             =>
           val current = state.dispatchKnowledge.getOrElse(evidence.submitCommandId, Vector.empty)
-          if current.contains(evidence) then transition(state, CommandTransitionKind.IdempotentDuplicate)
+          if current.contains(evidence) then idempotent(state)
           else
             val conflicting = current.nonEmpty
             val next        = constructState(
@@ -381,9 +433,5 @@ object CommandState:
               state.conflicts,
               state.cancellationRequests
             )
-            transition(
-              next,
-              if conflicting then CommandTransitionKind.ConflictingDispatchEvidence
-              else CommandTransitionKind.Applied
-            )
+            if conflicting then dispatchConflict(next) else applied(next)
 end CommandState

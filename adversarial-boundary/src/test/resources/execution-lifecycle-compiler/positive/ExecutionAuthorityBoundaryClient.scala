@@ -66,8 +66,8 @@ object ExecutionAuthorityBoundaryClient:
 
     assert(commandKinds.toSet == Set("submit", "cancel"))
     assert(dispatchKinds == Vector("indeterminate"))
-    assert(cancelled.kind == CommandTransitionKind.Applied)
-    assert(observed.kind == CommandTransitionKind.Applied)
+    assert(cancelled.isInstanceOf[AppliedCommandTransition[?, ?, ?]])
+    assert(observed.isInstanceOf[AppliedCommandTransition[?, ?, ?]])
 
     val eventId = required(
       QualifiedSourceEventId.create(target, required(NativeSourceEventId.from("accepted")))

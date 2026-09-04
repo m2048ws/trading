@@ -1,6 +1,6 @@
 ---
 type: memory
-updated: 2026-09-03
+updated: 2026-09-04
 ---
 
 # Session Bridge
@@ -14,19 +14,20 @@ updated: 2026-09-03
 - **Issue**: 40 https://github.com/m2048ws/trading/issues/40
 - **Change**: total-and-deterministic-execution-transitions
 - **Worktree**: /Users/m/src/money/.worktrees/total-and-deterministic-execution-transitions
-- **Phase at Checkpoint**: planning_ready
+- **Phase at Checkpoint**: applying
 - **Task Group at Checkpoint**: 1
-- **Observed Run Revision**: none
-- **Last Verified HEAD**: 887757e3cfd88bf7fd8014139238ff6e8d71d128
+- **Observed Run Revision**: 2
+- **Last Verified HEAD**: 8e323f7f4cec83f7d4d06f1a324586ddfbebd8b4
 
 ## Next Action
-- Start Apply for `total-and-deterministic-execution-transitions` Task Group 1.
+- Commit and acknowledge Task Group 1, then inspect the CLI-selected next group.
 
 ## Blockers
 - none
 
 ## Uncommitted Work
-- none
+- Task Group 1 replaces command transition kind/optional-payload states with exhaustive payload-correct alternatives;
+  focused execution and packaged compiler-boundary tests pass.
 
 ## Discoveries
 - No active Corgi Run Contract or OpenSpec Change exists on primary `main`.
@@ -63,6 +64,9 @@ updated: 2026-09-03
 - RFC-0005/S-01 Task Group 2 removed the runtime-only Java-first compile order, stale bridge explanation, and duplicate
   release option; the runtime inherits mixed compilation and repository `--release 25`, with 1,043 tests and benchmark
   compilation passing after a clean build.
+- RFC-0005/S-02 Task Group 1 replaces the command transition kind plus optional violations with five owner-sealed
+  alternatives, removes unchecked violation extraction, and preserves applied, idempotent, command-conflict,
+  dispatch-conflict, and rejection state semantics under focused and completed-artifact compiler tests.
 
 ## Promotion Queue
 - none
