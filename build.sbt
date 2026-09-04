@@ -104,7 +104,7 @@ lazy val quantities =
         "org.typelevel"  %% "algebra-laws"     % algebraVersion         % Test,
         "org.typelevel"  %% "cats-laws"        % catsVersion            % Test,
         "org.typelevel"  %% "discipline-munit" % disciplineMunitVersion % Test,
-        "org.scalameta"  %% "munit"            % "1.3.5"                % Test,
+        "org.scalameta"  %% "munit"            % "1.3.6"                % Test,
         "org.scalacheck" %% "scalacheck"       % "1.20.0"               % Test,
         "org.scalameta"  %% "munit-scalacheck" % "1.3.0"                % Test
       )
@@ -123,7 +123,7 @@ lazy val referenceData =
       Test / classLoaderLayeringStrategy := ClassLoaderLayeringStrategy.Flat,
 
       libraryDependencies ++= Seq(
-        "org.scalameta"  %% "munit"            % "1.3.5"  % Test,
+        "org.scalameta"  %% "munit"            % "1.3.6"  % Test,
         "org.scalacheck" %% "scalacheck"       % "1.20.0" % Test,
         "org.scalameta"  %% "munit-scalacheck" % "1.3.0"  % Test
       )
@@ -146,7 +146,7 @@ lazy val feePolicy =
 
       libraryDependencies ++= Seq(
         "org.typelevel"  %% "cats-core"        % catsVersion,
-        "org.scalameta"  %% "munit"            % "1.3.5"  % Test,
+        "org.scalameta"  %% "munit"            % "1.3.6"  % Test,
         "org.scalacheck" %% "scalacheck"       % "1.20.0" % Test,
         "org.scalameta"  %% "munit-scalacheck" % "1.3.0"  % Test
       )
@@ -167,7 +167,7 @@ lazy val instrumentEconomics =
 
       libraryDependencies ++= Seq(
         "org.typelevel"  %% "cats-core"        % catsVersion,
-        "org.scalameta"  %% "munit"            % "1.3.5"  % Test,
+        "org.scalameta"  %% "munit"            % "1.3.6"  % Test,
         "org.scalacheck" %% "scalacheck"       % "1.20.0" % Test,
         "org.scalameta"  %% "munit-scalacheck" % "1.3.0"  % Test
       )
@@ -188,7 +188,7 @@ lazy val risk =
 
       libraryDependencies ++= Seq(
         "org.typelevel"  %% "cats-core"        % catsVersion,
-        "org.scalameta"  %% "munit"            % "1.3.5"  % Test,
+        "org.scalameta"  %% "munit"            % "1.3.6"  % Test,
         "org.scalacheck" %% "scalacheck"       % "1.20.0" % Test,
         "org.scalameta"  %% "munit-scalacheck" % "1.3.0"  % Test
       )
@@ -209,7 +209,7 @@ lazy val orderModel =
 
       libraryDependencies ++= Seq(
         "org.typelevel"  %% "cats-core"        % catsVersion,
-        "org.scalameta"  %% "munit"            % "1.3.5"  % Test,
+        "org.scalameta"  %% "munit"            % "1.3.6"  % Test,
         "org.scalacheck" %% "scalacheck"       % "1.20.0" % Test,
         "org.scalameta"  %% "munit-scalacheck" % "1.3.0"  % Test
       )
@@ -230,7 +230,7 @@ lazy val executionLifecycle =
 
       libraryDependencies ++= Seq(
         "org.typelevel"  %% "cats-core"        % catsVersion,
-        "org.scalameta"  %% "munit"            % "1.3.5"  % Test,
+        "org.scalameta"  %% "munit"            % "1.3.6"  % Test,
         "org.scalacheck" %% "scalacheck"       % "1.20.0" % Test,
         "org.scalameta"  %% "munit-scalacheck" % "1.3.0"  % Test
       )
@@ -251,7 +251,7 @@ lazy val executionScenario =
 
       libraryDependencies ++= Seq(
         "org.typelevel"  %% "cats-core"        % catsVersion,
-        "org.scalameta"  %% "munit"            % "1.3.5"  % Test,
+        "org.scalameta"  %% "munit"            % "1.3.6"  % Test,
         "org.scalacheck" %% "scalacheck"       % "1.20.0" % Test,
         "org.scalameta"  %% "munit-scalacheck" % "1.3.0"  % Test
       )
@@ -275,7 +275,7 @@ lazy val boundaryCodecs =
         "tools.jackson.core" % "jackson-core"               % jacksonCoreVersion,
         "com.networknt"      % "json-schema-validator"      % jsonSchemaValidatorVersion      % Test,
         "io.github.erdtman"  % "java-json-canonicalization" % javaJsonCanonicalizationVersion % Test,
-        "org.scalameta"     %% "munit"                      % "1.3.5"                         % Test,
+        "org.scalameta"     %% "munit"                      % "1.3.6"                         % Test,
         "org.scalacheck"    %% "scalacheck"                 % "1.20.0"                        % Test,
         "org.scalameta"     %% "munit-scalacheck"           % "1.3.0"                         % Test
       )
@@ -296,7 +296,7 @@ lazy val application =
       // it always loads that completed dependency generation instead of an in-process classloader cached earlier.
       Test / fork := true,
 
-      libraryDependencies += "org.scalameta" %% "munit" % "1.3.5" % Test
+      libraryDependencies += "org.scalameta" %% "munit" % "1.3.6" % Test
     )
 
 lazy val runtime =
@@ -638,6 +638,6 @@ lazy val adversarialBoundary =
       }.taskValue,
       libraryDependencies ++= Seq(
         "org.scala-lang" %% "scala3-compiler" % scala3Version % Test,
-        "org.scalameta"  %% "munit"           % "1.3.5"       % Test
+        "org.scalameta"  %% "munit"           % "1.3.6"       % Test
       )
     )
