@@ -10,24 +10,25 @@ updated: 2026-09-04
 ## Delivery Pointer
 - **RFC**: RFC-0005-simplify-post-trust-boundary
 - **RFC Revision**: 7f1d1ab9eb88d0912d3219920eacadea4d01aa2e
-- **Slice**: S-02-total-and-deterministic-execution-transitions
-- **Issue**: 40 https://github.com/m2048ws/trading/issues/40
-- **Change**: total-and-deterministic-execution-transitions
-- **Worktree**: /Users/m/src/money/.worktrees/total-and-deterministic-execution-transitions
+- **Slice**: S-03-use-direct-scala-derived-models
+- **Issue**: 42 https://github.com/m2048ws/trading/issues/42
+- **Change**: use-direct-scala-derived-models
+- **Worktree**: /Users/m/src/money/.worktrees/use-direct-scala-derived-models
 - **Phase at Checkpoint**: archiving
 - **Task Group at Checkpoint**: none
 - **Observed Run Revision**: 9
-- **Last Verified HEAD**: a977df576bf089a366930183c14f45029cf77a14
+- **Last Verified HEAD**: f46c95751e6f72e45ee33881eb1705625b2228d9
 
 ## Next Action
-- Consult Run Contract v3: resume tracker closeout for `total-and-deterministic-execution-transitions` only if pending; otherwise select the next accepted Slice. Local delivery: `wiki/deliveries/RFC-0005-simplify-post-trust-boundary-S-02-total-and-deterministic-execution-transitions.md`.
+- Consult Run Contract v3: resume tracker closeout for `use-direct-scala-derived-models` only if pending; otherwise select the next accepted Slice. Local delivery: `wiki/deliveries/RFC-0005-simplify-post-trust-boundary-S-03-use-direct-scala-derived-models.md`.
 
 ## Blockers
 - none
 
 ## Uncommitted Work
-- Task Group 3 passes the observation's single effective-fill ledger into anomaly construction and proves exact overfill
-  value reuse; the zero-reflection guard and clean 1,047-test aggregate pass.
+- Task Group 3 converts field-valid evidence, conflict, ledger, anomaly, observation, and replay values to direct
+  package-owned Scala products; the clean 1,047-test aggregate, benchmark compilation, formatting, strict planning
+  validation, and reflection guard/regression all pass.
 
 ## Discoveries
 - No active Corgi Run Contract or OpenSpec Change exists on primary `main`.
@@ -73,6 +74,16 @@ updated: 2026-09-04
 - RFC-0005/S-02 Task Group 3 removes the second effective-fill derivation from observation assembly, passes the one
   ledger value into anomaly construction, and proves the non-empty overfill object is reused by identity while all
   correction, bust, unresolved-reference, conflict, cancellation-race, exposure, and serialization behavior remains.
+- RFC-0005/S-03 Task Group 1 replaces command and source transitions with generated sealed cases and replaces the
+  lifecycle accepted-kind tag with applied, idempotent, conflicting, and rejected cases while preserving state,
+  violation, conflict, work-accounting, exhaustive compiler-boundary, equality, and serialization behavior.
+- RFC-0005/S-03 Task Group 2 replaces submission knowledge, cancellation knowledge, and effective-fill alternatives
+  with direct generated sealed cases while preserving evidence, precedence, uncertainty, exact economics, modifier
+  order, conflict detail, exhaustive matching, structural equality, and fail-closed serialization.
+- RFC-0005/S-03 Task Group 3 converts field-valid evidence, command/source conflicts, ledgers, anomalies, observations,
+  and replay results to package-owned generated products, removes their forwarding constructors and manual equality,
+  retains computed accessors and fail-closed serialization, and leaves guarded states, commands, facts, identities,
+  refinements, non-empty wrappers, and external reconstruction under checked construction.
 
 ## Promotion Queue
 - none

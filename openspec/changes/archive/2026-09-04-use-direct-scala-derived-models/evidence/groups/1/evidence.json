@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 3,
+  "groupId": "1",
+  "checks": [
+    {
+      "name": "focused execution transition suites",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:execution-lifecycle%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fexecution%2FCommandStateSuite.scala#sha256:9b6db2367fd101a7ff0129293d2ca98d92e4a2380c9aefa8008d25b80a32ca28",
+        "file:execution-lifecycle%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fexecution%2FSourceFactSuite.scala#sha256:52af5d42aa5de1ba01f0344cc9bbd2e37af8e869ac0b7527a8d6084a78d9c36d",
+        "file:execution-lifecycle%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fexecution%2FExecutionStateSuite.scala#sha256:fd83e60bf07e76fb0f6675491aa7d831d96aeadbc211c7e08206f86ca543d59b"
+      ]
+    },
+    {
+      "name": "completed-artifact exhaustive Scala transition boundary",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fexecution-lifecycle-compiler%2Fpositive%2FExecutionAuthorityBoundaryClient.scala#sha256:e38b17763d72db075a1f52c86c1cdd1a0f43337cca2f8349247d69e75337cc80"
+      ]
+    },
+    {
+      "name": "formatting and zero-reflection policy",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:execution-lifecycle%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fexecution%2FCommands.scala#sha256:c3436de05c71cb1a5528b9d85b0126f391fa7613539a343e3d95fd5c53b97c87",
+        "file:execution-lifecycle%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fexecution%2FSourceEvidenceState.scala#sha256:ac39f29942ab0716e9098c0f31d8a0b4ec5a743d6108e91a6246b4c9b77a648f",
+        "file:execution-lifecycle%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fexecution%2FExecutionState.scala#sha256:79a1c304cabd8b12cac1ba58d25c3d11372e325c40395b5e2310bb138c84d1a9"
+      ]
+    }
+  ],
+  "automatedReview": {
+    "verdict": "pass",
+    "findings": []
+  },
+  "artifacts": [
+    "file:execution-lifecycle%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fexecution%2FCommands.scala#sha256:c3436de05c71cb1a5528b9d85b0126f391fa7613539a343e3d95fd5c53b97c87",
+    "file:execution-lifecycle%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fexecution%2FSourceEvidenceState.scala#sha256:ac39f29942ab0716e9098c0f31d8a0b4ec5a743d6108e91a6246b4c9b77a648f",
+    "file:execution-lifecycle%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fexecution%2FExecutionState.scala#sha256:79a1c304cabd8b12cac1ba58d25c3d11372e325c40395b5e2310bb138c84d1a9",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fexecution-lifecycle-compiler%2Fpositive%2FExecutionAuthorityBoundaryClient.scala#sha256:e38b17763d72db075a1f52c86c1cdd1a0f43337cca2f8349247d69e75337cc80"
+  ],
+  "summary": "Command, source-fact, and lifecycle transitions are exhaustive generated Scala sums; the lifecycle accepted-kind tag and manual alternative equality are gone, state/conflict/violation/work semantics and fail-closed serialization are preserved, 68 focused tests and 7 completed-artifact compiler tests pass, and automated review found no issues."
+}

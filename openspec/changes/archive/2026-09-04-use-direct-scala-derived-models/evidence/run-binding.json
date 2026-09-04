@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 3,
+  "changeName": "use-direct-scala-derived-models",
+  "runId": "run-b70ef36b-dc7b-4dae-a61b-12233adb5504",
+  "finalRevision": "f46c95751e6f72e45ee33881eb1705625b2228d9",
+  "planningRevision": "sha256:67c3337c629b415fdb804289dc8af3ef203b54f33de677930b87aad4706f6b6e",
+  "contract": {
+    "kind": "rfc-slice",
+    "deliveryRef": "RFC-0005-simplify-post-trust-boundary/S-03-use-direct-scala-derived-models",
+    "rfcId": "RFC-0005-simplify-post-trust-boundary",
+    "rfcDigest": "sha256:31336459ac68c4a188388bb58cf59fe8c84830a0b72aa66d29fdcff4f90657a3",
+    "acceptedCommit": "7f1d1ab9eb88d0912d3219920eacadea4d01aa2e",
+    "sliceId": "S-03-use-direct-scala-derived-models",
+    "sourcePath": "openspec/changes/use-direct-scala-derived-models/corgi/source.yaml",
+    "sourceDigest": "sha256:495368726ab7e6d992b882779e3d87f360ee51dc422efd00ceb7cae29dedba56",
+    "traceabilityPath": "openspec/changes/use-direct-scala-derived-models/corgi/traceability.yaml",
+    "traceabilityDigest": "sha256:4fdfcff5f49b669dd4c0a5bb9a960354f411c5d256c8f75059dcfe31d3e133db",
+    "acceptance": [
+      {
+        "id": "AC-008",
+        "evidence": "automated",
+        "taskGroups": [
+          "1",
+          "2"
+        ]
+      },
+      {
+        "id": "AC-009",
+        "evidence": "automated",
+        "taskGroups": [
+          "2",
+          "3"
+        ]
+      },
+      {
+        "id": "AC-010",
+        "evidence": "automated",
+        "taskGroups": [
+          "1",
+          "2",
+          "3"
+        ]
+      },
+      {
+        "id": "AC-011",
+        "evidence": "automated",
+        "taskGroups": [
+          "3"
+        ]
+      }
+    ],
+    "tracker": {
+      "provider": "github",
+      "idempotencyKey": "a437e35266598e9cd0dffb05ae9212d91a9ad92be63fcecd49c7e5a4ca795ceb",
+      "issue": {
+        "id": "42",
+        "url": "https://github.com/m2048ws/trading/issues/42"
+      }
+    }
+  },
+  "archiveIntentId": "archive-d8fa6f95-6a43-4b06-a209-46d6c520c4cd"
+}

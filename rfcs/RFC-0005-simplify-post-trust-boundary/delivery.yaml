@@ -1,6 +1,6 @@
 schemaVersion: 1
 rfcId: RFC-0005-simplify-post-trust-boundary
-revision: 5
+revision: 7
 slices:
   S-01-retire-trust-boundary-migration-scaffolding:
     status: archived
@@ -31,7 +31,19 @@ slices:
       commit: a977df576bf089a366930183c14f45029cf77a14
       evidenceManifest: sha256:fc98726449f5ed9c353d75b88b17d255c3c509f1c8d84be94eda66e5ee00e8c9
   S-03-use-direct-scala-derived-models:
-    status: unbound
+    status: archived
+    binding:
+      change: use-direct-scala-derived-models
+      sourceDigest: sha256:495368726ab7e6d992b882779e3d87f360ee51dc422efd00ceb7cae29dedba56
+      plannedAt: '2026-09-04T01:23:41.927Z'
+      issue:
+        provider: github
+        id: '42'
+        url: https://github.com/m2048ws/trading/issues/42
+    archive:
+      archivedAt: '2026-09-04T02:50:22.277Z'
+      commit: f46c95751e6f72e45ee33881eb1705625b2228d9
+      evidenceManifest: sha256:aa9b0dc3e278d955dd75f2edab6fd5d572f17f2754252b7e4cb6b345e9e80658
   S-04-use-scala-first-quantity-and-reference-data:
     status: unbound
   S-05-remove-java-api-compatibility:

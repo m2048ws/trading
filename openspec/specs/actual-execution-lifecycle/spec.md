@@ -148,6 +148,14 @@ lexicographically under owner-local orderings rather than encode composite keys 
 One lifecycle observation SHALL derive one effective-fill ledger and supply that same derivation to anomaly
 construction.
 
+Submission knowledge, cancellation knowledge, effective-fill classification, and source and command transitions SHALL
+be closed exhaustive Scala sums without parallel kind flags, optional case payloads, or hand-written per-alternative
+equality. Derived evidence, anomalies, ledgers, replay results, and observations SHALL use direct structural products
+where every field combination is valid and SHALL retain their public field information and structural equality.
+Commands, source facts, lifecycle identity, refinements, non-empty wrappers, and external reconstruction SHALL retain
+checked construction and typed failures wherever construction establishes a semantic predicate. Converted derived
+results MUST continue to reject Java object serialization.
+
 #### Scenario: Replay the same evidence repeatedly
 
 - **WHEN** the same normalized command and fact history is replayed from an empty lifecycle more than once
@@ -188,6 +196,20 @@ construction.
   unresolved references, cancellation races, and overfill anomalies
 - **THEN** anomaly construction consumes that observation's single effective-fill ledger and preserves the existing
   structural results
+
+#### Scenario: Exhaustively consume derived execution results
+
+- **WHEN** a completed-artifact Scala client matches submission, cancellation, effective-fill, source-transition, or
+  command-transition results
+- **THEN** every domain alternative is available as an exhaustive sum case with the same public field information and
+  structural equality as the derived result it replaces
+
+#### Scenario: Retain guarded inputs and fail-closed derived values
+
+- **WHEN** focused positive and negative tests construct commands, source facts, lifecycle identities, refinements,
+  non-empty wrappers, or external reconstructions and attempt Java object serialization of converted derived results
+- **THEN** semantic predicates still require their checked factories and typed failures, while every converted derived
+  result rejects serialization
 
 ### Requirement: Submission knowledge preserves uncertainty
 

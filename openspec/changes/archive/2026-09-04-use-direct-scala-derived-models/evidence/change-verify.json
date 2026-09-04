@@ -1,0 +1,89 @@
+{
+  "verdict": "pass",
+  "finalRevision": "f46c95751e6f72e45ee33881eb1705625b2228d9",
+  "planningRevision": "sha256:67c3337c629b415fdb804289dc8af3ef203b54f33de677930b87aad4706f6b6e",
+  "sourceDigest": "sha256:495368726ab7e6d992b882779e3d87f360ee51dc422efd00ceb7cae29dedba56",
+  "traceabilityDigest": "sha256:4fdfcff5f49b669dd4c0a5bb9a960354f411c5d256c8f75059dcfe31d3e133db",
+  "reportHash": "sha256:e5f2685ffdf361c4c65f27cd0f2ee6f8aa7905234039f0ef13de50cad3e35deb",
+  "checks": [
+    {
+      "name": "clean aggregate test and benchmark build",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:.github%2Fworkflows%2Fci.yml#sha256:6e3686b27b47db63179a273ee46b3483e18465626707fb18a5344860267f5d6c",
+        "file:build.sbt#sha256:790e4ae7fa4ab9334b36c0273bc4d44d02d59cac352b50f5f0aeaadc026f5db8"
+      ]
+    },
+    {
+      "name": "formatting and zero-reflection policy",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:tools%2Fcheck-in-process-reflection.sh#sha256:bca2729121ce2bde4dfe3e8db2af53d6129ea0db1162eaab0dd982d769ddf3d6",
+        "file:tools%2Ftest-check-in-process-reflection.sh#sha256:0679a80193d81a4ab8836387de8054644fd1569e9b4275506cb3171fdbce9510"
+      ]
+    },
+    {
+      "name": "strict planning and RFC traceability",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:openspec%2Fchanges%2Fuse-direct-scala-derived-models%2Fspecs%2Factual-execution-lifecycle%2Fspec.md#sha256:43b05d5c27629c67e1f0060b455bda0b69694eb9895ca2fda32f3d63f6cc234b",
+        "file:openspec%2Fchanges%2Fuse-direct-scala-derived-models%2Fcorgi%2Ftraceability.yaml#sha256:4fdfcff5f49b669dd4c0a5bb9a960354f411c5d256c8f75059dcfe31d3e133db"
+      ]
+    }
+  ],
+  "acceptance": [
+    {
+      "id": "AC-008",
+      "automated": "pass",
+      "evidenceRefs": [
+        "file:execution-lifecycle%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fexecution%2FCommands.scala#sha256:d91707cff41ee925dd7829b1bb0832411397b7609032d694547d54c5cd332e1c",
+        "file:execution-lifecycle%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fexecution%2FSourceEvidenceState.scala#sha256:5f7c5fecb64d226e990d93ad20ceb1e0fbaf2aaf1d2a19665f8da1d4c0bd2c1e",
+        "file:execution-lifecycle%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fexecution%2FSubmissionKnowledge.scala#sha256:77c378bc786f15b955ed19e6bc3b52229ab889f7b41ca8707484e7893da5e591",
+        "file:execution-lifecycle%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fexecution%2FCancellation.scala#sha256:8e41a05bbda8b3cbed41f6dc7b52ba33fb593b8cad91faec07ac4bdbeff8194e",
+        "file:execution-lifecycle%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fexecution%2FEffectiveFillLedger.scala#sha256:c6886d60f1781cc520b5fd6f34e94d426c11636907eb691f074520529a9534db",
+        "file:execution-lifecycle%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fexecution%2FExecutionState.scala#sha256:ff8f2a64f43d2c693e7e9697f121d9701745ea92402f05ddff130d6d33eb7205"
+      ]
+    },
+    {
+      "id": "AC-009",
+      "automated": "pass",
+      "evidenceRefs": [
+        "file:execution-lifecycle%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fexecution%2FSubmissionKnowledge.scala#sha256:77c378bc786f15b955ed19e6bc3b52229ab889f7b41ca8707484e7893da5e591",
+        "file:execution-lifecycle%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fexecution%2FCancellation.scala#sha256:8e41a05bbda8b3cbed41f6dc7b52ba33fb593b8cad91faec07ac4bdbeff8194e",
+        "file:execution-lifecycle%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fexecution%2FCommands.scala#sha256:d91707cff41ee925dd7829b1bb0832411397b7609032d694547d54c5cd332e1c",
+        "file:execution-lifecycle%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fexecution%2FSourceEvidenceState.scala#sha256:5f7c5fecb64d226e990d93ad20ceb1e0fbaf2aaf1d2a19665f8da1d4c0bd2c1e",
+        "file:execution-lifecycle%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fexecution%2FEffectiveFillLedger.scala#sha256:c6886d60f1781cc520b5fd6f34e94d426c11636907eb691f074520529a9534db",
+        "file:execution-lifecycle%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fexecution%2FExecutionState.scala#sha256:ff8f2a64f43d2c693e7e9697f121d9701745ea92402f05ddff130d6d33eb7205"
+      ]
+    },
+    {
+      "id": "AC-010",
+      "automated": "pass",
+      "evidenceRefs": [
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fexecution-lifecycle-compiler%2Fpositive%2FExecutionAuthorityBoundaryClient.scala#sha256:5371e4023bd1410338a92470a92dba843ebf1190884b817f49f01e6e2f5e5197",
+        "file:execution-lifecycle%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fexecution%2FCommandStateSuite.scala#sha256:473b111742d40ff2cc356347e31263ad19229e75a64c3c1c3d4de88f70f0d1a7",
+        "file:execution-lifecycle%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fexecution%2FSourceFactSuite.scala#sha256:498910d5f85e3efeb2bc5b2f5e3af86a5f4922f098a39c8c8334404377538422",
+        "file:execution-lifecycle%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fexecution%2FSubmissionKnowledgeSuite.scala#sha256:fa09dbd16b03f2a8b003bd8a20031682bfe52d79b60cb63a65681b69f6e63870",
+        "file:execution-lifecycle%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fexecution%2FCancellationSuite.scala#sha256:9ebf9573f20179c2c6d6c81630cfda6e7a7a817e816c0d2dd8085ff8969b7c11",
+        "file:execution-lifecycle%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fexecution%2FEffectiveFillLedgerSuite.scala#sha256:4fdebac83e6e2fe237f43179f69e2ed9360d225dec93863583bc30ad3d3cda16",
+        "file:execution-lifecycle%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fexecution%2FExecutionStateSuite.scala#sha256:bc756b946c9564325cfcc642ad6129a2ac5cefebd154e4945e543d748cf6add3"
+      ]
+    },
+    {
+      "id": "AC-011",
+      "automated": "pass",
+      "evidenceRefs": [
+        "file:execution-lifecycle%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fexecution%2FCommands.scala#sha256:d91707cff41ee925dd7829b1bb0832411397b7609032d694547d54c5cd332e1c",
+        "file:execution-lifecycle%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fexecution%2FSourceFacts.scala#sha256:f7c8ea3a31c08d8408568a3ecf1414944065068a9d48caf446063de6b9676354",
+        "file:execution-lifecycle%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fexecution%2FLifecycle.scala#sha256:9ccd2e3bf45259d33616bc7f0a5efa6580fb24d43b1d5ad27ba0075c06dea47a",
+        "file:execution-lifecycle%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fexecution%2FIdentity.scala#sha256:26465ddadb1457742cf1125a899ecb64365cb5ceb7bb69104af2e04097382563",
+        "file:execution-lifecycle%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fexecution%2FCommandStateSuite.scala#sha256:473b111742d40ff2cc356347e31263ad19229e75a64c3c1c3d4de88f70f0d1a7",
+        "file:execution-lifecycle%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fexecution%2FSourceFactSuite.scala#sha256:498910d5f85e3efeb2bc5b2f5e3af86a5f4922f098a39c8c8334404377538422",
+        "file:execution-lifecycle%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fexecution%2FExecutionIdentitySuite.scala#sha256:08f7d0cb9b5fe0d1cb4808675acfef54429fff89bcad848f7fab121c20d760fe",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fexecution-lifecycle-compiler%2Fnegative%2FEstablishedOwnerCannotImportExecution.scala#sha256:c01d1abcaf83b27bacf711fb30eb126b1832a1e0a1074e897d48b4797da66a3c",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fexecution-lifecycle-compiler%2Fnegative%2FExecutionLifecycleHasNoDownstream.scala#sha256:6c2ce12394ff392ffdad46db771a0189589d0b2dc0d7e710b546ad3be98e34ea"
+      ]
+    }
+  ],
+  "verifiedAt": "2026-09-04T01:53:01.000Z"
+}
