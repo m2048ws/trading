@@ -161,58 +161,93 @@ object AttributedPricePnl:
           GridHandle.reconcile(market.price.grid, instrument.priceGrid)
         )
 
-    val (changeViolationsReversed, validationVisits) =
-      changes.iterator.zipWithIndex.foldLeft((List.empty[AttributedPricePnlViolation], BigInt(0))):
-        case ((violations, visits), (change, index)) =>
-          val at      = (component: AttributedPricePnlComponent) => AttributedPricePnlLocation.Change(index, component)
-          val current =
+    val validationStart =
+      (List.empty[AttributedPricePnlViolation], List.empty[AttributedPricePnlViolation], BigInt(0))
+    val (changeViolationsReversed, positionViolationsReversed, validationVisits) =
+      changes.iterator.zipWithIndex.foldLeft(validationStart):
+        case ((violations, positionViolations, visits), (change, index)) =>
+          val at = (component: AttributedPricePnlComponent) => AttributedPricePnlLocation.Change(index, component)
+          val currentPositionViolations =
             instrumentMismatch(at(AttributedPricePnlComponent.Position), change.position.instrumentId) ++
               referenceMismatch(
                 at(AttributedPricePnlComponent.PositionGrid),
                 GridHandle.reconcile(change.position.grid, instrument.positionLotGrid)
-              ) ++
-              marketViolations(change.market, at)
-          (current.foldLeft(violations)((acc, violation) => violation :: acc), visits + 1)
-    val changeViolations = changeViolationsReversed.reverse.toVector
+              )
+          val current = currentPositionViolations ++ marketViolations(change.market, at)
+          (
+            current.foldLeft(violations)((acc, violation) => violation :: acc),
+            currentPositionViolations.foldLeft(positionViolations)((acc, violation) => violation :: acc),
+            visits + 1
+          )
+    val changeViolations   = changeViolationsReversed.reverse.toVector
+    val positionViolations = positionViolationsReversed.reverse.toVector
 
     val endpointReferenceViolations = endpoint match
       case PricePnlEndpoint.Flat           => Vector.empty
       case PricePnlEndpoint.Marked(market) =>
         marketViolations(market, component => AttributedPricePnlLocation.Endpoint(component))
 
-    AttributedPricePnlErrors.from(changeViolations ++ endpointReferenceViolations) match
-      case Some(errors) if changeViolations.nonEmpty => Left(errors)
-      case _                                         =>
-        val (endingCoordinate, positionVisits) =
-          changes.foldLeft((BigInt(0), BigInt(0))):
-            case ((total, visits), change) => (total + change.position.coordinate, visits + 1)
-        val endingPosition = PositionLots.fromCoordinate(instrument)(endingCoordinate)
+    val independentViolations = changeViolations ++ endpointReferenceViolations
+    AttributedPricePnlErrors.from(positionViolations) match
+      case Some(positionErrors) =>
+        // Market and endpoint-reference failures remain independently knowable even when position evidence is bad.
+        Left(AttributedPricePnlErrors.from(independentViolations).getOrElse(positionErrors))
+      case None =>
+        // Every position identity and retained grid was reconciled above. The immutable collection can therefore be
+        // strengthened once and folded through the position owner's lawful combination operation.
+        val positionStart: Either[AttributedPricePnlViolation, instrument.PositionLots] =
+          Right(PositionLots.flat(instrument))
+        val (endingPositionResult, positionVisits) =
+          changes.iterator.zipWithIndex.foldLeft((positionStart, BigInt(0))):
+            case ((Right(total), visits), (change, index)) =>
+              val position = change.position.asInstanceOf[instrument.PositionLots]
+              val combined = PositionLots
+                .combine(instrument)(total, position)
+                .left
+                .map:
+                  case PositionInstrumentMismatch(_, expected, supplied) =>
+                    AttributedPricePnlViolation.InstrumentMismatch(
+                      AttributedPricePnlLocation.Change(index, AttributedPricePnlComponent.Position),
+                      expected,
+                      supplied
+                    )
+              (combined, visits + 1)
+            case ((failure @ Left(_), visits), _) => (failure, visits)
 
-        val endpointViolations = endpoint match
-          case PricePnlEndpoint.Flat if endingPosition.coordinate != 0 =>
-            Vector(AttributedPricePnlViolation.NonFlatPositionRequiresMark(endingPosition.coordinate))
-          case PricePnlEndpoint.Marked(_) if endingPosition.coordinate == 0 =>
-            Vector(AttributedPricePnlViolation.FlatPositionRejectsMark)
-          case _ => Vector.empty
-
-        AttributedPricePnlErrors.from(endpointReferenceViolations ++ endpointViolations) match
-          case Some(errors) => Left(errors)
-          case None         =>
-            // Every element's identity and retained dimension/grid references were reconciled above. Vector is
-            // immutable, so the checked collection can be strengthened without another per-change traversal.
-            val checkedChanges = changes.asInstanceOf[Vector[instrument.AttributedPriceChange[A]]]
-            val checkedEndpoint: instrument.PricePnlEndpoint = endpoint match
-              case PricePnlEndpoint.Flat           => PricePnlEndpoint.Flat
-              case PricePnlEndpoint.Marked(market) =>
-                // The endpoint market passed the same complete reference reconciliation above.
-                PricePnlEndpoint.Marked(market.asInstanceOf[instrument.MarketState])
-            value(instrument)(
-              checkedChanges,
-              checkedEndpoint,
-              endingPosition,
-              validationVisits,
-              positionVisits
+        endingPositionResult match
+          case Left(combinationViolation) =>
+            Left(
+              AttributedPricePnlErrors
+                .from(independentViolations :+ combinationViolation)
+                .getOrElse(AttributedPricePnlErrors.one(combinationViolation))
             )
+          case Right(endingPosition) =>
+            val endpointViolations = endpoint match
+              case PricePnlEndpoint.Flat if endingPosition.coordinate != 0 =>
+                Vector(AttributedPricePnlViolation.NonFlatPositionRequiresMark(endingPosition.coordinate))
+              case PricePnlEndpoint.Marked(_) if endingPosition.coordinate == 0 =>
+                Vector(AttributedPricePnlViolation.FlatPositionRejectsMark)
+              case _ => Vector.empty
+
+            AttributedPricePnlErrors.from(independentViolations ++ endpointViolations) match
+              case Some(errors) => Left(errors)
+              case None         =>
+                // Every element's identity and retained dimension/grid references were reconciled above. Vector is
+                // immutable, so the checked collection can be strengthened without another per-change traversal.
+                val checkedChanges = changes.asInstanceOf[Vector[instrument.AttributedPriceChange[A]]]
+                val checkedEndpoint: instrument.PricePnlEndpoint = endpoint match
+                  case PricePnlEndpoint.Flat           => PricePnlEndpoint.Flat
+                  case PricePnlEndpoint.Marked(market) =>
+                    // The endpoint market passed the same complete reference reconciliation above.
+                    PricePnlEndpoint.Marked(market.asInstanceOf[instrument.MarketState])
+                value(instrument)(
+                  checkedChanges,
+                  checkedEndpoint,
+                  endingPosition,
+                  validationVisits,
+                  positionVisits
+                )
+        end match
     end match
   end calculate
 

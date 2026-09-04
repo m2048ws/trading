@@ -441,7 +441,15 @@ lazy val adversarialBoundary =
         val quantitiesDependencies = (quantities / Compile / externalDependencyClasspath).value.files
         val referenceDependencies  = (referenceData / Compile / externalDependencyClasspath).value.files
         val instrumentDependencies = (instrumentEconomics / Compile / externalDependencyClasspath).value.files
-        val compilerDependencies   = (Test / externalDependencyClasspath).value.files
+        val compilerDependencies   = (Test / externalDependencyClasspath).value.files.filter { file =>
+          val name = file.getName
+          name.startsWith("scala3-compiler_3-") ||
+          name.startsWith("scala3-interfaces-") ||
+          name.startsWith("tasty-core_3-") ||
+          name.startsWith("scala-asm-") ||
+          name.startsWith("compiler-interface-") ||
+          name.startsWith("util-interface-")
+        }
         (moduleProducts ++ quantitiesDependencies ++ referenceDependencies ++ instrumentDependencies ++
           compilerDependencies).distinct
       },

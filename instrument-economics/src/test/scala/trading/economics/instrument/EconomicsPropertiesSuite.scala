@@ -86,6 +86,44 @@ class EconomicsPropertiesSuite extends ScalaCheckSuite:
           result.settledContributions.map(_.attribution) == permutation.map(_.attribution)
     }
 
+  property("three-change cross-zero reversals remain total, exact, and permutation invariant"):
+    forAll { (firstRaw: Int, secondRaw: Int, shortRaw: Int, priceRaw: Int) =>
+      val first       = BigInt(firstRaw).abs + 1
+      val second      = BigInt(secondRaw).abs + 1
+      val shortEnding = BigInt(shortRaw).abs + 1
+      val reversal    = -(first + second + shortEnding)
+      val price       = BigInt(priceRaw).abs + 1
+      val mark        = fixture.quoteState(instrument, Rational(price + 3))
+      val changes     = Vector(
+        AttributedPriceChange(
+          "first-long",
+          PositionLots.fromCoordinate(instrument)(first),
+          fixture.quoteState(instrument, Rational(price))
+        ),
+        AttributedPriceChange(
+          "second-long",
+          PositionLots.fromCoordinate(instrument)(second),
+          fixture.quoteState(instrument, Rational(price + 1))
+        ),
+        AttributedPriceChange(
+          "reverse-short",
+          PositionLots.fromCoordinate(instrument)(reversal),
+          fixture.quoteState(instrument, Rational(price + 2))
+        )
+      )
+      val results = changes.permutations.map: permutation =>
+        permutation -> AttributedPricePnl.calculate(instrument)(permutation, PricePnlEndpoint.Marked(mark))
+      val allResults = results.toVector
+      val expected   = allResults.head._2.toOption.get
+
+      allResults.forall: (permutation, result) =>
+        result.exists: value =>
+          value.endingPosition.coordinate == -shortEnding &&
+            value.endingPosition == expected.endingPosition &&
+            value.pricePnl == expected.pricePnl &&
+            value.settledContributions.map(_.attribution) == permutation.map(_.attribution)
+    }
+
   property("settled execution cost is linear in same-price position changes"):
     forAll { (firstRaw: Int, secondRaw: Int, priceRaw: Int, markDeltaRaw: Int) =>
       val first     = BigInt(firstRaw).abs + 1

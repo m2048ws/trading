@@ -47,6 +47,32 @@ class AttributedPricePnlSuite extends FunSuite:
     assertEquals(result.endpoint, PricePnlEndpoint.Marked(mark))
     assertEquals(result.settledContributions.map(_.original), changes)
 
+  test("open-short and cross-zero reversal paths retain exact signed economics"):
+    val openShort = AttributedPricePnl
+      .calculate(instrument)(
+        Vector(change("open-short", -1000, 100)),
+        PricePnlEndpoint.Marked(fixture.quoteState(instrument, Rational(90)))
+      )
+      .toOption
+      .get
+    assertEquals(openShort.endingPosition.coordinate, BigInt(-1000))
+    assertEquals(openShort.settledContributions.map(_.quantity.coefficient), Vector(Rational(100)))
+    assertEquals(openShort.pricePnl.quantity.coefficient, Rational(10))
+
+    val reversal = AttributedPricePnl
+      .calculate(instrument)(
+        Vector(change("open-long", 1000, 100), change("reverse-short", -1500, 110)),
+        PricePnlEndpoint.Marked(fixture.quoteState(instrument, Rational(90)))
+      )
+      .toOption
+      .get
+    assertEquals(reversal.endingPosition.coordinate, BigInt(-500))
+    assertEquals(
+      reversal.settledContributions.map(_.quantity.coefficient),
+      Vector(Rational(-100), Rational(165))
+    )
+    assertEquals(reversal.pricePnl.quantity.coefficient, Rational(20))
+
   test("multi-change flat input sums exact execution cashflows"):
     val changes = Vector(
       change("open", 1000, 100),
@@ -163,8 +189,42 @@ class AttributedPricePnlSuite extends FunSuite:
       case _                                                  => false
     )
 
-  test("arbitrarily large coordinates remain exact without overflow or approximation"):
-    val coordinate = BigInt(2).pow(256)
+  test("market-only invalidity accumulates an independently knowable endpoint mismatch"):
+    val otherFixture                                                                           = new InstrumentFixtures
+    val changes: Vector[AttributedPriceChange[String, ? <: Dim, ? <: Dim, ? <: Dim, ? <: Dim]] = Vector(
+      AttributedPriceChange(
+        "open",
+        PositionLots.fromCoordinate(instrument)(1000),
+        otherFixture.quoteState(otherFixture.linear, Rational(100))
+      )
+    )
+    val violations = AttributedPricePnl
+      .calculate(instrument)(changes, PricePnlEndpoint.Flat)
+      .swap
+      .toOption
+      .get
+      .violations
+
+    assertEquals(
+      violations.map:
+        case AttributedPricePnlViolation.ReferenceMismatch(location, _)          => Left(location)
+        case AttributedPricePnlViolation.NonFlatPositionRequiresMark(coordinate) => Right(coordinate)
+        case other => fail(s"unexpected violation $other"),
+      Vector(
+        Left(AttributedPricePnlLocation.Change(0, AttributedPricePnlComponent.Base)),
+        Left(AttributedPricePnlLocation.Change(0, AttributedPricePnlComponent.Quote)),
+        Left(AttributedPricePnlLocation.Change(0, AttributedPricePnlComponent.Settlement)),
+        Left(AttributedPricePnlLocation.Change(0, AttributedPricePnlComponent.PriceGrid)),
+        Right(BigInt(1000))
+      )
+    )
+    assert(!violations.exists:
+      case AttributedPricePnlViolation.ValuationFailure(_, _) => true
+      case _                                                  => false
+    )
+
+  test("arbitrarily large signed coordinates remain exact without overflow or approximation"):
+    val coordinate = -BigInt(2).pow(256)
     val market     = fixture.quoteState(instrument, Rational(100))
     val result     = AttributedPricePnl
       .calculate(instrument)(

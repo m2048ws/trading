@@ -59,6 +59,27 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
   test("completed pure JAR compiles and runs attributed price PnL from a concrete core-only client"):
     val entries = coreCompilationClasspath.split(File.pathSeparator).map(Paths.get(_)).map(_.getFileName.toString)
     assert(entries.exists(_.startsWith("trading-instrument-economics_3-")))
+    val allowedPrefixes = List(
+      "trading-quantities_3-",
+      "trading-reference-data_3-",
+      "trading-instrument-economics_3-",
+      "scala3-library_3-",
+      "scala-library-",
+      "algebra_3-",
+      "cats-core_3-",
+      "cats-kernel_3-",
+      "scala3-compiler_3-",
+      "scala3-interfaces-",
+      "tasty-core_3-",
+      "scala-asm-",
+      "compiler-interface-",
+      "util-interface-"
+    )
+    val unexpected = entries.filterNot(entry => allowedPrefixes.exists(entry.startsWith))
+    assertEquals(unexpected.toList, Nil,
+      s"core compiler classpath retained non-owning dependencies: ${unexpected.mkString(", ")}")
+    List("cats-effect", "fs2", "jackson", "munit", "junit", "cats-mtl", "test-interface", "hamcrest")
+      .foreach(prefix => assert(!entries.exists(_.startsWith(prefix)), s"core compiler classpath retained $prefix"))
     List(
       "trading-order-model_3-",
       "trading-execution-lifecycle_3-",

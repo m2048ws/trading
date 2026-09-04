@@ -269,49 +269,33 @@ final class ScenarioValuationSuite extends FunSuite:
       )
     )
 
-  test("shared calculation failures retain existing slice and construction locations"):
-    val expected  = fixture.linear.identity.id
-    val supplied  = fixture.foreignIdentity.identity.id
-    val locations = Vector(
-      RoundTripPriceAttribution(RoundTripLeg.Entry, 2),
-      RoundTripPriceAttribution(RoundTripLeg.Exit, 3)
-    )
-    val marketFailure = AttributedPricePnlErrors.one(
-      AttributedPricePnlViolation.InstrumentMismatch(
-        AttributedPricePnlLocation.Change(1, AttributedPricePnlComponent.Market),
-        expected,
-        supplied
-      )
-    )
-    assertEquals(
-      ScenarioValuation.compatibleFailure(locations, marketFailure),
-      ScenarioValuationError.SliceValue(
-        RoundTripLeg.Exit,
-        3,
-        ValuationInstrumentMismatch("market", expected, supplied)
+  test("delegated failures retain the real round-trip leg and slice location"):
+    val instrument     = fixture.linear
+    val foreignLineage = new InstrumentFixtures
+    val foreignMarket  = foreignLineage
+      .quoteState(foreignLineage.linear, Rational(112))
+      .asInstanceOf[instrument.MarketState]
+    val trip = roundTrip(instrument)(
+      Side.Buy,
+      Vector(BigInt(10) -> fixture.quoteState(instrument, Rational(100))),
+      Vector(
+        BigInt(4) -> fixture.quoteState(instrument, Rational(110)),
+        BigInt(6) -> foreignMarket
       )
     )
 
-    val valuationFailure = ValuationInstrumentMismatch("market", expected, supplied)
     assertEquals(
-      ScenarioValuation.compatibleFailure(
-        locations,
-        AttributedPricePnlErrors.one(
-          AttributedPricePnlViolation.ValuationFailure(
-            AttributedPricePnlLocation.Change(0, AttributedPricePnlComponent.Value),
-            valuationFailure
+      ScenarioValuation.pricePnl(instrument)(trip),
+      Left(
+        ScenarioValuationError.SliceValue(
+          RoundTripLeg.Exit,
+          1,
+          ValuationInstrumentMismatch(
+            "market.base.reference",
+            instrument.identity.id,
+            foreignLineage.linear.identity.id
           )
         )
-      ),
-      ScenarioValuationError.SliceValue(RoundTripLeg.Entry, 2, valuationFailure)
-    )
-
-    val construction = ValuationInstrumentMismatch("position", expected, supplied)
-    assertEquals(
-      ScenarioValuation.compatibleFailure(
-        locations,
-        AttributedPricePnlErrors.one(AttributedPricePnlViolation.PricePnlConstruction(construction))
-      ),
-      ScenarioValuationError.PricePnlConstruction(construction)
+      )
     )
 end ScenarioValuationSuite

@@ -68,6 +68,17 @@ object ScenarioValuationClient:
     .get
   private val result = ScenarioValuation.pricePnl(instrument)(trip).toOption.get
 
+  private def describe(error: ScenarioValuationError): String =
+    error match
+      case ScenarioValuationError.InstrumentMismatch(_, _)     => "instrument"
+      case ScenarioValuationError.SlicePosition(_, _, _)       => "position"
+      case ScenarioValuationError.SliceValue(_, _, _)          => "value"
+      case ScenarioValuationError.PricePnlConstruction(_)      => "construction"
+
   assert(result.instrumentId == instrument.identity.id)
   assert(result.quantity.coefficient == Rational(2))
+  private val characterizedError = ScenarioValuationError.PricePnlConstruction(
+    ValuationInstrumentMismatch("fixture", instrument.identity.id, instrument.identity.id)
+  )
+  assert(describe(characterizedError) == "construction")
 end ScenarioValuationClient

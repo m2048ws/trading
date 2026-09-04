@@ -14,23 +14,23 @@ updated: 2026-09-04
 - **Issue**: 48 https://github.com/m2048ws/trading/issues/48
 - **Change**: generalize-attributed-price-pnl
 - **Worktree**: /Users/m/src/money/.worktrees/generalize-attributed-price-pnl
-- **Phase at Checkpoint**: planning_ready
+- **Phase at Checkpoint**: awaiting_verify
 - **Task Group at Checkpoint**: 4
-- **Observed Run Revision**: none
-- **Last Verified HEAD**: 19eb99b65b8b3583eef9966ec5cb0ce4742eeef0
+- **Observed Run Revision**: 2
+- **Last Verified HEAD**: 2ed37e7f663bdb735c2291502ec2e1e2876706d3
 
 ## Next Action
-- Start Apply for `generalize-attributed-price-pnl` Task Group 4.
+- Run canonical Corgi Verify for `generalize-attributed-price-pnl` with a whole-change AC report.
 
 ## Blockers
 - none
 
 ## Uncommitted Work
-- Task Group 3 proves a completed instrument-economics artifact exposes the public attributed price-PnL calculation,
-  exact contributions, honest endpoint, typed failure matching, and fail-closed serialization without order,
-  execution, scenario, campaign, fee, risk, application, codec, or runtime ownership leakage. The exact configured CI
-  gate passes on Temurin JDK 25.0.4.1 with formatting, all 1,054 tests, and benchmark compilation green; both
-  reflection-policy guards pass and the dependency graph is unchanged.
+- Task Group 4 repairs staged validation so market-only failures accumulate independently knowable endpoint mismatches,
+  derives ending exposure through lawful `PositionLots.combine`, restores the four-case scenario valuation error
+  surface with native leg/slice projection, proves signed and cross-zero exactness, and makes the completed core
+  compiler classpath hermetic. Focused suites, both reflection guards, formatting, the clean JDK-25 aggregate, and
+  benchmark compilation pass.
 
 ## Discoveries
 - No active Corgi Run Contract or OpenSpec Change exists on primary `main`.
@@ -111,6 +111,10 @@ updated: 2026-09-04
 - RFC-0006/S-01 Task Group 2 delegates round-trip price economics to that shared calculation, preserves public failure
   semantics and stable entry/exit attribution, and retains exact single- and multi-slice long, short, settlement, fee,
   and net-PnL behavior under 16 scenario and 39 fee-policy tests.
+- RFC-0006/S-01 Task Group 3 proves the completed instrument-economics artifact exposes attributed price PnL without
+  reverse ownership leakage and passes the configured clean JDK-25 repository gate.
+- RFC-0006/S-01 Task Group 4 repairs independently knowable validation accumulation, lawful position combination,
+  scenario error compatibility and location projection, signed exactness evidence, and the core compiler classpath.
 
 ## Promotion Queue
 - none
