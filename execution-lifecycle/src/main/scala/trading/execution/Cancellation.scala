@@ -4,36 +4,15 @@ import trading.economics.instrument.PositionLots
 import trading.order.Side
 import trading.quantity.Dim
 import trading.quantity.JavaSerializationUnsupported
-final class CancellationEvidence[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
-  val issuedRequests: Set[CancelOrderCommand[D, B, Q]],
-  val reportedRequests: Set[CancelOrderCommand[D, B, Q]],
-  val referencedSubmissions: Set[SubmitOrderCommand[D, B, Q]],
-  val reportedConfirmations: Set[CancellationEffective[D, B, Q]],
-  val authoritativeConfirmations: Set[CancellationEffective[D, B, Q]],
-  val commandConflicts: Set[CommandConflict[D, B, Q]],
-  val sourceConflicts: Set[SourceFactConflict[D, B, Q]])
-  extends JavaSerializationUnsupported:
-
-  override def equals(other: Any): Boolean = other match
-    case that: CancellationEvidence[?, ?, ?] =>
-      issuedRequests == that.issuedRequests && reportedRequests == that.reportedRequests &&
-      referencedSubmissions == that.referencedSubmissions &&
-      reportedConfirmations == that.reportedConfirmations &&
-      authoritativeConfirmations == that.authoritativeConfirmations &&
-      commandConflicts == that.commandConflicts && sourceConflicts == that.sourceConflicts
-    case _ => false
-
-  override def hashCode(): Int =
-    (
-      issuedRequests,
-      reportedRequests,
-      referencedSubmissions,
-      reportedConfirmations,
-      authoritativeConfirmations,
-      commandConflicts,
-      sourceConflicts
-    ).hashCode
-end CancellationEvidence
+final case class CancellationEvidence[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
+  issuedRequests: Set[CancelOrderCommand[D, B, Q]],
+  reportedRequests: Set[CancelOrderCommand[D, B, Q]],
+  referencedSubmissions: Set[SubmitOrderCommand[D, B, Q]],
+  reportedConfirmations: Set[CancellationEffective[D, B, Q]],
+  authoritativeConfirmations: Set[CancellationEffective[D, B, Q]],
+  commandConflicts: Set[CommandConflict[D, B, Q]],
+  sourceConflicts: Set[SourceFactConflict[D, B, Q]])
+  extends JavaSerializationUnsupported
 
 sealed trait CancellationKnowledge[D <: Dim, B <: Dim, Q <: Dim] extends JavaSerializationUnsupported:
   def evidence: CancellationEvidence[D, B, Q]
@@ -51,25 +30,6 @@ final case class CancellationConflicted[D <: Dim, B <: Dim, Q <: Dim] private[ex
   extends CancellationKnowledge[D, B, Q]
 
 object CancellationKnowledge:
-  private def constructEvidence[D <: Dim, B <: Dim, Q <: Dim](
-    issuedRequests: Set[CancelOrderCommand[D, B, Q]],
-    reportedRequests: Set[CancelOrderCommand[D, B, Q]],
-    referencedSubmissions: Set[SubmitOrderCommand[D, B, Q]],
-    reportedConfirmations: Set[CancellationEffective[D, B, Q]],
-    authoritativeConfirmations: Set[CancellationEffective[D, B, Q]],
-    commandConflicts: Set[CommandConflict[D, B, Q]],
-    sourceConflicts: Set[SourceFactConflict[D, B, Q]]
-  ): CancellationEvidence[D, B, Q] =
-    new CancellationEvidence(
-      issuedRequests,
-      reportedRequests,
-      referencedSubmissions,
-      reportedConfirmations,
-      authoritativeConfirmations,
-      commandConflicts,
-      sourceConflicts
-    )
-
   private[execution] def derive[D <: Dim, B <: Dim, Q <: Dim](
     state: ExecutionState[D, B, Q]
   ): Option[CancellationKnowledge[D, B, Q]] =
@@ -96,7 +56,7 @@ object CancellationKnowledge:
     val referencedSubmissions = reportedRequests.flatMap: request =>
       state.commands.issuedCommands.get(request.originalSubmitCommandId).collect:
         case value: SubmitOrderCommand[D, B, Q] => value
-    val evidence = constructEvidence(
+    val evidence = CancellationEvidence(
       issuedRequests,
       reportedRequests,
       referencedSubmissions,
@@ -125,50 +85,29 @@ object CancellationKnowledge:
   private def isCancellation(value: SourceFact[?, ?, ?]): Boolean =
     value.isInstanceOf[CancellationEffective[?, ?, ?]]
 end CancellationKnowledge
-final class PostCancellationFillAnomaly[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
-  val effectiveFill: ActiveEffectiveFill[D, B, Q],
-  val priorCancellations: Vector[CancellationEffective[D, B, Q]],
-  val exactExposure: PositionLots[D])
+final case class PostCancellationFillAnomaly[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
+  effectiveFill: ActiveEffectiveFill[D, B, Q],
+  priorCancellations: Vector[CancellationEffective[D, B, Q]],
+  exactExposure: PositionLots[D])
   extends JavaSerializationUnsupported:
 
   val fillId: QualifiedFillId = effectiveFill.original.fillId
 
-  override def equals(other: Any): Boolean = other match
-    case that: PostCancellationFillAnomaly[?, ?, ?] =>
-      effectiveFill == that.effectiveFill && priorCancellations == that.priorCancellations &&
-      exactExposure == that.exactExposure
-    case _ => false
-  override def hashCode(): Int = (effectiveFill, priorCancellations, exactExposure).hashCode
-final class ExecutionAnomalies[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
-  val overfill: Option[OverfillAnomaly[D]],
-  val postCancellationFills: Vector[PostCancellationFillAnomaly[D, B, Q]],
-  val sourceEventConflicts: Set[SourceFactConflict[D, B, Q]],
-  val fillIdentityConflicts: Set[FillIdentityConflict[D, B, Q]],
-  val streamPositionConflicts: Map[QualifiedStreamPosition, StreamPositionConflict[D, B, Q]])
+final case class ExecutionAnomalies[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
+  overfill: Option[OverfillAnomaly[D]],
+  postCancellationFills: Vector[PostCancellationFillAnomaly[D, B, Q]],
+  sourceEventConflicts: Set[SourceFactConflict[D, B, Q]],
+  fillIdentityConflicts: Set[FillIdentityConflict[D, B, Q]],
+  streamPositionConflicts: Map[QualifiedStreamPosition, StreamPositionConflict[D, B, Q]])
   extends JavaSerializationUnsupported:
 
   def isEmpty: Boolean =
     overfill.isEmpty && postCancellationFills.isEmpty && sourceEventConflicts.isEmpty &&
       fillIdentityConflicts.isEmpty && streamPositionConflicts.isEmpty
 
-  override def equals(other: Any): Boolean = other match
-    case that: ExecutionAnomalies[?, ?, ?] =>
-      overfill == that.overfill && postCancellationFills == that.postCancellationFills &&
-      sourceEventConflicts == that.sourceEventConflicts && fillIdentityConflicts == that.fillIdentityConflicts &&
-      streamPositionConflicts == that.streamPositionConflicts
-    case _ => false
-  override def hashCode(): Int =
-    (overfill, postCancellationFills, sourceEventConflicts, fillIdentityConflicts, streamPositionConflicts).hashCode
 end ExecutionAnomalies
 
 object ExecutionAnomalies:
-  private def postCancellation[D <: Dim, B <: Dim, Q <: Dim](
-    effectiveFill: ActiveEffectiveFill[D, B, Q],
-    priorCancellations: Vector[CancellationEffective[D, B, Q]],
-    exactExposure: PositionLots[D]
-  ): PostCancellationFillAnomaly[D, B, Q] =
-    new PostCancellationFillAnomaly(effectiveFill, priorCancellations, exactExposure)
-
   private[execution] def derive[D <: Dim, B <: Dim, Q <: Dim](
     state: ExecutionState[D, B, Q],
     ledger: EffectiveFillLedger[D, B, Q]
@@ -197,7 +136,7 @@ object ExecutionAnomalies:
                 else ExecutionOrderings.compareCancellation(left._2, right._2) < 0
               .map(_._2)
             Option.when(prior.nonEmpty):
-              postCancellation(
+              PostCancellationFillAnomaly(
                 active,
                 prior,
                 position(state.lifecycle, active.effectiveLots.count.unrefined)
@@ -206,7 +145,7 @@ object ExecutionAnomalies:
       case _ => Vector.empty
     .sorted(using ExecutionOrderings.postCancellationFillAnomaly)
 
-    new ExecutionAnomalies(
+    ExecutionAnomalies(
       ledger.overfill,
       postCancellationFills,
       state.source.eventConflicts.toSet,

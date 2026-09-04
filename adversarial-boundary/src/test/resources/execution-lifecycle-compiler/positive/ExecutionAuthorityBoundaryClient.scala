@@ -170,6 +170,8 @@ object ExecutionAuthorityBoundaryClient:
       case _: LifecycleRejected[?, ?, ?]    => "rejected"
 
     assert(transitionKinds == Vector.fill(4)("applied"))
+    assert(replay.isInstanceOf[Product])
+    assert(observation.isInstanceOf[Product])
     assert(observation.issuedCommands.keySet == Set(submit.commandId, cancel.commandId))
     assert(observation.fills.keySet == Set(fillId))
     assert(observation.commandConflicts.isEmpty)
@@ -185,11 +187,14 @@ object ExecutionAuthorityBoundaryClient:
     assert(effectiveFillKind == "active")
     assert(observation.effectiveFillLedger.knownExposure == lifecycle.initialPositionChange)
     assert(observation.effectiveFillLedger.overfill.isEmpty)
+    assert(observation.effectiveFillLedger.isInstanceOf[Product])
     val cancellationKind = observation.cancellationKnowledge.get match
       case _: CancellationRequested[?, ?, ?]  => "requested"
       case _: CancellationConfirmed[?, ?, ?]  => "confirmed"
       case _: CancellationConflicted[?, ?, ?] => "conflicted"
     assert(cancellationKind == "confirmed")
+    assert(observation.cancellationKnowledge.get.evidence.isInstanceOf[Product])
+    assert(observation.anomalies.isInstanceOf[Product])
     assert(observation.anomalies.isEmpty)
     val submissionKind = observation.submissionKnowledge.get match
       case _: IssuedPendingSubmission[?, ?, ?]         => "pending"
@@ -201,6 +206,7 @@ object ExecutionAuthorityBoundaryClient:
       case _: AuthoritativelyAbsentSubmission[?, ?, ?] => "absent"
       case _: ConflictingSubmission[?, ?, ?]           => "conflicting"
     assert(submissionKind == "execution-proven")
+    assert(observation.submissionKnowledge.get.evidence.isInstanceOf[Product])
     val successorLifecycle = required(
       ExecutionLifecycle.create(instrument)(
         order,

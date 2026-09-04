@@ -29,23 +29,14 @@ object SubmissionConflicts:
 
   private[execution] def from(values: Vector[SubmissionConflictKind]): Option[SubmissionConflicts] =
     Option.when(values.nonEmpty)(construct(values.distinct))
-final class SubmissionEvidence[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
-  val submitCommands: Set[SubmitOrderCommand[D, B, Q]],
-  val dispatchEvidence: Set[DispatchEvidence[D, B, Q]],
-  val acceptances: Set[OrderAccepted[D, B, Q]],
-  val rejections: Set[OrderRejected[D, B, Q]],
-  val executionFills: Set[ExecutionFill[D, B, Q]],
-  val sourceAbsences: Set[SourceOrderAbsent[D, B, Q]])
-  extends JavaSerializationUnsupported:
-
-  override def equals(other: Any): Boolean = other match
-    case that: SubmissionEvidence[?, ?, ?] =>
-      submitCommands == that.submitCommands && dispatchEvidence == that.dispatchEvidence &&
-      acceptances == that.acceptances && rejections == that.rejections &&
-      executionFills == that.executionFills && sourceAbsences == that.sourceAbsences
-    case _ => false
-  override def hashCode(): Int =
-    (submitCommands, dispatchEvidence, acceptances, rejections, executionFills, sourceAbsences).hashCode
+final case class SubmissionEvidence[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
+  submitCommands: Set[SubmitOrderCommand[D, B, Q]],
+  dispatchEvidence: Set[DispatchEvidence[D, B, Q]],
+  acceptances: Set[OrderAccepted[D, B, Q]],
+  rejections: Set[OrderRejected[D, B, Q]],
+  executionFills: Set[ExecutionFill[D, B, Q]],
+  sourceAbsences: Set[SourceOrderAbsent[D, B, Q]])
+  extends JavaSerializationUnsupported
 
 sealed trait SubmissionKnowledge[D <: Dim, B <: Dim, Q <: Dim] extends JavaSerializationUnsupported:
   def evidence: SubmissionEvidence[D, B, Q]
@@ -84,16 +75,6 @@ final case class ConflictingSubmission[D <: Dim, B <: Dim, Q <: Dim] private[exe
   extends SubmissionKnowledge[D, B, Q]
 
 object SubmissionKnowledge:
-  private def constructEvidence[D <: Dim, B <: Dim, Q <: Dim](
-    submits: Set[SubmitOrderCommand[D, B, Q]],
-    dispatch: Set[DispatchEvidence[D, B, Q]],
-    acceptances: Set[OrderAccepted[D, B, Q]],
-    rejections: Set[OrderRejected[D, B, Q]],
-    fills: Set[ExecutionFill[D, B, Q]],
-    absences: Set[SourceOrderAbsent[D, B, Q]]
-  ): SubmissionEvidence[D, B, Q] =
-    new SubmissionEvidence(submits, dispatch, acceptances, rejections, fills, absences)
-
   private[execution] def derive[D <: Dim, B <: Dim, Q <: Dim](
     state: ExecutionState[D, B, Q],
     authoritativeStreams: Set[QualifiedSourceStreamId]
@@ -115,7 +96,7 @@ object SubmissionKnowledge:
       case value: ExecutionFill[D, B, Q] => value
     val absences = sourceEvidence.collect:
       case value: SourceOrderAbsent[D, B, Q] => value
-    val evidence = constructEvidence(submits, dispatch, acceptances, rejections, fills, absences)
+    val evidence = SubmissionEvidence(submits, dispatch, acceptances, rejections, fills, absences)
 
     val proven               = dispatch.exists(_.isInstanceOf[ProvenNotDispatched[?, ?, ?]])
     val indeterminate        = dispatch.exists(_.isInstanceOf[IndeterminateDispatch[?, ?, ?]])

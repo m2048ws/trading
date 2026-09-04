@@ -14,20 +14,21 @@ updated: 2026-09-04
 - **Issue**: 42 https://github.com/m2048ws/trading/issues/42
 - **Change**: use-direct-scala-derived-models
 - **Worktree**: /Users/m/src/money/.worktrees/use-direct-scala-derived-models
-- **Phase at Checkpoint**: applying
-- **Task Group at Checkpoint**: 2
-- **Observed Run Revision**: 3
-- **Last Verified HEAD**: 07ecbaba79ab1092bf73514268054f477597d183
+- **Phase at Checkpoint**: awaiting_verify
+- **Task Group at Checkpoint**: 3
+- **Observed Run Revision**: 4
+- **Last Verified HEAD**: 60b585f8ac4a3a92941bd4f47bca5a643b28fc6e
 
 ## Next Action
-- Commit and acknowledge Task Group 2, then implement the CLI-selected Task Group 3.
+- Commit and acknowledge Task Group 3, then run canonical whole-change Verify.
 
 ## Blockers
 - none
 
 ## Uncommitted Work
-- Task Group 2 replaces submission knowledge, cancellation knowledge, and effective-fill alternatives with direct
-  generated Scala sum cases; 68 focused lifecycle tests, 7 completed-artifact compiler tests, and formatting pass.
+- Task Group 3 converts field-valid evidence, conflict, ledger, anomaly, observation, and replay values to direct
+  package-owned Scala products; the clean 1,047-test aggregate, benchmark compilation, formatting, strict planning
+  validation, and reflection guard/regression all pass.
 
 ## Discoveries
 - No active Corgi Run Contract or OpenSpec Change exists on primary `main`.
@@ -79,6 +80,10 @@ updated: 2026-09-04
 - RFC-0005/S-03 Task Group 2 replaces submission knowledge, cancellation knowledge, and effective-fill alternatives
   with direct generated sealed cases while preserving evidence, precedence, uncertainty, exact economics, modifier
   order, conflict detail, exhaustive matching, structural equality, and fail-closed serialization.
+- RFC-0005/S-03 Task Group 3 converts field-valid evidence, command/source conflicts, ledgers, anomalies, observations,
+  and replay results to package-owned generated products, removes their forwarding constructors and manual equality,
+  retains computed accessors and fail-closed serialization, and leaves guarded states, commands, facts, identities,
+  refinements, non-empty wrappers, and external reconstruction under checked construction.
 
 ## Promotion Queue
 - none

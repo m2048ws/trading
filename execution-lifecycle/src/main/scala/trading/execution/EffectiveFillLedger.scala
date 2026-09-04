@@ -68,19 +68,12 @@ final case class OverfillAnomaly[D <: Dim](
   excessExposure: PositionLots[D])
   extends JavaSerializationUnsupported
 
-final class EffectiveFillLedger[D <: Dim, B <: Dim, Q <: Dim] private (
-  val byFillId: Map[QualifiedFillId, EffectiveFill[D, B, Q]],
-  val knownExposure: PositionLots[D],
-  val overfill: Option[OverfillAnomaly[D]],
-  val unresolvedReferences: Map[QualifiedFillId, Vector[UnresolvedFillReference[D, B, Q]]])
-  extends JavaSerializationUnsupported:
-
-  override def equals(other: Any): Boolean = other match
-    case that: EffectiveFillLedger[?, ?, ?] =>
-      byFillId == that.byFillId && knownExposure == that.knownExposure &&
-      overfill == that.overfill && unresolvedReferences == that.unresolvedReferences
-    case _ => false
-  override def hashCode(): Int = (byFillId, knownExposure, overfill, unresolvedReferences).hashCode
+final case class EffectiveFillLedger[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
+  byFillId: Map[QualifiedFillId, EffectiveFill[D, B, Q]],
+  knownExposure: PositionLots[D],
+  overfill: Option[OverfillAnomaly[D]],
+  unresolvedReferences: Map[QualifiedFillId, Vector[UnresolvedFillReference[D, B, Q]]])
+  extends JavaSerializationUnsupported
 
 object EffectiveFillLedger:
   private[execution] def derive[D <: Dim, B <: Dim, Q <: Dim](
@@ -123,7 +116,7 @@ object EffectiveFillLedger:
     val overfill = Option.when(excess > 0):
       OverfillAnomaly(state.lifecycle.orderedLots, exposure, position(state.lifecycle, excess))
 
-    new EffectiveFillLedger(effective, exposure, overfill, state.source.unresolvedFillReferences)
+    EffectiveFillLedger(effective, exposure, overfill, state.source.unresolvedFillReferences)
   end derive
 
   private def resolve[D <: Dim, B <: Dim, Q <: Dim](

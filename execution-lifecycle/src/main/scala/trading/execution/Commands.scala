@@ -187,19 +187,12 @@ object IndeterminateDispatch:
     if submit == null then
       Left(CommandViolations.one(MissingCommandValue(CommandViolationLocation.OriginalSubmit)))
     else Right(construct(submit))
-final class CommandConflict[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
-  val original: ExecutionCommand[D, B, Q],
-  val conflicting: ExecutionCommand[D, B, Q])
+final case class CommandConflict[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
+  original: ExecutionCommand[D, B, Q],
+  conflicting: ExecutionCommand[D, B, Q])
   extends JavaSerializationUnsupported:
 
   val commandId: ApplicationCommandId = original.commandId
-
-  override def equals(other: Any): Boolean = other match
-    case that: CommandConflict[?, ?, ?] =>
-      original == that.original && conflicting == that.conflicting
-    case _ => false
-
-  override def hashCode(): Int = (original, conflicting).hashCode
 
 sealed trait CommandTransition[D <: Dim, B <: Dim, Q <: Dim] extends JavaSerializationUnsupported:
   def state: CommandState[D, B, Q]
@@ -259,12 +252,6 @@ object CommandState:
   ): CommandState[D, B, Q] =
     new CommandState(lifecycle, issuedCommands, dispatchKnowledge, conflicts, cancellationRequests)
 
-  private def constructConflict[D <: Dim, B <: Dim, Q <: Dim](
-    original: ExecutionCommand[D, B, Q],
-    conflicting: ExecutionCommand[D, B, Q]
-  ): CommandConflict[D, B, Q] =
-    new CommandConflict(original, conflicting)
-
   def initial[D <: Dim, B <: Dim, Q <: Dim](
     lifecycle: ExecutionLifecycle[D, B, Q]
   ): Either[CommandViolations, CommandState[D, B, Q]] =
@@ -309,7 +296,7 @@ object CommandState:
         case Some(existing) if existing == command =>
           IdempotentCommandTransition(state)
         case Some(existing) =>
-          val conflict = constructConflict(existing, command)
+          val conflict = CommandConflict(existing, command)
           val retained =
             if state.conflicts.contains(conflict) then state.conflicts else state.conflicts :+ conflict
           ConflictingCommandTransition(

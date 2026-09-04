@@ -245,6 +245,9 @@ final class SourceFactSuite extends ScalaCheckSuite:
     assertEquals(third.state.fillsById(original.fillId), original)
     assertEquals(third.state.fillConflicts.size, 1)
     assertEquals(third.state.fillConflicts.head.conflicting, conflict)
+    assertEquals(third.state.fillConflicts.head.productElementNames.toVector, Vector("original", "conflicting"))
+    assertEquals(third.state.fillConflicts.head.copy(), third.state.fillConflicts.head)
+    assertSerializationRejected(third.state.fillConflicts.head)
 
   test("same source-event identity with different content retains a typed conflict and preserves the original"):
     val nativeEvent = event(target, "event")
@@ -274,6 +277,8 @@ final class SourceFactSuite extends ScalaCheckSuite:
     assertEquals(conflicted.state.factsByEvent(nativeEvent), accepted)
     assertEquals(conflicted.state.eventConflicts.size, 1)
     assertEquals(conflicted.state.eventConflicts.head.conflicting, rejected)
+    assertEquals(conflicted.state.eventConflicts.head.copy(), conflicted.state.eventConflicts.head)
+    assertSerializationRejected(conflicted.state.eventConflicts.head)
 
   test("source/account qualification keeps equal native fill identity distinct and rejects foreign scope"):
     val foreignTarget = executionTarget("other-source", "other-account")
@@ -354,6 +359,8 @@ final class SourceFactSuite extends ScalaCheckSuite:
     assert(second.classifications.contains(SourceFactClassification.ConflictingStreamPosition))
     assertEquals(second.state.positionClaimants(atFive), Vector(accepted, executionFill))
     assertEquals(second.state.positionConflicts(atFive).claimants, Vector(accepted, executionFill))
+    assertEquals(second.state.positionConflicts(atFive).copy(), second.state.positionConflicts(atFive))
+    assertSerializationRejected(second.state.positionConflicts(atFive))
 
   test("correction and bust arriving before their fill remain unresolved until the target is retained"):
     val targetFill = fill("fill", "fill", 2)
@@ -381,6 +388,7 @@ final class SourceFactSuite extends ScalaCheckSuite:
     val busted    = recorded(corrected.state.record(bust))
 
     assertEquals(busted.state.unresolvedFillReferences(targetFill.fillId).map(_.modifier), Vector(correction, bust))
+    assert(busted.state.unresolvedFillReferences(targetFill.fillId).forall(_.isInstanceOf[Product]))
     val resolved = recorded(busted.state.record(targetFill))
     assert(!resolved.state.unresolvedFillReferences.contains(targetFill.fillId))
     assertEquals(resolved.state.factsByEvent.values.toSet, Set(correction, bust, targetFill))

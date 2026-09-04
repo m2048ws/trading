@@ -353,6 +353,11 @@ final class SubmissionKnowledgeSuite extends ScalaCheckSuite:
     val command = submit()
     val value   = knowledge(issued(command))
 
+    assertEquals(value.evidence.copy(), value.evidence)
+    assertEquals(
+      value.evidence.productElementNames.toVector,
+      Vector("submitCommands", "dispatchEvidence", "acceptances", "rejections", "executionFills", "sourceAbsences")
+    )
     List[JavaSerializationUnsupported](value, value.evidence).foreach(assertSerializationRejected)
 
 end SubmissionKnowledgeSuite

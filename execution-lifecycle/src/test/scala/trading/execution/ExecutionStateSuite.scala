@@ -341,6 +341,11 @@ final class ExecutionStateSuite extends ScalaCheckSuite:
     val replay      = required(ExecutionState.replay(lifecycle)(Vector.empty, Vector.empty, Vector(original)))
     val observation = transition.state.observation
 
+    assertEquals(replay.copy(), replay)
+    assertEquals(replay.productElementNames.toVector, Vector("state", "rejections"))
+    assertEquals(observation.copy(), observation)
+    assertEquals(observation.productElementNames.toVector.head, "lifecycle")
+    assertEquals(observation.productElementNames.toVector.last, "diagnostics")
     val values: List[JavaSerializationUnsupported] = List(
       transition.state,
       transition,

@@ -361,6 +361,10 @@ final class CancellationSuite extends ScalaCheckSuite:
     )
     assertEquals(first, replayed)
     assertEquals(first.hashCode, replayed.hashCode)
+    assertEquals(first.cancellationKnowledge.get.evidence.copy(), first.cancellationKnowledge.get.evidence)
+    assertEquals(first.anomalies.copy(), first.anomalies)
+    assertEquals(first.anomalies.postCancellationFills.head.copy(), first.anomalies.postCancellationFills.head)
+    assertEquals(first.anomalies.postCancellationFills.head.fillId, postFill.fillId)
     val values = List[JavaSerializationUnsupported](
       first.cancellationKnowledge.get,
       first.cancellationKnowledge.get.evidence,

@@ -102,63 +102,25 @@ object LifecycleDiagnostics:
   private[execution] def from(values: Vector[LifecycleDiagnostic]): Option[LifecycleDiagnostics] =
     Option.when(values.nonEmpty)(construct(values))
 
-final class LifecycleObservation[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
-  val lifecycle: ExecutionLifecycle[D, B, Q],
-  val submissionKnowledge: Option[SubmissionKnowledge[D, B, Q]],
-  val cancellationKnowledge: Option[CancellationKnowledge[D, B, Q]],
-  val issuedCommands: Map[ApplicationCommandId, ExecutionCommand[D, B, Q]],
-  val sourceFacts: Map[QualifiedSourceEventId, SourceFact[D, B, Q]],
-  val fills: Map[QualifiedFillId, ExecutionFill[D, B, Q]],
-  val effectiveFillLedger: EffectiveFillLedger[D, B, Q],
-  val anomalies: ExecutionAnomalies[D, B, Q],
-  val commandConflicts: Vector[CommandConflict[D, B, Q]],
-  val sourceEventConflicts: Vector[SourceFactConflict[D, B, Q]],
-  val fillIdentityConflicts: Vector[FillIdentityConflict[D, B, Q]],
-  val streamPositionConflicts: Map[QualifiedStreamPosition, StreamPositionConflict[D, B, Q]],
-  val authoritativeCompleteness: Map[QualifiedSourceStreamId, SourceCompleteness],
-  val incompleteStreams: Set[QualifiedSourceStreamId],
-  val explicitlyUnsequencedEvents: Vector[QualifiedSourceEventId],
-  val unresolvedFillReferences: Map[QualifiedFillId, Vector[UnresolvedFillReference[D, B, Q]]],
-  val diagnostics: Option[LifecycleDiagnostics])
-  extends JavaSerializationUnsupported:
-
-  override def equals(other: Any): Boolean = other match
-    case that: LifecycleObservation[?, ?, ?] =>
-      lifecycle == that.lifecycle && submissionKnowledge == that.submissionKnowledge &&
-      cancellationKnowledge == that.cancellationKnowledge &&
-      issuedCommands == that.issuedCommands &&
-      sourceFacts == that.sourceFacts && fills == that.fills && effectiveFillLedger == that.effectiveFillLedger &&
-      anomalies == that.anomalies &&
-      commandConflicts == that.commandConflicts && sourceEventConflicts == that.sourceEventConflicts &&
-      fillIdentityConflicts == that.fillIdentityConflicts &&
-      streamPositionConflicts == that.streamPositionConflicts &&
-      authoritativeCompleteness == that.authoritativeCompleteness &&
-      incompleteStreams == that.incompleteStreams &&
-      explicitlyUnsequencedEvents == that.explicitlyUnsequencedEvents &&
-      unresolvedFillReferences == that.unresolvedFillReferences && diagnostics == that.diagnostics
-    case _ => false
-
-  override def hashCode(): Int =
-    (
-      lifecycle,
-      submissionKnowledge,
-      cancellationKnowledge,
-      issuedCommands,
-      sourceFacts,
-      fills,
-      effectiveFillLedger,
-      anomalies,
-      commandConflicts,
-      sourceEventConflicts,
-      fillIdentityConflicts,
-      streamPositionConflicts,
-      authoritativeCompleteness,
-      incompleteStreams,
-      explicitlyUnsequencedEvents,
-      unresolvedFillReferences,
-      diagnostics
-    ).hashCode
-end LifecycleObservation
+final case class LifecycleObservation[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
+  lifecycle: ExecutionLifecycle[D, B, Q],
+  submissionKnowledge: Option[SubmissionKnowledge[D, B, Q]],
+  cancellationKnowledge: Option[CancellationKnowledge[D, B, Q]],
+  issuedCommands: Map[ApplicationCommandId, ExecutionCommand[D, B, Q]],
+  sourceFacts: Map[QualifiedSourceEventId, SourceFact[D, B, Q]],
+  fills: Map[QualifiedFillId, ExecutionFill[D, B, Q]],
+  effectiveFillLedger: EffectiveFillLedger[D, B, Q],
+  anomalies: ExecutionAnomalies[D, B, Q],
+  commandConflicts: Vector[CommandConflict[D, B, Q]],
+  sourceEventConflicts: Vector[SourceFactConflict[D, B, Q]],
+  fillIdentityConflicts: Vector[FillIdentityConflict[D, B, Q]],
+  streamPositionConflicts: Map[QualifiedStreamPosition, StreamPositionConflict[D, B, Q]],
+  authoritativeCompleteness: Map[QualifiedSourceStreamId, SourceCompleteness],
+  incompleteStreams: Set[QualifiedSourceStreamId],
+  explicitlyUnsequencedEvents: Vector[QualifiedSourceEventId],
+  unresolvedFillReferences: Map[QualifiedFillId, Vector[UnresolvedFillReference[D, B, Q]]],
+  diagnostics: Option[LifecycleDiagnostics])
+  extends JavaSerializationUnsupported
 
 final class ExecutionState[D <: Dim, B <: Dim, Q <: Dim] private (
   val lifecycle: ExecutionLifecycle[D, B, Q],
@@ -186,16 +148,10 @@ final class ExecutionState[D <: Dim, B <: Dim, Q <: Dim] private (
   override def hashCode(): Int = (lifecycle, commands, source).hashCode
 end ExecutionState
 
-final class LifecycleReplayResult[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
-  val state: ExecutionState[D, B, Q],
-  val rejections: Vector[LifecycleRejection])
-  extends JavaSerializationUnsupported:
-
-  override def equals(other: Any): Boolean = other match
-    case that: LifecycleReplayResult[?, ?, ?] =>
-      state == that.state && rejections == that.rejections
-    case _ => false
-  override def hashCode(): Int = (state, rejections).hashCode
+final case class LifecycleReplayResult[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
+  state: ExecutionState[D, B, Q],
+  rejections: Vector[LifecycleRejection])
+  extends JavaSerializationUnsupported
 
 object ExecutionState:
   private def construct[D <: Dim, B <: Dim, Q <: Dim](
@@ -323,7 +279,7 @@ object ExecutionState:
           case value: LifecycleRejected[D, B, Q] =>
             state = value.state
             rejections += value.rejection
-      new LifecycleReplayResult(state, rejections.result())
+      LifecycleReplayResult(state, rejections.result())
 
   private def observe[D <: Dim, B <: Dim, Q <: Dim](
     state: ExecutionState[D, B, Q]
@@ -403,7 +359,7 @@ object ExecutionState:
     .sorted(using ExecutionOrderings.qualifiedSourceEventId)
 
     val effectiveFillLedger = EffectiveFillLedger.derive(state)
-    new LifecycleObservation(
+    LifecycleObservation(
       state.lifecycle,
       SubmissionKnowledge.derive(state, authoritativeCompleteness.keySet),
       CancellationKnowledge.derive(state),

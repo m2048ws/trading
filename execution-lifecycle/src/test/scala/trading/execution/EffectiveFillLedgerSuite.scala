@@ -327,6 +327,11 @@ final class EffectiveFillLedgerSuite extends ScalaCheckSuite:
 
     assertEquals(ledger, repeated)
     assertEquals(ledger.hashCode, repeated.hashCode)
+    assertEquals(ledger.copy(), ledger)
+    assertEquals(
+      ledger.productElementNames.toVector,
+      Vector("byFillId", "knownExposure", "overfill", "unresolvedReferences")
+    )
     List[JavaSerializationUnsupported](ledger, active,
       OverfillAnomaly(value.orderedLots, position(value, 12), position(value, 2)))
       .foreach(assertSerializationRejected)

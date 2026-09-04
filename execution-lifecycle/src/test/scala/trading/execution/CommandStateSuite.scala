@@ -95,6 +95,8 @@ final class CommandStateSuite extends ScalaCheckSuite:
     assertEquals(conflict.state.conflicts.size, 1)
     assertEquals(conflict.state.conflicts.head.original, original)
     assertEquals(conflict.state.conflicts.head.conflicting, cancelReuse)
+    assertEquals(conflict.state.conflicts.head.productElementNames.toVector, Vector("original", "conflicting"))
+    assertEquals(conflict.state.conflicts.head.copy(), conflict.state.conflicts.head)
     assertEquals(repeated.state.conflicts, conflict.state.conflicts)
     assertEquals(conflict.state.cancellationRequests, Vector.empty)
 

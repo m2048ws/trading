@@ -31,53 +31,29 @@ object SourceFactClassifications:
     if values.isEmpty then throw new IllegalArgumentException("source fact classifications must be non-empty")
     else construct(values.distinct)
 
-final class SourceFactConflict[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
-  val original: SourceFact[D, B, Q],
-  val conflicting: SourceFact[D, B, Q])
+final case class SourceFactConflict[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
+  original: SourceFact[D, B, Q],
+  conflicting: SourceFact[D, B, Q])
   extends JavaSerializationUnsupported:
 
   val eventId: QualifiedSourceEventId = original.eventId
 
-  override def equals(other: Any): Boolean = other match
-    case that: SourceFactConflict[?, ?, ?] =>
-      original == that.original && conflicting == that.conflicting
-    case _ => false
-  override def hashCode(): Int = (original, conflicting).hashCode
-
-final class FillIdentityConflict[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
-  val original: ExecutionFill[D, B, Q],
-  val conflicting: ExecutionFill[D, B, Q])
+final case class FillIdentityConflict[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
+  original: ExecutionFill[D, B, Q],
+  conflicting: ExecutionFill[D, B, Q])
   extends JavaSerializationUnsupported:
 
   val fillId: QualifiedFillId = original.fillId
 
-  override def equals(other: Any): Boolean = other match
-    case that: FillIdentityConflict[?, ?, ?] =>
-      original == that.original && conflicting == that.conflicting
-    case _ => false
-  override def hashCode(): Int = (original, conflicting).hashCode
+final case class StreamPositionConflict[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
+  position: QualifiedStreamPosition,
+  claimants: Vector[SourceFact[D, B, Q]])
+  extends JavaSerializationUnsupported
 
-final class StreamPositionConflict[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
-  val position: QualifiedStreamPosition,
-  val claimants: Vector[SourceFact[D, B, Q]])
-  extends JavaSerializationUnsupported:
-
-  override def equals(other: Any): Boolean = other match
-    case that: StreamPositionConflict[?, ?, ?] =>
-      position == that.position && claimants == that.claimants
-    case _ => false
-  override def hashCode(): Int = (position, claimants).hashCode
-
-final class UnresolvedFillReference[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
-  val referencedFillId: QualifiedFillId,
-  val modifier: FillModifier[D, B, Q])
-  extends JavaSerializationUnsupported:
-
-  override def equals(other: Any): Boolean = other match
-    case that: UnresolvedFillReference[?, ?, ?] =>
-      referencedFillId == that.referencedFillId && modifier == that.modifier
-    case _ => false
-  override def hashCode(): Int = (referencedFillId, modifier).hashCode
+final case class UnresolvedFillReference[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
+  referencedFillId: QualifiedFillId,
+  modifier: FillModifier[D, B, Q])
+  extends JavaSerializationUnsupported
 
 sealed trait SourceFactTransition[D <: Dim, B <: Dim, Q <: Dim] extends JavaSerializationUnsupported:
   def state: SourceEvidenceState[D, B, Q]
@@ -149,29 +125,6 @@ object SourceEvidenceState:
       unresolvedFillReferences
     )
 
-  private def constructEventConflict[D <: Dim, B <: Dim, Q <: Dim](
-    original: SourceFact[D, B, Q],
-    conflicting: SourceFact[D, B, Q]
-  ): SourceFactConflict[D, B, Q] =
-    new SourceFactConflict(original, conflicting)
-
-  private def constructFillConflict[D <: Dim, B <: Dim, Q <: Dim](
-    original: ExecutionFill[D, B, Q],
-    conflicting: ExecutionFill[D, B, Q]
-  ): FillIdentityConflict[D, B, Q] =
-    new FillIdentityConflict(original, conflicting)
-
-  private def constructPositionConflict[D <: Dim, B <: Dim, Q <: Dim](
-    position: QualifiedStreamPosition,
-    claimants: Vector[SourceFact[D, B, Q]]
-  ): StreamPositionConflict[D, B, Q] =
-    new StreamPositionConflict(position, claimants)
-
-  private def constructUnresolved[D <: Dim, B <: Dim, Q <: Dim](
-    modifier: FillModifier[D, B, Q]
-  ): UnresolvedFillReference[D, B, Q] =
-    new UnresolvedFillReference(modifier.referencedFillId, modifier)
-
   private def recorded[D <: Dim, B <: Dim, Q <: Dim](
     state: SourceEvidenceState[D, B, Q],
     classifications: Vector[SourceFactClassification]
@@ -208,7 +161,7 @@ object SourceEvidenceState:
           case Some(existing) if existing == fact =>
             recorded(state, Vector(SourceFactClassification.DuplicateSourceEvent))
           case Some(existing) =>
-            val conflict = constructEventConflict(existing, fact)
+            val conflict = SourceFactConflict(existing, fact)
             val retained =
               if state.eventConflicts.contains(conflict) then state.eventConflicts
               else state.eventConflicts :+ conflict
@@ -244,12 +197,12 @@ object SourceEvidenceState:
           case Some(existing) if SourceFactEquality.sameFillBody(existing, fill) =>
             classifications += SourceFactClassification.DuplicateFillIdentity
           case Some(existing) =>
-            val conflict = constructFillConflict(existing, fill)
+            val conflict = FillIdentityConflict(existing, fill)
             if !fillConflicts.contains(conflict) then fillConflicts = fillConflicts :+ conflict
             classifications += SourceFactClassification.ConflictingFillIdentity
         unresolved = unresolved.removed(fill.fillId)
       case modifier: FillModifier[D, B, Q] if !fills.contains(modifier.referencedFillId) =>
-        val reference = constructUnresolved(modifier)
+        val reference = UnresolvedFillReference(modifier.referencedFillId, modifier)
         val current   = unresolved.getOrElse(modifier.referencedFillId, Vector.empty)
         if !current.contains(reference) then
           unresolved = unresolved.updated(modifier.referencedFillId, current :+ reference)
@@ -262,7 +215,7 @@ object SourceEvidenceState:
       if current.nonEmpty && !current.contains(fact) then
         val next = current :+ fact
         claimants = claimants.updated(position, next)
-        positionConflicts = positionConflicts.updated(position, constructPositionConflict(position, next))
+        positionConflicts = positionConflicts.updated(position, StreamPositionConflict(position, next))
         classifications += SourceFactClassification.ConflictingStreamPosition
       else if current.isEmpty then claimants = claimants.updated(position, Vector(fact))
 
