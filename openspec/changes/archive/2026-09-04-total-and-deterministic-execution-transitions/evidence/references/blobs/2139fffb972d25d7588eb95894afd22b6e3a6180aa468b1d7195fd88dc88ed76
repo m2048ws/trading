@@ -323,8 +323,8 @@ object ExecutionState:
             state = value.state
             rejections += value.rejection
 
-      val sortedCommands      = commands.sorted(using ExecutionOrderings.command)
-      val sortedDispatch      = dispatch.sorted(using ExecutionOrderings.dispatchEvidence)
+      val sortedCommands      = commands.sortBy(commandSortKey)
+      val sortedDispatch      = dispatch.sortBy(dispatchSortKey)
       val dispatchedSubmitIds = sortedDispatch.collect:
         case evidence if evidence != null => evidence.submitCommandId
       .toSet
@@ -338,7 +338,7 @@ object ExecutionState:
             state = value.state
             rejections += value.rejection
       remainingCommands.foreach(recordCommand)
-      facts.sorted(using ExecutionOrderings.sourceFact).foreach: fact =>
+      facts.sortBy(factSortKey).foreach: fact =>
         state.record(fact) match
           case value: LifecycleAccepted[D, B, Q] => state = value.state
           case value: LifecycleRejected[D, B, Q] =>
@@ -418,10 +418,10 @@ object ExecutionState:
     val absentCompleteness = incompleteStreams.diff(streamProblems).toVector.map(CompletenessNotEstablished.apply)
     val diagnostics        = (streamDiagnostics ++ nonStreamDiagnostics ++ absentCompleteness)
       .distinct
-      .sorted(using ExecutionOrderings.diagnostic)
+      .sortBy(diagnosticKey)
     val unsequenced = facts.collect:
       case fact if fact.ordering == ExplicitlyUnsequenced => fact.eventId
-    .sorted(using ExecutionOrderings.qualifiedSourceEventId)
+    .sortBy(eventKey)
 
     val effectiveFillLedger = EffectiveFillLedger.derive(state)
     new LifecycleObservation(
@@ -432,7 +432,7 @@ object ExecutionState:
       state.source.factsByEvent,
       state.source.fillsById,
       effectiveFillLedger,
-      ExecutionAnomalies.derive(state, effectiveFillLedger),
+      ExecutionAnomalies.derive(state),
       state.commands.conflicts,
       state.source.eventConflicts,
       state.source.fillConflicts,
@@ -479,4 +479,87 @@ object ExecutionState:
             if value < start || value > end then Vector((start, end))
             else Vector((start, value - 1), (value + 1, end)).filter((a, b) => a <= b)
 
+  private def commandKey(command: ExecutionCommand[?, ?, ?]): String =
+    val kind = command match
+      case _: SubmitOrderCommand[?, ?, ?]      => "0-submit"
+      case cancel: CancelOrderCommand[?, ?, ?] => s"1-cancel-${cancel.originalSubmitCommandId.value}"
+    s"$kind|${command.commandId.value}|${lifecycleKey(command.lifecycle)}"
+
+  private def commandSortKey(command: ExecutionCommand[?, ?, ?]): String =
+    if command == null then "0-null" else s"1|${commandKey(command)}"
+
+  private def dispatchKey(evidence: DispatchEvidence[?, ?, ?]): String =
+    val kind = evidence match
+      case _: ProvenNotDispatched[?, ?, ?]   => "0"
+      case _: IndeterminateDispatch[?, ?, ?] => "1"
+    s"${evidence.submitCommandId.value}|$kind|${commandKey(evidence.submit)}"
+
+  private def dispatchSortKey(evidence: DispatchEvidence[?, ?, ?]): String =
+    if evidence == null then "0-null" else s"1|${dispatchKey(evidence)}"
+
+  private def factKey(fact: SourceFact[?, ?, ?]): String =
+    val body = fact match
+      case _: OrderAccepted[?, ?, ?]    => "0-accepted"
+      case _: OrderRejected[?, ?, ?]    => "1-rejected"
+      case fill: ExecutionFill[?, ?, ?] =>
+        s"2-fill-${fillKey(fill.fillId)}-${fill.lots.count.unrefined}-${fill.price.coefficient}"
+      case correction: FillCorrected[?, ?, ?] =>
+        s"3-correction-${fillKey(correction.referencedFillId)}-${correction.replacementLots.count.unrefined}-${correction.replacementPrice.coefficient}"
+      case bust: FillBusted[?, ?, ?]                     => s"4-bust-${fillKey(bust.referencedFillId)}"
+      case _: CancellationEffective[?, ?, ?]             => "5-cancelled"
+      case checkpoint: ReconciliationCheckpoint[?, ?, ?] =>
+        s"6-checkpoint-${positionKey(checkpoint.checkpoint.position)}-${continuationKey(checkpoint.checkpoint.continuation)}"
+      case complete: SourceOrderCompleted[?, ?, ?] =>
+        s"7-complete-${positionKey(complete.completeness.completeThrough)}"
+      case absent: SourceOrderAbsent[?, ?, ?] =>
+        s"8-absent-${positionKey(absent.completeness.completeThrough)}"
+    s"${eventKey(fact.eventId)}|${fact.executionOrderId.value}|${sourceOrderKey(fact.sourceOrderId)}|$body|${orderingKey(fact.ordering)}"
+
+  private def factSortKey(fact: SourceFact[?, ?, ?]): String =
+    if fact == null then "0-null" else s"1|${factKey(fact)}"
+
+  private def lifecycleKey(value: ExecutionLifecycle[?, ?, ?]): String =
+    s"${value.executionOrderId.value}|${value.lineageId.value}|${value.target.source.value}|${value.target.account.value}|${value.order.intent.side}|${value.orderedLots.count.unrefined}|${value.order.execution}"
+
+  private def orderingKey(value: SourceOrdering): String = value match
+    case ExplicitlyUnsequenced               => "unsequenced"
+    case sequenced: AuthoritativelySequenced =>
+      s"${positionKey(sequenced.position)}|${continuationKey(sequenced.continuation)}"
+
+  private def continuationKey(value: SourceContinuation): String =
+    val previous = value.previous.map(positionKey).getOrElse("origin")
+    s"${streamKey(value.stream)}|$previous"
+
+  private def diagnosticKey(value: LifecycleDiagnostic): String = value match
+    case diagnostic: CommandConflictObserved => s"0|${diagnostic.commandId.value}"
+    case diagnostic: MissingSourceRange      =>
+      s"1|${streamKey(diagnostic.stream)}|0|${diagnostic.first.value}|${diagnostic.last.value}"
+    case diagnostic: StreamPositionConflictObserved =>
+      s"1|${streamKey(diagnostic.position.stream)}|1|${diagnostic.position.sequence.value}"
+    case diagnostic: SourceRewindObserved =>
+      s"1|${streamKey(diagnostic.stream)}|2|${diagnostic.position.value}|${diagnostic.previous.value}"
+    case diagnostic: SourceEventConflictObserved  => s"2|${eventKey(diagnostic.eventId)}"
+    case diagnostic: FillIdentityConflictObserved =>
+      s"3|${targetKey(diagnostic.fillId.target)}|${diagnostic.fillId.native.value}"
+    case diagnostic: UnresolvedFillObserved =>
+      s"3|${targetKey(diagnostic.fillId.target)}|${diagnostic.fillId.native.value}|${eventKey(diagnostic.modifierEventId)}"
+    case diagnostic: CompletenessNotEstablished => s"4|${streamKey(diagnostic.stream)}"
+
+  private def eventKey(value: QualifiedSourceEventId): String =
+    s"${targetKey(value.target)}|${value.native.value}"
+
+  private def sourceOrderKey(value: QualifiedSourceOrderId): String =
+    s"${targetKey(value.target)}|${value.native.value}"
+
+  private def fillKey(value: QualifiedFillId): String =
+    s"${targetKey(value.target)}|${value.native.value}"
+
+  private def positionKey(value: QualifiedStreamPosition): String =
+    s"${streamKey(value.stream)}|${value.sequence.value}"
+
+  private def streamKey(value: QualifiedSourceStreamId): String =
+    s"${targetKey(value.target)}|${value.native.value}"
+
+  private def targetKey(value: ExecutionTarget): String =
+    s"${value.source.value}|${value.account.value}"
 end ExecutionState

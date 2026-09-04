@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 3,
+  "changeName": "total-and-deterministic-execution-transitions",
+  "runId": "run-b43dfc02-62df-4673-8d75-527d75ec4a14",
+  "finalRevision": "a977df576bf089a366930183c14f45029cf77a14",
+  "planningRevision": "sha256:cc2f27f72a1ce0fdc778c0e13c1f7eb04d0a0297886502ea92bf6b7a45c1acb6",
+  "contract": {
+    "kind": "rfc-slice",
+    "deliveryRef": "RFC-0005-simplify-post-trust-boundary/S-02-total-and-deterministic-execution-transitions",
+    "rfcId": "RFC-0005-simplify-post-trust-boundary",
+    "rfcDigest": "sha256:31336459ac68c4a188388bb58cf59fe8c84830a0b72aa66d29fdcff4f90657a3",
+    "acceptedCommit": "7f1d1ab9eb88d0912d3219920eacadea4d01aa2e",
+    "sliceId": "S-02-total-and-deterministic-execution-transitions",
+    "sourcePath": "openspec/changes/total-and-deterministic-execution-transitions/corgi/source.yaml",
+    "sourceDigest": "sha256:06321277e89e5cf534d3885211fe15f6392a8d0f633ead24e71281d22804ea13",
+    "traceabilityPath": "openspec/changes/total-and-deterministic-execution-transitions/corgi/traceability.yaml",
+    "traceabilityDigest": "sha256:92f0e3ac5b786f15faca55ae39144929c684160a9fd4dd0df2d8be3fb2141598",
+    "acceptance": [
+      {
+        "id": "AC-004",
+        "evidence": "automated",
+        "taskGroups": [
+          "1"
+        ]
+      },
+      {
+        "id": "AC-005",
+        "evidence": "automated",
+        "taskGroups": [
+          "1"
+        ]
+      },
+      {
+        "id": "AC-006",
+        "evidence": "automated",
+        "taskGroups": [
+          "2"
+        ]
+      },
+      {
+        "id": "AC-007",
+        "evidence": "automated",
+        "taskGroups": [
+          "3"
+        ]
+      }
+    ],
+    "tracker": {
+      "provider": "github",
+      "idempotencyKey": "9d77320a5eecf2ed87b247fb906ecd05417785b0e4332edda5aa5994f74c28f3",
+      "issue": {
+        "id": "40",
+        "url": "https://github.com/m2048ws/trading/issues/40"
+      }
+    }
+  },
+  "archiveIntentId": "archive-9af4554f-2501-4493-a9c6-61a48508ef0b"
+}

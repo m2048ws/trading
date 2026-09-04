@@ -32,6 +32,7 @@ Add an entry only after a human accepts it or a verified delivery proves it. Eve
 - [[wiki/deliveries/RFC-0003-execution-lifecycle-foundation-S-01-actual-execution-lifecycle|RFC-0003-execution-lifecycle-foundation/S-01-actual-execution-lifecycle]] — verified by sha256:65afe49168a3c223c12556a2ffdfea42e0244580b2d29a30b3d5365b9d28c2e6
 - [[wiki/deliveries/RFC-0004-simplify-in-process-trust-boundary-S-01-simplify-in-process-trust-boundary|RFC-0004-simplify-in-process-trust-boundary/S-01-simplify-in-process-trust-boundary]] — verified by sha256:77f7954a068af43ca196f8e88262efca7c1b782ca20ebfa860cf2ef3847ef022
 - [[wiki/deliveries/RFC-0005-simplify-post-trust-boundary-S-01-retire-trust-boundary-migration-scaffolding|RFC-0005-simplify-post-trust-boundary/S-01-retire-trust-boundary-migration-scaffolding]] — verified by sha256:048651d8e79a23efe53616bb45e0c46e0f4a986f1278d5816470b1fc68702ad8
+- [[wiki/deliveries/RFC-0005-simplify-post-trust-boundary-S-02-total-and-deterministic-execution-transitions|RFC-0005-simplify-post-trust-boundary/S-02-total-and-deterministic-execution-transitions]] — verified by sha256:fc98726449f5ed9c353d75b88b17d255c3c509f1c8d84be94eda66e5ee00e8c9
 <!-- corgi:managed:end verified-deliveries -->
 
 ## Working Preferences

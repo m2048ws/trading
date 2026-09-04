@@ -198,9 +198,9 @@ object ExecutionAnomalies:
     new PostCancellationFillAnomaly(effectiveFill, priorCancellations, exactExposure)
 
   private[execution] def derive[D <: Dim, B <: Dim, Q <: Dim](
-    state: ExecutionState[D, B, Q],
-    ledger: EffectiveFillLedger[D, B, Q]
+    state: ExecutionState[D, B, Q]
   ): ExecutionAnomalies[D, B, Q] =
+    val ledger               = EffectiveFillLedger.derive(state)
     val orderedCancellations = CancellationKnowledge
       .authoritativeConfirmations(state)
       .flatMap: cancellation =>

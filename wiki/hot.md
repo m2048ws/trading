@@ -30,6 +30,7 @@ pinned: true
 - [[wiki/deliveries/RFC-0003-execution-lifecycle-foundation-S-01-actual-execution-lifecycle|RFC-0003-execution-lifecycle-foundation/S-01-actual-execution-lifecycle]]
 - [[wiki/deliveries/RFC-0004-simplify-in-process-trust-boundary-S-01-simplify-in-process-trust-boundary|RFC-0004-simplify-in-process-trust-boundary/S-01-simplify-in-process-trust-boundary]]
 - [[wiki/deliveries/RFC-0005-simplify-post-trust-boundary-S-01-retire-trust-boundary-migration-scaffolding|RFC-0005-simplify-post-trust-boundary/S-01-retire-trust-boundary-migration-scaffolding]]
+- [[wiki/deliveries/RFC-0005-simplify-post-trust-boundary-S-02-total-and-deterministic-execution-transitions|RFC-0005-simplify-post-trust-boundary/S-02-total-and-deterministic-execution-transitions]]
 <!-- corgi:managed:end recently-shipped -->
 
 ## Research Queue

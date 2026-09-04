@@ -1,0 +1,9 @@
+Final HEAD: a977df576bf089a366930183c14f45029cf77a14
+Command: sbt scalafmtCheckAll test
+Exit code: 0
+Formatting: pass across all projects
+Tests: 1,047 passed; 0 failed; 0 errors; 0 ignored
+Completed-artifact compiler boundaries: pass, including 7 execution-lifecycle cases
+Clean precursor run: sbt clean test
+Clean precursor exit code: 0
+Clean precursor tests: 1,047 passed; 0 failed; 0 errors; 0 ignored

@@ -1,6 +1,6 @@
 ---
 type: memory
-updated: 2026-09-03
+updated: 2026-09-04
 ---
 
 # Session Bridge
@@ -10,23 +10,24 @@ updated: 2026-09-03
 ## Delivery Pointer
 - **RFC**: RFC-0005-simplify-post-trust-boundary
 - **RFC Revision**: 7f1d1ab9eb88d0912d3219920eacadea4d01aa2e
-- **Slice**: S-01-retire-trust-boundary-migration-scaffolding
-- **Issue**: 38 https://github.com/m2048ws/trading/issues/38
-- **Change**: retire-trust-boundary-migration-scaffolding
-- **Worktree**: /Users/m/src/money/.worktrees/retire-trust-boundary-migration-scaffolding
+- **Slice**: S-02-total-and-deterministic-execution-transitions
+- **Issue**: 40 https://github.com/m2048ws/trading/issues/40
+- **Change**: total-and-deterministic-execution-transitions
+- **Worktree**: /Users/m/src/money/.worktrees/total-and-deterministic-execution-transitions
 - **Phase at Checkpoint**: archiving
 - **Task Group at Checkpoint**: none
-- **Observed Run Revision**: 8
-- **Last Verified HEAD**: 522fad5d570c1a76da6c30b408c26f0991bee1af
+- **Observed Run Revision**: 9
+- **Last Verified HEAD**: a977df576bf089a366930183c14f45029cf77a14
 
 ## Next Action
-- Consult Run Contract v3: resume tracker closeout for `retire-trust-boundary-migration-scaffolding` only if pending; otherwise select the next accepted Slice. Local delivery: `wiki/deliveries/RFC-0005-simplify-post-trust-boundary-S-01-retire-trust-boundary-migration-scaffolding.md`.
+- Consult Run Contract v3: resume tracker closeout for `total-and-deterministic-execution-transitions` only if pending; otherwise select the next accepted Slice. Local delivery: `wiki/deliveries/RFC-0005-simplify-post-trust-boundary-S-02-total-and-deterministic-execution-transitions.md`.
 
 ## Blockers
 - none
 
 ## Uncommitted Work
-- none
+- Task Group 3 passes the observation's single effective-fill ledger into anomaly construction and proves exact overfill
+  value reuse; the zero-reflection guard and clean 1,047-test aggregate pass.
 
 ## Discoveries
 - No active Corgi Run Contract or OpenSpec Change exists on primary `main`.
@@ -63,6 +64,15 @@ updated: 2026-09-03
 - RFC-0005/S-01 Task Group 2 removed the runtime-only Java-first compile order, stale bridge explanation, and duplicate
   release option; the runtime inherits mixed compilation and repository `--release 25`, with 1,043 tests and benchmark
   compilation passing after a clean build.
+- RFC-0005/S-02 Task Group 1 replaces the command transition kind plus optional violations with five owner-sealed
+  alternatives, removes unchecked violation extraction, and preserves applied, idempotent, command-conflict,
+  dispatch-conflict, and rejection state semantics under focused and completed-artifact compiler tests.
+- RFC-0005/S-02 Task Group 2 replaces replay, effective-fill, cancellation-anomaly, continuation, unsequenced-event,
+  conflict, and diagnostic string keys with owner-local typed lexicographic comparisons, retaining null rejection and
+  deterministic permutation semantics even when identifier components contain former `|` and `-` delimiters.
+- RFC-0005/S-02 Task Group 3 removes the second effective-fill derivation from observation assembly, passes the one
+  ledger value into anomaly construction, and proves the non-empty overfill object is reused by identity while all
+  correction, bust, unresolved-reference, conflict, cancellation-race, exposure, and serialization behavior remains.
 
 ## Promotion Queue
 - none

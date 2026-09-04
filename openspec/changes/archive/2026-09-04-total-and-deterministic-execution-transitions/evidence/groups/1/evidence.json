@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 3,
+  "groupId": "1",
+  "checks": [
+    {
+      "name": "focused command and lifecycle transition suites",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:execution-lifecycle%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fexecution%2FCommandStateSuite.scala#sha256:9b6db2367fd101a7ff0129293d2ca98d92e4a2380c9aefa8008d25b80a32ca28",
+        "file:execution-lifecycle%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fexecution%2FExecutionStateSuite.scala#sha256:d437f7204700a1de676ca0939684d50a1ee481d909216d01ce34444a8f24da49"
+      ]
+    },
+    {
+      "name": "completed-artifact execution compiler boundary",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fexecution-lifecycle-compiler%2Fpositive%2FExecutionAuthorityBoundaryClient.scala#sha256:7199a9c8f2d847f10d1813aa73d7ea5f95a44255de450ea6fcc954f7f041b401"
+      ]
+    },
+    {
+      "name": "total transition source invariant",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:execution-lifecycle%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fexecution%2FCommands.scala#sha256:0e5f8767e4f7dbdceea1b10186a053e06a5d99f27f602f0b249cea55137d5a66",
+        "file:execution-lifecycle%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fexecution%2FExecutionState.scala#sha256:2139fffb972d25d7588eb95894afd22b6e3a6180aa468b1d7195fd88dc88ed76"
+      ]
+    }
+  ],
+  "automatedReview": {
+    "verdict": "pass",
+    "findings": []
+  },
+  "artifacts": [
+    "file:execution-lifecycle%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fexecution%2FCommands.scala#sha256:0e5f8767e4f7dbdceea1b10186a053e06a5d99f27f602f0b249cea55137d5a66",
+    "file:execution-lifecycle%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fexecution%2FExecutionState.scala#sha256:2139fffb972d25d7588eb95894afd22b6e3a6180aa468b1d7195fd88dc88ed76",
+    "file:execution-lifecycle%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fexecution%2FCommandStateSuite.scala#sha256:9b6db2367fd101a7ff0129293d2ca98d92e4a2380c9aefa8008d25b80a32ca28",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fexecution-lifecycle-compiler%2Fpositive%2FExecutionAuthorityBoundaryClient.scala#sha256:7199a9c8f2d847f10d1813aa73d7ea5f95a44255de450ea6fcc954f7f041b401"
+  ],
+  "summary": "The execution command transition API is total: every applied, idempotent, conflict, dispatch-conflict, and rejection outcome has its own owner-sealed alternative, rejection violations are mandatory, lifecycle handling is exhaustive, compiler-boundary evidence is updated, and the focused automated review found no issues."
+}

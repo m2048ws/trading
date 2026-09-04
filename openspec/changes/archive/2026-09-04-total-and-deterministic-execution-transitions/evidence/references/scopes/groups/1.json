@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 3,
+  "scope": "group-1",
+  "runId": "run-b43dfc02-62df-4673-8d75-527d75ec4a14",
+  "references": [
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fexecution-lifecycle-compiler%2Fpositive%2FExecutionAuthorityBoundaryClient.scala#sha256:7199a9c8f2d847f10d1813aa73d7ea5f95a44255de450ea6fcc954f7f041b401",
+      "sourcePath": "adversarial-boundary/src/test/resources/execution-lifecycle-compiler/positive/ExecutionAuthorityBoundaryClient.scala",
+      "digest": "sha256:7199a9c8f2d847f10d1813aa73d7ea5f95a44255de450ea6fcc954f7f041b401",
+      "archivePath": "references/blobs/7199a9c8f2d847f10d1813aa73d7ea5f95a44255de450ea6fcc954f7f041b401"
+    },
+    {
+      "reference": "file:execution-lifecycle%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fexecution%2FCommands.scala#sha256:0e5f8767e4f7dbdceea1b10186a053e06a5d99f27f602f0b249cea55137d5a66",
+      "sourcePath": "execution-lifecycle/src/main/scala/trading/execution/Commands.scala",
+      "digest": "sha256:0e5f8767e4f7dbdceea1b10186a053e06a5d99f27f602f0b249cea55137d5a66",
+      "archivePath": "references/blobs/0e5f8767e4f7dbdceea1b10186a053e06a5d99f27f602f0b249cea55137d5a66"
+    },
+    {
+      "reference": "file:execution-lifecycle%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fexecution%2FExecutionState.scala#sha256:2139fffb972d25d7588eb95894afd22b6e3a6180aa468b1d7195fd88dc88ed76",
+      "sourcePath": "execution-lifecycle/src/main/scala/trading/execution/ExecutionState.scala",
+      "digest": "sha256:2139fffb972d25d7588eb95894afd22b6e3a6180aa468b1d7195fd88dc88ed76",
+      "archivePath": "references/blobs/2139fffb972d25d7588eb95894afd22b6e3a6180aa468b1d7195fd88dc88ed76"
+    },
+    {
+      "reference": "file:execution-lifecycle%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fexecution%2FCommandStateSuite.scala#sha256:9b6db2367fd101a7ff0129293d2ca98d92e4a2380c9aefa8008d25b80a32ca28",
+      "sourcePath": "execution-lifecycle/src/test/scala/trading/execution/CommandStateSuite.scala",
+      "digest": "sha256:9b6db2367fd101a7ff0129293d2ca98d92e4a2380c9aefa8008d25b80a32ca28",
+      "archivePath": "references/blobs/9b6db2367fd101a7ff0129293d2ca98d92e4a2380c9aefa8008d25b80a32ca28"
+    },
+    {
+      "reference": "file:execution-lifecycle%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fexecution%2FExecutionStateSuite.scala#sha256:d437f7204700a1de676ca0939684d50a1ee481d909216d01ce34444a8f24da49",
+      "sourcePath": "execution-lifecycle/src/test/scala/trading/execution/ExecutionStateSuite.scala",
+      "digest": "sha256:d437f7204700a1de676ca0939684d50a1ee481d909216d01ce34444a8f24da49",
+      "archivePath": "references/blobs/d437f7204700a1de676ca0939684d50a1ee481d909216d01ce34444a8f24da49"
+    }
+  ]
+}

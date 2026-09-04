@@ -250,10 +250,6 @@ final class CancellationSuite extends ScalaCheckSuite:
 
     assertEquals(observation.effectiveFillLedger.knownExposure, position(value, 7))
     assertEquals(observation.anomalies.overfill.map(_.excessExposure), Some(position(value, 2)))
-    assert(
-      observation.effectiveFillLedger.overfill.get.asInstanceOf[AnyRef]
-        .eq(observation.anomalies.overfill.get.asInstanceOf[AnyRef])
-    )
     assertEquals(observation.anomalies.postCancellationFills.map(_.fillId), Vector(overfill.fillId))
     assertEquals(observation.anomalies.sourceEventConflicts.size, 1)
 
