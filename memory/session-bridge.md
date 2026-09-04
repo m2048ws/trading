@@ -10,17 +10,17 @@ updated: 2026-09-04
 ## Delivery Pointer
 - **RFC**: RFC-0005-simplify-post-trust-boundary
 - **RFC Revision**: 7f1d1ab9eb88d0912d3219920eacadea4d01aa2e
-- **Slice**: S-03-use-direct-scala-derived-models
-- **Issue**: 42 https://github.com/m2048ws/trading/issues/42
-- **Change**: use-direct-scala-derived-models
-- **Worktree**: /Users/m/src/money/.worktrees/use-direct-scala-derived-models
-- **Phase at Checkpoint**: archiving
-- **Task Group at Checkpoint**: none
-- **Observed Run Revision**: 9
-- **Last Verified HEAD**: f46c95751e6f72e45ee33881eb1705625b2228d9
+- **Slice**: S-05-remove-java-api-compatibility
+- **Issue**: 44 https://github.com/m2048ws/trading/issues/44
+- **Change**: remove-java-api-compatibility
+- **Worktree**: /Users/m/src/money/.worktrees/remove-java-api-compatibility
+- **Phase at Checkpoint**: planning_ready
+- **Task Group at Checkpoint**: 1
+- **Observed Run Revision**: none
+- **Last Verified HEAD**: 219cf213a66e443941d4504b37672e172f436685
 
 ## Next Action
-- Consult Run Contract v3: resume tracker closeout for `use-direct-scala-derived-models` only if pending; otherwise select the next accepted Slice. Local delivery: `wiki/deliveries/RFC-0005-simplify-post-trust-boundary-S-03-use-direct-scala-derived-models.md`.
+- Start Apply for `remove-java-api-compatibility` Task Group 1.
 
 ## Blockers
 - none

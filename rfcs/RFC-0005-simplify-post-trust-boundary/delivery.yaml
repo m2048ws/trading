@@ -1,6 +1,6 @@
 schemaVersion: 1
 rfcId: RFC-0005-simplify-post-trust-boundary
-revision: 7
+revision: 8
 slices:
   S-01-retire-trust-boundary-migration-scaffolding:
     status: archived
@@ -47,4 +47,12 @@ slices:
   S-04-use-scala-first-quantity-and-reference-data:
     status: unbound
   S-05-remove-java-api-compatibility:
-    status: unbound
+    status: planned
+    binding:
+      change: remove-java-api-compatibility
+      issue:
+        provider: github
+        id: '44'
+        url: https://github.com/m2048ws/trading/issues/44
+      sourceDigest: sha256:d2278178847daa4d028e46f160af897ea1d2ebde0ad37b0bf9c480d5b5faa853
+      plannedAt: '2026-09-04T03:10:44.175Z'

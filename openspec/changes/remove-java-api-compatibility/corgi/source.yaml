@@ -1,0 +1,27 @@
+schemaVersion: 1
+kind: rfc-slice
+deliveryRef: RFC-0005-simplify-post-trust-boundary/S-05-remove-java-api-compatibility
+rfc:
+  id: RFC-0005-simplify-post-trust-boundary
+  path: rfcs/RFC-0005-simplify-post-trust-boundary
+  acceptedCommit: 7f1d1ab9eb88d0912d3219920eacadea4d01aa2e
+  digest: sha256:31336459ac68c4a188388bb58cf59fe8c84830a0b72aa66d29fdcff4f90657a3
+slice:
+  id: S-05-remove-java-api-compatibility
+  digest: sha256:c38f9531eeead2cc0209a65a0440cedc63d9daba9f7097961dd4c241d52ed00e
+acceptance:
+  - id: AC-016
+    evidence: automated
+  - id: AC-017
+    evidence: automated
+  - id: AC-018
+    evidence: automated
+  - id: AC-019
+    evidence: automated
+deliveryBindingDigest: sha256:22dab3f0e2948babc9190d6761722cfe7b4d2404089cbac5d4d302927b7c9cd8
+tracker:
+  provider: github
+  idempotencyKey: f0a9707242f556a48c3954ff7ab9455701751aee65a32434eaf26ed1482a25bb
+  issue:
+    id: '44'
+    url: https://github.com/m2048ws/trading/issues/44
