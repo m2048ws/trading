@@ -24,6 +24,12 @@ object PureCoreClient:
   ): Either[ValuationError, Quantity[instrument.roles.settle.D]] =
     Valuation.positionValue(instrument)(position, state)
 
+  def attributedPricePnl[I <: Instrument, A](instrument: I)(
+    changes: Vector[instrument.AttributedPriceChange[A]],
+    endpoint: instrument.PricePnlEndpoint
+  ): Either[AttributedPricePnlErrors, instrument.AttributedPricePnl[A]] =
+    AttributedPricePnl.calculate(instrument)(changes, endpoint)
+
   private def required[E, A](context: String, result: Either[E, A]): A =
     result.fold(error => throw new AssertionError(s"$context: $error"), identity)
 
@@ -94,6 +100,21 @@ object PureCoreClient:
   val concretePrice    = required("price", Price.exact(instrument)(Rational(100)))
   val concreteState    = required("market state", MarketState.quoteSettled(instrument)(concretePrice))
   val concreteValue    = required("position value", value(instrument)(concretePosition, concreteState))
+  val closingPosition  = PositionLots.fromCoordinate(instrument)(BigInt(-2))
+  val exitPrice        = required("exit price", Price.exact(instrument)(Rational(110)))
+  val exitState        = required("exit market state", MarketState.quoteSettled(instrument)(exitPrice))
+  val attributedChanges: Vector[instrument.AttributedPriceChange[String]] = Vector(
+    AttributedPriceChange("entry", concretePosition, concreteState),
+    AttributedPriceChange("exit", closingPosition, exitState)
+  )
+  val attributedResult = required(
+    "attributed price PnL",
+    attributedPricePnl(instrument)(attributedChanges, PricePnlEndpoint.Flat)
+  )
+  val nonFlatViolation =
+    attributedPricePnl(instrument)(Vector(attributedChanges.head), PricePnlEndpoint.Flat) match
+      case Left(errors) => errors.head
+      case Right(value) => throw new AssertionError(s"non-flat calculation unexpectedly succeeded: $value")
 
   private def rejectsSerialization(value: JavaSerializationUnsupported): Boolean =
     val bytes  = new ByteArrayOutputStream
@@ -109,12 +130,30 @@ object PureCoreClient:
     assert(concreteLots.count.unrefined == BigInt(2))
     assert(concretePrice.coefficient == Rational(100))
     assert(concreteValue.coefficient == Rational(200))
-    Vector[JavaSerializationUnsupported](
-      spec,
-      instrument,
-      concreteLots,
-      concretePosition,
-      concretePrice,
-      concreteState
+    assert(attributedResult.instrumentId == instrument.identity.id)
+    assert(attributedResult.settlement.id == instrument.roles.settle.id)
+    assert(attributedResult.endingPosition.coordinate == BigInt(0))
+    assert(attributedResult.settledContributions.map(_.attribution) == Vector("entry", "exit"))
+    assert(attributedResult.settledContributions.map(_.positionChange.coordinate) == Vector(BigInt(2), BigInt(-2)))
+    assert(
+      attributedResult.settledContributions.map(_.quantity.coefficient) ==
+        Vector(Rational(-200), Rational(220))
+    )
+    assert(attributedResult.settledContributions.map(_.original) == attributedChanges)
+    assert(attributedResult.pricePnl.quantity.coefficient == Rational(20))
+    attributedResult.endpoint match
+      case PricePnlEndpoint.Flat      => ()
+      case PricePnlEndpoint.Marked(_) => throw new AssertionError("flat calculation retained a mark")
+    assert(nonFlatViolation == AttributedPricePnlViolation.NonFlatPositionRequiresMark(BigInt(2)))
+    (
+      Vector[JavaSerializationUnsupported](
+        spec,
+        instrument,
+        concreteLots,
+        concretePosition,
+        concretePrice,
+        concreteState,
+        attributedResult
+      ) ++ attributedChanges ++ attributedResult.settledContributions
     ).foreach(value => assert(rejectsSerialization(value)))
 end PureCoreClient

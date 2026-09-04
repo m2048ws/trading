@@ -14,21 +14,23 @@ updated: 2026-09-04
 - **Issue**: 48 https://github.com/m2048ws/trading/issues/48
 - **Change**: generalize-attributed-price-pnl
 - **Worktree**: /Users/m/src/money/.worktrees/generalize-attributed-price-pnl
-- **Phase at Checkpoint**: applying
-- **Task Group at Checkpoint**: 2
-- **Observed Run Revision**: 3
-- **Last Verified HEAD**: 8739045a2d5c995e519a97e8ab3902b0e41ac6e6
+- **Phase at Checkpoint**: awaiting_verify
+- **Task Group at Checkpoint**: 3
+- **Observed Run Revision**: 4
+- **Last Verified HEAD**: ac05a9a3946fe3210ab0016745be6466ec5a307f
 
 ## Next Action
-- Commit and acknowledge Task Group 2, then inspect the CLI-selected next group.
+- Acknowledge Task Group 3's exact commit, then run canonical whole-change Verify as a separate gate.
 
 ## Blockers
 - none
 
 ## Uncommitted Work
-- Task Group 2 delegates round-trip price economics to the attributed finite-change calculation, preserves compatible
-  failure locations and stable entry/exit slice attribution, and retains exact single- and multi-slice long, short,
-  settlement, fee, and net-PnL behavior; all 16 scenario and 39 fee-policy tests and formatting checks pass.
+- Task Group 3 proves a completed instrument-economics artifact exposes the public attributed price-PnL calculation,
+  exact contributions, honest endpoint, typed failure matching, and fail-closed serialization without order,
+  execution, scenario, campaign, fee, risk, application, codec, or runtime ownership leakage. The exact configured CI
+  gate passes on Temurin JDK 25.0.4.1 with formatting, all 1,054 tests, and benchmark compilation green; both
+  reflection-policy guards pass and the dependency graph is unchanged.
 
 ## Discoveries
 - No active Corgi Run Contract or OpenSpec Change exists on primary `main`.
@@ -106,6 +108,9 @@ updated: 2026-09-04
 - RFC-0006/S-01 Task Group 1 adds exact attributed finite-change price PnL, honest flat/marked endpoints, stable
   accumulated typed validation, ordered settled contributions, algebraic laws, and deterministic linear-traversal
   evidence, with 23 focused instrument-economics tests passing.
+- RFC-0006/S-01 Task Group 2 delegates round-trip price economics to that shared calculation, preserves public failure
+  semantics and stable entry/exit attribution, and retains exact single- and multi-slice long, short, settlement, fee,
+  and net-PnL behavior under 16 scenario and 39 fee-policy tests.
 
 ## Promotion Queue
 - none

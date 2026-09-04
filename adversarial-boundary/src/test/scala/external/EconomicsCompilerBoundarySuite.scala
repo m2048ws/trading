@@ -56,12 +56,19 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
     try new String(resource.readAllBytes(), StandardCharsets.UTF_8).trim
     finally resource.close()
 
-  test("completed pure JAR compiles and runs a concrete core-only client with generic helpers"):
+  test("completed pure JAR compiles and runs attributed price PnL from a concrete core-only client"):
     val entries = coreCompilationClasspath.split(File.pathSeparator).map(Paths.get(_)).map(_.getFileName.toString)
     assert(entries.exists(_.startsWith("trading-instrument-economics_3-")))
-    assert(!entries.exists(_.startsWith("trading-fee-policy_3-")))
-    assert(!entries.exists(_.startsWith("trading-risk_3-")))
-    assert(!entries.exists(_.startsWith("trading-application_3-")))
+    List(
+      "trading-order-model_3-",
+      "trading-execution-lifecycle_3-",
+      "trading-execution-scenario_3-",
+      "trading-campaign_3-",
+      "trading-fee-policy_3-",
+      "trading-risk_3-",
+      "trading-application_3-",
+      "trading-runtime_3-"
+    ).foreach(prefix => assert(!entries.exists(_.startsWith(prefix)), s"pure classpath retained $prefix"))
     val result = compileCore(Paths.get(getClass.getResource("/economics-core-compiler/PureCoreClient.scala").toURI))
     assert(result.succeeded, result.rendered)
     runModule(result.output, "external.economics.core.PureCoreClient$", "run")
@@ -78,9 +85,14 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
     val prelude = compileCorePrelude(source)
     assert(prelude.succeeded, s"fixture prelude must compile independently:\n${prelude.rendered}")
     val rejected = compileCore(source)
-    assert(rejected.errors.size >= 5, rejected.rendered)
+    assert(rejected.errors.size >= 9, rejected.rendered)
     assert(rejected.rendered.contains("is not a member"), rejected.rendered)
+    assert(rejected.rendered.contains("execution is not a member of trading"), rejected.rendered)
+    assert(rejected.rendered.contains("scenario is not a member of trading"), rejected.rendered)
+    assert(rejected.rendered.contains("campaign is not a member of trading"), rejected.rendered)
     assert(rejected.rendered.contains("fee is not a member of trading"), rejected.rendered)
+    assert(rejected.rendered.contains("application is not a member of trading"), rejected.rendered)
+    assert(rejected.rendered.contains("runtime is not a member of trading"), rejected.rendered)
     assert(rejected.rendered.contains("codec is not a member of trading"), rejected.rendered)
     economicsForbiddenDiagnostics.foreach(fragment => assert(!rejected.rendered.contains(fragment), rejected.rendered))
 
@@ -127,7 +139,17 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
       assert(!referenceEntries.exists(_.startsWith("trading/economics/")))
       assert(!referenceEntries.exists(_.startsWith("trading/risk/")))
       assert(instrumentEntries.exists(_ == "trading/economics/instrument/Instrument.class"))
-      List("trading/order/", "trading/scenario/", "trading/fee/", "trading/risk/", "trading/application/")
+      List(
+        "trading/order/",
+        "trading/execution/",
+        "trading/scenario/",
+        "trading/campaign/",
+        "trading/fee/",
+        "trading/risk/",
+        "trading/application/",
+        "trading/runtime/",
+        "trading/codec/"
+      )
         .foreach(prefix => assert(!instrumentEntries.exists(_.startsWith(prefix)), s"pure JAR retained $prefix"))
     finally
       quantitiesArchive.close()
@@ -171,11 +193,45 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
         "FeeDenomination.class",
         "Fee.class",
         "PricePnl.class",
+        "AttributedPriceChange.class",
+        "PricePnlEndpoint.class",
+        "SettledPriceContribution.class",
+        "AttributedPricePnl.class",
+        "AttributedPricePnlComponent.class",
+        "AttributedPricePnlLocation.class",
+        "AttributedPricePnlViolation.class",
+        "AttributedPricePnlErrors.class",
         "SettledFeeContribution.class",
         "Pnl.class",
         "Valuation.class"
       ).map(name => s"trading/economics/instrument/$name")
       expectedCore.foreach(entry => assert(coreEntries.contains(entry), s"missing $entry from $instrumentJar"))
+      val attributedCoreEntries = coreEntries.toList.sorted.filter: entry =>
+        List(
+          "trading/economics/instrument/AttributedPrice",
+          "trading/economics/instrument/PricePnlEndpoint",
+          "trading/economics/instrument/SettledPriceContribution"
+        ).exists(entry.startsWith) && (entry.endsWith(".class") || entry.endsWith(".tasty"))
+      assert(attributedCoreEntries.nonEmpty, s"missing attributed price PnL bytecode from $instrumentJar")
+      val attributedCoreBytes = attributedCoreEntries
+        .map: entry =>
+          val stream = core.getInputStream(core.getJarEntry(entry))
+          try new String(stream.readAllBytes(), StandardCharsets.ISO_8859_1)
+          finally stream.close()
+        .mkString
+      List(
+        "trading/order/",
+        "trading/execution/",
+        "trading/scenario/",
+        "trading/campaign/",
+        "trading/fee/",
+        "trading/risk/",
+        "trading/application/",
+        "trading/runtime/",
+        "trading/codec/",
+        "cats/effect/",
+        "fs2/"
+      ).foreach(fragment => assert(!attributedCoreBytes.contains(fragment), s"attributed price PnL leaked $fragment"))
       List(
         "trading/order/Order.class",
         "trading/order/OrderIntent.class",
