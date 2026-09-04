@@ -10,26 +10,23 @@ updated: 2026-09-04
 ## Delivery Pointer
 - **RFC**: RFC-0005-simplify-post-trust-boundary
 - **RFC Revision**: 7f1d1ab9eb88d0912d3219920eacadea4d01aa2e
-- **Slice**: S-05-remove-java-api-compatibility
-- **Issue**: 44 https://github.com/m2048ws/trading/issues/44
-- **Change**: remove-java-api-compatibility
-- **Worktree**: /Users/m/src/money/.worktrees/remove-java-api-compatibility
+- **Slice**: S-04-use-scala-first-quantity-and-reference-data
+- **Issue**: 46 https://github.com/m2048ws/trading/issues/46
+- **Change**: use-scala-first-quantity-and-reference-data
+- **Worktree**: /Users/m/src/money/.worktrees/use-scala-first-quantity-and-reference-data
 - **Phase at Checkpoint**: archiving
 - **Task Group at Checkpoint**: none
 - **Observed Run Revision**: 9
-- **Last Verified HEAD**: 2754b2e91ebc5f9f29fc95e51793d01f4d71681a
+- **Last Verified HEAD**: 806a6b435614a23536f5f26a221469281f5253b6
 
 ## Next Action
-- Consult Run Contract v3: resume tracker closeout for `remove-java-api-compatibility` only if pending; otherwise select the next accepted Slice. Local delivery: `wiki/deliveries/RFC-0005-simplify-post-trust-boundary-S-05-remove-java-api-compatibility.md`.
+- Consult Run Contract v3: resume tracker closeout for `use-scala-first-quantity-and-reference-data` only if pending; otherwise select the next accepted Slice. Local delivery: `wiki/deliveries/RFC-0005-simplify-post-trust-boundary-S-04-use-scala-first-quantity-and-reference-data.md`.
 
 ## Blockers
 - none
 
 ## Uncommitted Work
-- Task Group 3 aligns durable architecture guidance and eight delta specifications on the Scala 3 source contract while
-  retaining JDK 25, Java-library integration, checked external reconstruction, wire formats, exact decimals, and
-  serialization rejection; the clean 1,041-test aggregate, benchmark compile, formatting, strict readiness, and both
-  reflection guard checks pass.
+- none
 
 ## Discoveries
 - No active Corgi Run Contract or OpenSpec Change exists on primary `main`.
@@ -94,6 +91,16 @@ updated: 2026-09-04
 - RFC-0005/S-05 Task Group 3 establishes Scala 3 as the supported domain source API in durable architecture guidance
   and the active specification deltas while explicitly retaining the JDK 25 baseline, Java-library/JVM integration,
   checked external representations, exact decimal conversion, canonical wire formats, and serialization rejection.
+- RFC-0005/S-04 Task Group 1 replaces `AssetId`, `GridId`, and `GridVersion` with Scala-owned checked case classes,
+  denies generated product reconstruction, removes the repository's last production Java sources, and preserves typed
+  invalidity, value semantics, stable codec representations, Scala field observation, and serialization rejection.
+- RFC-0005/S-04 Task Group 2 removes raw `UniformGrid` and `GridDefinition` factories and redundant positive-quantum
+  reconstruction, trusts established `PositiveRational` values directly, and retains null rejection, generative grid
+  identity, exact interpretation, and precise raw-invalidity diagnostics at refinement and codec boundaries.
+- RFC-0005/S-04 Task Group 3 replaces catalog commit and transition product emulation with an exhaustive sealed Scala
+  sum and direct structural products, retains model-owned issuance, null and serialization rejection, publication and
+  idempotence semantics, and passes the clean 1,042-test aggregate, benchmark compile, guards, source scans, formatting,
+  and strict readiness.
 
 ## Promotion Queue
 - none

@@ -3,7 +3,9 @@
 ## Purpose
 Defines the pure append-only reference-data catalog, its immutable state transitions, canonical handle issuance,
 revisioned snapshots, transactional registration semantics, and typed lookup and definition failures.
+
 ## Requirements
+
 ### Requirement: Catalog evolution is an immutable state transition
 The reference-data artifact SHALL model catalog evolution as a pure transformation from one immutable catalog state and
 an explicit registration batch to either a non-empty domain failure or a new immutable state plus an observable commit
@@ -163,6 +165,13 @@ leave the revision unchanged but SHALL remain distinguishable from an idempotent
 include a non-empty immutable delta identifying every newly added asset binding, dimension, and grid identity; a delta
 SHALL never contain removal or replacement.
 
+The successful commit outcome SHALL be an exhaustive direct Scala sum whose alternatives are unchanged and published,
+and the state/outcome transition SHALL be a direct structural Scala product. Supported Scala callers SHALL be able to
+pattern-match those alternatives exhaustively and compare independently observed equal results structurally without
+hand-written product, extractor, equality, hash, or rendering behavior becoming part of the contract. Construction of
+model-issued observations SHALL remain owned by the reference-data model so arbitrary state/outcome combinations cannot
+be presented as successful catalog transitions.
+
 #### Scenario: Publish several definitions once
 
 - **WHEN** one valid batch adds ten definitions to revision `7`
@@ -184,6 +193,13 @@ SHALL never contain removal or replacement.
   state, snapshot, revision, and publication delta that were not issued together by the catalog model
 - **THEN** the checked delta factory returns typed rejection evidence and no malformed delta, published outcome, or
   transition is returned, while model-issued values remain publicly inspectable and pattern-matchable
+
+#### Scenario: Match and compare direct catalog observations
+
+- **WHEN** supported Scala code receives two successful catalog observations containing the same model-issued state and
+  equal outcome fields
+- **THEN** exhaustive matching distinguishes unchanged from published outcomes and structural equality observes equal
+  state, snapshot, and delta fields
 
 ### Requirement: Handles are canonical across a catalog lineage
 
@@ -277,4 +293,3 @@ change the definition stored at its key.
 #### Scenario: Keep time out of catalog transitions
 - **WHEN** a catalog batch is evaluated
 - **THEN** its success and resulting definitions do not depend on the current clock or an implicit effective date
-

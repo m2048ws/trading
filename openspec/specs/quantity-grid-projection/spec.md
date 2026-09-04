@@ -4,7 +4,9 @@
 
 Defines anonymous mathematical grids, exact projection and quantization, and numerical grid relationships without
 stable asset/grid identity, catalog provenance, or encoding ownership.
+
 ## Requirements
+
 ### Requirement: Grid quantity semantics
 `GridQuantity[D, G]` SHALL be an opaque integer-coordinate value proving membership in grid `G` in dimension `D`. A
 grid SHALL be zero-anchored with arbitrary positive rational quantum `q`, and a grid quantity's exact value SHALL be
@@ -331,10 +333,11 @@ Each successful grid construction SHALL create a fresh coordinate namespace even
 dimension and quantum. Stable naming of a mathematical grid SHALL be supplied only by a reference-data handle in a
 downstream artifact.
 
-The supported source API SHALL be Scala 3 and SHALL accept an established `PositiveRational` for refined grid
-construction. While a checked raw/JVM entry remains available for external reconstruction, it SHALL return
-`ExpectedPositive` for zero or negative input before grid authority is returned; its presence SHALL NOT establish an
-ordinary-Java domain API contract.
+The supported source API SHALL be Scala 3 and SHALL accept an established `PositiveRational` directly for refined grid
+construction without defensively revalidating that refinement. No raw rational domain factory SHALL remain on the
+uniform-grid owner. An external reconstruction boundary that begins with a raw rational SHALL establish
+`PositiveRational` first and SHALL return `ExpectedPositive` for zero or negative input before calling the grid factory
+or returning grid authority.
 
 #### Scenario: Construct an anonymous grid
 
@@ -353,8 +356,9 @@ ordinary-Java domain API contract.
 
 #### Scenario: Reject a nonpositive raw grid quantum
 
-- **WHEN** an external reconstruction boundary supplies zero or a negative rational to the checked raw grid entry
-- **THEN** it receives `ExpectedPositive` and no `GridRef` is returned
+- **WHEN** an external reconstruction boundary supplies zero or a negative rational for an anonymous grid
+- **THEN** the owning positive refinement returns `ExpectedPositive`, the refined grid factory is not called, and no
+  `GridRef` is returned
 
 ### Requirement: Projection diagnostics remain mathematical
 Exact narrowing and quantization failures in the quantity artifact SHALL describe the exact source and target quantum
@@ -395,4 +399,3 @@ SHALL NOT be advertised as resistance to deliberate same-JVM visibility or bytec
 
 - **WHEN** in-process code possesses a `GridQuantity` without its witness or stable handle
 - **THEN** the value supplies no mathematical witness, stable identity, lineage, or encoding authority
-

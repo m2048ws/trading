@@ -3,7 +3,9 @@
 ## Purpose
 Defines immutable asset and stable-grid identities and the trusted handles that connect those reference-data concepts
 to the anonymous dimensions and mathematical grids supplied by the quantity foundation.
+
 ## Requirements
+
 ### Requirement: Reference data is a one-way layer above quantities
 Stable asset identity, stable grid identity and version, reference-data definitions, and trusted identity-bearing
 handles SHALL be delivered by a `trading-reference-data` artifact that depends on `trading-quantities`. The quantities
@@ -29,22 +31,24 @@ anonymous grid, project or quantize a value, or use mathematical grid evidence.
 
 ### Requirement: Stable identity is explicit and dimension-scoped
 
-`AssetId`, `GridId`, `GridVersion`, and `GridKey` SHALL be reference-data value types. `GridKey` SHALL contain a
-`GridId` and positive `GridVersion` and SHALL remain local to one canonical dimension. Full stable grid identity SHALL
-be the product of canonical `DimKey` and `GridKey`; the reference-data API SHALL represent that full product explicitly
-rather than treating an unqualified `GridKey` as globally unique.
+`AssetId`, `GridId`, `GridVersion`, and `GridKey` SHALL be Scala-owned reference-data value types. `GridKey` SHALL
+contain a `GridId` and positive `GridVersion` and SHALL remain local to one canonical dimension. Full stable grid
+identity SHALL be the product of canonical `DimKey` and `GridKey`; the reference-data API SHALL represent that full
+product explicitly rather than treating an unqualified `GridKey` as globally unique.
 
 Stable identifiers SHALL use immutable values with value equality, hashing, and domain-readable display. Their
 documented Scala smart constructors SHALL reject null before returning and SHALL return the precise reference-data-
 owned failures `EmptyAssetId`, `EmptyGridId`, and `NonPositiveGridVersion` for ordinary expected invalidity. Product
 copying or another documented unchecked path SHALL NOT bypass those factories. Constructor modifiers and deliberate
 same-package or JVM bypass are not compatibility or security commitments. Equal quanta SHALL NOT erase distinct asset
-IDs, grid IDs, versions, or dimension scopes.
+IDs, grid IDs, versions, or dimension scopes. Reference data SHALL contain no production Java source for these values.
 
 `GridDefinition` SHALL likewise be an immutable value whose quantum is positive before the definition returns. Its
-supported Scala entry SHALL accept `PositiveRational`; a checked external reconstruction boundary MAY accept raw
-`Rational` and SHALL return `NonPositiveGridQuantum` for zero or negative input before a definition or handle is
-returned. Such reconstruction support SHALL NOT establish an ordinary-Java domain API contract.
+supported Scala entry SHALL accept an established `PositiveRational` directly without defensive revalidation, and no
+raw rational domain factory SHALL remain on `GridDefinition`. A checked external reconstruction boundary MAY accept a
+raw `Rational`, but it SHALL establish `PositiveRational` and return `NonPositiveGridQuantum` for zero or negative input
+before calling the definition factory or returning a definition or handle. Such reconstruction support SHALL NOT
+establish an ordinary-Java domain API contract.
 
 #### Scenario: Reuse a local grid key across dimensions
 
@@ -72,14 +76,15 @@ returned. Such reconstruction support SHALL NOT establish an ordinary-Java domai
 #### Scenario: Reject Java stable-identity construction bypasses
 
 - **WHEN** ordinary Java source attempts to construct a stable identity through domain implementation details
-- **THEN** no supported Java domain API is promised; external values enter through an owning checked Scala boundary,
-  and direct JVM constructor availability or privacy remains outside the compatibility and anti-forgery contract
+- **THEN** no supported Java domain API or production Java identity implementation is present; external values enter
+  through an owning checked Scala boundary
 
 #### Scenario: Reject nonpositive stable grid definitions
 
-- **WHEN** supported Scala or an external reconstruction boundary supplies zero or a negative raw quantum
-- **THEN** the checked boundary returns `NonPositiveGridQuantum` before a `GridDefinition`, anonymous `GridRef`, or
-  registry-issued `GridHandle` is returned
+- **WHEN** an external reconstruction boundary supplies zero or a negative raw quantum
+- **THEN** the owning external boundary maps the failed positive refinement to `NonPositiveGridQuantum`, the direct
+  definition factory is not called, and no `GridDefinition`, anonymous `GridRef`, or registry-issued `GridHandle` is
+  returned
 
 ### Requirement: Trusted dimension and asset handles retain authority
 
@@ -193,4 +198,3 @@ separately specified boundary-codec capability.
 - **WHEN** a database or wire adapter needs to reconstruct a trusted handle from stable IDs
 - **THEN** it uses the future explicit codec and catalog-snapshot boundary rather than Java serialization or a quantity
   constructor
-
