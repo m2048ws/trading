@@ -14,13 +14,13 @@ updated: 2026-09-04
 - **Issue**: 57 https://github.com/m2048ws/trading/issues/57
 - **Change**: bind-source-fact-construction
 - **Worktree**: /Users/m/src/money/.worktrees/bind-source-fact-construction
-- **Phase at Checkpoint**: planning_ready
+- **Phase at Checkpoint**: awaiting_verify
 - **Task Group at Checkpoint**: 1
-- **Observed Run Revision**: none
-- **Last Verified HEAD**: 8ce189bb63e20f3ed2432cb69a0dc084bb75f7df
+- **Observed Run Revision**: 2
+- **Last Verified HEAD**: 5f7c1eb86da814614f009d6b1d7c414a7dcc25ba
 
 ## Next Action
-- Start Apply for `bind-source-fact-construction` Task Group 1.
+- Run canonical whole-change Verify for `bind-source-fact-construction` against the acknowledged Task Group commit.
 
 ## Blockers
 - none
@@ -106,4 +106,6 @@ updated: 2026-09-04
   and strict readiness.
 
 ## Promotion Queue
-- none
+- RFC-0008/S-03 Task Group 1 adds a final `SourceFact`-owned lifecycle scope whose nine operations delegate to the
+  canonical fact constructors; focused and completed-artifact evidence preserves exact types, deterministic validation,
+  foreign identity/grid rejection, independent allocation, concurrent reuse, and the pure execution dependency cone.

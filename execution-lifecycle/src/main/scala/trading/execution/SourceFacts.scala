@@ -214,6 +214,125 @@ sealed abstract class SourceFact[D <: Dim, B <: Dim, Q <: Dim] protected () exte
     case ExplicitlyUnsequenced               => None
     case sequenced: AuthoritativelySequenced => Some(sequenced.position)
 
+object SourceFact:
+  final class LifecycleScope[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
+    val lifecycle: ExecutionLifecycle[D, B, Q]):
+
+    def accepted(
+      eventId: QualifiedSourceEventId,
+      executionOrderId: ExecutionOrderId,
+      sourceOrderId: QualifiedSourceOrderId,
+      ordering: SourceOrdering
+    ): Either[SourceFactViolations, OrderAccepted[D, B, Q]] =
+      OrderAccepted.create(lifecycle)(eventId, executionOrderId, sourceOrderId, ordering)
+
+    def rejected(
+      eventId: QualifiedSourceEventId,
+      executionOrderId: ExecutionOrderId,
+      sourceOrderId: QualifiedSourceOrderId,
+      ordering: SourceOrdering
+    ): Either[SourceFactViolations, OrderRejected[D, B, Q]] =
+      OrderRejected.create(lifecycle)(eventId, executionOrderId, sourceOrderId, ordering)
+
+    def fill(
+      eventId: QualifiedSourceEventId,
+      executionOrderId: ExecutionOrderId,
+      sourceOrderId: QualifiedSourceOrderId,
+      fillId: QualifiedFillId,
+      lots: Lots[D],
+      price: Price[B, Q],
+      ordering: SourceOrdering
+    ): Either[SourceFactViolations, ExecutionFill[D, B, Q]] =
+      ExecutionFill.create(lifecycle)(eventId, executionOrderId, sourceOrderId, fillId, lots, price, ordering)
+
+    def corrected(
+      eventId: QualifiedSourceEventId,
+      executionOrderId: ExecutionOrderId,
+      sourceOrderId: QualifiedSourceOrderId,
+      referencedFillId: QualifiedFillId,
+      replacementLots: Lots[D],
+      replacementPrice: Price[B, Q],
+      ordering: SourceOrdering
+    ): Either[SourceFactViolations, FillCorrected[D, B, Q]] =
+      FillCorrected.create(lifecycle)(
+        eventId,
+        executionOrderId,
+        sourceOrderId,
+        referencedFillId,
+        replacementLots,
+        replacementPrice,
+        ordering
+      )
+
+    def busted(
+      eventId: QualifiedSourceEventId,
+      executionOrderId: ExecutionOrderId,
+      sourceOrderId: QualifiedSourceOrderId,
+      referencedFillId: QualifiedFillId,
+      ordering: SourceOrdering
+    ): Either[SourceFactViolations, FillBusted[D, B, Q]] =
+      FillBusted.create(lifecycle)(eventId, executionOrderId, sourceOrderId, referencedFillId, ordering)
+
+    def cancellationEffective(
+      eventId: QualifiedSourceEventId,
+      executionOrderId: ExecutionOrderId,
+      sourceOrderId: QualifiedSourceOrderId,
+      ordering: SourceOrdering
+    ): Either[SourceFactViolations, CancellationEffective[D, B, Q]] =
+      CancellationEffective.create(lifecycle)(eventId, executionOrderId, sourceOrderId, ordering)
+
+    def reconciliationCheckpoint(
+      eventId: QualifiedSourceEventId,
+      executionOrderId: ExecutionOrderId,
+      sourceOrderId: QualifiedSourceOrderId,
+      checkpoint: SourceCheckpoint,
+      ordering: SourceOrdering
+    ): Either[SourceFactViolations, ReconciliationCheckpoint[D, B, Q]] =
+      ReconciliationCheckpoint.create(lifecycle)(
+        eventId,
+        executionOrderId,
+        sourceOrderId,
+        checkpoint,
+        ordering
+      )
+
+    def sourceOrderCompleted(
+      eventId: QualifiedSourceEventId,
+      executionOrderId: ExecutionOrderId,
+      sourceOrderId: QualifiedSourceOrderId,
+      completeness: SourceCompleteness,
+      ordering: SourceOrdering
+    ): Either[SourceFactViolations, SourceOrderCompleted[D, B, Q]] =
+      SourceOrderCompleted.create(lifecycle)(
+        eventId,
+        executionOrderId,
+        sourceOrderId,
+        completeness,
+        ordering
+      )
+
+    def sourceOrderAbsent(
+      eventId: QualifiedSourceEventId,
+      executionOrderId: ExecutionOrderId,
+      sourceOrderId: QualifiedSourceOrderId,
+      completeness: SourceCompleteness,
+      ordering: SourceOrdering
+    ): Either[SourceFactViolations, SourceOrderAbsent[D, B, Q]] =
+      SourceOrderAbsent.create(lifecycle)(
+        eventId,
+        executionOrderId,
+        sourceOrderId,
+        completeness,
+        ordering
+      )
+  end LifecycleScope
+
+  def forLifecycle[D <: Dim, B <: Dim, Q <: Dim](
+    lifecycle: ExecutionLifecycle[D, B, Q]
+  ): LifecycleScope[D, B, Q] =
+    new LifecycleScope(lifecycle)
+end SourceFact
+
 sealed abstract class FillModifier[D <: Dim, B <: Dim, Q <: Dim] protected () extends SourceFact[D, B, Q]():
   def referencedFillId: QualifiedFillId
 

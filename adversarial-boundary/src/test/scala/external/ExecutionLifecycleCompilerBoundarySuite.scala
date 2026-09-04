@@ -60,7 +60,8 @@ class ExecutionLifecycleCompilerBoundarySuite extends FunSuite:
         "NativeSourceOrderId.class",
         "NativeFillId.class",
         "SourceStreamId.class",
-        "SourceSequence.class"
+        "SourceSequence.class",
+        "SourceFact$LifecycleScope.class"
       ).foreach(name => assert(names.contains(s"trading/execution/$name"), s"missing $name"))
 
       val classBytes = entries
@@ -103,6 +104,26 @@ class ExecutionLifecycleCompilerBoundarySuite extends FunSuite:
     )
     assert(result.succeeded, result.rendered)
     runModule(result.output, "external.execution.positive.ExecutionAuthorityBoundaryClient$", "run")
+
+  test("completed execution-lifecycle JAR compiles and runs all lifecycle-bound source-fact forms"):
+    val result = compile(
+      List(
+        fixturesRoot.resolve("ExecutionLifecycleSetup.scala"),
+        fixturesRoot.resolve("positive/LifecycleSourceFactScopeClient.scala")
+      ),
+      executionClasspath
+    )
+    assert(result.succeeded, result.rendered)
+    runModule(result.output, "external.execution.positive.LifecycleSourceFactScopeClient$", "run")
+
+  test("completed execution-lifecycle JAR rejects incompatible lifecycle-bound lots and prices"):
+    val source  = fixturesRoot.resolve("negative/LifecycleSourceFactScopeMismatch.scala")
+    val prelude = compilePrelude(source, executionClasspath)
+    assert(prelude.succeeded, s"fixture prelude must compile independently:\n${prelude.rendered}")
+    val rejected = compile(source, executionClasspath)
+    assertEquals(rejected.errors.size, 4, rejected.rendered)
+    assert(rejected.rendered.contains("Found:"), rejected.rendered)
+    assert(rejected.rendered.contains("Required:"), rejected.rendered)
 
   test("execution-lifecycle classpath rejects downstream mechanisms"):
     val source  = fixturesRoot.resolve("negative/ExecutionLifecycleHasNoDownstream.scala")
