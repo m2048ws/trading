@@ -1,6 +1,6 @@
 schemaVersion: 1
 rfcId: RFC-0008-simplify-instrument-dependent-apis
-revision: 5
+revision: 7
 slices:
   S-01-name-instrument-dimensions:
     status: archived
@@ -31,7 +31,19 @@ slices:
       commit: 804f32e3e0ed8ccda8245ee3530779c47904169c
       evidenceManifest: sha256:e0cb40a5a2bbfb4b3c5ae954d21e7be212433eab7114ed6adbfd81038d228a35
   S-03-bind-source-fact-construction:
-    status: unbound
+    status: archived
+    binding:
+      change: bind-source-fact-construction
+      sourceDigest: sha256:44cee1e7fc26759bc7720e78681cc6abfc18e11cd7e57e810d74ab07f5adf6e8
+      plannedAt: '2026-09-04T14:20:40.030Z'
+      issue:
+        provider: github
+        id: '57'
+        url: https://github.com/m2048ws/trading/issues/57
+    archive:
+      archivedAt: '2026-09-04T15:06:46.432Z'
+      commit: ad69a9adf84eb56a80a5e09d07da1e487502530a
+      evidenceManifest: sha256:336f9805040785ac5aea98745d63ded1121da6e23cab778dd0de44d489250a9e
   S-04-bind-scenario-record-codecs:
     status: unbound
   S-05-bind-instrument-risk:

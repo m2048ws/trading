@@ -10,17 +10,17 @@ updated: 2026-09-04
 ## Delivery Pointer
 - **RFC**: RFC-0008-simplify-instrument-dependent-apis
 - **RFC Revision**: bf457296faa7d29aec0840a7e8f48d41ed0f7491
-- **Slice**: S-02-bind-standard-order-construction
-- **Issue**: 55 https://github.com/m2048ws/trading/issues/55
-- **Change**: bind-standard-order-construction
-- **Worktree**: /Users/m/src/money/.worktrees/bind-standard-order-construction
+- **Slice**: S-03-bind-source-fact-construction
+- **Issue**: 57 https://github.com/m2048ws/trading/issues/57
+- **Change**: bind-source-fact-construction
+- **Worktree**: /Users/m/src/money/.worktrees/bind-source-fact-construction
 - **Phase at Checkpoint**: archiving
 - **Task Group at Checkpoint**: none
 - **Observed Run Revision**: 7
-- **Last Verified HEAD**: 804f32e3e0ed8ccda8245ee3530779c47904169c
+- **Last Verified HEAD**: ad69a9adf84eb56a80a5e09d07da1e487502530a
 
 ## Next Action
-- Consult Run Contract v3: resume tracker closeout for `bind-standard-order-construction` only if pending; otherwise select the next accepted Slice. Local delivery: `wiki/deliveries/RFC-0008-simplify-instrument-dependent-apis-S-02-bind-standard-order-construction.md`.
+- Consult Run Contract v3: resume tracker closeout for `bind-source-fact-construction` only if pending; otherwise select the next accepted Slice. Local delivery: `wiki/deliveries/RFC-0008-simplify-instrument-dependent-apis-S-03-bind-source-fact-construction.md`.
 
 ## Blockers
 - none
@@ -106,4 +106,6 @@ updated: 2026-09-04
   and strict readiness.
 
 ## Promotion Queue
-- none
+- RFC-0008/S-03 Task Group 1 adds a final `SourceFact`-owned lifecycle scope whose nine operations delegate to the
+  canonical fact constructors; focused and completed-artifact evidence preserves exact types, deterministic validation,
+  foreign identity/grid rejection, independent allocation, concurrent reuse, and the pure execution dependency cone.
