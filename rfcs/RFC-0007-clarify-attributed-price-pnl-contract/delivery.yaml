@@ -1,0 +1,6 @@
+schemaVersion: 1
+rfcId: RFC-0007-clarify-attributed-price-pnl-contract
+revision: 0
+slices:
+  S-01-clarify-attributed-price-pnl-contract:
+    status: unbound

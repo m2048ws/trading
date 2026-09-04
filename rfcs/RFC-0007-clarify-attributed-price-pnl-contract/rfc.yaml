@@ -1,0 +1,7 @@
+schemaVersion: 1
+id: RFC-0007-clarify-attributed-price-pnl-contract
+type: amendment
+status: draft
+author: m@2048.ws
+createdAt: '2026-09-04T11:31:53.080Z'
+amends: RFC-0006-establish-exact-trade-campaigns
