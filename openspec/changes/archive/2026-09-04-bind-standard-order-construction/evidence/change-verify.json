@@ -1,0 +1,83 @@
+{
+  "verdict": "pass",
+  "finalRevision": "804f32e3e0ed8ccda8245ee3530779c47904169c",
+  "planningRevision": "sha256:4167d6e84fe9d1df135b9a00b8877e8eb4b88da1d55c0660d631dac4579852c5",
+  "sourceDigest": "sha256:336fb9cc40c59e4cf28a44a8210ed5db6ee2bbdc22025a1fcd71f1d32fb5359d",
+  "traceabilityDigest": "sha256:ab36e14e78ee8c1de5f88e683b6d67c0b6103accc2149ad3e3596d226367806b",
+  "reportHash": "sha256:125997dae07237f9e9dd7e1f17ee938e7a099ef2578fadd3397a4765ce83e2cb",
+  "checks": [
+    {
+      "name": "clean release-25 repository test and benchmark matrix",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:build.sbt#sha256:790e4ae7fa4ab9334b36c0273bc4d44d02d59cac352b50f5f0aeaadc026f5db8",
+        "file:order-model%2Fsrc%2Ftest%2Fscala%2Ftrading%2Forder%2FInstrumentOrderScopeSuite.scala#sha256:e04784abd05e4537dbe86937f0b1a46d851835732c709d3889d9d7481f1823df",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FEconomicsCompilerBoundarySuite.scala#sha256:94127fb0bea280618de7408b8c01e3857fb03d7196a34af7fd96ee63f299f87b"
+      ]
+    },
+    {
+      "name": "in-process reflection guards",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:tools%2Fcheck-in-process-reflection.sh#sha256:bca2729121ce2bde4dfe3e8db2af53d6129ea0db1162eaab0dd982d769ddf3d6",
+        "file:tools%2Ftest-check-in-process-reflection.sh#sha256:0679a80193d81a4ab8836387de8054644fd1569e9b4275506cb3171fdbce9510"
+      ]
+    },
+    {
+      "name": "clean acknowledged HEAD and unchanged RFC traceability",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:openspec%2Fchanges%2Fbind-standard-order-construction%2Fcorgi%2Fsource.yaml#sha256:336fb9cc40c59e4cf28a44a8210ed5db6ee2bbdc22025a1fcd71f1d32fb5359d",
+        "file:openspec%2Fchanges%2Fbind-standard-order-construction%2Fcorgi%2Ftraceability.yaml#sha256:ab36e14e78ee8c1de5f88e683b6d67c0b6103accc2149ad3e3596d226367806b",
+        "file:openspec%2Fchanges%2Fbind-standard-order-construction%2Ftasks.md#sha256:15a243be100f10826b61a04af33f062f8a30e6f3bf9f1256d8d6fbfbc120b0d2"
+      ]
+    },
+    {
+      "name": "pure order-model ownership and completed-artifact boundary",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:order-model%2Fsrc%2Fmain%2Fscala%2Ftrading%2Forder%2FOrder.scala#sha256:91df553f518dc02e5ecff4c5fdacd23c32dbcae002daa6257c1631d28acfafc3",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Forder-model-compiler%2FOrderModelHasNoDownstream.scala#sha256:e1be5a62e8e761eebacaa1687af715ea673495d7864132024023be8369f06a26",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FEconomicsCompilerBoundarySuite.scala#sha256:94127fb0bea280618de7408b8c01e3857fb03d7196a34af7fd96ee63f299f87b"
+      ]
+    }
+  ],
+  "acceptance": [
+    {
+      "id": "AC-004",
+      "automated": "pass",
+      "evidenceRefs": [
+        "file:order-model%2Fsrc%2Fmain%2Fscala%2Ftrading%2Forder%2FOrder.scala#sha256:91df553f518dc02e5ecff4c5fdacd23c32dbcae002daa6257c1631d28acfafc3",
+        "file:order-model%2Fsrc%2Ftest%2Fscala%2Ftrading%2Forder%2FInstrumentOrderScopeSuite.scala#sha256:e04784abd05e4537dbe86937f0b1a46d851835732c709d3889d9d7481f1823df",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Forder-model-compiler%2Fpositive%2FInstrumentOrderScopeClient.scala#sha256:5d07bb116d874991a8954cc2af556817b0ed3ce7c1e21dde4aeeb7b29e328b43"
+      ]
+    },
+    {
+      "id": "AC-005",
+      "automated": "pass",
+      "evidenceRefs": [
+        "file:order-model%2Fsrc%2Fmain%2Fscala%2Ftrading%2Forder%2FOrder.scala#sha256:91df553f518dc02e5ecff4c5fdacd23c32dbcae002daa6257c1631d28acfafc3",
+        "file:order-model%2Fsrc%2Ftest%2Fscala%2Ftrading%2Forder%2FInstrumentOrderScopeSuite.scala#sha256:e04784abd05e4537dbe86937f0b1a46d851835732c709d3889d9d7481f1823df"
+      ]
+    },
+    {
+      "id": "AC-006",
+      "automated": "pass",
+      "evidenceRefs": [
+        "file:order-model%2Fsrc%2Fmain%2Fscala%2Ftrading%2Forder%2FOrder.scala#sha256:91df553f518dc02e5ecff4c5fdacd23c32dbcae002daa6257c1631d28acfafc3",
+        "file:order-model%2Fsrc%2Ftest%2Fscala%2Ftrading%2Forder%2FInstrumentOrderScopeSuite.scala#sha256:e04784abd05e4537dbe86937f0b1a46d851835732c709d3889d9d7481f1823df"
+      ]
+    },
+    {
+      "id": "AC-007",
+      "automated": "pass",
+      "evidenceRefs": [
+        "file:order-model%2Fsrc%2Ftest%2Fscala%2Ftrading%2Forder%2FInstrumentOrderScopeSuite.scala#sha256:e04784abd05e4537dbe86937f0b1a46d851835732c709d3889d9d7481f1823df",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Forder-model-compiler%2Fpositive%2FInstrumentOrderScopeClient.scala#sha256:5d07bb116d874991a8954cc2af556817b0ed3ce7c1e21dde4aeeb7b29e328b43",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Forder-model-compiler%2Fnegative%2FInstrumentOrderScopeMismatch.scala#sha256:d5e3f0af51bc2c172a1e01ff13ce139c810783b7424bbf208947167f926ad756",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FEconomicsCompilerBoundarySuite.scala#sha256:94127fb0bea280618de7408b8c01e3857fb03d7196a34af7fd96ee63f299f87b"
+      ]
+    }
+  ],
+  "verifiedAt": "2026-09-04T13:30:02.287Z"
+}

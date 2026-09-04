@@ -1,0 +1,27 @@
+schemaVersion: 1
+kind: rfc-slice
+deliveryRef: RFC-0008-simplify-instrument-dependent-apis/S-02-bind-standard-order-construction
+rfc:
+  id: RFC-0008-simplify-instrument-dependent-apis
+  path: rfcs/RFC-0008-simplify-instrument-dependent-apis
+  acceptedCommit: bf457296faa7d29aec0840a7e8f48d41ed0f7491
+  digest: sha256:77e1c4ac3d7629334f86695e07ffaf835549c5e0e05612314f0ca193e42139f3
+slice:
+  id: S-02-bind-standard-order-construction
+  digest: sha256:78ae59d2fd332fc0d7751a737e29e2938cf41a2f7f016bc7df7d360d33e15c86
+acceptance:
+  - id: AC-004
+    evidence: automated
+  - id: AC-005
+    evidence: automated
+  - id: AC-006
+    evidence: automated
+  - id: AC-007
+    evidence: automated
+deliveryBindingDigest: sha256:387227fe7ccf86a56e2964c7ae1a76a56593a2a2b99e1fb4b8e9b6eb731c9433
+tracker:
+  provider: github
+  idempotencyKey: 94d9fed72c0192cdef0ed02e419f0aa5795b63259b1663eb00597f621b5f04e4
+  issue:
+    id: '55'
+    url: https://github.com/m2048ws/trading/issues/55

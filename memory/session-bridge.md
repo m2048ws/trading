@@ -10,17 +10,17 @@ updated: 2026-09-04
 ## Delivery Pointer
 - **RFC**: RFC-0008-simplify-instrument-dependent-apis
 - **RFC Revision**: bf457296faa7d29aec0840a7e8f48d41ed0f7491
-- **Slice**: S-01-name-instrument-dimensions
-- **Issue**: 53 https://github.com/m2048ws/trading/issues/53
-- **Change**: name-instrument-dimensions
-- **Worktree**: /Users/m/src/money/.worktrees/name-instrument-dimensions
+- **Slice**: S-02-bind-standard-order-construction
+- **Issue**: 55 https://github.com/m2048ws/trading/issues/55
+- **Change**: bind-standard-order-construction
+- **Worktree**: /Users/m/src/money/.worktrees/bind-standard-order-construction
 - **Phase at Checkpoint**: archiving
 - **Task Group at Checkpoint**: none
 - **Observed Run Revision**: 7
-- **Last Verified HEAD**: 2e69c260793d85d1c9e1b4930a908421eaef2bb5
+- **Last Verified HEAD**: 804f32e3e0ed8ccda8245ee3530779c47904169c
 
 ## Next Action
-- Consult Run Contract v3: resume tracker closeout for `name-instrument-dimensions` only if pending; otherwise select the next accepted Slice. Local delivery: `wiki/deliveries/RFC-0008-simplify-instrument-dependent-apis-S-01-name-instrument-dimensions.md`.
+- Consult Run Contract v3: resume tracker closeout for `bind-standard-order-construction` only if pending; otherwise select the next accepted Slice. Local delivery: `wiki/deliveries/RFC-0008-simplify-instrument-dependent-apis-S-02-bind-standard-order-construction.md`.
 
 ## Blockers
 - none
@@ -29,6 +29,9 @@ updated: 2026-09-04
 - none
 
 ## Discoveries
+- RFC-0008/S-02 Task Group 1 adds a final `Order`-owned scope that retains only one exact instrument and delegates all
+  four standard constructors to canonical validation; focused, concurrent-reuse, and completed-artifact tests preserve
+  exact result refinements, deterministic failures, runtime identity checks, and five incompatible input boundaries.
 - No active Corgi Run Contract or OpenSpec Change exists on primary `main`.
 - RFC-0003/S-01 is archived; its delivery record is `wiki/deliveries/RFC-0003-execution-lifecycle-foundation-S-01-actual-execution-lifecycle.md`.
 - The registered `introduce-application-and-runtime-foundation` worktree has no active Change and remains cleanup-only.
