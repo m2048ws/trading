@@ -1,0 +1,9 @@
+{
+  "decision": "approve",
+  "reviewer": "requesting-user",
+  "reason": null,
+  "finalRevision": "fa010240f300abf02ccd0c13b24253674c8d6f35",
+  "planningRevision": "sha256:3b41082b634f9a9dad638aff39276756523aded846256d9b42492e22813a58bb",
+  "verifyReportHash": "sha256:e6bf5f011040f95af19f08cb3ad1fbb62d3a45dd83c085b0e8336f527a79d563",
+  "reviewedAt": "2026-09-04T16:25:22.145Z"
+}

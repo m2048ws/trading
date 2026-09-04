@@ -1,0 +1,96 @@
+{
+  "schemaVersion": 3,
+  "changeName": "bind-scenario-record-codecs",
+  "runId": "run-293dbbc0-3b95-49ff-9ab8-826ece5d44a7",
+  "finalRevision": "fa010240f300abf02ccd0c13b24253674c8d6f35",
+  "planningRevision": "sha256:3b41082b634f9a9dad638aff39276756523aded846256d9b42492e22813a58bb",
+  "sourceDigest": "sha256:ed1e07a7dbeb06ac490bba7fe7fe7cd9de7e393bccb37d2db710b6a62119793a",
+  "traceabilityDigest": "sha256:9a01e14f918d7433e9cae1d044413a36bba7821e2cc44e9e61f928230ff90fd8",
+  "files": [
+    {
+      "path": "change-verify.json",
+      "digest": "sha256:f398ae11a5251193cc1919b5c5c66e893ba65f31d93cb7785224347e5b73e7cf"
+    },
+    {
+      "path": "groups/1/binding.json",
+      "digest": "sha256:9978a5d79d5e91ef37885e99158c8352f5c6562bdf45779d69c7f351d5ad530f"
+    },
+    {
+      "path": "groups/1/evidence.json",
+      "digest": "sha256:de3d5785e256e3a3c002d980254282b96e4786d03ab250fce96ce4d4d6c28e7b"
+    },
+    {
+      "path": "human-qa.json",
+      "digest": "sha256:10f1b1a4c1e7b90c81239163032f0aaaab7f7a77384aef8f0d9ea7f08e758168"
+    },
+    {
+      "path": "human-review.json",
+      "digest": "sha256:fbbaec8b11dec112bd4f36f71b77fd44e0dcccf70e2144811c5f2a1dcf979564"
+    },
+    {
+      "path": "references/blobs/0679a80193d81a4ab8836387de8054644fd1569e9b4275506cb3171fdbce9510",
+      "digest": "sha256:0679a80193d81a4ab8836387de8054644fd1569e9b4275506cb3171fdbce9510"
+    },
+    {
+      "path": "references/blobs/36effb8081b7dc21629135f6fa594f4232b544a4b33e4d428274e4067fcd503f",
+      "digest": "sha256:36effb8081b7dc21629135f6fa594f4232b544a4b33e4d428274e4067fcd503f"
+    },
+    {
+      "path": "references/blobs/58bec01c0bcbe6dc088eac482226689b6edb900eb00767dbb8203762a56f437e",
+      "digest": "sha256:58bec01c0bcbe6dc088eac482226689b6edb900eb00767dbb8203762a56f437e"
+    },
+    {
+      "path": "references/blobs/6a83782675f536952069630f130d6e61018a69d847109caf926939b723c4cd70",
+      "digest": "sha256:6a83782675f536952069630f130d6e61018a69d847109caf926939b723c4cd70"
+    },
+    {
+      "path": "references/blobs/71e5723b8f5565bbdfa9c78589ea1b7e5450d6547aff7afbce6d9c24984e2264",
+      "digest": "sha256:71e5723b8f5565bbdfa9c78589ea1b7e5450d6547aff7afbce6d9c24984e2264"
+    },
+    {
+      "path": "references/blobs/790e4ae7fa4ab9334b36c0273bc4d44d02d59cac352b50f5f0aeaadc026f5db8",
+      "digest": "sha256:790e4ae7fa4ab9334b36c0273bc4d44d02d59cac352b50f5f0aeaadc026f5db8"
+    },
+    {
+      "path": "references/blobs/82541016c6a847f7b5f8aa21be39eaa3229a202585be27866f2b218397985479",
+      "digest": "sha256:82541016c6a847f7b5f8aa21be39eaa3229a202585be27866f2b218397985479"
+    },
+    {
+      "path": "references/blobs/9a01e14f918d7433e9cae1d044413a36bba7821e2cc44e9e61f928230ff90fd8",
+      "digest": "sha256:9a01e14f918d7433e9cae1d044413a36bba7821e2cc44e9e61f928230ff90fd8"
+    },
+    {
+      "path": "references/blobs/afd0b025fe554c4c4b8beec3ae3c2b98d573feb074bf9b32c07e7670b2e4dd07",
+      "digest": "sha256:afd0b025fe554c4c4b8beec3ae3c2b98d573feb074bf9b32c07e7670b2e4dd07"
+    },
+    {
+      "path": "references/blobs/bca2729121ce2bde4dfe3e8db2af53d6129ea0db1162eaab0dd982d769ddf3d6",
+      "digest": "sha256:bca2729121ce2bde4dfe3e8db2af53d6129ea0db1162eaab0dd982d769ddf3d6"
+    },
+    {
+      "path": "references/blobs/c91ddca040afd8aca8925683e1a1730faadd944acaa5108e2426824b40473f0c",
+      "digest": "sha256:c91ddca040afd8aca8925683e1a1730faadd944acaa5108e2426824b40473f0c"
+    },
+    {
+      "path": "references/blobs/ed1e07a7dbeb06ac490bba7fe7fe7cd9de7e393bccb37d2db710b6a62119793a",
+      "digest": "sha256:ed1e07a7dbeb06ac490bba7fe7fe7cd9de7e393bccb37d2db710b6a62119793a"
+    },
+    {
+      "path": "references/scopes/groups/1.json",
+      "digest": "sha256:27b1ec1fa01fbad40dfcc8a5d2908b44e97419f3ad17740965ff9667d9a25342"
+    },
+    {
+      "path": "references/scopes/human-qa.json",
+      "digest": "sha256:e0cb7e1c647e96c42d72564cdfac9d6fe0662519d608bb8c65433dbe9559d458"
+    },
+    {
+      "path": "references/scopes/verify.json",
+      "digest": "sha256:c59a2a2cf9a29c17dae7b603509d5a248cebe116dd4d77d732457eff6cab00cf"
+    },
+    {
+      "path": "run-binding.json",
+      "digest": "sha256:d9a49496747dea71fe81743246636f71b83677c06ee961fc731c58668792a1e9"
+    }
+  ],
+  "manifestHash": "sha256:db11f417b9b2b52e876c9e618045c0ea2bac19033a63d234ad7cb44c75c8f1f9"
+}

@@ -1,0 +1,95 @@
+{
+  "verdict": "pass",
+  "finalRevision": "fa010240f300abf02ccd0c13b24253674c8d6f35",
+  "planningRevision": "sha256:3b41082b634f9a9dad638aff39276756523aded846256d9b42492e22813a58bb",
+  "sourceDigest": "sha256:ed1e07a7dbeb06ac490bba7fe7fe7cd9de7e393bccb37d2db710b6a62119793a",
+  "traceabilityDigest": "sha256:9a01e14f918d7433e9cae1d044413a36bba7821e2cc44e9e61f928230ff90fd8",
+  "reportHash": "sha256:e6bf5f011040f95af19f08cb3ad1fbb62d3a45dd83c085b0e8336f527a79d563",
+  "checks": [
+    {
+      "name": "clean release-25 repository test and benchmark matrix",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:build.sbt#sha256:790e4ae7fa4ab9334b36c0273bc4d44d02d59cac352b50f5f0aeaadc026f5db8",
+        "file:boundary-codecs%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fcodec%2FScenarioRecordScopeSuite.scala#sha256:71e5723b8f5565bbdfa9c78589ea1b7e5450d6547aff7afbce6d9c24984e2264",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FBoundaryCodecCompilerBoundarySuite.scala#sha256:6a83782675f536952069630f130d6e61018a69d847109caf926939b723c4cd70"
+      ]
+    },
+    {
+      "name": "in-process reflection guards and committed diff hygiene",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:tools%2Fcheck-in-process-reflection.sh#sha256:bca2729121ce2bde4dfe3e8db2af53d6129ea0db1162eaab0dd982d769ddf3d6",
+        "file:tools%2Ftest-check-in-process-reflection.sh#sha256:0679a80193d81a4ab8836387de8054644fd1569e9b4275506cb3171fdbce9510"
+      ]
+    },
+    {
+      "name": "clean acknowledged HEAD and unchanged RFC provenance and traceability",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:openspec%2Fchanges%2Fbind-scenario-record-codecs%2Fcorgi%2Fsource.yaml#sha256:ed1e07a7dbeb06ac490bba7fe7fe7cd9de7e393bccb37d2db710b6a62119793a",
+        "file:openspec%2Fchanges%2Fbind-scenario-record-codecs%2Fcorgi%2Ftraceability.yaml#sha256:9a01e14f918d7433e9cae1d044413a36bba7821e2cc44e9e61f928230ff90fd8",
+        "file:openspec%2Fchanges%2Fbind-scenario-record-codecs%2Ftasks.md#sha256:82541016c6a847f7b5f8aa21be39eaa3229a202585be27866f2b218397985479"
+      ]
+    },
+    {
+      "name": "codec ownership, immutable snapshot coherence, and completed-artifact boundary",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:boundary-codecs%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fcodec%2FScenarioRecords.scala#sha256:36effb8081b7dc21629135f6fa594f4232b544a4b33e4d428274e4067fcd503f",
+        "file:boundary-codecs%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fcodec%2FScenarioRecordScopeSuite.scala#sha256:71e5723b8f5565bbdfa9c78589ea1b7e5450d6547aff7afbce6d9c24984e2264",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FBoundaryCodecCompilerBoundarySuite.scala#sha256:6a83782675f536952069630f130d6e61018a69d847109caf926939b723c4cd70",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fboundary-codec-compiler%2Fpositive%2FScenarioRecordScopeClient.scala#sha256:58bec01c0bcbe6dc088eac482226689b6edb900eb00767dbb8203762a56f437e",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fboundary-codec-compiler%2Fnegative%2FScenarioRecordScopeMismatch.scala#sha256:afd0b025fe554c4c4b8beec3ae3c2b98d573feb074bf9b32c07e7670b2e4dd07"
+      ]
+    }
+  ],
+  "acceptance": [
+    {
+      "id": "AC-012",
+      "automated": "pass",
+      "evidenceRefs": [
+        "file:boundary-codecs%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fcodec%2FScenarioRecords.scala#sha256:36effb8081b7dc21629135f6fa594f4232b544a4b33e4d428274e4067fcd503f",
+        "file:boundary-codecs%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fcodec%2FScenarioRecordScopeSuite.scala#sha256:71e5723b8f5565bbdfa9c78589ea1b7e5450d6547aff7afbce6d9c24984e2264",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FBoundaryCodecCompilerBoundarySuite.scala#sha256:6a83782675f536952069630f130d6e61018a69d847109caf926939b723c4cd70"
+      ]
+    },
+    {
+      "id": "AC-013",
+      "automated": "pass",
+      "evidenceRefs": [
+        "file:boundary-codecs%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fcodec%2FScenarioRecords.scala#sha256:36effb8081b7dc21629135f6fa594f4232b544a4b33e4d428274e4067fcd503f",
+        "file:boundary-codecs%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fcodec%2FScenarioRecordScopeSuite.scala#sha256:71e5723b8f5565bbdfa9c78589ea1b7e5450d6547aff7afbce6d9c24984e2264",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fboundary-codec-compiler%2Fpositive%2FScenarioRecordScopeClient.scala#sha256:58bec01c0bcbe6dc088eac482226689b6edb900eb00767dbb8203762a56f437e"
+      ]
+    },
+    {
+      "id": "AC-014",
+      "automated": "pass",
+      "evidenceRefs": [
+        "file:boundary-codecs%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fcodec%2FScenarioRecords.scala#sha256:36effb8081b7dc21629135f6fa594f4232b544a4b33e4d428274e4067fcd503f",
+        "file:boundary-codecs%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fcodec%2FScenarioRecordScopeSuite.scala#sha256:71e5723b8f5565bbdfa9c78589ea1b7e5450d6547aff7afbce6d9c24984e2264",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fboundary-codec-compiler%2Fpositive%2FScenarioRecordScopeClient.scala#sha256:58bec01c0bcbe6dc088eac482226689b6edb900eb00767dbb8203762a56f437e"
+      ]
+    },
+    {
+      "id": "AC-015",
+      "automated": "pass",
+      "evidenceRefs": [
+        "file:boundary-codecs%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fcodec%2FScenarioRecords.scala#sha256:36effb8081b7dc21629135f6fa594f4232b544a4b33e4d428274e4067fcd503f",
+        "file:boundary-codecs%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fcodec%2FScenarioRecordScopeSuite.scala#sha256:71e5723b8f5565bbdfa9c78589ea1b7e5450d6547aff7afbce6d9c24984e2264"
+      ]
+    },
+    {
+      "id": "AC-016",
+      "automated": "pass",
+      "evidenceRefs": [
+        "file:boundary-codecs%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fcodec%2FScenarioRecords.scala#sha256:36effb8081b7dc21629135f6fa594f4232b544a4b33e4d428274e4067fcd503f",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FBoundaryCodecCompilerBoundarySuite.scala#sha256:6a83782675f536952069630f130d6e61018a69d847109caf926939b723c4cd70",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fboundary-codec-compiler%2Fpositive%2FScenarioRecordScopeClient.scala#sha256:58bec01c0bcbe6dc088eac482226689b6edb900eb00767dbb8203762a56f437e",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fboundary-codec-compiler%2Fnegative%2FScenarioRecordScopeMismatch.scala#sha256:afd0b025fe554c4c4b8beec3ae3c2b98d573feb074bf9b32c07e7670b2e4dd07"
+      ]
+    }
+  ],
+  "verifiedAt": "2026-09-04T16:24:05.125Z"
+}
