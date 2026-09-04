@@ -31,6 +31,7 @@ Add an entry only after a human accepts it or a verified delivery proves it. Eve
 - [[wiki/deliveries/RFC-0002-architecture-portfolio-S-05-versioned-boundary-codecs|RFC-0002-architecture-portfolio/S-05-versioned-boundary-codecs]] — verified by sha256:21835d70b9da0a74b9b03f9a22ca11833eec287671357f63a7281dd3de69c897
 - [[wiki/deliveries/RFC-0003-execution-lifecycle-foundation-S-01-actual-execution-lifecycle|RFC-0003-execution-lifecycle-foundation/S-01-actual-execution-lifecycle]] — verified by sha256:65afe49168a3c223c12556a2ffdfea42e0244580b2d29a30b3d5365b9d28c2e6
 - [[wiki/deliveries/RFC-0004-simplify-in-process-trust-boundary-S-01-simplify-in-process-trust-boundary|RFC-0004-simplify-in-process-trust-boundary/S-01-simplify-in-process-trust-boundary]] — verified by sha256:77f7954a068af43ca196f8e88262efca7c1b782ca20ebfa860cf2ef3847ef022
+- [[wiki/deliveries/RFC-0005-simplify-post-trust-boundary-S-01-retire-trust-boundary-migration-scaffolding|RFC-0005-simplify-post-trust-boundary/S-01-retire-trust-boundary-migration-scaffolding]] — verified by sha256:048651d8e79a23efe53616bb45e0c46e0f4a986f1278d5816470b1fc68702ad8
 <!-- corgi:managed:end verified-deliveries -->
 
 ## Working Preferences

@@ -1,0 +1,116 @@
+{
+  "schemaVersion": 3,
+  "changeName": "retire-trust-boundary-migration-scaffolding",
+  "runId": "run-36260a45-2e85-4bdc-b4a0-fe7d620b0139",
+  "finalRevision": "522fad5d570c1a76da6c30b408c26f0991bee1af",
+  "planningRevision": "sha256:e6345fcbf01ddfa18310c5e492453711ef4e0616376546b633a64e391bebf544",
+  "sourceDigest": "sha256:dfac56dc14fb55e286cd1493adb5014f44a2dba9858e8bb8e75e4314d6e58782",
+  "traceabilityDigest": "sha256:f4a220616972a5c04c61e60877a70829a0f4ae0cc8500f7f0913a62d6a24cdf2",
+  "files": [
+    {
+      "path": "change-verify.json",
+      "digest": "sha256:39c8597d898a43720a8c2219c1e9b7cb40f8da9a954220be75bdcd13c33c8ecb"
+    },
+    {
+      "path": "groups/1/binding.json",
+      "digest": "sha256:e30a1cb91095b7ca3efa87c242aa4b9a48eb6850fb091406e1801775f100ef4c"
+    },
+    {
+      "path": "groups/1/evidence.json",
+      "digest": "sha256:339a4e5792a4518ce3cc48bfe9ec12379843ccbd9b995fe1abb0bc0ca617f3ba"
+    },
+    {
+      "path": "groups/2/binding.json",
+      "digest": "sha256:28336662646af6fe7bfeec0ba4857a7bab76ba222de1dc057c7a90d63412feae"
+    },
+    {
+      "path": "groups/2/evidence.json",
+      "digest": "sha256:f00bd4f5525290c00760a863cf9a3634c0fbb5e2640cce0252513b04132bf71b"
+    },
+    {
+      "path": "human-qa.json",
+      "digest": "sha256:79a7b31d3693a9f794a466777fb3aed9260f42bc5ab38c106e793bdd62547f77"
+    },
+    {
+      "path": "human-review.json",
+      "digest": "sha256:459ab78c7a56248bf4b0b5e12276c6fccba5a4a7771c39740eb5c3bfa0ff962a"
+    },
+    {
+      "path": "references/blobs/0679a80193d81a4ab8836387de8054644fd1569e9b4275506cb3171fdbce9510",
+      "digest": "sha256:0679a80193d81a4ab8836387de8054644fd1569e9b4275506cb3171fdbce9510"
+    },
+    {
+      "path": "references/blobs/5ae42492cbd987c4e6af011cb409455c8fe7b1daf9b9f453ef6a984b7f626b7c",
+      "digest": "sha256:5ae42492cbd987c4e6af011cb409455c8fe7b1daf9b9f453ef6a984b7f626b7c"
+    },
+    {
+      "path": "references/blobs/5cc70cb38c3e5aa6cacf346387fa2775df24c07d02f7382ea6c4069622140917",
+      "digest": "sha256:5cc70cb38c3e5aa6cacf346387fa2775df24c07d02f7382ea6c4069622140917"
+    },
+    {
+      "path": "references/blobs/790e4ae7fa4ab9334b36c0273bc4d44d02d59cac352b50f5f0aeaadc026f5db8",
+      "digest": "sha256:790e4ae7fa4ab9334b36c0273bc4d44d02d59cac352b50f5f0aeaadc026f5db8"
+    },
+    {
+      "path": "references/blobs/80bd7e8759f43f4bb72c092656264ef93467aad84892d068cb7fff98a3a64567",
+      "digest": "sha256:80bd7e8759f43f4bb72c092656264ef93467aad84892d068cb7fff98a3a64567"
+    },
+    {
+      "path": "references/blobs/8680ddc9cf71dc5c8b8ea8d7bdc66305f18c26578fd83defe96a9432ae3032c1",
+      "digest": "sha256:8680ddc9cf71dc5c8b8ea8d7bdc66305f18c26578fd83defe96a9432ae3032c1"
+    },
+    {
+      "path": "references/blobs/9892be755859ca09e735e4c20b955275abdccf996094d982ddb204d85baf3115",
+      "digest": "sha256:9892be755859ca09e735e4c20b955275abdccf996094d982ddb204d85baf3115"
+    },
+    {
+      "path": "references/blobs/b95059f4f262b87737d159ab30e8f2b2b372c37fe72996d9700b2d9695e971ce",
+      "digest": "sha256:b95059f4f262b87737d159ab30e8f2b2b372c37fe72996d9700b2d9695e971ce"
+    },
+    {
+      "path": "references/blobs/bae238d1b0f317e8f979095fd5f660286b40647aed54d915a33cd357657c1fbc",
+      "digest": "sha256:bae238d1b0f317e8f979095fd5f660286b40647aed54d915a33cd357657c1fbc"
+    },
+    {
+      "path": "references/blobs/bca2729121ce2bde4dfe3e8db2af53d6129ea0db1162eaab0dd982d769ddf3d6",
+      "digest": "sha256:bca2729121ce2bde4dfe3e8db2af53d6129ea0db1162eaab0dd982d769ddf3d6"
+    },
+    {
+      "path": "references/blobs/d42660628c7c20b9884de2a7bad2250b5e72eee76633524a937773dc7bf2a14d",
+      "digest": "sha256:d42660628c7c20b9884de2a7bad2250b5e72eee76633524a937773dc7bf2a14d"
+    },
+    {
+      "path": "references/blobs/d8f4d6c07ea5f1bf7e3653240a4b140b1c2a776df84228eca548ce213e5b3308",
+      "digest": "sha256:d8f4d6c07ea5f1bf7e3653240a4b140b1c2a776df84228eca548ce213e5b3308"
+    },
+    {
+      "path": "references/blobs/dfac56dc14fb55e286cd1493adb5014f44a2dba9858e8bb8e75e4314d6e58782",
+      "digest": "sha256:dfac56dc14fb55e286cd1493adb5014f44a2dba9858e8bb8e75e4314d6e58782"
+    },
+    {
+      "path": "references/blobs/f4a220616972a5c04c61e60877a70829a0f4ae0cc8500f7f0913a62d6a24cdf2",
+      "digest": "sha256:f4a220616972a5c04c61e60877a70829a0f4ae0cc8500f7f0913a62d6a24cdf2"
+    },
+    {
+      "path": "references/scopes/groups/1.json",
+      "digest": "sha256:c8444ee0bafa0a64c08c794430be0abc524a0355741e0b2be502346c2b22a33f"
+    },
+    {
+      "path": "references/scopes/groups/2.json",
+      "digest": "sha256:245ea6f30e4c41074f23b3da1e7a2007c545614afba43b6e2f42893db8703ba3"
+    },
+    {
+      "path": "references/scopes/human-qa.json",
+      "digest": "sha256:3065555b89380137f0e816848ae0909156caf1a019fbbc646217edfa5f05189f"
+    },
+    {
+      "path": "references/scopes/verify.json",
+      "digest": "sha256:fd01c8d3cef81d361599d83bcb3be883c13fd71eaefaa5206678d1cee13024ea"
+    },
+    {
+      "path": "run-binding.json",
+      "digest": "sha256:0f279ebd8207bf6527cdefacfe9783c188dc0de35d485fb6d58ea999de12903a"
+    }
+  ],
+  "manifestHash": "sha256:048651d8e79a23efe53616bb45e0c46e0f4a986f1278d5816470b1fc68702ad8"
+}

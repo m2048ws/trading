@@ -8,19 +8,19 @@ updated: 2026-09-03
 > Durable checkpoint mirror. Read first at startup; `.corgi/loop` remains lifecycle authority. `corgispec archive --local` alone writes archive closeout fields.
 
 ## Delivery Pointer
-- **RFC**: RFC-0004-simplify-in-process-trust-boundary
-- **RFC Revision**: 24090e8f0af2b04c733f8bffd2b394f232084877
-- **Slice**: S-01-simplify-in-process-trust-boundary
-- **Issue**: 36 https://github.com/m2048ws/trading/issues/36
-- **Change**: simplify-in-process-trust-boundary
-- **Worktree**: /Users/m/src/money/.worktrees/simplify-in-process-trust-boundary
+- **RFC**: RFC-0005-simplify-post-trust-boundary
+- **RFC Revision**: 7f1d1ab9eb88d0912d3219920eacadea4d01aa2e
+- **Slice**: S-01-retire-trust-boundary-migration-scaffolding
+- **Issue**: 38 https://github.com/m2048ws/trading/issues/38
+- **Change**: retire-trust-boundary-migration-scaffolding
+- **Worktree**: /Users/m/src/money/.worktrees/retire-trust-boundary-migration-scaffolding
 - **Phase at Checkpoint**: archiving
 - **Task Group at Checkpoint**: none
-- **Observed Run Revision**: 7
-- **Last Verified HEAD**: 1833257ee0fed4941e59d3482d8bf5cef85e7933
+- **Observed Run Revision**: 8
+- **Last Verified HEAD**: 522fad5d570c1a76da6c30b408c26f0991bee1af
 
 ## Next Action
-- Consult Run Contract v3: resume tracker closeout for `simplify-in-process-trust-boundary` only if pending; otherwise select the next accepted Slice. Local delivery: `wiki/deliveries/RFC-0004-simplify-in-process-trust-boundary-S-01-simplify-in-process-trust-boundary.md`.
+- Consult Run Contract v3: resume tracker closeout for `retire-trust-boundary-migration-scaffolding` only if pending; otherwise select the next accepted Slice. Local delivery: `wiki/deliveries/RFC-0005-simplify-post-trust-boundary-S-01-retire-trust-boundary-migration-scaffolding.md`.
 
 ## Blockers
 - none
@@ -58,6 +58,11 @@ updated: 2026-09-03
 - Task Group 11 repaired the failed whole-change Verify by removing the remaining reference-data singleton permits and
   erased Java runtime bridge, preserving semantic lineage/reconciliation and erased-input checks, repairing change-spec
   whitespace, and passing the clean 1,043-test aggregate plus ordinary Scala/Java and runtime performance checks.
+- RFC-0005/S-01 Task Group 1 replaced migration allowance accounting with a permanent zero-tolerance reflection guard,
+  added an isolated deterministic regression fixture, and made the normal CI workflow execute both checks.
+- RFC-0005/S-01 Task Group 2 removed the runtime-only Java-first compile order, stale bridge explanation, and duplicate
+  release option; the runtime inherits mixed compilation and repository `--release 25`, with 1,043 tests and benchmark
+  compilation passing after a clean build.
 
 ## Promotion Queue
 - none

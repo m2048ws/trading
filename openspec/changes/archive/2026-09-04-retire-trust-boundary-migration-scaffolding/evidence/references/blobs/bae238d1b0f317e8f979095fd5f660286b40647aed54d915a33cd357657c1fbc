@@ -1,0 +1,235 @@
+{
+  "schemaVersion": 1,
+  "changeName": "retire-trust-boundary-migration-scaffolding",
+  "schemaName": "spec-driven",
+  "planningRevision": "sha256:e6345fcbf01ddfa18310c5e492453711ef4e0616376546b633a64e391bebf544",
+  "status": "ready",
+  "taskArtifactId": "tasks",
+  "artifactPaths": {
+    "design": {
+      "outputPath": "design.md",
+      "resolvedOutputPath": "/Users/m/src/money/.worktrees/retire-trust-boundary-migration-scaffolding/openspec/changes/retire-trust-boundary-migration-scaffolding/design.md",
+      "existingOutputPaths": [
+        "/Users/m/src/money/.worktrees/retire-trust-boundary-migration-scaffolding/openspec/changes/retire-trust-boundary-migration-scaffolding/design.md"
+      ]
+    },
+    "proposal": {
+      "outputPath": "proposal.md",
+      "resolvedOutputPath": "/Users/m/src/money/.worktrees/retire-trust-boundary-migration-scaffolding/openspec/changes/retire-trust-boundary-migration-scaffolding/proposal.md",
+      "existingOutputPaths": [
+        "/Users/m/src/money/.worktrees/retire-trust-boundary-migration-scaffolding/openspec/changes/retire-trust-boundary-migration-scaffolding/proposal.md"
+      ]
+    },
+    "specs": {
+      "outputPath": "specs/**/*.md",
+      "resolvedOutputPath": "/Users/m/src/money/.worktrees/retire-trust-boundary-migration-scaffolding/openspec/changes/retire-trust-boundary-migration-scaffolding/specs/**/*.md",
+      "existingOutputPaths": [
+        "/Users/m/src/money/.worktrees/retire-trust-boundary-migration-scaffolding/openspec/changes/retire-trust-boundary-migration-scaffolding/specs/repository-architecture/spec.md",
+        "/Users/m/src/money/.worktrees/retire-trust-boundary-migration-scaffolding/openspec/changes/retire-trust-boundary-migration-scaffolding/specs/scala-functional-design/spec.md"
+      ]
+    },
+    "tasks": {
+      "outputPath": "tasks.md",
+      "resolvedOutputPath": "/Users/m/src/money/.worktrees/retire-trust-boundary-migration-scaffolding/openspec/changes/retire-trust-boundary-migration-scaffolding/tasks.md",
+      "existingOutputPaths": [
+        "/Users/m/src/money/.worktrees/retire-trust-boundary-migration-scaffolding/openspec/changes/retire-trust-boundary-migration-scaffolding/tasks.md"
+      ]
+    }
+  },
+  "checks": [
+    {
+      "code": "ARTIFACTS_COMPLETE",
+      "status": "pass",
+      "severity": "info",
+      "message": "All planning artifacts are complete"
+    },
+    {
+      "code": "OPENSPEC_STRICT_VALIDATION",
+      "status": "pass",
+      "severity": "info",
+      "message": "OpenSpec strict validation passed"
+    },
+    {
+      "code": "TASK_ARTIFACT_CONFIGURED",
+      "status": "pass",
+      "severity": "info",
+      "message": "Task artifact 'tasks' exists in the schema"
+    },
+    {
+      "code": "TASK_ARTIFACT_UNIQUE",
+      "status": "pass",
+      "severity": "info",
+      "message": "Exactly one concrete task artifact was resolved",
+      "paths": [
+        "/Users/m/src/money/.worktrees/retire-trust-boundary-migration-scaffolding/openspec/changes/retire-trust-boundary-migration-scaffolding/tasks.md"
+      ]
+    },
+    {
+      "code": "TASK_GROUP_STRUCTURE",
+      "status": "pass",
+      "severity": "info",
+      "message": "2 Task Group(s) have stable unique ids",
+      "paths": [
+        "/Users/m/src/money/.worktrees/retire-trust-boundary-migration-scaffolding/openspec/changes/retire-trust-boundary-migration-scaffolding/tasks.md"
+      ]
+    },
+    {
+      "code": "NO_PLACEHOLDERS",
+      "status": "pass",
+      "severity": "info",
+      "message": "Planning artifacts contain no unresolved placeholders"
+    },
+    {
+      "code": "NO_OPEN_QUESTIONS",
+      "status": "pass",
+      "severity": "info",
+      "message": "No unresolved Open Questions sections remain"
+    },
+    {
+      "code": "CAPABILITY_SPEC_PARITY",
+      "status": "pass",
+      "severity": "info",
+      "message": "Proposal capability names match concrete delta specs",
+      "paths": [
+        "/Users/m/src/money/.worktrees/retire-trust-boundary-migration-scaffolding/openspec/changes/retire-trust-boundary-migration-scaffolding/proposal.md",
+        "/Users/m/src/money/.worktrees/retire-trust-boundary-migration-scaffolding/openspec/changes/retire-trust-boundary-migration-scaffolding/specs/repository-architecture/spec.md",
+        "/Users/m/src/money/.worktrees/retire-trust-boundary-migration-scaffolding/openspec/changes/retire-trust-boundary-migration-scaffolding/specs/scala-functional-design/spec.md"
+      ]
+    },
+    {
+      "code": "ARCHIVE_DELTA_COMPATIBLE",
+      "status": "pass",
+      "severity": "info",
+      "message": "Every MODIFIED requirement preserves canonical scenario identities"
+    },
+    {
+      "code": "CHANGE_CONTRACT_PRESENT",
+      "status": "pass",
+      "severity": "info",
+      "message": "Change is bound to RFC-0005-simplify-post-trust-boundary/S-01-retire-trust-boundary-migration-scaffolding",
+      "paths": [
+        "/Users/m/src/money/.worktrees/retire-trust-boundary-migration-scaffolding/openspec/changes/retire-trust-boundary-migration-scaffolding/corgi/source.yaml",
+        "/Users/m/src/money/.worktrees/retire-trust-boundary-migration-scaffolding/openspec/changes/retire-trust-boundary-migration-scaffolding/corgi/traceability.yaml"
+      ]
+    },
+    {
+      "code": "TRACEABILITY_COMPLETE",
+      "status": "pass",
+      "severity": "info",
+      "message": "Every acceptance criterion maps to planning artifacts and Task Groups",
+      "paths": [
+        "/Users/m/src/money/.worktrees/retire-trust-boundary-migration-scaffolding/openspec/changes/retire-trust-boundary-migration-scaffolding/corgi/traceability.yaml"
+      ]
+    },
+    {
+      "code": "SOURCE_PROVENANCE_CURRENT",
+      "status": "pass",
+      "severity": "info",
+      "message": "RFC acceptance, branch ancestry, Slice binding, and tracker source are current",
+      "paths": []
+    }
+  ],
+  "taskGroups": [
+    {
+      "number": 1,
+      "name": "Permanent Zero-Tolerance Reflection Guard",
+      "tasks": [
+        {
+          "id": "1.1",
+          "description": "Confirm the effective RFC/source binding, exact `origin/main` planning baseline, isolated worktree identity,",
+          "done": false,
+          "line": 3
+        },
+        {
+          "id": "1.2",
+          "description": "Simplify `tools/check-in-process-reflection.sh` to reject every established prohibited token with",
+          "done": false,
+          "line": 5
+        },
+        {
+          "id": "1.3",
+          "description": "Add a POSIX-shell regression fixture that executes the tracked guard against a trap-cleaned temporary source",
+          "done": false,
+          "line": 8
+        },
+        {
+          "id": "1.4",
+          "description": "Add the real repository guard and its regression fixture to the normal GitHub Actions build job before the SBT",
+          "done": false,
+          "line": 11
+        },
+        {
+          "id": "1.5",
+          "description": "Run the guard and regression fixture, inspect their stable pass/fail diagnostics and tracked-file cleanliness,",
+          "done": false,
+          "line": 13
+        }
+      ],
+      "totalTasks": 5,
+      "completedTasks": 0,
+      "status": "pending",
+      "line": 1
+    },
+    {
+      "number": 2,
+      "name": "Runtime Build Cleanup and Integration Verification",
+      "tasks": [
+        {
+          "id": "2.1",
+          "description": "Remove only the runtime project's obsolete Java-bridge comment, `JavaThenScala` compile-order override, and",
+          "done": false,
+          "line": 18
+        },
+        {
+          "id": "2.2",
+          "description": "Run a clean focused runtime compile and test, confirming no source-order dependency or project-local Java",
+          "done": false,
+          "line": 20
+        },
+        {
+          "id": "2.3",
+          "description": "Run formatting checks, the permanent guard and its fixture, strict OpenSpec/Corgi validation, and the clean",
+          "done": false,
+          "line": 22
+        },
+        {
+          "id": "2.4",
+          "description": "Inspect the completed diff and test evidence to confirm no production API, dependency, domain result, wire",
+          "done": false,
+          "line": 24
+        }
+      ],
+      "totalTasks": 4,
+      "completedTasks": 0,
+      "status": "pending",
+      "line": 16
+    }
+  ],
+  "contract": {
+    "schemaVersion": 1,
+    "pathConvention": "project-relative-posix",
+    "kind": "rfc-slice",
+    "deliveryRef": "RFC-0005-simplify-post-trust-boundary/S-01-retire-trust-boundary-migration-scaffolding",
+    "rfcId": "RFC-0005-simplify-post-trust-boundary",
+    "rfcDigest": "sha256:31336459ac68c4a188388bb58cf59fe8c84830a0b72aa66d29fdcff4f90657a3",
+    "acceptedCommit": "7f1d1ab9eb88d0912d3219920eacadea4d01aa2e",
+    "sliceId": "S-01-retire-trust-boundary-migration-scaffolding",
+    "acceptanceIds": [
+      "AC-001",
+      "AC-002",
+      "AC-003"
+    ],
+    "sourcePath": "openspec/changes/retire-trust-boundary-migration-scaffolding/corgi/source.yaml",
+    "sourceDigest": "sha256:dfac56dc14fb55e286cd1493adb5014f44a2dba9858e8bb8e75e4314d6e58782",
+    "traceabilityPath": "openspec/changes/retire-trust-boundary-migration-scaffolding/corgi/traceability.yaml",
+    "traceabilityDigest": "sha256:f4a220616972a5c04c61e60877a70829a0f4ae0cc8500f7f0913a62d6a24cdf2",
+    "tracker": {
+      "provider": "github",
+      "idempotencyKey": "df7661c17182cfd79a3ab2d7b67614529d953aab13d79665a93bfa49f68b7237",
+      "issue": {
+        "id": "38",
+        "url": "https://github.com/m2048ws/trading/issues/38"
+      }
+    }
+  }
+}

@@ -1,0 +1,48 @@
+in-process reflection guard: pass (no production or benchmark sites)
+in-process reflection guard regression: pass
+reflection allowance baseline: absent
+runtime bridge overrides: absent
+42:          tools/check-in-process-reflection.sh
+43:          tools/test-check-in-process-reflection.sh
+[info] welcome to sbt 1.12.15 (Homebrew Java 26.0.2)
+[info] loading settings for project retire-trust-boundary-migration-scaffolding-build from plugins.sbt...
+[info] loading project definition from /Users/m/src/money/.worktrees/retire-trust-boundary-migration-scaffolding/project
+[info] loading settings for project root from build.sbt...
+[info] resolving key references (12514 settings) ...
+[info] set current project to trading (in build file:/Users/m/src/money/.worktrees/retire-trust-boundary-migration-scaffolding/)
+[info] Mixed
+[info] * --release
+[info] * 25
+[success] Total time: 0 s, completed Sep 4, 2026, 1:43:43 AM
+{
+  "status": "ready",
+  "planningRevision": "sha256:e6345fcbf01ddfa18310c5e492453711ef4e0616376546b633a64e391bebf544",
+  "contract": {
+    "schemaVersion": 1,
+    "pathConvention": "project-relative-posix",
+    "kind": "rfc-slice",
+    "deliveryRef": "RFC-0005-simplify-post-trust-boundary/S-01-retire-trust-boundary-migration-scaffolding",
+    "rfcId": "RFC-0005-simplify-post-trust-boundary",
+    "rfcDigest": "sha256:31336459ac68c4a188388bb58cf59fe8c84830a0b72aa66d29fdcff4f90657a3",
+    "acceptedCommit": "7f1d1ab9eb88d0912d3219920eacadea4d01aa2e",
+    "sliceId": "S-01-retire-trust-boundary-migration-scaffolding",
+    "acceptanceIds": [
+      "AC-001",
+      "AC-002",
+      "AC-003"
+    ],
+    "sourcePath": "openspec/changes/retire-trust-boundary-migration-scaffolding/corgi/source.yaml",
+    "sourceDigest": "sha256:dfac56dc14fb55e286cd1493adb5014f44a2dba9858e8bb8e75e4314d6e58782",
+    "traceabilityPath": "openspec/changes/retire-trust-boundary-migration-scaffolding/corgi/traceability.yaml",
+    "traceabilityDigest": "sha256:f4a220616972a5c04c61e60877a70829a0f4ae0cc8500f7f0913a62d6a24cdf2",
+    "tracker": {
+      "provider": "github",
+      "idempotencyKey": "df7661c17182cfd79a3ab2d7b67614529d953aab13d79665a93bfa49f68b7237",
+      "issue": {
+        "id": "38",
+        "url": "https://github.com/m2048ws/trading/issues/38"
+      }
+    }
+  },
+  "failures": []
+}
