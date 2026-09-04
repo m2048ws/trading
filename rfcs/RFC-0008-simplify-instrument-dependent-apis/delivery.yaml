@@ -1,6 +1,6 @@
 schemaVersion: 1
 rfcId: RFC-0008-simplify-instrument-dependent-apis
-revision: 11
+revision: 12
 slices:
   S-01-name-instrument-dimensions:
     status: archived
@@ -73,4 +73,12 @@ slices:
       commit: 819a4c8dc3fc601655790a512ad24df2df7aee91
       evidenceManifest: sha256:a512c2e68318d9b39f26cb899009f9d524de936ec6d6bbb2151c910f78fb3f5b
   S-06-bind-market-state-construction:
-    status: unbound
+    status: planned
+    binding:
+      change: bind-market-state-construction
+      issue:
+        provider: github
+        id: '63'
+        url: https://github.com/m2048ws/trading/issues/63
+      sourceDigest: sha256:7228b2dcc47996a30649f1192bf82b83a696dacc62686de4ab86fffbe432c0ae
+      plannedAt: '2026-09-04T20:46:53.033Z'

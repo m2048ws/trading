@@ -10,17 +10,17 @@ updated: 2026-09-04
 ## Delivery Pointer
 - **RFC**: RFC-0008-simplify-instrument-dependent-apis
 - **RFC Revision**: bf457296faa7d29aec0840a7e8f48d41ed0f7491
-- **Slice**: S-05-bind-instrument-risk
-- **Issue**: 61 https://github.com/m2048ws/trading/issues/61
-- **Change**: bind-instrument-risk
-- **Worktree**: /Users/m/src/money/.worktrees/bind-instrument-risk
-- **Phase at Checkpoint**: archiving
-- **Task Group at Checkpoint**: none
-- **Observed Run Revision**: 7
-- **Last Verified HEAD**: 819a4c8dc3fc601655790a512ad24df2df7aee91
+- **Slice**: S-06-bind-market-state-construction
+- **Issue**: 63 https://github.com/m2048ws/trading/issues/63
+- **Change**: bind-market-state-construction
+- **Worktree**: /Users/m/src/money/.worktrees/bind-market-state-construction
+- **Phase at Checkpoint**: planning_ready
+- **Task Group at Checkpoint**: 1
+- **Observed Run Revision**: none
+- **Last Verified HEAD**: 54dc75521ed2d22d59bc42b95e0e5773fb1061a5
 
 ## Next Action
-- Consult Run Contract v3: resume tracker closeout for `bind-instrument-risk` only if pending; otherwise select the next accepted Slice. Local delivery: `wiki/deliveries/RFC-0008-simplify-instrument-dependent-apis-S-05-bind-instrument-risk.md`.
+- Start Apply for `bind-market-state-construction` Task Group 1.
 
 ## Blockers
 - none
