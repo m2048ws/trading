@@ -6,43 +6,36 @@ import trading.quantity.JavaSerializationUnsupported
 final case class TransitionWork(indexLookups: Int, indexUpdates: Int, fullHistoryScans: Int)
   extends JavaSerializationUnsupported
 
-enum LifecycleTransitionKind extends JavaSerializationUnsupported:
-  case Applied
-  case IdempotentDuplicate
-  case ConflictingEvidence
-
 sealed abstract class LifecycleRejection extends JavaSerializationUnsupported with Product with Serializable
 final case class CommandInputRejected(violations: CommandViolations)   extends LifecycleRejection
 final case class SourceInputRejected(violations: SourceFactViolations) extends LifecycleRejection
 
-sealed abstract class LifecycleTransition[D <: Dim, B <: Dim, Q <: Dim] protected ()
-  extends JavaSerializationUnsupported:
+sealed trait LifecycleTransition[D <: Dim, B <: Dim, Q <: Dim] extends JavaSerializationUnsupported:
   def state: ExecutionState[D, B, Q]
   def work: TransitionWork
 
-final class LifecycleAccepted[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
-  val state: ExecutionState[D, B, Q],
-  val kind: LifecycleTransitionKind,
-  val work: TransitionWork)
-  extends LifecycleTransition[D, B, Q]():
+sealed trait LifecycleAccepted[D <: Dim, B <: Dim, Q <: Dim] extends LifecycleTransition[D, B, Q]
 
-  override def equals(other: Any): Boolean = other match
-    case that: LifecycleAccepted[?, ?, ?] =>
-      state == that.state && kind == that.kind && work == that.work
-    case _ => false
-  override def hashCode(): Int = (state, kind, work).hashCode
+final case class LifecycleApplied[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
+  state: ExecutionState[D, B, Q],
+  work: TransitionWork)
+  extends LifecycleAccepted[D, B, Q]
 
-final class LifecycleRejected[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
-  val state: ExecutionState[D, B, Q],
-  val rejection: LifecycleRejection,
-  val work: TransitionWork)
-  extends LifecycleTransition[D, B, Q]():
+final case class LifecycleIdempotent[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
+  state: ExecutionState[D, B, Q],
+  work: TransitionWork)
+  extends LifecycleAccepted[D, B, Q]
 
-  override def equals(other: Any): Boolean = other match
-    case that: LifecycleRejected[?, ?, ?] =>
-      state == that.state && rejection == that.rejection && work == that.work
-    case _ => false
-  override def hashCode(): Int = (state, rejection, work).hashCode
+final case class LifecycleConflicting[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
+  state: ExecutionState[D, B, Q],
+  work: TransitionWork)
+  extends LifecycleAccepted[D, B, Q]
+
+final case class LifecycleRejected[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
+  state: ExecutionState[D, B, Q],
+  rejection: LifecycleRejection,
+  work: TransitionWork)
+  extends LifecycleTransition[D, B, Q]
 
 sealed abstract class LifecycleDiagnostic extends JavaSerializationUnsupported with Product with Serializable:
   def location: LifecycleDiagnosticLocation
@@ -213,20 +206,6 @@ object ExecutionState:
   ): ExecutionState[D, B, Q] =
     new ExecutionState(lifecycle, commands, source, work)
 
-  private def accepted[D <: Dim, B <: Dim, Q <: Dim](
-    state: ExecutionState[D, B, Q],
-    kind: LifecycleTransitionKind,
-    work: TransitionWork
-  ): LifecycleAccepted[D, B, Q] =
-    new LifecycleAccepted(state, kind, work)
-
-  private def rejected[D <: Dim, B <: Dim, Q <: Dim](
-    state: ExecutionState[D, B, Q],
-    rejection: LifecycleRejection,
-    work: TransitionWork
-  ): LifecycleRejected[D, B, Q] =
-    new LifecycleRejected(state, rejection, work)
-
   def initial[D <: Dim, B <: Dim, Q <: Dim](
     lifecycle: ExecutionLifecycle[D, B, Q]
   ): Either[CommandViolations, ExecutionState[D, B, Q]] =
@@ -247,7 +226,7 @@ object ExecutionState:
         if submit.executionOrderId == state.lifecycle.executionOrderId &&
           !state.commands.issuedCommands.get(submit.commandId).contains(submit) =>
         val work = TransitionWork(1, 0, 0)
-        rejected(
+        LifecycleRejected(
           construct(state.lifecycle, state.commands, state.source, work),
           CommandInputRejected(
             CommandViolations.one(FreshSubmitBlockedByIndeterminate(originalCommandId, submit.commandId))
@@ -259,13 +238,13 @@ object ExecutionState:
         val work   = TransitionWork(1, if result.state == state.commands then 0 else 1, 0)
         val next   = construct(state.lifecycle, result.state, state.source, work)
         result match
-          case _: AppliedCommandTransition[?, ?, ?]    => accepted(next, LifecycleTransitionKind.Applied, work)
+          case _: AppliedCommandTransition[?, ?, ?]    => LifecycleApplied(next, work)
           case _: IdempotentCommandTransition[?, ?, ?] =>
-            accepted(next, LifecycleTransitionKind.IdempotentDuplicate, work)
+            LifecycleIdempotent(next, work)
           case _: ConflictingCommandTransition[?, ?, ?] | _: ConflictingDispatchTransition[?, ?, ?] =>
-            accepted(next, LifecycleTransitionKind.ConflictingEvidence, work)
+            LifecycleConflicting(next, work)
           case rejectedCommand: RejectedCommandTransition[?, ?, ?] =>
-            rejected(next, CommandInputRejected(rejectedCommand.violations), work)
+            LifecycleRejected(next, CommandInputRejected(rejectedCommand.violations), work)
     end match
   end recordCommand
 
@@ -277,13 +256,13 @@ object ExecutionState:
     val work   = TransitionWork(1, if result.state == state.commands then 0 else 1, 0)
     val next   = construct(state.lifecycle, result.state, state.source, work)
     result match
-      case _: AppliedCommandTransition[?, ?, ?]    => accepted(next, LifecycleTransitionKind.Applied, work)
+      case _: AppliedCommandTransition[?, ?, ?]    => LifecycleApplied(next, work)
       case _: IdempotentCommandTransition[?, ?, ?] =>
-        accepted(next, LifecycleTransitionKind.IdempotentDuplicate, work)
+        LifecycleIdempotent(next, work)
       case _: ConflictingCommandTransition[?, ?, ?] | _: ConflictingDispatchTransition[?, ?, ?] =>
-        accepted(next, LifecycleTransitionKind.ConflictingEvidence, work)
+        LifecycleConflicting(next, work)
       case rejectedCommand: RejectedCommandTransition[?, ?, ?] =>
-        rejected(next, CommandInputRejected(rejectedCommand.violations), work)
+        LifecycleRejected(next, CommandInputRejected(rejectedCommand.violations), work)
 
   private def recordSource[D <: Dim, B <: Dim, Q <: Dim](
     state: ExecutionState[D, B, Q],
@@ -299,12 +278,12 @@ object ExecutionState:
           kinds.contains(SourceFactClassification.ConflictingSourceEvent) ||
           kinds.contains(SourceFactClassification.ConflictingFillIdentity) ||
           kinds.contains(SourceFactClassification.ConflictingStreamPosition)
-        then accepted(next, LifecycleTransitionKind.ConflictingEvidence, work)
+        then LifecycleConflicting(next, work)
         else if kinds.toVector == Vector(SourceFactClassification.DuplicateSourceEvent) then
-          accepted(next, LifecycleTransitionKind.IdempotentDuplicate, work)
-        else accepted(next, LifecycleTransitionKind.Applied, work)
+          LifecycleIdempotent(next, work)
+        else LifecycleApplied(next, work)
       case rejectedSource: SourceFactRejected[D, B, Q] =>
-        rejected(next, SourceInputRejected(rejectedSource.violations), work)
+        LifecycleRejected(next, SourceInputRejected(rejectedSource.violations), work)
 
   def replay[D <: Dim, B <: Dim, Q <: Dim](
     lifecycle: ExecutionLifecycle[D, B, Q]

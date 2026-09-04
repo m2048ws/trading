@@ -79,31 +79,18 @@ final class UnresolvedFillReference[D <: Dim, B <: Dim, Q <: Dim] private[execut
     case _ => false
   override def hashCode(): Int = (referencedFillId, modifier).hashCode
 
-sealed abstract class SourceFactTransition[D <: Dim, B <: Dim, Q <: Dim] protected ()
-  extends JavaSerializationUnsupported:
+sealed trait SourceFactTransition[D <: Dim, B <: Dim, Q <: Dim] extends JavaSerializationUnsupported:
   def state: SourceEvidenceState[D, B, Q]
 
-final class SourceFactRecorded[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
-  val state: SourceEvidenceState[D, B, Q],
-  val classifications: SourceFactClassifications)
-  extends SourceFactTransition[D, B, Q]():
+final case class SourceFactRecorded[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
+  state: SourceEvidenceState[D, B, Q],
+  classifications: SourceFactClassifications)
+  extends SourceFactTransition[D, B, Q]
 
-  override def equals(other: Any): Boolean = other match
-    case that: SourceFactRecorded[?, ?, ?] =>
-      state == that.state && classifications == that.classifications
-    case _ => false
-  override def hashCode(): Int = (state, classifications).hashCode
-
-final class SourceFactRejected[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
-  val state: SourceEvidenceState[D, B, Q],
-  val violations: SourceFactViolations)
-  extends SourceFactTransition[D, B, Q]():
-
-  override def equals(other: Any): Boolean = other match
-    case that: SourceFactRejected[?, ?, ?] =>
-      state == that.state && violations == that.violations
-    case _ => false
-  override def hashCode(): Int = (state, violations).hashCode
+final case class SourceFactRejected[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
+  state: SourceEvidenceState[D, B, Q],
+  violations: SourceFactViolations)
+  extends SourceFactTransition[D, B, Q]
 
 final class SourceEvidenceState[D <: Dim, B <: Dim, Q <: Dim] private (
   val lifecycle: ExecutionLifecycle[D, B, Q],
@@ -189,13 +176,7 @@ object SourceEvidenceState:
     state: SourceEvidenceState[D, B, Q],
     classifications: Vector[SourceFactClassification]
   ): SourceFactRecorded[D, B, Q] =
-    new SourceFactRecorded(state, SourceFactClassifications.from(classifications))
-
-  private def rejected[D <: Dim, B <: Dim, Q <: Dim](
-    state: SourceEvidenceState[D, B, Q],
-    violations: SourceFactViolations
-  ): SourceFactRejected[D, B, Q] =
-    new SourceFactRejected(state, violations)
+    SourceFactRecorded(state, SourceFactClassifications.from(classifications))
 
   def initial[D <: Dim, B <: Dim, Q <: Dim](
     lifecycle: ExecutionLifecycle[D, B, Q]
@@ -221,7 +202,7 @@ object SourceEvidenceState:
     fact: SourceFact[D, B, Q]
   ): SourceFactTransition[D, B, Q] =
     SourceFactViolations.from(SourceFactValidation.fact(state.lifecycle, fact)) match
-      case Some(violations) => rejected(state, violations)
+      case Some(violations) => SourceFactRejected(state, violations)
       case None             =>
         state.factsByEvent.get(fact.eventId) match
           case Some(existing) if existing == fact =>

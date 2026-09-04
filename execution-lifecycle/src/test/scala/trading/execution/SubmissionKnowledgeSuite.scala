@@ -98,7 +98,7 @@ final class SubmissionKnowledgeSuite extends ScalaCheckSuite:
           instrument.roles.quote.D
         ]
       ]
-    case value: LifecycleAccepted[?, ?, ?] => fail(s"unexpected acceptance: ${value.kind}")
+    case value: LifecycleAccepted[?, ?, ?] => fail(s"unexpected acceptance: $value")
 
   private def issued(
     command: SubmitOrderCommand[
@@ -250,8 +250,8 @@ final class SubmissionKnowledgeSuite extends ScalaCheckSuite:
         CommandViolations.one(FreshSubmitBlockedByIndeterminate(original.commandId, fresh.commandId))
       )
     )
-    assertEquals(retried.kind, LifecycleTransitionKind.IdempotentDuplicate)
-    assertEquals(defensive.kind, LifecycleTransitionKind.Applied)
+    assert(retried.isInstanceOf[LifecycleIdempotent[?, ?, ?]])
+    assert(defensive.isInstanceOf[LifecycleApplied[?, ?, ?]])
     assertEquals(defensive.state.commands.cancellationRequests, Vector(cancel))
     assertEquals(replay.state.commands.issuedCommands.keySet, Set(original.commandId))
     assertEquals(

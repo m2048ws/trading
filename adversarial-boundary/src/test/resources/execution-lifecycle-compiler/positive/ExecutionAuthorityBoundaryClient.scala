@@ -66,8 +66,13 @@ object ExecutionAuthorityBoundaryClient:
 
     assert(commandKinds.toSet == Set("submit", "cancel"))
     assert(dispatchKinds == Vector("indeterminate"))
-    assert(cancelled.isInstanceOf[AppliedCommandTransition[?, ?, ?]])
-    assert(observed.isInstanceOf[AppliedCommandTransition[?, ?, ?]])
+    val commandTransitionKinds = Vector[CommandTransition[?, ?, ?]](submitted, cancelled, observed).map:
+      case _: AppliedCommandTransition[?, ?, ?]             => "applied"
+      case _: IdempotentCommandTransition[?, ?, ?]          => "idempotent"
+      case _: ConflictingCommandTransition[?, ?, ?]         => "command-conflict"
+      case _: ConflictingDispatchTransition[?, ?, ?]        => "dispatch-conflict"
+      case _: RejectedCommandTransition[?, ?, ?]            => "rejected"
+    assert(commandTransitionKinds == Vector.fill(3)("applied"))
 
     val eventId = required(
       QualifiedSourceEventId.create(target, required(NativeSourceEventId.from("accepted")))
@@ -108,9 +113,17 @@ object ExecutionAuthorityBoundaryClient:
         SourceOrdering.unsequenced
       )
     )
-    val sourceState = required(SourceEvidenceState.initial(lifecycle))
-    val unresolved  = sourceState.record(correction).state
-    val resolved    = unresolved.record(executionFill).state
+    val sourceState          = required(SourceEvidenceState.initial(lifecycle))
+    val unresolvedTransition = sourceState.record(correction)
+    val unresolved           = unresolvedTransition.state
+    val resolvedTransition   = unresolved.record(executionFill)
+    val resolved             = resolvedTransition.state
+    val sourceTransitionKinds = Vector[SourceFactTransition[?, ?, ?]](
+      unresolvedTransition,
+      resolvedTransition
+    ).map:
+      case _: SourceFactRecorded[?, ?, ?] => "recorded"
+      case _: SourceFactRejected[?, ?, ?] => "rejected"
 
     val factKinds = Vector[SourceFact[?, ?, ?]](accepted, executionFill, correction).map:
       case _: OrderAccepted[?, ?, ?]              => "accepted"
@@ -124,6 +137,7 @@ object ExecutionAuthorityBoundaryClient:
       case _: SourceOrderAbsent[?, ?, ?]          => "absent"
 
     assert(factKinds == Vector("accepted", "fill", "corrected"))
+    assert(sourceTransitionKinds == Vector.fill(2)("recorded"))
     assert(unresolved.unresolvedFillReferences.contains(fillId))
     assert(!resolved.unresolvedFillReferences.contains(fillId))
     assert(resolved.fillsById(fillId).price == price)
@@ -150,10 +164,12 @@ object ExecutionAuthorityBoundaryClient:
       fillApplied,
       cancellationApplied
     ).map:
-      case value: LifecycleAccepted[?, ?, ?] => value.kind
-      case _: LifecycleRejected[?, ?, ?]     => throw new AssertionError("unexpected lifecycle rejection")
+      case _: LifecycleApplied[?, ?, ?]     => "applied"
+      case _: LifecycleIdempotent[?, ?, ?]  => "idempotent"
+      case _: LifecycleConflicting[?, ?, ?] => "conflicting"
+      case _: LifecycleRejected[?, ?, ?]    => "rejected"
 
-    assert(transitionKinds == Vector.fill(4)(LifecycleTransitionKind.Applied))
+    assert(transitionKinds == Vector.fill(4)("applied"))
     assert(observation.issuedCommands.keySet == Set(submit.commandId, cancel.commandId))
     assert(observation.fills.keySet == Set(fillId))
     assert(observation.commandConflicts.isEmpty)

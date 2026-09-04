@@ -14,20 +14,20 @@ updated: 2026-09-04
 - **Issue**: 42 https://github.com/m2048ws/trading/issues/42
 - **Change**: use-direct-scala-derived-models
 - **Worktree**: /Users/m/src/money/.worktrees/use-direct-scala-derived-models
-- **Phase at Checkpoint**: planning_ready
+- **Phase at Checkpoint**: applying
 - **Task Group at Checkpoint**: 1
-- **Observed Run Revision**: none
-- **Last Verified HEAD**: 5f997f126d5dda2b4aba9a34100bfb4710398272
+- **Observed Run Revision**: 2
+- **Last Verified HEAD**: fd9544ff7f312892a493b21e1f50436abfe5f518
 
 ## Next Action
-- Start Apply for `use-direct-scala-derived-models` Task Group 1.
+- Commit and acknowledge Task Group 1, then implement the CLI-selected Task Group 2.
 
 ## Blockers
 - none
 
 ## Uncommitted Work
-- Task Group 3 passes the observation's single effective-fill ledger into anomaly construction and proves exact overfill
-  value reuse; the zero-reflection guard and clean 1,047-test aggregate pass.
+- Task Group 1 replaces command, source-fact, and lifecycle transition class/tag machinery with exhaustive generated
+  Scala sums; 68 focused lifecycle tests, 7 completed-artifact compiler tests, formatting, and reflection guards pass.
 
 ## Discoveries
 - No active Corgi Run Contract or OpenSpec Change exists on primary `main`.
@@ -73,6 +73,9 @@ updated: 2026-09-04
 - RFC-0005/S-02 Task Group 3 removes the second effective-fill derivation from observation assembly, passes the one
   ledger value into anomaly construction, and proves the non-empty overfill object is reused by identity while all
   correction, bust, unresolved-reference, conflict, cancellation-race, exposure, and serialization behavior remains.
+- RFC-0005/S-03 Task Group 1 replaces command and source transitions with generated sealed cases and replaces the
+  lifecycle accepted-kind tag with applied, idempotent, conflicting, and rejected cases while preserving state,
+  violation, conflict, work-accounting, exhaustive compiler-boundary, equality, and serialization behavior.
 
 ## Promotion Queue
 - none

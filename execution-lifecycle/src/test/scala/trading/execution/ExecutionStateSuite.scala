@@ -132,9 +132,9 @@ final class ExecutionStateSuite extends ScalaCheckSuite:
       dispatchTransition.state.record(fill("fill", "fill", 2, SourceOrdering.unsequenced))
     )
 
-    assertEquals(commandTransition.kind, LifecycleTransitionKind.Applied)
-    assertEquals(dispatchTransition.kind, LifecycleTransitionKind.Applied)
-    assertEquals(fillTransition.kind, LifecycleTransitionKind.Applied)
+    assert(commandTransition.isInstanceOf[LifecycleApplied[?, ?, ?]])
+    assert(dispatchTransition.isInstanceOf[LifecycleApplied[?, ?, ?]])
+    assert(fillTransition.isInstanceOf[LifecycleApplied[?, ?, ?]])
     assertEquals(fillTransition.state.commands.issuedCommands.keySet, Set(submit.commandId))
     assertEquals(fillTransition.state.source.fillsById.size, 1)
 
@@ -331,7 +331,7 @@ final class ExecutionStateSuite extends ScalaCheckSuite:
     val replayed = accepted(applied.state.record(original))
 
     assertEquals(applied.work, TransitionWork(2, 2, 0))
-    assertEquals(replayed.kind, LifecycleTransitionKind.IdempotentDuplicate)
+    assert(replayed.isInstanceOf[LifecycleIdempotent[?, ?, ?]])
     assertEquals(replayed.work, TransitionWork(2, 0, 0))
     assertEquals(replayed.state, applied.state)
 
