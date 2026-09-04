@@ -41,7 +41,7 @@ final class FeePolicyStrategySuite extends ScalaCheckSuite:
     order.activation.evidence,
     order.execution.resolution,
     slice
-  ).toOption.get
+  )
   private val scenario     = OrderScenario.evaluate(instrument)(assumptions).toOption.get
   private val denomination = FeeDenomination
     .create(instrument)(fixture.usd, fixture.usdCents, QuantizationPolicy.TowardZero)

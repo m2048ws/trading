@@ -10,25 +10,26 @@ updated: 2026-09-04
 ## Delivery Pointer
 - **RFC**: RFC-0005-simplify-post-trust-boundary
 - **RFC Revision**: 7f1d1ab9eb88d0912d3219920eacadea4d01aa2e
-- **Slice**: S-03-use-direct-scala-derived-models
-- **Issue**: 42 https://github.com/m2048ws/trading/issues/42
-- **Change**: use-direct-scala-derived-models
-- **Worktree**: /Users/m/src/money/.worktrees/use-direct-scala-derived-models
+- **Slice**: S-05-remove-java-api-compatibility
+- **Issue**: 44 https://github.com/m2048ws/trading/issues/44
+- **Change**: remove-java-api-compatibility
+- **Worktree**: /Users/m/src/money/.worktrees/remove-java-api-compatibility
 - **Phase at Checkpoint**: archiving
 - **Task Group at Checkpoint**: none
 - **Observed Run Revision**: 9
-- **Last Verified HEAD**: f46c95751e6f72e45ee33881eb1705625b2228d9
+- **Last Verified HEAD**: 2754b2e91ebc5f9f29fc95e51793d01f4d71681a
 
 ## Next Action
-- Consult Run Contract v3: resume tracker closeout for `use-direct-scala-derived-models` only if pending; otherwise select the next accepted Slice. Local delivery: `wiki/deliveries/RFC-0005-simplify-post-trust-boundary-S-03-use-direct-scala-derived-models.md`.
+- Consult Run Contract v3: resume tracker closeout for `remove-java-api-compatibility` only if pending; otherwise select the next accepted Slice. Local delivery: `wiki/deliveries/RFC-0005-simplify-post-trust-boundary-S-05-remove-java-api-compatibility.md`.
 
 ## Blockers
 - none
 
 ## Uncommitted Work
-- Task Group 3 converts field-valid evidence, conflict, ledger, anomaly, observation, and replay values to direct
-  package-owned Scala products; the clean 1,047-test aggregate, benchmark compilation, formatting, strict planning
-  validation, and reflection guard/regression all pass.
+- Task Group 3 aligns durable architecture guidance and eight delta specifications on the Scala 3 source contract while
+  retaining JDK 25, Java-library integration, checked external reconstruction, wire formats, exact decimals, and
+  serialization rejection; the clean 1,041-test aggregate, benchmark compile, formatting, strict readiness, and both
+  reflection guard checks pass.
 
 ## Discoveries
 - No active Corgi Run Contract or OpenSpec Change exists on primary `main`.
@@ -84,6 +85,15 @@ updated: 2026-09-04
   and replay results to package-owned generated products, removes their forwarding constructors and manual equality,
   retains computed accessors and fail-closed serialization, and leaves guarded states, commands, facts, identities,
   refinements, non-empty wrappers, and external reconstruction under checked construction.
+- RFC-0005/S-05 Task Group 1 removes `Any`-based activation/pricing acceptance hooks and their erased-shape errors,
+  makes `ScenarioAssumptions.create`, `one`, and `many` direct, keeps `fromVector` typed for empty input, and preserves
+  same-shape semantic mismatch, fee, codec reconstruction, and negative associated-evidence compiler behavior.
+- RFC-0005/S-05 Task Group 2 removes the reference-data, order/scenario, execution-lifecycle, and boundary-codec Java
+  domain fixtures and their dedicated compiler/classloader code while retaining completed-artifact Scala clients,
+  negative compiler cases, dependency inspections, semantic tests, external wire/null cases, and serialization checks.
+- RFC-0005/S-05 Task Group 3 establishes Scala 3 as the supported domain source API in durable architecture guidance
+  and the active specification deltas while explicitly retaining the JDK 25 baseline, Java-library/JVM integration,
+  checked external representations, exact decimal conversion, canonical wire formats, and serialization rejection.
 
 ## Promotion Queue
 - none

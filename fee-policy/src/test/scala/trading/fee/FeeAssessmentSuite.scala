@@ -46,7 +46,7 @@ final class FeeAssessmentSuite extends FunSuite:
       order.activation.evidence,
       order.execution.resolution,
       slice
-    ).toOption.get
+    )
     OrderScenario.evaluate(instrument)(assumptions).toOption.get
 
   private def duplicateSliceScenario(): (
@@ -65,7 +65,7 @@ final class FeeAssessmentSuite extends FunSuite:
       order.execution.resolution,
       first,
       second
-    ).toOption.get
+    )
     (OrderScenario.evaluate(instrument)(assumptions).toOption.get, first, second)
 
   private def usdFee(name: String, amount: Rational): Fee[fixture.usd.D] =
@@ -138,7 +138,7 @@ final class FeeAssessmentSuite extends FunSuite:
       foreignOrder.activation.evidence,
       foreignOrder.execution.resolution,
       foreignSlice
-    ).toOption.get
+    )
     val foreignScenario = OrderScenario
       .evaluate(fixture.foreign)(foreignAssumptions)
       .toOption

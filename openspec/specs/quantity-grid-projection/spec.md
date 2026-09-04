@@ -322,6 +322,7 @@ SHALL not alter the original grid witness or confer stable identity.
 - **THEN** it returns no `GridQuantity` at the requested indices
 
 ### Requirement: Mathematical grid witnesses are anonymous
+
 `GridRef[D]` SHALL describe only an authoritative `DimRef[D]`, a positive exact rational quantum, and a generative
 coordinate namespace `G`. Creating a uniform mathematical grid SHALL require the dimension witness and quantum and
 SHALL NOT accept, synthesize, or expose a stable grid ID, version, catalog key, asset, or issuer provenance.
@@ -330,28 +331,30 @@ Each successful grid construction SHALL create a fresh coordinate namespace even
 dimension and quantum. Stable naming of a mathematical grid SHALL be supplied only by a reference-data handle in a
 downstream artifact.
 
-Because `PositiveRational` erases to raw `Rational` for JVM callers, uniform-grid construction SHALL expose a typed
-checked raw/JVM entry that returns `ExpectedPositive` for zero or negative input. The statically refined `create` entry
-SHALL defensively revalidate its erased argument and terminate before returning a grid if a raw JVM caller violates the
-refinement. Ordinary expected raw invalidity SHALL use the checked result boundary rather than exceptions as routine
-control flow.
+The supported source API SHALL be Scala 3 and SHALL accept an established `PositiveRational` for refined grid
+construction. While a checked raw/JVM entry remains available for external reconstruction, it SHALL return
+`ExpectedPositive` for zero or negative input before grid authority is returned; its presence SHALL NOT establish an
+ordinary-Java domain API contract.
 
 #### Scenario: Construct an anonymous grid
-- **WHEN** a caller supplies an authoritative USD dimension and quantum `1/100`
+
+- **WHEN** a supported Scala caller supplies an authoritative USD dimension and positive quantum `1/100`
 - **THEN** grid construction returns a mathematical witness with a fresh coordinate namespace and no stable identity
 
 #### Scenario: Repeat an equal mathematical definition
+
 - **WHEN** a caller constructs two anonymous grids with the same dimension and quantum
 - **THEN** the grids have distinct coordinate namespaces until explicit mathematical evidence relates them
 
 #### Scenario: Exclude stable identity from the factory
+
 - **WHEN** downstream source attempts to pass a grid ID or version to mathematical uniform-grid construction
 - **THEN** no such quantity-layer parameter or overload exists
 
 #### Scenario: Reject a nonpositive raw grid quantum
-- **WHEN** downstream Scala or Java supplies zero or a negative rational to the checked raw uniform-grid boundary
-- **THEN** it receives `ExpectedPositive` and no `GridRef` is returned, while an erased call to the refined entry fails
-  closed before returning grid authority
+
+- **WHEN** an external reconstruction boundary supplies zero or a negative rational to the checked raw grid entry
+- **THEN** it receives `ExpectedPositive` and no `GridRef` is returned
 
 ### Requirement: Projection diagnostics remain mathematical
 Exact narrowing and quantization failures in the quantity artifact SHALL describe the exact source and target quantum

@@ -1,0 +1,49 @@
+schemaVersion: 1
+sourceDigest: sha256:d2278178847daa4d028e46f160af897ea1d2ebde0ad37b0bf9c480d5b5faa853
+acceptance:
+  - id: AC-016
+    evidence: automated
+    planningRefs:
+      - path: specs/order-scenarios/spec.md
+        anchor: requirement-associated-scala-evidence-constructs-scenario-assumptions-directly
+    taskGroups:
+      - '1'
+  - id: AC-017
+    evidence: automated
+    planningRefs:
+      - path: specs/order-scenarios/spec.md
+        anchor: requirement-associated-scala-evidence-constructs-scenario-assumptions-directly
+    taskGroups:
+      - '1'
+  - id: AC-018
+    evidence: automated
+    planningRefs:
+      - path: specs/actual-execution-lifecycle/spec.md
+        anchor: requirement-execution-lifecycle-exposes-a-scala-3-source-boundary
+      - path: specs/versioned-boundary-codecs/spec.md
+        anchor: requirement-boundary-codecs-expose-a-scala-3-source-boundary
+    taskGroups:
+      - '2'
+  - id: AC-019
+    evidence: automated
+    planningRefs:
+      - path: specs/repository-architecture/spec.md
+        anchor: requirement-mature-mechanisms-are-reused-and-contained-by-responsibility
+      - path: specs/repository-architecture/spec.md
+        anchor: requirement-cooperative-code-and-untrusted-data-have-distinct-boundaries
+      - path: specs/quantity-grid-projection/spec.md
+        anchor: requirement-mathematical-grid-witnesses-are-anonymous
+      - path: specs/runtime-quantity-identity/spec.md
+        anchor: requirement-runtime-witness-authority-is-checked-at-supported-roots
+      - path: specs/reference-data-identity/spec.md
+        anchor: requirement-stable-identity-is-explicit-and-dimension-scoped
+      - path: specs/reference-data-catalog/spec.md
+        anchor: requirement-registration-commands-are-explicit-non-empty-data
+      - path: specs/order-scenarios/spec.md
+        anchor: requirement-associated-scala-evidence-constructs-scenario-assumptions-directly
+      - path: specs/actual-execution-lifecycle/spec.md
+        anchor: requirement-execution-lifecycle-exposes-a-scala-3-source-boundary
+      - path: specs/versioned-boundary-codecs/spec.md
+        anchor: requirement-boundary-codecs-expose-a-scala-3-source-boundary
+    taskGroups:
+      - '3'

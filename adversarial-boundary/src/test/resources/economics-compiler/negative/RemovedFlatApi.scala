@@ -13,7 +13,7 @@ object RemovedFlatApi:
     marketOrder.activation.evidence,
     marketOrder.execution.resolution,
     slice
-  ).toOption.get
+  )
   val entry     = OrderScenario.evaluate(instrument)(buyAssumptions).toOption.get
   val sell      = Order.market(instrument)(Side.Sell, lots).toOption.get
   val sellSlice = LiquiditySlice.create(instrument)(lots, state, LiquidityRole.Taker).toOption.get
@@ -21,7 +21,7 @@ object RemovedFlatApi:
     sell.activation.evidence,
     sell.execution.resolution,
     sellSlice
-  ).toOption.get
+  )
   val exit      = OrderScenario.evaluate(instrument)(sellAssumptions).toOption.get
   val roundTrip = RoundTripScenario.create(instrument)(entry, exit).toOption.get
   val currentPosition = PositionLots.fromCoordinate(instrument)(lots.count.unrefined)
