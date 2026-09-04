@@ -8,25 +8,28 @@ updated: 2026-09-04
 > Durable checkpoint mirror. Read first at startup; `.corgi/loop` remains lifecycle authority. `corgispec archive --local` alone writes archive closeout fields.
 
 ## Delivery Pointer
-- **RFC**: RFC-0005-simplify-post-trust-boundary
-- **RFC Revision**: 7f1d1ab9eb88d0912d3219920eacadea4d01aa2e
-- **Slice**: S-04-use-scala-first-quantity-and-reference-data
-- **Issue**: 46 https://github.com/m2048ws/trading/issues/46
-- **Change**: use-scala-first-quantity-and-reference-data
-- **Worktree**: /Users/m/src/money/.worktrees/use-scala-first-quantity-and-reference-data
+- **RFC**: RFC-0007-clarify-attributed-price-pnl-contract
+- **RFC Revision**: 5a398da32bb2efc7277a15908e58a103fa0bfbb1
+- **Slice**: S-01-generalize-attributed-price-pnl
+- **Issue**: 48 https://github.com/m2048ws/trading/issues/48
+- **Change**: generalize-attributed-price-pnl
+- **Worktree**: /Users/m/src/money/.worktrees/generalize-attributed-price-pnl
 - **Phase at Checkpoint**: archiving
 - **Task Group at Checkpoint**: none
-- **Observed Run Revision**: 9
-- **Last Verified HEAD**: 806a6b435614a23536f5f26a221469281f5253b6
+- **Observed Run Revision**: 7
+- **Last Verified HEAD**: 659f1ae339d92130e48924f55661d5b8fe7767b0
 
 ## Next Action
-- Consult Run Contract v3: resume tracker closeout for `use-scala-first-quantity-and-reference-data` only if pending; otherwise select the next accepted Slice. Local delivery: `wiki/deliveries/RFC-0005-simplify-post-trust-boundary-S-04-use-scala-first-quantity-and-reference-data.md`.
+- Consult Run Contract v3: resume tracker closeout for `generalize-attributed-price-pnl` only if pending; otherwise select the next accepted Slice. Local delivery: `wiki/deliveries/RFC-0007-clarify-attributed-price-pnl-contract-S-01-generalize-attributed-price-pnl.md`.
 
 ## Blockers
 - none
 
 ## Uncommitted Work
-- none
+- Task Group 5 adds the accepted `ValuationReferenceDataMismatch` case, preserves the exact retained-reference cause
+  at the original round-trip leg and slice, and proves the nested exhaustiveness and fee-policy propagation from
+  completed artifacts. Economics 26, scenario 16, fee-policy 40, boundary 131, both reflection guards, formatting,
+  the clean 1,058-test JDK-26 aggregate, and benchmark compilation pass; the automated group review found no issues.
 
 ## Discoveries
 - No active Corgi Run Contract or OpenSpec Change exists on primary `main`.
@@ -101,6 +104,19 @@ updated: 2026-09-04
   sum and direct structural products, retains model-owned issuance, null and serialization rejection, publication and
   idempotence semantics, and passes the clean 1,042-test aggregate, benchmark compile, guards, source scans, formatting,
   and strict readiness.
+- RFC-0006/S-01 Task Group 1 adds exact attributed finite-change price PnL, honest flat/marked endpoints, stable
+  accumulated typed validation, ordered settled contributions, algebraic laws, and deterministic linear-traversal
+  evidence, with 23 focused instrument-economics tests passing.
+- RFC-0006/S-01 Task Group 2 delegates round-trip price economics to that shared calculation, preserves public failure
+  semantics and stable entry/exit attribution, and retains exact single- and multi-slice long, short, settlement, fee,
+  and net-PnL behavior under 16 scenario and 39 fee-policy tests.
+- RFC-0006/S-01 Task Group 3 proves the completed instrument-economics artifact exposes attributed price PnL without
+  reverse ownership leakage and passes the configured clean JDK-25 repository gate.
+- RFC-0006/S-01 Task Group 4 repairs independently knowable validation accumulation, lawful position combination,
+  scenario error compatibility and location projection, signed exactness evidence, and the core compiler classpath.
+- RFC-0007/S-01 Task Group 5 replaces the false same-ID instrument mismatch with a truthful retained-reference
+  valuation failure at the original leg and slice, expands nested-error exhaustive compiler coverage, and preserves
+  that failure through fee-inclusive valuation.
 
 ## Promotion Queue
 - none

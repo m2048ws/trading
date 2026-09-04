@@ -26,4 +26,5 @@ updated: 2026-08-29
 - [[wiki/deliveries/RFC-0005-simplify-post-trust-boundary-S-03-use-direct-scala-derived-models|RFC-0005-simplify-post-trust-boundary/S-03-use-direct-scala-derived-models]]
 - [[wiki/deliveries/RFC-0005-simplify-post-trust-boundary-S-04-use-scala-first-quantity-and-reference-data|RFC-0005-simplify-post-trust-boundary/S-04-use-scala-first-quantity-and-reference-data]]
 - [[wiki/deliveries/RFC-0005-simplify-post-trust-boundary-S-05-remove-java-api-compatibility|RFC-0005-simplify-post-trust-boundary/S-05-remove-java-api-compatibility]]
+- [[wiki/deliveries/RFC-0007-clarify-attributed-price-pnl-contract-S-01-generalize-attributed-price-pnl|RFC-0007-clarify-attributed-price-pnl-contract/S-01-generalize-attributed-price-pnl]]
 <!-- corgi:managed:end pattern-deliveries -->

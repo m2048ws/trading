@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "provider": "github-actions",
+  "repository": "m2048ws/trading",
+  "workflow": "CI",
+  "runId": 33872401345,
+  "jobId": 101021226046,
+  "headSha": "659f1ae339d92130e48924f55661d5b8fe7767b0",
+  "status": "completed",
+  "conclusion": "success",
+  "jdk": "Temurin 25.0.4+1 (/opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/25.0.4-1/x64)",
+  "command": "sbt -batch scalafmtCheckAll scalafmtSbtCheck clean test benchmarks/Jmh/compile",
+  "tests": {
+    "quantities": 596,
+    "referenceData": 13,
+    "application": 9,
+    "runtime": 18,
+    "instrumentEconomics": 26,
+    "risk": 40,
+    "orderModel": 7,
+    "executionLifecycle": 68,
+    "executionScenario": 16,
+    "boundaryCodecs": 94,
+    "feePolicy": 40,
+    "adversarialBoundary": 131,
+    "total": 1058
+  },
+  "reflectionGuards": "pass",
+  "formatting": "pass",
+  "benchmarkCompilation": "pass",
+  "url": "https://github.com/m2048ws/trading/actions/runs/33872401345"
+}

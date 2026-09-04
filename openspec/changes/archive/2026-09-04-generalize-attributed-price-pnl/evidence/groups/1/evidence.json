@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 3,
+  "groupId": "1",
+  "checks": [
+    {
+      "name": "focused exact attributed price-PnL examples and typed validation",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:instrument-economics%2Fsrc%2Ftest%2Fscala%2Ftrading%2Feconomics%2Finstrument%2FAttributedPricePnlSuite.scala#sha256:8581d24c9f528d1c5f6c49b046bf2b4423b3be38f916f990eeaefab40b6d1c5c"
+      ]
+    },
+    {
+      "name": "exact permutation, attribution, settled-cost, and traversal laws",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:instrument-economics%2Fsrc%2Ftest%2Fscala%2Ftrading%2Feconomics%2Finstrument%2FEconomicsPropertiesSuite.scala#sha256:efee83aa20421417b772a12084acfd67cb9f3612901daa0d3d08a8767b0ceb41",
+        "file:instrument-economics%2Fsrc%2Ftest%2Fscala%2Ftrading%2Feconomics%2Finstrument%2FAttributedPricePnlSuite.scala#sha256:8581d24c9f528d1c5f6c49b046bf2b4423b3be38f916f990eeaefab40b6d1c5c"
+      ]
+    },
+    {
+      "name": "instrumentEconomics formatting and 23-test focused suite",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:instrument-economics%2Fsrc%2Fmain%2Fscala%2Ftrading%2Feconomics%2Finstrument%2FAttributedPricePnl.scala#sha256:b309c702929f9a3ebe246576654b9b7574e33d1c326352bad2a7c0eb02e10b9e",
+        "file:instrument-economics%2Fsrc%2Fmain%2Fscala%2Ftrading%2Feconomics%2Finstrument%2FError.scala#sha256:5a598024f5854bad90a6b038158f0dfe46647c4ade97ff1563ec1d965f9dc20e"
+      ]
+    },
+    {
+      "name": "pure one-way instrument-economics dependency scan",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:instrument-economics%2Fsrc%2Fmain%2Fscala%2Ftrading%2Feconomics%2Finstrument%2FAttributedPricePnl.scala#sha256:b309c702929f9a3ebe246576654b9b7574e33d1c326352bad2a7c0eb02e10b9e",
+        "file:instrument-economics%2Fsrc%2Fmain%2Fscala%2Ftrading%2Feconomics%2Finstrument%2FMarket.scala#sha256:815050767e87d2558232ef3cad895cf7e3b80bca478a87fefd5f9f1918bb6e8a"
+      ]
+    }
+  ],
+  "automatedReview": {
+    "verdict": "pass",
+    "findings": []
+  },
+  "artifacts": [
+    "file:instrument-economics%2Fsrc%2Fmain%2Fscala%2Ftrading%2Feconomics%2Finstrument%2FAttributedPricePnl.scala#sha256:b309c702929f9a3ebe246576654b9b7574e33d1c326352bad2a7c0eb02e10b9e",
+    "file:instrument-economics%2Fsrc%2Fmain%2Fscala%2Ftrading%2Feconomics%2Finstrument%2FError.scala#sha256:5a598024f5854bad90a6b038158f0dfe46647c4ade97ff1563ec1d965f9dc20e",
+    "file:instrument-economics%2Fsrc%2Fmain%2Fscala%2Ftrading%2Feconomics%2Finstrument%2FInstrument.scala#sha256:2f109d0e4a15f83c0c81792b6460a05cdb5da3f170920108c6396f242a9c2fe8",
+    "file:instrument-economics%2Fsrc%2Fmain%2Fscala%2Ftrading%2Feconomics%2Finstrument%2FMarket.scala#sha256:815050767e87d2558232ef3cad895cf7e3b80bca478a87fefd5f9f1918bb6e8a",
+    "file:instrument-economics%2Fsrc%2Ftest%2Fscala%2Ftrading%2Feconomics%2Finstrument%2FAttributedPricePnlSuite.scala#sha256:8581d24c9f528d1c5f6c49b046bf2b4423b3be38f916f990eeaefab40b6d1c5c",
+    "file:instrument-economics%2Fsrc%2Ftest%2Fscala%2Ftrading%2Feconomics%2Finstrument%2FEconomicsPropertiesSuite.scala#sha256:efee83aa20421417b772a12084acfd67cb9f3612901daa0d3d08a8767b0ceb41"
+  ],
+  "summary": "Added the pure single-instrument attributed finite-change price-PnL algebra, honest flat/marked endpoints, ordered exact settled contributions, stable accumulated typed validation, algebraic laws, and deterministic linear successful-path traversal evidence. The focused 23-test module suite and formatting checks pass; structured review covered requirements, correctness, exactness, validation staging, API ownership, architecture, complexity, and security with no remaining findings."
+}

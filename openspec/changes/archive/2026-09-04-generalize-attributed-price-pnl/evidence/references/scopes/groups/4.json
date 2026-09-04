@@ -1,0 +1,91 @@
+{
+  "schemaVersion": 3,
+  "scope": "group-4",
+  "runId": "run-b7d8bacc-b119-48f4-ad68-9c6f312c22f7",
+  "references": [
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fexecution-scenario-compiler%2Fpositive%2FScenarioValuationClient.scala#sha256:25312fdffde08949eabc5aa84d3c884534c5937afdd211001a0eca9b461e04cf",
+      "sourcePath": "adversarial-boundary/src/test/resources/execution-scenario-compiler/positive/ScenarioValuationClient.scala",
+      "digest": "sha256:25312fdffde08949eabc5aa84d3c884534c5937afdd211001a0eca9b461e04cf",
+      "archivePath": "references/blobs/25312fdffde08949eabc5aa84d3c884534c5937afdd211001a0eca9b461e04cf"
+    },
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FEconomicsCompilerBoundarySuite.scala#sha256:c70bfe2da9b6186bb40cca696b62a72d344420ec6f9c063347e816d9eb208382",
+      "sourcePath": "adversarial-boundary/src/test/scala/external/EconomicsCompilerBoundarySuite.scala",
+      "digest": "sha256:c70bfe2da9b6186bb40cca696b62a72d344420ec6f9c063347e816d9eb208382",
+      "archivePath": "references/blobs/c70bfe2da9b6186bb40cca696b62a72d344420ec6f9c063347e816d9eb208382"
+    },
+    {
+      "reference": "file:build.sbt#sha256:7815889cbd4e10c0c4237ff890aff871bf5550c2d36eeb55c8750ead45c619e5",
+      "sourcePath": "build.sbt",
+      "digest": "sha256:7815889cbd4e10c0c4237ff890aff871bf5550c2d36eeb55c8750ead45c619e5",
+      "archivePath": "references/blobs/7815889cbd4e10c0c4237ff890aff871bf5550c2d36eeb55c8750ead45c619e5"
+    },
+    {
+      "reference": "file:execution-scenario%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fscenario%2FError.scala#sha256:0ccf3b41bd537ec85f968d61bc3b83d21fdfd1e51219c8466123867c161f77a6",
+      "sourcePath": "execution-scenario/src/main/scala/trading/scenario/Error.scala",
+      "digest": "sha256:0ccf3b41bd537ec85f968d61bc3b83d21fdfd1e51219c8466123867c161f77a6",
+      "archivePath": "references/blobs/0ccf3b41bd537ec85f968d61bc3b83d21fdfd1e51219c8466123867c161f77a6"
+    },
+    {
+      "reference": "file:execution-scenario%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fscenario%2FScenarioValuation.scala#sha256:de6e9ded0ad365e2277127ef18dc4cafa718653b7c8f1c5e2d6beb8e2986d99d",
+      "sourcePath": "execution-scenario/src/main/scala/trading/scenario/ScenarioValuation.scala",
+      "digest": "sha256:de6e9ded0ad365e2277127ef18dc4cafa718653b7c8f1c5e2d6beb8e2986d99d",
+      "archivePath": "references/blobs/de6e9ded0ad365e2277127ef18dc4cafa718653b7c8f1c5e2d6beb8e2986d99d"
+    },
+    {
+      "reference": "file:execution-scenario%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fscenario%2FScenarioValuationSuite.scala#sha256:4b16730153e9ae3396392e57d588d35cf15cfee340c6fe9aad007ef83dd52da7",
+      "sourcePath": "execution-scenario/src/test/scala/trading/scenario/ScenarioValuationSuite.scala",
+      "digest": "sha256:4b16730153e9ae3396392e57d588d35cf15cfee340c6fe9aad007ef83dd52da7",
+      "archivePath": "references/blobs/4b16730153e9ae3396392e57d588d35cf15cfee340c6fe9aad007ef83dd52da7"
+    },
+    {
+      "reference": "file:instrument-economics%2Fsrc%2Fmain%2Fscala%2Ftrading%2Feconomics%2Finstrument%2FAttributedPricePnl.scala#sha256:9e769d17aed1bdda81fa122a2b65c2379150679622cef4c3cc492084886c5330",
+      "sourcePath": "instrument-economics/src/main/scala/trading/economics/instrument/AttributedPricePnl.scala",
+      "digest": "sha256:9e769d17aed1bdda81fa122a2b65c2379150679622cef4c3cc492084886c5330",
+      "archivePath": "references/blobs/9e769d17aed1bdda81fa122a2b65c2379150679622cef4c3cc492084886c5330"
+    },
+    {
+      "reference": "file:instrument-economics%2Fsrc%2Ftest%2Fscala%2Ftrading%2Feconomics%2Finstrument%2FAttributedPricePnlSuite.scala#sha256:a3da720a165100d5bcc9e8e50ee7a962865db921acf6eea11d66a1706d2399ac",
+      "sourcePath": "instrument-economics/src/test/scala/trading/economics/instrument/AttributedPricePnlSuite.scala",
+      "digest": "sha256:a3da720a165100d5bcc9e8e50ee7a962865db921acf6eea11d66a1706d2399ac",
+      "archivePath": "references/blobs/a3da720a165100d5bcc9e8e50ee7a962865db921acf6eea11d66a1706d2399ac"
+    },
+    {
+      "reference": "file:instrument-economics%2Fsrc%2Ftest%2Fscala%2Ftrading%2Feconomics%2Finstrument%2FEconomicsPropertiesSuite.scala#sha256:dfb9a78030b49b5f7bfcc46791cb43f64913f0dd321571b894326d5ec4cff91c",
+      "sourcePath": "instrument-economics/src/test/scala/trading/economics/instrument/EconomicsPropertiesSuite.scala",
+      "digest": "sha256:dfb9a78030b49b5f7bfcc46791cb43f64913f0dd321571b894326d5ec4cff91c",
+      "archivePath": "references/blobs/dfb9a78030b49b5f7bfcc46791cb43f64913f0dd321571b894326d5ec4cff91c"
+    },
+    {
+      "reference": "file:target%2Fcorgi-apply%2Fgroup-4%2Fjdk25-checksum.log#sha256:9115b5ce4e88dde57130f0a2c193e4d6b0931313e67f10d0996004a6f359b022",
+      "sourcePath": "target/corgi-apply/group-4/jdk25-checksum.log",
+      "digest": "sha256:9115b5ce4e88dde57130f0a2c193e4d6b0931313e67f10d0996004a6f359b022",
+      "archivePath": "references/blobs/9115b5ce4e88dde57130f0a2c193e4d6b0931313e67f10d0996004a6f359b022"
+    },
+    {
+      "reference": "file:target%2Fcorgi-apply%2Fgroup-4%2Fjdk25-clean-matrix.log#sha256:2de30cc65e83e16682e5d69788c626621b9b8e5776ae930886b3bb1b4b88197e",
+      "sourcePath": "target/corgi-apply/group-4/jdk25-clean-matrix.log",
+      "digest": "sha256:2de30cc65e83e16682e5d69788c626621b9b8e5776ae930886b3bb1b4b88197e",
+      "archivePath": "references/blobs/2de30cc65e83e16682e5d69788c626621b9b8e5776ae930886b3bb1b4b88197e"
+    },
+    {
+      "reference": "file:target%2Fcorgi-apply%2Fgroup-4%2Fjdk25-version.log#sha256:26355c87ae9a607a1852964702be1846ff2c75a313f8bcbfb5f2e039a1a543c1",
+      "sourcePath": "target/corgi-apply/group-4/jdk25-version.log",
+      "digest": "sha256:26355c87ae9a607a1852964702be1846ff2c75a313f8bcbfb5f2e039a1a543c1",
+      "archivePath": "references/blobs/26355c87ae9a607a1852964702be1846ff2c75a313f8bcbfb5f2e039a1a543c1"
+    },
+    {
+      "reference": "file:target%2Fcorgi-apply%2Fgroup-4%2Freflection-production.log#sha256:c0b99e32f07b7e69753e224c23149bf8589ed9a027202ee82c4be2cabc231b3d",
+      "sourcePath": "target/corgi-apply/group-4/reflection-production.log",
+      "digest": "sha256:c0b99e32f07b7e69753e224c23149bf8589ed9a027202ee82c4be2cabc231b3d",
+      "archivePath": "references/blobs/c0b99e32f07b7e69753e224c23149bf8589ed9a027202ee82c4be2cabc231b3d"
+    },
+    {
+      "reference": "file:target%2Fcorgi-apply%2Fgroup-4%2Freflection-regression.log#sha256:eb6658545773b5377bc49220f2c819304dfba1b9e738b527917744a24991037b",
+      "sourcePath": "target/corgi-apply/group-4/reflection-regression.log",
+      "digest": "sha256:eb6658545773b5377bc49220f2c819304dfba1b9e738b527917744a24991037b",
+      "archivePath": "references/blobs/eb6658545773b5377bc49220f2c819304dfba1b9e738b527917744a24991037b"
+    }
+  ]
+}

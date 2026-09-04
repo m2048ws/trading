@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "headSha": "659f1ae339d92130e48924f55661d5b8fe7767b0",
+  "java": "OpenJDK 26.0.2.1",
+  "checks": [
+    {
+      "command": "sbt instrumentEconomics/test executionScenario/test feePolicy/test adversarialBoundary/test",
+      "exitCode": 0,
+      "result": "26 economics, 16 scenario, 40 fee-policy, and 131 boundary tests passed"
+    },
+    {
+      "command": "tools/check-in-process-reflection.sh && tools/test-check-in-process-reflection.sh",
+      "exitCode": 0,
+      "result": "production/benchmark reflection policy and its regression fixture passed"
+    },
+    {
+      "command": "sbt -batch scalafmtCheckAll scalafmtSbtCheck clean test benchmarks/Jmh/compile",
+      "exitCode": 0,
+      "result": "formatting, clean 1,058-test aggregate, and benchmark compilation passed"
+    },
+    {
+      "command": "openspec validate generalize-attributed-price-pnl --strict --no-interactive && corgispec ready generalize-attributed-price-pnl --strict --json",
+      "exitCode": 0,
+      "result": "strict OpenSpec validation, source provenance, traceability, and planning readiness passed"
+    }
+  ]
+}

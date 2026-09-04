@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 3,
+  "scope": "group-2",
+  "runId": "run-6050f409-de56-4d29-897a-4d997bf0d3db",
+  "references": [
+    {
+      "reference": "file:build.sbt#sha256:790e4ae7fa4ab9334b36c0273bc4d44d02d59cac352b50f5f0aeaadc026f5db8",
+      "sourcePath": "build.sbt",
+      "digest": "sha256:790e4ae7fa4ab9334b36c0273bc4d44d02d59cac352b50f5f0aeaadc026f5db8",
+      "archivePath": "references/blobs/790e4ae7fa4ab9334b36c0273bc4d44d02d59cac352b50f5f0aeaadc026f5db8"
+    },
+    {
+      "reference": "file:execution-scenario%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fscenario%2FError.scala#sha256:cbf0355d3ab0f8edbd29d2fa69fc1a403a97104bce8663ecd70a5655b508da91",
+      "sourcePath": "execution-scenario/src/main/scala/trading/scenario/Error.scala",
+      "digest": "sha256:cbf0355d3ab0f8edbd29d2fa69fc1a403a97104bce8663ecd70a5655b508da91",
+      "archivePath": "references/blobs/cbf0355d3ab0f8edbd29d2fa69fc1a403a97104bce8663ecd70a5655b508da91"
+    },
+    {
+      "reference": "file:execution-scenario%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fscenario%2FScenarioValuation.scala#sha256:48d102c18dff4b94d15f04ca64c007a33d3ad5001032c2767784b5375a106e5b",
+      "sourcePath": "execution-scenario/src/main/scala/trading/scenario/ScenarioValuation.scala",
+      "digest": "sha256:48d102c18dff4b94d15f04ca64c007a33d3ad5001032c2767784b5375a106e5b",
+      "archivePath": "references/blobs/48d102c18dff4b94d15f04ca64c007a33d3ad5001032c2767784b5375a106e5b"
+    },
+    {
+      "reference": "file:execution-scenario%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fscenario%2FScenarioValuationSuite.scala#sha256:0ec7c2fd22fd2ab5fb28cced12aa780b33ab35af03242611facb238d6e4776f8",
+      "sourcePath": "execution-scenario/src/test/scala/trading/scenario/ScenarioValuationSuite.scala",
+      "digest": "sha256:0ec7c2fd22fd2ab5fb28cced12aa780b33ab35af03242611facb238d6e4776f8",
+      "archivePath": "references/blobs/0ec7c2fd22fd2ab5fb28cced12aa780b33ab35af03242611facb238d6e4776f8"
+    },
+    {
+      "reference": "file:fee-policy%2Fsrc%2Ftest%2Fscala%2Ftrading%2Ffee%2FFeeInclusivePnlSuite.scala#sha256:24bbded023e2553d1db6b6ef557c97f6093d18fbd5a079fb1d2ba4abf79f198f",
+      "sourcePath": "fee-policy/src/test/scala/trading/fee/FeeInclusivePnlSuite.scala",
+      "digest": "sha256:24bbded023e2553d1db6b6ef557c97f6093d18fbd5a079fb1d2ba4abf79f198f",
+      "archivePath": "references/blobs/24bbded023e2553d1db6b6ef557c97f6093d18fbd5a079fb1d2ba4abf79f198f"
+    }
+  ]
+}

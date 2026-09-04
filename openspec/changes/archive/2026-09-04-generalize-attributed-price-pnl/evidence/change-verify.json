@@ -1,0 +1,75 @@
+{
+  "verdict": "pass",
+  "finalRevision": "659f1ae339d92130e48924f55661d5b8fe7767b0",
+  "planningRevision": "sha256:b348cb099e0dea093b67394dce8158b2d3d2483e0d308ea28d9d264d3ad2225f",
+  "sourceDigest": "sha256:9eb8ee95174cead0868ba533797007510fb3101a3471ef65c79a485a33f1705c",
+  "traceabilityDigest": "sha256:4811349ed9785b6d4123b4f65ff239a387f23093ae39eb2f70f9c9867047ac4a",
+  "reportHash": "sha256:fe6a78213859fe979b8274c6a39f51f9470a07d9f26ce7b9347f75408f0fbce1",
+  "checks": [
+    {
+      "name": "Exact-head JDK-25 formatting, clean aggregate tests, reflection guards, and benchmark compilation",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:target%2Fcorgi-verify-rfc0007-s01%2Fci-33872401345.json#sha256:3f8ae5c721148844cb07a9b6e26aa74e94bff8be05b5a63c04f6c54ce7e165c8",
+        "file:.github%2Fworkflows%2Fci.yml#sha256:6e3686b27b47db63179a273ee46b3483e18465626707fb18a5344860267f5d6c"
+      ]
+    },
+    {
+      "name": "Independent local focused and clean aggregate verification on JDK 26",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:target%2Fcorgi-verify-rfc0007-s01%2Flocal-checks.json#sha256:0c2833358aba3435b17377655de72b467f9d9c82930643850e3989aa6939990d",
+        "file:build.sbt#sha256:7815889cbd4e10c0c4237ff890aff871bf5550c2d36eeb55c8750ead45c619e5"
+      ]
+    },
+    {
+      "name": "Strict planning, source provenance, traceability, and completed-artifact boundaries",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:openspec%2Fchanges%2Fgeneralize-attributed-price-pnl%2Fcorgi%2Fsource.yaml#sha256:9eb8ee95174cead0868ba533797007510fb3101a3471ef65c79a485a33f1705c",
+        "file:openspec%2Fchanges%2Fgeneralize-attributed-price-pnl%2Fcorgi%2Ftraceability.yaml#sha256:4811349ed9785b6d4123b4f65ff239a387f23093ae39eb2f70f9c9867047ac4a",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FEconomicsCompilerBoundarySuite.scala#sha256:243406f00e966df7756f7e0a27abe11ee46c7be2ee78c31d375c7161d4a9ca4f"
+      ]
+    }
+  ],
+  "acceptance": [
+    {
+      "id": "AC-001",
+      "automated": "pass",
+      "evidenceRefs": [
+        "file:instrument-economics%2Fsrc%2Fmain%2Fscala%2Ftrading%2Feconomics%2Finstrument%2FAttributedPricePnl.scala#sha256:9e769d17aed1bdda81fa122a2b65c2379150679622cef4c3cc492084886c5330",
+        "file:instrument-economics%2Fsrc%2Fmain%2Fscala%2Ftrading%2Feconomics%2Finstrument%2FInstrument.scala#sha256:2f109d0e4a15f83c0c81792b6460a05cdb5da3f170920108c6396f242a9c2fe8",
+        "file:instrument-economics%2Fsrc%2Ftest%2Fscala%2Ftrading%2Feconomics%2Finstrument%2FAttributedPricePnlSuite.scala#sha256:a3da720a165100d5bcc9e8e50ee7a962865db921acf6eea11d66a1706d2399ac"
+      ]
+    },
+    {
+      "id": "AC-002",
+      "automated": "pass",
+      "evidenceRefs": [
+        "file:instrument-economics%2Fsrc%2Fmain%2Fscala%2Ftrading%2Feconomics%2Finstrument%2FError.scala#sha256:88a789e9bd4253b6a70ebb27cd5045f47d74062c4b76b5c6505af9c9a86e2098",
+        "file:instrument-economics%2Fsrc%2Fmain%2Fscala%2Ftrading%2Feconomics%2Finstrument%2FAttributedPricePnl.scala#sha256:9e769d17aed1bdda81fa122a2b65c2379150679622cef4c3cc492084886c5330",
+        "file:instrument-economics%2Fsrc%2Ftest%2Fscala%2Ftrading%2Feconomics%2Finstrument%2FAttributedPricePnlSuite.scala#sha256:a3da720a165100d5bcc9e8e50ee7a962865db921acf6eea11d66a1706d2399ac"
+      ]
+    },
+    {
+      "id": "AC-003",
+      "automated": "pass",
+      "evidenceRefs": [
+        "file:execution-scenario%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fscenario%2FScenarioValuation.scala#sha256:1125a7cd51547543e5f5f7df0988f3c4b5e200193156d61883727425e24532a2",
+        "file:execution-scenario%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fscenario%2FScenarioValuationSuite.scala#sha256:cca762fd7affe8c3297999f0da9a8c4cb1e35c92208552745f1d8e6927ba8dad",
+        "file:fee-policy%2Fsrc%2Ftest%2Fscala%2Ftrading%2Ffee%2FFeeInclusivePnlSuite.scala#sha256:4ecf89684c35ea05db6dbe31a33becddffcf3afa67624f20cd91f338652a51cd",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fexecution-scenario-compiler%2Fpositive%2FScenarioValuationClient.scala#sha256:584a866deada05d6673259a4b8c4a4a42094c87f5d83b51f8805c142a3fce7f4"
+      ]
+    },
+    {
+      "id": "AC-004",
+      "automated": "pass",
+      "evidenceRefs": [
+        "file:instrument-economics%2Fsrc%2Ftest%2Fscala%2Ftrading%2Feconomics%2Finstrument%2FEconomicsPropertiesSuite.scala#sha256:dfb9a78030b49b5f7bfcc46791cb43f64913f0dd321571b894326d5ec4cff91c",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FEconomicsCompilerBoundarySuite.scala#sha256:243406f00e966df7756f7e0a27abe11ee46c7be2ee78c31d375c7161d4a9ca4f",
+        "file:target%2Fcorgi-verify-rfc0007-s01%2Fci-33872401345.json#sha256:3f8ae5c721148844cb07a9b6e26aa74e94bff8be05b5a63c04f6c54ce7e165c8"
+      ]
+    }
+  ],
+  "verifiedAt": "2026-09-04T12:27:23.837Z"
+}
