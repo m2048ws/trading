@@ -1,0 +1,27 @@
+schemaVersion: 1
+kind: rfc-slice
+deliveryRef: RFC-0006-establish-exact-trade-campaigns/S-01-generalize-attributed-price-pnl
+rfc:
+  id: RFC-0006-establish-exact-trade-campaigns
+  path: rfcs/RFC-0006-establish-exact-trade-campaigns
+  acceptedCommit: 13cc4d096522dbd9b3e6da14733d6a8c098780fe
+  digest: sha256:46281df42383c6a5b51df4b7f733036662323801e49be1a748434182e4a96ead
+slice:
+  id: S-01-generalize-attributed-price-pnl
+  digest: sha256:18c72319b6ab307510a5347c5de2bc5970c541a4d084f9e8c761bf4af16c9173
+acceptance:
+  - id: AC-001
+    evidence: automated
+  - id: AC-002
+    evidence: automated
+  - id: AC-003
+    evidence: automated
+  - id: AC-004
+    evidence: automated
+deliveryBindingDigest: sha256:8468aebbd684eb02f28511f82e2861f640b01684ac09cc7c2be2af7bd90039e9
+tracker:
+  provider: github
+  idempotencyKey: a2176b27afe9ff50cc7e56835a7e742f9a73ff5a09e7075de6ba0a4c887ba970
+  issue:
+    id: '48'
+    url: https://github.com/m2048ws/trading/issues/48

@@ -1,0 +1,43 @@
+schemaVersion: 1
+sourceDigest: sha256:64a528c4e464de33ac8f51425ad096c150426888bfc925bae206016de6b6c238
+acceptance:
+  - id: AC-001
+    evidence: automated
+    planningRefs:
+      - path: specs/attributed-price-pnl/spec.md
+        anchor: requirement-finite-attributed-price-calculation
+      - path: specs/attributed-price-pnl/spec.md
+        anchor: requirement-endpoint-honesty
+      - path: design.md
+        anchor: 1-instrument-economics-owns-an-attributed-finite-change-algebra
+    taskGroups:
+      - '1'
+  - id: AC-002
+    evidence: automated
+    planningRefs:
+      - path: specs/attributed-price-pnl/spec.md
+        anchor: requirement-typed-and-accumulating-validation
+      - path: design.md
+        anchor: 2-validation-is-staged-by-dependency
+    taskGroups:
+      - '1'
+  - id: AC-003
+    evidence: automated
+    planningRefs:
+      - path: specs/attributed-price-pnl/spec.md
+        anchor: requirement-round-trip-valuation-compatibility
+      - path: design.md
+        anchor: 4-round-trip-scenarios-adapt-downward-and-fees-remain-downstream
+    taskGroups:
+      - '2'
+  - id: AC-004
+    evidence: automated
+    planningRefs:
+      - path: specs/attributed-price-pnl/spec.md
+        anchor: requirement-exact-calculation-laws
+      - path: design.md
+        anchor: 5-verification-separates-algebra-compatibility-and-boundaries
+    taskGroups:
+      - '1'
+      - '2'
+      - '3'

@@ -8,19 +8,19 @@ updated: 2026-09-04
 > Durable checkpoint mirror. Read first at startup; `.corgi/loop` remains lifecycle authority. `corgispec archive --local` alone writes archive closeout fields.
 
 ## Delivery Pointer
-- **RFC**: RFC-0005-simplify-post-trust-boundary
-- **RFC Revision**: 7f1d1ab9eb88d0912d3219920eacadea4d01aa2e
-- **Slice**: S-04-use-scala-first-quantity-and-reference-data
-- **Issue**: 46 https://github.com/m2048ws/trading/issues/46
-- **Change**: use-scala-first-quantity-and-reference-data
-- **Worktree**: /Users/m/src/money/.worktrees/use-scala-first-quantity-and-reference-data
-- **Phase at Checkpoint**: archiving
-- **Task Group at Checkpoint**: none
-- **Observed Run Revision**: 9
-- **Last Verified HEAD**: 806a6b435614a23536f5f26a221469281f5253b6
+- **RFC**: RFC-0006-establish-exact-trade-campaigns
+- **RFC Revision**: 13cc4d096522dbd9b3e6da14733d6a8c098780fe
+- **Slice**: S-01-generalize-attributed-price-pnl
+- **Issue**: 48 https://github.com/m2048ws/trading/issues/48
+- **Change**: generalize-attributed-price-pnl
+- **Worktree**: /Users/m/src/money/.worktrees/generalize-attributed-price-pnl
+- **Phase at Checkpoint**: planning_ready
+- **Task Group at Checkpoint**: 1
+- **Observed Run Revision**: none
+- **Last Verified HEAD**: 7efe84171e23f8e255b3004af253d9be8fc3a804
 
 ## Next Action
-- Consult Run Contract v3: resume tracker closeout for `use-scala-first-quantity-and-reference-data` only if pending; otherwise select the next accepted Slice. Local delivery: `wiki/deliveries/RFC-0005-simplify-post-trust-boundary-S-04-use-scala-first-quantity-and-reference-data.md`.
+- Start Apply for `generalize-attributed-price-pnl` Task Group 1.
 
 ## Blockers
 - none
