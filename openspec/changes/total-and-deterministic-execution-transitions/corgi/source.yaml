@@ -1,0 +1,27 @@
+schemaVersion: 1
+kind: rfc-slice
+deliveryRef: RFC-0005-simplify-post-trust-boundary/S-02-total-and-deterministic-execution-transitions
+rfc:
+  id: RFC-0005-simplify-post-trust-boundary
+  path: rfcs/RFC-0005-simplify-post-trust-boundary
+  acceptedCommit: 7f1d1ab9eb88d0912d3219920eacadea4d01aa2e
+  digest: sha256:31336459ac68c4a188388bb58cf59fe8c84830a0b72aa66d29fdcff4f90657a3
+slice:
+  id: S-02-total-and-deterministic-execution-transitions
+  digest: sha256:fd963a59a8e15afff3be9550862458dbb27cf3e0d19336867bd6ef2635eddd9c
+acceptance:
+  - id: AC-004
+    evidence: automated
+  - id: AC-005
+    evidence: automated
+  - id: AC-006
+    evidence: automated
+  - id: AC-007
+    evidence: automated
+deliveryBindingDigest: sha256:378c410f550dde27560b5c115132110d873af8990e1f5d5a8b11fd706f5b9800
+tracker:
+  provider: github
+  idempotencyKey: 9d77320a5eecf2ed87b247fb906ecd05417785b0e4332edda5aa5994f74c28f3
+  issue:
+    id: '40'
+    url: https://github.com/m2048ws/trading/issues/40

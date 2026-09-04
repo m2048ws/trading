@@ -10,17 +10,17 @@ updated: 2026-09-03
 ## Delivery Pointer
 - **RFC**: RFC-0005-simplify-post-trust-boundary
 - **RFC Revision**: 7f1d1ab9eb88d0912d3219920eacadea4d01aa2e
-- **Slice**: S-01-retire-trust-boundary-migration-scaffolding
-- **Issue**: 38 https://github.com/m2048ws/trading/issues/38
-- **Change**: retire-trust-boundary-migration-scaffolding
-- **Worktree**: /Users/m/src/money/.worktrees/retire-trust-boundary-migration-scaffolding
-- **Phase at Checkpoint**: archiving
-- **Task Group at Checkpoint**: none
-- **Observed Run Revision**: 8
-- **Last Verified HEAD**: 522fad5d570c1a76da6c30b408c26f0991bee1af
+- **Slice**: S-02-total-and-deterministic-execution-transitions
+- **Issue**: 40 https://github.com/m2048ws/trading/issues/40
+- **Change**: total-and-deterministic-execution-transitions
+- **Worktree**: /Users/m/src/money/.worktrees/total-and-deterministic-execution-transitions
+- **Phase at Checkpoint**: planning_ready
+- **Task Group at Checkpoint**: 1
+- **Observed Run Revision**: none
+- **Last Verified HEAD**: 887757e3cfd88bf7fd8014139238ff6e8d71d128
 
 ## Next Action
-- Consult Run Contract v3: resume tracker closeout for `retire-trust-boundary-migration-scaffolding` only if pending; otherwise select the next accepted Slice. Local delivery: `wiki/deliveries/RFC-0005-simplify-post-trust-boundary-S-01-retire-trust-boundary-migration-scaffolding.md`.
+- Start Apply for `total-and-deterministic-execution-transitions` Task Group 1.
 
 ## Blockers
 - none
