@@ -75,6 +75,54 @@ sealed abstract class ValuationError extends JavaSerializationUnsupported with P
 final case class ValuationInstrumentMismatch(context: String, expected: InstrumentId, supplied: InstrumentId)
   extends ValuationError
 
+/** Component of an attributed price-PnL input named by a precise failure location. */
+enum AttributedPricePnlComponent extends JavaSerializationUnsupported:
+  case Position, PositionGrid, Market, Base, Quote, Settlement, Price, PriceGrid, Value
+
+/** Stable source location for attributed price-PnL validation and valuation failures. */
+enum AttributedPricePnlLocation extends JavaSerializationUnsupported:
+  case Change(index: Int, component: AttributedPricePnlComponent)
+  case Endpoint(component: AttributedPricePnlComponent)
+
+/** Closed failures for the exact finite attributed price-PnL calculation. */
+enum AttributedPricePnlViolation extends JavaSerializationUnsupported:
+  case InstrumentMismatch(
+    location: AttributedPricePnlLocation,
+    expected: InstrumentId,
+    supplied: InstrumentId)
+  case ReferenceMismatch(location: AttributedPricePnlLocation, cause: ReferenceDataError)
+  case NonFlatPositionRequiresMark(endingCoordinate: BigInt)
+  case FlatPositionRejectsMark
+  case ValuationFailure(location: AttributedPricePnlLocation, cause: ValuationError)
+  case PricePnlConstruction(cause: ValuationError)
+
+/** Non-empty, stable-order failures from an attributed price-PnL calculation. */
+final class AttributedPricePnlErrors private (
+  val head: AttributedPricePnlViolation,
+  val tail: Vector[AttributedPricePnlViolation])
+  extends JavaSerializationUnsupported:
+
+  val violations: Vector[AttributedPricePnlViolation] = head +: tail
+
+  override def equals(other: Any): Boolean =
+    other match
+      case that: AttributedPricePnlErrors => violations == that.violations
+      case _                              => false
+
+  override def hashCode: Int    = violations.hashCode
+  override def toString: String = violations.mkString("AttributedPricePnlErrors(", ",", ")")
+end AttributedPricePnlErrors
+
+object AttributedPricePnlErrors:
+  def one(head: AttributedPricePnlViolation): AttributedPricePnlErrors =
+    new AttributedPricePnlErrors(head, Vector.empty)
+
+  def from(values: Vector[AttributedPricePnlViolation]): Option[AttributedPricePnlErrors] =
+    values match
+      case head +: tail => Some(new AttributedPricePnlErrors(head, tail))
+      case _            => None
+end AttributedPricePnlErrors
+
 sealed abstract class ContributionError extends JavaSerializationUnsupported with Product with Serializable
 final case class ContributionInstrumentMismatch(context: String, expected: InstrumentId, supplied: InstrumentId)
   extends ContributionError

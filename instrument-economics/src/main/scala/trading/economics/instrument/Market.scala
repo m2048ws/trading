@@ -74,6 +74,8 @@ end SettlementConversion
 /** Immutable coherent price and heterogeneous settle-targeted conversion set. */
 final class MarketState[B <: Dim, Q <: Dim, S <: Dim] private (
   val instrumentId: InstrumentId,
+  val base: Asset { type D = B },
+  val quote: Asset { type D = Q },
   val settlement: Asset { type D = S },
   val price: Price[B, Q],
   val baseToSettle: Rate[B, S],
@@ -448,6 +450,8 @@ object MarketState:
                                 .map(MarketStateViolations.one)
         yield new MarketState(
           instrument.identity.id,
+          base,
+          quote,
           settle,
           price,
           baseRate,

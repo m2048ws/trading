@@ -117,7 +117,29 @@ final class Instrument private (val spec: InstrumentSpec) extends JavaSerializat
   type Price        = _root_.trading.economics.instrument.Price[roles.base.D, roles.quote.D]
   type MarketState  = _root_.trading.economics.instrument.MarketState[roles.base.D, roles.quote.D, roles.settle.D]
   type PricePnl     = _root_.trading.economics.instrument.PricePnl[roles.settle.D]
-  type Pnl          = _root_.trading.economics.instrument.Pnl[roles.settle.D]
+  type AttributedPriceChange[A] = _root_.trading.economics.instrument.AttributedPriceChange[
+    A,
+    roles.position.D,
+    roles.base.D,
+    roles.quote.D,
+    roles.settle.D
+  ]
+  type PricePnlEndpoint            = _root_.trading.economics.instrument.PricePnlEndpoint[MarketState]
+  type SettledPriceContribution[A] = _root_.trading.economics.instrument.SettledPriceContribution[
+    A,
+    roles.position.D,
+    roles.base.D,
+    roles.quote.D,
+    roles.settle.D
+  ]
+  type AttributedPricePnl[A] = _root_.trading.economics.instrument.AttributedPricePnl[
+    A,
+    roles.position.D,
+    roles.base.D,
+    roles.quote.D,
+    roles.settle.D
+  ]
+  type Pnl = _root_.trading.economics.instrument.Pnl[roles.settle.D]
 end Instrument
 
 object Instrument:

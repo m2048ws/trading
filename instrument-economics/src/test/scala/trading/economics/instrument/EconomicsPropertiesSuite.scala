@@ -45,4 +45,73 @@ class EconomicsPropertiesSuite extends ScalaCheckSuite:
         .get
       fee.amount + fee.residual == fee.unrounded
     }
+
+  property("three-change marked totals are permutation invariant while attribution follows input order"):
+    forAll { (firstRaw: Int, secondRaw: Int, reductionRaw: Int, priceRaw: Int) =>
+      val first     = BigInt(firstRaw).abs + 1
+      val second    = BigInt(secondRaw).abs + 1
+      val available = first + second
+      val reduction = BigInt(reductionRaw).abs % available
+      val price     = BigInt(priceRaw).abs + 1
+      val mark      = fixture.quoteState(instrument, Rational(price + 3))
+      val changes   = Vector(
+        AttributedPriceChange(
+          "first",
+          PositionLots.fromCoordinate(instrument)(first),
+          fixture.quoteState(instrument, Rational(price))
+        ),
+        AttributedPriceChange(
+          "second",
+          PositionLots.fromCoordinate(instrument)(second),
+          fixture.quoteState(instrument, Rational(price + 1))
+        ),
+        AttributedPriceChange(
+          "reduction",
+          PositionLots.fromCoordinate(instrument)(-reduction),
+          fixture.quoteState(instrument, Rational(price + 2))
+        )
+      )
+      val results = changes.permutations.map: permutation =>
+        permutation ->
+          AttributedPricePnl
+            .calculate(instrument)(permutation, PricePnlEndpoint.Marked(mark))
+            .toOption
+            .get
+      val allResults = results.toVector
+      val expected   = allResults.head._2
+
+      allResults.forall: (permutation, result) =>
+        result.endingPosition == expected.endingPosition &&
+          result.pricePnl == expected.pricePnl &&
+          result.settledContributions.map(_.attribution) == permutation.map(_.attribution)
+    }
+
+  property("settled execution cost is linear in same-price position changes"):
+    forAll { (firstRaw: Int, secondRaw: Int, priceRaw: Int, markDeltaRaw: Int) =>
+      val first     = BigInt(firstRaw).abs + 1
+      val second    = BigInt(secondRaw).abs + 1
+      val price     = BigInt(priceRaw).abs + 1
+      val markDelta = BigInt(markDeltaRaw).abs + 1
+      val execution = fixture.quoteState(instrument, Rational(price))
+      val mark      = fixture.quoteState(instrument, Rational(price + markDelta))
+      val split     = Vector(
+        AttributedPriceChange("first", PositionLots.fromCoordinate(instrument)(first), execution),
+        AttributedPriceChange("second", PositionLots.fromCoordinate(instrument)(second), execution)
+      )
+      val combined = Vector(
+        AttributedPriceChange("combined", PositionLots.fromCoordinate(instrument)(first + second), execution)
+      )
+      val splitResult = AttributedPricePnl
+        .calculate(instrument)(split, PricePnlEndpoint.Marked(mark))
+        .toOption
+        .get
+      val combinedResult = AttributedPricePnl
+        .calculate(instrument)(combined, PricePnlEndpoint.Marked(mark))
+        .toOption
+        .get
+
+      splitResult.settledContributions.map(_.quantity).reduce(_ + _) ==
+        combinedResult.settledContributions.head.quantity &&
+        splitResult.pricePnl == combinedResult.pricePnl
+    }
 end EconomicsPropertiesSuite

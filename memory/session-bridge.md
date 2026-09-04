@@ -14,19 +14,21 @@ updated: 2026-09-04
 - **Issue**: 48 https://github.com/m2048ws/trading/issues/48
 - **Change**: generalize-attributed-price-pnl
 - **Worktree**: /Users/m/src/money/.worktrees/generalize-attributed-price-pnl
-- **Phase at Checkpoint**: planning_ready
+- **Phase at Checkpoint**: applying
 - **Task Group at Checkpoint**: 1
-- **Observed Run Revision**: none
-- **Last Verified HEAD**: 7efe84171e23f8e255b3004af253d9be8fc3a804
+- **Observed Run Revision**: 2
+- **Last Verified HEAD**: a755834e45898b983b9b6cd9a10b64cd671a471f
 
 ## Next Action
-- Start Apply for `generalize-attributed-price-pnl` Task Group 1.
+- Commit and acknowledge Task Group 1, then inspect the CLI-selected next group.
 
 ## Blockers
 - none
 
 ## Uncommitted Work
-- none
+- Task Group 1 adds exact attributed finite-change price PnL, honest flat/marked endpoints, stable accumulated typed
+  validation, ordered settled contributions, algebraic laws, and deterministic linear-traversal evidence; all 23
+  focused instrument-economics tests and formatting checks pass.
 
 ## Discoveries
 - No active Corgi Run Contract or OpenSpec Change exists on primary `main`.
