@@ -1,9 +1,17 @@
 schemaVersion: 1
 rfcId: RFC-0007-clarify-attributed-price-pnl-contract
-revision: 1
+revision: 2
 slices:
   S-01-generalize-attributed-price-pnl:
-    status: unbound
+    status: planned
+    binding:
+      change: generalize-attributed-price-pnl
+      issue:
+        provider: github
+        id: '48'
+        url: https://github.com/m2048ws/trading/issues/48
+      sourceDigest: sha256:9eb8ee95174cead0868ba533797007510fb3101a3471ef65c79a485a33f1705c
+      plannedAt: '2026-09-04T11:59:10.309Z'
   S-02-create-append-only-campaigns:
     status: unbound
   S-03-project-campaign-execution:

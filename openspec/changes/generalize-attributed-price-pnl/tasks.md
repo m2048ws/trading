@@ -21,3 +21,9 @@
 - [ ] 4.3 Demonstrate that compatible checked inputs remain total under the current unbounded exact representation, adding direct open-short and cross-zero/reversal examples and signed generative paths without inventing a numeric ceiling or approximation.
 - [ ] 4.4 Make the instrument-economics completed-artifact compiler classpath hermetic through an explicit compiler-support allowlist and assertions rejecting effect, codec, and other non-owning dependencies.
 - [ ] 4.5 Run focused instrument-economics, execution-scenario, fee-policy, and adversarial-boundary checks, both reflection guards, formatting, the complete clean JDK-25 test/build matrix, and the automated repair-group review before its dedicated commit.
+
+## 5. RFC-0007 amendment remediation
+
+- [ ] 5.1 Add `ValuationReferenceDataMismatch(context, cause)` to the instrument-economics `ValuationError` algebra and project same-ID foreign-lineage failures through the existing `ScenarioValuationError.SliceValue` case at the original leg and slice, preserving the exact `ReferenceDataError`; verify the public round-trip path never fabricates an instrument mismatch.
+- [ ] 5.2 Add completed-artifact exhaustive-match coverage for the expanded nested `ValuationError`, plus end-to-end scenario and fee-policy regressions proving reference-coherent behavior remains unchanged.
+- [ ] 5.3 Reconcile RFC-0007's exact-totality contract—explicitly superseding Task 1.2's unreachable arithmetic-failure evidence request without changing the immutable completed group—and run focused suites, boundary checks, reflection guards, formatting, the clean JDK-25 build matrix, and the automated amendment-group review before its dedicated commit.

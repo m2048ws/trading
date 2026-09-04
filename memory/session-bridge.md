@@ -8,19 +8,19 @@ updated: 2026-09-04
 > Durable checkpoint mirror. Read first at startup; `.corgi/loop` remains lifecycle authority. `corgispec archive --local` alone writes archive closeout fields.
 
 ## Delivery Pointer
-- **RFC**: RFC-0006-establish-exact-trade-campaigns
-- **RFC Revision**: 13cc4d096522dbd9b3e6da14733d6a8c098780fe
+- **RFC**: RFC-0007-clarify-attributed-price-pnl-contract
+- **RFC Revision**: 5a398da32bb2efc7277a15908e58a103fa0bfbb1
 - **Slice**: S-01-generalize-attributed-price-pnl
 - **Issue**: 48 https://github.com/m2048ws/trading/issues/48
 - **Change**: generalize-attributed-price-pnl
 - **Worktree**: /Users/m/src/money/.worktrees/generalize-attributed-price-pnl
-- **Phase at Checkpoint**: awaiting_verify
-- **Task Group at Checkpoint**: 4
-- **Observed Run Revision**: 2
-- **Last Verified HEAD**: 2ed37e7f663bdb735c2291502ec2e1e2876706d3
+- **Phase at Checkpoint**: planning_ready
+- **Task Group at Checkpoint**: 5
+- **Observed Run Revision**: none
+- **Last Verified HEAD**: 8d7bd48d0812f90489f5abdcdd98da95cf252654
 
 ## Next Action
-- Run canonical Corgi Verify for `generalize-attributed-price-pnl` with a whole-change AC report.
+- Start Apply for `generalize-attributed-price-pnl` Task Group 5.
 
 ## Blockers
 - none

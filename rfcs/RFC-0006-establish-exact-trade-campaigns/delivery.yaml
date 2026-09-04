@@ -1,17 +1,20 @@
 schemaVersion: 1
 rfcId: RFC-0006-establish-exact-trade-campaigns
-revision: 2
+revision: 3
 slices:
   S-01-generalize-attributed-price-pnl:
-    status: planned
+    status: superseded
     binding:
       change: generalize-attributed-price-pnl
+      sourceDigest: sha256:64a528c4e464de33ac8f51425ad096c150426888bfc925bae206016de6b6c238
+      plannedAt: '2026-09-04T07:08:51.354Z'
       issue:
         provider: github
         id: '48'
         url: https://github.com/m2048ws/trading/issues/48
-      sourceDigest: sha256:64a528c4e464de33ac8f51425ad096c150426888bfc925bae206016de6b6c238
-      plannedAt: '2026-09-04T07:08:51.354Z'
+    supersededBy:
+      rfcId: RFC-0007-clarify-attributed-price-pnl-contract
+      sliceId: S-01-generalize-attributed-price-pnl
   S-02-create-append-only-campaigns:
     status: superseded
     supersededBy:

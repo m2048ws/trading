@@ -41,7 +41,7 @@ The calculation SHALL accept a flat endpoint only when the derived ending positi
 
 ### Requirement: Typed and accumulating validation
 
-Expected input invalidity SHALL be represented in public typed domain results. The calculation SHALL validate instrument identity, quantity and price dimensions, grids, endpoint compatibility, and exact arithmetic without throwing. Independent validation failures SHALL be accumulated deterministically, while checks that depend on a successfully derived ending position SHALL run only from that evidence.
+Expected input invalidity SHALL be represented in public typed domain results. The calculation SHALL validate instrument identity, retained-reference coherence, quantity and price dimensions, grids, and endpoint compatibility without throwing. Independent validation failures SHALL be accumulated deterministically, while checks that depend on a successfully derived ending position SHALL run only from that evidence. Compatible checked finite `BigInt`/`Rational` inputs are total under the current exact representation.
 
 #### Scenario: Multiple independent incompatibilities
 
@@ -53,14 +53,14 @@ Expected input invalidity SHALL be represented in public typed domain results. T
 - **WHEN** invalid change data prevents a valid ending position from being derived
 - **THEN** the calculation reports the change-data failures without inventing an endpoint-consistency result
 
-#### Scenario: Exact arithmetic failure
+#### Scenario: Compatible exact arithmetic totality
 
-- **WHEN** an otherwise compatible calculation cannot represent an intermediate or result on its required exact refinement or grid
-- **THEN** the calculation returns the owning typed arithmetic or refinement failure without approximation
+- **WHEN** all identities, retained references, dimensions, and grids are compatible and the checked inputs are finite
+- **THEN** the calculation returns an exact result without a synthetic arithmetic or refinement failure; construction failures remain with their owning constructors
 
 ### Requirement: Round-trip valuation compatibility
 
-Existing round-trip scenario valuation SHALL delegate its price economics to the finite attributed calculation without changing observable results. Single-slice and multi-slice long and short scenarios SHALL retain their exact ending position, contribution ordering and attribution, price PnL, fee contribution, total PnL, and typed failure behavior.
+Existing round-trip scenario valuation SHALL delegate its price economics to the finite attributed calculation. Reference-coherent single-slice and multi-slice long and short scenarios SHALL retain their exact ending position, contribution ordering and attribution, price PnL, fee contribution, total PnL, and characterized typed failure behavior. A same-ID market from a foreign reference-data lineage SHALL instead be rejected at its original leg and slice through `ScenarioValuationError.SliceValue` carrying `ValuationReferenceDataMismatch(context, cause)`. Adding that truthful nested `ValuationError` case and requiring exhaustive consumers to handle it is an accepted compatibility change.
 
 #### Scenario: Existing flat round trip
 
@@ -76,6 +76,11 @@ Existing round-trip scenario valuation SHALL delegate its price economics to the
 
 - **WHEN** a round-trip scenario contains an incompatibility previously represented by a typed valuation failure
 - **THEN** valuation returns the same public failure semantics after delegation
+
+#### Scenario: Same-ID foreign-lineage round trip
+
+- **WHEN** a round-trip market has the requested displayed instrument ID but retained references from an incompatible reference-data lineage
+- **THEN** valuation reports the retained `ReferenceDataError` at the original leg and slice instead of succeeding or fabricating an instrument mismatch
 
 ### Requirement: Exact calculation laws
 

@@ -1,14 +1,14 @@
 schemaVersion: 1
 kind: rfc-slice
-deliveryRef: RFC-0006-establish-exact-trade-campaigns/S-01-generalize-attributed-price-pnl
+deliveryRef: RFC-0007-clarify-attributed-price-pnl-contract/S-01-generalize-attributed-price-pnl
 rfc:
-  id: RFC-0006-establish-exact-trade-campaigns
-  path: rfcs/RFC-0006-establish-exact-trade-campaigns
-  acceptedCommit: 13cc4d096522dbd9b3e6da14733d6a8c098780fe
-  digest: sha256:46281df42383c6a5b51df4b7f733036662323801e49be1a748434182e4a96ead
+  id: RFC-0007-clarify-attributed-price-pnl-contract
+  path: rfcs/RFC-0007-clarify-attributed-price-pnl-contract
+  acceptedCommit: 5a398da32bb2efc7277a15908e58a103fa0bfbb1
+  digest: sha256:1f8217bb56b939b3eb45a6c827a2b06031b7a94b879f010f8dbc68b77c16bcd8
 slice:
   id: S-01-generalize-attributed-price-pnl
-  digest: sha256:18c72319b6ab307510a5347c5de2bc5970c541a4d084f9e8c761bf4af16c9173
+  digest: sha256:c4520601da0b228246c46606db4262638a17e70b030cbb16df7861ca89f959be
 acceptance:
   - id: AC-001
     evidence: automated
@@ -18,10 +18,10 @@ acceptance:
     evidence: automated
   - id: AC-004
     evidence: automated
-deliveryBindingDigest: sha256:8468aebbd684eb02f28511f82e2861f640b01684ac09cc7c2be2af7bd90039e9
+deliveryBindingDigest: sha256:b45d95e09b7cc0fdee91d97101ada9576bb73b3a3c9c9432ee7418984d6be13d
 tracker:
   provider: github
-  idempotencyKey: a2176b27afe9ff50cc7e56835a7e742f9a73ff5a09e7075de6ba0a4c887ba970
+  idempotencyKey: 90dc507b6e72214e6db74ab7f2039c98e1cffe784cdffaa5310d45db30f6b7ba
   issue:
     id: '48'
     url: https://github.com/m2048ws/trading/issues/48
