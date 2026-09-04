@@ -28,7 +28,8 @@
     "remove-java-api-compatibility",
     "total-and-deterministic-execution-transitions",
     "use-direct-scala-derived-models",
-    "use-scala-first-quantity-and-reference-data"
+    "use-scala-first-quantity-and-reference-data",
+    "generalize-attributed-price-pnl"
   ],
   "authority": {
     "localCorgiCommits": true,
