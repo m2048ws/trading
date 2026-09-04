@@ -10,17 +10,17 @@ updated: 2026-09-04
 ## Delivery Pointer
 - **RFC**: RFC-0008-simplify-instrument-dependent-apis
 - **RFC Revision**: bf457296faa7d29aec0840a7e8f48d41ed0f7491
-- **Slice**: S-04-bind-scenario-record-codecs
-- **Issue**: 59 https://github.com/m2048ws/trading/issues/59
-- **Change**: bind-scenario-record-codecs
-- **Worktree**: /Users/m/src/money/.worktrees/bind-scenario-record-codecs
-- **Phase at Checkpoint**: archiving
-- **Task Group at Checkpoint**: none
-- **Observed Run Revision**: 7
-- **Last Verified HEAD**: fa010240f300abf02ccd0c13b24253674c8d6f35
+- **Slice**: S-05-bind-instrument-risk
+- **Issue**: 61 https://github.com/m2048ws/trading/issues/61
+- **Change**: bind-instrument-risk
+- **Worktree**: /Users/m/src/money/.worktrees/bind-instrument-risk
+- **Phase at Checkpoint**: planning_ready
+- **Task Group at Checkpoint**: 1
+- **Observed Run Revision**: none
+- **Last Verified HEAD**: b7c762de8f9a1a0fa512be58a7eb95fb2f12d93d
 
 ## Next Action
-- Consult Run Contract v3: resume tracker closeout for `bind-scenario-record-codecs` only if pending; otherwise select the next accepted Slice. Local delivery: `wiki/deliveries/RFC-0008-simplify-instrument-dependent-apis-S-04-bind-scenario-record-codecs.md`.
+- Start Apply for `bind-instrument-risk` Task Group 1.
 
 ## Blockers
 - none
