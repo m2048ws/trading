@@ -14,13 +14,13 @@ updated: 2026-09-04
 - **Issue**: 40 https://github.com/m2048ws/trading/issues/40
 - **Change**: total-and-deterministic-execution-transitions
 - **Worktree**: /Users/m/src/money/.worktrees/total-and-deterministic-execution-transitions
-- **Phase at Checkpoint**: awaiting_verify
-- **Task Group at Checkpoint**: 3
-- **Observed Run Revision**: 4
-- **Last Verified HEAD**: 869425ad202580b8da18835af8b741468cd995a8
+- **Phase at Checkpoint**: archiving
+- **Task Group at Checkpoint**: none
+- **Observed Run Revision**: 9
+- **Last Verified HEAD**: a977df576bf089a366930183c14f45029cf77a14
 
 ## Next Action
-- Commit and acknowledge Task Group 3, then run canonical whole-change Verify.
+- Consult Run Contract v3: resume tracker closeout for `total-and-deterministic-execution-transitions` only if pending; otherwise select the next accepted Slice. Local delivery: `wiki/deliveries/RFC-0005-simplify-post-trust-boundary-S-02-total-and-deterministic-execution-transitions.md`.
 
 ## Blockers
 - none

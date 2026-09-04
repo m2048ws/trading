@@ -1,0 +1,31 @@
+schemaVersion: 1
+sourceDigest: sha256:06321277e89e5cf534d3885211fe15f6392a8d0f633ead24e71281d22804ea13
+acceptance:
+  - id: AC-004
+    evidence: automated
+    planningRefs:
+      - path: specs/actual-execution-lifecycle/spec.md
+        anchor: requirement-pure-transition-and-replay-are-deterministic
+    taskGroups:
+      - '1'
+  - id: AC-005
+    evidence: automated
+    planningRefs:
+      - path: specs/actual-execution-lifecycle/spec.md
+        anchor: requirement-pure-transition-and-replay-are-deterministic
+    taskGroups:
+      - '1'
+  - id: AC-006
+    evidence: automated
+    planningRefs:
+      - path: specs/actual-execution-lifecycle/spec.md
+        anchor: requirement-pure-transition-and-replay-are-deterministic
+    taskGroups:
+      - '2'
+  - id: AC-007
+    evidence: automated
+    planningRefs:
+      - path: specs/actual-execution-lifecycle/spec.md
+        anchor: requirement-pure-transition-and-replay-are-deterministic
+    taskGroups:
+      - '3'
