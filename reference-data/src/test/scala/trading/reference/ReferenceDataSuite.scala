@@ -60,12 +60,23 @@ class ReferenceDataSuite extends FunSuite:
     val secondAssetId = validAssetId("USD")
     assertEquals(firstAssetId, secondAssetId)
     assertEquals(firstAssetId.hashCode, secondAssetId.hashCode)
+    assertEquals(firstAssetId.value, "USD")
     assertEquals(firstAssetId.toString, "AssetId(USD)")
 
-    val version = validGridVersion(1)
-    val gridId  = validGridId("cent")
-    val _       = intercept[NullPointerException](GridKey(null, version))
-    val _       = intercept[NullPointerException](GridIdentity(null, GridKey(gridId, version)))
+    val version       = validGridVersion(1)
+    val secondVersion = validGridVersion(1)
+    val gridId        = validGridId("cent")
+    val secondGridId  = validGridId("cent")
+    assertEquals(gridId, secondGridId)
+    assertEquals(gridId.hashCode, secondGridId.hashCode)
+    assertEquals(gridId.value, "cent")
+    assertEquals(gridId.toString, "GridId(cent)")
+    assertEquals(version, secondVersion)
+    assertEquals(version.hashCode, secondVersion.hashCode)
+    assertEquals(version.value, 1L)
+    assertEquals(version.toString, "GridVersion(1)")
+    val _ = intercept[NullPointerException](GridKey(null, version))
+    val _ = intercept[NullPointerException](GridIdentity(null, GridKey(gridId, version)))
 
     val local = GridKey(gridId, version)
     assertNotEquals(GridIdentity(DimKey.one, local), GridIdentity(DimKey.atom(AtomId("USD")), local))
@@ -111,6 +122,8 @@ class ReferenceDataSuite extends FunSuite:
 
     val serializableValues: Vector[JavaSerializationUnsupported] = Vector(
       definition.id,
+      gridDefinitionValue.id,
+      gridDefinitionValue.version,
       definition,
       command,
       CatalogCommand.RegisterDimension(DimKey.one),

@@ -21,6 +21,41 @@ final case class NonPositiveGridVersion(value: Long) extends ReferenceDataError
 /** A stable grid definition supplied a zero or negative exact quantum. */
 final case class NonPositiveGridQuantum(value: Rational) extends ReferenceDataError
 
+/** Stable external identifier for an asset. */
+final case class AssetId private (value: String) extends JavaSerializationUnsupported
+
+object AssetId:
+  override def fromProduct(product: Product): AssetId =
+    throw new UnsupportedOperationException("use AssetId.from")
+
+  /** Validate an external asset identifier. Null is rejected before a result is returned. */
+  def from(value: String): Either[EmptyAssetId.type, AssetId] =
+    val checked = Objects.requireNonNull(value, "asset ID")
+    Either.cond(checked.trim.nonEmpty, new AssetId(checked), EmptyAssetId)
+
+/** Stable external identifier for a grid definition. */
+final case class GridId private (value: String) extends JavaSerializationUnsupported
+
+object GridId:
+  override def fromProduct(product: Product): GridId =
+    throw new UnsupportedOperationException("use GridId.from")
+
+  /** Validate an external grid identifier. Null is rejected before a result is returned. */
+  def from(value: String): Either[EmptyGridId.type, GridId] =
+    val checked = Objects.requireNonNull(value, "grid ID")
+    Either.cond(checked.trim.nonEmpty, new GridId(checked), EmptyGridId)
+
+/** Positive version distinguishing immutable definitions that share a [[GridId]]. */
+final case class GridVersion private (value: Long) extends JavaSerializationUnsupported
+
+object GridVersion:
+  override def fromProduct(product: Product): GridVersion =
+    throw new UnsupportedOperationException("use GridVersion.from")
+
+  /** Validate a positive stable grid version. */
+  def from(value: Long): Either[NonPositiveGridVersion, GridVersion] =
+    Either.cond(value > 0, new GridVersion(value), NonPositiveGridVersion(value))
+
 /** The dimension-local portion of stable grid identity. */
 final case class GridKey(id: GridId, version: GridVersion) extends JavaSerializationUnsupported:
   val _ = Objects.requireNonNull(id, "grid ID")

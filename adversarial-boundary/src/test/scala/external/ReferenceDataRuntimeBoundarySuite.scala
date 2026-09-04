@@ -75,12 +75,15 @@ class ReferenceDataRuntimeBoundarySuite extends FunSuite:
 
     assertEquals(validAssetId("equal"), validAssetId("equal"))
     assertEquals(validGridId("equal"), validGridId("equal"))
+    assertEquals(validAssetId("observed").value, "observed")
+    assertEquals(validGridId("observed-grid").value, "observed-grid")
+    assertEquals(validGridVersion(3).value, 3L)
     assertEquals(validGridVersion(3).toString, "GridVersion(3)")
+    val _ = intercept[UnsupportedOperationException](AssetId.fromProduct(Tuple1("unchecked")))
+    val _ = intercept[UnsupportedOperationException](GridId.fromProduct(Tuple1("unchecked")))
+    val _ = intercept[UnsupportedOperationException](GridVersion.fromProduct(Tuple1(1L)))
 
-  test("packaged products and stable identities expose no product-copy bypass"):
-    List(classOf[AssetId], classOf[GridId], classOf[GridVersion]).foreach: identityClass =>
-      assert(!classOf[Product].isAssignableFrom(identityClass))
-
+  test("packaged invariant-bearing products expose no product-copy bypass"):
     List(classOf[GridDefinition], classOf[CatalogBatch], classOf[CatalogDelta], classOf[CatalogRevision]).foreach:
       domainClass => assert(!classOf[Product].isAssignableFrom(domainClass))
 

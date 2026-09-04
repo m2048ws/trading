@@ -119,7 +119,7 @@ class ReferenceDataCompilerBoundarySuite extends FunSuite:
     ),
     NegativeFixture(
       "StableIdentityCopy.scala",
-      List("copy", "is not a member", "AssetId", "GridId", "GridVersion"),
+      List("copy", "cannot be accessed", "AssetId", "GridId", "GridVersion"),
       minimumErrors = 3
     ),
     NegativeFixture(

@@ -54,7 +54,7 @@ class InstrumentDefinitionRecordSuite extends FunSuite:
     val malformed = valid
       .replace("\"instrumentId\":\"malformed-valid\"", "\"instrumentId\":\"\"")
       .replace("\"underlyingId\":\"malformed-underlying\"", "\"underlyingId\":\" \"")
-      .replace(s"\"baseAssetId\":\"${fixture.baseId.value()}\"", "\"baseAssetId\":\"\"")
+      .replace(s"\"baseAssetId\":\"${fixture.baseId.value}\"", "\"baseAssetId\":\"\"")
       .replace(
         "\"basePerPosition\":{\"denominator\":\"3\",\"numerator\":\"2\"}",
         "\"basePerPosition\":{\"denominator\":\"2\",\"numerator\":\"2\"}"

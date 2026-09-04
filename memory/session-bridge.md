@@ -14,22 +14,19 @@ updated: 2026-09-04
 - **Issue**: 46 https://github.com/m2048ws/trading/issues/46
 - **Change**: use-scala-first-quantity-and-reference-data
 - **Worktree**: /Users/m/src/money/.worktrees/use-scala-first-quantity-and-reference-data
-- **Phase at Checkpoint**: planning_ready
+- **Phase at Checkpoint**: applying
 - **Task Group at Checkpoint**: 1
-- **Observed Run Revision**: none
-- **Last Verified HEAD**: 49e5e0473c27bb59b82cdcb63fb4fa30d2e6bb3a
+- **Observed Run Revision**: 2
+- **Last Verified HEAD**: fd3d4f06cd21f458a8311394cca3d9d6c0ea1eaa
 
 ## Next Action
-- Start Apply for `use-scala-first-quantity-and-reference-data` Task Group 1.
+- After acknowledging Task Group 1, implement `use-scala-first-quantity-and-reference-data` Task Group 2.
 
 ## Blockers
 - none
 
 ## Uncommitted Work
-- Task Group 3 aligns durable architecture guidance and eight delta specifications on the Scala 3 source contract while
-  retaining JDK 25, Java-library integration, checked external reconstruction, wire formats, exact decimals, and
-  serialization rejection; the clean 1,041-test aggregate, benchmark compile, formatting, strict readiness, and both
-  reflection guard checks pass.
+- none
 
 ## Discoveries
 - No active Corgi Run Contract or OpenSpec Change exists on primary `main`.
@@ -94,6 +91,9 @@ updated: 2026-09-04
 - RFC-0005/S-05 Task Group 3 establishes Scala 3 as the supported domain source API in durable architecture guidance
   and the active specification deltas while explicitly retaining the JDK 25 baseline, Java-library/JVM integration,
   checked external representations, exact decimal conversion, canonical wire formats, and serialization rejection.
+- RFC-0005/S-04 Task Group 1 replaces `AssetId`, `GridId`, and `GridVersion` with Scala-owned checked case classes,
+  denies generated product reconstruction, removes the repository's last production Java sources, and preserves typed
+  invalidity, value semantics, stable codec representations, Scala field observation, and serialization rejection.
 
 ## Promotion Queue
 - none

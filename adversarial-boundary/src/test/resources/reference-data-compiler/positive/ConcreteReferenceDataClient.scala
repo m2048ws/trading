@@ -17,5 +17,8 @@ object ConcreteReferenceDataClient:
   assert(AssetId.from(" ") == Left(EmptyAssetId))
   assert(GridId.from("") == Left(EmptyGridId))
   assert(GridVersion.from(0) == Left(NonPositiveGridVersion(0)))
+  assert(validAssetId("observed").value == "observed")
+  assert(validGridId("observed-grid").value == "observed-grid")
+  assert(validGridVersion(7).value == 7L)
 
 end ConcreteReferenceDataClient

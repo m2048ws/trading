@@ -46,10 +46,10 @@ private[codec] object ExactWire:
     identifier(StableIdentifierKind.DimensionAtom, constructAtomId)(_.value)
 
   val assetId: WireSchema[AssetId] =
-    identifier(StableIdentifierKind.Asset, value => AssetId.from(value).left.map(_ => ()))(_.value())
+    identifier(StableIdentifierKind.Asset, value => AssetId.from(value).left.map(_ => ()))(_.value)
 
   val gridId: WireSchema[GridId] =
-    identifier(StableIdentifierKind.Grid, value => GridId.from(value).left.map(_ => ()))(_.value())
+    identifier(StableIdentifierKind.Grid, value => GridId.from(value).left.map(_ => ()))(_.value)
 
   val instrumentId: WireSchema[InstrumentId] =
     identifier(StableIdentifierKind.Instrument, value => InstrumentId.from(value).left.map(_ => ()))(_.value)
@@ -58,7 +58,7 @@ private[codec] object ExactWire:
     identifier(StableIdentifierKind.Underlying, value => UnderlyingId.from(value).left.map(_ => ()))(_.value)
 
   val gridVersion: WireSchema[GridVersion] =
-    positiveInteger.refine[GridVersion](decodeGridVersion)(value => BigInt(value.value()))
+    positiveInteger.refine[GridVersion](decodeGridVersion)(value => BigInt(value.value))
 
   val dimension: WireSchema[DimKey] =
     val factor =
