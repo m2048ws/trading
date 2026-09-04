@@ -1,6 +1,14 @@
 schemaVersion: 1
 rfcId: RFC-0007-clarify-attributed-price-pnl-contract
-revision: 0
+revision: 1
 slices:
-  S-01-clarify-attributed-price-pnl-contract:
+  S-01-generalize-attributed-price-pnl:
+    status: unbound
+  S-02-create-append-only-campaigns:
+    status: unbound
+  S-03-project-campaign-execution:
+    status: unbound
+  S-04-value-campaign-price-pnl:
+    status: unbound
+  S-05-certify-campaign-closeout:
     status: unbound
