@@ -14,13 +14,13 @@ updated: 2026-09-04
 - **Issue**: 53 https://github.com/m2048ws/trading/issues/53
 - **Change**: name-instrument-dimensions
 - **Worktree**: /Users/m/src/money/.worktrees/name-instrument-dimensions
-- **Phase at Checkpoint**: planning_ready
+- **Phase at Checkpoint**: awaiting_verify
 - **Task Group at Checkpoint**: 1
-- **Observed Run Revision**: none
-- **Last Verified HEAD**: fd62724ca83b5b47ec39916d967c7bfa66f09e3f
+- **Observed Run Revision**: 2
+- **Last Verified HEAD**: 96879f8176bd7972ed7e321dacbc8a1105de9d39
 
 ## Next Action
-- Start Apply for `name-instrument-dimensions` Task Group 1.
+- Run canonical whole-change Verify for `name-instrument-dimensions` after Task Group 1 acknowledgement.
 
 ## Blockers
 - none

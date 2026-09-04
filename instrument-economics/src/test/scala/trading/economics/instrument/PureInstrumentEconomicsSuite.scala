@@ -5,10 +5,59 @@ import munit.FunSuite
 import trading.quantity.*
 import trading.quantity.grid.QuantizationPolicy
 import trading.quantity.refinement.PositiveWhole
+import trading.reference.GridHandle
 
 class PureInstrumentEconomicsSuite extends FunSuite:
   private val fixture    = new InstrumentFixtures
   private val instrument = fixture.linear
+
+  private def assertSameType[A, B](using forward: A =:= B, backward: B =:= A): Unit =
+    assert(forward != null)
+    assert(backward != null)
+
+  test("Instrument dimension aliases preserve role projections and retained values"):
+    assertSameType[instrument.PositionD, instrument.roles.position.D]
+    assertSameType[instrument.BaseD, instrument.roles.base.D]
+    assertSameType[instrument.QuoteD, instrument.roles.quote.D]
+    assertSameType[instrument.SettleD, instrument.roles.settle.D]
+
+    val positionGrid: GridHandle[instrument.PositionD]                              = instrument.positionLotGrid
+    val priceGrid: GridHandle[Divide[instrument.QuoteD, instrument.BaseD]]          = instrument.priceGrid
+    val basePerPosition: Rate[instrument.PositionD, instrument.BaseD]               = instrument.basePerPosition
+    val quotePerPosition: Rate[instrument.PositionD, instrument.QuoteD]             = instrument.quotePerPosition
+    val lots: Lots[instrument.PositionD]                                            = fixture.lots(instrument, 1000)
+    val position: PositionLots[instrument.PositionD]                                = fixture.position(instrument, 1000)
+    val entry: MarketState[instrument.BaseD, instrument.QuoteD, instrument.SettleD] =
+      fixture.quoteState(instrument, Rational(100))
+    val exit: MarketState[instrument.BaseD, instrument.QuoteD, instrument.SettleD] =
+      fixture.quoteState(instrument, Rational(110))
+    val price: Price[instrument.BaseD, instrument.QuoteD] = fixture.price(instrument, Rational(100))
+    val pricePnl: PricePnl[instrument.SettleD]            =
+      PricePnl.calculate(instrument)(position, entry, exit).toOption.get
+    val pnl: Pnl[instrument.SettleD] = Pnl.create(instrument)(pricePnl, Vector.empty).toOption.get
+
+    val roleLots: Lots[instrument.roles.position.D]                         = lots
+    val rolePrice: Price[instrument.roles.base.D, instrument.roles.quote.D] = price
+    val roleMarket: MarketState[
+      instrument.roles.base.D,
+      instrument.roles.quote.D,
+      instrument.roles.settle.D
+    ]                                                = entry
+    val roleNet: Quantity[instrument.roles.settle.D] = pnl.netPnl
+
+    assertEquals(instrument.identity, instrument.spec.identity)
+    assertEquals(positionGrid, instrument.spec.positionLotGrid)
+    assertEquals(priceGrid, instrument.spec.priceGrid)
+    assertEquals(basePerPosition, instrument.spec.basePerPosition)
+    assertEquals(quotePerPosition, instrument.spec.quotePerPosition)
+    assertEquals(roleLots.quantity, position.quantity)
+    assertEquals(rolePrice.coefficient, Rational(100))
+    assertEquals(roleMarket.instrumentId, instrument.identity.id)
+    assertEquals(pricePnl.quantity.coefficient, Rational(10))
+    assertEquals(roleNet.coefficient, Rational(10))
+
+    val publicNames = classOf[Instrument].getMethods.toVector.map(_.getName).toSet
+    assert(!Set("PositionD", "BaseD", "QuoteD", "SettleD").exists(publicNames))
 
   test("Instrument is static and dependent lot/position constructors preserve grid meaning"):
     val lots = Lots.fromCount(instrument)(1000).toOption.get

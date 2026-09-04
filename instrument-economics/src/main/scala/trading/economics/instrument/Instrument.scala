@@ -107,17 +107,22 @@ final class Instrument private (val spec: InstrumentSpec) extends JavaSerializat
   val identity: InstrumentIdentity = spec.identity
   val roles: spec.roles.type       = spec.roles
 
-  val positionLotGrid: GridHandle[roles.position.D]              = spec.positionLotGrid
-  val priceGrid: GridHandle[Divide[roles.quote.D, roles.base.D]] = spec.priceGrid
-  val basePerPosition: Rate[roles.position.D, roles.base.D]      = spec.basePerPosition
-  val quotePerPosition: Rate[roles.position.D, roles.quote.D]    = spec.quotePerPosition
+  type PositionD = roles.position.D
+  type BaseD     = roles.base.D
+  type QuoteD    = roles.quote.D
+  type SettleD   = roles.settle.D
 
-  type Lots         = _root_.trading.economics.instrument.Lots[roles.position.D]
-  type PositionLots = _root_.trading.economics.instrument.PositionLots[roles.position.D]
-  type Price        = _root_.trading.economics.instrument.Price[roles.base.D, roles.quote.D]
-  type MarketState  = _root_.trading.economics.instrument.MarketState[roles.base.D, roles.quote.D, roles.settle.D]
-  type PricePnl     = _root_.trading.economics.instrument.PricePnl[roles.settle.D]
-  type Pnl          = _root_.trading.economics.instrument.Pnl[roles.settle.D]
+  val positionLotGrid: GridHandle[PositionD]       = spec.positionLotGrid
+  val priceGrid: GridHandle[Divide[QuoteD, BaseD]] = spec.priceGrid
+  val basePerPosition: Rate[PositionD, BaseD]      = spec.basePerPosition
+  val quotePerPosition: Rate[PositionD, QuoteD]    = spec.quotePerPosition
+
+  type Lots         = _root_.trading.economics.instrument.Lots[PositionD]
+  type PositionLots = _root_.trading.economics.instrument.PositionLots[PositionD]
+  type Price        = _root_.trading.economics.instrument.Price[BaseD, QuoteD]
+  type MarketState  = _root_.trading.economics.instrument.MarketState[BaseD, QuoteD, SettleD]
+  type PricePnl     = _root_.trading.economics.instrument.PricePnl[SettleD]
+  type Pnl          = _root_.trading.economics.instrument.Pnl[SettleD]
 end Instrument
 
 object Instrument:

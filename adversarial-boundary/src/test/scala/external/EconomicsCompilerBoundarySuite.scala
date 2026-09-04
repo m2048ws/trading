@@ -73,6 +73,18 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
     assert(result.succeeded, result.rendered)
     runModule(result.output, "external.economics.core.RetainedDenominationEqualityClient$", "run")
 
+  test("completed pure JAR dimension aliases reject incompatible roles and instruments"):
+    val source = Paths.get(
+      getClass.getResource("/economics-core-compiler/InstrumentDimensionAliasMismatch.scala").toURI
+    )
+    val prelude = compileCorePrelude(source)
+    assert(prelude.succeeded, s"fixture prelude must compile independently:\n${prelude.rendered}")
+    val rejected = compileCore(source)
+    assertEquals(rejected.errors.size, 2, rejected.rendered)
+    assert(rejected.rendered.contains("Found:"), rejected.rendered)
+    assert(rejected.rendered.contains("Required:"), rejected.rendered)
+    economicsForbiddenDiagnostics.foreach(fragment => assert(!rejected.rendered.contains(fragment), rejected.rendered))
+
   test("completed pure JAR cannot import downstream packages"):
     val source  = Paths.get(getClass.getResource("/economics-core-compiler/CoreHasNoDownstream.scala").toURI)
     val prelude = compileCorePrelude(source)
