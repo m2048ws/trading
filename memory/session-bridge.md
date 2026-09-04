@@ -15,20 +15,20 @@ updated: 2026-09-04
 - **Change**: remove-java-api-compatibility
 - **Worktree**: /Users/m/src/money/.worktrees/remove-java-api-compatibility
 - **Phase at Checkpoint**: applying
-- **Task Group at Checkpoint**: 1
-- **Observed Run Revision**: 2
-- **Last Verified HEAD**: c6df0f77ff6b7f16da7d0bc27e416756127d254c
+- **Task Group at Checkpoint**: 2
+- **Observed Run Revision**: 3
+- **Last Verified HEAD**: 0aa35e63b443bca111bba0a0cb156f891f9ec81a
 
 ## Next Action
-- Commit and acknowledge Task Group 1, then implement the CLI-selected Task Group 2.
+- Commit and acknowledge Task Group 2, then implement the CLI-selected Task Group 3.
 
 ## Blockers
 - none
 
 ## Uncommitted Work
-- Task Group 1 removes erased evidence/resolution acceptance hooks, makes associated Scala assumptions construction
-  direct, retains typed vector emptiness and semantic replay validation, and passes the focused order/scenario, fee,
-  codec, and 134-test compiler-boundary suites.
+- Task Group 2 removes all 11 ordinary-Java domain fixtures, the dedicated reference-data Java suite, and Java-only
+  compiler/loader branches from the mixed order/scenario, lifecycle, and codec suites; the clean 130-test adversarial
+  boundary and formatting checks pass with Scala compiler, dependency, semantic, wire, null, and serialization coverage.
 
 ## Discoveries
 - No active Corgi Run Contract or OpenSpec Change exists on primary `main`.
@@ -87,6 +87,9 @@ updated: 2026-09-04
 - RFC-0005/S-05 Task Group 1 removes `Any`-based activation/pricing acceptance hooks and their erased-shape errors,
   makes `ScenarioAssumptions.create`, `one`, and `many` direct, keeps `fromVector` typed for empty input, and preserves
   same-shape semantic mismatch, fee, codec reconstruction, and negative associated-evidence compiler behavior.
+- RFC-0005/S-05 Task Group 2 removes the reference-data, order/scenario, execution-lifecycle, and boundary-codec Java
+  domain fixtures and their dedicated compiler/classloader code while retaining completed-artifact Scala clients,
+  negative compiler cases, dependency inspections, semantic tests, external wire/null cases, and serialization checks.
 
 ## Promotion Queue
 - none

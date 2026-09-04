@@ -8,9 +8,6 @@ import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.Locale
 import java.util.jar.JarFile
-import javax.tools.DiagnosticCollector
-import javax.tools.JavaFileObject
-import javax.tools.ToolProvider
 import scala.jdk.CollectionConverters.*
 
 import dotty.tools.dotc.Main
@@ -32,7 +29,6 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
   private val orderFixturesRoot     = Paths.get(getClass.getResource("/order-model-compiler").toURI)
   private val scenarioFixturesRoot  = Paths.get(getClass.getResource("/execution-scenario-compiler").toURI)
   private val feePolicyFixturesRoot = Paths.get(getClass.getResource("/fee-policy-compiler").toURI)
-  private val javaFixturesRoot      = Paths.get(getClass.getResource("/order-scenario-java").toURI)
   private val sharedFixture         = fixturesRoot.resolve("SharedEconomicsSetup.scala")
   private val compilationClasspath  =
     val resource = Option(getClass.getResourceAsStream("/static-dimension-compiler.classpath")).getOrElse:
@@ -472,16 +468,6 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
     assert(rejected.rendered.contains("is not a member"), rejected.rendered)
     assert(rejected.rendered.contains("ScenarioLeg"), rejected.rendered)
 
-  test("ordinary Java uses checked order factories and closed alternatives without reflection"):
-    val source = javaFixturesRoot.resolve("positive/OrderFactoryClient.java")
-    val result = compileJava(source, orderCompilationClasspath)
-    assert(result.succeeded, result.diagnostics)
-    assertJavaBoolean(
-      result.output,
-      "external.order.positive.OrderFactoryClient",
-      "checkedFactoriesPreserveSemantics"
-    )
-
   test("positive downstream composition fixture compiles without warnings and runs"):
     val result = compile(fixturesRoot.resolve("positive/CompleteCompositionClient.scala"))
     assert(result.succeeded, result.rendered)
@@ -574,48 +560,6 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
     val arguments = baseArguments ++ shared.toVector.map(_.toString) :+ source.toString
     val _         = Main.process(arguments, reporter)
     Compilation(output, reporter.allErrors.map(_.message), reporter.allWarnings.map(_.message))
-
-  private final case class JavaCompilation(output: Path, succeeded: Boolean, diagnostics: String)
-
-  private def compileJava(source: Path, classpath: String): JavaCompilation =
-    val compiler = Option(ToolProvider.getSystemJavaCompiler).getOrElse:
-      throw new IllegalStateException("a full JDK is required for Java boundary fixtures")
-    val diagnostics = new DiagnosticCollector[JavaFileObject]
-    val files       = compiler.getStandardFileManager(diagnostics, Locale.ROOT, StandardCharsets.UTF_8)
-    val output      = Files.createTempDirectory("order-scenario-java-")
-    try
-      val units   = files.getJavaFileObjects(source.toFile)
-      val options = List(
-        "--release",
-        "25",
-        "-proc:none",
-        "-classpath",
-        classpath,
-        "-d",
-        output.toString
-      )
-      val succeeded = compiler.getTask(null, files, diagnostics, options.asJava, null, units).call()
-      val rendered  = diagnostics.getDiagnostics.asScala
-        .map(diagnostic => diagnostic.getMessage(Locale.ROOT))
-        .mkString("\n")
-      JavaCompilation(output, succeeded, rendered)
-    finally files.close()
-  end compileJava
-
-  private def assertJavaBoolean(output: Path, className: String, methodName: String): Unit =
-    val loader = new URLClassLoader(Array(output.toUri.toURL), getClass.getClassLoader)
-    try
-      val fixture = Class.forName(className, true, loader)
-      assertEquals(fixture.getMethod(methodName).invoke(null), java.lang.Boolean.TRUE)
-    catch
-      case error: java.lang.reflect.InvocationTargetException =>
-        val cause = Option(error.getCause).fold(error.toString)(_.toString)
-        fail(s"compiled Java fixture $className.$methodName failed: $cause")
-      case error: ReflectiveOperationException =>
-        fail(s"compiled Java fixture $className.$methodName could not be invoked: $error")
-      case error: LinkageError =>
-        fail(s"compiled Java fixture $className.$methodName could not be linked: $error")
-    finally loader.close()
 
   private def packagedFeePolicyJar: Path =
     compilationClasspath

@@ -1,16 +1,11 @@
 package external
 
 import java.io.File
-import java.net.URLClassLoader
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
-import java.util.Locale
 import java.util.jar.JarFile
-import javax.tools.DiagnosticCollector
-import javax.tools.JavaFileObject
-import javax.tools.ToolProvider
 import scala.jdk.CollectionConverters.*
 
 import dotty.tools.dotc.Main
@@ -21,8 +16,6 @@ class BoundaryCodecCompilerBoundarySuite extends FunSuite:
   private final case class Compilation(errors: List[String], warnings: List[String]):
     def succeeded: Boolean = errors.isEmpty && warnings.isEmpty
     def rendered: String   = (errors ++ warnings).mkString("\n")
-
-  private final case class JavaCompilation(output: Path, succeeded: Boolean, diagnostics: String)
 
   private val fixturesRoot         = Paths.get(getClass.getResource("/boundary-codec-compiler").toURI)
   private val compilationClasspath =
@@ -242,15 +235,6 @@ class BoundaryCodecCompilerBoundarySuite extends FunSuite:
     val result = compile(fixturesRoot.resolve("positive/BoundaryCodecFoundationClient.scala"))
     assert(result.succeeded, result.rendered)
 
-  test("completed boundary-codec JAR compiles and runs an ordinary Java checked-factory client"):
-    val result = compileJava(fixturesRoot.resolve("positive/BoundaryCodecJavaClient.java"))
-    assert(result.succeeded, result.diagnostics)
-    val loader = new URLClassLoader(Array(result.output.toUri.toURL), getClass.getClassLoader)
-    try
-      val fixture = Class.forName("external.codec.positive.BoundaryCodecJavaClient", true, loader)
-      assertEquals(fixture.getMethod("checkedFactoriesPreserveSemantics").invoke(null), java.lang.Boolean.TRUE)
-    finally loader.close()
-
   test("completed boundary-codec JAR compiles exact grid packing and dependent reconstruction clients"):
     val result = compile(fixturesRoot.resolve("positive/GridCoordinateRecordClient.scala"))
     assert(result.succeeded, result.rendered)
@@ -457,31 +441,6 @@ class BoundaryCodecCompilerBoundarySuite extends FunSuite:
       reporter
     )
     Compilation(reporter.allErrors.map(_.message), reporter.allWarnings.map(_.message))
-
-  private def compileJava(source: Path): JavaCompilation =
-    val compiler = Option(ToolProvider.getSystemJavaCompiler).getOrElse:
-      throw new IllegalStateException("a full JDK is required for Java boundary fixtures")
-    val diagnostics = new DiagnosticCollector[JavaFileObject]
-    val files       = compiler.getStandardFileManager(diagnostics, Locale.ROOT, StandardCharsets.UTF_8)
-    val output      = Files.createTempDirectory("boundary-codec-java-")
-    try
-      val units   = files.getJavaFileObjects(source.toFile)
-      val options = List(
-        "--release",
-        "25",
-        "-proc:none",
-        "-classpath",
-        compilationClasspath,
-        "-d",
-        output.toString
-      )
-      val succeeded = compiler.getTask(null, files, diagnostics, options.asJava, null, units).call()
-      val rendered  = diagnostics.getDiagnostics.asScala
-        .map(diagnostic => diagnostic.getMessage(Locale.ROOT))
-        .mkString("\n")
-      JavaCompilation(output, succeeded, rendered)
-    finally files.close()
-  end compileJava
 
 end BoundaryCodecCompilerBoundarySuite
 

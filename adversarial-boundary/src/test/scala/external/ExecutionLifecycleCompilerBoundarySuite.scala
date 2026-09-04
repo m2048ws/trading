@@ -6,11 +6,7 @@ import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
-import java.util.Locale
 import java.util.jar.JarFile
-import javax.tools.DiagnosticCollector
-import javax.tools.JavaFileObject
-import javax.tools.ToolProvider
 import scala.jdk.CollectionConverters.*
 
 import dotty.tools.dotc.Main
@@ -22,10 +18,7 @@ class ExecutionLifecycleCompilerBoundarySuite extends FunSuite:
     def succeeded: Boolean = errors.isEmpty && warnings.isEmpty
     def rendered: String   = (errors ++ warnings).mkString("\n")
 
-  private final case class JavaCompilation(output: Path, succeeded: Boolean, diagnostics: String)
-
   private val fixturesRoot       = Paths.get(getClass.getResource("/execution-lifecycle-compiler").toURI)
-  private val javaRoot           = Paths.get(getClass.getResource("/execution-lifecycle-java").toURI)
   private val executionClasspath = loadClasspath("execution-lifecycle-compiler.classpath")
 
   test("completed execution-lifecycle classpath contains only its admitted pure dependency cone"):
@@ -100,15 +93,6 @@ class ExecutionLifecycleCompilerBoundarySuite extends FunSuite:
     assert(result.succeeded, result.rendered)
     runModule(result.output, "external.execution.positive.ExecutionIdentityBoundaryClient$", "run")
 
-  test("completed execution-lifecycle JAR compiles and runs an ordinary Java checked-factory client"):
-    val result = compileJava(javaRoot.resolve("positive/ExecutionFactoryClient.java"))
-    assert(result.succeeded, result.diagnostics)
-    val loader = new URLClassLoader(Array(result.output.toUri.toURL), getClass.getClassLoader)
-    try
-      val fixture = Class.forName("external.execution.positive.ExecutionFactoryClient", true, loader)
-      assertEquals(fixture.getMethod("checkedFactoriesPreserveSemantics").invoke(null), java.lang.Boolean.TRUE)
-    finally loader.close()
-
   test("completed execution-lifecycle JAR compiles and runs authority, lifecycle, and closed command transitions"):
     val result = compile(
       List(
@@ -182,31 +166,6 @@ class ExecutionLifecycleCompilerBoundarySuite extends FunSuite:
       List("-classpath", classpath, "-d", output.toString, "-Werror", "-source:future") ++ sources.map(_.toString)
     val _ = Main.process(arguments.toArray, reporter)
     Compilation(output, reporter.allErrors.map(_.message), reporter.allWarnings.map(_.message))
-
-  private def compileJava(source: Path): JavaCompilation =
-    val compiler = Option(ToolProvider.getSystemJavaCompiler).getOrElse:
-      throw new IllegalStateException("a full JDK is required for Java boundary fixtures")
-    val diagnostics = new DiagnosticCollector[JavaFileObject]
-    val files       = compiler.getStandardFileManager(diagnostics, Locale.ROOT, StandardCharsets.UTF_8)
-    val output      = Files.createTempDirectory("execution-java-")
-    try
-      val units   = files.getJavaFileObjects(source.toFile)
-      val options = List(
-        "--release",
-        "25",
-        "-proc:none",
-        "-classpath",
-        executionClasspath,
-        "-d",
-        output.toString
-      )
-      val succeeded = compiler.getTask(null, files, diagnostics, options.asJava, null, units).call()
-      val rendered  = diagnostics.getDiagnostics.asScala
-        .map(diagnostic => diagnostic.getMessage(Locale.ROOT))
-        .mkString("\n")
-      JavaCompilation(output, succeeded, rendered)
-    finally files.close()
-  end compileJava
 
   private def runModule(output: Path, moduleName: String, method: String): Unit =
     val urls = (output +: executionClasspath.split(File.pathSeparator).map(Paths.get(_)).toSeq)
