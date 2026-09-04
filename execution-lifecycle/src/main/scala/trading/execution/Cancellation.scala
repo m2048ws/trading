@@ -219,8 +219,10 @@ object ExecutionAnomalies:
                   if cancelPosition.stream == fillPosition.stream &&
                     cancelPosition.sequence.value < fillPosition.sequence.value =>
                   cancelPosition -> cancellation
-              .sortBy: (position, cancellation) =>
-                (position.sequence.value, eventKey(cancellation.eventId))
+              .sortWith: (left, right) =>
+                val positionComparison = ExecutionOrderings.comparePosition(left._1, right._1)
+                if positionComparison != 0 then positionComparison < 0
+                else ExecutionOrderings.compareCancellation(left._2, right._2) < 0
               .map(_._2)
             Option.when(prior.nonEmpty):
               postCancellation(
@@ -230,9 +232,7 @@ object ExecutionAnomalies:
               )
             .toVector
       case _ => Vector.empty
-    .sortBy: anomaly =>
-      val position = anomaly.effectiveFill.original.authoritativePosition.get
-      (streamKey(position.stream), position.sequence.value, fillKey(anomaly.fillId))
+    .sorted(using ExecutionOrderings.postCancellationFillAnomaly)
 
     new ExecutionAnomalies(
       ledger.overfill,
@@ -242,15 +242,6 @@ object ExecutionAnomalies:
       state.source.positionConflicts
     )
   end derive
-
-  private def eventKey(value: QualifiedSourceEventId): String =
-    s"${value.target.source.value}-${value.target.account.value}-${value.native.value}"
-
-  private def fillKey(value: QualifiedFillId): String =
-    s"${value.target.source.value}-${value.target.account.value}-${value.native.value}"
-
-  private def streamKey(value: QualifiedSourceStreamId): String =
-    s"${value.target.source.value}-${value.target.account.value}-${value.native.value}"
 
   private def position[D <: Dim, B <: Dim, Q <: Dim](
     lifecycle: ExecutionLifecycle[D, B, Q],

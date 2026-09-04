@@ -15,19 +15,19 @@ updated: 2026-09-04
 - **Change**: total-and-deterministic-execution-transitions
 - **Worktree**: /Users/m/src/money/.worktrees/total-and-deterministic-execution-transitions
 - **Phase at Checkpoint**: applying
-- **Task Group at Checkpoint**: 1
-- **Observed Run Revision**: 2
-- **Last Verified HEAD**: 8e323f7f4cec83f7d4d06f1a324586ddfbebd8b4
+- **Task Group at Checkpoint**: 2
+- **Observed Run Revision**: 3
+- **Last Verified HEAD**: 42c59c4860900f24e1b523428574503f138931be
 
 ## Next Action
-- Commit and acknowledge Task Group 1, then inspect the CLI-selected next group.
+- Commit and acknowledge Task Group 2, then implement the CLI-selected Task Group 3.
 
 ## Blockers
 - none
 
 ## Uncommitted Work
-- Task Group 1 replaces command transition kind/optional-payload states with exhaustive payload-correct alternatives;
-  focused execution and packaged compiler-boundary tests pass.
+- Task Group 2 centralizes typed execution comparisons, removes delimiter-built replay and observation ordering keys,
+  and adds collision/permutation regressions; all execution and packaged compiler-boundary tests pass.
 
 ## Discoveries
 - No active Corgi Run Contract or OpenSpec Change exists on primary `main`.
@@ -67,6 +67,9 @@ updated: 2026-09-04
 - RFC-0005/S-02 Task Group 1 replaces the command transition kind plus optional violations with five owner-sealed
   alternatives, removes unchecked violation extraction, and preserves applied, idempotent, command-conflict,
   dispatch-conflict, and rejection state semantics under focused and completed-artifact compiler tests.
+- RFC-0005/S-02 Task Group 2 replaces replay, effective-fill, cancellation-anomaly, continuation, unsequenced-event,
+  conflict, and diagnostic string keys with owner-local typed lexicographic comparisons, retaining null rejection and
+  deterministic permutation semantics even when identifier components contain former `|` and `-` delimiters.
 
 ## Promotion Queue
 - none

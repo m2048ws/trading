@@ -155,14 +155,16 @@ object EffectiveFillLedger:
     val identityConflictsByFill = state.source.fillConflicts.groupBy(_.fillId)
 
     val effective = state.source.fillsById.map: (fillId, original) =>
-      val targetModifiers = modifiersByFill.getOrElse(fillId, Vector.empty).sortBy(modifierKey)
-      val eventConflicts  = eventConflictsByFill
+      val targetModifiers = modifiersByFill
+        .getOrElse(fillId, Vector.empty)
+        .sorted(using ExecutionOrderings.fillModifier)
+      val eventConflicts = eventConflictsByFill
         .getOrElse(fillId, Vector.empty)
         .distinct
-        .sortBy(conflictKey)
+        .sorted(using ExecutionOrderings.sourceFactConflict)
       val identityConflicts = identityConflictsByFill
         .getOrElse(fillId, Vector.empty)
-        .sortBy(fillConflictKey)
+        .sorted(using ExecutionOrderings.fillIdentityConflict)
       val value =
         if eventConflicts.nonEmpty || identityConflicts.nonEmpty then
           conflicting(original, targetModifiers, eventConflicts, identityConflicts)
@@ -191,8 +193,10 @@ object EffectiveFillLedger:
       val streams             = ordered.map(_._1.stream).distinct
       val conflictingPosition = ordered.exists: (position, _) =>
         state.source.positionConflicts.contains(position)
-      val sorted = ordered.sortBy: (position, modifier) =>
-        (streamKey(position.stream), position.sequence.value, modifierKey(modifier))
+      val sorted = ordered.sortWith: (left, right) =>
+        val positionComparison = ExecutionOrderings.comparePosition(left._1, right._1)
+        if positionComparison != 0 then positionComparison < 0
+        else ExecutionOrderings.compareFillModifier(left._2, right._2) < 0
       .map(_._2)
       val firstBust = sorted.indexWhere(_.isInstanceOf[FillBusted[?, ?, ?]])
       val ambiguity = ModifierAmbiguity.from(
@@ -216,54 +220,6 @@ object EffectiveFillLedger:
     case fill: ExecutionFill[?, ?, ?]    => Vector(fill.fillId)
     case modifier: FillModifier[?, ?, ?] => Vector(modifier.referencedFillId)
     case _                               => Vector.empty
-
-  private def modifierKey(value: FillModifier[?, ?, ?]): String =
-    val position = value.authoritativePosition match
-      case None        => "0-unsequenced"
-      case Some(value) => s"1-${streamKey(value.stream)}-${value.sequence.value}"
-    val body = value match
-      case correction: FillCorrected[?, ?, ?] =>
-        s"correction-${correction.replacementLots.count.unrefined}-${correction.replacementPrice.coefficient}"
-      case _: FillBusted[?, ?, ?] => "bust"
-    s"$position-${eventKey(value.eventId)}-$body"
-
-  private def conflictKey(value: SourceFactConflict[?, ?, ?]): String =
-    s"${sourceFactKey(value.original)}-${sourceFactKey(value.conflicting)}"
-
-  private def fillConflictKey(value: FillIdentityConflict[?, ?, ?]): String =
-    s"${sourceFactKey(value.original)}-${sourceFactKey(value.conflicting)}"
-
-  private def sourceFactKey(value: SourceFact[?, ?, ?]): String =
-    val body = value match
-      case _: OrderAccepted[?, ?, ?]    => "accepted"
-      case _: OrderRejected[?, ?, ?]    => "rejected"
-      case fill: ExecutionFill[?, ?, ?] =>
-        s"fill-${fillKey(fill.fillId)}-${fill.lots.count.unrefined}-${fill.price.coefficient}"
-      case correction: FillCorrected[?, ?, ?] =>
-        s"correction-${fillKey(correction.referencedFillId)}-${correction.replacementLots.count.unrefined}-${correction.replacementPrice.coefficient}"
-      case bust: FillBusted[?, ?, ?]                     => s"bust-${fillKey(bust.referencedFillId)}"
-      case _: CancellationEffective[?, ?, ?]             => "cancelled"
-      case checkpoint: ReconciliationCheckpoint[?, ?, ?] =>
-        s"checkpoint-${streamKey(checkpoint.checkpoint.position.stream)}-${checkpoint.checkpoint.position.sequence.value}"
-      case complete: SourceOrderCompleted[?, ?, ?] =>
-        s"complete-${streamKey(complete.completeness.completeThrough.stream)}-${complete.completeness.completeThrough.sequence.value}"
-      case absent: SourceOrderAbsent[?, ?, ?] =>
-        s"absent-${streamKey(absent.completeness.completeThrough.stream)}-${absent.completeness.completeThrough.sequence.value}"
-    s"${eventKey(value.eventId)}-${value.executionOrderId.value}-$body-${modifierOrderingKey(value.ordering)}"
-
-  private def modifierOrderingKey(value: SourceOrdering): String = value match
-    case ExplicitlyUnsequenced               => "unsequenced"
-    case sequenced: AuthoritativelySequenced =>
-      s"${streamKey(sequenced.position.stream)}-${sequenced.position.sequence.value}"
-
-  private def eventKey(value: QualifiedSourceEventId): String =
-    s"${value.target.source.value}-${value.target.account.value}-${value.native.value}"
-
-  private def fillKey(value: QualifiedFillId): String =
-    s"${value.target.source.value}-${value.target.account.value}-${value.native.value}"
-
-  private def streamKey(value: QualifiedSourceStreamId): String =
-    s"${value.target.source.value}-${value.target.account.value}-${value.native.value}"
 
   private def position[D <: Dim, B <: Dim, Q <: Dim](
     lifecycle: ExecutionLifecycle[D, B, Q],
