@@ -104,6 +104,79 @@ final class MarketState[B <: Dim, Q <: Dim, S <: Dim] private (
 end MarketState
 
 object MarketState:
+  /** Immutable construction context; every call retains the canonical operation's validation. */
+  final class InstrumentScope[I <: Instrument] private[instrument] (val instrument: I):
+    type BaseD      = instrument.BaseD
+    type QuoteD     = instrument.QuoteD
+    type SettleD    = instrument.SettleD
+    type Price      = instrument.Price
+    type State      = instrument.MarketState
+    type BaseRate   = Rate[BaseD, SettleD]
+    type QuoteRate  = Rate[QuoteD, SettleD]
+    type Conversion = SettlementConversion[SettleD]
+    type Violations = MarketStateViolations
+
+    def quoteSettled(
+      price: Price,
+      additional: Vector[Conversion] = Vector.empty[Conversion]
+    ): Either[Violations, State] =
+      MarketState.quoteSettled(instrument)(price, additional)
+
+    def baseSettled(
+      price: Price,
+      additional: Vector[Conversion] = Vector.empty[Conversion]
+    ): Either[Violations, State] =
+      MarketState.baseSettled(instrument)(price, additional)
+
+    def fromQuoteAnchor(
+      price: Price,
+      quoteToSettle: Rational,
+      additional: Vector[Conversion] = Vector.empty[Conversion]
+    ): Either[Violations, State] =
+      MarketState.fromQuoteAnchor(instrument)(price, quoteToSettle, additional)
+
+    def fromBaseAnchor(
+      price: Price,
+      baseToSettle: Rational,
+      additional: Vector[Conversion] = Vector.empty[Conversion]
+    ): Either[Violations, State] =
+      MarketState.fromBaseAnchor(instrument)(price, baseToSettle, additional)
+
+    def fromAnchors(
+      price: Price,
+      baseToSettle: Rational,
+      quoteToSettle: Rational,
+      additional: Vector[Conversion] = Vector.empty[Conversion]
+    ): Either[Violations, State] =
+      MarketState.fromAnchors(instrument)(price, baseToSettle, quoteToSettle, additional)
+
+    def fromQuoteRate(
+      price: Price,
+      quoteToSettle: QuoteRate,
+      additional: Vector[Conversion] = Vector.empty[Conversion]
+    ): Either[Violations, State] =
+      MarketState.fromQuoteRate(instrument)(price, quoteToSettle, additional)
+
+    def fromBaseRate(
+      price: Price,
+      baseToSettle: BaseRate,
+      additional: Vector[Conversion] = Vector.empty[Conversion]
+    ): Either[Violations, State] =
+      MarketState.fromBaseRate(instrument)(price, baseToSettle, additional)
+
+    def fromRates(
+      price: Price,
+      baseToSettle: BaseRate,
+      quoteToSettle: QuoteRate,
+      additional: Vector[Conversion] = Vector.empty[Conversion]
+    ): Either[Violations, State] =
+      MarketState.fromRates(instrument)(price, baseToSettle, quoteToSettle, additional)
+  end InstrumentScope
+
+  /** Bind only the stable instrument; prices, rates, and conversions remain invocation inputs. */
+  def forInstrument[I <: Instrument](instrument: I): InstrumentScope[instrument.type] =
+    new InstrumentScope[instrument.type](instrument)
+
   /** Project accumulated construction diagnostics to the same stable first error. */
   def firstError[A](
     result: Either[MarketStateViolations, A]
@@ -113,15 +186,9 @@ object MarketState:
   def quoteSettled(
     instrument: Instrument
   )(
-    price: instrument.Price
-  ): Either[MarketStateViolations, instrument.MarketState] =
-    quoteSettled(instrument)(price, Vector.empty)
-
-  def quoteSettled(
-    instrument: Instrument
-  )(
     price: instrument.Price,
-    additional: Vector[SettlementConversion[instrument.roles.settle.D]]
+    additional: Vector[SettlementConversion[instrument.SettleD]] =
+      Vector.empty[SettlementConversion[instrument.SettleD]]
   ): Either[MarketStateViolations, instrument.MarketState] =
     val quote: Asset { type D = instrument.roles.quote.D }   = instrument.roles.quote
     val settle: Asset { type D = instrument.roles.settle.D } = instrument.roles.settle
@@ -144,15 +211,9 @@ object MarketState:
   def baseSettled(
     instrument: Instrument
   )(
-    price: instrument.Price
-  ): Either[MarketStateViolations, instrument.MarketState] =
-    baseSettled(instrument)(price, Vector.empty)
-
-  def baseSettled(
-    instrument: Instrument
-  )(
     price: instrument.Price,
-    additional: Vector[SettlementConversion[instrument.roles.settle.D]]
+    additional: Vector[SettlementConversion[instrument.SettleD]] =
+      Vector.empty[SettlementConversion[instrument.SettleD]]
   ): Either[MarketStateViolations, instrument.MarketState] =
     val base: Asset { type D = instrument.roles.base.D }     = instrument.roles.base
     val settle: Asset { type D = instrument.roles.settle.D } = instrument.roles.settle
@@ -191,16 +252,9 @@ object MarketState:
     instrument: Instrument
   )(
     price: instrument.Price,
-    quoteToSettle: Rational
-  ): Either[MarketStateViolations, instrument.MarketState] =
-    fromQuoteAnchor(instrument)(price, quoteToSettle, Vector.empty)
-
-  def fromQuoteAnchor(
-    instrument: Instrument
-  )(
-    price: instrument.Price,
     quoteToSettle: Rational,
-    additional: Vector[SettlementConversion[instrument.roles.settle.D]]
+    additional: Vector[SettlementConversion[instrument.SettleD]] =
+      Vector.empty[SettlementConversion[instrument.SettleD]]
   ): Either[MarketStateViolations, instrument.MarketState] =
     fromQuoteRate(instrument)(
       price,
@@ -216,16 +270,9 @@ object MarketState:
     instrument: Instrument
   )(
     price: instrument.Price,
-    baseToSettle: Rational
-  ): Either[MarketStateViolations, instrument.MarketState] =
-    fromBaseAnchor(instrument)(price, baseToSettle, Vector.empty)
-
-  def fromBaseAnchor(
-    instrument: Instrument
-  )(
-    price: instrument.Price,
     baseToSettle: Rational,
-    additional: Vector[SettlementConversion[instrument.roles.settle.D]]
+    additional: Vector[SettlementConversion[instrument.SettleD]] =
+      Vector.empty[SettlementConversion[instrument.SettleD]]
   ): Either[MarketStateViolations, instrument.MarketState] =
     fromBaseRate(instrument)(
       price,
@@ -242,17 +289,9 @@ object MarketState:
   )(
     price: instrument.Price,
     baseToSettle: Rational,
-    quoteToSettle: Rational
-  ): Either[MarketStateViolations, instrument.MarketState] =
-    fromAnchors(instrument)(price, baseToSettle, quoteToSettle, Vector.empty)
-
-  def fromAnchors(
-    instrument: Instrument
-  )(
-    price: instrument.Price,
-    baseToSettle: Rational,
     quoteToSettle: Rational,
-    additional: Vector[SettlementConversion[instrument.roles.settle.D]]
+    additional: Vector[SettlementConversion[instrument.SettleD]] =
+      Vector.empty[SettlementConversion[instrument.SettleD]]
   ): Either[MarketStateViolations, instrument.MarketState] =
     fromRates(instrument)(
       price,
@@ -273,16 +312,9 @@ object MarketState:
     instrument: Instrument
   )(
     price: instrument.Price,
-    quoteToSettle: Rate[instrument.roles.quote.D, instrument.roles.settle.D]
-  ): Either[MarketStateViolations, instrument.MarketState] =
-    fromQuoteRate(instrument)(price, quoteToSettle, Vector.empty)
-
-  def fromQuoteRate(
-    instrument: Instrument
-  )(
-    price: instrument.Price,
     quoteToSettle: Rate[instrument.roles.quote.D, instrument.roles.settle.D],
-    additional: Vector[SettlementConversion[instrument.roles.settle.D]]
+    additional: Vector[SettlementConversion[instrument.SettleD]] =
+      Vector.empty[SettlementConversion[instrument.SettleD]]
   ): Either[MarketStateViolations, instrument.MarketState] =
     checked(instrument)(price, price.rate.andThen(quoteToSettle), quoteToSettle, additional)
 
@@ -290,16 +322,9 @@ object MarketState:
     instrument: Instrument
   )(
     price: instrument.Price,
-    baseToSettle: Rate[instrument.roles.base.D, instrument.roles.settle.D]
-  ): Either[MarketStateViolations, instrument.MarketState] =
-    fromBaseRate(instrument)(price, baseToSettle, Vector.empty)
-
-  def fromBaseRate(
-    instrument: Instrument
-  )(
-    price: instrument.Price,
     baseToSettle: Rate[instrument.roles.base.D, instrument.roles.settle.D],
-    additional: Vector[SettlementConversion[instrument.roles.settle.D]]
+    additional: Vector[SettlementConversion[instrument.SettleD]] =
+      Vector.empty[SettlementConversion[instrument.SettleD]]
   ): Either[MarketStateViolations, instrument.MarketState] =
     NonZero(price.rate) match
       case Left(_) =>
@@ -322,17 +347,9 @@ object MarketState:
   )(
     price: instrument.Price,
     baseToSettle: Rate[instrument.roles.base.D, instrument.roles.settle.D],
-    quoteToSettle: Rate[instrument.roles.quote.D, instrument.roles.settle.D]
-  ): Either[MarketStateViolations, instrument.MarketState] =
-    fromRates(instrument)(price, baseToSettle, quoteToSettle, Vector.empty)
-
-  def fromRates(
-    instrument: Instrument
-  )(
-    price: instrument.Price,
-    baseToSettle: Rate[instrument.roles.base.D, instrument.roles.settle.D],
     quoteToSettle: Rate[instrument.roles.quote.D, instrument.roles.settle.D],
-    additional: Vector[SettlementConversion[instrument.roles.settle.D]]
+    additional: Vector[SettlementConversion[instrument.SettleD]] =
+      Vector.empty[SettlementConversion[instrument.SettleD]]
   ): Either[MarketStateViolations, instrument.MarketState] =
     checked(instrument)(price, baseToSettle, quoteToSettle, additional)
 

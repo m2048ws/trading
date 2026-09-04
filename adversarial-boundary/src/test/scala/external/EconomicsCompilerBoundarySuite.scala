@@ -73,6 +73,88 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
     assert(result.succeeded, result.rendered)
     runModule(result.output, "external.economics.core.RetainedDenominationEqualityClient$", "run")
 
+  test("completed pure JAR compiles and runs every market scope mode and direct default argument form"):
+    val root   = Paths.get(getClass.getResource("/economics-core-compiler").toURI)
+    val result = compileWith(root.resolve("MarketStateScopeClient.scala"), coreCompilationClasspath,
+      Some(root.resolve("PureCoreClient.scala")))
+    assert(result.succeeded, result.rendered)
+    runModule(result.output, "external.economics.core.MarketStateScopeClient$", "run")
+
+  test("completed pure market scope rejects each incompatible endpoint independently"):
+    val source  = Paths.get(getClass.getResource("/economics-core-compiler/MarketStateScopeMismatch.scala").toURI)
+    val prelude = compileCorePrelude(source)
+    assert(prelude.succeeded, s"fixture prelude must compile independently:\n${prelude.rendered}")
+    List("price", "reversed-base", "reversed-quote", "foreign-base", "foreign-quote", "conversion").foreach: label =>
+      val lines    = Files.readAllLines(source, StandardCharsets.UTF_8).asScala
+      var retain   = true
+      val selected = lines.filter: line =>
+        if line.contains("OFFENDING-BEGIN") then
+          retain = line.trim == s"// OFFENDING-BEGIN $label"
+          false
+        else if line.contains("OFFENDING-END") then
+          retain = true
+          false
+        else retain
+      val directory = Files.createTempDirectory("market-scope-negative-")
+      val copy      = directory.resolve(source.getFileName)
+      val _         = Files.write(copy, selected.asJava, StandardCharsets.UTF_8)
+      val rejected  = compileCore(copy)
+      assertEquals(rejected.errors.size, 1, s"$label: ${rejected.rendered}")
+      assert(rejected.rendered.contains("Found:"), rejected.rendered)
+      assert(rejected.rendered.contains("Required:"), rejected.rendered)
+      economicsForbiddenDiagnostics.foreach(fragment =>
+        assert(!rejected.rendered.contains(fragment), rejected.rendered)
+      )
+
+  test("completed market scope retains core-only dependencies and independent conversion ownership"):
+    val entries = coreCompilationClasspath.split(File.pathSeparator).map(Paths.get(_))
+    List(
+      "trading-order-model_3-",
+      "trading-execution-lifecycle_3-",
+      "trading-execution-scenario_3-",
+      "trading-fee-policy_3-",
+      "trading-risk_3-",
+      "trading-boundary-codecs_3-",
+      "trading-application_3-",
+      "trading-runtime_3-",
+      "cats-effect",
+      "fs2-",
+      "jackson-",
+      "jmh-"
+    ).foreach: prefix =>
+      assert(!entries.exists(_.getFileName.toString.startsWith(prefix)), s"core classpath contains $prefix")
+    assert(entries.forall(Files.isRegularFile(_)))
+    val archive = new JarFile(packagedInstrumentEconomicsJar.toFile)
+    try
+      val source = archive.getJarEntry("trading/economics/instrument/MarketState$InstrumentScope.class")
+      assert(source != null)
+      val stream = archive.getInputStream(source)
+      val bytes  = try new String(stream.readAllBytes(), StandardCharsets.ISO_8859_1)
+      finally stream.close()
+      List(
+        "trading/order/",
+        "trading/execution/",
+        "trading/scenario/",
+        "trading/fee/",
+        "trading/risk/",
+        "trading/codec/",
+        "trading/application/",
+        "trading/runtime/",
+        "cats/effect/",
+        "fs2/",
+        "Catalog",
+        "ThreadLocal",
+        "java/util/concurrent/"
+      ).foreach: forbidden =>
+        assert(!bytes.contains(forbidden), s"market scope references $forbidden")
+      val scope   = classOf[trading.economics.instrument.MarketState.InstrumentScope[?]]
+      val methods = scope.getDeclaredMethods.map(_.getName).toSet
+      assert(!methods.contains("exact"))
+      assert(!methods.contains("fromRate"))
+      assert(!classOf[trading.economics.instrument.Instrument].getMethods.exists(_.getName == "forInstrument"))
+    finally archive.close()
+    end try
+
   test("completed pure JAR dimension aliases reject incompatible roles and instruments"):
     val source = Paths.get(
       getClass.getResource("/economics-core-compiler/InstrumentDimensionAliasMismatch.scala").toURI

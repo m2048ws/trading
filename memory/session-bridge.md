@@ -14,19 +14,21 @@ updated: 2026-09-04
 - **Issue**: 63 https://github.com/m2048ws/trading/issues/63
 - **Change**: bind-market-state-construction
 - **Worktree**: /Users/m/src/money/.worktrees/bind-market-state-construction
-- **Phase at Checkpoint**: planning_ready
+- **Phase at Checkpoint**: awaiting_verify
 - **Task Group at Checkpoint**: 1
-- **Observed Run Revision**: none
-- **Last Verified HEAD**: 54dc75521ed2d22d59bc42b95e0e5773fb1061a5
+- **Observed Run Revision**: 2
+- **Last Verified HEAD**: a5f97ca2d1f745005bf93abb1c9dab30b483f722
 
 ## Next Action
-- Start Apply for `bind-market-state-construction` Task Group 1.
+- Consult Run Contract v3 for `bind-market-state-construction`; complete Task Group 1 acknowledgement if pending,
+  open its draft PR through the guarded adapter, then run the separate whole-change Verify gate.
+  Run: `run-4874b9a2-be9a-4d0d-8a20-b391ae7a185b`; session: `rfc0008-s06-20260904`.
 
 ## Blockers
 - none
 
 ## Uncommitted Work
-- none
+- none after the dedicated Task Group 1 commit; this bridge records the next canonical acknowledgement checkpoint.
 
 ## Discoveries
 - RFC-0008/S-02 Task Group 1 adds a final `Order`-owned scope that retains only one exact instrument and delegates all
@@ -106,6 +108,14 @@ updated: 2026-09-04
   and strict readiness.
 
 ## Promotion Queue
+- RFC-0008/S-06 Task Group 1 consolidates all eight direct market-state constructors and adds a final field-only
+  MarketState-owned scope with exact instrument-dependent aliases and one-call delegates. The checked kernel and
+  SettlementConversion owner remain unchanged. Explicit default element types preserve dependent-call inference.
+  Baseline characterization passed before production edits; 1,084 clean aggregate tests and 96 packaged-client call
+  forms preserve exact math, failures, runtime identity/lineage, grids, and concurrent reuse. Six independent negative
+  fixtures reject wrong prices/rates/conversions. The economics compiler classpath now excludes aggregate effect
+  dependencies. Local checks targeted release 25 on JDK 26.0.2.1; short and three-fork JMH comparisons are indicative,
+  not deterministic performance guarantees. Evidence: `/private/tmp/market-state-s06.rMryWt`.
 - RFC-0008/S-05 Task Group 1 adds one final field-only `Risk` scope whose exact aliases and six delegates bind downside,
   checked monotone-model construction, and explicit exhaustive sizing to one instrument; focused and completed-artifact
   evidence preserves broad existential validation, typed failures, exact costs and decisions, incompatible-input
