@@ -40,7 +40,7 @@ final class OrderScenarioSuite extends FunSuite:
       order.activation.evidence,
       order.execution.resolution,
       slice(lots, price, LiquidityRole.Taker)
-    ).toOption.get
+    )
     OrderScenario.evaluate(instrument)(assumptions).toOption.get
 
   test("successful evaluation retains one order, verified results, slices, and intent position change"):
@@ -52,7 +52,7 @@ final class OrderScenarioSuite extends FunSuite:
       order.execution.pricing.resolution,
       first,
       second
-    ).toOption.get
+    )
 
     val evaluated = OrderScenario.evaluate(instrument)(assumptions).toOption.get
     assertEquals(evaluated.order, order)
@@ -68,7 +68,7 @@ final class OrderScenarioSuite extends FunSuite:
       order.activation.evidence,
       order.execution.resolution,
       slice(lots10, Rational(99), LiquidityRole.Taker)
-    ).toOption.get
+    )
     val first  = OrderScenario.evaluate(instrument)(assumptions).toOption.get
     val second = OrderScenario.evaluate(instrument)(assumptions).toOption.get
     val third  = OrderScenario.evaluate(instrument)(assumptions).toOption.get
@@ -102,7 +102,7 @@ final class OrderScenarioSuite extends FunSuite:
       mismatchedEvidence,
       order.execution.resolution,
       slice(lots9, Rational(100), LiquidityRole.Maker)
-    ).toOption.get
+    )
     val expected = Vector(
       ScenarioViolation.LotTotal(10, 9),
       ScenarioViolation.Activation(ActivationViolation.FixedEvidenceMismatch),
@@ -134,39 +134,13 @@ final class OrderScenarioSuite extends FunSuite:
       order.activation.evidence,
       mismatchedResolution,
       slice(lots10, Rational(101), LiquidityRole.Taker)
-    ).toOption.get
+    )
     val expected = Vector(
       ScenarioViolation.Pricing(PricingViolation.PegResolutionMismatch),
       ScenarioViolation.MakerOnlySliceNotMaker(0)
     )
 
     assertEquals(OrderScenario.evaluate(instrument)(assumptions).left.map(_.violations), Left(expected))
-
-  test("erased Java assumptions entry point rejects arbitrary evidence with typed failures"):
-    val order   = Order.market(instrument)(Side.Buy, lots10).toOption.get
-    val matched = MatchedSlices.one(
-      slice(lots10, Rational(100), LiquidityRole.Taker)
-    )
-    val create = classOf[ScenarioAssumptions[?, ?, ?, ?]].getMethod(
-      "create",
-      classOf[Order[?, ?, ?]],
-      classOf[Object],
-      classOf[Object],
-      classOf[MatchedSlices[?, ?]]
-    )
-    def invoke(activationEvidence: AnyRef, pricingResolution: AnyRef): Either[ScenarioViolation, Any] =
-      create
-        .invoke(null, order, activationEvidence, pricingResolution, matched)
-        .asInstanceOf[Either[ScenarioViolation, Any]]
-
-    assertEquals(
-      invoke(new Object, order.execution.resolution),
-      Left(ScenarioViolation.Activation(ActivationViolation.EvidenceShapeMismatch))
-    )
-    assertEquals(
-      invoke(order.activation.evidence, new Object),
-      Left(ScenarioViolation.Pricing(PricingViolation.ResolutionShapeMismatch))
-    )
 
   test("foreign slices use closed locations and suppress only dependent slice branches"):
     val order             = Order.market(instrument)(Side.Buy, lots10).toOption.get
@@ -183,7 +157,7 @@ final class OrderScenarioSuite extends FunSuite:
       order.activation.evidence,
       order.execution.resolution,
       foreign
-    ).toOption.get
+    )
     val expected = Vector(
       ScenarioSliceComponent.Identity,
       ScenarioSliceComponent.Lots,
@@ -248,7 +222,7 @@ final class OrderScenarioSuite extends FunSuite:
       foreignOrder.activation.evidence,
       foreignOrder.execution.resolution,
       foreignSlice
-    ).toOption.get
+    )
     val foreignEntry = OrderScenario
       .evaluate(foreign)(foreignAssumptions)
       .toOption

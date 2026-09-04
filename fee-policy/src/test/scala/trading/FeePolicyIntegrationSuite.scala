@@ -49,7 +49,7 @@ class FeePolicyIntegrationSuite extends FunSuite:
       order.activation.evidence,
       order.execution.resolution,
       slice
-    ).toOption.get
+    )
     OrderScenario.evaluate(instrument)(assumptions).toOption.get
 
   private def roundTrip(
@@ -75,7 +75,7 @@ class FeePolicyIntegrationSuite extends FunSuite:
       order.activation.evidence,
       order.execution.pricing.resolution,
       slice
-    ).toOption.get
+    )
     val errors = OrderScenario.evaluate(instrument)(assumptions).swap.toOption.get
     assertEquals(
       errors.violations,
@@ -119,7 +119,7 @@ class FeePolicyIntegrationSuite extends FunSuite:
       order.execution.pricing.resolution,
       first,
       second
-    ).toOption.get
+    )
     val expected = Vector(
       ScenarioViolation.MakerOnlySliceNotMaker(0),
       ScenarioViolation.MakerOnlySliceNotMaker(1),

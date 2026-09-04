@@ -103,7 +103,6 @@ sealed abstract class OrderActivation[B <: Dim, Q <: Dim] protected ():
   type Evidence
 
   def verify(evidence: Evidence): Either[ActivationViolation, CheckedActivation[B, Q]]
-  private[trading] def acceptsEvidence(evidence: Any): Boolean
   private[trading] def observations(evidence: Evidence): Vector[(ActivationObservation, Price[B, Q])]
 
 sealed abstract class TriggerActivation[B <: Dim, Q <: Dim] protected () extends OrderActivation[B, Q]()
@@ -115,9 +114,6 @@ final class ImmediateActivation[B <: Dim, Q <: Dim] private extends OrderActivat
 
   def verify(evidence: Evidence): Either[ActivationViolation, CheckedActivation[B, Q]] =
     Right(CheckedActivation.immediate)
-
-  private[trading] def acceptsEvidence(evidence: Any): Boolean =
-    evidence.asInstanceOf[AnyRef].eq(ImmediateActivation.Evidence)
 
   private[trading] def observations(
     evidence: Evidence
@@ -143,9 +139,6 @@ final case class FixedActivation[B <: Dim, Q <: Dim](
   def verify(evidence: Evidence): Either[ActivationViolation, CheckedActivation[B, Q]] =
     CheckedActivation.fixed(this, evidence)
 
-  private[trading] def acceptsEvidence(evidence: Any): Boolean =
-    evidence.isInstanceOf[FixedTriggerEvidence[?, ?]]
-
   private[trading] def observations(
     evidence: Evidence
   ): Vector[(ActivationObservation, Price[B, Q])] =
@@ -168,9 +161,6 @@ final case class TrailingActivation[B <: Dim, Q <: Dim] private (
 
   def verify(evidence: Evidence): Either[ActivationViolation, CheckedActivation[B, Q]] =
     CheckedActivation.trailing(this, evidence)
-
-  private[trading] def acceptsEvidence(evidence: Any): Boolean =
-    evidence.isInstanceOf[TrailingTriggerEvidence[?, ?]]
 
   private[trading] def observations(
     evidence: Evidence
@@ -314,7 +304,6 @@ sealed abstract class OrderPricing[B <: Dim, Q <: Dim] protected ():
   type Resolution
 
   def resolve(resolution: Resolution): Either[PricingViolation, EffectivePricing[B, Q]]
-  private[trading] def acceptsResolution(resolution: Any): Boolean
   private[trading] def observations(resolution: Resolution): Vector[(PricingObservation, Price[B, Q])]
 
 final case class LimitPricing[B <: Dim, Q <: Dim](limit: Price[B, Q]) extends OrderPricing[B, Q]():
@@ -324,9 +313,6 @@ final case class LimitPricing[B <: Dim, Q <: Dim](limit: Price[B, Q]) extends Or
 
   def resolve(resolution: Resolution): Either[PricingViolation, EffectivePricing[B, Q]] =
     Right(EffectivePricing.Limited(limit))
-
-  private[trading] def acceptsResolution(resolution: Any): Boolean =
-    resolution.asInstanceOf[AnyRef].eq(DirectPricingResolution)
 
   private[trading] def observations(
     resolution: Resolution
@@ -347,9 +333,6 @@ final case class PeggedPricing[B <: Dim, Q <: Dim](reference: PriceReference, of
       Left(PricingViolation.PegResolutionMismatch)
     else Right(EffectivePricing.Limited(resolution.resolvedLimit))
 
-  private[trading] def acceptsResolution(resolution: Any): Boolean =
-    resolution.isInstanceOf[PegResolution[?, ?]]
-
   private[trading] def observations(
     resolution: Resolution
   ): Vector[(PricingObservation, Price[B, Q])] =
@@ -369,7 +352,6 @@ sealed abstract class OrderExecution[D <: Dim, B <: Dim, Q <: Dim] protected ():
   type Resolution
 
   def resolve(resolution: Resolution): Either[PricingViolation, EffectivePricing[B, Q]]
-  private[trading] def acceptsResolution(resolution: Any): Boolean
   private[trading] def requiresMaker: Boolean
   private[trading] def observations(resolution: Resolution): Vector[(PricingObservation, Price[B, Q])]
 
@@ -381,9 +363,6 @@ final case class MarketExecution[D <: Dim, B <: Dim, Q <: Dim](timeInForce: NonR
 
   def resolve(resolution: Resolution): Either[PricingViolation, EffectivePricing[B, Q]] =
     Right(EffectivePricing.Market())
-
-  private[trading] def acceptsResolution(resolution: Any): Boolean =
-    resolution.asInstanceOf[AnyRef].eq(DirectPricingResolution)
 
   private[trading] val requiresMaker: Boolean = false
 
@@ -402,9 +381,6 @@ final case class PricedExecution[D <: Dim, B <: Dim, Q <: Dim, PR <: OrderPricin
 
   def resolve(resolution: Resolution): Either[PricingViolation, EffectivePricing[B, Q]] =
     pricing.resolve(resolution)
-
-  private[trading] def acceptsResolution(resolution: Any): Boolean =
-    pricing.acceptsResolution(resolution)
 
   private[trading] def requiresMaker: Boolean = liquidityConstraint == LiquidityConstraint.MakerOnly
 

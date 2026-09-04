@@ -482,11 +482,6 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
       "checkedFactoriesPreserveSemantics"
     )
 
-  test("completed scenario JAR exposes erased Java assumptions construction only as a typed result"):
-    val source = javaFixturesRoot.resolve("negative/ErasedScenarioAssumptions.java")
-    val result = compileJava(source, scenarioCompilationClasspath)
-    assert(result.succeeded, result.diagnostics)
-
   test("positive downstream composition fixture compiles without warnings and runs"):
     val result = compile(fixturesRoot.resolve("positive/CompleteCompositionClient.scala"))
     assert(result.succeeded, result.rendered)

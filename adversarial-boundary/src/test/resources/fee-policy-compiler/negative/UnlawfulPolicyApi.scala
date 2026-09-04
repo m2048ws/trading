@@ -20,7 +20,7 @@ object UnlawfulPolicyApi:
     marketOrder.activation.evidence,
     marketOrder.execution.resolution,
     slice
-  ).toOption.get
+  )
   val scenario = OrderScenario.evaluate(instrument)(assumptions).toOption.get
   val noFees   = FeePolicy.noFees(instrument)
   val failing = new Policy[CustomPolicyFailure]:

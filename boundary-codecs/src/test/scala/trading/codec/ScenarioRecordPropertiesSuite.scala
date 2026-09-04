@@ -70,10 +70,8 @@ final class ScenarioRecordPropertiesSuite extends ScalaCheckSuite:
       .toOption
       .get
     val order       = Order.market(instrument)(side, checkedLots).toOption.get
-    val assumptions = ScenarioAssumptions
-      .one(order)(order.activation.evidence, order.execution.resolution, slice)
-      .toOption
-      .get
+    val assumptions =
+      ScenarioAssumptions.one(order)(order.activation.evidence, order.execution.resolution, slice)
     OrderScenario.evaluate(instrument)(assumptions).toOption.get
   end marketScenario
 end ScenarioRecordPropertiesSuite

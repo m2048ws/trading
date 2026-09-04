@@ -14,21 +14,21 @@ updated: 2026-09-04
 - **Issue**: 44 https://github.com/m2048ws/trading/issues/44
 - **Change**: remove-java-api-compatibility
 - **Worktree**: /Users/m/src/money/.worktrees/remove-java-api-compatibility
-- **Phase at Checkpoint**: planning_ready
+- **Phase at Checkpoint**: applying
 - **Task Group at Checkpoint**: 1
-- **Observed Run Revision**: none
-- **Last Verified HEAD**: 219cf213a66e443941d4504b37672e172f436685
+- **Observed Run Revision**: 2
+- **Last Verified HEAD**: c6df0f77ff6b7f16da7d0bc27e416756127d254c
 
 ## Next Action
-- Start Apply for `remove-java-api-compatibility` Task Group 1.
+- Commit and acknowledge Task Group 1, then implement the CLI-selected Task Group 2.
 
 ## Blockers
 - none
 
 ## Uncommitted Work
-- Task Group 3 converts field-valid evidence, conflict, ledger, anomaly, observation, and replay values to direct
-  package-owned Scala products; the clean 1,047-test aggregate, benchmark compilation, formatting, strict planning
-  validation, and reflection guard/regression all pass.
+- Task Group 1 removes erased evidence/resolution acceptance hooks, makes associated Scala assumptions construction
+  direct, retains typed vector emptiness and semantic replay validation, and passes the focused order/scenario, fee,
+  codec, and 134-test compiler-boundary suites.
 
 ## Discoveries
 - No active Corgi Run Contract or OpenSpec Change exists on primary `main`.
@@ -84,6 +84,9 @@ updated: 2026-09-04
   and replay results to package-owned generated products, removes their forwarding constructors and manual equality,
   retains computed accessors and fail-closed serialization, and leaves guarded states, commands, facts, identities,
   refinements, non-empty wrappers, and external reconstruction under checked construction.
+- RFC-0005/S-05 Task Group 1 removes `Any`-based activation/pricing acceptance hooks and their erased-shape errors,
+  makes `ScenarioAssumptions.create`, `one`, and `many` direct, keeps `fromVector` typed for empty input, and preserves
+  same-shape semantic mismatch, fee, codec reconstruction, and negative associated-evidence compiler behavior.
 
 ## Promotion Queue
 - none

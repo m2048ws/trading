@@ -747,16 +747,12 @@ object OrderScenarioRecord:
             val checkedSlices = slices.toOption.getOrElse(
               throw new IllegalStateException("successful scenario preparation lost matched slices")
             )
-            ScenarioAssumptions
-              .create(order)(checkedActivation, checkedPricing, checkedSlices)
+            val assumptions =
+              ScenarioAssumptions.create(order)(checkedActivation, checkedPricing, checkedSlices)
+            OrderScenario
+              .evaluate(instrument)(assumptions)
               .left
-              .map(value => OrderScenarioReconstructionFailure.Validation(ScenarioViolations.one(value)))
-              .flatMap(assumptions =>
-                OrderScenario
-                  .evaluate(instrument)(assumptions)
-                  .left
-                  .map(OrderScenarioReconstructionFailure.Validation.apply)
-              )
+              .map(OrderScenarioReconstructionFailure.Validation.apply)
         end match
       end prepare
 

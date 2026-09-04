@@ -59,7 +59,7 @@ object ScenarioValuationClient:
       order.activation.evidence,
       order.execution.resolution,
       slice
-    ).toOption.get
+    )
     OrderScenario.evaluate(instrument)(assumptions).toOption.get
 
   private val trip = RoundTripScenario

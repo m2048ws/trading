@@ -150,12 +150,8 @@ object ScenarioAssumptions:
     activationEvidence: order.activation.Evidence,
     pricingResolution: order.execution.Resolution,
     matchedSlices: MatchedSlices[Lots[D], M]
-  ): Either[ScenarioViolation, ScenarioAssumptions[D, B, Q, M]] =
-    if !order.activation.acceptsEvidence(activationEvidence) then
-      Left(ScenarioViolation.Activation(ActivationViolation.EvidenceShapeMismatch))
-    else if !order.execution.acceptsResolution(pricingResolution) then
-      Left(ScenarioViolation.Pricing(PricingViolation.ResolutionShapeMismatch))
-    else Right(construct(order)(activationEvidence, pricingResolution, matchedSlices))
+  ): ScenarioAssumptions[D, B, Q, M] =
+    construct(order)(activationEvidence, pricingResolution, matchedSlices)
 
   def one[D <: Dim, B <: Dim, Q <: Dim, M, O <: Order[D, B, Q]](
     order: O
@@ -163,7 +159,7 @@ object ScenarioAssumptions:
     activationEvidence: order.activation.Evidence,
     pricingResolution: order.execution.Resolution,
     matchedSlice: LiquiditySlice[Lots[D], M]
-  ): Either[ScenarioViolation, ScenarioAssumptions[D, B, Q, M]] =
+  ): ScenarioAssumptions[D, B, Q, M] =
     create(order)(activationEvidence, pricingResolution, MatchedSlices.one(matchedSlice))
 
   def many[D <: Dim, B <: Dim, Q <: Dim, M, O <: Order[D, B, Q]](
@@ -173,7 +169,7 @@ object ScenarioAssumptions:
     pricingResolution: order.execution.Resolution,
     head: LiquiditySlice[Lots[D], M],
     tail: LiquiditySlice[Lots[D], M]*
-  ): Either[ScenarioViolation, ScenarioAssumptions[D, B, Q, M]] =
+  ): ScenarioAssumptions[D, B, Q, M] =
     create(order)(activationEvidence, pricingResolution, MatchedSlices.of(head, tail*))
 
   def fromVector[D <: Dim, B <: Dim, Q <: Dim, M, O <: Order[D, B, Q]](
@@ -185,7 +181,7 @@ object ScenarioAssumptions:
   ): Either[ScenarioViolation, ScenarioAssumptions[D, B, Q, M]] =
     MatchedSlices
       .fromVector(matchedSlices)
-      .flatMap(create(order)(activationEvidence, pricingResolution, _))
+      .map(create(order)(activationEvidence, pricingResolution, _))
 end ScenarioAssumptions
 
 final class OrderScenario[D <: Dim, B <: Dim, Q <: Dim, M] private (
