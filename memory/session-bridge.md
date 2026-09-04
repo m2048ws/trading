@@ -10,17 +10,17 @@ updated: 2026-09-04
 ## Delivery Pointer
 - **RFC**: RFC-0008-simplify-instrument-dependent-apis
 - **RFC Revision**: bf457296faa7d29aec0840a7e8f48d41ed0f7491
-- **Slice**: S-02-bind-standard-order-construction
-- **Issue**: 55 https://github.com/m2048ws/trading/issues/55
-- **Change**: bind-standard-order-construction
-- **Worktree**: /Users/m/src/money/.worktrees/bind-standard-order-construction
-- **Phase at Checkpoint**: archiving
-- **Task Group at Checkpoint**: none
-- **Observed Run Revision**: 7
-- **Last Verified HEAD**: 804f32e3e0ed8ccda8245ee3530779c47904169c
+- **Slice**: S-03-bind-source-fact-construction
+- **Issue**: 57 https://github.com/m2048ws/trading/issues/57
+- **Change**: bind-source-fact-construction
+- **Worktree**: /Users/m/src/money/.worktrees/bind-source-fact-construction
+- **Phase at Checkpoint**: planning_ready
+- **Task Group at Checkpoint**: 1
+- **Observed Run Revision**: none
+- **Last Verified HEAD**: 8ce189bb63e20f3ed2432cb69a0dc084bb75f7df
 
 ## Next Action
-- Consult Run Contract v3: resume tracker closeout for `bind-standard-order-construction` only if pending; otherwise select the next accepted Slice. Local delivery: `wiki/deliveries/RFC-0008-simplify-instrument-dependent-apis-S-02-bind-standard-order-construction.md`.
+- Start Apply for `bind-source-fact-construction` Task Group 1.
 
 ## Blockers
 - none
