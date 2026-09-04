@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 3,
+  "scope": "group-1",
+  "runId": "run-77744ab3-39a1-4c0e-8d7b-edb322fb95d6",
+  "references": [
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Freference-data-compiler%2Fpositive%2FConcreteReferenceDataClient.scala#sha256:dfe436e245d61dad9c4140765f782eaab105f77c56f20c7dd9e9d120f668311e",
+      "sourcePath": "adversarial-boundary/src/test/resources/reference-data-compiler/positive/ConcreteReferenceDataClient.scala",
+      "digest": "sha256:dfe436e245d61dad9c4140765f782eaab105f77c56f20c7dd9e9d120f668311e",
+      "archivePath": "references/blobs/dfe436e245d61dad9c4140765f782eaab105f77c56f20c7dd9e9d120f668311e"
+    },
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FReferenceDataCompilerBoundarySuite.scala#sha256:181c82370e92c25dc40f74805ff700dbaf57a84fde0600fb59054028fedc68bf",
+      "sourcePath": "adversarial-boundary/src/test/scala/external/ReferenceDataCompilerBoundarySuite.scala",
+      "digest": "sha256:181c82370e92c25dc40f74805ff700dbaf57a84fde0600fb59054028fedc68bf",
+      "archivePath": "references/blobs/181c82370e92c25dc40f74805ff700dbaf57a84fde0600fb59054028fedc68bf"
+    },
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FReferenceDataRuntimeBoundarySuite.scala#sha256:401c0692f59c6b0ba2ded8e4affd96024f1729c3d4e1b2b5d4c32b143f3fc09e",
+      "sourcePath": "adversarial-boundary/src/test/scala/external/ReferenceDataRuntimeBoundarySuite.scala",
+      "digest": "sha256:401c0692f59c6b0ba2ded8e4affd96024f1729c3d4e1b2b5d4c32b143f3fc09e",
+      "archivePath": "references/blobs/401c0692f59c6b0ba2ded8e4affd96024f1729c3d4e1b2b5d4c32b143f3fc09e"
+    },
+    {
+      "reference": "file:boundary-codecs%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fcodec%2FExactPrimitives.scala#sha256:f1e65dfe26dc9b1ebff002a708f3d7d13b96998ba06b5dbdf4da16bb0596ad3a",
+      "sourcePath": "boundary-codecs/src/main/scala/trading/codec/ExactPrimitives.scala",
+      "digest": "sha256:f1e65dfe26dc9b1ebff002a708f3d7d13b96998ba06b5dbdf4da16bb0596ad3a",
+      "archivePath": "references/blobs/f1e65dfe26dc9b1ebff002a708f3d7d13b96998ba06b5dbdf4da16bb0596ad3a"
+    },
+    {
+      "reference": "file:boundary-codecs%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fcodec%2FExactPrimitivesSuite.scala#sha256:692617b1efdcf3df2a9f787803ef8d6c1b045b7e0d0223e41619436d08c12353",
+      "sourcePath": "boundary-codecs/src/test/scala/trading/codec/ExactPrimitivesSuite.scala",
+      "digest": "sha256:692617b1efdcf3df2a9f787803ef8d6c1b045b7e0d0223e41619436d08c12353",
+      "archivePath": "references/blobs/692617b1efdcf3df2a9f787803ef8d6c1b045b7e0d0223e41619436d08c12353"
+    },
+    {
+      "reference": "file:boundary-codecs%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fcodec%2FInstrumentDefinitionRecordSuite.scala#sha256:10790601b1762775f8586b58f8ce719b9de52e9d2463c2f488efad12847ece85",
+      "sourcePath": "boundary-codecs/src/test/scala/trading/codec/InstrumentDefinitionRecordSuite.scala",
+      "digest": "sha256:10790601b1762775f8586b58f8ce719b9de52e9d2463c2f488efad12847ece85",
+      "archivePath": "references/blobs/10790601b1762775f8586b58f8ce719b9de52e9d2463c2f488efad12847ece85"
+    },
+    {
+      "reference": "file:build.sbt#sha256:790e4ae7fa4ab9334b36c0273bc4d44d02d59cac352b50f5f0aeaadc026f5db8",
+      "sourcePath": "build.sbt",
+      "digest": "sha256:790e4ae7fa4ab9334b36c0273bc4d44d02d59cac352b50f5f0aeaadc026f5db8",
+      "archivePath": "references/blobs/790e4ae7fa4ab9334b36c0273bc4d44d02d59cac352b50f5f0aeaadc026f5db8"
+    },
+    {
+      "reference": "file:reference-data%2Fsrc%2Fmain%2Fscala%2Ftrading%2Freference%2FReferenceData.scala#sha256:8e952085582a9b3f6b1c4aecf0ec9437d3ca2056e2db2134185a01b8d0b5736c",
+      "sourcePath": "reference-data/src/main/scala/trading/reference/ReferenceData.scala",
+      "digest": "sha256:8e952085582a9b3f6b1c4aecf0ec9437d3ca2056e2db2134185a01b8d0b5736c",
+      "archivePath": "references/blobs/8e952085582a9b3f6b1c4aecf0ec9437d3ca2056e2db2134185a01b8d0b5736c"
+    },
+    {
+      "reference": "file:reference-data%2Fsrc%2Ftest%2Fscala%2Ftrading%2Freference%2FReferenceDataSuite.scala#sha256:f3c31a4192032645d00c49cd913552007ca6fe75a162f55737b716be7df49659",
+      "sourcePath": "reference-data/src/test/scala/trading/reference/ReferenceDataSuite.scala",
+      "digest": "sha256:f3c31a4192032645d00c49cd913552007ca6fe75a162f55737b716be7df49659",
+      "archivePath": "references/blobs/f3c31a4192032645d00c49cd913552007ca6fe75a162f55737b716be7df49659"
+    }
+  ]
+}

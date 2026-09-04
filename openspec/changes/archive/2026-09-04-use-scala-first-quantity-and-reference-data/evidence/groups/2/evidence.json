@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 3,
+  "groupId": "2",
+  "checks": [
+    {
+      "name": "Quantity refined construction, generative identity, and laws",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:quantities%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fquantity%2FGridQuantitySuite.scala#sha256:b1db019be15cf61e113134ff285ceb5eed62a35bda1fb9930e805c184fbbff4b",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FConstructionAndProvenanceBoundarySuite.scala#sha256:72d01feb20a7c2bcdee3d5bdf3594751f849597459d84a2587c391a4554da53d"
+      ]
+    },
+    {
+      "name": "Reference-data direct grid-definition construction",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:reference-data%2Fsrc%2Ftest%2Fscala%2Ftrading%2Freference%2FReferenceDataSuite.scala#sha256:f3c31a4192032645d00c49cd913552007ca6fe75a162f55737b716be7df49659",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FReferenceDataRuntimeBoundarySuite.scala#sha256:b3faeb5a4a0473f438d15677c0e104ce30c5638f58b566b1f1b162125aa0efd7"
+      ]
+    },
+    {
+      "name": "External raw-quantum refinement diagnostics",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:boundary-codecs%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fcodec%2FCatalogJournalSuite.scala#sha256:8eff2f0274dffa9650e840b3b7826444bc9d404ef26e6bb2acdd524abe515473",
+        "file:boundary-codecs%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fcodec%2FCatalogJournalPropertiesSuite.scala#sha256:a359ff0bc31db6e45d2ab42fa8c3feb6a68b0f03e02c49df54cd6a1342f6ec40"
+      ]
+    },
+    {
+      "name": "Removed raw factory compiler boundary and formatting",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FReferenceDataCompilerBoundarySuite.scala#sha256:dbb80925a09cefdff5f2c103b0dd2f14e2aeb74c3257cc85e61fcd10969b5ac7",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Freference-data-compiler%2Fnegative%2FRemovedStableGridFactory.scala#sha256:f02c4f3ebf31fe3674c580a0808b72c27305a8087803d9a77fd19f0a5b35f292"
+      ]
+    }
+  ],
+  "automatedReview": {
+    "verdict": "pass",
+    "findings": []
+  },
+  "artifacts": [
+    "file:quantities%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fquantity%2FGridQuantity.scala#sha256:9227506bc20e1760091752453f59cef5af1f027cf48c88331798f74515efad79",
+    "file:reference-data%2Fsrc%2Fmain%2Fscala%2Ftrading%2Freference%2FReferenceData.scala#sha256:79c70e90ceb39e6e4aa7fb85c57bf8b23d41f161ac03c1e58a63d83c3625fea5",
+    "file:boundary-codecs%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fcodec%2FCatalogJournal.scala#sha256:28adf0ab608cfc7b6c6939baa27b69e4799a0fb857072975b2006ed8942bed4c"
+  ],
+  "summary": "Removed UniformGrid.from and GridDefinition.from plus defensive PositiveRational reconstruction, retained direct null checks and generative identity, and kept raw nonpositive failure at the owning refinement and codec boundaries."
+}

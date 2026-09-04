@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 3,
+  "changeName": "use-scala-first-quantity-and-reference-data",
+  "runId": "run-77744ab3-39a1-4c0e-8d7b-edb322fb95d6",
+  "finalRevision": "806a6b435614a23536f5f26a221469281f5253b6",
+  "planningRevision": "sha256:5e14ad18e099bcc6ea75c1abfe6f3b4634ede6cea1163082f307aa2d65292f32",
+  "contract": {
+    "kind": "rfc-slice",
+    "deliveryRef": "RFC-0005-simplify-post-trust-boundary/S-04-use-scala-first-quantity-and-reference-data",
+    "rfcId": "RFC-0005-simplify-post-trust-boundary",
+    "rfcDigest": "sha256:31336459ac68c4a188388bb58cf59fe8c84830a0b72aa66d29fdcff4f90657a3",
+    "acceptedCommit": "7f1d1ab9eb88d0912d3219920eacadea4d01aa2e",
+    "sliceId": "S-04-use-scala-first-quantity-and-reference-data",
+    "sourcePath": "openspec/changes/use-scala-first-quantity-and-reference-data/corgi/source.yaml",
+    "sourceDigest": "sha256:196d46b1fb5039303f50ba631ba482d2231ee6c737a0e055a83f3653f1e91314",
+    "traceabilityPath": "openspec/changes/use-scala-first-quantity-and-reference-data/corgi/traceability.yaml",
+    "traceabilityDigest": "sha256:c66cba04e61006c179e98cc319e37c3d546ed874c19584cfcc669e015d053646",
+    "acceptance": [
+      {
+        "id": "AC-012",
+        "evidence": "automated",
+        "taskGroups": [
+          "1"
+        ]
+      },
+      {
+        "id": "AC-013",
+        "evidence": "automated",
+        "taskGroups": [
+          "2"
+        ]
+      },
+      {
+        "id": "AC-014",
+        "evidence": "automated",
+        "taskGroups": [
+          "3"
+        ]
+      },
+      {
+        "id": "AC-015",
+        "evidence": "automated",
+        "taskGroups": [
+          "1",
+          "2",
+          "3"
+        ]
+      }
+    ],
+    "tracker": {
+      "provider": "github",
+      "idempotencyKey": "93a9b79cc2eb55c6fdf862824975028edbcf46fe61034be82418e05d90c16515",
+      "issue": {
+        "id": "46",
+        "url": "https://github.com/m2048ws/trading/issues/46"
+      }
+    }
+  },
+  "archiveIntentId": "archive-cdef2973-1440-4c32-8192-c7eca9e62a91"
+}

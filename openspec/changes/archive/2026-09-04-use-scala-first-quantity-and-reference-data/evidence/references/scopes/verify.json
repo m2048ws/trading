@@ -1,0 +1,139 @@
+{
+  "schemaVersion": 3,
+  "scope": "verify",
+  "runId": "run-77744ab3-39a1-4c0e-8d7b-edb322fb95d6",
+  "references": [
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Freference-data-compiler%2Fnegative%2FCatalogObservationConstruction.scala#sha256:f363634fe105c79e1402ae125879b50ad970995120f90511ecd8d1f9d83456c7",
+      "sourcePath": "adversarial-boundary/src/test/resources/reference-data-compiler/negative/CatalogObservationConstruction.scala",
+      "digest": "sha256:f363634fe105c79e1402ae125879b50ad970995120f90511ecd8d1f9d83456c7",
+      "archivePath": "references/blobs/f363634fe105c79e1402ae125879b50ad970995120f90511ecd8d1f9d83456c7"
+    },
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Freference-data-compiler%2Fnegative%2FRemovedStableGridFactory.scala#sha256:f02c4f3ebf31fe3674c580a0808b72c27305a8087803d9a77fd19f0a5b35f292",
+      "sourcePath": "adversarial-boundary/src/test/resources/reference-data-compiler/negative/RemovedStableGridFactory.scala",
+      "digest": "sha256:f02c4f3ebf31fe3674c580a0808b72c27305a8087803d9a77fd19f0a5b35f292",
+      "archivePath": "references/blobs/f02c4f3ebf31fe3674c580a0808b72c27305a8087803d9a77fd19f0a5b35f292"
+    },
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Freference-data-compiler%2Fpositive%2FConcreteReferenceDataClient.scala#sha256:dfe436e245d61dad9c4140765f782eaab105f77c56f20c7dd9e9d120f668311e",
+      "sourcePath": "adversarial-boundary/src/test/resources/reference-data-compiler/positive/ConcreteReferenceDataClient.scala",
+      "digest": "sha256:dfe436e245d61dad9c4140765f782eaab105f77c56f20c7dd9e9d120f668311e",
+      "archivePath": "references/blobs/dfe436e245d61dad9c4140765f782eaab105f77c56f20c7dd9e9d120f668311e"
+    },
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FConstructionAndProvenanceBoundarySuite.scala#sha256:72d01feb20a7c2bcdee3d5bdf3594751f849597459d84a2587c391a4554da53d",
+      "sourcePath": "adversarial-boundary/src/test/scala/external/ConstructionAndProvenanceBoundarySuite.scala",
+      "digest": "sha256:72d01feb20a7c2bcdee3d5bdf3594751f849597459d84a2587c391a4554da53d",
+      "archivePath": "references/blobs/72d01feb20a7c2bcdee3d5bdf3594751f849597459d84a2587c391a4554da53d"
+    },
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FReferenceDataCompilerBoundarySuite.scala#sha256:946521a3092cd7628122ba9d4862d5f57c9970b57bebc24fb5e6fc264396273e",
+      "sourcePath": "adversarial-boundary/src/test/scala/external/ReferenceDataCompilerBoundarySuite.scala",
+      "digest": "sha256:946521a3092cd7628122ba9d4862d5f57c9970b57bebc24fb5e6fc264396273e",
+      "archivePath": "references/blobs/946521a3092cd7628122ba9d4862d5f57c9970b57bebc24fb5e6fc264396273e"
+    },
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FReferenceDataRuntimeBoundarySuite.scala#sha256:c42d8355290ff5e374d29e3fdf38de811a0457d07d5ce5b028b16a41a7b8068f",
+      "sourcePath": "adversarial-boundary/src/test/scala/external/ReferenceDataRuntimeBoundarySuite.scala",
+      "digest": "sha256:c42d8355290ff5e374d29e3fdf38de811a0457d07d5ce5b028b16a41a7b8068f",
+      "archivePath": "references/blobs/c42d8355290ff5e374d29e3fdf38de811a0457d07d5ce5b028b16a41a7b8068f"
+    },
+    {
+      "reference": "file:boundary-codecs%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fcodec%2FExactPrimitives.scala#sha256:f1e65dfe26dc9b1ebff002a708f3d7d13b96998ba06b5dbdf4da16bb0596ad3a",
+      "sourcePath": "boundary-codecs/src/main/scala/trading/codec/ExactPrimitives.scala",
+      "digest": "sha256:f1e65dfe26dc9b1ebff002a708f3d7d13b96998ba06b5dbdf4da16bb0596ad3a",
+      "archivePath": "references/blobs/f1e65dfe26dc9b1ebff002a708f3d7d13b96998ba06b5dbdf4da16bb0596ad3a"
+    },
+    {
+      "reference": "file:boundary-codecs%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fcodec%2FCatalogJournalSuite.scala#sha256:8eff2f0274dffa9650e840b3b7826444bc9d404ef26e6bb2acdd524abe515473",
+      "sourcePath": "boundary-codecs/src/test/scala/trading/codec/CatalogJournalSuite.scala",
+      "digest": "sha256:8eff2f0274dffa9650e840b3b7826444bc9d404ef26e6bb2acdd524abe515473",
+      "archivePath": "references/blobs/8eff2f0274dffa9650e840b3b7826444bc9d404ef26e6bb2acdd524abe515473"
+    },
+    {
+      "reference": "file:build.sbt#sha256:790e4ae7fa4ab9334b36c0273bc4d44d02d59cac352b50f5f0aeaadc026f5db8",
+      "sourcePath": "build.sbt",
+      "digest": "sha256:790e4ae7fa4ab9334b36c0273bc4d44d02d59cac352b50f5f0aeaadc026f5db8",
+      "archivePath": "references/blobs/790e4ae7fa4ab9334b36c0273bc4d44d02d59cac352b50f5f0aeaadc026f5db8"
+    },
+    {
+      "reference": "file:openspec%2Fchanges%2Fuse-scala-first-quantity-and-reference-data%2Fcorgi%2Ftraceability.yaml#sha256:c66cba04e61006c179e98cc319e37c3d546ed874c19584cfcc669e015d053646",
+      "sourcePath": "openspec/changes/use-scala-first-quantity-and-reference-data/corgi/traceability.yaml",
+      "digest": "sha256:c66cba04e61006c179e98cc319e37c3d546ed874c19584cfcc669e015d053646",
+      "archivePath": "references/blobs/c66cba04e61006c179e98cc319e37c3d546ed874c19584cfcc669e015d053646"
+    },
+    {
+      "reference": "file:openspec%2Fchanges%2Fuse-scala-first-quantity-and-reference-data%2Fspecs%2Fquantity-grid-projection%2Fspec.md#sha256:010c43893e2d6b8e2bdb95a82574612164866dace823976d5f2e4fb61201b922",
+      "sourcePath": "openspec/changes/use-scala-first-quantity-and-reference-data/specs/quantity-grid-projection/spec.md",
+      "digest": "sha256:010c43893e2d6b8e2bdb95a82574612164866dace823976d5f2e4fb61201b922",
+      "archivePath": "references/blobs/010c43893e2d6b8e2bdb95a82574612164866dace823976d5f2e4fb61201b922"
+    },
+    {
+      "reference": "file:openspec%2Fchanges%2Fuse-scala-first-quantity-and-reference-data%2Fspecs%2Freference-data-catalog%2Fspec.md#sha256:7cee3381a7a2bab1ca5f480ef0c62b0019f1b514310b5e26d77e1d5816d29118",
+      "sourcePath": "openspec/changes/use-scala-first-quantity-and-reference-data/specs/reference-data-catalog/spec.md",
+      "digest": "sha256:7cee3381a7a2bab1ca5f480ef0c62b0019f1b514310b5e26d77e1d5816d29118",
+      "archivePath": "references/blobs/7cee3381a7a2bab1ca5f480ef0c62b0019f1b514310b5e26d77e1d5816d29118"
+    },
+    {
+      "reference": "file:openspec%2Fchanges%2Fuse-scala-first-quantity-and-reference-data%2Fspecs%2Freference-data-identity%2Fspec.md#sha256:63b573cbe94a3b47179a54a7c7682afd4304308b2f909e13176c904174592efb",
+      "sourcePath": "openspec/changes/use-scala-first-quantity-and-reference-data/specs/reference-data-identity/spec.md",
+      "digest": "sha256:63b573cbe94a3b47179a54a7c7682afd4304308b2f909e13176c904174592efb",
+      "archivePath": "references/blobs/63b573cbe94a3b47179a54a7c7682afd4304308b2f909e13176c904174592efb"
+    },
+    {
+      "reference": "file:openspec%2Fchanges%2Fuse-scala-first-quantity-and-reference-data%2Fspecs%2Fruntime-quantity-identity%2Fspec.md#sha256:1049e7e19ac27fb9ba8e320f25d6ebd0cdbecf8e6aa04e3b391de7ebe1326eea",
+      "sourcePath": "openspec/changes/use-scala-first-quantity-and-reference-data/specs/runtime-quantity-identity/spec.md",
+      "digest": "sha256:1049e7e19ac27fb9ba8e320f25d6ebd0cdbecf8e6aa04e3b391de7ebe1326eea",
+      "archivePath": "references/blobs/1049e7e19ac27fb9ba8e320f25d6ebd0cdbecf8e6aa04e3b391de7ebe1326eea"
+    },
+    {
+      "reference": "file:quantities%2FREADME.md#sha256:fb9237b259175100a05fc9eaa42406c036e29923ccaff41813a036e15b73c0a8",
+      "sourcePath": "quantities/README.md",
+      "digest": "sha256:fb9237b259175100a05fc9eaa42406c036e29923ccaff41813a036e15b73c0a8",
+      "archivePath": "references/blobs/fb9237b259175100a05fc9eaa42406c036e29923ccaff41813a036e15b73c0a8"
+    },
+    {
+      "reference": "file:quantities%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fquantity%2FGridQuantity.scala#sha256:9227506bc20e1760091752453f59cef5af1f027cf48c88331798f74515efad79",
+      "sourcePath": "quantities/src/main/scala/trading/quantity/GridQuantity.scala",
+      "digest": "sha256:9227506bc20e1760091752453f59cef5af1f027cf48c88331798f74515efad79",
+      "archivePath": "references/blobs/9227506bc20e1760091752453f59cef5af1f027cf48c88331798f74515efad79"
+    },
+    {
+      "reference": "file:reference-data%2FREADME.md#sha256:a31b0e6b0945920c36e32833c499837a4fccb2c338b23fdba306d9e5a7f959da",
+      "sourcePath": "reference-data/README.md",
+      "digest": "sha256:a31b0e6b0945920c36e32833c499837a4fccb2c338b23fdba306d9e5a7f959da",
+      "archivePath": "references/blobs/a31b0e6b0945920c36e32833c499837a4fccb2c338b23fdba306d9e5a7f959da"
+    },
+    {
+      "reference": "file:reference-data%2Fsrc%2Fmain%2Fscala%2Ftrading%2Freference%2FCatalog.scala#sha256:5a315285fe5a8b55e6f0b4b2415dafe9d37bd88f70d9409e157294a3f657182e",
+      "sourcePath": "reference-data/src/main/scala/trading/reference/Catalog.scala",
+      "digest": "sha256:5a315285fe5a8b55e6f0b4b2415dafe9d37bd88f70d9409e157294a3f657182e",
+      "archivePath": "references/blobs/5a315285fe5a8b55e6f0b4b2415dafe9d37bd88f70d9409e157294a3f657182e"
+    },
+    {
+      "reference": "file:reference-data%2Fsrc%2Fmain%2Fscala%2Ftrading%2Freference%2FReferenceData.scala#sha256:79c70e90ceb39e6e4aa7fb85c57bf8b23d41f161ac03c1e58a63d83c3625fea5",
+      "sourcePath": "reference-data/src/main/scala/trading/reference/ReferenceData.scala",
+      "digest": "sha256:79c70e90ceb39e6e4aa7fb85c57bf8b23d41f161ac03c1e58a63d83c3625fea5",
+      "archivePath": "references/blobs/79c70e90ceb39e6e4aa7fb85c57bf8b23d41f161ac03c1e58a63d83c3625fea5"
+    },
+    {
+      "reference": "file:reference-data%2Fsrc%2Ftest%2Fscala%2Ftrading%2Freference%2FReferenceDataSuite.scala#sha256:751355b84d090f36cdce812e80600ce077e5c68062aafab715a6e0ae71739749",
+      "sourcePath": "reference-data/src/test/scala/trading/reference/ReferenceDataSuite.scala",
+      "digest": "sha256:751355b84d090f36cdce812e80600ce077e5c68062aafab715a6e0ae71739749",
+      "archivePath": "references/blobs/751355b84d090f36cdce812e80600ce077e5c68062aafab715a6e0ae71739749"
+    },
+    {
+      "reference": "file:tools%2Fcheck-in-process-reflection.sh#sha256:bca2729121ce2bde4dfe3e8db2af53d6129ea0db1162eaab0dd982d769ddf3d6",
+      "sourcePath": "tools/check-in-process-reflection.sh",
+      "digest": "sha256:bca2729121ce2bde4dfe3e8db2af53d6129ea0db1162eaab0dd982d769ddf3d6",
+      "archivePath": "references/blobs/bca2729121ce2bde4dfe3e8db2af53d6129ea0db1162eaab0dd982d769ddf3d6"
+    },
+    {
+      "reference": "file:tools%2Ftest-check-in-process-reflection.sh#sha256:0679a80193d81a4ab8836387de8054644fd1569e9b4275506cb3171fdbce9510",
+      "sourcePath": "tools/test-check-in-process-reflection.sh",
+      "digest": "sha256:0679a80193d81a4ab8836387de8054644fd1569e9b4275506cb3171fdbce9510",
+      "archivePath": "references/blobs/0679a80193d81a4ab8836387de8054644fd1569e9b4275506cb3171fdbce9510"
+    }
+  ]
+}

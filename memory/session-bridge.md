@@ -14,13 +14,13 @@ updated: 2026-09-04
 - **Issue**: 46 https://github.com/m2048ws/trading/issues/46
 - **Change**: use-scala-first-quantity-and-reference-data
 - **Worktree**: /Users/m/src/money/.worktrees/use-scala-first-quantity-and-reference-data
-- **Phase at Checkpoint**: awaiting_verify
-- **Task Group at Checkpoint**: 3
-- **Observed Run Revision**: 4
-- **Last Verified HEAD**: d29337fb6b72f7cbc4e986e8137a808fc1240c1e
+- **Phase at Checkpoint**: archiving
+- **Task Group at Checkpoint**: none
+- **Observed Run Revision**: 9
+- **Last Verified HEAD**: 806a6b435614a23536f5f26a221469281f5253b6
 
 ## Next Action
-- Run canonical Verify for `use-scala-first-quantity-and-reference-data` after acknowledging Task Group 3.
+- Consult Run Contract v3: resume tracker closeout for `use-scala-first-quantity-and-reference-data` only if pending; otherwise select the next accepted Slice. Local delivery: `wiki/deliveries/RFC-0005-simplify-post-trust-boundary-S-04-use-scala-first-quantity-and-reference-data.md`.
 
 ## Blockers
 - none
