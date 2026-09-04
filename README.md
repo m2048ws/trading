@@ -61,6 +61,12 @@ erased inputs, catalog reconstruction, and execution replay remain checked at
 their owning boundaries. The repository source guard is available as
 `tools/check-in-process-reflection.sh`.
 
+Scala 3 is the supported domain source API. Java libraries and JVM platform
+services may be integrated behind their owning Scala boundary, while ordinary
+Java source is not maintained as a domain-client compatibility surface. Java
+object serialization remains explicitly unsupported for authority-bearing and
+boundary values covered by their owning specifications.
+
 The catalog, snapshot, application-port, runtime-interpreter, instrument-economics, and shared benchmark
 responsibilities now have concrete owners. Order intent, actual-execution evidence, execution-scenario interpretation,
 fee-policy composition and scenario-owned attribution, risk, and boundary representation are separate physical pure

@@ -101,8 +101,13 @@ checks: refined fields, checked smart constructors, coherent identity and
 lineage, associated evidence, non-empty structure, and validated state
 transitions. Merely hiding a constructor does not establish those facts.
 
+The supported domain source API is Scala 3. Java libraries and JVM platform
+services remain valid implementation mechanisms behind their owning Scala
+boundary, but their use does not create an ordinary-Java domain API promise or
+turn source-language compatibility into an isolation boundary.
+
 External and least-trusted supported inputs remain fully checked. Wire records,
-database rows, configuration, venue facts, erased Java values, and replayed
+database rows, configuration, venue facts, Java-library values, and replayed
 events do not become trusted because they entered cooperative code; their
 owning parser, resolver, assembler, or transition must still validate them.
 Tests should attack those supported ingress paths and semantic relationships,
@@ -294,7 +299,7 @@ cost, and rejected snapshot/caching alternatives.
 | Algebraic law | Property or discipline law tests |
 | Refinement closure | Boundary examples plus closure properties |
 | Type-level rejection or semantic authority | Packaged downstream negative fixture and nearby positive fixture |
-| Cooperative in-process construction | Ordinary Scala/Java client plus source scan excluding reflective production access |
+| Cooperative in-process construction | Completed-artifact Scala 3 client plus source scan excluding reflective production access |
 | External or erased input | Least-trusted supported-input tests at the owning checked boundary |
 | Static/runtime coherence | Tests of both the static result and runtime identity/value |
 | Multiple interpreters | Shared contract suite plus interpreter-specific tests |

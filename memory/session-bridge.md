@@ -14,21 +14,22 @@ updated: 2026-09-04
 - **Issue**: 44 https://github.com/m2048ws/trading/issues/44
 - **Change**: remove-java-api-compatibility
 - **Worktree**: /Users/m/src/money/.worktrees/remove-java-api-compatibility
-- **Phase at Checkpoint**: applying
-- **Task Group at Checkpoint**: 2
-- **Observed Run Revision**: 3
-- **Last Verified HEAD**: 0aa35e63b443bca111bba0a0cb156f891f9ec81a
+- **Phase at Checkpoint**: awaiting_verify
+- **Task Group at Checkpoint**: 3
+- **Observed Run Revision**: 4
+- **Last Verified HEAD**: f98ef4f37e4597858c9c1d105be4aa9e002b2699
 
 ## Next Action
-- Commit and acknowledge Task Group 2, then implement the CLI-selected Task Group 3.
+- Commit and acknowledge Task Group 3, then run canonical whole-change Verify.
 
 ## Blockers
 - none
 
 ## Uncommitted Work
-- Task Group 2 removes all 11 ordinary-Java domain fixtures, the dedicated reference-data Java suite, and Java-only
-  compiler/loader branches from the mixed order/scenario, lifecycle, and codec suites; the clean 130-test adversarial
-  boundary and formatting checks pass with Scala compiler, dependency, semantic, wire, null, and serialization coverage.
+- Task Group 3 aligns durable architecture guidance and eight delta specifications on the Scala 3 source contract while
+  retaining JDK 25, Java-library integration, checked external reconstruction, wire formats, exact decimals, and
+  serialization rejection; the clean 1,041-test aggregate, benchmark compile, formatting, strict readiness, and both
+  reflection guard checks pass.
 
 ## Discoveries
 - No active Corgi Run Contract or OpenSpec Change exists on primary `main`.
@@ -90,6 +91,9 @@ updated: 2026-09-04
 - RFC-0005/S-05 Task Group 2 removes the reference-data, order/scenario, execution-lifecycle, and boundary-codec Java
   domain fixtures and their dedicated compiler/classloader code while retaining completed-artifact Scala clients,
   negative compiler cases, dependency inspections, semantic tests, external wire/null cases, and serialization checks.
+- RFC-0005/S-05 Task Group 3 establishes Scala 3 as the supported domain source API in durable architecture guidance
+  and the active specification deltas while explicitly retaining the JDK 25 baseline, Java-library/JVM integration,
+  checked external representations, exact decimal conversion, canonical wire formats, and serialization rejection.
 
 ## Promotion Queue
 - none
