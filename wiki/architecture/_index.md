@@ -30,4 +30,5 @@ updated: 2026-08-29
 - [[wiki/deliveries/RFC-0008-simplify-instrument-dependent-apis-S-02-bind-standard-order-construction|RFC-0008-simplify-instrument-dependent-apis/S-02-bind-standard-order-construction]]
 - [[wiki/deliveries/RFC-0008-simplify-instrument-dependent-apis-S-03-bind-source-fact-construction|RFC-0008-simplify-instrument-dependent-apis/S-03-bind-source-fact-construction]]
 - [[wiki/deliveries/RFC-0008-simplify-instrument-dependent-apis-S-04-bind-scenario-record-codecs|RFC-0008-simplify-instrument-dependent-apis/S-04-bind-scenario-record-codecs]]
+- [[wiki/deliveries/RFC-0008-simplify-instrument-dependent-apis-S-05-bind-instrument-risk|RFC-0008-simplify-instrument-dependent-apis/S-05-bind-instrument-risk]]
 <!-- corgi:managed:end architecture-deliveries -->

@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 3,
+  "changeName": "bind-instrument-risk",
+  "runId": "run-280a527b-c4a7-458e-ad08-174c86a1d6b4",
+  "finalRevision": "819a4c8dc3fc601655790a512ad24df2df7aee91",
+  "planningRevision": "sha256:53448d9f2f8a5104643a82456824a1e6cca2da96556c0f51e7282d82c1cd2b78",
+  "contract": {
+    "kind": "rfc-slice",
+    "deliveryRef": "RFC-0008-simplify-instrument-dependent-apis/S-05-bind-instrument-risk",
+    "rfcId": "RFC-0008-simplify-instrument-dependent-apis",
+    "rfcDigest": "sha256:77e1c4ac3d7629334f86695e07ffaf835549c5e0e05612314f0ca193e42139f3",
+    "acceptedCommit": "bf457296faa7d29aec0840a7e8f48d41ed0f7491",
+    "sliceId": "S-05-bind-instrument-risk",
+    "sourcePath": "openspec/changes/bind-instrument-risk/corgi/source.yaml",
+    "sourceDigest": "sha256:114045c8b2c0b08b7aef8ff5acd4cef89a4a2e36bc02c9a355ec271b160a5f44",
+    "traceabilityPath": "openspec/changes/bind-instrument-risk/corgi/traceability.yaml",
+    "traceabilityDigest": "sha256:06c93263b7cfc8626910da60fb4972f79e39fbab4504629332740b602710087d",
+    "acceptance": [
+      {
+        "id": "AC-017",
+        "evidence": "automated",
+        "taskGroups": [
+          "1"
+        ]
+      },
+      {
+        "id": "AC-018",
+        "evidence": "automated",
+        "taskGroups": [
+          "1"
+        ]
+      },
+      {
+        "id": "AC-019",
+        "evidence": "automated",
+        "taskGroups": [
+          "1"
+        ]
+      },
+      {
+        "id": "AC-020",
+        "evidence": "automated",
+        "taskGroups": [
+          "1"
+        ]
+      },
+      {
+        "id": "AC-021",
+        "evidence": "automated",
+        "taskGroups": [
+          "1"
+        ]
+      }
+    ],
+    "tracker": {
+      "provider": "github",
+      "idempotencyKey": "8912afe094b1808869605fda55e02776c7e3fdd11b6f4bbb5ec3fd730af91b86",
+      "issue": {
+        "id": "61",
+        "url": "https://github.com/m2048ws/trading/issues/61"
+      }
+    }
+  },
+  "archiveIntentId": "archive-afec9a0d-450b-4050-958c-f545b25f9149"
+}

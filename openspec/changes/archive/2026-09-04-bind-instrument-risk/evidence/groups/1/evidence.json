@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 3,
+  "groupId": "1",
+  "checks": [
+    {
+      "name": "Risk production compile and exact bound delegate surface",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:risk%2Fsrc%2Fmain%2Fscala%2Ftrading%2Frisk%2FRisk.scala#sha256:ff46a9fa93df61f52c397e2c4f9cbf6e8c9cb121f8026335f55581a63bfd7221"
+      ]
+    },
+    {
+      "name": "Focused risk scope equivalence, validation, reuse, and complexity",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:risk%2Fsrc%2Ftest%2Fscala%2Ftrading%2Frisk%2FRiskInstrumentScopeSuite.scala#sha256:eed28ba67c16b6c92435c2ce7cf9c20e8e899cd2592c8ef1dade7282ce81bded"
+      ]
+    },
+    {
+      "name": "Completed-artifact positive and incompatible-type compiler boundary",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Frisk-compiler%2Fpositive%2FRiskInstrumentScopeClient.scala#sha256:ae2e94ad40bde3c450d1cf7531192dce86707477b8975ae20d9313a3c936df53",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Frisk-compiler%2Fnegative%2FRiskInstrumentScopeMismatch.scala#sha256:63f44ea83fe72454b411ae468c98f59f981f89aa12d2704b3823be280f82fd80",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FRiskCompilerBoundarySuite.scala#sha256:a81602943cad15bf19922e1cc472d4de0f126f0576daeed7e3e336a72e37adaa"
+      ]
+    },
+    {
+      "name": "Production and benchmark in-process reflection guards",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:tools%2Fcheck-in-process-reflection.sh#sha256:bca2729121ce2bde4dfe3e8db2af53d6129ea0db1162eaab0dd982d769ddf3d6",
+        "file:tools%2Ftest-check-in-process-reflection.sh#sha256:0679a80193d81a4ab8836387de8054644fd1569e9b4275506cb3171fdbce9510"
+      ]
+    },
+    {
+      "name": "Formatting, clean JDK-25 aggregate test matrix, and JMH compilation",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:build.sbt#sha256:790e4ae7fa4ab9334b36c0273bc4d44d02d59cac352b50f5f0aeaadc026f5db8",
+        "file:risk%2Fsrc%2Ftest%2Fscala%2Ftrading%2Frisk%2FRiskInstrumentScopeSuite.scala#sha256:eed28ba67c16b6c92435c2ce7cf9c20e8e899cd2592c8ef1dade7282ce81bded",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FRiskCompilerBoundarySuite.scala#sha256:a81602943cad15bf19922e1cc472d4de0f126f0576daeed7e3e336a72e37adaa"
+      ]
+    }
+  ],
+  "automatedReview": {
+    "verdict": "pass",
+    "findings": []
+  },
+  "artifacts": [
+    "file:risk%2Fsrc%2Fmain%2Fscala%2Ftrading%2Frisk%2FRisk.scala#sha256:ff46a9fa93df61f52c397e2c4f9cbf6e8c9cb121f8026335f55581a63bfd7221",
+    "file:risk%2Fsrc%2Ftest%2Fscala%2Ftrading%2Frisk%2FRiskInstrumentScopeSuite.scala#sha256:eed28ba67c16b6c92435c2ce7cf9c20e8e899cd2592c8ef1dade7282ce81bded",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Frisk-compiler%2Fpositive%2FRiskInstrumentScopeClient.scala#sha256:ae2e94ad40bde3c450d1cf7531192dce86707477b8975ae20d9313a3c936df53",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Frisk-compiler%2Fnegative%2FRiskInstrumentScopeMismatch.scala#sha256:63f44ea83fe72454b411ae468c98f59f981f89aa12d2704b3823be280f82fd80",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FRiskCompilerBoundarySuite.scala#sha256:a81602943cad15bf19922e1cc472d4de0f126f0576daeed7e3e336a72e37adaa",
+    "file:memory%2Fsession-bridge.md#sha256:8a94531ef7e96950d6d602919b044723697728962e53623d3a704585da288723"
+  ],
+  "summary": "Task Group 1 binds the instrument-specific risk surface through a path-dependent scope, verifies exact delegation and compile-time mismatch rejection, passes automated review with no findings, and passes formatting, reflection guards, the clean 1,067-test aggregate matrix, and JMH compilation."
+}

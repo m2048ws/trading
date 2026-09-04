@@ -14,13 +14,13 @@ updated: 2026-09-04
 - **Issue**: 61 https://github.com/m2048ws/trading/issues/61
 - **Change**: bind-instrument-risk
 - **Worktree**: /Users/m/src/money/.worktrees/bind-instrument-risk
-- **Phase at Checkpoint**: archiving
-- **Task Group at Checkpoint**: none
-- **Observed Run Revision**: 7
-- **Last Verified HEAD**: 819a4c8dc3fc601655790a512ad24df2df7aee91
+- **Phase at Checkpoint**: awaiting_verify
+- **Task Group at Checkpoint**: 1
+- **Observed Run Revision**: 2
+- **Last Verified HEAD**: 458827c956e826a2251de13ef059e9c887450d5e
 
 ## Next Action
-- Consult Run Contract v3: resume tracker closeout for `bind-instrument-risk` only if pending; otherwise select the next accepted Slice. Local delivery: `wiki/deliveries/RFC-0008-simplify-instrument-dependent-apis-S-05-bind-instrument-risk.md`.
+- Run canonical whole-change Verify for `bind-instrument-risk` against the acknowledged Task Group commit.
 
 ## Blockers
 - none

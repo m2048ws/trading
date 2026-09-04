@@ -1,0 +1,47 @@
+[info] welcome to sbt 1.12.15 (Homebrew Java 26.0.2.1)
+[info] loading settings for project bind-instrument-risk-build from plugins.sbt...
+[info] loading project definition from /Users/m/src/money/.worktrees/bind-instrument-risk/project
+[info] loading settings for project root from build.sbt...
+[info] resolving key references (12514 settings) ...
+[info] set current project to trading (in build file:/Users/m/src/money/.worktrees/bind-instrument-risk/)
+[info] running (fork) org.openjdk.jmh.Main -wi 1 -w 200ms -i 1 -r 200ms -f 1 -foe true trading.benchmark.RiskSizingBenchmark.boundaryCertifiedMaximum
+[error] WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+[error] WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.openjdk.jmh.util.Utils (file:/Users/m/src/money/.worktrees/bind-instrument-risk/target/bg-jobs/sbt_f4f9b85f/target/0a592882/1296d6b9/jmh-core-1.37.jar)
+[error] WARNING: Please consider reporting this to the maintainers of class org.openjdk.jmh.util.Utils
+[error] WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+[info] # JMH version: 1.37
+[info] # VM version: JDK 26.0.2.1, OpenJDK 64-Bit Server VM, 26.0.2.1
+[info] # VM invoker: /opt/homebrew/Cellar/openjdk/26.0.2.1/libexec/openjdk.jdk/Contents/Home/bin/java
+[info] # VM options: <none>
+[info] # Blackhole mode: compiler (auto-detected, use -Djmh.blackhole.autoDetect=false to disable)
+[info] # Warmup: 1 iterations, 200 ms each
+[info] # Measurement: 1 iterations, 200 ms each
+[info] # Timeout: 10 min per iteration
+[info] # Threads: 1 thread, will synchronize iterations
+[info] # Benchmark mode: Throughput, ops/time
+[info] # Benchmark: trading.benchmark.RiskSizingBenchmark.boundaryCertifiedMaximum
+[info] # Parameters: (cap = 1024)
+[info] # Run progress: 0.00% complete, ETA 00:00:00
+[info] # Fork: 1 of 1
+[info] WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+[info] WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.openjdk.jmh.util.Utils (file:/Users/m/src/money/.worktrees/bind-instrument-risk/target/bg-jobs/sbt_f4f9b85f/target/0a592882/1296d6b9/jmh-core-1.37.jar)
+[info] WARNING: Please consider reporting this to the maintainers of class org.openjdk.jmh.util.Utils
+[info] WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+[info] # Warmup Iteration   1: 179458.754 ops/s
+[info] Iteration   1: 344709.224 ops/s
+[info] Result "trading.benchmark.RiskSizingBenchmark.boundaryCertifiedMaximum":
+[info]   344709.224 ops/s
+[info] # Run complete. Total time: 00:00:00
+[info] REMEMBER: The numbers below are just data. To gain reusable insights, you need to follow up on
+[info] why the numbers are the way they are. Use profilers (see -prof, -lprof), design factorial
+[info] experiments, perform baseline and negative tests that provide experimental control, make sure
+[info] the benchmarking environment is safe on JVM/OS/HW level, ask for reviews from the domain experts.
+[info] Do not assume the numbers tell you what you want them to tell.
+[info] NOTE: Current JVM experimentally supports Compiler Blackholes, and they are in use. Please exercise
+[info] extra caution when trusting the results, look into the generated code to check the benchmark still
+[info] works, and factor in a small probability of new VM bugs. Additionally, while comparisons between
+[info] different JVMs are already problematic, the performance difference caused by different Blackhole
+[info] modes can be very significant. Please make sure you use the consistent Blackhole mode for comparisons.
+[info] Benchmark                                     (cap)   Mode  Cnt       Score   Error  Units
+[info] RiskSizingBenchmark.boundaryCertifiedMaximum   1024  thrpt       344709.224          ops/s
+[success] Total time: 3 s, completed Sep 4, 2026, 7:29:56 PM

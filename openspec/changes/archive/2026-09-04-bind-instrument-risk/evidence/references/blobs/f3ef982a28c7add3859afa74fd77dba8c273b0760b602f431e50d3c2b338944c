@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "change": "bind-instrument-risk",
+  "head": "819a4c8dc3fc601655790a512ad24df2df7aee91",
+  "compilerTarget": "--release 25",
+  "hostJdk": "26.0.2.1",
+  "commands": [
+    {
+      "command": "sbt -batch scalafmtCheckAll scalafmtSbtCheck clean test benchmarks/Jmh/compile",
+      "exitCode": 0,
+      "evidencePath": "target/corgi-verify/full-matrix.log",
+      "summary": "Scala and SBT formatting passed; the clean 12-project aggregate passed 1067 tests; JMH sources generated and compiled."
+    },
+    {
+      "command": "sbt -batch \"risk/testOnly trading.risk.RiskInstrumentScopeSuite\" \"adversarialBoundary/testOnly external.RiskCompilerBoundarySuite\"",
+      "exitCode": 0,
+      "evidencePath": "target/corgi-verify/focused-risk.log",
+      "summary": "All 5 instrument-scope tests and all 8 completed-artifact risk compiler-boundary tests passed."
+    },
+    {
+      "command": "tools/check-in-process-reflection.sh",
+      "exitCode": 0,
+      "evidencePath": "target/corgi-verify/reflection-policy.log",
+      "summary": "The production and benchmark in-process reflection policy passed."
+    },
+    {
+      "command": "tools/test-check-in-process-reflection.sh",
+      "exitCode": 0,
+      "evidencePath": "target/corgi-verify/reflection-regression.log",
+      "summary": "The reflection-policy regression fixture passed."
+    },
+    {
+      "command": "git diff --check",
+      "exitCode": 0,
+      "evidencePath": "target/corgi-verify/git-diff-check.log",
+      "summary": "No whitespace errors were found."
+    },
+    {
+      "command": "sbt -batch \"benchmarks/Jmh/run -wi 1 -w 200ms -i 1 -r 200ms -f 1 -foe true trading.benchmark.RiskSizingBenchmark.boundaryCertifiedMaximum\"",
+      "exitCode": 0,
+      "evidencePath": "target/corgi-verify/risk-jmh.log",
+      "summary": "The cap-1024 indicative maximum-sizing sample completed at 344709.224 ops/s; deterministic operation-count tests remain the complexity authority."
+    }
+  ]
+}
