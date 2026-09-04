@@ -10,17 +10,17 @@ updated: 2026-09-04
 ## Delivery Pointer
 - **RFC**: RFC-0005-simplify-post-trust-boundary
 - **RFC Revision**: 7f1d1ab9eb88d0912d3219920eacadea4d01aa2e
-- **Slice**: S-02-total-and-deterministic-execution-transitions
-- **Issue**: 40 https://github.com/m2048ws/trading/issues/40
-- **Change**: total-and-deterministic-execution-transitions
-- **Worktree**: /Users/m/src/money/.worktrees/total-and-deterministic-execution-transitions
-- **Phase at Checkpoint**: archiving
-- **Task Group at Checkpoint**: none
-- **Observed Run Revision**: 9
-- **Last Verified HEAD**: a977df576bf089a366930183c14f45029cf77a14
+- **Slice**: S-03-use-direct-scala-derived-models
+- **Issue**: 42 https://github.com/m2048ws/trading/issues/42
+- **Change**: use-direct-scala-derived-models
+- **Worktree**: /Users/m/src/money/.worktrees/use-direct-scala-derived-models
+- **Phase at Checkpoint**: planning_ready
+- **Task Group at Checkpoint**: 1
+- **Observed Run Revision**: none
+- **Last Verified HEAD**: 5f997f126d5dda2b4aba9a34100bfb4710398272
 
 ## Next Action
-- Consult Run Contract v3: resume tracker closeout for `total-and-deterministic-execution-transitions` only if pending; otherwise select the next accepted Slice. Local delivery: `wiki/deliveries/RFC-0005-simplify-post-trust-boundary-S-02-total-and-deterministic-execution-transitions.md`.
+- Start Apply for `use-direct-scala-derived-models` Task Group 1.
 
 ## Blockers
 - none

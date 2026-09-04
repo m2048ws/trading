@@ -1,0 +1,27 @@
+schemaVersion: 1
+kind: rfc-slice
+deliveryRef: RFC-0005-simplify-post-trust-boundary/S-03-use-direct-scala-derived-models
+rfc:
+  id: RFC-0005-simplify-post-trust-boundary
+  path: rfcs/RFC-0005-simplify-post-trust-boundary
+  acceptedCommit: 7f1d1ab9eb88d0912d3219920eacadea4d01aa2e
+  digest: sha256:31336459ac68c4a188388bb58cf59fe8c84830a0b72aa66d29fdcff4f90657a3
+slice:
+  id: S-03-use-direct-scala-derived-models
+  digest: sha256:1da2295e8673d03304dec9676a1e6427d89eab52ff1273df64f599902a1c4bf1
+acceptance:
+  - id: AC-008
+    evidence: automated
+  - id: AC-009
+    evidence: automated
+  - id: AC-010
+    evidence: automated
+  - id: AC-011
+    evidence: automated
+deliveryBindingDigest: sha256:613ba3167c197944a8f22ce5fed5e4ba58f5013f59d6c0cd294066f4da013d0c
+tracker:
+  provider: github
+  idempotencyKey: a437e35266598e9cd0dffb05ae9212d91a9ad92be63fcecd49c7e5a4ca795ceb
+  issue:
+    id: '42'
+    url: https://github.com/m2048ws/trading/issues/42
