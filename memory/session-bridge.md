@@ -14,13 +14,13 @@ updated: 2026-09-04
 - **Issue**: 42 https://github.com/m2048ws/trading/issues/42
 - **Change**: use-direct-scala-derived-models
 - **Worktree**: /Users/m/src/money/.worktrees/use-direct-scala-derived-models
-- **Phase at Checkpoint**: awaiting_verify
-- **Task Group at Checkpoint**: 3
-- **Observed Run Revision**: 4
-- **Last Verified HEAD**: 60b585f8ac4a3a92941bd4f47bca5a643b28fc6e
+- **Phase at Checkpoint**: archiving
+- **Task Group at Checkpoint**: none
+- **Observed Run Revision**: 9
+- **Last Verified HEAD**: f46c95751e6f72e45ee33881eb1705625b2228d9
 
 ## Next Action
-- Commit and acknowledge Task Group 3, then run canonical whole-change Verify.
+- Consult Run Contract v3: resume tracker closeout for `use-direct-scala-derived-models` only if pending; otherwise select the next accepted Slice. Local delivery: `wiki/deliveries/RFC-0005-simplify-post-trust-boundary-S-03-use-direct-scala-derived-models.md`.
 
 ## Blockers
 - none
