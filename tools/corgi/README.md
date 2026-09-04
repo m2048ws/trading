@@ -84,7 +84,8 @@ synchronize the archive closeout commit, then obtain the separately controlled r
 Update branch operation wraps that commit, ready/merge/finalize accept only a bounded first-parent chain of clean,
 deterministic two-parent merges whose second parents follow the configured base lineage and whose newest merge includes
 the current base head; the local Corgi worktree remains fixed at the sealed closeout commit. Only `finalize` may confirm
-tracker closeout and finish Archive after GitHub proves the validated integration head merged.
+tracker closeout and finish Archive after GitHub proves the validated integration head merged and Git confirms that
+head is now an ancestor of the advanced base branch.
 `sync-archived` is a fail-closed recovery command for a historical premature finalization: it accepts only a preserved
 local branch whose exact closeout commit is a direct child of the verified revision and whose immutable archived run
 binding, evidence manifest, closed Issue, and draft PR identities all agree. It can fast-forward that draft PR and

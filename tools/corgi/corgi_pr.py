@@ -1467,12 +1467,20 @@ class Adapter:
                 "Local HEAD does not match the Corgi integration revision",
             )
         provider_head = self.validated_provider_integration_head(
-            branch, evidence_head, pr.head_oid
+            branch,
+            evidence_head,
+            pr.head_oid,
+            require_current_base=not allow_merged,
         )
         return status, pr, evidence_head, provider_head
 
     def validated_provider_integration_head(
-        self, branch: str, evidence_head: str, provider_head: str
+        self,
+        branch: str,
+        evidence_head: str,
+        provider_head: str,
+        *,
+        require_current_base: bool = True,
     ) -> str:
         if provider_head == evidence_head:
             return provider_head
@@ -1503,6 +1511,19 @@ class Adapter:
 
         current = provider_head
         allowed_base = base_head
+        if not require_current_base:
+            integrated = self.git(
+                "merge-base",
+                "--is-ancestor",
+                provider_head,
+                base_head,
+                accepted=(0, 1),
+            )
+            if integrated.returncode != 0:
+                raise PilotError(
+                    "integration_wrapper_not_merged",
+                    "Validated PR head is not integrated into current main",
+                )
         for depth in range(MAX_INTEGRATION_WRAPPERS):
             if current == evidence_head:
                 return provider_head
@@ -1514,7 +1535,7 @@ class Adapter:
                     "PR head contains a non-merge commit after the sealed Archive head",
                 )
             first_parent, base_parent = row[1], row[2]
-            if depth == 0 and base_parent != base_head:
+            if depth == 0 and require_current_base and base_parent != base_head:
                 raise PilotError(
                     "integration_wrapper_base_stale",
                     "The newest PR base-update merge does not include current main",
