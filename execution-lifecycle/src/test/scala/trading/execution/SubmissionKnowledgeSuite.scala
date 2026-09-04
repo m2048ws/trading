@@ -214,6 +214,8 @@ final class SubmissionKnowledgeSuite extends ScalaCheckSuite:
       case _: AuthoritativelyAbsentSubmission[?, ?, ?] => "absent"
       case _: ConflictingSubmission[?, ?, ?]           => "conflicting"
 
+    alternatives.foreach(assertSerializationRejected)
+
     assertEquals(
       kinds,
       Vector("pending", "accepted", "rejected", "not-dispatched", "indeterminate", "execution-proven", "absent",

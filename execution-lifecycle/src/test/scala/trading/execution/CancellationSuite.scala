@@ -177,6 +177,7 @@ final class CancellationSuite extends ScalaCheckSuite:
         assertEquals(knowledge.evidence.issuedRequests, Set(cancelOrder))
         assertEquals(knowledge.evidence.referencedSubmissions, Set(submitOrder))
         assertEquals(knowledge.evidence.authoritativeConfirmations, Set.empty)
+        assertSerializationRejected(knowledge)
       case other => fail(s"expected requested cancellation, received $other")
     val replayed = required(
       ExecutionState.replay(value)(Vector(cancelOrder, submitOrder), Vector.empty, Vector.empty)
@@ -190,6 +191,7 @@ final class CancellationSuite extends ScalaCheckSuite:
       case Some(knowledge: CancellationConfirmed[?, ?, ?]) =>
         assertEquals(knowledge.evidence.issuedRequests, Set(cancelOrder))
         assertEquals(knowledge.evidence.authoritativeConfirmations, Set(confirmedFact))
+        assertSerializationRejected(knowledge)
       case other => fail(s"expected confirmed cancellation, received $other")
 
   property("source ordering, not network delivery, identifies only the provably post-cancellation partial fill"):
@@ -290,6 +292,7 @@ final class CancellationSuite extends ScalaCheckSuite:
       case Some(knowledge: CancellationConflicted[?, ?, ?]) =>
         assertEquals(knowledge.evidence.authoritativeConfirmations, Set.empty)
         assertEquals(knowledge.evidence.reportedConfirmations, Set(cancelled))
+        assertSerializationRejected(knowledge)
       case other => fail(s"expected conflicted cancellation, received $other")
 
   test("confirmed cancel then submitted successor creates a mechanism-neutral immutable lineage link"):

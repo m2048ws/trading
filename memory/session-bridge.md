@@ -15,19 +15,19 @@ updated: 2026-09-04
 - **Change**: use-direct-scala-derived-models
 - **Worktree**: /Users/m/src/money/.worktrees/use-direct-scala-derived-models
 - **Phase at Checkpoint**: applying
-- **Task Group at Checkpoint**: 1
-- **Observed Run Revision**: 2
-- **Last Verified HEAD**: fd9544ff7f312892a493b21e1f50436abfe5f518
+- **Task Group at Checkpoint**: 2
+- **Observed Run Revision**: 3
+- **Last Verified HEAD**: 07ecbaba79ab1092bf73514268054f477597d183
 
 ## Next Action
-- Commit and acknowledge Task Group 1, then implement the CLI-selected Task Group 2.
+- Commit and acknowledge Task Group 2, then implement the CLI-selected Task Group 3.
 
 ## Blockers
 - none
 
 ## Uncommitted Work
-- Task Group 1 replaces command, source-fact, and lifecycle transition class/tag machinery with exhaustive generated
-  Scala sums; 68 focused lifecycle tests, 7 completed-artifact compiler tests, formatting, and reflection guards pass.
+- Task Group 2 replaces submission knowledge, cancellation knowledge, and effective-fill alternatives with direct
+  generated Scala sum cases; 68 focused lifecycle tests, 7 completed-artifact compiler tests, and formatting pass.
 
 ## Discoveries
 - No active Corgi Run Contract or OpenSpec Change exists on primary `main`.
@@ -76,6 +76,9 @@ updated: 2026-09-04
 - RFC-0005/S-03 Task Group 1 replaces command and source transitions with generated sealed cases and replaces the
   lifecycle accepted-kind tag with applied, idempotent, conflicting, and rejected cases while preserving state,
   violation, conflict, work-accounting, exhaustive compiler-boundary, equality, and serialization behavior.
+- RFC-0005/S-03 Task Group 2 replaces submission knowledge, cancellation knowledge, and effective-fill alternatives
+  with direct generated sealed cases while preserving evidence, precedence, uncertainty, exact economics, modifier
+  order, conflict detail, exhaustive matching, structural equality, and fail-closed serialization.
 
 ## Promotion Queue
 - none

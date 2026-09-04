@@ -32,61 +32,35 @@ object ModifierAmbiguity:
   private[execution] def from(values: Vector[ModifierAmbiguityKind]): Option[ModifierAmbiguity] =
     Option.when(values.nonEmpty)(construct(values.distinct))
 
-sealed abstract class EffectiveFill[D <: Dim, B <: Dim, Q <: Dim] protected () extends JavaSerializationUnsupported:
+sealed trait EffectiveFill[D <: Dim, B <: Dim, Q <: Dim] extends JavaSerializationUnsupported:
   def original: ExecutionFill[D, B, Q]
   def modifiers: Vector[FillModifier[D, B, Q]]
 
-final class ActiveEffectiveFill[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
-  val original: ExecutionFill[D, B, Q],
-  val effectiveLots: Lots[D],
-  val effectivePrice: Price[B, Q],
-  val modifiers: Vector[FillModifier[D, B, Q]])
-  extends EffectiveFill[D, B, Q]():
+final case class ActiveEffectiveFill[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
+  original: ExecutionFill[D, B, Q],
+  effectiveLots: Lots[D],
+  effectivePrice: Price[B, Q],
+  modifiers: Vector[FillModifier[D, B, Q]])
+  extends EffectiveFill[D, B, Q]
 
-  override def equals(other: Any): Boolean = other match
-    case that: ActiveEffectiveFill[?, ?, ?] =>
-      original == that.original && effectiveLots == that.effectiveLots &&
-      effectivePrice == that.effectivePrice && modifiers == that.modifiers
-    case _ => false
-  override def hashCode(): Int = (original, effectiveLots, effectivePrice, modifiers).hashCode
+final case class BustedEffectiveFill[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
+  original: ExecutionFill[D, B, Q],
+  bust: FillBusted[D, B, Q],
+  modifiers: Vector[FillModifier[D, B, Q]])
+  extends EffectiveFill[D, B, Q]
 
-final class BustedEffectiveFill[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
-  val original: ExecutionFill[D, B, Q],
-  val bust: FillBusted[D, B, Q],
-  val modifiers: Vector[FillModifier[D, B, Q]])
-  extends EffectiveFill[D, B, Q]():
+final case class AmbiguousEffectiveFill[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
+  original: ExecutionFill[D, B, Q],
+  modifiers: Vector[FillModifier[D, B, Q]],
+  ambiguity: ModifierAmbiguity)
+  extends EffectiveFill[D, B, Q]
 
-  override def equals(other: Any): Boolean = other match
-    case that: BustedEffectiveFill[?, ?, ?] =>
-      original == that.original && bust == that.bust && modifiers == that.modifiers
-    case _ => false
-  override def hashCode(): Int = (original, bust, modifiers).hashCode
-
-final class AmbiguousEffectiveFill[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
-  val original: ExecutionFill[D, B, Q],
-  val modifiers: Vector[FillModifier[D, B, Q]],
-  val ambiguity: ModifierAmbiguity)
-  extends EffectiveFill[D, B, Q]():
-
-  override def equals(other: Any): Boolean = other match
-    case that: AmbiguousEffectiveFill[?, ?, ?] =>
-      original == that.original && modifiers == that.modifiers && ambiguity == that.ambiguity
-    case _ => false
-  override def hashCode(): Int = (original, modifiers, ambiguity).hashCode
-
-final class ConflictingEffectiveFill[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
-  val original: ExecutionFill[D, B, Q],
-  val modifiers: Vector[FillModifier[D, B, Q]],
-  val eventConflicts: Vector[SourceFactConflict[D, B, Q]],
-  val identityConflicts: Vector[FillIdentityConflict[D, B, Q]])
-  extends EffectiveFill[D, B, Q]():
-
-  override def equals(other: Any): Boolean = other match
-    case that: ConflictingEffectiveFill[?, ?, ?] =>
-      original == that.original && modifiers == that.modifiers &&
-      eventConflicts == that.eventConflicts && identityConflicts == that.identityConflicts
-    case _ => false
-  override def hashCode(): Int = (original, modifiers, eventConflicts, identityConflicts).hashCode
+final case class ConflictingEffectiveFill[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
+  original: ExecutionFill[D, B, Q],
+  modifiers: Vector[FillModifier[D, B, Q]],
+  eventConflicts: Vector[SourceFactConflict[D, B, Q]],
+  identityConflicts: Vector[FillIdentityConflict[D, B, Q]])
+  extends EffectiveFill[D, B, Q]
 
 final case class OverfillAnomaly[D <: Dim](
   orderedLots: Lots[D],
@@ -109,36 +83,6 @@ final class EffectiveFillLedger[D <: Dim, B <: Dim, Q <: Dim] private (
   override def hashCode(): Int = (byFillId, knownExposure, overfill, unresolvedReferences).hashCode
 
 object EffectiveFillLedger:
-  private def active[D <: Dim, B <: Dim, Q <: Dim](
-    original: ExecutionFill[D, B, Q],
-    lots: Lots[D],
-    price: Price[B, Q],
-    modifiers: Vector[FillModifier[D, B, Q]]
-  ): ActiveEffectiveFill[D, B, Q] =
-    new ActiveEffectiveFill(original, lots, price, modifiers)
-
-  private def busted[D <: Dim, B <: Dim, Q <: Dim](
-    original: ExecutionFill[D, B, Q],
-    bust: FillBusted[D, B, Q],
-    modifiers: Vector[FillModifier[D, B, Q]]
-  ): BustedEffectiveFill[D, B, Q] =
-    new BustedEffectiveFill(original, bust, modifiers)
-
-  private def ambiguous[D <: Dim, B <: Dim, Q <: Dim](
-    original: ExecutionFill[D, B, Q],
-    modifiers: Vector[FillModifier[D, B, Q]],
-    ambiguity: ModifierAmbiguity
-  ): AmbiguousEffectiveFill[D, B, Q] =
-    new AmbiguousEffectiveFill(original, modifiers, ambiguity)
-
-  private def conflicting[D <: Dim, B <: Dim, Q <: Dim](
-    original: ExecutionFill[D, B, Q],
-    modifiers: Vector[FillModifier[D, B, Q]],
-    eventConflicts: Vector[SourceFactConflict[D, B, Q]],
-    identityConflicts: Vector[FillIdentityConflict[D, B, Q]]
-  ): ConflictingEffectiveFill[D, B, Q] =
-    new ConflictingEffectiveFill(original, modifiers, eventConflicts, identityConflicts)
-
   private[execution] def derive[D <: Dim, B <: Dim, Q <: Dim](
     state: ExecutionState[D, B, Q]
   ): EffectiveFillLedger[D, B, Q] =
@@ -167,7 +111,7 @@ object EffectiveFillLedger:
         .sorted(using ExecutionOrderings.fillIdentityConflict)
       val value =
         if eventConflicts.nonEmpty || identityConflicts.nonEmpty then
-          conflicting(original, targetModifiers, eventConflicts, identityConflicts)
+          ConflictingEffectiveFill(original, targetModifiers, eventConflicts, identityConflicts)
         else resolve(state, original, targetModifiers)
       fillId -> value
 
@@ -187,7 +131,7 @@ object EffectiveFillLedger:
     original: ExecutionFill[D, B, Q],
     modifiers: Vector[FillModifier[D, B, Q]]
   ): EffectiveFill[D, B, Q] =
-    if modifiers.isEmpty then active(original, original.lots, original.price, Vector.empty)
+    if modifiers.isEmpty then ActiveEffectiveFill(original, original.lots, original.price, Vector.empty)
     else
       val ordered             = modifiers.flatMap(modifier => modifier.authoritativePosition.map(_ -> modifier))
       val streams             = ordered.map(_._1.stream).distinct
@@ -208,12 +152,12 @@ object EffectiveFillLedger:
         ).flatten
       )
       ambiguity match
-        case Some(value) => ambiguous(original, modifiers, value)
+        case Some(value) => AmbiguousEffectiveFill(original, modifiers, value)
         case None        =>
           sorted.last match
-            case value: FillBusted[D, B, Q]    => busted(original, value, sorted)
+            case value: FillBusted[D, B, Q]    => BustedEffectiveFill(original, value, sorted)
             case value: FillCorrected[D, B, Q] =>
-              active(original, value.replacementLots, value.replacementPrice, sorted)
+              ActiveEffectiveFill(original, value.replacementLots, value.replacementPrice, sorted)
   end resolve
 
   private def referencedFillIds(value: SourceFact[?, ?, ?]): Vector[QualifiedFillId] = value match

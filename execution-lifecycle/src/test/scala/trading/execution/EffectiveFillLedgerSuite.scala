@@ -164,6 +164,7 @@ final class EffectiveFillLedgerSuite extends ScalaCheckSuite:
     assertEquals(state.source.fillsById(first.fillId), first)
     assertEquals(state.source.fillConflicts, Vector.empty)
     assert(ledger.byFillId.values.forall(_.isInstanceOf[ActiveEffectiveFill[?, ?, ?]]))
+    ledger.byFillId.values.foreach(assertSerializationRejected)
 
   test("an authoritatively ordered correction replaces exact economics and a later bust contributes zero"):
     val value           = lifecycle(Side.Buy, 10, "correction")
@@ -178,6 +179,7 @@ final class EffectiveFillLedgerSuite extends ScalaCheckSuite:
         assertEquals(active.effectiveLots, fixtures.lots(instrument, 5))
         assertEquals(active.effectivePrice, fixtures.price(instrument, Rational(3)))
         assertEquals(active.modifiers, Vector(first, second))
+        assertSerializationRejected(active)
       case other => fail(s"expected active corrected fill, received $other")
     assertEquals(correctedLedger.knownExposure, position(value, 5))
 
@@ -188,6 +190,7 @@ final class EffectiveFillLedgerSuite extends ScalaCheckSuite:
         assertEquals(busted.original, original)
         assertEquals(busted.bust, finalBust)
         assertEquals(busted.modifiers, Vector(first, second, finalBust))
+        assertSerializationRejected(busted)
       case other => fail(s"expected busted fill, received $other")
     assertEquals(bustedLedger.knownExposure, position(value, 0))
 
@@ -211,12 +214,15 @@ final class EffectiveFillLedgerSuite extends ScalaCheckSuite:
     val value    = lifecycle(Side.Buy, 10, "ambiguity")
     val original = fill(value, "fill", "fill", 2)
 
-    def ambiguity(facts: Vector[SourceFact[D, B, Q]]): ModifierAmbiguity =
+    def ambiguousFill(facts: Vector[SourceFact[D, B, Q]]): AmbiguousEffectiveFill[D, B, Q] =
       record(value, original +: facts).observation.effectiveFillLedger.byFillId(original.fillId) match
-        case result: AmbiguousEffectiveFill[?, ?, ?] => result.ambiguity
+        case result: AmbiguousEffectiveFill[?, ?, ?] => result.asInstanceOf[AmbiguousEffectiveFill[D, B, Q]]
         case other                                   => fail(s"expected ambiguous fill, received $other")
 
+    def ambiguity(facts: Vector[SourceFact[D, B, Q]]): ModifierAmbiguity = ambiguousFill(facts).ambiguity
+
     val unsequenced = correction(value, "unsequenced", original.fillId, 3, 2, SourceOrdering.unsequenced)
+    assertSerializationRejected(ambiguousFill(Vector(unsequenced)))
     assertEquals(
       ambiguity(Vector(unsequenced)).toVector,
       Vector(ModifierAmbiguityKind.ExplicitlyUnsequencedModifier)
@@ -256,6 +262,7 @@ final class EffectiveFillLedgerSuite extends ScalaCheckSuite:
         assertEquals(conflict.original, original)
         assertEquals(conflict.identityConflicts.size, 1)
         assertEquals(conflict.identityConflicts.head.conflicting, conflicting)
+        assertSerializationRejected(conflict)
       case other => fail(s"expected conflicting fill, received $other")
     assertEquals(ledger.knownExposure, position(value, 0))
     assertEquals(ledger.overfill, None)

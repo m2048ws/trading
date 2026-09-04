@@ -35,33 +35,20 @@ final class CancellationEvidence[D <: Dim, B <: Dim, Q <: Dim] private[execution
     ).hashCode
 end CancellationEvidence
 
-sealed abstract class CancellationKnowledge[D <: Dim, B <: Dim, Q <: Dim] protected ()
-  extends JavaSerializationUnsupported:
+sealed trait CancellationKnowledge[D <: Dim, B <: Dim, Q <: Dim] extends JavaSerializationUnsupported:
   def evidence: CancellationEvidence[D, B, Q]
-final class CancellationRequested[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
-  val evidence: CancellationEvidence[D, B, Q])
-  extends CancellationKnowledge[D, B, Q]():
 
-  override def equals(other: Any): Boolean = other match
-    case that: CancellationRequested[?, ?, ?] => evidence == that.evidence
-    case _                                    => false
-  override def hashCode(): Int = ("cancellation-requested", evidence).hashCode
-final class CancellationConfirmed[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
-  val evidence: CancellationEvidence[D, B, Q])
-  extends CancellationKnowledge[D, B, Q]():
+final case class CancellationRequested[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
+  evidence: CancellationEvidence[D, B, Q])
+  extends CancellationKnowledge[D, B, Q]
 
-  override def equals(other: Any): Boolean = other match
-    case that: CancellationConfirmed[?, ?, ?] => evidence == that.evidence
-    case _                                    => false
-  override def hashCode(): Int = ("cancellation-confirmed", evidence).hashCode
-final class CancellationConflicted[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
-  val evidence: CancellationEvidence[D, B, Q])
-  extends CancellationKnowledge[D, B, Q]():
+final case class CancellationConfirmed[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
+  evidence: CancellationEvidence[D, B, Q])
+  extends CancellationKnowledge[D, B, Q]
 
-  override def equals(other: Any): Boolean = other match
-    case that: CancellationConflicted[?, ?, ?] => evidence == that.evidence
-    case _                                     => false
-  override def hashCode(): Int = ("cancellation-conflicted", evidence).hashCode
+final case class CancellationConflicted[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
+  evidence: CancellationEvidence[D, B, Q])
+  extends CancellationKnowledge[D, B, Q]
 
 object CancellationKnowledge:
   private def constructEvidence[D <: Dim, B <: Dim, Q <: Dim](
@@ -82,21 +69,6 @@ object CancellationKnowledge:
       commandConflicts,
       sourceConflicts
     )
-
-  private def requested[D <: Dim, B <: Dim, Q <: Dim](
-    evidence: CancellationEvidence[D, B, Q]
-  ): CancellationRequested[D, B, Q] =
-    new CancellationRequested(evidence)
-
-  private def confirmed[D <: Dim, B <: Dim, Q <: Dim](
-    evidence: CancellationEvidence[D, B, Q]
-  ): CancellationConfirmed[D, B, Q] =
-    new CancellationConfirmed(evidence)
-
-  private def conflicted[D <: Dim, B <: Dim, Q <: Dim](
-    evidence: CancellationEvidence[D, B, Q]
-  ): CancellationConflicted[D, B, Q] =
-    new CancellationConflicted(evidence)
 
   private[execution] def derive[D <: Dim, B <: Dim, Q <: Dim](
     state: ExecutionState[D, B, Q]
@@ -134,9 +106,9 @@ object CancellationKnowledge:
       relevantSourceConflicts
     )
 
-    if authoritative.nonEmpty then Some(confirmed(evidence))
-    else if issuedRequests.nonEmpty then Some(requested(evidence))
-    else if reportedRequests.nonEmpty || reportedConfirmations.nonEmpty then Some(conflicted(evidence))
+    if authoritative.nonEmpty then Some(CancellationConfirmed(evidence))
+    else if issuedRequests.nonEmpty then Some(CancellationRequested(evidence))
+    else if reportedRequests.nonEmpty || reportedConfirmations.nonEmpty then Some(CancellationConflicted(evidence))
     else None
   end derive
 

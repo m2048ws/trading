@@ -47,66 +47,41 @@ final class SubmissionEvidence[D <: Dim, B <: Dim, Q <: Dim] private[execution] 
   override def hashCode(): Int =
     (submitCommands, dispatchEvidence, acceptances, rejections, executionFills, sourceAbsences).hashCode
 
-sealed abstract class SubmissionKnowledge[D <: Dim, B <: Dim, Q <: Dim] protected ()
-  extends JavaSerializationUnsupported:
+sealed trait SubmissionKnowledge[D <: Dim, B <: Dim, Q <: Dim] extends JavaSerializationUnsupported:
   def evidence: SubmissionEvidence[D, B, Q]
-final class IssuedPendingSubmission[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
-  val evidence: SubmissionEvidence[D, B, Q])
-  extends SubmissionKnowledge[D, B, Q]():
-  override def equals(other: Any): Boolean = other match
-    case that: IssuedPendingSubmission[?, ?, ?] => evidence == that.evidence
-    case _                                      => false
-  override def hashCode(): Int = ("issued-pending", evidence).hashCode
-final class AcceptedSubmission[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
-  val evidence: SubmissionEvidence[D, B, Q])
-  extends SubmissionKnowledge[D, B, Q]():
-  override def equals(other: Any): Boolean = other match
-    case that: AcceptedSubmission[?, ?, ?] => evidence == that.evidence
-    case _                                 => false
-  override def hashCode(): Int = ("accepted", evidence).hashCode
-final class RejectedSubmission[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
-  val evidence: SubmissionEvidence[D, B, Q])
-  extends SubmissionKnowledge[D, B, Q]():
-  override def equals(other: Any): Boolean = other match
-    case that: RejectedSubmission[?, ?, ?] => evidence == that.evidence
-    case _                                 => false
-  override def hashCode(): Int = ("rejected", evidence).hashCode
-final class ProvenNotDispatchedSubmission[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
-  val evidence: SubmissionEvidence[D, B, Q])
-  extends SubmissionKnowledge[D, B, Q]():
-  override def equals(other: Any): Boolean = other match
-    case that: ProvenNotDispatchedSubmission[?, ?, ?] => evidence == that.evidence
-    case _                                            => false
-  override def hashCode(): Int = ("proven-not-dispatched", evidence).hashCode
-final class IndeterminateSubmission[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
-  val evidence: SubmissionEvidence[D, B, Q])
-  extends SubmissionKnowledge[D, B, Q]():
-  override def equals(other: Any): Boolean = other match
-    case that: IndeterminateSubmission[?, ?, ?] => evidence == that.evidence
-    case _                                      => false
-  override def hashCode(): Int = ("indeterminate", evidence).hashCode
-final class ExecutionProvenSubmission[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
-  val evidence: SubmissionEvidence[D, B, Q])
-  extends SubmissionKnowledge[D, B, Q]():
-  override def equals(other: Any): Boolean = other match
-    case that: ExecutionProvenSubmission[?, ?, ?] => evidence == that.evidence
-    case _                                        => false
-  override def hashCode(): Int = ("execution-proven", evidence).hashCode
-final class AuthoritativelyAbsentSubmission[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
-  val evidence: SubmissionEvidence[D, B, Q])
-  extends SubmissionKnowledge[D, B, Q]():
-  override def equals(other: Any): Boolean = other match
-    case that: AuthoritativelyAbsentSubmission[?, ?, ?] => evidence == that.evidence
-    case _                                              => false
-  override def hashCode(): Int = ("authoritatively-absent", evidence).hashCode
-final class ConflictingSubmission[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
-  val evidence: SubmissionEvidence[D, B, Q],
-  val conflicts: SubmissionConflicts)
-  extends SubmissionKnowledge[D, B, Q]():
-  override def equals(other: Any): Boolean = other match
-    case that: ConflictingSubmission[?, ?, ?] => evidence == that.evidence && conflicts == that.conflicts
-    case _                                    => false
-  override def hashCode(): Int = ("conflicting", evidence, conflicts).hashCode
+
+final case class IssuedPendingSubmission[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
+  evidence: SubmissionEvidence[D, B, Q])
+  extends SubmissionKnowledge[D, B, Q]
+
+final case class AcceptedSubmission[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
+  evidence: SubmissionEvidence[D, B, Q])
+  extends SubmissionKnowledge[D, B, Q]
+
+final case class RejectedSubmission[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
+  evidence: SubmissionEvidence[D, B, Q])
+  extends SubmissionKnowledge[D, B, Q]
+
+final case class ProvenNotDispatchedSubmission[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
+  evidence: SubmissionEvidence[D, B, Q])
+  extends SubmissionKnowledge[D, B, Q]
+
+final case class IndeterminateSubmission[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
+  evidence: SubmissionEvidence[D, B, Q])
+  extends SubmissionKnowledge[D, B, Q]
+
+final case class ExecutionProvenSubmission[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
+  evidence: SubmissionEvidence[D, B, Q])
+  extends SubmissionKnowledge[D, B, Q]
+
+final case class AuthoritativelyAbsentSubmission[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
+  evidence: SubmissionEvidence[D, B, Q])
+  extends SubmissionKnowledge[D, B, Q]
+
+final case class ConflictingSubmission[D <: Dim, B <: Dim, Q <: Dim] private[execution] (
+  evidence: SubmissionEvidence[D, B, Q],
+  conflicts: SubmissionConflicts)
+  extends SubmissionKnowledge[D, B, Q]
 
 object SubmissionKnowledge:
   private def constructEvidence[D <: Dim, B <: Dim, Q <: Dim](
@@ -165,21 +140,21 @@ object SubmissionKnowledge:
 
     SubmissionConflicts.from(conflicts) match
       case Some(values) =>
-        Some(new ConflictingSubmission(evidence, values))
+        Some(ConflictingSubmission(evidence, values))
       case None if acceptances.nonEmpty =>
-        Some(new AcceptedSubmission(evidence))
+        Some(AcceptedSubmission(evidence))
       case None if rejections.nonEmpty =>
-        Some(new RejectedSubmission(evidence))
+        Some(RejectedSubmission(evidence))
       case None if fills.nonEmpty =>
-        Some(new ExecutionProvenSubmission(evidence))
+        Some(ExecutionProvenSubmission(evidence))
       case None if proven =>
-        Some(new ProvenNotDispatchedSubmission(evidence))
+        Some(ProvenNotDispatchedSubmission(evidence))
       case None if authoritativeAbsence =>
-        Some(new AuthoritativelyAbsentSubmission(evidence))
+        Some(AuthoritativelyAbsentSubmission(evidence))
       case None if indeterminate =>
-        Some(new IndeterminateSubmission(evidence))
+        Some(IndeterminateSubmission(evidence))
       case None if submits.nonEmpty =>
-        Some(new IssuedPendingSubmission(evidence))
+        Some(IssuedPendingSubmission(evidence))
       case None => None
     end match
   end derive
