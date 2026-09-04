@@ -7,9 +7,11 @@ immutable definitions, and catalog-issued `Asset`, `DimensionHandle`, and `GridH
 exactly one anonymous quantity `GridRef`, delegates coordinate and embedding operations to it, and adds stable identity
 plus opaque issuer lineage without changing quantity arithmetic.
 
-Stable IDs are validated immutable value roots. `AssetId.from`, `GridId.from`, and `GridVersion.from` return precise
-typed failures for empty or nonpositive input; documented construction does not bypass that validation. Constructor
-visibility is not an in-process security boundary. Null is rejected before a result is returned.
+Stable IDs are Scala-owned validated immutable value roots. `AssetId.from`, `GridId.from`, and `GridVersion.from` return
+precise typed failures for empty or nonpositive input; documented construction does not bypass that validation. Grid
+definitions and anonymous uniform grids accept an already established `PositiveRational` directly; raw external quanta
+must be refined before construction. Constructor visibility is not an in-process security boundary. Null is rejected
+before a result is returned.
 
 The dependency is one way:
 
@@ -36,6 +38,11 @@ non-empty deterministic `CatalogDelta`. No-op and failed commits do not advance 
 violations in command/rule order, sequences dependent grid validation after coherent dimensions exist, and issues no
 handles on failure.
 
+Successful observations are direct Scala products: `CatalogCommit` is an exhaustive sealed sum of `Unchanged` and
+`Published`, and `CatalogTransition` pairs the state to retain with that outcome. The catalog model owns construction;
+callers inspect generated fields, match exhaustively, and use structural equality without fabricating state/outcome
+combinations.
+
 `CatalogSnapshot` is the only read boundary. It provides direct immutable asset, dimension, and full-grid lookup plus
 revision and counts, with typed failures and no scan, lock, live pointer, mutable cache, or per-record coordination.
 Capture one snapshot for an ingress/replay/assembly batch, then resolve every record purely against that coherent view.
@@ -45,7 +52,7 @@ values. Mathematical `SameGrid`, `SameQuantum`, and `Embedding` remain in quanti
 implies stable identity or shared lineage. Successor states structurally retain old handles and grids, while checked
 stable-handle evidence—not JVM reference equality—defines public canonicality.
 
-Catalog roots, states, snapshots, identifiers, definitions, errors, and authority-bearing handles fail Java
-serialization closed. They are in-memory authority, not persistence formats. Proposal 9 introduces stable records,
-schema versions, parsing, replay, and checked reconstruction against a selected snapshot; Proposal 8 owns the first
-live interpreter, runtime lifecycle, resources, streams, and durability semantics.
+Catalog roots, states, snapshots, identifiers, definitions, errors, outcomes, and authority-bearing handles fail Java
+serialization closed. They are in-memory authority, not persistence formats. The downstream boundary-codecs module owns
+stable records, schema versions, parsing, replay, and checked reconstruction; application and runtime own the
+effect-polymorphic live port and concrete interpreter.

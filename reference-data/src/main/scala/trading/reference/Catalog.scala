@@ -619,9 +619,9 @@ object CatalogState:
       if additions.isEmpty then
         val snapshot = state.snapshot
         Right(
-          CatalogTransition.issue(
+          CatalogTransition(
             state,
-            CatalogCommit.unchanged(snapshot)
+            CatalogCommit.Unchanged(snapshot)
           )
         )
       else
@@ -636,9 +636,9 @@ object CatalogState:
         )
         val snapshot = successor.snapshot
         Right(
-          CatalogTransition.issue(
+          CatalogTransition(
             successor,
-            CatalogCommit.published(snapshot, CatalogDelta.nonEmpty(additions))
+            CatalogCommit.Published(snapshot, CatalogDelta.nonEmpty(additions))
           )
         )
       end if
@@ -717,110 +717,35 @@ object CatalogSnapshot:
 end CatalogSnapshot
 
 /** Observable result of a successful catalog commit. Construction remains owned by the pure catalog model. */
-sealed abstract class CatalogCommit private[reference] (snapshotValue: CatalogSnapshot)
-  extends JavaSerializationUnsupported with Product:
-  final val snapshot: CatalogSnapshot = Objects.requireNonNull(snapshotValue, "catalog commit snapshot")
-end CatalogCommit
+sealed trait CatalogCommit extends JavaSerializationUnsupported:
+  def snapshot: CatalogSnapshot
 
 object CatalogCommit:
-  final class Unchanged private[reference] (
-    val snapshotValue: CatalogSnapshot)
-    extends CatalogCommit(snapshotValue):
-    override def canEqual(other: Any): Boolean   = other.isInstanceOf[Unchanged]
-    override def productArity: Int               = 1
-    override def productPrefix: String           = "Unchanged"
-    override def productElement(index: Int): Any =
-      index match
-        case 0 => snapshotValue
-        case _ => throw new IndexOutOfBoundsException(index.toString)
-
-    override def equals(other: Any): Boolean =
-      other match
-        case that: Unchanged => that.canEqual(this) && snapshotValue == that.snapshotValue
-        case _               => false
-
-    override def hashCode: Int    = scala.runtime.ScalaRunTime._hashCode(this)
-    override def toString: String = scala.runtime.ScalaRunTime._toString(this)
-  end Unchanged
+  final case class Unchanged private[reference] (snapshot: CatalogSnapshot) extends CatalogCommit:
+    Objects.requireNonNull(snapshot, "catalog commit snapshot")
 
   object Unchanged:
-    def unapply(value: Unchanged): Some[CatalogSnapshot] = Some(value.snapshotValue)
-  end Unchanged
+    override def fromProduct(product: Product): Unchanged =
+      throw new UnsupportedOperationException("catalog commits are issued by CatalogModel")
 
-  final class Published private[reference] (
-    val snapshotValue: CatalogSnapshot,
-    val delta: CatalogDelta)
-    extends CatalogCommit(snapshotValue):
+  final case class Published private[reference] (snapshot: CatalogSnapshot, delta: CatalogDelta) extends CatalogCommit:
+    Objects.requireNonNull(snapshot, "catalog commit snapshot")
     Objects.requireNonNull(delta, "catalog delta")
 
-    override def canEqual(other: Any): Boolean   = other.isInstanceOf[Published]
-    override def productArity: Int               = 2
-    override def productPrefix: String           = "Published"
-    override def productElement(index: Int): Any =
-      index match
-        case 0 => snapshotValue
-        case 1 => delta
-        case _ => throw new IndexOutOfBoundsException(index.toString)
-
-    override def equals(other: Any): Boolean =
-      other match
-        case that: Published =>
-          that.canEqual(this) && snapshotValue == that.snapshotValue && delta == that.delta
-        case _ => false
-
-    override def hashCode: Int    = scala.runtime.ScalaRunTime._hashCode(this)
-    override def toString: String = scala.runtime.ScalaRunTime._toString(this)
-  end Published
-
   object Published:
-    def unapply(value: Published): Some[(CatalogSnapshot, CatalogDelta)] = Some((value.snapshotValue, value.delta))
-  end Published
-
-  private[reference] def unchanged(snapshot: CatalogSnapshot): Unchanged =
-    new Unchanged(snapshot)
-
-  private[reference] def published(
-    snapshot: CatalogSnapshot,
-    delta: CatalogDelta
-  ): Published =
-    new Published(snapshot, delta)
+    override def fromProduct(product: Product): Published =
+      throw new UnsupportedOperationException("catalog commits are issued by CatalogModel")
 end CatalogCommit
 
 /** Successful pure transition with the state to retain and its publication outcome. */
-final class CatalogTransition private[reference] (
-  val state: CatalogState,
-  val outcome: CatalogCommit)
-  extends JavaSerializationUnsupported with Product:
+final case class CatalogTransition private[reference] (state: CatalogState, outcome: CatalogCommit)
+  extends JavaSerializationUnsupported:
   Objects.requireNonNull(state, "catalog transition state")
   Objects.requireNonNull(outcome, "catalog transition outcome")
 
-  override def canEqual(other: Any): Boolean   = other.isInstanceOf[CatalogTransition]
-  override def productArity: Int               = 2
-  override def productPrefix: String           = "CatalogTransition"
-  override def productElement(index: Int): Any =
-    index match
-      case 0 => state
-      case 1 => outcome
-      case _ => throw new IndexOutOfBoundsException(index.toString)
-
-  override def equals(other: Any): Boolean =
-    other match
-      case that: CatalogTransition => that.canEqual(this) && state == that.state && outcome == that.outcome
-      case _                       => false
-
-  override def hashCode: Int    = scala.runtime.ScalaRunTime._hashCode(this)
-  override def toString: String = scala.runtime.ScalaRunTime._toString(this)
-end CatalogTransition
-
 object CatalogTransition:
-  def unapply(value: CatalogTransition): Some[(CatalogState, CatalogCommit)] = Some((value.state, value.outcome))
-
-  private[reference] def issue(
-    state: CatalogState,
-    outcome: CatalogCommit
-  ): CatalogTransition =
-    new CatalogTransition(state, outcome)
-end CatalogTransition
+  override def fromProduct(product: Product): CatalogTransition =
+    throw new UnsupportedOperationException("catalog transitions are issued by CatalogModel")
 
 /** Normative pure catalog transition model. */
 object CatalogModel:

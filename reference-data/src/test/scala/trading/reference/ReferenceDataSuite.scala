@@ -96,6 +96,19 @@ class ReferenceDataSuite extends FunSuite:
     val delta      = commit match
       case CatalogCommit.Published(_, value) => value
       case other                             => fail(s"expected published commit, got $other")
+    val equalCommit = commit match
+      case published: CatalogCommit.Published => published.copy()
+      case other                              => fail(s"expected published commit, got $other")
+    val equalTransition = transition.copy(outcome = equalCommit)
+
+    assertEquals(commit, equalCommit)
+    assertEquals(commit.hashCode, equalCommit.hashCode)
+    assertEquals(commit.toString, equalCommit.toString)
+    assert(commit.toString.startsWith("Published("))
+    assertEquals(transition, equalTransition)
+    assertEquals(transition.hashCode, equalTransition.hashCode)
+    assertEquals(transition.toString, equalTransition.toString)
+    assert(transition.toString.startsWith("CatalogTransition("))
 
     assertEquals(
       delta.additions,
@@ -458,7 +471,14 @@ class ReferenceDataSuite extends FunSuite:
     val retry = CatalogModel.commit(forwardTransition.state, reverse).toOption.get
     assert(retry.state.eq(forwardTransition.state))
     assertEquals(retry.state.revision.value, BigInt(1))
-    assert(retry.outcome.isInstanceOf[CatalogCommit.Unchanged])
+    retry.outcome match
+      case unchanged: CatalogCommit.Unchanged =>
+        val equal = unchanged.copy()
+        assertEquals(unchanged, equal)
+        assertEquals(unchanged.hashCode, equal.hashCode)
+        assertEquals(unchanged.toString, equal.toString)
+        assert(unchanged.toString.startsWith("Unchanged("))
+      case other => fail(s"expected unchanged commit, got $other")
 
   test("validation accumulates independent conflicts and leaves the input unchanged"):
     val usd          = assetDefinition("USD-conflict")

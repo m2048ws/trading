@@ -14,13 +14,13 @@ updated: 2026-09-04
 - **Issue**: 46 https://github.com/m2048ws/trading/issues/46
 - **Change**: use-scala-first-quantity-and-reference-data
 - **Worktree**: /Users/m/src/money/.worktrees/use-scala-first-quantity-and-reference-data
-- **Phase at Checkpoint**: applying
-- **Task Group at Checkpoint**: 2
-- **Observed Run Revision**: 3
-- **Last Verified HEAD**: 2b4440eb9f376c3110cf9921fbe53b72c5773f3d
+- **Phase at Checkpoint**: awaiting_verify
+- **Task Group at Checkpoint**: 3
+- **Observed Run Revision**: 4
+- **Last Verified HEAD**: d29337fb6b72f7cbc4e986e8137a808fc1240c1e
 
 ## Next Action
-- After acknowledging Task Group 2, implement `use-scala-first-quantity-and-reference-data` Task Group 3.
+- Run canonical Verify for `use-scala-first-quantity-and-reference-data` after acknowledging Task Group 3.
 
 ## Blockers
 - none
@@ -97,6 +97,10 @@ updated: 2026-09-04
 - RFC-0005/S-04 Task Group 2 removes raw `UniformGrid` and `GridDefinition` factories and redundant positive-quantum
   reconstruction, trusts established `PositiveRational` values directly, and retains null rejection, generative grid
   identity, exact interpretation, and precise raw-invalidity diagnostics at refinement and codec boundaries.
+- RFC-0005/S-04 Task Group 3 replaces catalog commit and transition product emulation with an exhaustive sealed Scala
+  sum and direct structural products, retains model-owned issuance, null and serialization rejection, publication and
+  idempotence semantics, and passes the clean 1,042-test aggregate, benchmark compile, guards, source scans, formatting,
+  and strict readiness.
 
 ## Promotion Queue
 - none

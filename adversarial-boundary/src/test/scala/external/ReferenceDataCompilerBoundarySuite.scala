@@ -127,6 +127,11 @@ class ReferenceDataCompilerBoundarySuite extends FunSuite:
       "GridDefinitionProductBypass.scala",
       List("Found:", "Positive", "copy", "fromProduct", "is not a member"),
       minimumErrors = 3
+    ),
+    NegativeFixture(
+      "CatalogObservationConstruction.scala",
+      List("cannot be accessed", "Unchanged", "Published", "CatalogTransition", "copy"),
+      minimumErrors = 5
     )
   )
 

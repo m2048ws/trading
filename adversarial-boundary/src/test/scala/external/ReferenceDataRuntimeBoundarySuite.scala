@@ -102,6 +102,19 @@ class ReferenceDataRuntimeBoundarySuite extends FunSuite:
     assertEquals(snapshot.dimensionCount, 1)
     assertEquals(snapshot.gridCount, 1)
 
+    val published = result.outcome match
+      case value: CatalogCommit.Published => value
+      case other                          => fail(s"expected published outcome, got $other")
+    val _ = intercept[UnsupportedOperationException](
+      CatalogCommit.Unchanged.fromProduct(Tuple1(snapshot))
+    )
+    val _ = intercept[UnsupportedOperationException](
+      CatalogCommit.Published.fromProduct(Tuple2(snapshot, published.delta))
+    )
+    val _ = intercept[UnsupportedOperationException](
+      CatalogTransition.fromProduct(Tuple2(result.state, result.outcome))
+    )
+
   test("packaged catalog values and trusted handles fail Java serialization"):
     val definition          = assetDefinition("serialization")
     val result              = catalog("serialization", "serialization-grid")

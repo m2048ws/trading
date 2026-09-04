@@ -208,7 +208,8 @@ val embedded: Quantity[usd.D] = stored.asQuantity(cents)
 Each construction creates a fresh coordinate namespace. The embedding is explicit and exact. Returning to a grid is
 either checked with `narrowExactlyTo` or explicitly lossy with `quantizeTo` and a named policy. Equal quanta permit
 `SameQuantum` when dimensions agree but do not imply `SameGrid`. Coordinate construction and inspection remain owned
-by the matching witness.
+by the matching witness. `UniformGrid.create` accepts an established `PositiveRational` directly; callers starting from
+a raw rational refine it before requesting grid authority.
 
 ## Refinements and algebra
 
