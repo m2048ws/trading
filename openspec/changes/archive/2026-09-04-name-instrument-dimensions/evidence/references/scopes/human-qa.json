@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 3,
+  "scope": "human-qa",
+  "runId": "run-ba0bb3fe-5645-4cf0-a892-c14bff918db6",
+  "references": [
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FEconomicsCompilerBoundarySuite.scala#sha256:378547036b76f95d012005b840c2331142e4342f6e61bbf13ec328f50ec2b14d",
+      "sourcePath": "adversarial-boundary/src/test/scala/external/EconomicsCompilerBoundarySuite.scala",
+      "digest": "sha256:378547036b76f95d012005b840c2331142e4342f6e61bbf13ec328f50ec2b14d",
+      "archivePath": "references/blobs/378547036b76f95d012005b840c2331142e4342f6e61bbf13ec328f50ec2b14d"
+    },
+    {
+      "reference": "file:instrument-economics%2Fsrc%2Fmain%2Fscala%2Ftrading%2Feconomics%2Finstrument%2FInstrument.scala#sha256:275ca8d2efef5a821083cdc64502e8c589c65ff430278b914f26bff982b39a7d",
+      "sourcePath": "instrument-economics/src/main/scala/trading/economics/instrument/Instrument.scala",
+      "digest": "sha256:275ca8d2efef5a821083cdc64502e8c589c65ff430278b914f26bff982b39a7d",
+      "archivePath": "references/blobs/275ca8d2efef5a821083cdc64502e8c589c65ff430278b914f26bff982b39a7d"
+    },
+    {
+      "reference": "file:instrument-economics%2Fsrc%2Ftest%2Fscala%2Ftrading%2Feconomics%2Finstrument%2FPureInstrumentEconomicsSuite.scala#sha256:89db5fd7ce25934d22280b9d86cefd3f304e47200bf0549c1a34fda444e93c51",
+      "sourcePath": "instrument-economics/src/test/scala/trading/economics/instrument/PureInstrumentEconomicsSuite.scala",
+      "digest": "sha256:89db5fd7ce25934d22280b9d86cefd3f304e47200bf0549c1a34fda444e93c51",
+      "archivePath": "references/blobs/89db5fd7ce25934d22280b9d86cefd3f304e47200bf0549c1a34fda444e93c51"
+    }
+  ]
+}

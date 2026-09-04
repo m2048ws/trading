@@ -1,0 +1,25 @@
+schemaVersion: 1
+kind: rfc-slice
+deliveryRef: RFC-0008-simplify-instrument-dependent-apis/S-01-name-instrument-dimensions
+rfc:
+  id: RFC-0008-simplify-instrument-dependent-apis
+  path: rfcs/RFC-0008-simplify-instrument-dependent-apis
+  acceptedCommit: bf457296faa7d29aec0840a7e8f48d41ed0f7491
+  digest: sha256:77e1c4ac3d7629334f86695e07ffaf835549c5e0e05612314f0ca193e42139f3
+slice:
+  id: S-01-name-instrument-dimensions
+  digest: sha256:20004004a6d623a8ab4618ec566a42f35ceea4c6b9e6a77dcea28899e794a459
+acceptance:
+  - id: AC-001
+    evidence: automated
+  - id: AC-002
+    evidence: automated
+  - id: AC-003
+    evidence: automated
+deliveryBindingDigest: sha256:033a398d6ccd28382074a0a195c91babd72ba438d23899b346b40fe9303af034
+tracker:
+  provider: github
+  idempotencyKey: 5c3805af53080f8f71829fc41ccf39f98bb1c1b47f02adc39a11a28be60d1ad3
+  issue:
+    id: '53'
+    url: https://github.com/m2048ws/trading/issues/53

@@ -14,13 +14,13 @@ updated: 2026-09-04
 - **Issue**: 53 https://github.com/m2048ws/trading/issues/53
 - **Change**: name-instrument-dimensions
 - **Worktree**: /Users/m/src/money/.worktrees/name-instrument-dimensions
-- **Phase at Checkpoint**: awaiting_verify
-- **Task Group at Checkpoint**: 1
-- **Observed Run Revision**: 2
-- **Last Verified HEAD**: 96879f8176bd7972ed7e321dacbc8a1105de9d39
+- **Phase at Checkpoint**: archiving
+- **Task Group at Checkpoint**: none
+- **Observed Run Revision**: 7
+- **Last Verified HEAD**: 2e69c260793d85d1c9e1b4930a908421eaef2bb5
 
 ## Next Action
-- Run canonical whole-change Verify for `name-instrument-dimensions` after Task Group 1 acknowledgement.
+- Consult Run Contract v3: resume tracker closeout for `name-instrument-dimensions` only if pending; otherwise select the next accepted Slice. Local delivery: `wiki/deliveries/RFC-0008-simplify-instrument-dependent-apis-S-01-name-instrument-dimensions.md`.
 
 ## Blockers
 - none
