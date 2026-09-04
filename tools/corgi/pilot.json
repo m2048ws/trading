@@ -25,7 +25,8 @@
     "establish-actual-execution-lifecycle",
     "simplify-in-process-trust-boundary",
     "retire-trust-boundary-migration-scaffolding",
-    "total-and-deterministic-execution-transitions"
+    "total-and-deterministic-execution-transitions",
+    "use-direct-scala-derived-models"
   ],
   "authority": {
     "localCorgiCommits": true,
