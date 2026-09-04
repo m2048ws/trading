@@ -15,20 +15,20 @@ updated: 2026-09-04
 - **Change**: generalize-attributed-price-pnl
 - **Worktree**: /Users/m/src/money/.worktrees/generalize-attributed-price-pnl
 - **Phase at Checkpoint**: applying
-- **Task Group at Checkpoint**: 1
-- **Observed Run Revision**: 2
-- **Last Verified HEAD**: a755834e45898b983b9b6cd9a10b64cd671a471f
+- **Task Group at Checkpoint**: 2
+- **Observed Run Revision**: 3
+- **Last Verified HEAD**: 8739045a2d5c995e519a97e8ab3902b0e41ac6e6
 
 ## Next Action
-- Commit and acknowledge Task Group 1, then inspect the CLI-selected next group.
+- Commit and acknowledge Task Group 2, then inspect the CLI-selected next group.
 
 ## Blockers
 - none
 
 ## Uncommitted Work
-- Task Group 1 adds exact attributed finite-change price PnL, honest flat/marked endpoints, stable accumulated typed
-  validation, ordered settled contributions, algebraic laws, and deterministic linear-traversal evidence; all 23
-  focused instrument-economics tests and formatting checks pass.
+- Task Group 2 delegates round-trip price economics to the attributed finite-change calculation, preserves compatible
+  failure locations and stable entry/exit slice attribution, and retains exact single- and multi-slice long, short,
+  settlement, fee, and net-PnL behavior; all 16 scenario and 39 fee-policy tests and formatting checks pass.
 
 ## Discoveries
 - No active Corgi Run Contract or OpenSpec Change exists on primary `main`.
@@ -103,6 +103,9 @@ updated: 2026-09-04
   sum and direct structural products, retains model-owned issuance, null and serialization rejection, publication and
   idempotence semantics, and passes the clean 1,042-test aggregate, benchmark compile, guards, source scans, formatting,
   and strict readiness.
+- RFC-0006/S-01 Task Group 1 adds exact attributed finite-change price PnL, honest flat/marked endpoints, stable
+  accumulated typed validation, ordered settled contributions, algebraic laws, and deterministic linear-traversal
+  evidence, with 23 focused instrument-economics tests passing.
 
 ## Promotion Queue
 - none

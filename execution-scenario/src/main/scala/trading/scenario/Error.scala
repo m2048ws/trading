@@ -1,5 +1,6 @@
 package trading.scenario
 
+import trading.economics.instrument.AttributedPricePnlViolation
 import trading.economics.instrument.InstrumentId
 import trading.economics.instrument.ValuationError
 import trading.order.*
@@ -72,3 +73,4 @@ enum ScenarioValuationError extends JavaSerializationUnsupported:
   case SlicePosition(leg: RoundTripLeg, sliceIndex: Int, cause: OrderViolation)
   case SliceValue(leg: RoundTripLeg, sliceIndex: Int, cause: ValuationError)
   case PricePnlConstruction(cause: ValuationError)
+  case SharedPricePnl(cause: AttributedPricePnlViolation)

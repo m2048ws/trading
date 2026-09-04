@@ -61,12 +61,45 @@ final class ScenarioValuationSuite extends FunSuite:
     exit: instrument.MarketState,
     expectedCoefficient: Rational
   ): Unit =
-    val trip       = roundTrip(instrument)(Side.Buy, Vector(BigInt(1000) -> entry), Vector(BigInt(1000) -> exit))
-    val core       = PricePnl.calculate(instrument)(trip.heldPosition, entry, exit).toOption.get
-    val normalized = ScenarioValuation.pricePnl(instrument)(trip).toOption.get
+    val longTrip = roundTrip(instrument)(Side.Buy, Vector(BigInt(1000) -> entry), Vector(BigInt(1000) -> exit))
+    val longCore = PricePnl.calculate(instrument)(longTrip.heldPosition, entry, exit).toOption.get
+    val long     = ScenarioValuation.pricePnl(instrument)(longTrip).toOption.get
 
-    assertEquals(normalized, core)
-    assertEquals(normalized.quantity.coefficient, expectedCoefficient)
+    assertEquals(long, longCore)
+    assertEquals(long.quantity.coefficient, expectedCoefficient)
+    assert(long.settlement.eq(instrument.roles.settle))
+    val longAttributed = ScenarioValuation.attributedPricePnl(instrument)(longTrip).toOption.get
+    assertEquals(
+      longAttributed.settledContributions.map(_.attribution),
+      Vector(
+        RoundTripPriceAttribution(RoundTripLeg.Entry, 0),
+        RoundTripPriceAttribution(RoundTripLeg.Exit, 0)
+      )
+    )
+    assertEquals(
+      longAttributed.settledContributions.map(_.positionChange.coordinate),
+      Vector(BigInt(1000), BigInt(-1000))
+    )
+
+    val shortTrip = roundTrip(instrument)(Side.Sell, Vector(BigInt(1000) -> exit), Vector(BigInt(1000) -> entry))
+    val shortCore = PricePnl.calculate(instrument)(shortTrip.heldPosition, exit, entry).toOption.get
+    val short     = ScenarioValuation.pricePnl(instrument)(shortTrip).toOption.get
+
+    assertEquals(short, shortCore)
+    assertEquals(short.quantity.coefficient, expectedCoefficient)
+    assert(short.settlement.eq(instrument.roles.settle))
+    val shortAttributed = ScenarioValuation.attributedPricePnl(instrument)(shortTrip).toOption.get
+    assertEquals(
+      shortAttributed.settledContributions.map(_.attribution),
+      Vector(
+        RoundTripPriceAttribution(RoundTripLeg.Entry, 0),
+        RoundTripPriceAttribution(RoundTripLeg.Exit, 0)
+      )
+    )
+    assertEquals(
+      shortAttributed.settledContributions.map(_.positionChange.coordinate),
+      Vector(BigInt(-1000), BigInt(1000))
+    )
   end assertOneSliceEquivalence
 
   test("one slice per leg exactly equals core exit-minus-entry for linear, inverse, and quanto payoffs"):
@@ -109,13 +142,39 @@ final class ScenarioValuationSuite extends FunSuite:
       BigInt(3) -> fixture.quoteState(fixture.linear, Rational(110)),
       BigInt(7) -> fixture.quoteState(fixture.linear, Rational(112))
     )
-    val long = ScenarioValuation.pricePnl(fixture.linear)(roundTrip(fixture.linear)(Side.Buy, entry, exit)).toOption.get
-    val short =
-      ScenarioValuation.pricePnl(fixture.linear)(roundTrip(fixture.linear)(Side.Sell, exit, entry)).toOption.get
+    val longTrip  = roundTrip(fixture.linear)(Side.Buy, entry, exit)
+    val shortTrip = roundTrip(fixture.linear)(Side.Sell, exit, entry)
+    val long      = ScenarioValuation.pricePnl(fixture.linear)(longTrip).toOption.get
+    val short     = ScenarioValuation.pricePnl(fixture.linear)(shortTrip).toOption.get
 
     assertEquals(long.quantity.coefficient, Rational(51, 500))
     assertEquals(short.quantity.coefficient, long.quantity.coefficient)
     assertNotEquals(long.quantity.coefficient, Rational(1, 10))
+
+    val expectedAttributions = Vector(
+      RoundTripPriceAttribution(RoundTripLeg.Entry, 0),
+      RoundTripPriceAttribution(RoundTripLeg.Entry, 1),
+      RoundTripPriceAttribution(RoundTripLeg.Exit, 0),
+      RoundTripPriceAttribution(RoundTripLeg.Exit, 1)
+    )
+    val attributed = ScenarioValuation.attributedPricePnl(fixture.linear)(longTrip).toOption.get
+    assertEquals(
+      attributed.settledContributions.map(_.attribution),
+      expectedAttributions
+    )
+    assertEquals(
+      attributed.settledContributions.map(_.positionChange.coordinate),
+      Vector(BigInt(4), BigInt(6), BigInt(-3), BigInt(-7))
+    )
+    assertEquals(attributed.pricePnl, long)
+
+    val shortAttributed = ScenarioValuation.attributedPricePnl(fixture.linear)(shortTrip).toOption.get
+    assertEquals(shortAttributed.settledContributions.map(_.attribution), expectedAttributions)
+    assertEquals(
+      shortAttributed.settledContributions.map(_.positionChange.coordinate),
+      Vector(BigInt(-3), BigInt(-7), BigInt(4), BigInt(6))
+    )
+    assertEquals(shortAttributed.pricePnl, short)
 
   test("multi-slice inverse normalization retains exact reciprocal weighting"):
     def state(price: Rational): fixture.inverse.MarketState =
@@ -208,5 +267,51 @@ final class ScenarioValuationSuite extends FunSuite:
           foreign.identity.id
         )
       )
+    )
+
+  test("shared calculation failures retain existing slice and construction locations"):
+    val expected  = fixture.linear.identity.id
+    val supplied  = fixture.foreignIdentity.identity.id
+    val locations = Vector(
+      RoundTripPriceAttribution(RoundTripLeg.Entry, 2),
+      RoundTripPriceAttribution(RoundTripLeg.Exit, 3)
+    )
+    val marketFailure = AttributedPricePnlErrors.one(
+      AttributedPricePnlViolation.InstrumentMismatch(
+        AttributedPricePnlLocation.Change(1, AttributedPricePnlComponent.Market),
+        expected,
+        supplied
+      )
+    )
+    assertEquals(
+      ScenarioValuation.compatibleFailure(locations, marketFailure),
+      ScenarioValuationError.SliceValue(
+        RoundTripLeg.Exit,
+        3,
+        ValuationInstrumentMismatch("market", expected, supplied)
+      )
+    )
+
+    val valuationFailure = ValuationInstrumentMismatch("market", expected, supplied)
+    assertEquals(
+      ScenarioValuation.compatibleFailure(
+        locations,
+        AttributedPricePnlErrors.one(
+          AttributedPricePnlViolation.ValuationFailure(
+            AttributedPricePnlLocation.Change(0, AttributedPricePnlComponent.Value),
+            valuationFailure
+          )
+        )
+      ),
+      ScenarioValuationError.SliceValue(RoundTripLeg.Entry, 2, valuationFailure)
+    )
+
+    val construction = ValuationInstrumentMismatch("position", expected, supplied)
+    assertEquals(
+      ScenarioValuation.compatibleFailure(
+        locations,
+        AttributedPricePnlErrors.one(AttributedPricePnlViolation.PricePnlConstruction(construction))
+      ),
+      ScenarioValuationError.PricePnlConstruction(construction)
     )
 end ScenarioValuationSuite

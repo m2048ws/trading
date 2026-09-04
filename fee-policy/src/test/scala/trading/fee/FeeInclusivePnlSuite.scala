@@ -167,7 +167,9 @@ final class FeeInclusivePnlSuite extends FunSuite:
     assertEquals(result.feePnl.coefficient, Rational(1, 125))
     assertEquals(result.netPnl.coefficient, Rational(1251, 125))
     assert(result.pricePnl.eq(result.pnl.pricePnl))
+    assert(result.pricePnl.settlement.eq(instrument.roles.settle))
     assert(result.settledFeeContributions.eq(result.pnl.settledFeeContributions))
+    assert(result.settledFeeContributions.forall(_.settlement.eq(instrument.roles.settle)))
     assertEquals(result.attributedContributions.map(_.contribution), result.settledFeeContributions)
     assertEquals(FeeInclusivePnl.evaluate(instrument)(trip, policies), Right(result))
 
@@ -188,6 +190,34 @@ final class FeeInclusivePnlSuite extends FunSuite:
     assertEquals(result.settledFeeContributions, Vector.empty)
     assertEquals(result.feePnl.coefficient, Rational.zero)
     assertEquals(result.netPnl, result.pricePnl.quantity)
+
+  test("multi-slice short valuation retains exact price, fee attribution, settlement, and net PnL"):
+    val trip = roundTrip(instrument)(
+      Side.Sell,
+      Vector(BigInt(400) -> market(Rational(110)), BigInt(600) -> market(Rational(110))),
+      Vector(BigInt(300) -> market(Rational(100)), BigInt(700) -> market(Rational(100)))
+    )
+    val entryCharge = fee(usdDenomination, "short-entry", Rational(-1, 100))
+    val exitCharge  = fee(usdDenomination, "short-exit", Rational(-1, 100))
+    val policies    = RoundTripFeePolicies(
+      successful(Vector(FeeDirective(entryCharge, SliceIndex.zero))),
+      successful(Vector(FeeDirective(exitCharge, SliceIndex.zero)))
+    )
+    val result = FeeInclusivePnl.evaluate(instrument)(trip, policies).toOption.get
+
+    assertEquals(result.pricePnl.quantity.coefficient, Rational(10))
+    assertEquals(result.feePnl.coefficient, Rational(-1, 50))
+    assertEquals(result.netPnl.coefficient, Rational(499, 50))
+    assertEquals(
+      result.attributedContributions.map(value => (value.leg, value.directiveOrdinal, value.sourceIndex.value)),
+      Vector((RoundTripLeg.Entry, 0, 0), (RoundTripLeg.Exit, 0, 0))
+    )
+    assertEquals(
+      result.settledFeeContributions.map(_.quantity.coefficient),
+      Vector(Rational(-1, 100), Rational(-1, 100))
+    )
+    assert(result.pricePnl.settlement.eq(instrument.roles.settle))
+    assert(result.settledFeeContributions.forall(_.settlement.eq(instrument.roles.settle)))
 
   test("all missing conversions accumulate in stable entry then exit directive order"):
     val trip = localRoundTrip(
