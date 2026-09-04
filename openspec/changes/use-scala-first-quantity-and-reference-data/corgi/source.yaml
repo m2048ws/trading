@@ -1,0 +1,27 @@
+schemaVersion: 1
+kind: rfc-slice
+deliveryRef: RFC-0005-simplify-post-trust-boundary/S-04-use-scala-first-quantity-and-reference-data
+rfc:
+  id: RFC-0005-simplify-post-trust-boundary
+  path: rfcs/RFC-0005-simplify-post-trust-boundary
+  acceptedCommit: 7f1d1ab9eb88d0912d3219920eacadea4d01aa2e
+  digest: sha256:31336459ac68c4a188388bb58cf59fe8c84830a0b72aa66d29fdcff4f90657a3
+slice:
+  id: S-04-use-scala-first-quantity-and-reference-data
+  digest: sha256:3a3ad8eebaa522652c7d026db29b8cf51dcad67f33c355c4d7e06118af00cd60
+acceptance:
+  - id: AC-012
+    evidence: automated
+  - id: AC-013
+    evidence: automated
+  - id: AC-014
+    evidence: automated
+  - id: AC-015
+    evidence: automated
+deliveryBindingDigest: sha256:d813b379888de2ce25bbc26826fa71109d0a9f6244734c8c7d58cb470bbec05e
+tracker:
+  provider: github
+  idempotencyKey: 93a9b79cc2eb55c6fdf862824975028edbcf46fe61034be82418e05d90c16515
+  issue:
+    id: '46'
+    url: https://github.com/m2048ws/trading/issues/46

@@ -10,17 +10,17 @@ updated: 2026-09-04
 ## Delivery Pointer
 - **RFC**: RFC-0005-simplify-post-trust-boundary
 - **RFC Revision**: 7f1d1ab9eb88d0912d3219920eacadea4d01aa2e
-- **Slice**: S-05-remove-java-api-compatibility
-- **Issue**: 44 https://github.com/m2048ws/trading/issues/44
-- **Change**: remove-java-api-compatibility
-- **Worktree**: /Users/m/src/money/.worktrees/remove-java-api-compatibility
-- **Phase at Checkpoint**: archiving
-- **Task Group at Checkpoint**: none
-- **Observed Run Revision**: 9
-- **Last Verified HEAD**: 2754b2e91ebc5f9f29fc95e51793d01f4d71681a
+- **Slice**: S-04-use-scala-first-quantity-and-reference-data
+- **Issue**: 46 https://github.com/m2048ws/trading/issues/46
+- **Change**: use-scala-first-quantity-and-reference-data
+- **Worktree**: /Users/m/src/money/.worktrees/use-scala-first-quantity-and-reference-data
+- **Phase at Checkpoint**: planning_ready
+- **Task Group at Checkpoint**: 1
+- **Observed Run Revision**: none
+- **Last Verified HEAD**: 49e5e0473c27bb59b82cdcb63fb4fa30d2e6bb3a
 
 ## Next Action
-- Consult Run Contract v3: resume tracker closeout for `remove-java-api-compatibility` only if pending; otherwise select the next accepted Slice. Local delivery: `wiki/deliveries/RFC-0005-simplify-post-trust-boundary-S-05-remove-java-api-compatibility.md`.
+- Start Apply for `use-scala-first-quantity-and-reference-data` Task Group 1.
 
 ## Blockers
 - none

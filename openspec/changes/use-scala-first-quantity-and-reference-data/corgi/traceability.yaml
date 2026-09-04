@@ -1,0 +1,43 @@
+schemaVersion: 1
+sourceDigest: sha256:196d46b1fb5039303f50ba631ba482d2231ee6c737a0e055a83f3653f1e91314
+acceptance:
+  - id: AC-012
+    evidence: automated
+    planningRefs:
+      - path: specs/reference-data-identity/spec.md
+        anchor: requirement-stable-identity-is-explicit-and-dimension-scoped
+    taskGroups:
+      - '1'
+  - id: AC-013
+    evidence: automated
+    planningRefs:
+      - path: specs/quantity-grid-projection/spec.md
+        anchor: requirement-mathematical-grid-witnesses-are-anonymous
+      - path: specs/runtime-quantity-identity/spec.md
+        anchor: requirement-runtime-witness-authority-is-checked-at-supported-roots
+      - path: specs/reference-data-identity/spec.md
+        anchor: requirement-stable-identity-is-explicit-and-dimension-scoped
+    taskGroups:
+      - '2'
+  - id: AC-014
+    evidence: automated
+    planningRefs:
+      - path: specs/reference-data-catalog/spec.md
+        anchor: requirement-revisions-distinguish-publication-from-no-op
+    taskGroups:
+      - '3'
+  - id: AC-015
+    evidence: automated
+    planningRefs:
+      - path: specs/quantity-grid-projection/spec.md
+        anchor: requirement-mathematical-grid-witnesses-are-anonymous
+      - path: specs/runtime-quantity-identity/spec.md
+        anchor: requirement-runtime-witness-authority-is-checked-at-supported-roots
+      - path: specs/reference-data-identity/spec.md
+        anchor: requirement-stable-identity-is-explicit-and-dimension-scoped
+      - path: specs/reference-data-catalog/spec.md
+        anchor: requirement-revisions-distinguish-publication-from-no-op
+    taskGroups:
+      - '1'
+      - '2'
+      - '3'
