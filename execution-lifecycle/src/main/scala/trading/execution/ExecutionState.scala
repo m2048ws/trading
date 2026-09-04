@@ -432,7 +432,7 @@ object ExecutionState:
       state.source.factsByEvent,
       state.source.fillsById,
       effectiveFillLedger,
-      ExecutionAnomalies.derive(state),
+      ExecutionAnomalies.derive(state, effectiveFillLedger),
       state.commands.conflicts,
       state.source.eventConflicts,
       state.source.fillConflicts,

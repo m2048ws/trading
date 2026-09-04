@@ -14,20 +14,20 @@ updated: 2026-09-04
 - **Issue**: 40 https://github.com/m2048ws/trading/issues/40
 - **Change**: total-and-deterministic-execution-transitions
 - **Worktree**: /Users/m/src/money/.worktrees/total-and-deterministic-execution-transitions
-- **Phase at Checkpoint**: applying
-- **Task Group at Checkpoint**: 2
-- **Observed Run Revision**: 3
-- **Last Verified HEAD**: 42c59c4860900f24e1b523428574503f138931be
+- **Phase at Checkpoint**: awaiting_verify
+- **Task Group at Checkpoint**: 3
+- **Observed Run Revision**: 4
+- **Last Verified HEAD**: 869425ad202580b8da18835af8b741468cd995a8
 
 ## Next Action
-- Commit and acknowledge Task Group 2, then implement the CLI-selected Task Group 3.
+- Commit and acknowledge Task Group 3, then run canonical whole-change Verify.
 
 ## Blockers
 - none
 
 ## Uncommitted Work
-- Task Group 2 centralizes typed execution comparisons, removes delimiter-built replay and observation ordering keys,
-  and adds collision/permutation regressions; all execution and packaged compiler-boundary tests pass.
+- Task Group 3 passes the observation's single effective-fill ledger into anomaly construction and proves exact overfill
+  value reuse; the zero-reflection guard and clean 1,047-test aggregate pass.
 
 ## Discoveries
 - No active Corgi Run Contract or OpenSpec Change exists on primary `main`.
@@ -70,6 +70,9 @@ updated: 2026-09-04
 - RFC-0005/S-02 Task Group 2 replaces replay, effective-fill, cancellation-anomaly, continuation, unsequenced-event,
   conflict, and diagnostic string keys with owner-local typed lexicographic comparisons, retaining null rejection and
   deterministic permutation semantics even when identifier components contain former `|` and `-` delimiters.
+- RFC-0005/S-02 Task Group 3 removes the second effective-fill derivation from observation assembly, passes the one
+  ledger value into anomaly construction, and proves the non-empty overfill object is reused by identity while all
+  correction, bust, unresolved-reference, conflict, cancellation-race, exposure, and serialization behavior remains.
 
 ## Promotion Queue
 - none
