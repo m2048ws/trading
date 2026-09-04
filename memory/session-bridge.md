@@ -14,13 +14,13 @@ updated: 2026-09-04
 - **Issue**: 55 https://github.com/m2048ws/trading/issues/55
 - **Change**: bind-standard-order-construction
 - **Worktree**: /Users/m/src/money/.worktrees/bind-standard-order-construction
-- **Phase at Checkpoint**: awaiting_verify
-- **Task Group at Checkpoint**: 1
-- **Observed Run Revision**: 2
-- **Last Verified HEAD**: c66616c8594a851c523a25b76a64a99dac532204
+- **Phase at Checkpoint**: archiving
+- **Task Group at Checkpoint**: none
+- **Observed Run Revision**: 7
+- **Last Verified HEAD**: 804f32e3e0ed8ccda8245ee3530779c47904169c
 
 ## Next Action
-- Run canonical whole-change Verify for `bind-standard-order-construction` against the acknowledged Task Group commit.
+- Consult Run Contract v3: resume tracker closeout for `bind-standard-order-construction` only if pending; otherwise select the next accepted Slice. Local delivery: `wiki/deliveries/RFC-0008-simplify-instrument-dependent-apis-S-02-bind-standard-order-construction.md`.
 
 ## Blockers
 - none

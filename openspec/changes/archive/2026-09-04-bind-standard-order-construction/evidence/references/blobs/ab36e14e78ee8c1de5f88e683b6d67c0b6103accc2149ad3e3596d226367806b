@@ -1,0 +1,33 @@
+schemaVersion: 1
+sourceDigest: sha256:336fb9cc40c59e4cf28a44a8210ed5db6ee2bbdc22025a1fcd71f1d32fb5359d
+acceptance:
+  - id: AC-004
+    evidence: automated
+    planningRefs:
+      - path: specs/order-scenarios/spec.md
+        anchor: requirement-instrument-bound-standard-order-construction
+    taskGroups:
+      - '1'
+  - id: AC-005
+    evidence: automated
+    planningRefs:
+      - path: specs/order-scenarios/spec.md
+        anchor: requirement-instrument-bound-standard-order-construction
+    taskGroups:
+      - '1'
+  - id: AC-006
+    evidence: automated
+    planningRefs:
+      - path: specs/order-scenarios/spec.md
+        anchor: requirement-bound-order-construction-preserves-purity-and-independent-validation
+    taskGroups:
+      - '1'
+  - id: AC-007
+    evidence: automated
+    planningRefs:
+      - path: specs/order-scenarios/spec.md
+        anchor: requirement-instrument-bound-standard-order-construction
+      - path: specs/order-scenarios/spec.md
+        anchor: requirement-bound-order-construction-preserves-purity-and-independent-validation
+    taskGroups:
+      - '1'

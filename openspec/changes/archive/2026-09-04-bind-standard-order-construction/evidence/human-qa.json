@@ -1,0 +1,18 @@
+{
+  "verdict": "skipped",
+  "reviewer": "requesting-user",
+  "reason": "The human requester explicitly directed S-02 Human QA to be skipped. The verified delivery changes only the pure order-model library construction API: its immutable instrument-bound scope delegates to existing checked constructors and adds no application/runtime interpreter, service, UI, API, CLI, or wire-format user path. All Slice acceptance criteria require automated evidence only.",
+  "noRuntimeImpact": true,
+  "finalRevision": "804f32e3e0ed8ccda8245ee3530779c47904169c",
+  "planningRevision": "sha256:4167d6e84fe9d1df135b9a00b8877e8eb4b88da1d55c0660d631dac4579852c5",
+  "reportHash": "sha256:16fba8511015e5a08846a17c245974a7b92c0b524f70758e1c28c711398a4175",
+  "acceptance": [],
+  "evidenceRefs": [
+    "file:order-model%2Fsrc%2Fmain%2Fscala%2Ftrading%2Forder%2FOrder.scala#sha256:91df553f518dc02e5ecff4c5fdacd23c32dbcae002daa6257c1631d28acfafc3",
+    "file:order-model%2Fsrc%2Ftest%2Fscala%2Ftrading%2Forder%2FInstrumentOrderScopeSuite.scala#sha256:e04784abd05e4537dbe86937f0b1a46d851835732c709d3889d9d7481f1823df",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Forder-model-compiler%2Fpositive%2FInstrumentOrderScopeClient.scala#sha256:5d07bb116d874991a8954cc2af556817b0ed3ce7c1e21dde4aeeb7b29e328b43",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Forder-model-compiler%2Fnegative%2FInstrumentOrderScopeMismatch.scala#sha256:d5e3f0af51bc2c172a1e01ff13ce139c810783b7424bbf208947167f926ad756",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FEconomicsCompilerBoundarySuite.scala#sha256:94127fb0bea280618de7408b8c01e3857fb03d7196a34af7fd96ee63f299f87b"
+  ],
+  "reviewedAt": "2026-09-04T13:57:14.449Z"
+}
