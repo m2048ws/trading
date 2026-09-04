@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 3,
+  "groupId": "2",
+  "checks": [
+    {
+      "name": "executionScenario compile and 16-test exact valuation suite",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:execution-scenario%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fscenario%2FScenarioValuation.scala#sha256:48d102c18dff4b94d15f04ca64c007a33d3ad5001032c2767784b5375a106e5b",
+        "file:execution-scenario%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fscenario%2FScenarioValuationSuite.scala#sha256:0ec7c2fd22fd2ab5fb28cced12aa780b33ab35af03242611facb238d6e4776f8"
+      ]
+    },
+    {
+      "name": "39-test fee-policy and fee-inclusive PnL regression suite",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:fee-policy%2Fsrc%2Ftest%2Fscala%2Ftrading%2Ffee%2FFeeInclusivePnlSuite.scala#sha256:24bbded023e2553d1db6b6ef557c97f6093d18fbd5a079fb1d2ba4abf79f198f"
+      ]
+    },
+    {
+      "name": "scenario and fee-policy formatting checks",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:execution-scenario%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fscenario%2FError.scala#sha256:cbf0355d3ab0f8edbd29d2fa69fc1a403a97104bce8663ecd70a5655b508da91",
+        "file:execution-scenario%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fscenario%2FScenarioValuation.scala#sha256:48d102c18dff4b94d15f04ca64c007a33d3ad5001032c2767784b5375a106e5b",
+        "file:fee-policy%2Fsrc%2Ftest%2Fscala%2Ftrading%2Ffee%2FFeeInclusivePnlSuite.scala#sha256:24bbded023e2553d1db6b6ef557c97f6093d18fbd5a079fb1d2ba4abf79f198f"
+      ]
+    },
+    {
+      "name": "one-way scenario-to-instrument-economics dependency and redundant-fold scan",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:build.sbt#sha256:790e4ae7fa4ab9334b36c0273bc4d44d02d59cac352b50f5f0aeaadc026f5db8",
+        "file:execution-scenario%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fscenario%2FScenarioValuation.scala#sha256:48d102c18dff4b94d15f04ca64c007a33d3ad5001032c2767784b5375a106e5b"
+      ]
+    }
+  ],
+  "automatedReview": {
+    "verdict": "pass",
+    "findings": []
+  },
+  "artifacts": [
+    "file:execution-scenario%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fscenario%2FError.scala#sha256:cbf0355d3ab0f8edbd29d2fa69fc1a403a97104bce8663ecd70a5655b508da91",
+    "file:execution-scenario%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fscenario%2FScenarioValuation.scala#sha256:48d102c18dff4b94d15f04ca64c007a33d3ad5001032c2767784b5375a106e5b",
+    "file:execution-scenario%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fscenario%2FScenarioValuationSuite.scala#sha256:0ec7c2fd22fd2ab5fb28cced12aa780b33ab35af03242611facb238d6e4776f8",
+    "file:fee-policy%2Fsrc%2Ftest%2Fscala%2Ftrading%2Ffee%2FFeeInclusivePnlSuite.scala#sha256:24bbded023e2553d1db6b6ef557c97f6093d18fbd5a079fb1d2ba4abf79f198f"
+  ],
+  "summary": "Replaced the scenario-local price cashflow fold with one flat-endpoint attributed price-PnL delegation, retained stable entry/exit slice attribution and compatible existing error locations, and preserved exact single- and multi-slice long, short, settlement-reference, fee-attribution, and net-PnL behavior. Scenario compile, 16 scenario tests, 39 fee-policy tests, and formatting pass. Structured review covered requirements, exact behavior, error compatibility, ownership, dependency direction, traversal complexity, and security with no remaining findings."
+}

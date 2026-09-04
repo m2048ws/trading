@@ -36,6 +36,7 @@ Add an entry only after a human accepts it or a verified delivery proves it. Eve
 - [[wiki/deliveries/RFC-0005-simplify-post-trust-boundary-S-03-use-direct-scala-derived-models|RFC-0005-simplify-post-trust-boundary/S-03-use-direct-scala-derived-models]] — verified by sha256:aa9b0dc3e278d955dd75f2edab6fd5d572f17f2754252b7e4cb6b345e9e80658
 - [[wiki/deliveries/RFC-0005-simplify-post-trust-boundary-S-04-use-scala-first-quantity-and-reference-data|RFC-0005-simplify-post-trust-boundary/S-04-use-scala-first-quantity-and-reference-data]] — verified by sha256:95f7a7ae69b6481f23ea39097a3533e1ad73ee57563f054d6581379a78567432
 - [[wiki/deliveries/RFC-0005-simplify-post-trust-boundary-S-05-remove-java-api-compatibility|RFC-0005-simplify-post-trust-boundary/S-05-remove-java-api-compatibility]] — verified by sha256:60fca10695ecec821f321730ede792e35d7310ca94e497504462a719c001b84b
+- [[wiki/deliveries/RFC-0007-clarify-attributed-price-pnl-contract-S-01-generalize-attributed-price-pnl|RFC-0007-clarify-attributed-price-pnl-contract/S-01-generalize-attributed-price-pnl]] — verified by sha256:99cc050096550e9c57241125e37fa4d6aaa341a8c54413e55d493d1da26c8551
 <!-- corgi:managed:end verified-deliveries -->
 
 ## Working Preferences

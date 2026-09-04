@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 3,
+  "scope": "group-5",
+  "runId": "run-da41912e-eb4e-4212-9bcf-000c8eff5d0c",
+  "references": [
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fexecution-scenario-compiler%2Fpositive%2FScenarioValuationClient.scala#sha256:584a866deada05d6673259a4b8c4a4a42094c87f5d83b51f8805c142a3fce7f4",
+      "sourcePath": "adversarial-boundary/src/test/resources/execution-scenario-compiler/positive/ScenarioValuationClient.scala",
+      "digest": "sha256:584a866deada05d6673259a4b8c4a4a42094c87f5d83b51f8805c142a3fce7f4",
+      "archivePath": "references/blobs/584a866deada05d6673259a4b8c4a4a42094c87f5d83b51f8805c142a3fce7f4"
+    },
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FEconomicsCompilerBoundarySuite.scala#sha256:243406f00e966df7756f7e0a27abe11ee46c7be2ee78c31d375c7161d4a9ca4f",
+      "sourcePath": "adversarial-boundary/src/test/scala/external/EconomicsCompilerBoundarySuite.scala",
+      "digest": "sha256:243406f00e966df7756f7e0a27abe11ee46c7be2ee78c31d375c7161d4a9ca4f",
+      "archivePath": "references/blobs/243406f00e966df7756f7e0a27abe11ee46c7be2ee78c31d375c7161d4a9ca4f"
+    },
+    {
+      "reference": "file:build.sbt#sha256:7815889cbd4e10c0c4237ff890aff871bf5550c2d36eeb55c8750ead45c619e5",
+      "sourcePath": "build.sbt",
+      "digest": "sha256:7815889cbd4e10c0c4237ff890aff871bf5550c2d36eeb55c8750ead45c619e5",
+      "archivePath": "references/blobs/7815889cbd4e10c0c4237ff890aff871bf5550c2d36eeb55c8750ead45c619e5"
+    },
+    {
+      "reference": "file:execution-scenario%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fscenario%2FScenarioValuation.scala#sha256:1125a7cd51547543e5f5f7df0988f3c4b5e200193156d61883727425e24532a2",
+      "sourcePath": "execution-scenario/src/main/scala/trading/scenario/ScenarioValuation.scala",
+      "digest": "sha256:1125a7cd51547543e5f5f7df0988f3c4b5e200193156d61883727425e24532a2",
+      "archivePath": "references/blobs/1125a7cd51547543e5f5f7df0988f3c4b5e200193156d61883727425e24532a2"
+    },
+    {
+      "reference": "file:execution-scenario%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fscenario%2FScenarioValuationSuite.scala#sha256:cca762fd7affe8c3297999f0da9a8c4cb1e35c92208552745f1d8e6927ba8dad",
+      "sourcePath": "execution-scenario/src/test/scala/trading/scenario/ScenarioValuationSuite.scala",
+      "digest": "sha256:cca762fd7affe8c3297999f0da9a8c4cb1e35c92208552745f1d8e6927ba8dad",
+      "archivePath": "references/blobs/cca762fd7affe8c3297999f0da9a8c4cb1e35c92208552745f1d8e6927ba8dad"
+    },
+    {
+      "reference": "file:fee-policy%2Fsrc%2Ftest%2Fscala%2Ftrading%2Ffee%2FFeeInclusivePnlSuite.scala#sha256:4ecf89684c35ea05db6dbe31a33becddffcf3afa67624f20cd91f338652a51cd",
+      "sourcePath": "fee-policy/src/test/scala/trading/fee/FeeInclusivePnlSuite.scala",
+      "digest": "sha256:4ecf89684c35ea05db6dbe31a33becddffcf3afa67624f20cd91f338652a51cd",
+      "archivePath": "references/blobs/4ecf89684c35ea05db6dbe31a33becddffcf3afa67624f20cd91f338652a51cd"
+    },
+    {
+      "reference": "file:instrument-economics%2Fsrc%2Fmain%2Fscala%2Ftrading%2Feconomics%2Finstrument%2FError.scala#sha256:88a789e9bd4253b6a70ebb27cd5045f47d74062c4b76b5c6505af9c9a86e2098",
+      "sourcePath": "instrument-economics/src/main/scala/trading/economics/instrument/Error.scala",
+      "digest": "sha256:88a789e9bd4253b6a70ebb27cd5045f47d74062c4b76b5c6505af9c9a86e2098",
+      "archivePath": "references/blobs/88a789e9bd4253b6a70ebb27cd5045f47d74062c4b76b5c6505af9c9a86e2098"
+    },
+    {
+      "reference": "file:tools%2Fcheck-in-process-reflection.sh#sha256:bca2729121ce2bde4dfe3e8db2af53d6129ea0db1162eaab0dd982d769ddf3d6",
+      "sourcePath": "tools/check-in-process-reflection.sh",
+      "digest": "sha256:bca2729121ce2bde4dfe3e8db2af53d6129ea0db1162eaab0dd982d769ddf3d6",
+      "archivePath": "references/blobs/bca2729121ce2bde4dfe3e8db2af53d6129ea0db1162eaab0dd982d769ddf3d6"
+    },
+    {
+      "reference": "file:tools%2Ftest-check-in-process-reflection.sh#sha256:0679a80193d81a4ab8836387de8054644fd1569e9b4275506cb3171fdbce9510",
+      "sourcePath": "tools/test-check-in-process-reflection.sh",
+      "digest": "sha256:0679a80193d81a4ab8836387de8054644fd1569e9b4275506cb3171fdbce9510",
+      "archivePath": "references/blobs/0679a80193d81a4ab8836387de8054644fd1569e9b4275506cb3171fdbce9510"
+    }
+  ]
+}

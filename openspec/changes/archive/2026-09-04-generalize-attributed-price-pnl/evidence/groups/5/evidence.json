@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 3,
+  "groupId": "5",
+  "checks": [
+    {
+      "name": "Truthful retained-reference projection and downstream propagation",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:instrument-economics%2Fsrc%2Fmain%2Fscala%2Ftrading%2Feconomics%2Finstrument%2FError.scala#sha256:88a789e9bd4253b6a70ebb27cd5045f47d74062c4b76b5c6505af9c9a86e2098",
+        "file:execution-scenario%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fscenario%2FScenarioValuation.scala#sha256:1125a7cd51547543e5f5f7df0988f3c4b5e200193156d61883727425e24532a2",
+        "file:execution-scenario%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fscenario%2FScenarioValuationSuite.scala#sha256:cca762fd7affe8c3297999f0da9a8c4cb1e35c92208552745f1d8e6927ba8dad",
+        "file:fee-policy%2Fsrc%2Ftest%2Fscala%2Ftrading%2Ffee%2FFeeInclusivePnlSuite.scala#sha256:4ecf89684c35ea05db6dbe31a33becddffcf3afa67624f20cd91f338652a51cd"
+      ]
+    },
+    {
+      "name": "Completed-artifact nested ValuationError exhaustiveness and boundaries",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fexecution-scenario-compiler%2Fpositive%2FScenarioValuationClient.scala#sha256:584a866deada05d6673259a4b8c4a4a42094c87f5d83b51f8805c142a3fce7f4",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FEconomicsCompilerBoundarySuite.scala#sha256:243406f00e966df7756f7e0a27abe11ee46c7be2ee78c31d375c7161d4a9ca4f"
+      ]
+    },
+    {
+      "name": "Clean aggregate tests and benchmark compilation",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:build.sbt#sha256:7815889cbd4e10c0c4237ff890aff871bf5550c2d36eeb55c8750ead45c619e5",
+        "file:execution-scenario%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fscenario%2FScenarioValuationSuite.scala#sha256:cca762fd7affe8c3297999f0da9a8c4cb1e35c92208552745f1d8e6927ba8dad",
+        "file:fee-policy%2Fsrc%2Ftest%2Fscala%2Ftrading%2Ffee%2FFeeInclusivePnlSuite.scala#sha256:4ecf89684c35ea05db6dbe31a33becddffcf3afa67624f20cd91f338652a51cd"
+      ]
+    },
+    {
+      "name": "Formatting and zero-reflection policy",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:tools%2Fcheck-in-process-reflection.sh#sha256:bca2729121ce2bde4dfe3e8db2af53d6129ea0db1162eaab0dd982d769ddf3d6",
+        "file:tools%2Ftest-check-in-process-reflection.sh#sha256:0679a80193d81a4ab8836387de8054644fd1569e9b4275506cb3171fdbce9510"
+      ]
+    }
+  ],
+  "automatedReview": {
+    "verdict": "pass",
+    "findings": []
+  },
+  "artifacts": [
+    "file:instrument-economics%2Fsrc%2Fmain%2Fscala%2Ftrading%2Feconomics%2Finstrument%2FError.scala#sha256:88a789e9bd4253b6a70ebb27cd5045f47d74062c4b76b5c6505af9c9a86e2098",
+    "file:execution-scenario%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fscenario%2FScenarioValuation.scala#sha256:1125a7cd51547543e5f5f7df0988f3c4b5e200193156d61883727425e24532a2",
+    "file:execution-scenario%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fscenario%2FScenarioValuationSuite.scala#sha256:cca762fd7affe8c3297999f0da9a8c4cb1e35c92208552745f1d8e6927ba8dad",
+    "file:fee-policy%2Fsrc%2Ftest%2Fscala%2Ftrading%2Ffee%2FFeeInclusivePnlSuite.scala#sha256:4ecf89684c35ea05db6dbe31a33becddffcf3afa67624f20cd91f338652a51cd",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fexecution-scenario-compiler%2Fpositive%2FScenarioValuationClient.scala#sha256:584a866deada05d6673259a4b8c4a4a42094c87f5d83b51f8805c142a3fce7f4",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FEconomicsCompilerBoundarySuite.scala#sha256:243406f00e966df7756f7e0a27abe11ee46c7be2ee78c31d375c7161d4a9ca4f"
+  ],
+  "summary": "RFC-0007/S-01 now reports a same-ID foreign-lineage market as ValuationReferenceDataMismatch with the exact retained ReferenceDataError at the original leg and slice, preserves that failure through fee-inclusive valuation, and proves nested ValuationError exhaustiveness from completed artifacts. The affected suites, both reflection guards, formatting, clean 1,058-test aggregate, and benchmark compilation pass; automated review found no issues."
+}

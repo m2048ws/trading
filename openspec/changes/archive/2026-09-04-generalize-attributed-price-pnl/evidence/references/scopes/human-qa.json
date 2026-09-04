@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 3,
+  "scope": "human-qa",
+  "runId": "run-da41912e-eb4e-4212-9bcf-000c8eff5d0c",
+  "references": [
+    {
+      "reference": "file:target%2Fcorgi-human-qa-rfc0007-s01%2Fbackend-walkthrough.md#sha256:a107da4987bf2d3ce794e26e486738b76405280cfe6e10b8289b6caed1887876",
+      "sourcePath": "target/corgi-human-qa-rfc0007-s01/backend-walkthrough.md",
+      "digest": "sha256:a107da4987bf2d3ce794e26e486738b76405280cfe6e10b8289b6caed1887876",
+      "archivePath": "references/blobs/a107da4987bf2d3ce794e26e486738b76405280cfe6e10b8289b6caed1887876"
+    }
+  ]
+}

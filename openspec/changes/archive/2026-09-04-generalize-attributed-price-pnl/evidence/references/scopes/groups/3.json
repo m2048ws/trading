@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 3,
+  "scope": "group-3",
+  "runId": "run-6050f409-de56-4d29-897a-4d997bf0d3db",
+  "references": [
+    {
+      "reference": "file:.github%2Fworkflows%2Fci.yml#sha256:6e3686b27b47db63179a273ee46b3483e18465626707fb18a5344860267f5d6c",
+      "sourcePath": ".github/workflows/ci.yml",
+      "digest": "sha256:6e3686b27b47db63179a273ee46b3483e18465626707fb18a5344860267f5d6c",
+      "archivePath": "references/blobs/6e3686b27b47db63179a273ee46b3483e18465626707fb18a5344860267f5d6c"
+    },
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Feconomics-core-compiler%2FCoreHasNoDownstream.scala#sha256:85153838c9e623c59e5067fdf713c38b26d7cce2e1cc3e92e87373bed9c96083",
+      "sourcePath": "adversarial-boundary/src/test/resources/economics-core-compiler/CoreHasNoDownstream.scala",
+      "digest": "sha256:85153838c9e623c59e5067fdf713c38b26d7cce2e1cc3e92e87373bed9c96083",
+      "archivePath": "references/blobs/85153838c9e623c59e5067fdf713c38b26d7cce2e1cc3e92e87373bed9c96083"
+    },
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Feconomics-core-compiler%2FPureCoreClient.scala#sha256:b428435a3d9a03acf91d7b579630015a129c33424516817215d0185ec00bbc25",
+      "sourcePath": "adversarial-boundary/src/test/resources/economics-core-compiler/PureCoreClient.scala",
+      "digest": "sha256:b428435a3d9a03acf91d7b579630015a129c33424516817215d0185ec00bbc25",
+      "archivePath": "references/blobs/b428435a3d9a03acf91d7b579630015a129c33424516817215d0185ec00bbc25"
+    },
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FEconomicsCompilerBoundarySuite.scala#sha256:5600c8b9905f9c1ad13e71836b8638070e7dfcb3cfa611ecb11c6093acdda54a",
+      "sourcePath": "adversarial-boundary/src/test/scala/external/EconomicsCompilerBoundarySuite.scala",
+      "digest": "sha256:5600c8b9905f9c1ad13e71836b8638070e7dfcb3cfa611ecb11c6093acdda54a",
+      "archivePath": "references/blobs/5600c8b9905f9c1ad13e71836b8638070e7dfcb3cfa611ecb11c6093acdda54a"
+    },
+    {
+      "reference": "file:build.sbt#sha256:790e4ae7fa4ab9334b36c0273bc4d44d02d59cac352b50f5f0aeaadc026f5db8",
+      "sourcePath": "build.sbt",
+      "digest": "sha256:790e4ae7fa4ab9334b36c0273bc4d44d02d59cac352b50f5f0aeaadc026f5db8",
+      "archivePath": "references/blobs/790e4ae7fa4ab9334b36c0273bc4d44d02d59cac352b50f5f0aeaadc026f5db8"
+    },
+    {
+      "reference": "file:tools%2Fcheck-in-process-reflection.sh#sha256:bca2729121ce2bde4dfe3e8db2af53d6129ea0db1162eaab0dd982d769ddf3d6",
+      "sourcePath": "tools/check-in-process-reflection.sh",
+      "digest": "sha256:bca2729121ce2bde4dfe3e8db2af53d6129ea0db1162eaab0dd982d769ddf3d6",
+      "archivePath": "references/blobs/bca2729121ce2bde4dfe3e8db2af53d6129ea0db1162eaab0dd982d769ddf3d6"
+    },
+    {
+      "reference": "file:tools%2Ftest-check-in-process-reflection.sh#sha256:0679a80193d81a4ab8836387de8054644fd1569e9b4275506cb3171fdbce9510",
+      "sourcePath": "tools/test-check-in-process-reflection.sh",
+      "digest": "sha256:0679a80193d81a4ab8836387de8054644fd1569e9b4275506cb3171fdbce9510",
+      "archivePath": "references/blobs/0679a80193d81a4ab8836387de8054644fd1569e9b4275506cb3171fdbce9510"
+    }
+  ]
+}

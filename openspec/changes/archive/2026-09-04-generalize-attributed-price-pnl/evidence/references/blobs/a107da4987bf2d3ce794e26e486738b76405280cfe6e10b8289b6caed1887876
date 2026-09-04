@@ -1,0 +1,49 @@
+# S-01 backend QA walkthrough
+
+- Change: `generalize-attributed-price-pnl`
+- RFC Slice: `RFC-0007-clarify-attributed-price-pnl-contract/S-01-generalize-attributed-price-pnl`
+- Final HEAD: `659f1ae339d92130e48924f55661d5b8fe7767b0`
+- Planning revision: `sha256:b348cb099e0dea093b67394dce8158b2d3d2483e0d308ea28d9d264d3ad2225f`
+- Environment: macOS arm64, OpenJDK 26.0.2.1
+- QA surface: pure in-process Scala backend APIs; no UI, HTTP API, CLI, authentication, database, network, or other side effects
+
+## Call chain
+
+| Layer | Entry | Input | Output | Side effects |
+|---|---|---|---|---|
+| L1 | `FeeInclusivePnl.evaluate` | checked instrument, round trip, fee policies | typed fee-inclusive PnL or non-empty typed violations | none |
+| L2 | `ScenarioValuation.pricePnl` | checked instrument and round trip | exact price PnL or scenario-native error | none |
+| L3 | `AttributedPricePnl.calculate` | ordered attributed changes and flat endpoint | exact attributed price PnL or accumulated typed violations | none |
+
+## Happy path
+
+Valid single- and multi-slice long/short round trips retain exact price PnL, attribution order, settled fees, and net PnL. The scenario and fee-policy public-path suites passed unchanged.
+
+## Critical error path
+
+A same-instrument-ID market from a foreign reference-data lineage is rejected by `AttributedPricePnl.calculate`. `ScenarioValuation.pricePnl` maps the retained `ReferenceDataError` to `ScenarioValuationError.SliceValue` at the original exit leg and slice without fabricating an instrument mismatch. `FeeInclusivePnl.evaluate` retains that exact nested cause in `FeeInclusiveScenarioPriceFailure`.
+
+## Executed checks
+
+Command:
+
+```text
+sbt -batch "executionScenario/testOnly trading.scenario.ScenarioValuationSuite" "feePolicy/testOnly trading.fee.FeeInclusivePnlSuite"
+```
+
+Results:
+
+- `ScenarioValuationSuite`: 7 passed, 0 failed
+- `FeeInclusivePnlSuite`: 9 passed, 0 failed
+- Process result: success
+
+## Applicability
+
+- Authentication pyramid: not applicable; the owning APIs have no authentication boundary.
+- Database integrity: not applicable; the path is pure and performs no persistence.
+- UI/API/CLI smoke paths: not applicable; the Slice exposes library APIs only.
+- RFC AC-001 through AC-004 require automated evidence and already passed canonical Verify; human QA adds a real public-call-chain walkthrough rather than replacing that evidence.
+
+## Human verdict
+
+PASS, explicitly confirmed by `m2048ws` on 2026-09-04.

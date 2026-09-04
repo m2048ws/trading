@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 3,
+  "groupId": "3",
+  "summary": "Completed-artifact coverage consumes exact attributed price PnL through the public instrument-economics API, rejects every RFC-forbidden downstream owner, and passes the repository CI gate on Temurin JDK 25.0.4.1 with 1,054 tests, formatting, reflection guards, and benchmark compilation green. Structured Task Group review passed with no findings.",
+  "checks": [
+    {
+      "name": "adversarialBoundary / test: 131 passed",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FEconomicsCompilerBoundarySuite.scala#sha256:5600c8b9905f9c1ad13e71836b8638070e7dfcb3cfa611ecb11c6093acdda54a",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Feconomics-core-compiler%2FPureCoreClient.scala#sha256:b428435a3d9a03acf91d7b579630015a129c33424516817215d0185ec00bbc25",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Feconomics-core-compiler%2FCoreHasNoDownstream.scala#sha256:85153838c9e623c59e5067fdf713c38b26d7cce2e1cc3e92e87373bed9c96083"
+      ]
+    },
+    {
+      "name": "JDK 25 CI-equivalent formatting, clean test, and benchmark compile: 1,054 passed",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:.github%2Fworkflows%2Fci.yml#sha256:6e3686b27b47db63179a273ee46b3483e18465626707fb18a5344860267f5d6c",
+        "file:build.sbt#sha256:790e4ae7fa4ab9334b36c0273bc4d44d02d59cac352b50f5f0aeaadc026f5db8"
+      ]
+    },
+    {
+      "name": "in-process reflection policy and regression guard",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:tools%2Fcheck-in-process-reflection.sh#sha256:bca2729121ce2bde4dfe3e8db2af53d6129ea0db1162eaab0dd982d769ddf3d6",
+        "file:tools%2Ftest-check-in-process-reflection.sh#sha256:0679a80193d81a4ab8836387de8054644fd1569e9b4275506cb3171fdbce9510"
+      ]
+    }
+  ],
+  "automatedReview": {
+    "verdict": "pass",
+    "findings": []
+  },
+  "artifacts": [
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FEconomicsCompilerBoundarySuite.scala#sha256:5600c8b9905f9c1ad13e71836b8638070e7dfcb3cfa611ecb11c6093acdda54a",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Feconomics-core-compiler%2FPureCoreClient.scala#sha256:b428435a3d9a03acf91d7b579630015a129c33424516817215d0185ec00bbc25",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Feconomics-core-compiler%2FCoreHasNoDownstream.scala#sha256:85153838c9e623c59e5067fdf713c38b26d7cce2e1cc3e92e87373bed9c96083"
+  ]
+}

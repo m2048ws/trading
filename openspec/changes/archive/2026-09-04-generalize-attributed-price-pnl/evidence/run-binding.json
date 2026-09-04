@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 3,
+  "changeName": "generalize-attributed-price-pnl",
+  "runId": "run-da41912e-eb4e-4212-9bcf-000c8eff5d0c",
+  "finalRevision": "659f1ae339d92130e48924f55661d5b8fe7767b0",
+  "planningRevision": "sha256:b348cb099e0dea093b67394dce8158b2d3d2483e0d308ea28d9d264d3ad2225f",
+  "contract": {
+    "kind": "rfc-slice",
+    "deliveryRef": "RFC-0007-clarify-attributed-price-pnl-contract/S-01-generalize-attributed-price-pnl",
+    "rfcId": "RFC-0007-clarify-attributed-price-pnl-contract",
+    "rfcDigest": "sha256:1f8217bb56b939b3eb45a6c827a2b06031b7a94b879f010f8dbc68b77c16bcd8",
+    "acceptedCommit": "5a398da32bb2efc7277a15908e58a103fa0bfbb1",
+    "sliceId": "S-01-generalize-attributed-price-pnl",
+    "sourcePath": "openspec/changes/generalize-attributed-price-pnl/corgi/source.yaml",
+    "sourceDigest": "sha256:9eb8ee95174cead0868ba533797007510fb3101a3471ef65c79a485a33f1705c",
+    "traceabilityPath": "openspec/changes/generalize-attributed-price-pnl/corgi/traceability.yaml",
+    "traceabilityDigest": "sha256:4811349ed9785b6d4123b4f65ff239a387f23093ae39eb2f70f9c9867047ac4a",
+    "acceptance": [
+      {
+        "id": "AC-001",
+        "evidence": "automated",
+        "taskGroups": [
+          "1"
+        ]
+      },
+      {
+        "id": "AC-002",
+        "evidence": "automated",
+        "taskGroups": [
+          "1",
+          "4",
+          "5"
+        ]
+      },
+      {
+        "id": "AC-003",
+        "evidence": "automated",
+        "taskGroups": [
+          "2",
+          "4",
+          "5"
+        ]
+      },
+      {
+        "id": "AC-004",
+        "evidence": "automated",
+        "taskGroups": [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+        ]
+      }
+    ],
+    "tracker": {
+      "provider": "github",
+      "idempotencyKey": "90dc507b6e72214e6db74ab7f2039c98e1cffe784cdffaa5310d45db30f6b7ba",
+      "issue": {
+        "id": "48",
+        "url": "https://github.com/m2048ws/trading/issues/48"
+      }
+    }
+  },
+  "archiveIntentId": "archive-0f14c26f-3ad9-4215-9ebb-27aa834295df"
+}

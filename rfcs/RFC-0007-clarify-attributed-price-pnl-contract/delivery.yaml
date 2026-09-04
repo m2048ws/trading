@@ -1,17 +1,21 @@
 schemaVersion: 1
 rfcId: RFC-0007-clarify-attributed-price-pnl-contract
-revision: 2
+revision: 3
 slices:
   S-01-generalize-attributed-price-pnl:
-    status: planned
+    status: archived
     binding:
       change: generalize-attributed-price-pnl
+      sourceDigest: sha256:9eb8ee95174cead0868ba533797007510fb3101a3471ef65c79a485a33f1705c
+      plannedAt: '2026-09-04T11:59:10.309Z'
       issue:
         provider: github
         id: '48'
         url: https://github.com/m2048ws/trading/issues/48
-      sourceDigest: sha256:9eb8ee95174cead0868ba533797007510fb3101a3471ef65c79a485a33f1705c
-      plannedAt: '2026-09-04T11:59:10.309Z'
+    archive:
+      archivedAt: '2026-09-04T12:37:00.508Z'
+      commit: 659f1ae339d92130e48924f55661d5b8fe7767b0
+      evidenceManifest: sha256:99cc050096550e9c57241125e37fa4d6aaa341a8c54413e55d493d1da26c8551
   S-02-create-append-only-campaigns:
     status: unbound
   S-03-project-campaign-execution:

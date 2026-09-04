@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 3,
+  "scope": "group-1",
+  "runId": "run-6050f409-de56-4d29-897a-4d997bf0d3db",
+  "references": [
+    {
+      "reference": "file:instrument-economics%2Fsrc%2Fmain%2Fscala%2Ftrading%2Feconomics%2Finstrument%2FAttributedPricePnl.scala#sha256:b309c702929f9a3ebe246576654b9b7574e33d1c326352bad2a7c0eb02e10b9e",
+      "sourcePath": "instrument-economics/src/main/scala/trading/economics/instrument/AttributedPricePnl.scala",
+      "digest": "sha256:b309c702929f9a3ebe246576654b9b7574e33d1c326352bad2a7c0eb02e10b9e",
+      "archivePath": "references/blobs/b309c702929f9a3ebe246576654b9b7574e33d1c326352bad2a7c0eb02e10b9e"
+    },
+    {
+      "reference": "file:instrument-economics%2Fsrc%2Fmain%2Fscala%2Ftrading%2Feconomics%2Finstrument%2FError.scala#sha256:5a598024f5854bad90a6b038158f0dfe46647c4ade97ff1563ec1d965f9dc20e",
+      "sourcePath": "instrument-economics/src/main/scala/trading/economics/instrument/Error.scala",
+      "digest": "sha256:5a598024f5854bad90a6b038158f0dfe46647c4ade97ff1563ec1d965f9dc20e",
+      "archivePath": "references/blobs/5a598024f5854bad90a6b038158f0dfe46647c4ade97ff1563ec1d965f9dc20e"
+    },
+    {
+      "reference": "file:instrument-economics%2Fsrc%2Fmain%2Fscala%2Ftrading%2Feconomics%2Finstrument%2FInstrument.scala#sha256:2f109d0e4a15f83c0c81792b6460a05cdb5da3f170920108c6396f242a9c2fe8",
+      "sourcePath": "instrument-economics/src/main/scala/trading/economics/instrument/Instrument.scala",
+      "digest": "sha256:2f109d0e4a15f83c0c81792b6460a05cdb5da3f170920108c6396f242a9c2fe8",
+      "archivePath": "references/blobs/2f109d0e4a15f83c0c81792b6460a05cdb5da3f170920108c6396f242a9c2fe8"
+    },
+    {
+      "reference": "file:instrument-economics%2Fsrc%2Fmain%2Fscala%2Ftrading%2Feconomics%2Finstrument%2FMarket.scala#sha256:815050767e87d2558232ef3cad895cf7e3b80bca478a87fefd5f9f1918bb6e8a",
+      "sourcePath": "instrument-economics/src/main/scala/trading/economics/instrument/Market.scala",
+      "digest": "sha256:815050767e87d2558232ef3cad895cf7e3b80bca478a87fefd5f9f1918bb6e8a",
+      "archivePath": "references/blobs/815050767e87d2558232ef3cad895cf7e3b80bca478a87fefd5f9f1918bb6e8a"
+    },
+    {
+      "reference": "file:instrument-economics%2Fsrc%2Ftest%2Fscala%2Ftrading%2Feconomics%2Finstrument%2FAttributedPricePnlSuite.scala#sha256:8581d24c9f528d1c5f6c49b046bf2b4423b3be38f916f990eeaefab40b6d1c5c",
+      "sourcePath": "instrument-economics/src/test/scala/trading/economics/instrument/AttributedPricePnlSuite.scala",
+      "digest": "sha256:8581d24c9f528d1c5f6c49b046bf2b4423b3be38f916f990eeaefab40b6d1c5c",
+      "archivePath": "references/blobs/8581d24c9f528d1c5f6c49b046bf2b4423b3be38f916f990eeaefab40b6d1c5c"
+    },
+    {
+      "reference": "file:instrument-economics%2Fsrc%2Ftest%2Fscala%2Ftrading%2Feconomics%2Finstrument%2FEconomicsPropertiesSuite.scala#sha256:efee83aa20421417b772a12084acfd67cb9f3612901daa0d3d08a8767b0ceb41",
+      "sourcePath": "instrument-economics/src/test/scala/trading/economics/instrument/EconomicsPropertiesSuite.scala",
+      "digest": "sha256:efee83aa20421417b772a12084acfd67cb9f3612901daa0d3d08a8767b0ceb41",
+      "archivePath": "references/blobs/efee83aa20421417b772a12084acfd67cb9f3612901daa0d3d08a8767b0ceb41"
+    }
+  ]
+}
