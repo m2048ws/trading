@@ -8,19 +8,19 @@ updated: 2026-09-04
 > Durable checkpoint mirror. Read first at startup; `.corgi/loop` remains lifecycle authority. `corgispec archive --local` alone writes archive closeout fields.
 
 ## Delivery Pointer
-- **RFC**: RFC-0005-simplify-post-trust-boundary
-- **RFC Revision**: 7f1d1ab9eb88d0912d3219920eacadea4d01aa2e
-- **Slice**: S-04-use-scala-first-quantity-and-reference-data
-- **Issue**: 46 https://github.com/m2048ws/trading/issues/46
-- **Change**: use-scala-first-quantity-and-reference-data
-- **Worktree**: /Users/m/src/money/.worktrees/use-scala-first-quantity-and-reference-data
-- **Phase at Checkpoint**: archiving
-- **Task Group at Checkpoint**: none
-- **Observed Run Revision**: 9
-- **Last Verified HEAD**: 806a6b435614a23536f5f26a221469281f5253b6
+- **RFC**: RFC-0008-simplify-instrument-dependent-apis
+- **RFC Revision**: bf457296faa7d29aec0840a7e8f48d41ed0f7491
+- **Slice**: S-01-name-instrument-dimensions
+- **Issue**: 53 https://github.com/m2048ws/trading/issues/53
+- **Change**: name-instrument-dimensions
+- **Worktree**: /Users/m/src/money/.worktrees/name-instrument-dimensions
+- **Phase at Checkpoint**: planning_ready
+- **Task Group at Checkpoint**: 1
+- **Observed Run Revision**: none
+- **Last Verified HEAD**: fd62724ca83b5b47ec39916d967c7bfa66f09e3f
 
 ## Next Action
-- Consult Run Contract v3: resume tracker closeout for `use-scala-first-quantity-and-reference-data` only if pending; otherwise select the next accepted Slice. Local delivery: `wiki/deliveries/RFC-0005-simplify-post-trust-boundary-S-04-use-scala-first-quantity-and-reference-data.md`.
+- Start Apply for `name-instrument-dimensions` Task Group 1.
 
 ## Blockers
 - none
