@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 3,
+  "groupId": "2",
+  "checks": [
+    {
+      "name": "focused knowledge and effective-fill suites",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:execution-lifecycle%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fexecution%2FSubmissionKnowledgeSuite.scala#sha256:00ed791e13c55b40ebbdac63a224ed744dd54ff4b3b4ebf34fa4c33ee61f277a",
+        "file:execution-lifecycle%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fexecution%2FCancellationSuite.scala#sha256:442bdeed9a2c76c1f748a6969d153b3332e7259ccdacd7a613d9c8740c45c40e",
+        "file:execution-lifecycle%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fexecution%2FEffectiveFillLedgerSuite.scala#sha256:7202df45dd10d3212bed461482da2465656e434741e69179799fca84ecfa7d7c"
+      ]
+    },
+    {
+      "name": "completed-artifact exhaustive Scala result boundary",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fexecution-lifecycle-compiler%2Fpositive%2FExecutionAuthorityBoundaryClient.scala#sha256:e38b17763d72db075a1f52c86c1cdd1a0f43337cca2f8349247d69e75337cc80"
+      ]
+    },
+    {
+      "name": "formatting and serialization rejection",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:execution-lifecycle%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fexecution%2FSubmissionKnowledge.scala#sha256:8b892d2bf2db47b260b0c824c1bec012fc0e04be8783446d99334f6b1b6c586d",
+        "file:execution-lifecycle%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fexecution%2FCancellation.scala#sha256:030ab021a74f9e609d63731133b6187841968a7a5b89cd8efae4e04850beda17",
+        "file:execution-lifecycle%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fexecution%2FEffectiveFillLedger.scala#sha256:67be733f2ab5f22f91968bf8f2b552d864f892ce4d4991db2dec360812ef5164"
+      ]
+    }
+  ],
+  "automatedReview": {
+    "verdict": "pass",
+    "findings": []
+  },
+  "artifacts": [
+    "file:execution-lifecycle%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fexecution%2FSubmissionKnowledge.scala#sha256:8b892d2bf2db47b260b0c824c1bec012fc0e04be8783446d99334f6b1b6c586d",
+    "file:execution-lifecycle%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fexecution%2FCancellation.scala#sha256:030ab021a74f9e609d63731133b6187841968a7a5b89cd8efae4e04850beda17",
+    "file:execution-lifecycle%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fexecution%2FEffectiveFillLedger.scala#sha256:67be733f2ab5f22f91968bf8f2b552d864f892ce4d4991db2dec360812ef5164",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fexecution-lifecycle-compiler%2Fpositive%2FExecutionAuthorityBoundaryClient.scala#sha256:e38b17763d72db075a1f52c86c1cdd1a0f43337cca2f8349247d69e75337cc80"
+  ],
+  "summary": "Submission knowledge, cancellation knowledge, and effective-fill classification are direct generated Scala sums; evidence, precedence, uncertainty, exact economics, ordering, conflicts, exhaustive matching, structural equality, and fail-closed serialization are preserved, 68 focused tests and 7 completed-artifact compiler tests pass, and automated review found no issues."
+}

@@ -1,0 +1,91 @@
+{
+  "schemaVersion": 3,
+  "scope": "group-3",
+  "runId": "run-e2915bcc-4b84-422e-bc4d-843b47fd5c99",
+  "references": [
+    {
+      "reference": "file:.scalafmt.conf#sha256:efecb2eaad5b314fc053f173f899c8c87f9a468432c8444593c0dcb386a3207f",
+      "sourcePath": ".scalafmt.conf",
+      "digest": "sha256:efecb2eaad5b314fc053f173f899c8c87f9a468432c8444593c0dcb386a3207f",
+      "archivePath": "references/blobs/efecb2eaad5b314fc053f173f899c8c87f9a468432c8444593c0dcb386a3207f"
+    },
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FEconomicsCompilerBoundarySuite.scala#sha256:003086363b15a4ddc948d6ef1d2d253416289abb703acbf688e90c31fe785e75",
+      "sourcePath": "adversarial-boundary/src/test/scala/external/EconomicsCompilerBoundarySuite.scala",
+      "digest": "sha256:003086363b15a4ddc948d6ef1d2d253416289abb703acbf688e90c31fe785e75",
+      "archivePath": "references/blobs/003086363b15a4ddc948d6ef1d2d253416289abb703acbf688e90c31fe785e75"
+    },
+    {
+      "reference": "file:boundary-codecs%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fcodec%2FBoundaryCodecCompatibilitySuite.scala#sha256:283196b99c21af4a089f339a62c1fb844fe1e4205e7e97299db77c87b03a8525",
+      "sourcePath": "boundary-codecs/src/test/scala/trading/codec/BoundaryCodecCompatibilitySuite.scala",
+      "digest": "sha256:283196b99c21af4a089f339a62c1fb844fe1e4205e7e97299db77c87b03a8525",
+      "archivePath": "references/blobs/283196b99c21af4a089f339a62c1fb844fe1e4205e7e97299db77c87b03a8525"
+    },
+    {
+      "reference": "file:build.sbt#sha256:790e4ae7fa4ab9334b36c0273bc4d44d02d59cac352b50f5f0aeaadc026f5db8",
+      "sourcePath": "build.sbt",
+      "digest": "sha256:790e4ae7fa4ab9334b36c0273bc4d44d02d59cac352b50f5f0aeaadc026f5db8",
+      "archivePath": "references/blobs/790e4ae7fa4ab9334b36c0273bc4d44d02d59cac352b50f5f0aeaadc026f5db8"
+    },
+    {
+      "reference": "file:docs%2Fdesign-principles.md#sha256:4e50ecda0495052c935efc444d8c89192a4aa614da91476db401a41769cd2ae9",
+      "sourcePath": "docs/design-principles.md",
+      "digest": "sha256:4e50ecda0495052c935efc444d8c89192a4aa614da91476db401a41769cd2ae9",
+      "archivePath": "references/blobs/4e50ecda0495052c935efc444d8c89192a4aa614da91476db401a41769cd2ae9"
+    },
+    {
+      "reference": "file:openspec%2Fchanges%2Fremove-java-api-compatibility%2Fcorgi%2Ftraceability.yaml#sha256:fb326f95f1744014bf9b48f64d4fb44d128f1e6a9452151263dcef389ea09d2f",
+      "sourcePath": "openspec/changes/remove-java-api-compatibility/corgi/traceability.yaml",
+      "digest": "sha256:fb326f95f1744014bf9b48f64d4fb44d128f1e6a9452151263dcef389ea09d2f",
+      "archivePath": "references/blobs/fb326f95f1744014bf9b48f64d4fb44d128f1e6a9452151263dcef389ea09d2f"
+    },
+    {
+      "reference": "file:openspec%2Fchanges%2Fremove-java-api-compatibility%2Fspecs%2Forder-scenarios%2Fspec.md#sha256:9bf7b7837b76c8dd84fa0f017a120a73bf4d79cdbc7f92de15b0884190a647ce",
+      "sourcePath": "openspec/changes/remove-java-api-compatibility/specs/order-scenarios/spec.md",
+      "digest": "sha256:9bf7b7837b76c8dd84fa0f017a120a73bf4d79cdbc7f92de15b0884190a647ce",
+      "archivePath": "references/blobs/9bf7b7837b76c8dd84fa0f017a120a73bf4d79cdbc7f92de15b0884190a647ce"
+    },
+    {
+      "reference": "file:openspec%2Fchanges%2Fremove-java-api-compatibility%2Fspecs%2Freference-data-identity%2Fspec.md#sha256:060ef27537c5d25c93fff9c6f896becf58f4bef74e7bf03feb6d67c0fa2c9447",
+      "sourcePath": "openspec/changes/remove-java-api-compatibility/specs/reference-data-identity/spec.md",
+      "digest": "sha256:060ef27537c5d25c93fff9c6f896becf58f4bef74e7bf03feb6d67c0fa2c9447",
+      "archivePath": "references/blobs/060ef27537c5d25c93fff9c6f896becf58f4bef74e7bf03feb6d67c0fa2c9447"
+    },
+    {
+      "reference": "file:openspec%2Fchanges%2Fremove-java-api-compatibility%2Fspecs%2Frepository-architecture%2Fspec.md#sha256:796bbe725e14204e2d56e0bd7e9e2b40c7018196297355790d64726e17d076b2",
+      "sourcePath": "openspec/changes/remove-java-api-compatibility/specs/repository-architecture/spec.md",
+      "digest": "sha256:796bbe725e14204e2d56e0bd7e9e2b40c7018196297355790d64726e17d076b2",
+      "archivePath": "references/blobs/796bbe725e14204e2d56e0bd7e9e2b40c7018196297355790d64726e17d076b2"
+    },
+    {
+      "reference": "file:openspec%2Fchanges%2Fremove-java-api-compatibility%2Fspecs%2Fruntime-quantity-identity%2Fspec.md#sha256:a128f7a377771592def5eeda133ee713ca8fb5b612ccee0c2505725d93a29db5",
+      "sourcePath": "openspec/changes/remove-java-api-compatibility/specs/runtime-quantity-identity/spec.md",
+      "digest": "sha256:a128f7a377771592def5eeda133ee713ca8fb5b612ccee0c2505725d93a29db5",
+      "archivePath": "references/blobs/a128f7a377771592def5eeda133ee713ca8fb5b612ccee0c2505725d93a29db5"
+    },
+    {
+      "reference": "file:openspec%2Fchanges%2Fremove-java-api-compatibility%2Fspecs%2Fversioned-boundary-codecs%2Fspec.md#sha256:48842ea46fd94b0212dc0f80365016f556ffb5b378596be9e18d02d7e434c4e0",
+      "sourcePath": "openspec/changes/remove-java-api-compatibility/specs/versioned-boundary-codecs/spec.md",
+      "digest": "sha256:48842ea46fd94b0212dc0f80365016f556ffb5b378596be9e18d02d7e434c4e0",
+      "archivePath": "references/blobs/48842ea46fd94b0212dc0f80365016f556ffb5b378596be9e18d02d7e434c4e0"
+    },
+    {
+      "reference": "file:README.md#sha256:121f5dbabf2598bdbbdd9d26904d609e16f6c4246240aa628ad0e636570c5189",
+      "sourcePath": "README.md",
+      "digest": "sha256:121f5dbabf2598bdbbdd9d26904d609e16f6c4246240aa628ad0e636570c5189",
+      "archivePath": "references/blobs/121f5dbabf2598bdbbdd9d26904d609e16f6c4246240aa628ad0e636570c5189"
+    },
+    {
+      "reference": "file:tools%2Fcheck-in-process-reflection.sh#sha256:bca2729121ce2bde4dfe3e8db2af53d6129ea0db1162eaab0dd982d769ddf3d6",
+      "sourcePath": "tools/check-in-process-reflection.sh",
+      "digest": "sha256:bca2729121ce2bde4dfe3e8db2af53d6129ea0db1162eaab0dd982d769ddf3d6",
+      "archivePath": "references/blobs/bca2729121ce2bde4dfe3e8db2af53d6129ea0db1162eaab0dd982d769ddf3d6"
+    },
+    {
+      "reference": "file:tools%2Ftest-check-in-process-reflection.sh#sha256:0679a80193d81a4ab8836387de8054644fd1569e9b4275506cb3171fdbce9510",
+      "sourcePath": "tools/test-check-in-process-reflection.sh",
+      "digest": "sha256:0679a80193d81a4ab8836387de8054644fd1569e9b4275506cb3171fdbce9510",
+      "archivePath": "references/blobs/0679a80193d81a4ab8836387de8054644fd1569e9b4275506cb3171fdbce9510"
+    }
+  ]
+}

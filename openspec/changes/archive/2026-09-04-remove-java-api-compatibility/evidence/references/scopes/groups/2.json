@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 3,
+  "scope": "group-2",
+  "runId": "run-e2915bcc-4b84-422e-bc4d-843b47fd5c99",
+  "references": [
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fboundary-codec-compiler%2Fpositive%2FBoundaryCodecClasspathClient.scala#sha256:f249c4dcc762597ee0acfc7570a3c931d578db984a764a2725fcb79e632dfab5",
+      "sourcePath": "adversarial-boundary/src/test/resources/boundary-codec-compiler/positive/BoundaryCodecClasspathClient.scala",
+      "digest": "sha256:f249c4dcc762597ee0acfc7570a3c931d578db984a764a2725fcb79e632dfab5",
+      "archivePath": "references/blobs/f249c4dcc762597ee0acfc7570a3c931d578db984a764a2725fcb79e632dfab5"
+    },
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Feconomics-compiler%2Fnegative%2FAssociatedEvidenceShapes.scala#sha256:05a1c73381da421cc7f41315985e90c0be411916d77a3ef067bea3c67c8f647b",
+      "sourcePath": "adversarial-boundary/src/test/resources/economics-compiler/negative/AssociatedEvidenceShapes.scala",
+      "digest": "sha256:05a1c73381da421cc7f41315985e90c0be411916d77a3ef067bea3c67c8f647b",
+      "archivePath": "references/blobs/05a1c73381da421cc7f41315985e90c0be411916d77a3ef067bea3c67c8f647b"
+    },
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Feconomics-compiler%2Fpositive%2FCompleteCompositionClient.scala#sha256:a42b3904705cb5b58f9f399bc9acf5dee174f4d9dd187e77eef6879cb75466fe",
+      "sourcePath": "adversarial-boundary/src/test/resources/economics-compiler/positive/CompleteCompositionClient.scala",
+      "digest": "sha256:a42b3904705cb5b58f9f399bc9acf5dee174f4d9dd187e77eef6879cb75466fe",
+      "archivePath": "references/blobs/a42b3904705cb5b58f9f399bc9acf5dee174f4d9dd187e77eef6879cb75466fe"
+    },
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fexecution-lifecycle-compiler%2Fpositive%2FExecutionAuthorityBoundaryClient.scala#sha256:5371e4023bd1410338a92470a92dba843ebf1190884b817f49f01e6e2f5e5197",
+      "sourcePath": "adversarial-boundary/src/test/resources/execution-lifecycle-compiler/positive/ExecutionAuthorityBoundaryClient.scala",
+      "digest": "sha256:5371e4023bd1410338a92470a92dba843ebf1190884b817f49f01e6e2f5e5197",
+      "archivePath": "references/blobs/5371e4023bd1410338a92470a92dba843ebf1190884b817f49f01e6e2f5e5197"
+    },
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FBoundaryCodecCompilerBoundarySuite.scala#sha256:1530e7e013723ce5f942c9da1c5b399026d63d0e5e57a66009a06f204f754699",
+      "sourcePath": "adversarial-boundary/src/test/scala/external/BoundaryCodecCompilerBoundarySuite.scala",
+      "digest": "sha256:1530e7e013723ce5f942c9da1c5b399026d63d0e5e57a66009a06f204f754699",
+      "archivePath": "references/blobs/1530e7e013723ce5f942c9da1c5b399026d63d0e5e57a66009a06f204f754699"
+    },
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FConstructionAndProvenanceBoundarySuite.scala#sha256:a5c6d1aeaa3d6b350b8d6339c09c8f28d285d03837b868259b6a1fc054918ffe",
+      "sourcePath": "adversarial-boundary/src/test/scala/external/ConstructionAndProvenanceBoundarySuite.scala",
+      "digest": "sha256:a5c6d1aeaa3d6b350b8d6339c09c8f28d285d03837b868259b6a1fc054918ffe",
+      "archivePath": "references/blobs/a5c6d1aeaa3d6b350b8d6339c09c8f28d285d03837b868259b6a1fc054918ffe"
+    },
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FEconomicsCompilerBoundarySuite.scala#sha256:003086363b15a4ddc948d6ef1d2d253416289abb703acbf688e90c31fe785e75",
+      "sourcePath": "adversarial-boundary/src/test/scala/external/EconomicsCompilerBoundarySuite.scala",
+      "digest": "sha256:003086363b15a4ddc948d6ef1d2d253416289abb703acbf688e90c31fe785e75",
+      "archivePath": "references/blobs/003086363b15a4ddc948d6ef1d2d253416289abb703acbf688e90c31fe785e75"
+    },
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FExecutionLifecycleCompilerBoundarySuite.scala#sha256:127fa27cc4942e1c04534dcc924669f32d706e2f57754ad3f271ea2e950ffe8c",
+      "sourcePath": "adversarial-boundary/src/test/scala/external/ExecutionLifecycleCompilerBoundarySuite.scala",
+      "digest": "sha256:127fa27cc4942e1c04534dcc924669f32d706e2f57754ad3f271ea2e950ffe8c",
+      "archivePath": "references/blobs/127fa27cc4942e1c04534dcc924669f32d706e2f57754ad3f271ea2e950ffe8c"
+    },
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FReferenceDataCompilerBoundarySuite.scala#sha256:7f47be784c51936201eab814ac885dba2bd9c88d8b4256cf1e75d0101bc4a56d",
+      "sourcePath": "adversarial-boundary/src/test/scala/external/ReferenceDataCompilerBoundarySuite.scala",
+      "digest": "sha256:7f47be784c51936201eab814ac885dba2bd9c88d8b4256cf1e75d0101bc4a56d",
+      "archivePath": "references/blobs/7f47be784c51936201eab814ac885dba2bd9c88d8b4256cf1e75d0101bc4a56d"
+    }
+  ]
+}

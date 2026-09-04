@@ -24,7 +24,11 @@
     "introduce-versioned-boundary-codecs",
     "establish-actual-execution-lifecycle",
     "simplify-in-process-trust-boundary",
-    "retire-trust-boundary-migration-scaffolding"
+    "retire-trust-boundary-migration-scaffolding",
+    "remove-java-api-compatibility",
+    "total-and-deterministic-execution-transitions",
+    "use-direct-scala-derived-models",
+    "use-scala-first-quantity-and-reference-data"
   ],
   "authority": {
     "localCorgiCommits": true,

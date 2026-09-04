@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 3,
+  "groupId": "2",
+  "checks": [
+    {
+      "name": "clean completed-artifact adversarial boundary",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FEconomicsCompilerBoundarySuite.scala#sha256:003086363b15a4ddc948d6ef1d2d253416289abb703acbf688e90c31fe785e75",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FExecutionLifecycleCompilerBoundarySuite.scala#sha256:127fa27cc4942e1c04534dcc924669f32d706e2f57754ad3f271ea2e950ffe8c",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FBoundaryCodecCompilerBoundarySuite.scala#sha256:1530e7e013723ce5f942c9da1c5b399026d63d0e5e57a66009a06f204f754699"
+      ]
+    },
+    {
+      "name": "retained Scala positive and negative compiler evidence",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Feconomics-compiler%2Fpositive%2FCompleteCompositionClient.scala#sha256:a42b3904705cb5b58f9f399bc9acf5dee174f4d9dd187e77eef6879cb75466fe",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Feconomics-compiler%2Fnegative%2FAssociatedEvidenceShapes.scala#sha256:05a1c73381da421cc7f41315985e90c0be411916d77a3ef067bea3c67c8f647b",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fexecution-lifecycle-compiler%2Fpositive%2FExecutionAuthorityBoundaryClient.scala#sha256:5371e4023bd1410338a92470a92dba843ebf1190884b817f49f01e6e2f5e5197",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fboundary-codec-compiler%2Fpositive%2FBoundaryCodecClasspathClient.scala#sha256:f249c4dcc762597ee0acfc7570a3c931d578db984a764a2725fcb79e632dfab5"
+      ]
+    },
+    {
+      "name": "Java fixture and dedicated harness inventory",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FReferenceDataCompilerBoundarySuite.scala#sha256:7f47be784c51936201eab814ac885dba2bd9c88d8b4256cf1e75d0101bc4a56d",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FConstructionAndProvenanceBoundarySuite.scala#sha256:a5c6d1aeaa3d6b350b8d6339c09c8f28d285d03837b868259b6a1fc054918ffe"
+      ]
+    }
+  ],
+  "automatedReview": {
+    "verdict": "pass",
+    "findings": []
+  },
+  "artifacts": [
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FEconomicsCompilerBoundarySuite.scala#sha256:003086363b15a4ddc948d6ef1d2d253416289abb703acbf688e90c31fe785e75",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FExecutionLifecycleCompilerBoundarySuite.scala#sha256:127fa27cc4942e1c04534dcc924669f32d706e2f57754ad3f271ea2e950ffe8c",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FBoundaryCodecCompilerBoundarySuite.scala#sha256:1530e7e013723ce5f942c9da1c5b399026d63d0e5e57a66009a06f204f754699"
+  ],
+  "summary": "Removed all 11 ordinary-Java domain fixtures, the dedicated reference-data Java suite, and Java-only compiler/loader branches while retaining and passing 130 completed-artifact Scala, negative compiler, dependency, semantic, wire, null, and serialization boundary tests."
+}

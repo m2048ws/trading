@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 3,
+  "groupId": "3",
+  "checks": [
+    {
+      "name": "clean aggregate test matrix",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:build.sbt#sha256:790e4ae7fa4ab9334b36c0273bc4d44d02d59cac352b50f5f0aeaadc026f5db8",
+        "file:execution-lifecycle%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fexecution%2FCancellationSuite.scala#sha256:e982eba61a7be8c5d0a8a95b02766779ed8082b21465673994af96d24f7be277",
+        "file:execution-lifecycle%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fexecution%2FEffectiveFillLedgerSuite.scala#sha256:3e0faa08a6c884ecc2e023c40f6f2e4a767f4f445b80cc51a3f6ca19808e3065",
+        "file:execution-lifecycle%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fexecution%2FExecutionStateSuite.scala#sha256:d437f7204700a1de676ca0939684d50a1ee481d909216d01ce34444a8f24da49"
+      ]
+    },
+    {
+      "name": "zero-reflection guard and regression",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:tools%2Fcheck-in-process-reflection.sh#sha256:bca2729121ce2bde4dfe3e8db2af53d6129ea0db1162eaab0dd982d769ddf3d6",
+        "file:tools%2Ftest-check-in-process-reflection.sh#sha256:0679a80193d81a4ab8836387de8054644fd1569e9b4275506cb3171fdbce9510"
+      ]
+    },
+    {
+      "name": "single observation-ledger derivation invariant",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:execution-lifecycle%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fexecution%2FExecutionState.scala#sha256:07767ffc45c8d067e8f8486993c01bea5e3d23e8016eb3deef5b94c2bc29855e",
+        "file:execution-lifecycle%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fexecution%2FCancellation.scala#sha256:bf3301df2c38076006930ca2ffb960c4092639bf6a393c37ff83f90df5daa78c"
+      ]
+    }
+  ],
+  "automatedReview": {
+    "verdict": "pass",
+    "findings": []
+  },
+  "artifacts": [
+    "file:execution-lifecycle%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fexecution%2FExecutionState.scala#sha256:07767ffc45c8d067e8f8486993c01bea5e3d23e8016eb3deef5b94c2bc29855e",
+    "file:execution-lifecycle%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fexecution%2FCancellation.scala#sha256:bf3301df2c38076006930ca2ffb960c4092639bf6a393c37ff83f90df5daa78c",
+    "file:execution-lifecycle%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fexecution%2FCancellationSuite.scala#sha256:e982eba61a7be8c5d0a8a95b02766779ed8082b21465673994af96d24f7be277"
+  ],
+  "summary": "ExecutionState now derives one effective-fill ledger per observation and supplies that exact value to anomaly construction. The identity-level overfill reuse assertion, focused tests, zero-reflection checks, formatting, and the clean 1,047-test aggregate matrix pass; the automated Task Group review found no issues and no Slice 3 representation work was pulled forward."
+}

@@ -4,7 +4,9 @@
 
 Defines domain-neutral runtime dimension identity and checked mathematical evidence without asset, stable-grid,
 registry, or packed-record ownership.
+
 ## Requirements
+
 ### Requirement: Checked runtime evidence
 `SameDimension[A, B]` SHALL remain one restricted capability for explicit alignment and equivalence-aware comparison,
 whether it was derived by private interpretation of statically visible expressions or recovered from authoritative
@@ -285,8 +287,12 @@ catalog provenance.
 
 Runtime dimension witnesses SHALL preserve the one-to-one static/runtime association established by supported literal,
 nominal, generative, fresh, algebraic, or checked-recovery roots. Raw keys and caller-selected type arguments SHALL NOT
-form a documented unchecked witness-construction path. This semantic guarantee SHALL NOT claim to defend against
-deliberate reflection, unsafe bytecode, casts, or constructor bypass by code already running in the JVM.
+form a documented unchecked witness-construction path. The supported domain source API SHALL be Scala 3; Java-library
+interoperation and checked external reconstruction MAY occur behind an owning Scala boundary without creating an
+ordinary-Java domain API promise. An already established positive grid quantum SHALL be trusted as refined input by
+runtime grid construction, while a raw external quantum SHALL pass through the owning positive refinement before any
+runtime grid witness is returned. This semantic guarantee SHALL NOT claim to defend against deliberate reflection,
+unsafe bytecode, casts, or constructor bypass by code already running in the JVM.
 
 #### Scenario: Recover a runtime dimension
 
@@ -300,6 +306,11 @@ deliberate reflection, unsafe bytecode, casts, or constructor bypass by code alr
 
 #### Scenario: Use only supported in-process APIs
 
-- **WHEN** ordinary Scala or Java code uses the documented runtime-witness operations
+- **WHEN** supported Scala 3 code uses the documented runtime-witness operations
 - **THEN** it cannot independently select contradictory static and runtime identities
 
+#### Scenario: Refine a raw grid quantum before witness construction
+
+- **WHEN** an external representation supplies a raw rational quantum
+- **THEN** the owning positive refinement rejects nonpositive input before direct runtime grid construction receives
+  an established `PositiveRational`

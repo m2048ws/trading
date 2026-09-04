@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 3,
+  "scope": "group-3",
+  "runId": "run-77744ab3-39a1-4c0e-8d7b-edb322fb95d6",
+  "references": [
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Freference-data-compiler%2Fnegative%2FCatalogObservationConstruction.scala#sha256:f363634fe105c79e1402ae125879b50ad970995120f90511ecd8d1f9d83456c7",
+      "sourcePath": "adversarial-boundary/src/test/resources/reference-data-compiler/negative/CatalogObservationConstruction.scala",
+      "digest": "sha256:f363634fe105c79e1402ae125879b50ad970995120f90511ecd8d1f9d83456c7",
+      "archivePath": "references/blobs/f363634fe105c79e1402ae125879b50ad970995120f90511ecd8d1f9d83456c7"
+    },
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Freference-data-compiler%2Fpositive%2FCatalogOutcomeInspectionBoundary.scala#sha256:70873f2377509bd92d076b03e5400bc5ea24bc2a879733e07b55d1e5a710075c",
+      "sourcePath": "adversarial-boundary/src/test/resources/reference-data-compiler/positive/CatalogOutcomeInspectionBoundary.scala",
+      "digest": "sha256:70873f2377509bd92d076b03e5400bc5ea24bc2a879733e07b55d1e5a710075c",
+      "archivePath": "references/blobs/70873f2377509bd92d076b03e5400bc5ea24bc2a879733e07b55d1e5a710075c"
+    },
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FReferenceDataCompilerBoundarySuite.scala#sha256:946521a3092cd7628122ba9d4862d5f57c9970b57bebc24fb5e6fc264396273e",
+      "sourcePath": "adversarial-boundary/src/test/scala/external/ReferenceDataCompilerBoundarySuite.scala",
+      "digest": "sha256:946521a3092cd7628122ba9d4862d5f57c9970b57bebc24fb5e6fc264396273e",
+      "archivePath": "references/blobs/946521a3092cd7628122ba9d4862d5f57c9970b57bebc24fb5e6fc264396273e"
+    },
+    {
+      "reference": "file:benchmarks%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fbenchmark%2FLiveCatalogRuntimeBenchmark.scala#sha256:47f88c9aa2fa53339f71067750a21c631fa84b324ee7ff9b228170aded125056",
+      "sourcePath": "benchmarks/src/main/scala/trading/benchmark/LiveCatalogRuntimeBenchmark.scala",
+      "digest": "sha256:47f88c9aa2fa53339f71067750a21c631fa84b324ee7ff9b228170aded125056",
+      "archivePath": "references/blobs/47f88c9aa2fa53339f71067750a21c631fa84b324ee7ff9b228170aded125056"
+    },
+    {
+      "reference": "file:build.sbt#sha256:790e4ae7fa4ab9334b36c0273bc4d44d02d59cac352b50f5f0aeaadc026f5db8",
+      "sourcePath": "build.sbt",
+      "digest": "sha256:790e4ae7fa4ab9334b36c0273bc4d44d02d59cac352b50f5f0aeaadc026f5db8",
+      "archivePath": "references/blobs/790e4ae7fa4ab9334b36c0273bc4d44d02d59cac352b50f5f0aeaadc026f5db8"
+    },
+    {
+      "reference": "file:openspec%2Fchanges%2Fuse-scala-first-quantity-and-reference-data%2Ftasks.md#sha256:1320f414af14697565bfd08d283bd03202e96d00eb93f33e42ddcac0351a18dd",
+      "sourcePath": "openspec/changes/use-scala-first-quantity-and-reference-data/tasks.md",
+      "digest": "sha256:1320f414af14697565bfd08d283bd03202e96d00eb93f33e42ddcac0351a18dd",
+      "archivePath": "references/blobs/1320f414af14697565bfd08d283bd03202e96d00eb93f33e42ddcac0351a18dd"
+    },
+    {
+      "reference": "file:quantities%2FREADME.md#sha256:fb9237b259175100a05fc9eaa42406c036e29923ccaff41813a036e15b73c0a8",
+      "sourcePath": "quantities/README.md",
+      "digest": "sha256:fb9237b259175100a05fc9eaa42406c036e29923ccaff41813a036e15b73c0a8",
+      "archivePath": "references/blobs/fb9237b259175100a05fc9eaa42406c036e29923ccaff41813a036e15b73c0a8"
+    },
+    {
+      "reference": "file:reference-data%2FREADME.md#sha256:a31b0e6b0945920c36e32833c499837a4fccb2c338b23fdba306d9e5a7f959da",
+      "sourcePath": "reference-data/README.md",
+      "digest": "sha256:a31b0e6b0945920c36e32833c499837a4fccb2c338b23fdba306d9e5a7f959da",
+      "archivePath": "references/blobs/a31b0e6b0945920c36e32833c499837a4fccb2c338b23fdba306d9e5a7f959da"
+    },
+    {
+      "reference": "file:reference-data%2Fsrc%2Fmain%2Fscala%2Ftrading%2Freference%2FCatalog.scala#sha256:5a315285fe5a8b55e6f0b4b2415dafe9d37bd88f70d9409e157294a3f657182e",
+      "sourcePath": "reference-data/src/main/scala/trading/reference/Catalog.scala",
+      "digest": "sha256:5a315285fe5a8b55e6f0b4b2415dafe9d37bd88f70d9409e157294a3f657182e",
+      "archivePath": "references/blobs/5a315285fe5a8b55e6f0b4b2415dafe9d37bd88f70d9409e157294a3f657182e"
+    },
+    {
+      "reference": "file:reference-data%2Fsrc%2Ftest%2Fscala%2Ftrading%2Freference%2FCatalogPropertiesSuite.scala#sha256:62359e4bca4d59a1c60e285de9a2bb4eddd62916126ae08d8142b65e139a9692",
+      "sourcePath": "reference-data/src/test/scala/trading/reference/CatalogPropertiesSuite.scala",
+      "digest": "sha256:62359e4bca4d59a1c60e285de9a2bb4eddd62916126ae08d8142b65e139a9692",
+      "archivePath": "references/blobs/62359e4bca4d59a1c60e285de9a2bb4eddd62916126ae08d8142b65e139a9692"
+    },
+    {
+      "reference": "file:reference-data%2Fsrc%2Ftest%2Fscala%2Ftrading%2Freference%2FReferenceDataSuite.scala#sha256:751355b84d090f36cdce812e80600ce077e5c68062aafab715a6e0ae71739749",
+      "sourcePath": "reference-data/src/test/scala/trading/reference/ReferenceDataSuite.scala",
+      "digest": "sha256:751355b84d090f36cdce812e80600ce077e5c68062aafab715a6e0ae71739749",
+      "archivePath": "references/blobs/751355b84d090f36cdce812e80600ce077e5c68062aafab715a6e0ae71739749"
+    },
+    {
+      "reference": "file:tools%2Fcheck-in-process-reflection.sh#sha256:bca2729121ce2bde4dfe3e8db2af53d6129ea0db1162eaab0dd982d769ddf3d6",
+      "sourcePath": "tools/check-in-process-reflection.sh",
+      "digest": "sha256:bca2729121ce2bde4dfe3e8db2af53d6129ea0db1162eaab0dd982d769ddf3d6",
+      "archivePath": "references/blobs/bca2729121ce2bde4dfe3e8db2af53d6129ea0db1162eaab0dd982d769ddf3d6"
+    },
+    {
+      "reference": "file:tools%2Ftest-check-in-process-reflection.sh#sha256:0679a80193d81a4ab8836387de8054644fd1569e9b4275506cb3171fdbce9510",
+      "sourcePath": "tools/test-check-in-process-reflection.sh",
+      "digest": "sha256:0679a80193d81a4ab8836387de8054644fd1569e9b4275506cb3171fdbce9510",
+      "archivePath": "references/blobs/0679a80193d81a4ab8836387de8054644fd1569e9b4275506cb3171fdbce9510"
+    }
+  ]
+}

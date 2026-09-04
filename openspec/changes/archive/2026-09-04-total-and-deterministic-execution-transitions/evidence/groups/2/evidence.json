@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 3,
+  "groupId": "2",
+  "checks": [
+    {
+      "name": "complete execution-lifecycle suite",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:execution-lifecycle%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fexecution%2FExecutionOrderingsSuite.scala#sha256:67bdf3936d89df0a34521050e628b2e16975bc9549ee1bc8731fc61e94ca3052",
+        "file:execution-lifecycle%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fexecution%2FExecutionStateSuite.scala#sha256:d437f7204700a1de676ca0939684d50a1ee481d909216d01ce34444a8f24da49",
+        "file:execution-lifecycle%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fexecution%2FEffectiveFillLedgerSuite.scala#sha256:3e0faa08a6c884ecc2e023c40f6f2e4a767f4f445b80cc51a3f6ca19808e3065",
+        "file:execution-lifecycle%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fexecution%2FCancellationSuite.scala#sha256:f77c3bea48e39703979477c89eb99473e1a0b2af58ac3bb3ef9beba69f091246"
+      ]
+    },
+    {
+      "name": "completed-artifact execution compiler boundary",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FExecutionLifecycleCompilerBoundarySuite.scala#sha256:8cdd472bffc55acc96549c8c2c86e4865b5bf43f94d5c3ebbc98eadb23b8beb8"
+      ]
+    },
+    {
+      "name": "typed-ordering source invariant and formatting",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:execution-lifecycle%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fexecution%2FExecutionOrderings.scala#sha256:056fec3a5d5521e216fcc83287c198adc56ef7a08cef4cab53c1cce85e0f6d4d",
+        "file:execution-lifecycle%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fexecution%2FExecutionState.scala#sha256:50fbe5f2f1d884a249cd2782b494fc29c72adaf5c47bd7c00ed94a6d0be458a9",
+        "file:execution-lifecycle%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fexecution%2FEffectiveFillLedger.scala#sha256:3d2f8a48bc2393e16eb916142b181b316b53a6aaeac0b373f16cdabd0ffe5853",
+        "file:execution-lifecycle%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fexecution%2FCancellation.scala#sha256:4cbe276cd9460fcfcdc460b11524e892ebd48aebf30ff8ac2cb63aa469a76b6c"
+      ]
+    }
+  ],
+  "automatedReview": {
+    "verdict": "pass",
+    "findings": []
+  },
+  "artifacts": [
+    "file:execution-lifecycle%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fexecution%2FExecutionOrderings.scala#sha256:056fec3a5d5521e216fcc83287c198adc56ef7a08cef4cab53c1cce85e0f6d4d",
+    "file:execution-lifecycle%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fexecution%2FExecutionState.scala#sha256:50fbe5f2f1d884a249cd2782b494fc29c72adaf5c47bd7c00ed94a6d0be458a9",
+    "file:execution-lifecycle%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fexecution%2FEffectiveFillLedger.scala#sha256:3d2f8a48bc2393e16eb916142b181b316b53a6aaeac0b373f16cdabd0ffe5853",
+    "file:execution-lifecycle%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fexecution%2FCancellation.scala#sha256:4cbe276cd9460fcfcdc460b11524e892ebd48aebf30ff8ac2cb63aa469a76b6c",
+    "file:execution-lifecycle%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fexecution%2FExecutionOrderingsSuite.scala#sha256:67bdf3936d89df0a34521050e628b2e16975bc9549ee1bc8731fc61e94ca3052"
+  ],
+  "summary": "Execution replay and derived observations now share owner-local typed lexicographic comparisons across commands, dispatch, source facts, qualified identifiers, continuations, modifiers, conflicts, diagnostics, and post-cancellation anomalies. All 68 execution tests, seven completed-artifact compiler-boundary tests, formatting checks, delimiter-collision fixtures, and replay permutations pass; the automated Task Group review found no issues."
+}

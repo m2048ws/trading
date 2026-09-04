@@ -40,7 +40,6 @@ end OrderViolations
 
 /** Shape and semantic failures from activation evidence. */
 enum ActivationViolation:
-  case EvidenceShapeMismatch
   case FixedTriggerUnsatisfied
   case FixedEvidenceMismatch
   case TrailingThresholdNonPositive
@@ -49,6 +48,5 @@ enum ActivationViolation:
 
 /** Shape and semantic failures from pricing resolution. */
 enum PricingViolation:
-  case ResolutionShapeMismatch
   case PegOffsetMismatch(expectedOffset: BigInt, suppliedOffset: BigInt)
   case PegResolutionMismatch

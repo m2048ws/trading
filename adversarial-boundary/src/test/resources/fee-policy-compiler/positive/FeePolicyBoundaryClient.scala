@@ -29,7 +29,7 @@ object FeePolicyBoundaryClient:
     marketOrder.activation.evidence,
     marketOrder.execution.resolution,
     slice
-  ).toOption.get
+  )
   val scenario = OrderScenario.evaluate(instrument)(assumptions).toOption.get
   val directive = FeeDirective(fee, SliceIndex.zero)
   val noFees    = FeePolicy.noFees(instrument)
@@ -45,7 +45,7 @@ object FeePolicyBoundaryClient:
     exitOrder.activation.evidence,
     exitOrder.execution.resolution,
     exitSlice
-  ).toOption.get
+  )
   val exitScenario = OrderScenario.evaluate(instrument)(exitAssumptions).toOption.get
   val roundTrip    = RoundTripScenario.create(instrument)(scenario, exitScenario).toOption.get
   val policies     = RoundTripFeePolicies.same(strategy)

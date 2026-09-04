@@ -1,0 +1,16 @@
+{
+  "command": "corgispec ready total-and-deterministic-execution-transitions --path . --strict --json",
+  "exitCode": 0,
+  "status": "ready",
+  "planningRevision": "sha256:cc2f27f72a1ce0fdc778c0e13c1f7eb04d0a0297886502ea92bf6b7a45c1acb6",
+  "checks": [
+    "artifacts complete",
+    "OpenSpec strict validation passed",
+    "three stable unique Task Groups",
+    "no placeholders or open questions",
+    "capability/spec parity",
+    "archive delta compatible",
+    "RFC source provenance current",
+    "AC traceability complete"
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 3,
+  "scope": "group-2",
+  "runId": "run-b70ef36b-dc7b-4dae-a61b-12233adb5504",
+  "references": [
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fexecution-lifecycle-compiler%2Fpositive%2FExecutionAuthorityBoundaryClient.scala#sha256:e38b17763d72db075a1f52c86c1cdd1a0f43337cca2f8349247d69e75337cc80",
+      "sourcePath": "adversarial-boundary/src/test/resources/execution-lifecycle-compiler/positive/ExecutionAuthorityBoundaryClient.scala",
+      "digest": "sha256:e38b17763d72db075a1f52c86c1cdd1a0f43337cca2f8349247d69e75337cc80",
+      "archivePath": "references/blobs/e38b17763d72db075a1f52c86c1cdd1a0f43337cca2f8349247d69e75337cc80"
+    },
+    {
+      "reference": "file:execution-lifecycle%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fexecution%2FCancellation.scala#sha256:030ab021a74f9e609d63731133b6187841968a7a5b89cd8efae4e04850beda17",
+      "sourcePath": "execution-lifecycle/src/main/scala/trading/execution/Cancellation.scala",
+      "digest": "sha256:030ab021a74f9e609d63731133b6187841968a7a5b89cd8efae4e04850beda17",
+      "archivePath": "references/blobs/030ab021a74f9e609d63731133b6187841968a7a5b89cd8efae4e04850beda17"
+    },
+    {
+      "reference": "file:execution-lifecycle%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fexecution%2FEffectiveFillLedger.scala#sha256:67be733f2ab5f22f91968bf8f2b552d864f892ce4d4991db2dec360812ef5164",
+      "sourcePath": "execution-lifecycle/src/main/scala/trading/execution/EffectiveFillLedger.scala",
+      "digest": "sha256:67be733f2ab5f22f91968bf8f2b552d864f892ce4d4991db2dec360812ef5164",
+      "archivePath": "references/blobs/67be733f2ab5f22f91968bf8f2b552d864f892ce4d4991db2dec360812ef5164"
+    },
+    {
+      "reference": "file:execution-lifecycle%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fexecution%2FSubmissionKnowledge.scala#sha256:8b892d2bf2db47b260b0c824c1bec012fc0e04be8783446d99334f6b1b6c586d",
+      "sourcePath": "execution-lifecycle/src/main/scala/trading/execution/SubmissionKnowledge.scala",
+      "digest": "sha256:8b892d2bf2db47b260b0c824c1bec012fc0e04be8783446d99334f6b1b6c586d",
+      "archivePath": "references/blobs/8b892d2bf2db47b260b0c824c1bec012fc0e04be8783446d99334f6b1b6c586d"
+    },
+    {
+      "reference": "file:execution-lifecycle%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fexecution%2FCancellationSuite.scala#sha256:442bdeed9a2c76c1f748a6969d153b3332e7259ccdacd7a613d9c8740c45c40e",
+      "sourcePath": "execution-lifecycle/src/test/scala/trading/execution/CancellationSuite.scala",
+      "digest": "sha256:442bdeed9a2c76c1f748a6969d153b3332e7259ccdacd7a613d9c8740c45c40e",
+      "archivePath": "references/blobs/442bdeed9a2c76c1f748a6969d153b3332e7259ccdacd7a613d9c8740c45c40e"
+    },
+    {
+      "reference": "file:execution-lifecycle%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fexecution%2FEffectiveFillLedgerSuite.scala#sha256:7202df45dd10d3212bed461482da2465656e434741e69179799fca84ecfa7d7c",
+      "sourcePath": "execution-lifecycle/src/test/scala/trading/execution/EffectiveFillLedgerSuite.scala",
+      "digest": "sha256:7202df45dd10d3212bed461482da2465656e434741e69179799fca84ecfa7d7c",
+      "archivePath": "references/blobs/7202df45dd10d3212bed461482da2465656e434741e69179799fca84ecfa7d7c"
+    },
+    {
+      "reference": "file:execution-lifecycle%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fexecution%2FSubmissionKnowledgeSuite.scala#sha256:00ed791e13c55b40ebbdac63a224ed744dd54ff4b3b4ebf34fa4c33ee61f277a",
+      "sourcePath": "execution-lifecycle/src/test/scala/trading/execution/SubmissionKnowledgeSuite.scala",
+      "digest": "sha256:00ed791e13c55b40ebbdac63a224ed744dd54ff4b3b4ebf34fa4c33ee61f277a",
+      "archivePath": "references/blobs/00ed791e13c55b40ebbdac63a224ed744dd54ff4b3b4ebf34fa4c33ee61f277a"
+    }
+  ]
+}

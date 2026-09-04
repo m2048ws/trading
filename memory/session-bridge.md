@@ -1,6 +1,6 @@
 ---
 type: memory
-updated: 2026-09-03
+updated: 2026-09-04
 ---
 
 # Session Bridge
@@ -10,17 +10,17 @@ updated: 2026-09-03
 ## Delivery Pointer
 - **RFC**: RFC-0005-simplify-post-trust-boundary
 - **RFC Revision**: 7f1d1ab9eb88d0912d3219920eacadea4d01aa2e
-- **Slice**: S-01-retire-trust-boundary-migration-scaffolding
-- **Issue**: 38 https://github.com/m2048ws/trading/issues/38
-- **Change**: retire-trust-boundary-migration-scaffolding
-- **Worktree**: /Users/m/src/money/.worktrees/retire-trust-boundary-migration-scaffolding
+- **Slice**: S-04-use-scala-first-quantity-and-reference-data
+- **Issue**: 46 https://github.com/m2048ws/trading/issues/46
+- **Change**: use-scala-first-quantity-and-reference-data
+- **Worktree**: /Users/m/src/money/.worktrees/use-scala-first-quantity-and-reference-data
 - **Phase at Checkpoint**: archiving
 - **Task Group at Checkpoint**: none
-- **Observed Run Revision**: 8
-- **Last Verified HEAD**: 522fad5d570c1a76da6c30b408c26f0991bee1af
+- **Observed Run Revision**: 9
+- **Last Verified HEAD**: 806a6b435614a23536f5f26a221469281f5253b6
 
 ## Next Action
-- Consult Run Contract v3: resume tracker closeout for `retire-trust-boundary-migration-scaffolding` only if pending; otherwise select the next accepted Slice. Local delivery: `wiki/deliveries/RFC-0005-simplify-post-trust-boundary-S-01-retire-trust-boundary-migration-scaffolding.md`.
+- Consult Run Contract v3: resume tracker closeout for `use-scala-first-quantity-and-reference-data` only if pending; otherwise select the next accepted Slice. Local delivery: `wiki/deliveries/RFC-0005-simplify-post-trust-boundary-S-04-use-scala-first-quantity-and-reference-data.md`.
 
 ## Blockers
 - none
@@ -63,6 +63,44 @@ updated: 2026-09-03
 - RFC-0005/S-01 Task Group 2 removed the runtime-only Java-first compile order, stale bridge explanation, and duplicate
   release option; the runtime inherits mixed compilation and repository `--release 25`, with 1,043 tests and benchmark
   compilation passing after a clean build.
+- RFC-0005/S-02 Task Group 1 replaces the command transition kind plus optional violations with five owner-sealed
+  alternatives, removes unchecked violation extraction, and preserves applied, idempotent, command-conflict,
+  dispatch-conflict, and rejection state semantics under focused and completed-artifact compiler tests.
+- RFC-0005/S-02 Task Group 2 replaces replay, effective-fill, cancellation-anomaly, continuation, unsequenced-event,
+  conflict, and diagnostic string keys with owner-local typed lexicographic comparisons, retaining null rejection and
+  deterministic permutation semantics even when identifier components contain former `|` and `-` delimiters.
+- RFC-0005/S-02 Task Group 3 removes the second effective-fill derivation from observation assembly, passes the one
+  ledger value into anomaly construction, and proves the non-empty overfill object is reused by identity while all
+  correction, bust, unresolved-reference, conflict, cancellation-race, exposure, and serialization behavior remains.
+- RFC-0005/S-03 Task Group 1 replaces command and source transitions with generated sealed cases and replaces the
+  lifecycle accepted-kind tag with applied, idempotent, conflicting, and rejected cases while preserving state,
+  violation, conflict, work-accounting, exhaustive compiler-boundary, equality, and serialization behavior.
+- RFC-0005/S-03 Task Group 2 replaces submission knowledge, cancellation knowledge, and effective-fill alternatives
+  with direct generated sealed cases while preserving evidence, precedence, uncertainty, exact economics, modifier
+  order, conflict detail, exhaustive matching, structural equality, and fail-closed serialization.
+- RFC-0005/S-03 Task Group 3 converts field-valid evidence, command/source conflicts, ledgers, anomalies, observations,
+  and replay results to package-owned generated products, removes their forwarding constructors and manual equality,
+  retains computed accessors and fail-closed serialization, and leaves guarded states, commands, facts, identities,
+  refinements, non-empty wrappers, and external reconstruction under checked construction.
+- RFC-0005/S-05 Task Group 1 removes `Any`-based activation/pricing acceptance hooks and their erased-shape errors,
+  makes `ScenarioAssumptions.create`, `one`, and `many` direct, keeps `fromVector` typed for empty input, and preserves
+  same-shape semantic mismatch, fee, codec reconstruction, and negative associated-evidence compiler behavior.
+- RFC-0005/S-05 Task Group 2 removes the reference-data, order/scenario, execution-lifecycle, and boundary-codec Java
+  domain fixtures and their dedicated compiler/classloader code while retaining completed-artifact Scala clients,
+  negative compiler cases, dependency inspections, semantic tests, external wire/null cases, and serialization checks.
+- RFC-0005/S-05 Task Group 3 establishes Scala 3 as the supported domain source API in durable architecture guidance
+  and the active specification deltas while explicitly retaining the JDK 25 baseline, Java-library/JVM integration,
+  checked external representations, exact decimal conversion, canonical wire formats, and serialization rejection.
+- RFC-0005/S-04 Task Group 1 replaces `AssetId`, `GridId`, and `GridVersion` with Scala-owned checked case classes,
+  denies generated product reconstruction, removes the repository's last production Java sources, and preserves typed
+  invalidity, value semantics, stable codec representations, Scala field observation, and serialization rejection.
+- RFC-0005/S-04 Task Group 2 removes raw `UniformGrid` and `GridDefinition` factories and redundant positive-quantum
+  reconstruction, trusts established `PositiveRational` values directly, and retains null rejection, generative grid
+  identity, exact interpretation, and precise raw-invalidity diagnostics at refinement and codec boundaries.
+- RFC-0005/S-04 Task Group 3 replaces catalog commit and transition product emulation with an exhaustive sealed Scala
+  sum and direct structural products, retains model-owned issuance, null and serialization rejection, publication and
+  idempotence semantics, and passes the clean 1,042-test aggregate, benchmark compile, guards, source scans, formatting,
+  and strict readiness.
 
 ## Promotion Queue
 - none

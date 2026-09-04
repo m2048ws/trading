@@ -61,8 +61,9 @@ the project SHALL retain ownership of domain meanings, invariants, trusted-value
 durable schema semantics. A second library vocabulary for the same concern SHALL require an explicit distinct need.
 
 Independently released dependencies SHALL use independently named version coordinates even when their current version
-strings happen to match. The repository minimum build and runtime JDK SHALL be 17 while it uses Scala 3.8.x; changing
-that floor or selecting a dependency major that requires a higher floor SHALL be an explicit compatibility decision.
+strings happen to match. The repository minimum build and runtime JDK SHALL remain 25 while it uses Scala 3.8.x;
+changing that floor or selecting a dependency major that requires a higher floor SHALL be an explicit compatibility
+decision.
 
 #### Scenario: Select a concrete runtime mechanism
 
@@ -208,25 +209,33 @@ their effects and mechanisms MUST NOT move into its pure model.
 
 ### Requirement: Cooperative code and untrusted data have distinct boundaries
 
-The repository SHALL treat well-typed Scala and ordinary Java application code using documented APIs as cooperative
-in-process callers. It SHALL NOT claim that constructor visibility, exact-class checks, synthetic access details,
-reflection avoidance, or difficulty instantiating a representation protects against deliberately hostile code already
-executing in the same JVM. If mutually untrusted executable code is introduced, its isolation SHALL be designed at an
-explicit process, module, class-loader, or sandbox boundary.
+The repository SHALL treat well-typed Scala 3 application code using documented domain APIs as cooperative in-process
+callers. Ordinary Java source SHALL NOT be a supported domain API contract. Java libraries and JVM platform services
+MAY still be integrated behind their owning Scala boundary, and this source-policy distinction SHALL NOT be presented
+as an isolation or security boundary. The repository SHALL NOT claim that constructor visibility, exact-class checks,
+synthetic access details, reflection avoidance, or difficulty instantiating a representation protects against
+deliberately hostile code already executing in the same JVM. If mutually untrusted executable code is introduced, its
+isolation SHALL be designed at an explicit process, module, class-loader, or sandbox boundary.
 
-Data arriving from wire, persistence, configuration, venue, replay, or another external representation SHALL remain
-untrusted until an owning checked boundary validates it. Construction difficulty SHALL NOT substitute for validating
-the semantic predicate that distinguishes data from trusted domain evidence.
+Data arriving from wire, persistence, configuration, venue, replay, Java-library interoperation, or another external
+representation SHALL remain untrusted until an owning checked boundary validates it. Construction difficulty SHALL
+NOT substitute for validating the semantic predicate that distinguishes data from trusted domain evidence.
 
 #### Scenario: Collaborate across in-process owners
 
 - **WHEN** one production owner must construct or observe another owner's value to implement documented behavior
-- **THEN** it uses a narrow statically callable operation without reflective private-member access or an issuance token
-  whose only purpose is resisting same-JVM callers
+- **THEN** it uses a narrow statically callable Scala operation without reflective private-member access or an issuance
+  token whose only purpose is resisting same-JVM callers
+
+#### Scenario: Integrate a Java library
+
+- **WHEN** a Scala owner consumes a Java library or JVM platform service
+- **THEN** that owner validates external values as required and exposes the repository's supported Scala domain surface
+  without promising an ordinary-Java domain API
 
 #### Scenario: Reject malformed external data
 
-- **WHEN** malformed or incoherent wire, persistence, configuration, venue, or replay data enters the process
+- **WHEN** malformed or incoherent wire, persistence, configuration, venue, replay, or library data enters the process
 - **THEN** the owning decoder, resolver, assembler, or transition returns its typed failure before trusted state is
   produced
 

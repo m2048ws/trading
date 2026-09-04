@@ -1,6 +1,6 @@
 schemaVersion: 1
 rfcId: RFC-0005-simplify-post-trust-boundary
-revision: 3
+revision: 11
 slices:
   S-01-retire-trust-boundary-migration-scaffolding:
     status: archived
@@ -17,10 +17,58 @@ slices:
       commit: 522fad5d570c1a76da6c30b408c26f0991bee1af
       evidenceManifest: sha256:048651d8e79a23efe53616bb45e0c46e0f4a986f1278d5816470b1fc68702ad8
   S-02-total-and-deterministic-execution-transitions:
-    status: unbound
+    status: archived
+    binding:
+      change: total-and-deterministic-execution-transitions
+      sourceDigest: sha256:06321277e89e5cf534d3885211fe15f6392a8d0f633ead24e71281d22804ea13
+      plannedAt: '2026-09-04T00:34:45.390Z'
+      issue:
+        provider: github
+        id: '40'
+        url: https://github.com/m2048ws/trading/issues/40
+    archive:
+      archivedAt: '2026-09-04T01:10:52.120Z'
+      commit: a977df576bf089a366930183c14f45029cf77a14
+      evidenceManifest: sha256:fc98726449f5ed9c353d75b88b17d255c3c509f1c8d84be94eda66e5ee00e8c9
   S-03-use-direct-scala-derived-models:
-    status: unbound
+    status: archived
+    binding:
+      change: use-direct-scala-derived-models
+      sourceDigest: sha256:495368726ab7e6d992b882779e3d87f360ee51dc422efd00ceb7cae29dedba56
+      plannedAt: '2026-09-04T01:23:41.927Z'
+      issue:
+        provider: github
+        id: '42'
+        url: https://github.com/m2048ws/trading/issues/42
+    archive:
+      archivedAt: '2026-09-04T02:50:22.277Z'
+      commit: f46c95751e6f72e45ee33881eb1705625b2228d9
+      evidenceManifest: sha256:aa9b0dc3e278d955dd75f2edab6fd5d572f17f2754252b7e4cb6b345e9e80658
   S-04-use-scala-first-quantity-and-reference-data:
-    status: unbound
+    status: archived
+    binding:
+      change: use-scala-first-quantity-and-reference-data
+      sourceDigest: sha256:196d46b1fb5039303f50ba631ba482d2231ee6c737a0e055a83f3653f1e91314
+      plannedAt: '2026-09-04T05:20:13.985Z'
+      issue:
+        provider: github
+        id: '46'
+        url: https://github.com/m2048ws/trading/issues/46
+    archive:
+      archivedAt: '2026-09-04T06:25:35.796Z'
+      commit: 806a6b435614a23536f5f26a221469281f5253b6
+      evidenceManifest: sha256:95f7a7ae69b6481f23ea39097a3533e1ad73ee57563f054d6581379a78567432
   S-05-remove-java-api-compatibility:
-    status: unbound
+    status: archived
+    binding:
+      change: remove-java-api-compatibility
+      sourceDigest: sha256:d2278178847daa4d028e46f160af897ea1d2ebde0ad37b0bf9c480d5b5faa853
+      plannedAt: '2026-09-04T03:10:44.175Z'
+      issue:
+        provider: github
+        id: '44'
+        url: https://github.com/m2048ws/trading/issues/44
+    archive:
+      archivedAt: '2026-09-04T05:06:23.223Z'
+      commit: 2754b2e91ebc5f9f29fc95e51793d01f4d71681a
+      evidenceManifest: sha256:60fca10695ecec821f321730ede792e35d7310ca94e497504462a719c001b84b
