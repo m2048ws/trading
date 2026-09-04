@@ -14,13 +14,13 @@ updated: 2026-09-04
 - **Issue**: 44 https://github.com/m2048ws/trading/issues/44
 - **Change**: remove-java-api-compatibility
 - **Worktree**: /Users/m/src/money/.worktrees/remove-java-api-compatibility
-- **Phase at Checkpoint**: awaiting_verify
-- **Task Group at Checkpoint**: 3
-- **Observed Run Revision**: 4
-- **Last Verified HEAD**: f98ef4f37e4597858c9c1d105be4aa9e002b2699
+- **Phase at Checkpoint**: archiving
+- **Task Group at Checkpoint**: none
+- **Observed Run Revision**: 9
+- **Last Verified HEAD**: 2754b2e91ebc5f9f29fc95e51793d01f4d71681a
 
 ## Next Action
-- Commit and acknowledge Task Group 3, then run canonical whole-change Verify.
+- Consult Run Contract v3: resume tracker closeout for `remove-java-api-compatibility` only if pending; otherwise select the next accepted Slice. Local delivery: `wiki/deliveries/RFC-0005-simplify-post-trust-boundary-S-05-remove-java-api-compatibility.md`.
 
 ## Blockers
 - none

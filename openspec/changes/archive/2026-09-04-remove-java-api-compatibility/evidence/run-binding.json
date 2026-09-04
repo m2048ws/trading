@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 3,
+  "changeName": "remove-java-api-compatibility",
+  "runId": "run-e2915bcc-4b84-422e-bc4d-843b47fd5c99",
+  "finalRevision": "2754b2e91ebc5f9f29fc95e51793d01f4d71681a",
+  "planningRevision": "sha256:e062242ee1292d105f4c88f385eae436ba0ae47dd6d276c1afc592a94a030e2b",
+  "contract": {
+    "kind": "rfc-slice",
+    "deliveryRef": "RFC-0005-simplify-post-trust-boundary/S-05-remove-java-api-compatibility",
+    "rfcId": "RFC-0005-simplify-post-trust-boundary",
+    "rfcDigest": "sha256:31336459ac68c4a188388bb58cf59fe8c84830a0b72aa66d29fdcff4f90657a3",
+    "acceptedCommit": "7f1d1ab9eb88d0912d3219920eacadea4d01aa2e",
+    "sliceId": "S-05-remove-java-api-compatibility",
+    "sourcePath": "openspec/changes/remove-java-api-compatibility/corgi/source.yaml",
+    "sourceDigest": "sha256:d2278178847daa4d028e46f160af897ea1d2ebde0ad37b0bf9c480d5b5faa853",
+    "traceabilityPath": "openspec/changes/remove-java-api-compatibility/corgi/traceability.yaml",
+    "traceabilityDigest": "sha256:fb326f95f1744014bf9b48f64d4fb44d128f1e6a9452151263dcef389ea09d2f",
+    "acceptance": [
+      {
+        "id": "AC-016",
+        "evidence": "automated",
+        "taskGroups": [
+          "1"
+        ]
+      },
+      {
+        "id": "AC-017",
+        "evidence": "automated",
+        "taskGroups": [
+          "1"
+        ]
+      },
+      {
+        "id": "AC-018",
+        "evidence": "automated",
+        "taskGroups": [
+          "2"
+        ]
+      },
+      {
+        "id": "AC-019",
+        "evidence": "automated",
+        "taskGroups": [
+          "3"
+        ]
+      }
+    ],
+    "tracker": {
+      "provider": "github",
+      "idempotencyKey": "f0a9707242f556a48c3954ff7ab9455701751aee65a32434eaf26ed1482a25bb",
+      "issue": {
+        "id": "44",
+        "url": "https://github.com/m2048ws/trading/issues/44"
+      }
+    }
+  },
+  "archiveIntentId": "archive-08dfa4bb-68db-48dd-9883-312d5ac9fb1a"
+}

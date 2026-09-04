@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 3,
+  "groupId": "1",
+  "checks": [
+    {
+      "name": "focused domain and downstream semantics",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:execution-scenario%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fscenario%2FOrderScenarioSuite.scala#sha256:d0a119529bb76efb91eebd2c626c4666ae72fd41002f856c5bc8830f0053357f",
+        "file:fee-policy%2Fsrc%2Ftest%2Fscala%2Ftrading%2FFeePolicyIntegrationSuite.scala#sha256:4f2d30ba78997268ac18b7cb82c573cc256c68a7524189af6211bf8a4065af28",
+        "file:boundary-codecs%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fcodec%2FScenarioRecordPropertiesSuite.scala#sha256:21481f26cbacfd405d7298813b921b5c5d4ea5fcd098e32465520905e0849947"
+      ]
+    },
+    {
+      "name": "completed-artifact compiler boundaries",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Feconomics-compiler%2Fnegative%2FAssociatedEvidenceShapes.scala#sha256:05a1c73381da421cc7f41315985e90c0be411916d77a3ef067bea3c67c8f647b",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Feconomics-compiler%2Fpositive%2FCompleteCompositionClient.scala#sha256:a42b3904705cb5b58f9f399bc9acf5dee174f4d9dd187e77eef6879cb75466fe"
+      ]
+    },
+    {
+      "name": "formatting and erased-hook source scan",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:order-model%2Fsrc%2Fmain%2Fscala%2Ftrading%2Forder%2FOrder.scala#sha256:ca0ada236fa5c6fe9d18de097acb1e1e7233617efabb1a6c634b95a5c8441028",
+        "file:execution-scenario%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fscenario%2FScenario.scala#sha256:826cbe189394f1ea158621d9b491a2879460216fab71f0c212265a8421d9ac05"
+      ]
+    }
+  ],
+  "automatedReview": {
+    "verdict": "pass",
+    "findings": []
+  },
+  "artifacts": [
+    "file:order-model%2Fsrc%2Fmain%2Fscala%2Ftrading%2Forder%2FOrder.scala#sha256:ca0ada236fa5c6fe9d18de097acb1e1e7233617efabb1a6c634b95a5c8441028",
+    "file:execution-scenario%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fscenario%2FScenario.scala#sha256:826cbe189394f1ea158621d9b491a2879460216fab71f0c212265a8421d9ac05",
+    "file:boundary-codecs%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fcodec%2FScenarioRecords.scala#sha256:dc9be36aeac5100df306cb43d493b1c6849a7219751c3a1af6fb46b764091c1d",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Feconomics-compiler%2Fnegative%2FAssociatedEvidenceShapes.scala#sha256:05a1c73381da421cc7f41315985e90c0be411916d77a3ef067bea3c67c8f647b"
+  ],
+  "summary": "Removed erased activation/pricing acceptance hooks, made associated Scala assumptions construction direct, retained typed vector emptiness and semantic replay failures, and updated all affected Scala consumers and compiler fixtures."
+}
