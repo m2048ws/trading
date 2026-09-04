@@ -24,7 +24,8 @@
     "introduce-versioned-boundary-codecs",
     "establish-actual-execution-lifecycle",
     "simplify-in-process-trust-boundary",
-    "retire-trust-boundary-migration-scaffolding"
+    "retire-trust-boundary-migration-scaffolding",
+    "total-and-deterministic-execution-transitions"
   ],
   "authority": {
     "localCorgiCommits": true,
