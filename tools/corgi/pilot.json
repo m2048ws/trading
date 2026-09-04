@@ -27,7 +27,8 @@
     "retire-trust-boundary-migration-scaffolding",
     "remove-java-api-compatibility",
     "total-and-deterministic-execution-transitions",
-    "use-direct-scala-derived-models"
+    "use-direct-scala-derived-models",
+    "use-scala-first-quantity-and-reference-data"
   ],
   "authority": {
     "localCorgiCommits": true,
