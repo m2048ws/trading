@@ -10,17 +10,17 @@ updated: 2026-09-04
 ## Delivery Pointer
 - **RFC**: RFC-0008-simplify-instrument-dependent-apis
 - **RFC Revision**: bf457296faa7d29aec0840a7e8f48d41ed0f7491
-- **Slice**: S-01-name-instrument-dimensions
-- **Issue**: 53 https://github.com/m2048ws/trading/issues/53
-- **Change**: name-instrument-dimensions
-- **Worktree**: /Users/m/src/money/.worktrees/name-instrument-dimensions
-- **Phase at Checkpoint**: archiving
-- **Task Group at Checkpoint**: none
-- **Observed Run Revision**: 7
-- **Last Verified HEAD**: 2e69c260793d85d1c9e1b4930a908421eaef2bb5
+- **Slice**: S-02-bind-standard-order-construction
+- **Issue**: 55 https://github.com/m2048ws/trading/issues/55
+- **Change**: bind-standard-order-construction
+- **Worktree**: /Users/m/src/money/.worktrees/bind-standard-order-construction
+- **Phase at Checkpoint**: planning_ready
+- **Task Group at Checkpoint**: 1
+- **Observed Run Revision**: none
+- **Last Verified HEAD**: e2fa856516c31457c9491b7c3d663ca465cd9763
 
 ## Next Action
-- Consult Run Contract v3: resume tracker closeout for `name-instrument-dimensions` only if pending; otherwise select the next accepted Slice. Local delivery: `wiki/deliveries/RFC-0008-simplify-instrument-dependent-apis-S-01-name-instrument-dimensions.md`.
+- Start Apply for `bind-standard-order-construction` Task Group 1.
 
 ## Blockers
 - none
