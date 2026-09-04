@@ -14,13 +14,13 @@ updated: 2026-09-04
 - **Issue**: 61 https://github.com/m2048ws/trading/issues/61
 - **Change**: bind-instrument-risk
 - **Worktree**: /Users/m/src/money/.worktrees/bind-instrument-risk
-- **Phase at Checkpoint**: planning_ready
+- **Phase at Checkpoint**: awaiting_verify
 - **Task Group at Checkpoint**: 1
-- **Observed Run Revision**: none
-- **Last Verified HEAD**: b7c762de8f9a1a0fa512be58a7eb95fb2f12d93d
+- **Observed Run Revision**: 2
+- **Last Verified HEAD**: 458827c956e826a2251de13ef059e9c887450d5e
 
 ## Next Action
-- Start Apply for `bind-instrument-risk` Task Group 1.
+- Run canonical whole-change Verify for `bind-instrument-risk` against the acknowledged Task Group commit.
 
 ## Blockers
 - none
@@ -106,6 +106,10 @@ updated: 2026-09-04
   and strict readiness.
 
 ## Promotion Queue
+- RFC-0008/S-05 Task Group 1 adds one final field-only `Risk` scope whose exact aliases and six delegates bind downside,
+  checked monotone-model construction, and explicit exhaustive sizing to one instrument; focused and completed-artifact
+  evidence preserves broad existential validation, typed failures, exact costs and decisions, incompatible-input
+  rejection, independent model algebra, complexity bounds, concurrent reuse, and the pure risk dependency cone.
 - RFC-0008/S-04 Task Group 1 adds final codec-owned `ScenarioRecord` encoder and immutable-snapshot decoder contexts
   whose ten methods delegate to the canonical order- and round-trip-scenario record operations; focused and
   completed-artifact evidence preserves exact dependent types, canonical wire and diagnostic behavior, coherent

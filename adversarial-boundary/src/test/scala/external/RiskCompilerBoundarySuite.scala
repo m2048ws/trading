@@ -54,6 +54,7 @@ class RiskCompilerBoundarySuite extends FunSuite:
       val names   = entries.map(_.getName).toSet
       assert(names.contains("trading/risk/RiskIdentityError.class"))
       assert(names.contains("trading/risk/DownsideInstrumentMismatch.class"))
+      assert(names.contains("trading/risk/Risk$InstrumentScope.class"))
       val classBytes = entries
         .filter(entry => !entry.isDirectory && entry.getName.endsWith(".class"))
         .map: entry =>
@@ -84,6 +85,11 @@ class RiskCompilerBoundarySuite extends FunSuite:
     assert(result.succeeded, result.rendered)
     runModule(result.output, "external.risk.positive.RiskBoundaryClient$", "run")
 
+  test("completed risk JAR compiles and runs the instrument-bound risk client"):
+    val result = compile(fixturesRoot.resolve("positive/RiskInstrumentScopeClient.scala"))
+    assert(result.succeeded, result.rendered)
+    runModule(result.output, "external.risk.positive.RiskInstrumentScopeClient$", "run")
+
   test("completed risk classpath rejects downstream, effect, codec, persistence, telemetry, and benchmark concerns"):
     val source  = fixturesRoot.resolve("negative/RiskHasNoDownstream.scala")
     val prelude = compilePrelude(source)
@@ -100,6 +106,16 @@ class RiskCompilerBoundarySuite extends FunSuite:
     assert(prelude.succeeded, s"fixture prelude must compile independently:\n${prelude.rendered}")
     val rejected = compile(source)
     assert(rejected.errors.size >= 4, rejected.rendered)
+    assert(rejected.rendered.contains("Found:"), rejected.rendered)
+    assert(rejected.rendered.contains("Required:"), rejected.rendered)
+    forbiddenDiagnostics.foreach(fragment => assert(!rejected.rendered.contains(fragment), rejected.rendered))
+
+  test("completed instrument-bound risk API rejects incompatible PnL, loss, segment, budget, and evaluator types"):
+    val source  = fixturesRoot.resolve("negative/RiskInstrumentScopeMismatch.scala")
+    val prelude = compilePrelude(source)
+    assert(prelude.succeeded, s"fixture prelude must compile independently:\n${prelude.rendered}")
+    val rejected = compile(source)
+    assert(rejected.errors.size >= 5, rejected.rendered)
     assert(rejected.rendered.contains("Found:"), rejected.rendered)
     assert(rejected.rendered.contains("Required:"), rejected.rendered)
     forbiddenDiagnostics.foreach(fragment => assert(!rejected.rendered.contains(fragment), rejected.rendered))
