@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 3,
+  "scope": "group-1",
+  "runId": "run-280a527b-c4a7-458e-ad08-174c86a1d6b4",
+  "references": [
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Frisk-compiler%2Fnegative%2FRiskInstrumentScopeMismatch.scala#sha256:63f44ea83fe72454b411ae468c98f59f981f89aa12d2704b3823be280f82fd80",
+      "sourcePath": "adversarial-boundary/src/test/resources/risk-compiler/negative/RiskInstrumentScopeMismatch.scala",
+      "digest": "sha256:63f44ea83fe72454b411ae468c98f59f981f89aa12d2704b3823be280f82fd80",
+      "archivePath": "references/blobs/63f44ea83fe72454b411ae468c98f59f981f89aa12d2704b3823be280f82fd80"
+    },
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Frisk-compiler%2Fpositive%2FRiskInstrumentScopeClient.scala#sha256:ae2e94ad40bde3c450d1cf7531192dce86707477b8975ae20d9313a3c936df53",
+      "sourcePath": "adversarial-boundary/src/test/resources/risk-compiler/positive/RiskInstrumentScopeClient.scala",
+      "digest": "sha256:ae2e94ad40bde3c450d1cf7531192dce86707477b8975ae20d9313a3c936df53",
+      "archivePath": "references/blobs/ae2e94ad40bde3c450d1cf7531192dce86707477b8975ae20d9313a3c936df53"
+    },
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FRiskCompilerBoundarySuite.scala#sha256:a81602943cad15bf19922e1cc472d4de0f126f0576daeed7e3e336a72e37adaa",
+      "sourcePath": "adversarial-boundary/src/test/scala/external/RiskCompilerBoundarySuite.scala",
+      "digest": "sha256:a81602943cad15bf19922e1cc472d4de0f126f0576daeed7e3e336a72e37adaa",
+      "archivePath": "references/blobs/a81602943cad15bf19922e1cc472d4de0f126f0576daeed7e3e336a72e37adaa"
+    },
+    {
+      "reference": "file:build.sbt#sha256:790e4ae7fa4ab9334b36c0273bc4d44d02d59cac352b50f5f0aeaadc026f5db8",
+      "sourcePath": "build.sbt",
+      "digest": "sha256:790e4ae7fa4ab9334b36c0273bc4d44d02d59cac352b50f5f0aeaadc026f5db8",
+      "archivePath": "references/blobs/790e4ae7fa4ab9334b36c0273bc4d44d02d59cac352b50f5f0aeaadc026f5db8"
+    },
+    {
+      "reference": "file:memory%2Fsession-bridge.md#sha256:8a94531ef7e96950d6d602919b044723697728962e53623d3a704585da288723",
+      "sourcePath": "memory/session-bridge.md",
+      "digest": "sha256:8a94531ef7e96950d6d602919b044723697728962e53623d3a704585da288723",
+      "archivePath": "references/blobs/8a94531ef7e96950d6d602919b044723697728962e53623d3a704585da288723"
+    },
+    {
+      "reference": "file:risk%2Fsrc%2Fmain%2Fscala%2Ftrading%2Frisk%2FRisk.scala#sha256:ff46a9fa93df61f52c397e2c4f9cbf6e8c9cb121f8026335f55581a63bfd7221",
+      "sourcePath": "risk/src/main/scala/trading/risk/Risk.scala",
+      "digest": "sha256:ff46a9fa93df61f52c397e2c4f9cbf6e8c9cb121f8026335f55581a63bfd7221",
+      "archivePath": "references/blobs/ff46a9fa93df61f52c397e2c4f9cbf6e8c9cb121f8026335f55581a63bfd7221"
+    },
+    {
+      "reference": "file:risk%2Fsrc%2Ftest%2Fscala%2Ftrading%2Frisk%2FRiskInstrumentScopeSuite.scala#sha256:eed28ba67c16b6c92435c2ce7cf9c20e8e899cd2592c8ef1dade7282ce81bded",
+      "sourcePath": "risk/src/test/scala/trading/risk/RiskInstrumentScopeSuite.scala",
+      "digest": "sha256:eed28ba67c16b6c92435c2ce7cf9c20e8e899cd2592c8ef1dade7282ce81bded",
+      "archivePath": "references/blobs/eed28ba67c16b6c92435c2ce7cf9c20e8e899cd2592c8ef1dade7282ce81bded"
+    },
+    {
+      "reference": "file:tools%2Fcheck-in-process-reflection.sh#sha256:bca2729121ce2bde4dfe3e8db2af53d6129ea0db1162eaab0dd982d769ddf3d6",
+      "sourcePath": "tools/check-in-process-reflection.sh",
+      "digest": "sha256:bca2729121ce2bde4dfe3e8db2af53d6129ea0db1162eaab0dd982d769ddf3d6",
+      "archivePath": "references/blobs/bca2729121ce2bde4dfe3e8db2af53d6129ea0db1162eaab0dd982d769ddf3d6"
+    },
+    {
+      "reference": "file:tools%2Ftest-check-in-process-reflection.sh#sha256:0679a80193d81a4ab8836387de8054644fd1569e9b4275506cb3171fdbce9510",
+      "sourcePath": "tools/test-check-in-process-reflection.sh",
+      "digest": "sha256:0679a80193d81a4ab8836387de8054644fd1569e9b4275506cb3171fdbce9510",
+      "archivePath": "references/blobs/0679a80193d81a4ab8836387de8054644fd1569e9b4275506cb3171fdbce9510"
+    }
+  ]
+}

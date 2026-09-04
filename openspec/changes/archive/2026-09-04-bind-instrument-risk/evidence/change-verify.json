@@ -1,0 +1,144 @@
+{
+  "verdict": "pass",
+  "finalRevision": "819a4c8dc3fc601655790a512ad24df2df7aee91",
+  "planningRevision": "sha256:53448d9f2f8a5104643a82456824a1e6cca2da96556c0f51e7282d82c1cd2b78",
+  "sourceDigest": "sha256:114045c8b2c0b08b7aef8ff5acd4cef89a4a2e36bc02c9a355ec271b160a5f44",
+  "traceabilityDigest": "sha256:06c93263b7cfc8626910da60fb4972f79e39fbab4504629332740b602710087d",
+  "reportHash": "sha256:ad7f186612c0aeea4b886e3395b0e828453fb4567025e224fca9b5a638e9d25d",
+  "checks": [
+    {
+      "name": "Run Contract, accepted RFC, and exact AC traceability integrity",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:target%2Fcorgi-verify%2Fcorgi-status-before-verify.json#sha256:3a18516ba80d92a5cebca292f60acf1c53b9e846f4d7f72de3516498bbb3c96c",
+        "file:target%2Fcorgi-verify%2Fgit-status-before-verify.log#sha256:bedacd0fc28afee0694078407cf5879c60ad0a5e9568f58d6ff52b786967332f",
+        "file:openspec%2Fchanges%2Fbind-instrument-risk%2Fcorgi%2Fsource.yaml#sha256:114045c8b2c0b08b7aef8ff5acd4cef89a4a2e36bc02c9a355ec271b160a5f44",
+        "file:openspec%2Fchanges%2Fbind-instrument-risk%2Fcorgi%2Ftraceability.yaml#sha256:06c93263b7cfc8626910da60fb4972f79e39fbab4504629332740b602710087d",
+        "file:openspec%2Fchanges%2Fbind-instrument-risk%2Fspecs%2Fposition-risk-sizing%2Fspec.md#sha256:0a0a038edfc6e07b6791f492b6eed4d65e14a72923e122b0c1bff5f6878709c4",
+        "file:openspec%2Fchanges%2Fbind-instrument-risk%2Ftasks.md#sha256:c0e7c8a71b6ce367d4e65f9bce8824f4b03ee7cf498a763fe34fc84db80d2a4d",
+        "file:rfcs%2FRFC-0008-simplify-instrument-dependent-apis%2Frfc.md#sha256:77e1c4ac3d7629334f86695e07ffaf835549c5e0e05612314f0ca193e42139f3",
+        "file:rfcs%2FRFC-0008-simplify-instrument-dependent-apis%2Frfc.yaml#sha256:39c4a195f5e4777cfa1b93458ddfe4a6b631561f7c23e37589d79fc095fac04f"
+      ]
+    },
+    {
+      "name": "Release-25 formatting, clean aggregate tests, and JMH compilation",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:target%2Fcorgi-verify%2Fcommand-manifest.json#sha256:f3ef982a28c7add3859afa74fd77dba8c273b0760b602f431e50d3c2b338944c",
+        "file:target%2Fcorgi-verify%2Ffull-matrix.log#sha256:c840905b6d974ce926724b843c8393fcae7b61d94c0465850cbd0045125ab1b5",
+        "file:.java-version#sha256:64aeb9975f234becd55bb4635e6e2f2da7a6b7bf0a896f0c07763bdfbfb31420",
+        "file:build.sbt#sha256:790e4ae7fa4ab9334b36c0273bc4d44d02d59cac352b50f5f0aeaadc026f5db8"
+      ]
+    },
+    {
+      "name": "Bound-risk exact delegation, validation, allocation, and concurrent reuse",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:target%2Fcorgi-verify%2Ffocused-risk.log#sha256:3fd90d3ef5df538743c470e0a6de7e155cce78bdd72a87c73b47d38f3a947f42",
+        "file:risk%2Fsrc%2Fmain%2Fscala%2Ftrading%2Frisk%2FRisk.scala#sha256:ff46a9fa93df61f52c397e2c4f9cbf6e8c9cb121f8026335f55581a63bfd7221",
+        "file:risk%2Fsrc%2Ftest%2Fscala%2Ftrading%2Frisk%2FRiskInstrumentScopeSuite.scala#sha256:eed28ba67c16b6c92435c2ce7cf9c20e8e899cd2592c8ef1dade7282ce81bded",
+        "file:risk%2Fsrc%2Ftest%2Fscala%2Ftrading%2Frisk%2FRiskCurveSuite.scala#sha256:50996fa957fcd01f8fdeb91e8d7df188d0c19e4a08dad4e7accbaede69cb9c34",
+        "file:risk%2Fsrc%2Ftest%2Fscala%2Ftrading%2Frisk%2FRiskModelBoundarySuite.scala#sha256:396534ec4ee44d893a5d4a2715bc24a1202410a41760c8a3158aa1a6f3382229",
+        "file:risk%2Fsrc%2Ftest%2Fscala%2Ftrading%2Frisk%2FExhaustiveLotSizingSuite.scala#sha256:47e53b78d4628f9db0e24f8a19195752b0779eb5c01f1ac248532543b723e878"
+      ]
+    },
+    {
+      "name": "Completed-artifact dependent typing and incompatible-input rejection",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:target%2Fcorgi-verify%2Ffocused-risk.log#sha256:3fd90d3ef5df538743c470e0a6de7e155cce78bdd72a87c73b47d38f3a947f42",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FRiskCompilerBoundarySuite.scala#sha256:a81602943cad15bf19922e1cc472d4de0f126f0576daeed7e3e336a72e37adaa",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Frisk-compiler%2Fpositive%2FRiskInstrumentScopeClient.scala#sha256:ae2e94ad40bde3c450d1cf7531192dce86707477b8975ae20d9313a3c936df53",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Frisk-compiler%2Fnegative%2FRiskInstrumentScopeMismatch.scala#sha256:63f44ea83fe72454b411ae468c98f59f981f89aa12d2704b3823be280f82fd80"
+      ]
+    },
+    {
+      "name": "Independent model algebra, sizing complexity, and indicative measurement",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:target%2Fcorgi-verify%2Ffull-matrix.log#sha256:c840905b6d974ce926724b843c8393fcae7b61d94c0465850cbd0045125ab1b5",
+        "file:target%2Fcorgi-verify%2Frisk-jmh.log#sha256:a2da0a3b880c23a202657c954c07cdc6a7058701570a3fdaa99720c5bababc5b",
+        "file:risk%2Fsrc%2Ftest%2Fscala%2Ftrading%2Frisk%2FRiskInstrumentScopeSuite.scala#sha256:eed28ba67c16b6c92435c2ce7cf9c20e8e899cd2592c8ef1dade7282ce81bded",
+        "file:risk%2Fsrc%2Ftest%2Fscala%2Ftrading%2Frisk%2FMaximumAffordableSuite.scala#sha256:e8cdeb2a45eabc38755e48c8b2b998d49a8b5d5a7724e773d8637294f39884d5",
+        "file:risk%2Fsrc%2Ftest%2Fscala%2Ftrading%2Frisk%2FMaximumAffordablePropertiesSuite.scala#sha256:99ae4fdce8e0e3a7aade9d9fa32374d205064dc166d3016e586ec6491e9244f7",
+        "file:benchmarks%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fbenchmark%2FRiskSizingBenchmark.scala#sha256:fed7607e2c1b97ae6c15722b43543e71557d9858e3d8269ef9f64bc88bdd651d"
+      ]
+    },
+    {
+      "name": "Pure risk dependency cone and zero in-process reflection policy",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:target%2Fcorgi-verify%2Freflection-policy.log#sha256:c0b99e32f07b7e69753e224c23149bf8589ed9a027202ee82c4be2cabc231b3d",
+        "file:target%2Fcorgi-verify%2Freflection-regression.log#sha256:eb6658545773b5377bc49220f2c819304dfba1b9e738b527917744a24991037b",
+        "file:tools%2Fcheck-in-process-reflection.sh#sha256:bca2729121ce2bde4dfe3e8db2af53d6129ea0db1162eaab0dd982d769ddf3d6",
+        "file:tools%2Ftest-check-in-process-reflection.sh#sha256:0679a80193d81a4ab8836387de8054644fd1569e9b4275506cb3171fdbce9510",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FRiskCompilerBoundarySuite.scala#sha256:a81602943cad15bf19922e1cc472d4de0f126f0576daeed7e3e336a72e37adaa",
+        "file:build.sbt#sha256:790e4ae7fa4ab9334b36c0273bc4d44d02d59cac352b50f5f0aeaadc026f5db8"
+      ]
+    }
+  ],
+  "acceptance": [
+    {
+      "id": "AC-017",
+      "automated": "pass",
+      "evidenceRefs": [
+        "file:target%2Fcorgi-verify%2Ffocused-risk.log#sha256:3fd90d3ef5df538743c470e0a6de7e155cce78bdd72a87c73b47d38f3a947f42",
+        "file:risk%2Fsrc%2Fmain%2Fscala%2Ftrading%2Frisk%2FRisk.scala#sha256:ff46a9fa93df61f52c397e2c4f9cbf6e8c9cb121f8026335f55581a63bfd7221",
+        "file:risk%2Fsrc%2Ftest%2Fscala%2Ftrading%2Frisk%2FRiskInstrumentScopeSuite.scala#sha256:eed28ba67c16b6c92435c2ce7cf9c20e8e899cd2592c8ef1dade7282ce81bded",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Frisk-compiler%2Fpositive%2FRiskInstrumentScopeClient.scala#sha256:ae2e94ad40bde3c450d1cf7531192dce86707477b8975ae20d9313a3c936df53"
+      ]
+    },
+    {
+      "id": "AC-018",
+      "automated": "pass",
+      "evidenceRefs": [
+        "file:target%2Fcorgi-verify%2Ffull-matrix.log#sha256:c840905b6d974ce926724b843c8393fcae7b61d94c0465850cbd0045125ab1b5",
+        "file:target%2Fcorgi-verify%2Ffocused-risk.log#sha256:3fd90d3ef5df538743c470e0a6de7e155cce78bdd72a87c73b47d38f3a947f42",
+        "file:risk%2Fsrc%2Fmain%2Fscala%2Ftrading%2Frisk%2FRisk.scala#sha256:ff46a9fa93df61f52c397e2c4f9cbf6e8c9cb121f8026335f55581a63bfd7221",
+        "file:risk%2Fsrc%2Ftest%2Fscala%2Ftrading%2Frisk%2FRiskInstrumentScopeSuite.scala#sha256:eed28ba67c16b6c92435c2ce7cf9c20e8e899cd2592c8ef1dade7282ce81bded",
+        "file:risk%2Fsrc%2Ftest%2Fscala%2Ftrading%2Frisk%2FRiskCurveSuite.scala#sha256:50996fa957fcd01f8fdeb91e8d7df188d0c19e4a08dad4e7accbaede69cb9c34",
+        "file:risk%2Fsrc%2Ftest%2Fscala%2Ftrading%2Frisk%2FExhaustiveLotSizingSuite.scala#sha256:47e53b78d4628f9db0e24f8a19195752b0779eb5c01f1ac248532543b723e878"
+      ]
+    },
+    {
+      "id": "AC-019",
+      "automated": "pass",
+      "evidenceRefs": [
+        "file:target%2Fcorgi-verify%2Ffull-matrix.log#sha256:c840905b6d974ce926724b843c8393fcae7b61d94c0465850cbd0045125ab1b5",
+        "file:target%2Fcorgi-verify%2Ffocused-risk.log#sha256:3fd90d3ef5df538743c470e0a6de7e155cce78bdd72a87c73b47d38f3a947f42",
+        "file:risk%2Fsrc%2Fmain%2Fscala%2Ftrading%2Frisk%2FRisk.scala#sha256:ff46a9fa93df61f52c397e2c4f9cbf6e8c9cb121f8026335f55581a63bfd7221",
+        "file:risk%2Fsrc%2Ftest%2Fscala%2Ftrading%2Frisk%2FRiskInstrumentScopeSuite.scala#sha256:eed28ba67c16b6c92435c2ce7cf9c20e8e899cd2592c8ef1dade7282ce81bded",
+        "file:risk%2Fsrc%2Ftest%2Fscala%2Ftrading%2Frisk%2FRiskCurveSuite.scala#sha256:50996fa957fcd01f8fdeb91e8d7df188d0c19e4a08dad4e7accbaede69cb9c34",
+        "file:risk%2Fsrc%2Ftest%2Fscala%2Ftrading%2Frisk%2FRiskModelBoundarySuite.scala#sha256:396534ec4ee44d893a5d4a2715bc24a1202410a41760c8a3158aa1a6f3382229"
+      ]
+    },
+    {
+      "id": "AC-020",
+      "automated": "pass",
+      "evidenceRefs": [
+        "file:target%2Fcorgi-verify%2Ffocused-risk.log#sha256:3fd90d3ef5df538743c470e0a6de7e155cce78bdd72a87c73b47d38f3a947f42",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FRiskCompilerBoundarySuite.scala#sha256:a81602943cad15bf19922e1cc472d4de0f126f0576daeed7e3e336a72e37adaa",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Frisk-compiler%2Fpositive%2FRiskInstrumentScopeClient.scala#sha256:ae2e94ad40bde3c450d1cf7531192dce86707477b8975ae20d9313a3c936df53",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Frisk-compiler%2Fnegative%2FRiskInstrumentScopeMismatch.scala#sha256:63f44ea83fe72454b411ae468c98f59f981f89aa12d2704b3823be280f82fd80"
+      ]
+    },
+    {
+      "id": "AC-021",
+      "automated": "pass",
+      "evidenceRefs": [
+        "file:target%2Fcorgi-verify%2Ffull-matrix.log#sha256:c840905b6d974ce926724b843c8393fcae7b61d94c0465850cbd0045125ab1b5",
+        "file:target%2Fcorgi-verify%2Frisk-jmh.log#sha256:a2da0a3b880c23a202657c954c07cdc6a7058701570a3fdaa99720c5bababc5b",
+        "file:target%2Fcorgi-verify%2Freflection-policy.log#sha256:c0b99e32f07b7e69753e224c23149bf8589ed9a027202ee82c4be2cabc231b3d",
+        "file:target%2Fcorgi-verify%2Freflection-regression.log#sha256:eb6658545773b5377bc49220f2c819304dfba1b9e738b527917744a24991037b",
+        "file:risk%2Fsrc%2Ftest%2Fscala%2Ftrading%2Frisk%2FRiskInstrumentScopeSuite.scala#sha256:eed28ba67c16b6c92435c2ce7cf9c20e8e899cd2592c8ef1dade7282ce81bded",
+        "file:risk%2Fsrc%2Ftest%2Fscala%2Ftrading%2Frisk%2FRiskCurveSuite.scala#sha256:50996fa957fcd01f8fdeb91e8d7df188d0c19e4a08dad4e7accbaede69cb9c34",
+        "file:risk%2Fsrc%2Ftest%2Fscala%2Ftrading%2Frisk%2FMaximumAffordableSuite.scala#sha256:e8cdeb2a45eabc38755e48c8b2b998d49a8b5d5a7724e773d8637294f39884d5",
+        "file:risk%2Fsrc%2Ftest%2Fscala%2Ftrading%2Frisk%2FMaximumAffordablePropertiesSuite.scala#sha256:99ae4fdce8e0e3a7aade9d9fa32374d205064dc166d3016e586ec6491e9244f7",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FRiskCompilerBoundarySuite.scala#sha256:a81602943cad15bf19922e1cc472d4de0f126f0576daeed7e3e336a72e37adaa",
+        "file:benchmarks%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fbenchmark%2FRiskSizingBenchmark.scala#sha256:fed7607e2c1b97ae6c15722b43543e71557d9858e3d8269ef9f64bc88bdd651d",
+        "file:build.sbt#sha256:790e4ae7fa4ab9334b36c0273bc4d44d02d59cac352b50f5f0aeaadc026f5db8"
+      ]
+    }
+  ],
+  "verifiedAt": "2026-09-04T17:33:50.422Z"
+}

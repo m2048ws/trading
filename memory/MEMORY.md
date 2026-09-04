@@ -40,6 +40,7 @@ Add an entry only after a human accepts it or a verified delivery proves it. Eve
 - [[wiki/deliveries/RFC-0008-simplify-instrument-dependent-apis-S-02-bind-standard-order-construction|RFC-0008-simplify-instrument-dependent-apis/S-02-bind-standard-order-construction]] — verified by sha256:e0cb40a5a2bbfb4b3c5ae954d21e7be212433eab7114ed6adbfd81038d228a35
 - [[wiki/deliveries/RFC-0008-simplify-instrument-dependent-apis-S-03-bind-source-fact-construction|RFC-0008-simplify-instrument-dependent-apis/S-03-bind-source-fact-construction]] — verified by sha256:336f9805040785ac5aea98745d63ded1121da6e23cab778dd0de44d489250a9e
 - [[wiki/deliveries/RFC-0008-simplify-instrument-dependent-apis-S-04-bind-scenario-record-codecs|RFC-0008-simplify-instrument-dependent-apis/S-04-bind-scenario-record-codecs]] — verified by sha256:db11f417b9b2b52e876c9e618045c0ea2bac19033a63d234ad7cb44c75c8f1f9
+- [[wiki/deliveries/RFC-0008-simplify-instrument-dependent-apis-S-05-bind-instrument-risk|RFC-0008-simplify-instrument-dependent-apis/S-05-bind-instrument-risk]] — verified by sha256:a512c2e68318d9b39f26cb899009f9d524de936ec6d6bbb2151c910f78fb3f5b
 <!-- corgi:managed:end verified-deliveries -->
 
 ## Working Preferences

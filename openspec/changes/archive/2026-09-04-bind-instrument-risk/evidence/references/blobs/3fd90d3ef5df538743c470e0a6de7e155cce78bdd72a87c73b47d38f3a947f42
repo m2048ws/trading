@@ -1,0 +1,20 @@
+[info] welcome to sbt 1.12.15 (Homebrew Java 26.0.2.1)
+[info] loading settings for project bind-instrument-risk-build from plugins.sbt...
+[info] loading project definition from /Users/m/src/money/.worktrees/bind-instrument-risk/project
+[info] loading settings for project root from build.sbt...
+[info] resolving key references (12514 settings) ...
+[info] set current project to trading (in build file:/Users/m/src/money/.worktrees/bind-instrument-risk/)
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by scala.runtime.LazyVals$ (file:/Users/m/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/scala-library/3.8.4/scala-library-3.8.4.jar)
+WARNING: Please consider reporting this to the maintainers of class scala.runtime.LazyVals$
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+Test run trading.risk.RiskInstrumentScopeSuite started
+trading.risk.RiskInstrumentScopeSuite: finished 0.175s
+Test run trading.risk.RiskInstrumentScopeSuite finished: 0 failed, 0 ignored, 5 total 0.183s
+[info] Passed: Total 5, Failed 0, Errors 0, Passed 5
+[success] Total time: 1 s, completed Sep 4, 2026, 7:29:23 PM
+Test run external.RiskCompilerBoundarySuite started
+external.RiskCompilerBoundarySuite: finished 5.823s
+Test run external.RiskCompilerBoundarySuite finished: 0 failed, 0 ignored, 8 total 5.836s
+[info] Passed: Total 8, Failed 0, Errors 0, Passed 8
+[success] Total time: 7 s, completed Sep 4, 2026, 7:29:30 PM
