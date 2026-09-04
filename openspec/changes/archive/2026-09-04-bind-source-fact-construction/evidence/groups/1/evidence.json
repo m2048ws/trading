@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 3,
+  "groupId": "1",
+  "checks": [
+    {
+      "name": "Execution lifecycle compile and focused source-fact scope behavior",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:execution-lifecycle%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fexecution%2FSourceFacts.scala#sha256:f59e9d5cd97fe7d6a8f28ab57b9b450b8642fdbec8f80266cebddadd7c660fd4",
+        "file:execution-lifecycle%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fexecution%2FSourceFactScopeSuite.scala#sha256:ee2ac9a4a7dfd72d5235e1342a26644d2aa876216141ac8f2bcf3efb2e55419c"
+      ]
+    },
+    {
+      "name": "Completed-artifact positive and negative compiler boundary",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fexecution-lifecycle-compiler%2Fpositive%2FLifecycleSourceFactScopeClient.scala#sha256:19ee7cfedada2b5903c469beb9f177d01d6a2ab3a992c54f43b31428c160d1d3",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fexecution-lifecycle-compiler%2Fnegative%2FLifecycleSourceFactScopeMismatch.scala#sha256:0b71242c80c2d0b6b84424bb8efdf216b8f2d08b1decb3374048dd01e2378509",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FExecutionLifecycleCompilerBoundarySuite.scala#sha256:6e97cd6638a4420cb4403963a5892e3f367f91700bea8a038bd7f4e6f3bdfcdb"
+      ]
+    },
+    {
+      "name": "Purity, dependency, and source-mechanism inspection",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:execution-lifecycle%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fexecution%2FSourceFacts.scala#sha256:f59e9d5cd97fe7d6a8f28ab57b9b450b8642fdbec8f80266cebddadd7c660fd4",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FExecutionLifecycleCompilerBoundarySuite.scala#sha256:6e97cd6638a4420cb4403963a5892e3f367f91700bea8a038bd7f4e6f3bdfcdb"
+      ]
+    },
+    {
+      "name": "In-process reflection guards",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:tools%2Fcheck-in-process-reflection.sh#sha256:bca2729121ce2bde4dfe3e8db2af53d6129ea0db1162eaab0dd982d769ddf3d6",
+        "file:tools%2Ftest-check-in-process-reflection.sh#sha256:0679a80193d81a4ab8836387de8054644fd1569e9b4275506cb3171fdbce9510"
+      ]
+    },
+    {
+      "name": "Clean release-25 repository test and benchmark matrix",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:build.sbt#sha256:790e4ae7fa4ab9334b36c0273bc4d44d02d59cac352b50f5f0aeaadc026f5db8",
+        "file:execution-lifecycle%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fexecution%2FSourceFactScopeSuite.scala#sha256:ee2ac9a4a7dfd72d5235e1342a26644d2aa876216141ac8f2bcf3efb2e55419c",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FExecutionLifecycleCompilerBoundarySuite.scala#sha256:6e97cd6638a4420cb4403963a5892e3f367f91700bea8a038bd7f4e6f3bdfcdb"
+      ]
+    }
+  ],
+  "automatedReview": {
+    "verdict": "pass",
+    "findings": []
+  },
+  "artifacts": [
+    "file:execution-lifecycle%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fexecution%2FSourceFacts.scala#sha256:f59e9d5cd97fe7d6a8f28ab57b9b450b8642fdbec8f80266cebddadd7c660fd4",
+    "file:execution-lifecycle%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fexecution%2FSourceFactScopeSuite.scala#sha256:ee2ac9a4a7dfd72d5235e1342a26644d2aa876216141ac8f2bcf3efb2e55419c",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fexecution-lifecycle-compiler%2Fpositive%2FLifecycleSourceFactScopeClient.scala#sha256:19ee7cfedada2b5903c469beb9f177d01d6a2ab3a992c54f43b31428c160d1d3",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fexecution-lifecycle-compiler%2Fnegative%2FLifecycleSourceFactScopeMismatch.scala#sha256:0b71242c80c2d0b6b84424bb8efdf216b8f2d08b1decb3374048dd01e2378509",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FExecutionLifecycleCompilerBoundarySuite.scala#sha256:6e97cd6638a4420cb4403963a5892e3f367f91700bea8a038bd7f4e6f3bdfcdb"
+  ],
+  "summary": "Task Group 1 adds one final immutable SourceFact-owned lifecycle scope whose nine precisely typed operations delegate exactly once to the canonical checked fact constructors. Focused tests prove exact success and ordered failure equivalence, missing values, foreign logical-order, target, instrument, grid, modifier, checkpoint and completeness rejection, invocation-order invariance, independent allocation and concurrent reuse; completed-artifact fixtures prove concise all-form construction and exactly four incompatible dimension failures. Formatting, both reflection guards, git diff checks, the clean 1,055-test release-25 repository matrix, JMH compilation and automated review all passed with no unresolved findings."
+}

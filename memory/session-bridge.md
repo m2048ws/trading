@@ -14,13 +14,13 @@ updated: 2026-09-04
 - **Issue**: 57 https://github.com/m2048ws/trading/issues/57
 - **Change**: bind-source-fact-construction
 - **Worktree**: /Users/m/src/money/.worktrees/bind-source-fact-construction
-- **Phase at Checkpoint**: awaiting_verify
-- **Task Group at Checkpoint**: 1
-- **Observed Run Revision**: 2
-- **Last Verified HEAD**: 5f7c1eb86da814614f009d6b1d7c414a7dcc25ba
+- **Phase at Checkpoint**: archiving
+- **Task Group at Checkpoint**: none
+- **Observed Run Revision**: 7
+- **Last Verified HEAD**: ad69a9adf84eb56a80a5e09d07da1e487502530a
 
 ## Next Action
-- Run canonical whole-change Verify for `bind-source-fact-construction` against the acknowledged Task Group commit.
+- Consult Run Contract v3: resume tracker closeout for `bind-source-fact-construction` only if pending; otherwise select the next accepted Slice. Local delivery: `wiki/deliveries/RFC-0008-simplify-instrument-dependent-apis-S-03-bind-source-fact-construction.md`.
 
 ## Blockers
 - none

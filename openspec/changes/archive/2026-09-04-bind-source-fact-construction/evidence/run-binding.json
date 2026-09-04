@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 3,
+  "changeName": "bind-source-fact-construction",
+  "runId": "run-5b7d8841-98c6-4894-a036-0299e32a6988",
+  "finalRevision": "ad69a9adf84eb56a80a5e09d07da1e487502530a",
+  "planningRevision": "sha256:9f9819e1e62fef4ad282579ea4e3d376b69068d3c2bde3be4ecffbedd47bbc2c",
+  "contract": {
+    "kind": "rfc-slice",
+    "deliveryRef": "RFC-0008-simplify-instrument-dependent-apis/S-03-bind-source-fact-construction",
+    "rfcId": "RFC-0008-simplify-instrument-dependent-apis",
+    "rfcDigest": "sha256:77e1c4ac3d7629334f86695e07ffaf835549c5e0e05612314f0ca193e42139f3",
+    "acceptedCommit": "bf457296faa7d29aec0840a7e8f48d41ed0f7491",
+    "sliceId": "S-03-bind-source-fact-construction",
+    "sourcePath": "openspec/changes/bind-source-fact-construction/corgi/source.yaml",
+    "sourceDigest": "sha256:44cee1e7fc26759bc7720e78681cc6abfc18e11cd7e57e810d74ab07f5adf6e8",
+    "traceabilityPath": "openspec/changes/bind-source-fact-construction/corgi/traceability.yaml",
+    "traceabilityDigest": "sha256:7964e167e9a944bd949e8038d53d468e6cb0c8b0845c52cab6f99d74228c872c",
+    "acceptance": [
+      {
+        "id": "AC-008",
+        "evidence": "automated",
+        "taskGroups": [
+          "1"
+        ]
+      },
+      {
+        "id": "AC-009",
+        "evidence": "automated",
+        "taskGroups": [
+          "1"
+        ]
+      },
+      {
+        "id": "AC-010",
+        "evidence": "automated",
+        "taskGroups": [
+          "1"
+        ]
+      },
+      {
+        "id": "AC-011",
+        "evidence": "automated",
+        "taskGroups": [
+          "1"
+        ]
+      }
+    ],
+    "tracker": {
+      "provider": "github",
+      "idempotencyKey": "dedaf1f982dd9ec5259752a29c844440da80bd8405ea6519b3c3472f2b1b2575",
+      "issue": {
+        "id": "57",
+        "url": "https://github.com/m2048ws/trading/issues/57"
+      }
+    }
+  },
+  "archiveIntentId": "archive-ebf23bbd-fa68-47b2-9fed-7307e0c7435a"
+}
