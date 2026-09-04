@@ -13,3 +13,11 @@
 
 - [ ] 3.1 Add completed-artifact boundary coverage that consumes the public calculation from instrument economics and rejects forbidden scenario, campaign, fee, application, or runtime ownership leakage; verify `adversarialBoundary / test` passes.
 - [ ] 3.2 Run repository formatting checks and the full SBT test suite, resolving only regressions caused by this change; verify all configured checks pass on JDK 25 with no new dependency or module-cycle findings.
+
+## 4. Canonical Verify remediation
+
+- [ ] 4.1 Separate position identity/grid validation from market evidence, derive ending position through `PositionLots.flat` and `PositionLots.combine` after position reconciliation, and accumulate endpoint mismatches beside independently knowable market/reference failures in stable order; verify a real market-only-invalid flat request also reports its non-flat endpoint mismatch.
+- [ ] 4.2 Restore the characterized four-case `ScenarioValuationError` surface, project every delegated failure reachable from public round-trip valuation to scenario-native leg/slice or construction locations, and add end-to-end invalid-round-trip plus completed-artifact exhaustive-match regressions.
+- [ ] 4.3 Demonstrate that compatible checked inputs remain total under the current unbounded exact representation, adding direct open-short and cross-zero/reversal examples and signed generative paths without inventing a numeric ceiling or approximation.
+- [ ] 4.4 Make the instrument-economics completed-artifact compiler classpath hermetic through an explicit compiler-support allowlist and assertions rejecting effect, codec, and other non-owning dependencies.
+- [ ] 4.5 Run focused instrument-economics, execution-scenario, fee-policy, and adversarial-boundary checks, both reflection guards, formatting, the complete clean JDK-25 test/build matrix, and the automated repair-group review before its dedicated commit.

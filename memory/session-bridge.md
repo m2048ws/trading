@@ -14,13 +14,13 @@ updated: 2026-09-04
 - **Issue**: 48 https://github.com/m2048ws/trading/issues/48
 - **Change**: generalize-attributed-price-pnl
 - **Worktree**: /Users/m/src/money/.worktrees/generalize-attributed-price-pnl
-- **Phase at Checkpoint**: awaiting_verify
-- **Task Group at Checkpoint**: 3
-- **Observed Run Revision**: 4
-- **Last Verified HEAD**: ac05a9a3946fe3210ab0016745be6466ec5a307f
+- **Phase at Checkpoint**: planning_ready
+- **Task Group at Checkpoint**: 4
+- **Observed Run Revision**: none
+- **Last Verified HEAD**: 19eb99b65b8b3583eef9966ec5cb0ce4742eeef0
 
 ## Next Action
-- Acknowledge Task Group 3's exact commit, then run canonical whole-change Verify as a separate gate.
+- Start Apply for `generalize-attributed-price-pnl` Task Group 4.
 
 ## Blockers
 - none
