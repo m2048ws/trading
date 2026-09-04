@@ -77,7 +77,7 @@ final class GridDefinition private (
   quantumValue: PositiveRational)
   extends JavaSerializationUnsupported:
   final val identity: GridIdentity    = Objects.requireNonNull(identityValue, "grid identity")
-  final val quantum: PositiveRational = GridDefinition.requirePositive(quantumValue)
+  final val quantum: PositiveRational = Objects.requireNonNull(quantumValue, "grid quantum")
 
   def dimension: DimKey    = identity.dimension
   def key: GridKey         = identity.key
@@ -95,28 +95,9 @@ final class GridDefinition private (
 end GridDefinition
 
 object GridDefinition:
-  private def requirePositive(value: PositiveRational): PositiveRational =
-    val checked = Objects.requireNonNull(value, "grid quantum")
-    PositiveRational(checked.unrefined).fold(
-      _ => throw new IllegalArgumentException("grid quantum must be positive"),
-      identity
-    )
-
-  /** Construct from an already refined quantum; erased JVM calls are defensively revalidated. */
+  /** Construct directly from an already refined quantum. */
   def apply(identity: GridIdentity, quantum: PositiveRational): GridDefinition =
-    new GridDefinition(Objects.requireNonNull(identity, "grid identity"), requirePositive(quantum))
-
-  /** Checked raw/JVM boundary for expected invalid quantum input. */
-  def from(
-    identity: GridIdentity,
-    quantum: Rational
-  ): Either[NonPositiveGridQuantum, GridDefinition] =
-    val checkedIdentity = Objects.requireNonNull(identity, "grid identity")
-    val checkedQuantum  = Objects.requireNonNull(quantum, "grid quantum")
-    PositiveRational(checkedQuantum)
-      .left
-      .map(_ => NonPositiveGridQuantum(checkedQuantum))
-      .map(positive => new GridDefinition(checkedIdentity, positive))
+    new GridDefinition(identity, quantum)
 end GridDefinition
 
 final case class ForeignLineage(left: DimKey, right: DimKey)                         extends ReferenceDataError

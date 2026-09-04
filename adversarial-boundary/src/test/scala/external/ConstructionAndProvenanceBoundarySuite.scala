@@ -4,6 +4,7 @@ import munit.FunSuite
 
 import trading.quantity.*
 import trading.quantity.algebra.*
+import trading.quantity.grid.*
 import trading.quantity.refinement.*
 
 class ConstructionAndProvenanceBoundarySuite extends FunSuite:
@@ -19,14 +20,18 @@ class ConstructionAndProvenanceBoundarySuite extends FunSuite:
 
   test("UniformGrid rejects null authority and keeps valid construction generative and exact"):
     type Bad = Canonical[Power["construction-boundary", 0] *: EmptyTuple]
-    val malformed: DimRef[Bad] = null
+    val malformed: DimRef[Bad]             = null
+    val malformedQuantum: PositiveRational = null.asInstanceOf[PositiveRational]
     rejectsNullAtRoot(UniformGrid.create(malformed, quantum))
+    rejectsNullAtRoot(UniformGrid.create(DimRef.one, malformedQuantum))
 
     val dimension                                = DimRef.atomic(AtomId("valid-grid-construction"))
     val grid                                     = UniformGrid.create(dimension.dimension, quantum)
+    val otherGrid                                = UniformGrid.create(dimension.dimension, quantum)
     val value: GridQuantity[dimension.D, grid.G] = grid.fromCoordinate(7)
     assertEquals(grid.coordinate(value + value), BigInt(14))
     assertEquals(grid.asQuantity(value), Quantity(dimension.dimension, Rational(7, 100)))
+    assertEquals(SameGrid.between(grid, otherGrid), Left(AnonymousGridMismatch))
 
   test("witness-backed quantity and grid roots reject null numeric payloads"):
     val nullCoefficient: Rational = null

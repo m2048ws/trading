@@ -110,7 +110,8 @@ class ReferenceDataCompilerBoundarySuite extends FunSuite:
     ),
     NegativeFixture(
       "RemovedStableGridFactory.scala",
-      List("method create in object UniformGrid", "too many arguments")
+      List("method create in object UniformGrid", "too many arguments", "from", "UniformGrid", "GridDefinition"),
+      minimumErrors = 3
     ),
     NegativeFixture(
       "StableIdentityApply.scala",

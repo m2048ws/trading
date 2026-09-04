@@ -190,7 +190,7 @@ class ReferenceDataRuntimeBoundarySuite extends FunSuite:
     val nullAsset: Asset                        = null
     val nullGrid: GridHandle[asset.D]           = null
     val nullCoordinate: BigInt                  = null
-    val nullRational: Rational                  = null
+    val nullQuantum: PositiveRational           = null.asInstanceOf[PositiveRational]
 
     rejectsNullAtRoot(CatalogModel.commit(null, CatalogBatch.one(CatalogCommand.RegisterAsset(assetDefinition("x")))))
     rejectsNullAtRoot(CatalogModel.commit(result.state, null))
@@ -198,8 +198,8 @@ class ReferenceDataRuntimeBoundarySuite extends FunSuite:
     rejectsNullAtRoot(snapshot.resolveDimension(null))
     rejectsNullAtRoot(snapshot.resolveGrid(null))
     rejectsNullAtRoot(snapshot.resolveGrid(nullDimension)(grid.key))
-    rejectsNullAtRoot(GridDefinition.from(grid.identity, nullRational))
-    rejectsNullAtRoot(UniformGrid.from(asset.dimension.ref, nullRational))
+    rejectsNullAtRoot(GridDefinition(grid.identity, nullQuantum))
+    rejectsNullAtRoot(UniformGrid.create(asset.dimension.ref, nullQuantum))
     rejectsNullAtRoot(DimensionHandle.sameLineage(nullDimension, asset.dimension))
     rejectsNullAtRoot(Asset.reconcile(nullAsset, asset))
     rejectsNullAtRoot(GridHandle.reconcile(nullGrid, grid))

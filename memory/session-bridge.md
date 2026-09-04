@@ -15,12 +15,12 @@ updated: 2026-09-04
 - **Change**: use-scala-first-quantity-and-reference-data
 - **Worktree**: /Users/m/src/money/.worktrees/use-scala-first-quantity-and-reference-data
 - **Phase at Checkpoint**: applying
-- **Task Group at Checkpoint**: 1
-- **Observed Run Revision**: 2
-- **Last Verified HEAD**: fd3d4f06cd21f458a8311394cca3d9d6c0ea1eaa
+- **Task Group at Checkpoint**: 2
+- **Observed Run Revision**: 3
+- **Last Verified HEAD**: 2b4440eb9f376c3110cf9921fbe53b72c5773f3d
 
 ## Next Action
-- After acknowledging Task Group 1, implement `use-scala-first-quantity-and-reference-data` Task Group 2.
+- After acknowledging Task Group 2, implement `use-scala-first-quantity-and-reference-data` Task Group 3.
 
 ## Blockers
 - none
@@ -94,6 +94,9 @@ updated: 2026-09-04
 - RFC-0005/S-04 Task Group 1 replaces `AssetId`, `GridId`, and `GridVersion` with Scala-owned checked case classes,
   denies generated product reconstruction, removes the repository's last production Java sources, and preserves typed
   invalidity, value semantics, stable codec representations, Scala field observation, and serialization rejection.
+- RFC-0005/S-04 Task Group 2 removes raw `UniformGrid` and `GridDefinition` factories and redundant positive-quantum
+  reconstruction, trusts established `PositiveRational` values directly, and retains null rejection, generative grid
+  identity, exact interpretation, and precise raw-invalidity diagnostics at refinement and codec boundaries.
 
 ## Promotion Queue
 - none

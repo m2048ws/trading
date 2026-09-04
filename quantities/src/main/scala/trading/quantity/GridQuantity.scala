@@ -196,28 +196,12 @@ object UniformGrid:
       val dimension: DimRef[D]      = dimensionRef
       val quantum: PositiveRational = gridQuantum
 
-  private def requirePositive(value: PositiveRational): PositiveRational =
-    val checked = Objects.requireNonNull(value, "grid quantum")
-    PositiveRational(checked.unrefined).fold(
-      _ => throw new IllegalArgumentException("grid quantum must be positive"),
-      identity
-    )
-
   def create[D <: Dim](
     dimensionRef: DimRef[D],
     gridQuantum: PositiveRational
   ): GridRef[D] =
     val checkedDimension = Objects.requireNonNull(dimensionRef, "grid dimension")
+    val checkedQuantum   = Objects.requireNonNull(gridQuantum, "grid quantum")
     val _                = checkedDimension.key
-    build(checkedDimension, requirePositive(gridQuantum))
-
-  /** Checked raw/JVM boundary for expected invalid quantum input. */
-  def from[D <: Dim](
-    dimensionRef: DimRef[D],
-    gridQuantum: Rational
-  ): Either[ExpectedPositive.type, GridRef[D]] =
-    val checkedDimension = Objects.requireNonNull(dimensionRef, "grid dimension")
-    val _                = checkedDimension.key
-    PositiveRational(Objects.requireNonNull(gridQuantum, "grid quantum"))
-      .map(positive => build(checkedDimension, positive))
+    build(checkedDimension, checkedQuantum)
 end UniformGrid

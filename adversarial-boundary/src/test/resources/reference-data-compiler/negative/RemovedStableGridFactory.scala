@@ -10,9 +10,12 @@ object RemovedStableGridFactory:
   val version  = validGridVersion(1)
   val quantum  = PositiveRational.exact(1, 100).fold(error => throw new AssertionError(error.toString), identity)
   val supported = UniformGrid.create(DimRef.one, quantum)
+  val gridIdentityValue = GridIdentity(DimKey.one, GridKey(stableId, version))
 
   // OFFENDING-BEGIN
   val forbidden = UniformGrid.create(stableId, version, DimRef.one, quantum)
+  val removedAnonymousRawFactory = UniformGrid.from(DimRef.one, Rational.one)
+  val removedStableRawFactory    = GridDefinition.from(gridIdentityValue, Rational.one)
   // OFFENDING-END
 
 end RemovedStableGridFactory

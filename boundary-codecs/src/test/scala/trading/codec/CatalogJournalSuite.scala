@@ -68,6 +68,10 @@ class CatalogJournalSuite extends FunSuite:
         "$.payload.commands[0].kind"
       )
     )
+    failures(2) match
+      case WireDecodeViolation.InvalidValue(_, code, _) =>
+        assertEquals(code, "expected-positive-grid-quantum")
+      case other => fail(s"expected grid-quantum refinement failure, got $other")
     assert(failures.last.isInstanceOf[WireDecodeViolation.UnknownAlternative])
 
     val nonFresh = commit(
