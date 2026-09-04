@@ -222,6 +222,9 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
         "AttributedPricePnlLocation.class",
         "AttributedPricePnlViolation.class",
         "AttributedPricePnlErrors.class",
+        "ValuationError.class",
+        "ValuationInstrumentMismatch.class",
+        "ValuationReferenceDataMismatch.class",
         "SettledFeeContribution.class",
         "Pnl.class",
         "Valuation.class"

@@ -74,6 +74,7 @@ final case class InvalidFeeGrid(asset: AssetId, grid: GridKey, expected: DimKey,
 sealed abstract class ValuationError extends JavaSerializationUnsupported with Product with Serializable
 final case class ValuationInstrumentMismatch(context: String, expected: InstrumentId, supplied: InstrumentId)
   extends ValuationError
+final case class ValuationReferenceDataMismatch(context: String, cause: ReferenceDataError) extends ValuationError
 
 /** Component of an attributed price-PnL input named by a precise failure location. */
 enum AttributedPricePnlComponent extends JavaSerializationUnsupported:

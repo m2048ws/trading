@@ -6,6 +6,7 @@ import trading.economics.instrument.*
 import trading.order.*
 import trading.quantity.*
 import trading.quantity.grid.QuantizationPolicy
+import trading.reference.Asset
 import trading.scenario.*
 import trading.support.DownstreamFixtures
 
@@ -437,4 +438,30 @@ final class FeeInclusivePnlSuite extends FunSuite:
       )
     )
     assertEquals(evaluations, 0)
+
+  test("same-ID foreign-lineage price failure retains its scenario location and reference cause"):
+    val foreignLineage = new DownstreamFixtures
+    val foreignMarket  = foreignLineage
+      .state(foreignLineage.linear, Rational(110))
+      .asInstanceOf[instrument.MarketState]
+    val referenceCause = Asset.reconcile(foreignMarket.base, instrument.roles.base).swap.toOption.get
+    val trip           = localRoundTrip(
+      Vector(BigInt(1000) -> market(Rational(100))),
+      Vector(BigInt(1000) -> foreignMarket)
+    )
+    val policy: Policy[Nothing] = FeePolicy.noFees(instrument)
+    val policies                = RoundTripFeePolicies.same(policy)
+    val expected                = FeeInclusiveScenarioPriceFailure(
+      ScenarioValuationError.SliceValue(
+        RoundTripLeg.Exit,
+        0,
+        ValuationReferenceDataMismatch("market.base.reference", referenceCause)
+      )
+    )
+
+    assertEquals(
+      FeeInclusivePnl.evaluate(instrument)(trip, policies).left.map(_.toVector),
+      Left(Vector(expected))
+    )
+    assertEquals(FeeInclusivePnl.evaluateFirst(instrument)(trip, policies), Left(expected))
 end FeeInclusivePnlSuite

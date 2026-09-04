@@ -5,6 +5,7 @@ import munit.FunSuite
 import trading.economics.instrument.*
 import trading.order.*
 import trading.quantity.*
+import trading.reference.Asset
 
 final class ScenarioValuationSuite extends FunSuite:
   private val fixture = new InstrumentFixtures
@@ -275,7 +276,8 @@ final class ScenarioValuationSuite extends FunSuite:
     val foreignMarket  = foreignLineage
       .quoteState(foreignLineage.linear, Rational(112))
       .asInstanceOf[instrument.MarketState]
-    val trip = roundTrip(instrument)(
+    val referenceCause = Asset.reconcile(foreignMarket.base, instrument.roles.base).swap.toOption.get
+    val trip           = roundTrip(instrument)(
       Side.Buy,
       Vector(BigInt(10) -> fixture.quoteState(instrument, Rational(100))),
       Vector(
@@ -290,10 +292,9 @@ final class ScenarioValuationSuite extends FunSuite:
         ScenarioValuationError.SliceValue(
           RoundTripLeg.Exit,
           1,
-          ValuationInstrumentMismatch(
+          ValuationReferenceDataMismatch(
             "market.base.reference",
-            instrument.identity.id,
-            foreignLineage.linear.identity.id
+            referenceCause
           )
         )
       )

@@ -75,10 +75,17 @@ object ScenarioValuationClient:
       case ScenarioValuationError.SliceValue(_, _, _)          => "value"
       case ScenarioValuationError.PricePnlConstruction(_)      => "construction"
 
+  private def describeValuation(error: ValuationError): String =
+    error match
+      case ValuationInstrumentMismatch(_, _, _)  => "instrument"
+      case ValuationReferenceDataMismatch(_, _)  => "reference"
+
   assert(result.instrumentId == instrument.identity.id)
   assert(result.quantity.coefficient == Rational(2))
-  private val characterizedError = ScenarioValuationError.PricePnlConstruction(
-    ValuationInstrumentMismatch("fixture", instrument.identity.id, instrument.identity.id)
-  )
+  private val characterizedMismatch = ValuationInstrumentMismatch("fixture", instrument.identity.id, instrument.identity.id)
+  private val characterizedReference = ValuationReferenceDataMismatch("fixture", ForeignLineage(baseKey, quoteKey))
+  private val characterizedError     = ScenarioValuationError.PricePnlConstruction(characterizedMismatch)
   assert(describe(characterizedError) == "construction")
+  assert(describeValuation(characterizedMismatch) == "instrument")
+  assert(describeValuation(characterizedReference) == "reference")
 end ScenarioValuationClient

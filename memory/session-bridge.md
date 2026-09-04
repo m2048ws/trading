@@ -14,23 +14,22 @@ updated: 2026-09-04
 - **Issue**: 48 https://github.com/m2048ws/trading/issues/48
 - **Change**: generalize-attributed-price-pnl
 - **Worktree**: /Users/m/src/money/.worktrees/generalize-attributed-price-pnl
-- **Phase at Checkpoint**: planning_ready
+- **Phase at Checkpoint**: awaiting_verify
 - **Task Group at Checkpoint**: 5
-- **Observed Run Revision**: none
-- **Last Verified HEAD**: 8d7bd48d0812f90489f5abdcdd98da95cf252654
+- **Observed Run Revision**: 2
+- **Last Verified HEAD**: 5bbbc1c68758cb164bfc50cf9852619890a47e63
 
 ## Next Action
-- Start Apply for `generalize-attributed-price-pnl` Task Group 5.
+- Run canonical whole-change Verify for `generalize-attributed-price-pnl` from the sealed Task Group 5 commit.
 
 ## Blockers
 - none
 
 ## Uncommitted Work
-- Task Group 4 repairs staged validation so market-only failures accumulate independently knowable endpoint mismatches,
-  derives ending exposure through lawful `PositionLots.combine`, restores the four-case scenario valuation error
-  surface with native leg/slice projection, proves signed and cross-zero exactness, and makes the completed core
-  compiler classpath hermetic. Focused suites, both reflection guards, formatting, the clean JDK-25 aggregate, and
-  benchmark compilation pass.
+- Task Group 5 adds the accepted `ValuationReferenceDataMismatch` case, preserves the exact retained-reference cause
+  at the original round-trip leg and slice, and proves the nested exhaustiveness and fee-policy propagation from
+  completed artifacts. Economics 26, scenario 16, fee-policy 40, boundary 131, both reflection guards, formatting,
+  the clean 1,058-test JDK-26 aggregate, and benchmark compilation pass; the automated group review found no issues.
 
 ## Discoveries
 - No active Corgi Run Contract or OpenSpec Change exists on primary `main`.
@@ -115,6 +114,9 @@ updated: 2026-09-04
   reverse ownership leakage and passes the configured clean JDK-25 repository gate.
 - RFC-0006/S-01 Task Group 4 repairs independently knowable validation accumulation, lawful position combination,
   scenario error compatibility and location projection, signed exactness evidence, and the core compiler classpath.
+- RFC-0007/S-01 Task Group 5 replaces the false same-ID instrument mismatch with a truthful retained-reference
+  valuation failure at the original leg and slice, expands nested-error exhaustive compiler coverage, and preserves
+  that failure through fee-inclusive valuation.
 
 ## Promotion Queue
 - none

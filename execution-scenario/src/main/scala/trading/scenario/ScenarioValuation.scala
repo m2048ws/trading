@@ -3,6 +3,7 @@ package trading.scenario
 import trading.economics.instrument.*
 import trading.order.*
 import trading.quantity.*
+import trading.reference.ReferenceDataError
 
 /** Scenario-local association between one shared price contribution and its original round-trip slice. */
 private[scenario] final case class RoundTripPriceAttribution(leg: RoundTripLeg, sliceIndex: Int)
@@ -121,8 +122,17 @@ object ScenarioValuation:
           ValuationInstrumentMismatch(context, expected, supplied)
         )
 
-    // Scenario valuation historically returned one deterministic failure. Preserve that fail-fast surface while
-    // projecting every shared-core head case back into the original four-case algebra and its native slice location.
+    def sliceReference(index: Int, context: String, cause: ReferenceDataError): ScenarioValuationError =
+      at(index): change =>
+        ScenarioValuationError.SliceValue(
+          change.attribution.leg,
+          change.attribution.sliceIndex,
+          ValuationReferenceDataMismatch(context, cause)
+        )
+
+    // Scenario valuation returns one deterministic failure. Preserve that fail-fast outer surface while projecting
+    // every shared-core head case back into the original four-case algebra and its native slice location. RFC-0007
+    // explicitly expands the nested ValuationError so retained-reference failures can preserve their truthful cause.
     errors.head match
       case AttributedPricePnlViolation.InstrumentMismatch(
           AttributedPricePnlLocation.Change(index, AttributedPricePnlComponent.Position),
@@ -150,10 +160,9 @@ object ScenarioValuation:
         sliceValue(index, "market.price", supplied)
       case AttributedPricePnlViolation.ReferenceMismatch(
           AttributedPricePnlLocation.Change(index, component),
-          _
+          cause
         ) =>
-        val supplied = changes.lift(index).fold(expected)(_.market.instrumentId)
-        sliceValue(index, s"market.${componentName(component)}.reference", supplied)
+        sliceReference(index, s"market.${componentName(component)}.reference", cause)
       case AttributedPricePnlViolation.PricePnlConstruction(cause) =>
         ScenarioValuationError.PricePnlConstruction(cause)
       case AttributedPricePnlViolation.InstrumentMismatch(
