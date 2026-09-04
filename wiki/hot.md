@@ -34,6 +34,7 @@ pinned: true
 - [[wiki/deliveries/RFC-0005-simplify-post-trust-boundary-S-03-use-direct-scala-derived-models|RFC-0005-simplify-post-trust-boundary/S-03-use-direct-scala-derived-models]]
 - [[wiki/deliveries/RFC-0005-simplify-post-trust-boundary-S-05-remove-java-api-compatibility|RFC-0005-simplify-post-trust-boundary/S-05-remove-java-api-compatibility]]
 - [[wiki/deliveries/RFC-0005-simplify-post-trust-boundary-S-04-use-scala-first-quantity-and-reference-data|RFC-0005-simplify-post-trust-boundary/S-04-use-scala-first-quantity-and-reference-data]]
+- [[wiki/deliveries/RFC-0008-simplify-instrument-dependent-apis-S-01-name-instrument-dimensions|RFC-0008-simplify-instrument-dependent-apis/S-01-name-instrument-dimensions]]
 <!-- corgi:managed:end recently-shipped -->
 
 ## Research Queue

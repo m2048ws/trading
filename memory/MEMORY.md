@@ -36,6 +36,7 @@ Add an entry only after a human accepts it or a verified delivery proves it. Eve
 - [[wiki/deliveries/RFC-0005-simplify-post-trust-boundary-S-03-use-direct-scala-derived-models|RFC-0005-simplify-post-trust-boundary/S-03-use-direct-scala-derived-models]] — verified by sha256:aa9b0dc3e278d955dd75f2edab6fd5d572f17f2754252b7e4cb6b345e9e80658
 - [[wiki/deliveries/RFC-0005-simplify-post-trust-boundary-S-04-use-scala-first-quantity-and-reference-data|RFC-0005-simplify-post-trust-boundary/S-04-use-scala-first-quantity-and-reference-data]] — verified by sha256:95f7a7ae69b6481f23ea39097a3533e1ad73ee57563f054d6581379a78567432
 - [[wiki/deliveries/RFC-0005-simplify-post-trust-boundary-S-05-remove-java-api-compatibility|RFC-0005-simplify-post-trust-boundary/S-05-remove-java-api-compatibility]] — verified by sha256:60fca10695ecec821f321730ede792e35d7310ca94e497504462a719c001b84b
+- [[wiki/deliveries/RFC-0008-simplify-instrument-dependent-apis-S-01-name-instrument-dimensions|RFC-0008-simplify-instrument-dependent-apis/S-01-name-instrument-dimensions]] — verified by sha256:f51be78a9c5b67c22ac29adfeebbb80bdbddd712d4c29f51933da3fbad945e3f
 <!-- corgi:managed:end verified-deliveries -->
 
 ## Working Preferences
