@@ -30,7 +30,12 @@
     "use-direct-scala-derived-models",
     "use-scala-first-quantity-and-reference-data",
     "generalize-attributed-price-pnl",
-    "name-instrument-dimensions"
+    "name-instrument-dimensions",
+    "bind-standard-order-construction",
+    "bind-source-fact-construction",
+    "bind-scenario-record-codecs",
+    "bind-instrument-risk",
+    "bind-market-state-construction"
   ],
   "authority": {
     "localCorgiCommits": true,
