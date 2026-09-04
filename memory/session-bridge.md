@@ -14,13 +14,13 @@ updated: 2026-09-04
 - **Issue**: 55 https://github.com/m2048ws/trading/issues/55
 - **Change**: bind-standard-order-construction
 - **Worktree**: /Users/m/src/money/.worktrees/bind-standard-order-construction
-- **Phase at Checkpoint**: planning_ready
+- **Phase at Checkpoint**: awaiting_verify
 - **Task Group at Checkpoint**: 1
-- **Observed Run Revision**: none
-- **Last Verified HEAD**: e2fa856516c31457c9491b7c3d663ca465cd9763
+- **Observed Run Revision**: 2
+- **Last Verified HEAD**: c66616c8594a851c523a25b76a64a99dac532204
 
 ## Next Action
-- Start Apply for `bind-standard-order-construction` Task Group 1.
+- Run canonical whole-change Verify for `bind-standard-order-construction` against the acknowledged Task Group commit.
 
 ## Blockers
 - none
@@ -29,6 +29,9 @@ updated: 2026-09-04
 - none
 
 ## Discoveries
+- RFC-0008/S-02 Task Group 1 adds a final `Order`-owned scope that retains only one exact instrument and delegates all
+  four standard constructors to canonical validation; focused, concurrent-reuse, and completed-artifact tests preserve
+  exact result refinements, deterministic failures, runtime identity checks, and five incompatible input boundaries.
 - No active Corgi Run Contract or OpenSpec Change exists on primary `main`.
 - RFC-0003/S-01 is archived; its delivery record is `wiki/deliveries/RFC-0003-execution-lifecycle-foundation-S-01-actual-execution-lifecycle.md`.
 - The registered `introduce-application-and-runtime-foundation` worktree has no active Change and remains cleanup-only.

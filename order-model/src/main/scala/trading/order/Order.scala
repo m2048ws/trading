@@ -519,6 +519,112 @@ object Order:
       type Execution  = E
     }
 
+  final class InstrumentScope[I <: Instrument] private[order] (val instrument: I):
+    def market(
+      side: Side,
+      lots: instrument.Lots,
+      positionEffect: PositionEffect = PositionEffect.Unrestricted
+    ): Either[
+      OrderViolations,
+      Order.Aux[
+        instrument.PositionD,
+        instrument.BaseD,
+        instrument.QuoteD,
+        ImmediateActivation[instrument.BaseD, instrument.QuoteD],
+        MarketExecution[instrument.PositionD, instrument.BaseD, instrument.QuoteD]
+      ]
+    ] =
+      Order.market(instrument)(side, lots, positionEffect)
+
+    def limit(
+      side: Side,
+      lots: instrument.Lots,
+      limit: instrument.Price,
+      timeInForce: TimeInForce = TimeInForce.GoodTillCancelled,
+      liquidityConstraint: LiquidityConstraint = LiquidityConstraint.Unrestricted,
+      positionEffect: PositionEffect = PositionEffect.Unrestricted,
+      visibility: PricedVisibility[instrument.PositionD] = DisplayedVisibility
+    ): Either[
+      OrderViolations,
+      Order.Aux[
+        instrument.PositionD,
+        instrument.BaseD,
+        instrument.QuoteD,
+        ImmediateActivation[instrument.BaseD, instrument.QuoteD],
+        PricedExecution[
+          instrument.PositionD,
+          instrument.BaseD,
+          instrument.QuoteD,
+          LimitPricing[instrument.BaseD, instrument.QuoteD]
+        ]
+      ]
+    ] =
+      Order.limit(instrument)(
+        side,
+        lots,
+        limit,
+        timeInForce,
+        liquidityConstraint,
+        positionEffect,
+        visibility
+      )
+
+    def stopMarket(
+      side: Side,
+      lots: instrument.Lots,
+      trigger: TriggerActivation[instrument.BaseD, instrument.QuoteD],
+      positionEffect: PositionEffect = PositionEffect.Unrestricted
+    ): Either[
+      OrderViolations,
+      Order.Aux[
+        instrument.PositionD,
+        instrument.BaseD,
+        instrument.QuoteD,
+        trigger.type,
+        MarketExecution[instrument.PositionD, instrument.BaseD, instrument.QuoteD]
+      ]
+    ] =
+      Order.stopMarket(instrument)(side, lots, trigger, positionEffect)
+
+    def stopLimit(
+      side: Side,
+      lots: instrument.Lots,
+      trigger: TriggerActivation[instrument.BaseD, instrument.QuoteD],
+      limit: instrument.Price,
+      timeInForce: TimeInForce = TimeInForce.GoodTillCancelled,
+      liquidityConstraint: LiquidityConstraint = LiquidityConstraint.Unrestricted,
+      positionEffect: PositionEffect = PositionEffect.Unrestricted,
+      visibility: PricedVisibility[instrument.PositionD] = DisplayedVisibility
+    ): Either[
+      OrderViolations,
+      Order.Aux[
+        instrument.PositionD,
+        instrument.BaseD,
+        instrument.QuoteD,
+        trigger.type,
+        PricedExecution[
+          instrument.PositionD,
+          instrument.BaseD,
+          instrument.QuoteD,
+          LimitPricing[instrument.BaseD, instrument.QuoteD]
+        ]
+      ]
+    ] =
+      Order.stopLimit(instrument)(
+        side,
+        lots,
+        trigger,
+        limit,
+        timeInForce,
+        liquidityConstraint,
+        positionEffect,
+        visibility
+      )
+  end InstrumentScope
+
+  def forInstrument[I <: Instrument](instrument: I): InstrumentScope[instrument.type] =
+    new InstrumentScope[instrument.type](instrument)
+
   def create[
     D <: Dim,
     B <: Dim,

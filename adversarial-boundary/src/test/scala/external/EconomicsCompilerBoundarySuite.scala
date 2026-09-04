@@ -439,6 +439,21 @@ class EconomicsCompilerBoundarySuite extends FunSuite:
     val result = compileOrder(source)
     assert(result.succeeded, result.rendered)
 
+  test("completed order-model classpath compiles concise instrument-bound standard orders"):
+    val source = orderFixturesRoot.resolve("positive/InstrumentOrderScopeClient.scala")
+    val result = compileOrder(source)
+    assert(result.succeeded, result.rendered)
+
+  test("completed order-model classpath rejects incompatible instrument-bound order inputs"):
+    val source  = orderFixturesRoot.resolve("negative/InstrumentOrderScopeMismatch.scala")
+    val prelude = compileFilteredPrelude(source, compileOrder)
+    assert(prelude.succeeded, s"fixture prelude must compile independently:\n${prelude.rendered}")
+    val rejected = compileOrder(source)
+    assertEquals(rejected.errors.size, 5, rejected.rendered)
+    assert(rejected.rendered.contains("Found:"), rejected.rendered)
+    assert(rejected.rendered.contains("Required:"), rejected.rendered)
+    economicsForbiddenDiagnostics.foreach(fragment => assert(!rejected.rendered.contains(fragment), rejected.rendered))
+
   test("completed order-model classpath rejects impossible instruction and evidence shapes"):
     val source  = orderFixturesRoot.resolve("negative/ImpossibleInstructionShapes.scala")
     val prelude = compileFilteredPrelude(source, compileOrder)
