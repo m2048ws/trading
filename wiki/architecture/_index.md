@@ -29,4 +29,5 @@ updated: 2026-08-29
 - [[wiki/deliveries/RFC-0008-simplify-instrument-dependent-apis-S-01-name-instrument-dimensions|RFC-0008-simplify-instrument-dependent-apis/S-01-name-instrument-dimensions]]
 - [[wiki/deliveries/RFC-0008-simplify-instrument-dependent-apis-S-02-bind-standard-order-construction|RFC-0008-simplify-instrument-dependent-apis/S-02-bind-standard-order-construction]]
 - [[wiki/deliveries/RFC-0008-simplify-instrument-dependent-apis-S-03-bind-source-fact-construction|RFC-0008-simplify-instrument-dependent-apis/S-03-bind-source-fact-construction]]
+- [[wiki/deliveries/RFC-0008-simplify-instrument-dependent-apis-S-04-bind-scenario-record-codecs|RFC-0008-simplify-instrument-dependent-apis/S-04-bind-scenario-record-codecs]]
 <!-- corgi:managed:end architecture-deliveries -->

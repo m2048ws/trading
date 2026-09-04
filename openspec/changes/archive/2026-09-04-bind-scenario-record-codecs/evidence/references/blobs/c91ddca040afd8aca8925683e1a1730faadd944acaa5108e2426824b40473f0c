@@ -14,13 +14,13 @@ updated: 2026-09-04
 - **Issue**: 59 https://github.com/m2048ws/trading/issues/59
 - **Change**: bind-scenario-record-codecs
 - **Worktree**: /Users/m/src/money/.worktrees/bind-scenario-record-codecs
-- **Phase at Checkpoint**: archiving
-- **Task Group at Checkpoint**: none
-- **Observed Run Revision**: 7
-- **Last Verified HEAD**: fa010240f300abf02ccd0c13b24253674c8d6f35
+- **Phase at Checkpoint**: awaiting_verify
+- **Task Group at Checkpoint**: 1
+- **Observed Run Revision**: 2
+- **Last Verified HEAD**: 4c55d417f3a2d580fcbba578c063ef6765a1a294
 
 ## Next Action
-- Consult Run Contract v3: resume tracker closeout for `bind-scenario-record-codecs` only if pending; otherwise select the next accepted Slice. Local delivery: `wiki/deliveries/RFC-0008-simplify-instrument-dependent-apis-S-04-bind-scenario-record-codecs.md`.
+- Run canonical Verify for `bind-scenario-record-codecs` after Task Group 1 acknowledgement.
 
 ## Blockers
 - none

@@ -1,0 +1,18 @@
+{
+  "verdict": "skipped",
+  "reviewer": "requesting-user",
+  "reason": "The human requester explicitly directed Human QA to be skipped. The verified delivery changes only the pure boundary-codec library API: its immutable instrument-bound encoder and immutable-snapshot decoder delegate to existing checked record operations and add no application/runtime interpreter, service, UI, API, CLI, live-catalog, or changed wire-format user path. All Slice acceptance criteria require automated evidence only.",
+  "noRuntimeImpact": true,
+  "finalRevision": "fa010240f300abf02ccd0c13b24253674c8d6f35",
+  "planningRevision": "sha256:3b41082b634f9a9dad638aff39276756523aded846256d9b42492e22813a58bb",
+  "reportHash": "sha256:941f914508ca78894528012ef808138f1eb2b35da954ef9c77656a8f8e28d9a9",
+  "acceptance": [],
+  "evidenceRefs": [
+    "file:boundary-codecs%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fcodec%2FScenarioRecords.scala#sha256:36effb8081b7dc21629135f6fa594f4232b544a4b33e4d428274e4067fcd503f",
+    "file:boundary-codecs%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fcodec%2FScenarioRecordScopeSuite.scala#sha256:71e5723b8f5565bbdfa9c78589ea1b7e5450d6547aff7afbce6d9c24984e2264",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fboundary-codec-compiler%2Fpositive%2FScenarioRecordScopeClient.scala#sha256:58bec01c0bcbe6dc088eac482226689b6edb900eb00767dbb8203762a56f437e",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fboundary-codec-compiler%2Fnegative%2FScenarioRecordScopeMismatch.scala#sha256:afd0b025fe554c4c4b8beec3ae3c2b98d573feb074bf9b32c07e7670b2e4dd07",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FBoundaryCodecCompilerBoundarySuite.scala#sha256:6a83782675f536952069630f130d6e61018a69d847109caf926939b723c4cd70"
+  ],
+  "reviewedAt": "2026-09-04T16:26:41.311Z"
+}
