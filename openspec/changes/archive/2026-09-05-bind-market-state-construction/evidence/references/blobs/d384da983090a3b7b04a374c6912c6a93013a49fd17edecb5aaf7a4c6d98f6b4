@@ -1,0 +1,23 @@
+[info] welcome to sbt 1.12.15 (Homebrew Java 26.0.2.1)
+[info] loading settings for project bind-market-state-construction-build from plugins.sbt...
+[info] loading project definition from /Users/m/src/money/.worktrees/bind-market-state-construction/project
+[info] loading settings for project root from build.sbt...
+[info] resolving key references (12514 settings) ...
+[info] set current project to trading (in build file:/Users/m/src/money/.worktrees/bind-market-state-construction/)
+[info] compiling 4 Scala sources to /Users/m/src/money/.worktrees/bind-market-state-construction/instrument-economics/target/scala-3.8.4/test-classes ...
+[info] done compiling
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by scala.runtime.LazyVals$ (file:/Users/m/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/scala-library/3.8.4/scala-library-3.8.4.jar)
+WARNING: Please consider reporting this to the maintainers of class scala.runtime.LazyVals$
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+Test run trading.economics.instrument.PureInstrumentEconomicsSuite started
+trading.economics.instrument.PureInstrumentEconomicsSuite: finished 0.079s
+Test run trading.economics.instrument.PureInstrumentEconomicsSuite finished: 0 failed, 0 ignored, 12 total 0.09s
+Test run trading.economics.instrument.EconomicsPropertiesSuite started
+trading.economics.instrument.EconomicsPropertiesSuite: finished 0.097s
+Test run trading.economics.instrument.EconomicsPropertiesSuite finished: 0 failed, 0 ignored, 2 total 0.098s
+Test run trading.economics.instrument.MarketStateInstrumentScopeSuite started
+trading.economics.instrument.MarketStateInstrumentScopeSuite: finished 0.017s
+Test run trading.economics.instrument.MarketStateInstrumentScopeSuite finished: 0 failed, 0 ignored, 8 total 0.017s
+[info] Passed: Total 22, Failed 0, Errors 0, Passed 22
+[success] Total time: 6 s, completed Sep 4, 2026, 11:01:54 PM

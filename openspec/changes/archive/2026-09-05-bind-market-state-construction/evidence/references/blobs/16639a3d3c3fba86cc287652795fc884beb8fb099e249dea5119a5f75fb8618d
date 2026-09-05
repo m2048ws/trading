@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "change": "bind-market-state-construction",
+  "deliveryRef": "RFC-0008-simplify-instrument-dependent-apis/S-06-bind-market-state-construction",
+  "verdict": "pass",
+  "reviewer": "m2048ws",
+  "recordedAt": "2026-09-05T13:31:18Z",
+  "decisionSource": {
+    "kind": "explicit user message in current conversation",
+    "text": "lets skip this rfc (qa waiving)\n\nQA passed"
+  },
+  "identitySource": {
+    "kind": "explicit earlier user message in this conversation",
+    "text": "qa approved m2048ws"
+  },
+  "interpretation": "The latest QA passed is the human QA result for the existing S-06 delivery. The QA-waiver RFC is set aside; no QA skip or waiver is requested or recorded.",
+  "executionAttribution": "The retained Scala REPL walkthrough was agent-operated. This record captures the human's explicit QA decision; it does not claim the human personally entered terminal commands or conducted additional unrecorded tests.",
+  "finalRevision": "7012636e9ff868ec14daa1be58c0cc59ac426b67",
+  "planningRevision": "sha256:d71b55691b5e80ce8f028afe42202975d786dabf515eebc33b2d930a83c60827",
+  "sourceDigest": "sha256:7228b2dcc47996a30649f1192bf82b83a696dacc62686de4ab86fffbe432c0ae",
+  "traceabilityDigest": "sha256:48f87427d1fb0087946a8d66eea30fcaee5a1f24a3c33d3d8de0c79e9c306c78",
+  "verifyReportHash": "sha256:7db5ce2cfaf1998048cfc21019173a6eeaeebae3f42721c36dfce67ef4b90e9f",
+  "walkthroughEvidence": [
+    "target/corgi-evidence/s06-human-qa/console-session.json",
+    "target/corgi-evidence/s06-human-qa/walkthrough.txt",
+    "target/corgi-evidence/s06-human-qa/qa-observations.json"
+  ],
+  "temporalNote": "The original walkthrough and observation files truthfully retain pending-human-confirmation labels from before this message. This separate confirmation supplies the subsequent human decision without rewriting that history.",
+  "limitations": [
+    "Local walkthrough targeted release 25 on JDK 26.0.2.1 (Scala 3.8.4, SBT 1.12.15).",
+    "Nine bounded public-consumer cases, 277-second interactive console; no new concurrency or performance experiment.",
+    "Canonical Verify supplies wider characterization, compiler, dependency, identity/grid and regression coverage.",
+    "Retained short JMH evidence is indicative, not deterministic performance evidence."
+  ]
+}

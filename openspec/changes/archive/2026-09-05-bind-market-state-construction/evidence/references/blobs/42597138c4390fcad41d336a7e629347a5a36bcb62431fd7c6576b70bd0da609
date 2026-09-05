@@ -1,0 +1,261 @@
+{
+  "schemaVersion": 1,
+  "sessionId": "ET-2026-09-05-S06-01",
+  "kind": "agent-operated guided exploratory session pending human confirmation",
+  "binding": {
+    "change": "bind-market-state-construction",
+    "run": {
+      "schemaVersion": 3,
+      "runId": "run-4874b9a2-be9a-4d0d-8a20-b391ae7a185b",
+      "phase": "awaiting_human_qa",
+      "stateRevision": 4,
+      "planningRevision": "sha256:d71b55691b5e80ce8f028afe42202975d786dabf515eebc33b2d930a83c60827",
+      "finalRevision": "7012636e9ff868ec14daa1be58c0cc59ac426b67",
+      "nextGroupId": null
+    },
+    "contract": {
+      "schemaVersion": 1,
+      "pathConvention": "project-relative-posix",
+      "kind": "rfc-slice",
+      "deliveryRef": "RFC-0008-simplify-instrument-dependent-apis/S-06-bind-market-state-construction",
+      "rfcId": "RFC-0008-simplify-instrument-dependent-apis",
+      "rfcDigest": "sha256:77e1c4ac3d7629334f86695e07ffaf835549c5e0e05612314f0ca193e42139f3",
+      "acceptedCommit": "bf457296faa7d29aec0840a7e8f48d41ed0f7491",
+      "sliceId": "S-06-bind-market-state-construction",
+      "acceptanceIds": [
+        "AC-022",
+        "AC-023",
+        "AC-024",
+        "AC-025"
+      ],
+      "sourcePath": "openspec/changes/bind-market-state-construction/corgi/source.yaml",
+      "sourceDigest": "sha256:7228b2dcc47996a30649f1192bf82b83a696dacc62686de4ab86fffbe432c0ae",
+      "traceabilityPath": "openspec/changes/bind-market-state-construction/corgi/traceability.yaml",
+      "traceabilityDigest": "sha256:48f87427d1fb0087946a8d66eea30fcaee5a1f24a3c33d3d8de0c79e9c306c78",
+      "tracker": {
+        "provider": "github",
+        "idempotencyKey": "0278b383657b8c7e5345145d2b0c103640d79983db46494c11e0cf81c0dda367",
+        "issue": {
+          "id": "63",
+          "url": "https://github.com/m2048ws/trading/issues/63"
+        }
+      }
+    },
+    "review": {
+      "decision": "approve",
+      "reviewer": "m2048ws",
+      "reason": null,
+      "finalRevision": "7012636e9ff868ec14daa1be58c0cc59ac426b67",
+      "planningRevision": "sha256:d71b55691b5e80ce8f028afe42202975d786dabf515eebc33b2d930a83c60827",
+      "verifyReportHash": "sha256:7db5ce2cfaf1998048cfc21019173a6eeaeebae3f42721c36dfce67ef4b90e9f",
+      "reviewedAt": "2026-09-04T22:20:44.382Z"
+    },
+    "token": {
+      "runId": "run-4874b9a2-be9a-4d0d-8a20-b391ae7a185b",
+      "sessionId": "rfc0008-s06-20260904",
+      "stateRevision": 4,
+      "nonce": "e6876e3d-b69d-4200-b46f-ed1a87890ece"
+    }
+  },
+  "environment": {
+    "scala": "3.8.4",
+    "sbt": "1.12.15",
+    "hostJdk": "26.0.2.1",
+    "releaseTarget": 25,
+    "timezone": "Europe/Stockholm",
+    "entryCommand": "sbt \"instrumentEconomics/Test/console\"",
+    "fixture": "Existing InstrumentFixtures supplies checked immutable instruments only. All exercised constructors are public API."
+  },
+  "charter": {
+    "sessionId": "ET-2026-09-05-S06-01",
+    "plannedMinutes": 10,
+    "mission": "Human-observed Scala consumer walkthrough of the approved S-06 market scope, explicitly pending the user's QA verdict.",
+    "scope": "AC-022 through AC-025: defaults, exact dependent inputs/results, reuse, ordered errors, separate conversion owner and incompatible endpoints.",
+    "outOfScope": [
+      "No code/planning changes, repair, commit, push, Archive, runtime service, UI, authentication or database checks.",
+      "Do not replace full canonical automated Verify; use its 1084-test evidence for broader coverage."
+    ],
+    "tours": [
+      "Couch Potato: ordinary calls and empty defaults",
+      "Obsessive-Compulsive: reuse with varying prices and rates",
+      "Rained-Out: invalid anchors and incompatible typed rate"
+    ],
+    "fixtures": "InstrumentFixtures supplies immutable checked instruments; the interactive consumer calls public Price, MarketState and SettlementConversion APIs.",
+    "stopConditions": [
+      "Unexpected result or compiler failure in a valid call",
+      "Expected invalid call unexpectedly compiles",
+      "Dirty worktree, final HEAD or planning/source/traceability drift"
+    ],
+    "startedAt": "2026-09-04T22:26:16Z",
+    "humanVerdict": "pending",
+    "reviewer": "not yet confirmed for QA"
+  },
+  "duration": {
+    "plannedMinutes": 10,
+    "interactiveConsoleSeconds": 277,
+    "firstTourInputAt": {
+      "current_time": "2026-09-05 13:01:26 UTC"
+    },
+    "finishedAt": {
+      "current_time": "2026-09-05 13:05:18 UTC"
+    },
+    "note": "Earlier setup/approval wait excluded from the interactive exercise duration."
+  },
+  "surfaceClassification": {
+    "scalaLibraryConsumer": "exercised",
+    "ui": "not applicable",
+    "serverSmoke": "not applicable; no runnable product service",
+    "httpApi": "not applicable",
+    "productCli": "not applicable; SBT/REPL is the QA harness",
+    "auth": "not applicable",
+    "database": "not applicable"
+  },
+  "cases": [
+    {
+      "id": "QA-01",
+      "acceptanceIds": [
+        "AC-023",
+        "AC-024"
+      ],
+      "tour": "Couch Potato",
+      "input": "Reuse Price.exact(instrument) as Rational => Either[PriceError, instrument.Price]; construct at price 100, quote anchor 9/10.",
+      "expected": "Exact base rate 90, quote rate 9/10, zero additional conversions; exact instrument.MarketState result.",
+      "actual": "Console res0: (100, 90, 9/10, 0); exact dependent function and result types retained.",
+      "agentObservation": "matches"
+    },
+    {
+      "id": "QA-02",
+      "acceptanceIds": [
+        "AC-022"
+      ],
+      "tour": "Couch Potato",
+      "input": "Compare omitted additional conversions to Vector.empty and the direct fromQuoteAnchor operation using public observations.",
+      "expected": "Both comparisons true.",
+      "actual": "Console res1: (true, true).",
+      "agentObservation": "matches"
+    },
+    {
+      "id": "QA-03",
+      "acceptanceIds": [
+        "AC-023",
+        "AC-024"
+      ],
+      "tour": "Obsessive-Compulsive",
+      "input": "Reuse makePrice and the same markets scope for price 101, then repeat price 100.",
+      "expected": "New base rate 909/10, original rate still 90; repeated result is a different instance with equal observations.",
+      "actual": "Console res2: (909/10, 90, false, true).",
+      "agentObservation": "matches"
+    },
+    {
+      "id": "QA-04",
+      "acceptanceIds": [
+        "AC-023",
+        "AC-024",
+        "AC-025"
+      ],
+      "tour": "Couch Potato",
+      "input": "Construct using typed quote rate 9/10; separately create a fee-token conversion at coefficient 2 and convert 7/3 tokens.",
+      "expected": "Typed-rate construction equals anchor construction; token conversion yields exact 14/3.",
+      "actual": "Console res3: Right(true); res4: (Vector(2), Right(14/3)).",
+      "agentObservation": "matches"
+    },
+    {
+      "id": "QA-05",
+      "acceptanceIds": [
+        "AC-024"
+      ],
+      "tour": "Rained-Out",
+      "input": "Supply price 100 with base/quote anchors 89 and 9/10.",
+      "expected": "One IncoherentAnchors violation retaining all input values.",
+      "actual": "Console res5: Left(Vector(IncoherentAnchors(price=100, baseToSettle=89, quoteToSettle=9/10))).",
+      "agentObservation": "matches"
+    },
+    {
+      "id": "QA-06",
+      "acceptanceIds": [
+        "AC-024"
+      ],
+      "tour": "Rained-Out",
+      "input": "Supply base anchor -1, quote anchor 0, and the same token conversion twice.",
+      "expected": "Ordered base NonPositive, quote NonPositive, DuplicateSource(fee-token); no dependent coherence violation.",
+      "actual": "Console res6 has exactly those three violations in that order.",
+      "agentObservation": "matches"
+    },
+    {
+      "id": "QA-07",
+      "acceptanceIds": [
+        "AC-022",
+        "AC-023",
+        "AC-024"
+      ],
+      "tour": "Couch Potato",
+      "input": "Exercise all six scalar/rate modes on the third-asset-settled instrument; quoteSettled on linear and baseSettled on inverse.",
+      "expected": "Six results equal the original successful state; settled base/quote coefficients are (100,1) and (1,1/100).",
+      "actual": "Console res7: six Right(true); res8: (Right((100,1)), Right((1,1/100))).",
+      "agentObservation": "matches"
+    },
+    {
+      "id": "QA-08",
+      "acceptanceIds": [
+        "AC-024"
+      ],
+      "tour": "Rained-Out",
+      "input": "Invoke quoteSettled on the EUR-settled quanto instrument.",
+      "expected": "Typed SettleIsNotQuote rejection.",
+      "actual": "Console res9: InvalidConversion(usd, eur, 1, SettleIsNotQuote).",
+      "agentObservation": "matches"
+    },
+    {
+      "id": "QA-09",
+      "acceptanceIds": [
+        "AC-025"
+      ],
+      "tour": "Rained-Out",
+      "input": "Construct a valid reversed settle-to-quote rate, then supply it to markets.fromQuoteRate(price100, reversed, Vector.empty).",
+      "expected": "Compilation fails at reversed, requiring markets.QuoteRate; no runtime call occurs.",
+      "actual": "One E007 Type Mismatch Error at reversed; Found reversed endpoints, Required markets.QuoteRate.",
+      "agentObservation": "matches"
+    }
+  ],
+  "findings": [],
+  "oddities": [
+    "SBT -batch closed console stdin before any exercise; reopened without -batch.",
+    "Initial multiline terminal input did not evaluate all declarations; the setup was re-entered as one Scala REPL statement and confirmed by its printed exact types.",
+    "JLine warned about escaped/quoted completion; it did not prevent evaluation. No production change was made."
+  ],
+  "coverageConfidence": "High for the bounded demonstrated consumer paths, not exhaustive. Canonical automated Verify remains the broader regression evidence.",
+  "areasNotReached": [
+    "No new concurrency stress or performance experiment in this guided session.",
+    "Only one incompatible rate was explored interactively; six independent negative fixtures and 96 argument forms remain covered by canonical Verify.",
+    "No fresh foreign-lineage or off-grid case was exercised here; existing canonical characterization covers these."
+  ],
+  "perAc": {
+    "AC-022": {
+      "agentObservation": "demonstrated paths match expectations",
+      "humanVerdict": "pending",
+      "humanReviewer": null
+    },
+    "AC-023": {
+      "agentObservation": "demonstrated paths match expectations",
+      "humanVerdict": "pending",
+      "humanReviewer": null
+    },
+    "AC-024": {
+      "agentObservation": "demonstrated paths match expectations",
+      "humanVerdict": "pending",
+      "humanReviewer": null
+    },
+    "AC-025": {
+      "agentObservation": "demonstrated paths match expectations",
+      "humanVerdict": "pending",
+      "humanReviewer": null
+    }
+  },
+  "humanVerdict": "pending",
+  "humanReviewer": null,
+  "canonicalQaSubmitted": false,
+  "evidenceRefs": [
+    "target/corgi-evidence/s06-human-qa/console-session.json",
+    "target/corgi-evidence/s06-human-qa/walkthrough.txt"
+  ]
+}

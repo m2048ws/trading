@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 3,
+  "groupId": "1",
+  "checks": [
+    {
+      "name": "Pre-change characterization: 22 tests",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:target%2Fcorgi-evidence%2Fs06%2Fbaseline-pass.log#sha256:d384da983090a3b7b04a374c6912c6a93013a49fd17edecb5aaf7a4c6d98f6b4"
+      ]
+    },
+    {
+      "name": "Full formatting, clean aggregate: 1084 tests, benchmark compilation",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:target%2Fcorgi-evidence%2Fs06%2Ffull-gate.log#sha256:3f5ad1548bb27031749659de09f533b2bda6eb05e18e360c6462eb67cb571d89"
+      ]
+    },
+    {
+      "name": "Completed-artifact compiler boundaries: 39 tests, 96 calls and six independent rejections",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:target%2Fcorgi-evidence%2Fs06%2Fcompiler-boundary.log#sha256:6991359edff6a39c807f76aabdfc5c56fd5b69c5fc142724c8b4020ad8573d1e"
+      ]
+    },
+    {
+      "name": "Reflection policy",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:target%2Fcorgi-evidence%2Fs06%2Freflection-guard.log#sha256:c0b99e32f07b7e69753e224c23149bf8589ed9a027202ee82c4be2cabc231b3d"
+      ]
+    },
+    {
+      "name": "Reflection policy regression",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:target%2Fcorgi-evidence%2Fs06%2Freflection-regression.log#sha256:eb6658545773b5377bc49220f2c819304dfba1b9e738b527917744a24991037b"
+      ]
+    },
+    {
+      "name": "Strict ready and unchanged source/planning/traceability",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:target%2Fcorgi-evidence%2Fs06%2Fready.json#sha256:a9463ef55d1e400ddb9b6e7ba8686fb59b0c0edc86874eef8db29649fc0873b0"
+      ]
+    },
+    {
+      "name": "JMH 8-case comparison and 3-fork allocation follow-up",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:target%2Fcorgi-evidence%2Fs06%2Ffull-gate.log#sha256:3f5ad1548bb27031749659de09f533b2bda6eb05e18e360c6462eb67cb571d89",
+        "file:target%2Fcorgi-evidence%2Fs06%2Fallocation-followup.log#sha256:96130578b1ee9fc07348532bc49219267ecbfd8ab18ca14ba5eff747d33eee5f"
+      ]
+    },
+    {
+      "name": "Source and bytecode review: unchanged checked kernel, one field, one delegate per mode",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:target%2Fcorgi-evidence%2Fs06%2Fgroup-review.json#sha256:68afe8b08d59712dde2cd89567724d03f92b1bbcc246f74611376454ca8dd015",
+        "file:target%2Fcorgi-evidence%2Fs06%2Fscope-bytecode.txt#sha256:0935a09698094e8cae15b040f16a92bb2737329bfa401477c91bd1c660d2fe55"
+      ]
+    },
+    {
+      "name": "Git staged whitespace and unchanged evaluated workspace",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:target%2Fcorgi-evidence%2Fs06%2Fgit-checks.json#sha256:8777334e6ee9fbde937f746935f6c5b63d76ceab9ae6c0a0047dce28ec8f49db"
+      ]
+    }
+  ],
+  "automatedReview": {
+    "verdict": "pass",
+    "findings": []
+  },
+  "artifacts": [
+    "file:target%2Fcorgi-evidence%2Fs06%2Fgroup-review.json#sha256:68afe8b08d59712dde2cd89567724d03f92b1bbcc246f74611376454ca8dd015",
+    "file:target%2Fcorgi-evidence%2Fs06%2Fscope-bytecode.txt#sha256:0935a09698094e8cae15b040f16a92bb2737329bfa401477c91bd1c660d2fe55",
+    "file:instrument-economics%2Fsrc%2Fmain%2Fscala%2Ftrading%2Feconomics%2Finstrument%2FMarket.scala#sha256:d594c68c4fe46c5c582001f84de23dc432c8dbbd332b2f9d4984d7bda2a8bd38",
+    "file:instrument-economics%2Fsrc%2Ftest%2Fscala%2Ftrading%2Feconomics%2Finstrument%2FMarketStateInstrumentScopeSuite.scala#sha256:75bb1b0f96a4acd5a32f9939f2ec872b843d00d39b3a5fa3925b856d2c44770a",
+    "file:instrument-economics%2Fsrc%2Ftest%2Fscala%2Ftrading%2Feconomics%2Finstrument%2FEconomicsPropertiesSuite.scala#sha256:0f70f22a1c5b0dcef9841062889990ae20c4e2ab2aaa0b088bc40ea0395378a3",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Feconomics-core-compiler%2FMarketStateScopeClient.scala#sha256:1d2b0d832f5474683f68490b4c8d2b9ea6e219eadfa702497ff0bc21c38f3ad5",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Feconomics-core-compiler%2FMarketStateScopeMismatch.scala#sha256:f758ac0ff2b90448bf1b6e1487beb48a2787094aec1074f50bb844b79b452174",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FEconomicsCompilerBoundarySuite.scala#sha256:8b917c7f4c26da9f7da4e8dd70c806dd0004d08e333e2c4190ce94e2e9316c55",
+    "file:benchmarks%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fbenchmark%2FMarketStateConstructionBenchmark.scala#sha256:344604b9149e069613d46feadc4bf3d8b2d131b8232669874e21a25676f39bed",
+    "file:build.sbt#sha256:7815889cbd4e10c0c4237ff890aff871bf5550c2d36eeb55c8750ead45c619e5"
+  ],
+  "summary": "AC-022 through AC-025 implemented in one Task Group. Eight direct defaults and exact field-only scope retain the unchanged checked kernel and conversion owner. Baseline passed before production changes; final clean gate passed 1084 tests. Explicit default types resolve Scala Nothing inference. Compiler classpath strengthened to exclude aggregate effects. Scope/example compiler tests passed, including a retained Price.exact(instrument) function. Review found no actionable issues. JDK 26.0.2.1 host targeted release 25, not a JDK 25 execution claim. Short JMH allocations varied by fork; three-fork follow-up gave direct 752.049 +/-15.650 ns and 4349.342 +/-16.693 B/op versus scope 747.364 +/-12.980 ns and 4274.675 +/-133.542 B/op, overlapping intervals. Measurements are indicative, not deterministic performance guarantees. Canonical whole-change Verify and human gates remain pending."
+}

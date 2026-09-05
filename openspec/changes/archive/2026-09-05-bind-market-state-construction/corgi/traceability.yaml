@@ -1,0 +1,31 @@
+schemaVersion: 1
+sourceDigest: sha256:7228b2dcc47996a30649f1192bf82b83a696dacc62686de4ab86fffbe432c0ae
+acceptance:
+  - id: AC-022
+    evidence: automated
+    planningRefs:
+      - path: specs/instrument-economics/spec.md
+        anchor: requirement-market-state-modes-accept-optional-additional-conversions
+    taskGroups:
+      - '1'
+  - id: AC-023
+    evidence: automated
+    planningRefs:
+      - path: specs/instrument-economics/spec.md
+        anchor: requirement-market-state-construction-binds-one-exact-instrument
+    taskGroups:
+      - '1'
+  - id: AC-024
+    evidence: automated
+    planningRefs:
+      - path: specs/instrument-economics/spec.md
+        anchor: requirement-bound-market-state-construction-preserves-exact-checked-semantics
+    taskGroups:
+      - '1'
+  - id: AC-025
+    evidence: automated
+    planningRefs:
+      - path: specs/instrument-economics/spec.md
+        anchor: requirement-market-state-scopes-preserve-compiler-boundaries-and-ownership
+    taskGroups:
+      - '1'

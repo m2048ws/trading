@@ -1,0 +1,27 @@
+schemaVersion: 1
+kind: rfc-slice
+deliveryRef: RFC-0008-simplify-instrument-dependent-apis/S-06-bind-market-state-construction
+rfc:
+  id: RFC-0008-simplify-instrument-dependent-apis
+  path: rfcs/RFC-0008-simplify-instrument-dependent-apis
+  acceptedCommit: bf457296faa7d29aec0840a7e8f48d41ed0f7491
+  digest: sha256:77e1c4ac3d7629334f86695e07ffaf835549c5e0e05612314f0ca193e42139f3
+slice:
+  id: S-06-bind-market-state-construction
+  digest: sha256:8706694e8c911fd119b7306eccd5c823acaab43d11ee9b9a341219b360da1441
+acceptance:
+  - id: AC-022
+    evidence: automated
+  - id: AC-023
+    evidence: automated
+  - id: AC-024
+    evidence: automated
+  - id: AC-025
+    evidence: automated
+deliveryBindingDigest: sha256:1691b90ffbf25b94cea576f5fe42d23db581a927fc9aa0eba73db3f77aa53e0c
+tracker:
+  provider: github
+  idempotencyKey: 0278b383657b8c7e5345145d2b0c103640d79983db46494c11e0cf81c0dda367
+  issue:
+    id: '63'
+    url: https://github.com/m2048ws/trading/issues/63

@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 3,
+  "groupId": "1",
+  "checks": [
+    {
+      "name": "boundary-codec production compile and prohibited-mechanism source inspection",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:boundary-codecs%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fcodec%2FScenarioRecords.scala#sha256:36effb8081b7dc21629135f6fa594f4232b544a4b33e4d428274e4067fcd503f"
+      ]
+    },
+    {
+      "name": "focused scenario-record context behavior and compatibility suite",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:boundary-codecs%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fcodec%2FScenarioRecordScopeSuite.scala#sha256:71e5723b8f5565bbdfa9c78589ea1b7e5450d6547aff7afbce6d9c24984e2264"
+      ]
+    },
+    {
+      "name": "completed-artifact positive and incompatible-dimension compiler boundary suite",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FBoundaryCodecCompilerBoundarySuite.scala#sha256:6a83782675f536952069630f130d6e61018a69d847109caf926939b723c4cd70",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fboundary-codec-compiler%2Fpositive%2FScenarioRecordScopeClient.scala#sha256:58bec01c0bcbe6dc088eac482226689b6edb900eb00767dbb8203762a56f437e",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fboundary-codec-compiler%2Fnegative%2FScenarioRecordScopeMismatch.scala#sha256:afd0b025fe554c4c4b8beec3ae3c2b98d573feb074bf9b32c07e7670b2e4dd07"
+      ]
+    },
+    {
+      "name": "production and benchmark in-process reflection guards",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:tools%2Fcheck-in-process-reflection.sh#sha256:bca2729121ce2bde4dfe3e8db2af53d6129ea0db1162eaab0dd982d769ddf3d6",
+        "file:tools%2Ftest-check-in-process-reflection.sh#sha256:0679a80193d81a4ab8836387de8054644fd1569e9b4275506cb3171fdbce9510"
+      ]
+    },
+    {
+      "name": "diff, Scala formatting, clean JDK-25 release test matrix, and JMH compilation",
+      "status": "pass",
+      "evidenceRefs": [
+        "file:build.sbt#sha256:790e4ae7fa4ab9334b36c0273bc4d44d02d59cac352b50f5f0aeaadc026f5db8",
+        "file:boundary-codecs%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fcodec%2FScenarioRecordScopeSuite.scala#sha256:71e5723b8f5565bbdfa9c78589ea1b7e5450d6547aff7afbce6d9c24984e2264",
+        "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FBoundaryCodecCompilerBoundarySuite.scala#sha256:6a83782675f536952069630f130d6e61018a69d847109caf926939b723c4cd70"
+      ]
+    }
+  ],
+  "automatedReview": {
+    "verdict": "pass",
+    "findings": []
+  },
+  "artifacts": [
+    "file:boundary-codecs%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fcodec%2FScenarioRecords.scala#sha256:36effb8081b7dc21629135f6fa594f4232b544a4b33e4d428274e4067fcd503f",
+    "file:boundary-codecs%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fcodec%2FScenarioRecordScopeSuite.scala#sha256:71e5723b8f5565bbdfa9c78589ea1b7e5450d6547aff7afbce6d9c24984e2264",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FBoundaryCodecCompilerBoundarySuite.scala#sha256:6a83782675f536952069630f130d6e61018a69d847109caf926939b723c4cd70",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fboundary-codec-compiler%2Fpositive%2FScenarioRecordScopeClient.scala#sha256:58bec01c0bcbe6dc088eac482226689b6edb900eb00767dbb8203762a56f437e",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fboundary-codec-compiler%2Fnegative%2FScenarioRecordScopeMismatch.scala#sha256:afd0b025fe554c4c4b8beec3ae3c2b98d573feb074bf9b32c07e7670b2e4dd07",
+    "file:memory%2Fsession-bridge.md#sha256:c91ddca040afd8aca8925683e1a1730faadd944acaa5108e2426824b40473f0c"
+  ],
+  "summary": "Task Group 1 adds final codec-owned instrument-bound encoding and immutable-snapshot reconstruction contexts with ten exact delegates across both scenario families, preserving canonical wire, typed failure, diagnostic, batching, snapshot-coherence, reuse, and completed-artifact boundaries."
+}

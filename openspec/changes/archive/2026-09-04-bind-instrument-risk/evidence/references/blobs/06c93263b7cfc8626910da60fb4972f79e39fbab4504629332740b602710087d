@@ -1,0 +1,42 @@
+schemaVersion: 1
+sourceDigest: sha256:114045c8b2c0b08b7aef8ff5acd4cef89a4a2e36bc02c9a355ec271b160a5f44
+acceptance:
+  - id: AC-017
+    evidence: automated
+    planningRefs:
+      - path: specs/position-risk-sizing/spec.md
+        anchor: requirement-instrument-bound-risk-scope
+    taskGroups:
+      - '1'
+  - id: AC-018
+    evidence: automated
+    planningRefs:
+      - path: specs/position-risk-sizing/spec.md
+        anchor: requirement-bound-risk-behavior-is-exactly-preserved
+    taskGroups:
+      - '1'
+  - id: AC-019
+    evidence: automated
+    planningRefs:
+      - path: specs/position-risk-sizing/spec.md
+        anchor: requirement-least-trusted-model-inputs-remain-checked
+      - path: specs/position-risk-sizing/spec.md
+        anchor: requirement-bound-risk-behavior-is-exactly-preserved
+    taskGroups:
+      - '1'
+  - id: AC-020
+    evidence: automated
+    planningRefs:
+      - path: specs/position-risk-sizing/spec.md
+        anchor: requirement-instrument-bound-risk-scope
+      - path: specs/position-risk-sizing/spec.md
+        anchor: requirement-bound-risk-api-remains-type-safe-pure-and-owner-local
+    taskGroups:
+      - '1'
+  - id: AC-021
+    evidence: automated
+    planningRefs:
+      - path: specs/position-risk-sizing/spec.md
+        anchor: requirement-bound-risk-api-remains-type-safe-pure-and-owner-local
+    taskGroups:
+      - '1'

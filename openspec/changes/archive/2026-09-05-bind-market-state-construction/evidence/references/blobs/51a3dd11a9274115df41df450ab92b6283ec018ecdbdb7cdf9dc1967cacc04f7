@@ -1,0 +1,170 @@
+[
+  {
+    "command": "sbt -batch \"instrumentEconomics/Test/console\"",
+    "chunk_id": "52a53f",
+    "wall_time_seconds": 1.002266958,
+    "session_id": 90888,
+    "original_token_count": 0,
+    "output": ""
+  },
+  {
+    "input": "",
+    "chunk_id": "f17c11",
+    "wall_time_seconds": 0.000004875,
+    "exit_code": 0,
+    "original_token_count": 230,
+    "output": "[info] welcome to sbt 1.12.15 (Homebrew Java 26.0.2.1)\r\n[info] loading settings for project bind-market-state-construction-build from plugins.sbt...\r\n[info] loading project definition from /Users/m/src/money/.worktrees/bind-market-state-construction/project\r\n[info] loading settings for project root from build.sbt...\r\n[info] resolving key references (12514 settings) ...\r\n[info] set current project to trading (in build file:/Users/m/src/money/.worktrees/bind-market-state-construction/)\r\nSep 05, 2026 12:26:23 AM org.jline.utils.Log logr\r\nWARNING: The Parser of class dotty.tools.repl.JLineTerminal$$anon$2 does not support the CompletingParsedLine interface. Completion with escaped or quoted words won't work correctly.\r\nWelcome to Scala 3.8.4 (26.0.2.1, Java OpenJDK 64-Bit Server VM).\r\nType in expressions for evaluation. Or try :help.\r\n\r\nscala> \r\n[success] Total time: 3 s, completed Sep 5, 2026, 12:26:23 AM\r\n"
+  },
+  {
+    "command": "sbt \"instrumentEconomics/Test/console\"",
+    "chunk_id": "fe4dfe",
+    "wall_time_seconds": 1.000975791,
+    "session_id": 20164,
+    "original_token_count": 0,
+    "output": ""
+  },
+  {
+    "input": "",
+    "chunk_id": "481a12",
+    "wall_time_seconds": 5.001450875,
+    "session_id": 20164,
+    "original_token_count": 213,
+    "output": "[info] welcome to sbt 1.12.15 (Homebrew Java 26.0.2.1)\r\n[info] loading settings for project bind-market-state-construction-build from plugins.sbt...\r\n[info] loading project definition from /Users/m/src/money/.worktrees/bind-market-state-construction/project\r\n[info] loading settings for project root from build.sbt...\r\n[info] resolving key references (12514 settings) ...\r\n[info] set current project to trading (in build file:/Users/m/src/money/.worktrees/bind-market-state-construction/)\r\nSep 05, 2026 3:00:44 PM org.jline.utils.Log logr\r\nWARNING: The Parser of class dotty.tools.repl.JLineTerminal$$anon$2 does not support the CompletingParsedLine interface. Completion with escaped or quoted words won't work correctly.\r\nWelcome to Scala 3.8.4 (26.0.2.1, Java OpenJDK 64-Bit Server VM).\r\nType in expressions for evaluation. Or try :help.\r\n\r\nscala> "
+  },
+  {
+    "input": "import trading.economics.instrument.*\nimport trading.quantity.*\nval fixtures = new InstrumentFixtures\nval instrument = fixtures.quanto\nval markets = MarketState.forInstrument(instrument)\nval makePrice: Rational => Either[PriceError, instrument.Price] = Price.exact(instrument)\nval price100 = makePrice(Rational(100)).toOption.get\n",
+    "chunk_id": "e66aa6",
+    "wall_time_seconds": 1.001625125,
+    "session_id": 20164,
+    "original_token_count": 87,
+    "output": "import trading.economics.instrument.*\r\nimport trading.quantity.*\r\nval fixtures = new InstrumentFixtures\r\nval instrument = fixtures.quanto\r\nval markets = MarketState.forInstrument(instrument)\r\nval makePrice: Rational => Either[PriceError, instrument.Price] = Price.exact(instrument)\r\nval price100 = makePrice(Rational(100)).toOption.get\r\n\r\nscala> "
+  },
+  {
+    "input": "",
+    "chunk_id": "779dc3",
+    "wall_time_seconds": 5.001971167,
+    "session_id": 20164,
+    "original_token_count": 0,
+    "output": ""
+  },
+  {
+    "input": "println(\"QA console ready\")\n",
+    "chunk_id": "40e2cd",
+    "wall_time_seconds": 1.002598667,
+    "session_id": 20164,
+    "original_token_count": 14,
+    "output": "println(\"QA console ready\")\r\nQA console ready\r\n\r\nscala> "
+  },
+  {
+    "input": "import trading.quantity.*; val fixtures = new InstrumentFixtures; val instrument = fixtures.quanto; val markets = MarketState.forInstrument(instrument); val makePrice: Rational => Either[PriceError, instrument.Price] = Price.exact(instrument); val price100 = makePrice(Rational(100)).toOption.get\n",
+    "chunk_id": "6d38f3",
+    "wall_time_seconds": 1.002168041,
+    "session_id": 20164,
+    "original_token_count": 247,
+    "output": "import trading.quantity.*; val fixtures = new InstrumentFixtures; val instrument = fixtures.quanto; val markets = MarketState.forInstrument(instrument); val makePrice: Rational => Either[PriceError, instrument.Price] = Price.exact(instrument); val price100 = makePrice(Rational(100)).toOption.get\r\n\u001b[33mval\u001b[39m \u001b[36mfixtures\u001b[39m: \u001b[32mInstrumentFixtures\u001b[39m = trading.economics.instrument.InstrumentFixtures@7e992d8a\r\n\u001b[33mval\u001b[39m \u001b[36minstrument\u001b[39m: \u001b[32mInstrument\u001b[39m = trading.economics.instrument.Instrument@3e0f6d37\r\n\u001b[33mval\u001b[39m \u001b[36mmarkets\u001b[39m: \u001b[33mMarketState\u001b[39m.\u001b[32mInstrumentScope\u001b[39m[instrument.\u001b[33mtype\u001b[39m] = trading.economics.instrument.MarketState$InstrumentScope@9cde4f9\r\n\u001b[33mval\u001b[39m \u001b[36mmakePrice\u001b[39m: \u001b[32mRational\u001b[39m => \u001b[32mEither\u001b[39m[\u001b[32mPriceError\u001b[39m, instrument.\u001b[32mPrice\u001b[39m] = Lambda/0x000000c002405e80@457b54f1\r\n\u001b[33mval\u001b[39m \u001b[36mprice100\u001b[39m: instrument.\u001b[32mPrice\u001b[39m = trading.economics.instrument.Price@ccad2f92\r\n\r\nscala> "
+  },
+  {
+    "input": "val state100: instrument.MarketState = markets.fromQuoteAnchor(price100, Rational(9, 10)).toOption.get; (state100.price.coefficient, state100.baseToSettle.coefficient, state100.quoteToSettle.coefficient, state100.additionalConversions.size)\n",
+    "chunk_id": "ac3b3c",
+    "wall_time_seconds": 1.002380417,
+    "session_id": 20164,
+    "original_token_count": 127,
+    "output": "val state100: instrument.MarketState = markets.fromQuoteAnchor(price100, Rational(9, 10)).toOption.get; (state100.price.coefficient, state100.baseToSettle.coefficient, state100.quoteToSettle.coefficient, state100.additionalConversions.size)\r\n\u001b[33mval\u001b[39m \u001b[36mstate100\u001b[39m: instrument.\u001b[32mMarketState\u001b[39m = trading.economics.instrument.MarketState@f9bf2bd\r\n\u001b[33mval\u001b[39m \u001b[36mres0\u001b[39m: (\u001b[32mRational\u001b[39m, \u001b[32mRational\u001b[39m, \u001b[32mRational\u001b[39m, \u001b[32mInt\u001b[39m) = (100, 90, 9/10, \u001b[32m0\u001b[39m)\r\n\r\nscala> "
+  },
+  {
+    "input": "def observe(s: instrument.MarketState) = (s.instrumentId, s.price.coefficient, s.baseToSettle.coefficient, s.quoteToSettle.coefficient, s.conversionSources, s.additionalConversions.map(_.coefficient)); val explicitEmpty = markets.fromQuoteAnchor(price100, Rational(9, 10), Vector.empty).toOption.get; val direct = MarketState.fromQuoteAnchor(instrument)(price100, Rational(9, 10)).toOption.get; (observe(state100) == observe(explicitEmpty), observe(state100) == observe(direct))\n",
+    "chunk_id": "212e4a",
+    "wall_time_seconds": 1.00126775,
+    "session_id": 20164,
+    "original_token_count": 271,
+    "output": "def observe(s: instrument.MarketState) = (s.instrumentId, s.price.coefficient, s.baseToSettle.coefficient, s.quoteToSettle.coefficient, s.conversionSources, s.additionalConversions.map(_.coefficient)); val explicitEmpty = markets.fromQuoteAnchor(price100, Rational(9, 10), Vector.empty).toOption.get; val direct = MarketState.fromQuoteAnchor(instrument)(price100, Rational(9, 10)).toOption.get; (observe(state100) == observe(explicitEmpty), observe(state100) == observe(direct))\r\n\u001b[33mdef\u001b[0m \u001b[36mobserve\u001b[0m\r\n  (\u001b[36ms\u001b[0m: instrument.\u001b[32mMarketState\u001b[0m): (\u001b[32mInstrumentId\u001b[0m, \u001b[32mRational\u001b[0m, \u001b[32mRational\u001b[0m, \u001b[32mRational\u001b[0m,\r\n    \u001b[32mVector\u001b[0m[trading.reference.\u001b[32mAssetId\u001b[0m], \u001b[32mVector\u001b[0m[\u001b[32mRational\u001b[0m])\r\n\u001b[33mval\u001b[39m \u001b[36mexplicitEmpty\u001b[39m: markets.\u001b[32mState\u001b[39m = trading.economics.instrument.MarketState@6c8260a9\r\n\u001b[33mval\u001b[39m \u001b[36mdirect\u001b[39m: instrument.\u001b[32mMarketState\u001b[39m = trading.economics.instrument.MarketState@79546876\r\n\u001b[33mval\u001b[39m \u001b[36mres1\u001b[39m: (\u001b[32mBoolean\u001b[39m, \u001b[32mBoolean\u001b[39m) = (\u001b[32mtrue\u001b[39m, \u001b[32mtrue\u001b[39m)\r\n\r\nscala> "
+  },
+  {
+    "input": "val price101 = makePrice(Rational(101)).toOption.get; val state101 = markets.fromQuoteAnchor(price101, Rational(9, 10)).toOption.get; val again100 = markets.fromQuoteAnchor(price100, Rational(9, 10)).toOption.get; (state101.baseToSettle.coefficient, state100.baseToSettle.coefficient, state100.eq(again100), observe(state100) == observe(again100))\n",
+    "chunk_id": "53194e",
+    "wall_time_seconds": 1.002719542,
+    "session_id": 20164,
+    "original_token_count": 212,
+    "output": "val price101 = makePrice(Rational(101)).toOption.get; val state101 = markets.fromQuoteAnchor(price101, Rational(9, 10)).toOption.get; val again100 = markets.fromQuoteAnchor(price100, Rational(9, 10)).toOption.get; (state101.baseToSettle.coefficient, state100.baseToSettle.coefficient, state100.eq(again100), observe(state100) == observe(again100))\r\n\u001b[33mval\u001b[39m \u001b[36mprice101\u001b[39m: instrument.\u001b[32mPrice\u001b[39m = trading.economics.instrument.Price@4c4a2a17\r\n\u001b[33mval\u001b[39m \u001b[36mstate101\u001b[39m: markets.\u001b[32mState\u001b[39m = trading.economics.instrument.MarketState@5f4a8b3f\r\n\u001b[33mval\u001b[39m \u001b[36magain100\u001b[39m: markets.\u001b[32mState\u001b[39m = trading.economics.instrument.MarketState@3a99eaf6\r\n\u001b[33mval\u001b[39m \u001b[36mres2\u001b[39m: (\u001b[32mRational\u001b[39m, \u001b[32mRational\u001b[39m, \u001b[32mBoolean\u001b[39m, \u001b[32mBoolean\u001b[39m) = (909/10, 90, \u001b[32mfalse\u001b[39m, \u001b[32mtrue\u001b[39m)\r\n\r\nscala> "
+  },
+  {
+    "input": "val quoteRate: markets.QuoteRate = Rate(instrument.roles.quote.dimension.ref, instrument.roles.settle.dimension.ref, Rational(9, 10)); markets.fromQuoteRate(price100, quoteRate).map(s => observe(s) == observe(state100))\n",
+    "chunk_id": "545be6",
+    "wall_time_seconds": 1.0022345,
+    "session_id": 20164,
+    "original_token_count": 108,
+    "output": "val quoteRate: markets.QuoteRate = Rate(instrument.roles.quote.dimension.ref, instrument.roles.settle.dimension.ref, Rational(9, 10)); markets.fromQuoteRate(price100, quoteRate).map(s => observe(s) == observe(state100))\r\n\u001b[33mval\u001b[39m \u001b[36mquoteRate\u001b[39m: markets.\u001b[32mQuoteRate\u001b[39m = 9/10\r\n\u001b[33mval\u001b[39m \u001b[36mres3\u001b[39m: \u001b[32mEither\u001b[39m[markets.\u001b[32mViolations\u001b[39m, \u001b[32mBoolean\u001b[39m] = \u001b[33mRight\u001b[39m(\u001b[32mtrue\u001b[39m)\r\n\r\nscala> "
+  },
+  {
+    "input": "val conversion = SettlementConversion.exact(instrument)(fixtures.token)(Rational(2)).toOption.get; val withToken = markets.fromQuoteRate(price100, quoteRate, Vector(conversion)).toOption.get; (withToken.additionalConversions.map(_.coefficient), withToken.convertToSettle(fixtures.token)(Quantity(fixtures.token.dimension.ref, Rational(7, 3))).map(_.coefficient))\n",
+    "chunk_id": "1c6a37",
+    "wall_time_seconds": 1.002183042,
+    "session_id": 20164,
+    "original_token_count": 211,
+    "output": "val conversion = SettlementConversion.exact(instrument)(fixtures.token)(Rational(2)).toOption.get; val withToken = markets.fromQuoteRate(price100, quoteRate, Vector(conversion)).toOption.get; (withToken.additionalConversions.map(_.coefficient), withToken.convertToSettle(fixtures.token)(Quantity(fixtures.token.dimension.ref, Rational(7, 3))).map(_.coefficient))\r\n\u001b[33mval\u001b[39m \u001b[36mconversion\u001b[39m: \u001b[32mSettlementConversion\u001b[39m[instrument.roles.settle.\u001b[32mD\u001b[39m] = trading.economics.instrument.SettlementConversion@3292d478\r\n\u001b[33mval\u001b[39m \u001b[36mwithToken\u001b[39m: markets.\u001b[32mState\u001b[39m = trading.economics.instrument.MarketState@68ac09a4\r\n\u001b[33mval\u001b[39m \u001b[36mres4\u001b[39m: (\u001b[32mVector\u001b[39m[\u001b[32mRational\u001b[39m], \u001b[32mEither\u001b[39m[\u001b[32mConversionError\u001b[39m, \u001b[32mRational\u001b[39m]) = (\r\n  \u001b[33mVector\u001b[39m(2),\r\n  \u001b[33mRight\u001b[39m(14/3)\r\n)\r\n\r\nscala> "
+  },
+  {
+    "input": "markets.fromAnchors(price100, Rational(89), Rational(9, 10)).left.map(_.violations)\n",
+    "chunk_id": "61faaf",
+    "wall_time_seconds": 1.000504417,
+    "session_id": 20164,
+    "original_token_count": 88,
+    "output": "markets.fromAnchors(price100, Rational(89), Rational(9, 10)).left.map(_.violations)\r\n\u001b[33mval\u001b[39m \u001b[36mres5\u001b[39m: \u001b[32mEither\u001b[39m[\u001b[32mVector\u001b[39m[\u001b[32mMarketStateViolation\u001b[39m], markets.\u001b[32mState\u001b[39m] = \u001b[33mLeft\u001b[39m(\r\n  \u001b[33mVector\u001b[39m(\r\n    \u001b[33mIncoherentAnchors\u001b[39m(price = 100, baseToSettle = 89, quoteToSettle = 9/10)\r\n  )\r\n)\r\n\r\nscala> "
+  },
+  {
+    "input": "markets.fromAnchors(price100, Rational(-1), Rational.zero, Vector(conversion, conversion)).left.map(_.violations)\n",
+    "chunk_id": "0357f6",
+    "wall_time_seconds": 1.002363542,
+    "session_id": 20164,
+    "original_token_count": 191,
+    "output": "markets.fromAnchors(price100, Rational(-1), Rational.zero, Vector(conversion, conversion)).left.map(_.violations)\r\n\u001b[33mval\u001b[39m \u001b[36mres6\u001b[39m: \u001b[32mEither\u001b[39m[\u001b[32mVector\u001b[39m[\u001b[32mMarketStateViolation\u001b[39m], markets.\u001b[32mState\u001b[39m] = \u001b[33mLeft\u001b[39m(\r\n  \u001b[33mVector\u001b[39m(\r\n    \u001b[33mInvalidConversion\u001b[39m(\r\n      source = \u001b[33mAssetId\u001b[39m(\u001b[32m\"btc\"\u001b[39m),\r\n      target = \u001b[33mAssetId\u001b[39m(\u001b[32m\"eur\"\u001b[39m),\r\n      coefficient = -1,\r\n      reason = NonPositive\r\n    ),\r\n    \u001b[33mInvalidConversion\u001b[39m(\r\n      source = \u001b[33mAssetId\u001b[39m(\u001b[32m\"usd\"\u001b[39m),\r\n      target = \u001b[33mAssetId\u001b[39m(\u001b[32m\"eur\"\u001b[39m),\r\n      coefficient = 0,\r\n      reason = NonPositive\r\n    ),\r\n    \u001b[33mDuplicateSource\u001b[39m(\u001b[33mAssetId\u001b[39m(\u001b[32m\"fee-token\"\u001b[39m))\r\n  )\r\n)\r\n\r\nscala> "
+  },
+  {
+    "input": "val baseRate: markets.BaseRate = Rate(instrument.roles.base.dimension.ref, instrument.roles.settle.dimension.ref, Rational(90)); Vector(markets.fromQuoteAnchor(price100, Rational(9,10)), markets.fromBaseAnchor(price100, Rational(90)), markets.fromAnchors(price100, Rational(90), Rational(9,10)), markets.fromQuoteRate(price100, quoteRate), markets.fromBaseRate(price100, baseRate), markets.fromRates(price100, baseRate, quoteRate)).map(_.map(s => observe(s) == observe(state100)))\n",
+    "chunk_id": "1d54ee",
+    "wall_time_seconds": 1.001530708,
+    "session_id": 20164,
+    "original_token_count": 228,
+    "output": "val baseRate: markets.BaseRate = Rate(instrument.roles.base.dimension.ref, instrument.roles.settle.dimension.ref, Rational(90)); Vector(markets.fromQuoteAnchor(price100, Rational(9,10)), markets.fromBaseAnchor(price100, Rational(90)), markets.fromAnchors(price100, Rational(90), Rational(9,10)), markets.fromQuoteRate(price100, quoteRate), markets.fromBaseRate(price100, baseRate), markets.fromRates(price100, baseRate, quoteRate)).map(_.map(s => observe(s) == observe(state100)))\r\n\u001b[33mval\u001b[39m \u001b[36mbaseRate\u001b[39m: markets.\u001b[32mBaseRate\u001b[39m = 90\r\n\u001b[33mval\u001b[39m \u001b[36mres7\u001b[39m: \u001b[32mVector\u001b[39m[\u001b[32mEither\u001b[39m[markets.\u001b[32mViolations\u001b[39m, \u001b[32mBoolean\u001b[39m]] = \u001b[33mVector\u001b[39m(\r\n  \u001b[33mRight\u001b[39m(\u001b[32mtrue\u001b[39m),\r\n  \u001b[33mRight\u001b[39m(\u001b[32mtrue\u001b[39m),\r\n  \u001b[33mRight\u001b[39m(\u001b[32mtrue\u001b[39m),\r\n  \u001b[33mRight\u001b[39m(\u001b[32mtrue\u001b[39m),\r\n  \u001b[33mRight\u001b[39m(\u001b[32mtrue\u001b[39m),\r\n  \u001b[33mRight\u001b[39m(\u001b[32mtrue\u001b[39m)\r\n)\r\n\r\nscala> "
+  },
+  {
+    "input": "val linear = fixtures.linear; val inverse = fixtures.inverse; val linearMarkets = MarketState.forInstrument(linear); val inverseMarkets = MarketState.forInstrument(inverse); val linearPrice = Price.exact(linear)(Rational(100)).toOption.get; val inversePrice = Price.exact(inverse)(Rational(100)).toOption.get; (linearMarkets.quoteSettled(linearPrice).map(s => (s.baseToSettle.coefficient, s.quoteToSettle.coefficient)), inverseMarkets.baseSettled(inversePrice).map(s => (s.baseToSettle.coefficient, s.quoteToSettle.coefficient)))\n",
+    "chunk_id": "724d05",
+    "wall_time_seconds": 1.002367042,
+    "session_id": 20164,
+    "original_token_count": 406,
+    "output": "val linear = fixtures.linear; val inverse = fixtures.inverse; val linearMarkets = MarketState.forInstrument(linear); val inverseMarkets = MarketState.forInstrument(inverse); val linearPrice = Price.exact(linear)(Rational(100)).toOption.get; val inversePrice = Price.exact(inverse)(Rational(100)).toOption.get; (linearMarkets.quoteSettled(linearPrice).map(s => (s.baseToSettle.coefficient, s.quoteToSettle.coefficient)), inverseMarkets.baseSettled(inversePrice).map(s => (s.baseToSettle.coefficient, s.quoteToSettle.coefficient)))\r\n\u001b[33mval\u001b[39m \u001b[36mlinear\u001b[39m: \u001b[32mInstrument\u001b[39m = trading.economics.instrument.Instrument@1b520393\r\n\u001b[33mval\u001b[39m \u001b[36minverse\u001b[39m: \u001b[32mInstrument\u001b[39m = trading.economics.instrument.Instrument@65ec45da\r\n\u001b[33mval\u001b[39m \u001b[36mlinearMarkets\u001b[39m: \u001b[33mMarketState\u001b[39m.\u001b[32mInstrumentScope\u001b[39m[linear.\u001b[33mtype\u001b[39m] = trading.economics.instrument.MarketState$InstrumentScope@67ba7772\r\n\u001b[33mval\u001b[39m \u001b[36minverseMarkets\u001b[39m: \u001b[33mMarketState\u001b[39m.\u001b[32mInstrumentScope\u001b[39m[inverse.\u001b[33mtype\u001b[39m] = trading.economics.instrument.MarketState$InstrumentScope@2e9d3ba6\r\n\u001b[33mval\u001b[39m \u001b[36mlinearPrice\u001b[39m: linear.\u001b[32mPrice\u001b[39m = trading.economics.instrument.Price@4d819d4b\r\n\u001b[33mval\u001b[39m \u001b[36minversePrice\u001b[39m: inverse.\u001b[32mPrice\u001b[39m = trading.economics.instrument.Price@c75a7928\r\n\u001b[33mval\u001b[39m \u001b[36mres8\u001b[39m: (\u001b[32mEither\u001b[39m[linearMarkets.\u001b[32mViolations\u001b[39m, (\u001b[32mRational\u001b[39m, \u001b[32mRational\u001b[39m)],\r\n  \u001b[32mEither\u001b[39m[inverseMarkets.\u001b[32mViolations\u001b[39m, (\u001b[32mRational\u001b[39m, \u001b[32mRational\u001b[39m)]) = (\r\n  \u001b[33mRight\u001b[39m((100, 1)),\r\n  \u001b[33mRight\u001b[39m((1, 1/100))\r\n)\r\n\r\nscala> "
+  },
+  {
+    "input": "markets.quoteSettled(price100).left.map(_.violations)\n",
+    "chunk_id": "1db5c2",
+    "wall_time_seconds": 1.001531875,
+    "session_id": 20164,
+    "original_token_count": 109,
+    "output": "markets.quoteSettled(price100).left.map(_.violations)\r\n\u001b[33mval\u001b[39m \u001b[36mres9\u001b[39m: \u001b[32mEither\u001b[39m[\u001b[32mVector\u001b[39m[\u001b[32mMarketStateViolation\u001b[39m], markets.\u001b[32mState\u001b[39m] = \u001b[33mLeft\u001b[39m(\r\n  \u001b[33mVector\u001b[39m(\r\n    \u001b[33mInvalidConversion\u001b[39m(\r\n      source = \u001b[33mAssetId\u001b[39m(\u001b[32m\"usd\"\u001b[39m),\r\n      target = \u001b[33mAssetId\u001b[39m(\u001b[32m\"eur\"\u001b[39m),\r\n      coefficient = 1,\r\n      reason = SettleIsNotQuote\r\n    )\r\n  )\r\n)\r\n\r\nscala> "
+  },
+  {
+    "input": "val reversed = Rate(instrument.roles.settle.dimension.ref, instrument.roles.quote.dimension.ref, Rational(9, 10))\n",
+    "chunk_id": "e2edbd",
+    "wall_time_seconds": 1.001374292,
+    "session_id": 20164,
+    "original_token_count": 74,
+    "output": "val reversed = Rate(instrument.roles.settle.dimension.ref, instrument.roles.quote.dimension.ref, Rational(9, 10))\r\n\u001b[33mval\u001b[39m \u001b[36mreversed\u001b[39m:\r\n  \u001b[32mRate\u001b[39m[instrument.roles.settle.dimensionBasis.\u001b[32mD0\u001b[39m,\r\n    instrument.roles.quote.dimensionBasis.\u001b[32mD0\u001b[39m] = 9/10\r\n\r\nscala> "
+  },
+  {
+    "input": "markets.fromQuoteRate(price100, reversed, Vector.empty)\n",
+    "chunk_id": "60a0b9",
+    "wall_time_seconds": 1.00246975,
+    "session_id": 20164,
+    "original_token_count": 170,
+    "output": "markets.fromQuoteRate(price100, reversed, Vector.empty)\r\n\u001b[31m\u001b[31m-- [E007] Type Mismatch Error: -------------------------------------------------\u001b[0m\u001b[0m\r\n\u001b[31m1 |\u001b[0mmarkets.fromQuoteRate(price100, reversed, \u001b[33mVector\u001b[0m.empty)\r\n\u001b[31m\u001b[31m  |\u001b[0m                                ^^^^^^^^\u001b[0m\r\n\u001b[31m  |\u001b[0m        Found:    (reversed :\r\n\u001b[31m  |\u001b[0m          trading.quantity.Rate[instrument.roles.settle.dimensionBasis.D0,\r\n\u001b[31m  |\u001b[0m            instrument.roles.quote.dimensionBasis.D0]\r\n\u001b[31m  |\u001b[0m        )\r\n\u001b[31m  |\u001b[0m        Required: markets.QuoteRate\r\n\u001b[31m  |\u001b[0m\r\n\u001b[31m  |\u001b[0m longer explanation available when compiling with `-explain`\r\n1 error found\r\n\r\nscala> "
+  },
+  {
+    "input": ":quit\n",
+    "chunk_id": "76037c",
+    "wall_time_seconds": 0.000004792,
+    "exit_code": 0,
+    "original_token_count": 22,
+    "output": ":quit\r\n\r\n[success] Total time: 277 s (0:04:37.0), completed Sep 5, 2026, 3:05:18 PM\r\n"
+  }
+]

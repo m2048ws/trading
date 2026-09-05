@@ -1,0 +1,163 @@
+Compiled from "Market.scala"
+public final class trading.economics.instrument.MarketState$InstrumentScope<I extends trading.economics.instrument.Instrument> {
+  private final I instrument;
+
+  public trading.economics.instrument.MarketState$InstrumentScope(I);
+    Code:
+         0: aload_0
+         1: aload_1
+         2: putfield      #17                 // Field instrument:Ltrading/economics/instrument/Instrument;
+         5: aload_0
+         6: invokespecial #20                 // Method java/lang/Object."<init>":()V
+         9: return
+
+  public I instrument();
+    Code:
+         0: aload_0
+         1: getfield      #17                 // Field instrument:Ltrading/economics/instrument/Instrument;
+         4: areturn
+
+  public scala.util.Either<trading.economics.instrument.MarketStateViolations, trading.economics.instrument.MarketState<trading.quantity.Dim, trading.quantity.Dim, trading.quantity.Dim>> quoteSettled(trading.economics.instrument.Price<trading.quantity.Dim, trading.quantity.Dim>, scala.collection.immutable.Vector<trading.economics.instrument.SettlementConversion<trading.quantity.Dim>>);
+    Code:
+         0: getstatic     #35                 // Field trading/economics/instrument/MarketState$.MODULE$:Ltrading/economics/instrument/MarketState$;
+         3: aload_0
+         4: invokevirtual #37                 // Method instrument:()Ltrading/economics/instrument/Instrument;
+         7: aload_1
+         8: aload_2
+         9: invokevirtual #40                 // Method trading/economics/instrument/MarketState$.quoteSettled:(Ltrading/economics/instrument/Instrument;Ltrading/economics/instrument/Price;Lscala/collection/immutable/Vector;)Lscala/util/Either;
+        12: areturn
+
+  public scala.collection.immutable.Vector<trading.economics.instrument.SettlementConversion<trading.quantity.Dim>> quoteSettled$default$2();
+    Code:
+         0: getstatic     #50                 // Field scala/package$.MODULE$:Lscala/package$;
+         3: invokevirtual #54                 // Method scala/package$.Vector:()Lscala/collection/immutable/Vector$;
+         6: invokevirtual #59                 // Method scala/collection/immutable/Vector$.empty:()Lscala/collection/immutable/Vector;
+         9: areturn
+
+  public scala.util.Either<trading.economics.instrument.MarketStateViolations, trading.economics.instrument.MarketState<trading.quantity.Dim, trading.quantity.Dim, trading.quantity.Dim>> baseSettled(trading.economics.instrument.Price<trading.quantity.Dim, trading.quantity.Dim>, scala.collection.immutable.Vector<trading.economics.instrument.SettlementConversion<trading.quantity.Dim>>);
+    Code:
+         0: getstatic     #35                 // Field trading/economics/instrument/MarketState$.MODULE$:Ltrading/economics/instrument/MarketState$;
+         3: aload_0
+         4: invokevirtual #37                 // Method instrument:()Ltrading/economics/instrument/Instrument;
+         7: aload_1
+         8: aload_2
+         9: invokevirtual #62                 // Method trading/economics/instrument/MarketState$.baseSettled:(Ltrading/economics/instrument/Instrument;Ltrading/economics/instrument/Price;Lscala/collection/immutable/Vector;)Lscala/util/Either;
+        12: areturn
+
+  public scala.collection.immutable.Vector<trading.economics.instrument.SettlementConversion<trading.quantity.Dim>> baseSettled$default$2();
+    Code:
+         0: getstatic     #50                 // Field scala/package$.MODULE$:Lscala/package$;
+         3: invokevirtual #54                 // Method scala/package$.Vector:()Lscala/collection/immutable/Vector$;
+         6: invokevirtual #59                 // Method scala/collection/immutable/Vector$.empty:()Lscala/collection/immutable/Vector;
+         9: areturn
+
+  public scala.util.Either<trading.economics.instrument.MarketStateViolations, trading.economics.instrument.MarketState<trading.quantity.Dim, trading.quantity.Dim, trading.quantity.Dim>> fromQuoteAnchor(trading.economics.instrument.Price<trading.quantity.Dim, trading.quantity.Dim>, trading.quantity.Rational, scala.collection.immutable.Vector<trading.economics.instrument.SettlementConversion<trading.quantity.Dim>>);
+    Code:
+         0: getstatic     #35                 // Field trading/economics/instrument/MarketState$.MODULE$:Ltrading/economics/instrument/MarketState$;
+         3: aload_0
+         4: invokevirtual #37                 // Method instrument:()Ltrading/economics/instrument/Instrument;
+         7: aload_1
+         8: aload_2
+         9: aload_3
+        10: invokevirtual #70                 // Method trading/economics/instrument/MarketState$.fromQuoteAnchor:(Ltrading/economics/instrument/Instrument;Ltrading/economics/instrument/Price;Ltrading/quantity/Rational;Lscala/collection/immutable/Vector;)Lscala/util/Either;
+        13: areturn
+
+  public scala.collection.immutable.Vector<trading.economics.instrument.SettlementConversion<trading.quantity.Dim>> fromQuoteAnchor$default$3();
+    Code:
+         0: getstatic     #50                 // Field scala/package$.MODULE$:Lscala/package$;
+         3: invokevirtual #54                 // Method scala/package$.Vector:()Lscala/collection/immutable/Vector$;
+         6: invokevirtual #59                 // Method scala/collection/immutable/Vector$.empty:()Lscala/collection/immutable/Vector;
+         9: areturn
+
+  public scala.util.Either<trading.economics.instrument.MarketStateViolations, trading.economics.instrument.MarketState<trading.quantity.Dim, trading.quantity.Dim, trading.quantity.Dim>> fromBaseAnchor(trading.economics.instrument.Price<trading.quantity.Dim, trading.quantity.Dim>, trading.quantity.Rational, scala.collection.immutable.Vector<trading.economics.instrument.SettlementConversion<trading.quantity.Dim>>);
+    Code:
+         0: getstatic     #35                 // Field trading/economics/instrument/MarketState$.MODULE$:Ltrading/economics/instrument/MarketState$;
+         3: aload_0
+         4: invokevirtual #37                 // Method instrument:()Ltrading/economics/instrument/Instrument;
+         7: aload_1
+         8: aload_2
+         9: aload_3
+        10: invokevirtual #76                 // Method trading/economics/instrument/MarketState$.fromBaseAnchor:(Ltrading/economics/instrument/Instrument;Ltrading/economics/instrument/Price;Ltrading/quantity/Rational;Lscala/collection/immutable/Vector;)Lscala/util/Either;
+        13: areturn
+
+  public scala.collection.immutable.Vector<trading.economics.instrument.SettlementConversion<trading.quantity.Dim>> fromBaseAnchor$default$3();
+    Code:
+         0: getstatic     #50                 // Field scala/package$.MODULE$:Lscala/package$;
+         3: invokevirtual #54                 // Method scala/package$.Vector:()Lscala/collection/immutable/Vector$;
+         6: invokevirtual #59                 // Method scala/collection/immutable/Vector$.empty:()Lscala/collection/immutable/Vector;
+         9: areturn
+
+  public scala.util.Either<trading.economics.instrument.MarketStateViolations, trading.economics.instrument.MarketState<trading.quantity.Dim, trading.quantity.Dim, trading.quantity.Dim>> fromAnchors(trading.economics.instrument.Price<trading.quantity.Dim, trading.quantity.Dim>, trading.quantity.Rational, trading.quantity.Rational, scala.collection.immutable.Vector<trading.economics.instrument.SettlementConversion<trading.quantity.Dim>>);
+    Code:
+         0: getstatic     #35                 // Field trading/economics/instrument/MarketState$.MODULE$:Ltrading/economics/instrument/MarketState$;
+         3: aload_0
+         4: invokevirtual #37                 // Method instrument:()Ltrading/economics/instrument/Instrument;
+         7: aload_1
+         8: aload_2
+         9: aload_3
+        10: aload         4
+        12: invokevirtual #83                 // Method trading/economics/instrument/MarketState$.fromAnchors:(Ltrading/economics/instrument/Instrument;Ltrading/economics/instrument/Price;Ltrading/quantity/Rational;Ltrading/quantity/Rational;Lscala/collection/immutable/Vector;)Lscala/util/Either;
+        15: areturn
+
+  public scala.collection.immutable.Vector<trading.economics.instrument.SettlementConversion<trading.quantity.Dim>> fromAnchors$default$4();
+    Code:
+         0: getstatic     #50                 // Field scala/package$.MODULE$:Lscala/package$;
+         3: invokevirtual #54                 // Method scala/package$.Vector:()Lscala/collection/immutable/Vector$;
+         6: invokevirtual #59                 // Method scala/collection/immutable/Vector$.empty:()Lscala/collection/immutable/Vector;
+         9: areturn
+
+  public scala.util.Either<trading.economics.instrument.MarketStateViolations, trading.economics.instrument.MarketState<trading.quantity.Dim, trading.quantity.Dim, trading.quantity.Dim>> fromQuoteRate(trading.economics.instrument.Price<trading.quantity.Dim, trading.quantity.Dim>, trading.quantity.Rational, scala.collection.immutable.Vector<trading.economics.instrument.SettlementConversion<trading.quantity.Dim>>);
+    Code:
+         0: getstatic     #35                 // Field trading/economics/instrument/MarketState$.MODULE$:Ltrading/economics/instrument/MarketState$;
+         3: aload_0
+         4: invokevirtual #37                 // Method instrument:()Ltrading/economics/instrument/Instrument;
+         7: aload_1
+         8: aload_2
+         9: aload_3
+        10: invokevirtual #87                 // Method trading/economics/instrument/MarketState$.fromQuoteRate:(Ltrading/economics/instrument/Instrument;Ltrading/economics/instrument/Price;Ltrading/quantity/Rational;Lscala/collection/immutable/Vector;)Lscala/util/Either;
+        13: areturn
+
+  public scala.collection.immutable.Vector<trading.economics.instrument.SettlementConversion<trading.quantity.Dim>> fromQuoteRate$default$3();
+    Code:
+         0: getstatic     #50                 // Field scala/package$.MODULE$:Lscala/package$;
+         3: invokevirtual #54                 // Method scala/package$.Vector:()Lscala/collection/immutable/Vector$;
+         6: invokevirtual #59                 // Method scala/collection/immutable/Vector$.empty:()Lscala/collection/immutable/Vector;
+         9: areturn
+
+  public scala.util.Either<trading.economics.instrument.MarketStateViolations, trading.economics.instrument.MarketState<trading.quantity.Dim, trading.quantity.Dim, trading.quantity.Dim>> fromBaseRate(trading.economics.instrument.Price<trading.quantity.Dim, trading.quantity.Dim>, trading.quantity.Rational, scala.collection.immutable.Vector<trading.economics.instrument.SettlementConversion<trading.quantity.Dim>>);
+    Code:
+         0: getstatic     #35                 // Field trading/economics/instrument/MarketState$.MODULE$:Ltrading/economics/instrument/MarketState$;
+         3: aload_0
+         4: invokevirtual #37                 // Method instrument:()Ltrading/economics/instrument/Instrument;
+         7: aload_1
+         8: aload_2
+         9: aload_3
+        10: invokevirtual #91                 // Method trading/economics/instrument/MarketState$.fromBaseRate:(Ltrading/economics/instrument/Instrument;Ltrading/economics/instrument/Price;Ltrading/quantity/Rational;Lscala/collection/immutable/Vector;)Lscala/util/Either;
+        13: areturn
+
+  public scala.collection.immutable.Vector<trading.economics.instrument.SettlementConversion<trading.quantity.Dim>> fromBaseRate$default$3();
+    Code:
+         0: getstatic     #50                 // Field scala/package$.MODULE$:Lscala/package$;
+         3: invokevirtual #54                 // Method scala/package$.Vector:()Lscala/collection/immutable/Vector$;
+         6: invokevirtual #59                 // Method scala/collection/immutable/Vector$.empty:()Lscala/collection/immutable/Vector;
+         9: areturn
+
+  public scala.util.Either<trading.economics.instrument.MarketStateViolations, trading.economics.instrument.MarketState<trading.quantity.Dim, trading.quantity.Dim, trading.quantity.Dim>> fromRates(trading.economics.instrument.Price<trading.quantity.Dim, trading.quantity.Dim>, trading.quantity.Rational, trading.quantity.Rational, scala.collection.immutable.Vector<trading.economics.instrument.SettlementConversion<trading.quantity.Dim>>);
+    Code:
+         0: getstatic     #35                 // Field trading/economics/instrument/MarketState$.MODULE$:Ltrading/economics/instrument/MarketState$;
+         3: aload_0
+         4: invokevirtual #37                 // Method instrument:()Ltrading/economics/instrument/Instrument;
+         7: aload_1
+         8: aload_2
+         9: aload_3
+        10: aload         4
+        12: invokevirtual #95                 // Method trading/economics/instrument/MarketState$.fromRates:(Ltrading/economics/instrument/Instrument;Ltrading/economics/instrument/Price;Ltrading/quantity/Rational;Ltrading/quantity/Rational;Lscala/collection/immutable/Vector;)Lscala/util/Either;
+        15: areturn
+
+  public scala.collection.immutable.Vector<trading.economics.instrument.SettlementConversion<trading.quantity.Dim>> fromRates$default$4();
+    Code:
+         0: getstatic     #50                 // Field scala/package$.MODULE$:Lscala/package$;
+         3: invokevirtual #54                 // Method scala/package$.Vector:()Lscala/collection/immutable/Vector$;
+         6: invokevirtual #59                 // Method scala/collection/immutable/Vector$.empty:()Lscala/collection/immutable/Vector;
+         9: areturn
+}

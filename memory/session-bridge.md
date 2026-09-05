@@ -10,25 +10,30 @@ updated: 2026-09-04
 ## Delivery Pointer
 - **RFC**: RFC-0008-simplify-instrument-dependent-apis
 - **RFC Revision**: bf457296faa7d29aec0840a7e8f48d41ed0f7491
-- **Slice**: S-01-name-instrument-dimensions
-- **Issue**: 53 https://github.com/m2048ws/trading/issues/53
-- **Change**: name-instrument-dimensions
-- **Worktree**: /Users/m/src/money/.worktrees/name-instrument-dimensions
+- **Slice**: S-06-bind-market-state-construction
+- **Issue**: 63 https://github.com/m2048ws/trading/issues/63
+- **Change**: bind-market-state-construction
+- **Worktree**: /Users/m/src/money/.worktrees/bind-market-state-construction
 - **Phase at Checkpoint**: archiving
 - **Task Group at Checkpoint**: none
 - **Observed Run Revision**: 7
-- **Last Verified HEAD**: 2e69c260793d85d1c9e1b4930a908421eaef2bb5
+- **Last Verified HEAD**: 7012636e9ff868ec14daa1be58c0cc59ac426b67
 
 ## Next Action
-- Consult Run Contract v3: resume tracker closeout for `name-instrument-dimensions` only if pending; otherwise select the next accepted Slice. Local delivery: `wiki/deliveries/RFC-0008-simplify-instrument-dependent-apis-S-01-name-instrument-dimensions.md`.
+- Consult Run Contract v3: resume tracker closeout for `bind-market-state-construction` only if pending; otherwise select the next accepted Slice. Local delivery: `wiki/deliveries/RFC-0008-simplify-instrument-dependent-apis-S-06-bind-market-state-construction.md`.
+  open its draft PR through the guarded adapter, then run the separate whole-change Verify gate.
+  Run: `run-4874b9a2-be9a-4d0d-8a20-b391ae7a185b`; session: `rfc0008-s06-20260904`.
 
 ## Blockers
 - none
 
 ## Uncommitted Work
-- none
+- none after the dedicated Task Group 1 commit; this bridge records the next canonical acknowledgement checkpoint.
 
 ## Discoveries
+- RFC-0008/S-02 Task Group 1 adds a final `Order`-owned scope that retains only one exact instrument and delegates all
+  four standard constructors to canonical validation; focused, concurrent-reuse, and completed-artifact tests preserve
+  exact result refinements, deterministic failures, runtime identity checks, and five incompatible input boundaries.
 - No active Corgi Run Contract or OpenSpec Change exists on primary `main`.
 - RFC-0003/S-01 is archived; its delivery record is `wiki/deliveries/RFC-0003-execution-lifecycle-foundation-S-01-actual-execution-lifecycle.md`.
 - The registered `introduce-application-and-runtime-foundation` worktree has no active Change and remains cleanup-only.
@@ -103,4 +108,22 @@ updated: 2026-09-04
   and strict readiness.
 
 ## Promotion Queue
-- none
+- RFC-0008/S-06 Task Group 1 consolidates all eight direct market-state constructors and adds a final field-only
+  MarketState-owned scope with exact instrument-dependent aliases and one-call delegates. The checked kernel and
+  SettlementConversion owner remain unchanged. Explicit default element types preserve dependent-call inference.
+  Baseline characterization passed before production edits; 1,084 clean aggregate tests and 96 packaged-client call
+  forms preserve exact math, failures, runtime identity/lineage, grids, and concurrent reuse. Six independent negative
+  fixtures reject wrong prices/rates/conversions. The economics compiler classpath now excludes aggregate effect
+  dependencies. Local checks targeted release 25 on JDK 26.0.2.1; short and three-fork JMH comparisons are indicative,
+  not deterministic performance guarantees. Evidence: `/private/tmp/market-state-s06.rMryWt`.
+- RFC-0008/S-05 Task Group 1 adds one final field-only `Risk` scope whose exact aliases and six delegates bind downside,
+  checked monotone-model construction, and explicit exhaustive sizing to one instrument; focused and completed-artifact
+  evidence preserves broad existential validation, typed failures, exact costs and decisions, incompatible-input
+  rejection, independent model algebra, complexity bounds, concurrent reuse, and the pure risk dependency cone.
+- RFC-0008/S-04 Task Group 1 adds final codec-owned `ScenarioRecord` encoder and immutable-snapshot decoder contexts
+  whose ten methods delegate to the canonical order- and round-trip-scenario record operations; focused and
+  completed-artifact evidence preserves exact dependent types, canonical wire and diagnostic behavior, coherent
+  snapshot use, incompatible-shape rejection, independent allocation, concurrent reuse, and the codec dependency cone.
+- RFC-0008/S-03 Task Group 1 adds a final `SourceFact`-owned lifecycle scope whose nine operations delegate to the
+  canonical fact constructors; focused and completed-artifact evidence preserves exact types, deterministic validation,
+  foreign identity/grid rejection, independent allocation, concurrent reuse, and the pure execution dependency cone.

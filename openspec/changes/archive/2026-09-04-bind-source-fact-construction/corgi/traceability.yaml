@@ -1,0 +1,35 @@
+schemaVersion: 1
+sourceDigest: sha256:44cee1e7fc26759bc7720e78681cc6abfc18e11cd7e57e810d74ab07f5adf6e8
+acceptance:
+  - id: AC-008
+    evidence: automated
+    planningRefs:
+      - path: specs/actual-execution-lifecycle/spec.md
+        anchor: requirement-lifecycle-bound-source-fact-construction
+    taskGroups:
+      - '1'
+  - id: AC-009
+    evidence: automated
+    planningRefs:
+      - path: specs/actual-execution-lifecycle/spec.md
+        anchor: requirement-lifecycle-bound-source-fact-construction
+      - path: specs/actual-execution-lifecycle/spec.md
+        anchor: requirement-bound-source-fact-construction-preserves-validation-purity-and-ownership
+    taskGroups:
+      - '1'
+  - id: AC-010
+    evidence: automated
+    planningRefs:
+      - path: specs/actual-execution-lifecycle/spec.md
+        anchor: requirement-lifecycle-bound-source-fact-construction
+      - path: specs/actual-execution-lifecycle/spec.md
+        anchor: requirement-bound-source-fact-construction-preserves-validation-purity-and-ownership
+    taskGroups:
+      - '1'
+  - id: AC-011
+    evidence: automated
+    planningRefs:
+      - path: specs/actual-execution-lifecycle/spec.md
+        anchor: requirement-bound-source-fact-construction-preserves-validation-purity-and-ownership
+    taskGroups:
+      - '1'

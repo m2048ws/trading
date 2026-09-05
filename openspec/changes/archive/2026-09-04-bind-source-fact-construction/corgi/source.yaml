@@ -1,0 +1,27 @@
+schemaVersion: 1
+kind: rfc-slice
+deliveryRef: RFC-0008-simplify-instrument-dependent-apis/S-03-bind-source-fact-construction
+rfc:
+  id: RFC-0008-simplify-instrument-dependent-apis
+  path: rfcs/RFC-0008-simplify-instrument-dependent-apis
+  acceptedCommit: bf457296faa7d29aec0840a7e8f48d41ed0f7491
+  digest: sha256:77e1c4ac3d7629334f86695e07ffaf835549c5e0e05612314f0ca193e42139f3
+slice:
+  id: S-03-bind-source-fact-construction
+  digest: sha256:12204d15391992bf8d8db45e7250e716bc25ddc98dedfb7739c34c7845288a3d
+acceptance:
+  - id: AC-008
+    evidence: automated
+  - id: AC-009
+    evidence: automated
+  - id: AC-010
+    evidence: automated
+  - id: AC-011
+    evidence: automated
+deliveryBindingDigest: sha256:cdb29657529b8ad03e53add8ca0a172ed5d20c77f63eaaa556524565a30bd144
+tracker:
+  provider: github
+  idempotencyKey: dedaf1f982dd9ec5259752a29c844440da80bd8405ea6519b3c3472f2b1b2575
+  issue:
+    id: '57'
+    url: https://github.com/m2048ws/trading/issues/57

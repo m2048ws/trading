@@ -1,0 +1,29 @@
+schemaVersion: 1
+kind: rfc-slice
+deliveryRef: RFC-0008-simplify-instrument-dependent-apis/S-05-bind-instrument-risk
+rfc:
+  id: RFC-0008-simplify-instrument-dependent-apis
+  path: rfcs/RFC-0008-simplify-instrument-dependent-apis
+  acceptedCommit: bf457296faa7d29aec0840a7e8f48d41ed0f7491
+  digest: sha256:77e1c4ac3d7629334f86695e07ffaf835549c5e0e05612314f0ca193e42139f3
+slice:
+  id: S-05-bind-instrument-risk
+  digest: sha256:a2902480db1388d712a26b537e0355d3f40a9b7e34d590e0a8d4c4670377f5fa
+acceptance:
+  - id: AC-017
+    evidence: automated
+  - id: AC-018
+    evidence: automated
+  - id: AC-019
+    evidence: automated
+  - id: AC-020
+    evidence: automated
+  - id: AC-021
+    evidence: automated
+deliveryBindingDigest: sha256:ef46a248e7a932add8c18695484e21b73618e0250a61f29cfbe6ea1dc474157c
+tracker:
+  provider: github
+  idempotencyKey: 8912afe094b1808869605fda55e02776c7e3fdd11b6f4bbb5ec3fd730af91b86
+  issue:
+    id: '61'
+    url: https://github.com/m2048ws/trading/issues/61

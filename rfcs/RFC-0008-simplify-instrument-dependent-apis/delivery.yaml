@@ -1,6 +1,6 @@
 schemaVersion: 1
 rfcId: RFC-0008-simplify-instrument-dependent-apis
-revision: 3
+revision: 13
 slices:
   S-01-name-instrument-dimensions:
     status: archived
@@ -17,12 +17,72 @@ slices:
       commit: 2e69c260793d85d1c9e1b4930a908421eaef2bb5
       evidenceManifest: sha256:f51be78a9c5b67c22ac29adfeebbb80bdbddd712d4c29f51933da3fbad945e3f
   S-02-bind-standard-order-construction:
-    status: unbound
+    status: archived
+    binding:
+      change: bind-standard-order-construction
+      sourceDigest: sha256:336fb9cc40c59e4cf28a44a8210ed5db6ee2bbdc22025a1fcd71f1d32fb5359d
+      plannedAt: '2026-09-04T12:48:59.724Z'
+      issue:
+        provider: github
+        id: '55'
+        url: https://github.com/m2048ws/trading/issues/55
+    archive:
+      archivedAt: '2026-09-04T13:58:23.139Z'
+      commit: 804f32e3e0ed8ccda8245ee3530779c47904169c
+      evidenceManifest: sha256:e0cb40a5a2bbfb4b3c5ae954d21e7be212433eab7114ed6adbfd81038d228a35
   S-03-bind-source-fact-construction:
-    status: unbound
+    status: archived
+    binding:
+      change: bind-source-fact-construction
+      sourceDigest: sha256:44cee1e7fc26759bc7720e78681cc6abfc18e11cd7e57e810d74ab07f5adf6e8
+      plannedAt: '2026-09-04T14:20:40.030Z'
+      issue:
+        provider: github
+        id: '57'
+        url: https://github.com/m2048ws/trading/issues/57
+    archive:
+      archivedAt: '2026-09-04T15:06:46.432Z'
+      commit: ad69a9adf84eb56a80a5e09d07da1e487502530a
+      evidenceManifest: sha256:336f9805040785ac5aea98745d63ded1121da6e23cab778dd0de44d489250a9e
   S-04-bind-scenario-record-codecs:
-    status: unbound
+    status: archived
+    binding:
+      change: bind-scenario-record-codecs
+      sourceDigest: sha256:ed1e07a7dbeb06ac490bba7fe7fe7cd9de7e393bccb37d2db710b6a62119793a
+      plannedAt: '2026-09-04T15:22:31.611Z'
+      issue:
+        provider: github
+        id: '59'
+        url: https://github.com/m2048ws/trading/issues/59
+    archive:
+      archivedAt: '2026-09-04T16:27:36.174Z'
+      commit: fa010240f300abf02ccd0c13b24253674c8d6f35
+      evidenceManifest: sha256:db11f417b9b2b52e876c9e618045c0ea2bac19033a63d234ad7cb44c75c8f1f9
   S-05-bind-instrument-risk:
-    status: unbound
+    status: archived
+    binding:
+      change: bind-instrument-risk
+      sourceDigest: sha256:114045c8b2c0b08b7aef8ff5acd4cef89a4a2e36bc02c9a355ec271b160a5f44
+      plannedAt: '2026-09-04T16:44:11.684Z'
+      issue:
+        provider: github
+        id: '61'
+        url: https://github.com/m2048ws/trading/issues/61
+    archive:
+      archivedAt: '2026-09-04T20:10:36.945Z'
+      commit: 819a4c8dc3fc601655790a512ad24df2df7aee91
+      evidenceManifest: sha256:a512c2e68318d9b39f26cb899009f9d524de936ec6d6bbb2151c910f78fb3f5b
   S-06-bind-market-state-construction:
-    status: unbound
+    status: archived
+    binding:
+      change: bind-market-state-construction
+      sourceDigest: sha256:7228b2dcc47996a30649f1192bf82b83a696dacc62686de4ab86fffbe432c0ae
+      plannedAt: '2026-09-04T20:46:53.033Z'
+      issue:
+        provider: github
+        id: '63'
+        url: https://github.com/m2048ws/trading/issues/63
+    archive:
+      archivedAt: '2026-09-05T13:42:42.704Z'
+      commit: 7012636e9ff868ec14daa1be58c0cc59ac426b67
+      evidenceManifest: sha256:bb970e1c554cb05bb7dee15c534853753af47e55c5339d4c6aefb796b290c36c

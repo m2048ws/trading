@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 3,
+  "scope": "verify",
+  "runId": "run-293dbbc0-3b95-49ff-9ab8-826ece5d44a7",
+  "references": [
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fboundary-codec-compiler%2Fnegative%2FScenarioRecordScopeMismatch.scala#sha256:afd0b025fe554c4c4b8beec3ae3c2b98d573feb074bf9b32c07e7670b2e4dd07",
+      "sourcePath": "adversarial-boundary/src/test/resources/boundary-codec-compiler/negative/ScenarioRecordScopeMismatch.scala",
+      "digest": "sha256:afd0b025fe554c4c4b8beec3ae3c2b98d573feb074bf9b32c07e7670b2e4dd07",
+      "archivePath": "references/blobs/afd0b025fe554c4c4b8beec3ae3c2b98d573feb074bf9b32c07e7670b2e4dd07"
+    },
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fboundary-codec-compiler%2Fpositive%2FScenarioRecordScopeClient.scala#sha256:58bec01c0bcbe6dc088eac482226689b6edb900eb00767dbb8203762a56f437e",
+      "sourcePath": "adversarial-boundary/src/test/resources/boundary-codec-compiler/positive/ScenarioRecordScopeClient.scala",
+      "digest": "sha256:58bec01c0bcbe6dc088eac482226689b6edb900eb00767dbb8203762a56f437e",
+      "archivePath": "references/blobs/58bec01c0bcbe6dc088eac482226689b6edb900eb00767dbb8203762a56f437e"
+    },
+    {
+      "reference": "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FBoundaryCodecCompilerBoundarySuite.scala#sha256:6a83782675f536952069630f130d6e61018a69d847109caf926939b723c4cd70",
+      "sourcePath": "adversarial-boundary/src/test/scala/external/BoundaryCodecCompilerBoundarySuite.scala",
+      "digest": "sha256:6a83782675f536952069630f130d6e61018a69d847109caf926939b723c4cd70",
+      "archivePath": "references/blobs/6a83782675f536952069630f130d6e61018a69d847109caf926939b723c4cd70"
+    },
+    {
+      "reference": "file:boundary-codecs%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fcodec%2FScenarioRecords.scala#sha256:36effb8081b7dc21629135f6fa594f4232b544a4b33e4d428274e4067fcd503f",
+      "sourcePath": "boundary-codecs/src/main/scala/trading/codec/ScenarioRecords.scala",
+      "digest": "sha256:36effb8081b7dc21629135f6fa594f4232b544a4b33e4d428274e4067fcd503f",
+      "archivePath": "references/blobs/36effb8081b7dc21629135f6fa594f4232b544a4b33e4d428274e4067fcd503f"
+    },
+    {
+      "reference": "file:boundary-codecs%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fcodec%2FScenarioRecordScopeSuite.scala#sha256:71e5723b8f5565bbdfa9c78589ea1b7e5450d6547aff7afbce6d9c24984e2264",
+      "sourcePath": "boundary-codecs/src/test/scala/trading/codec/ScenarioRecordScopeSuite.scala",
+      "digest": "sha256:71e5723b8f5565bbdfa9c78589ea1b7e5450d6547aff7afbce6d9c24984e2264",
+      "archivePath": "references/blobs/71e5723b8f5565bbdfa9c78589ea1b7e5450d6547aff7afbce6d9c24984e2264"
+    },
+    {
+      "reference": "file:build.sbt#sha256:790e4ae7fa4ab9334b36c0273bc4d44d02d59cac352b50f5f0aeaadc026f5db8",
+      "sourcePath": "build.sbt",
+      "digest": "sha256:790e4ae7fa4ab9334b36c0273bc4d44d02d59cac352b50f5f0aeaadc026f5db8",
+      "archivePath": "references/blobs/790e4ae7fa4ab9334b36c0273bc4d44d02d59cac352b50f5f0aeaadc026f5db8"
+    },
+    {
+      "reference": "file:openspec%2Fchanges%2Fbind-scenario-record-codecs%2Fcorgi%2Fsource.yaml#sha256:ed1e07a7dbeb06ac490bba7fe7fe7cd9de7e393bccb37d2db710b6a62119793a",
+      "sourcePath": "openspec/changes/bind-scenario-record-codecs/corgi/source.yaml",
+      "digest": "sha256:ed1e07a7dbeb06ac490bba7fe7fe7cd9de7e393bccb37d2db710b6a62119793a",
+      "archivePath": "references/blobs/ed1e07a7dbeb06ac490bba7fe7fe7cd9de7e393bccb37d2db710b6a62119793a"
+    },
+    {
+      "reference": "file:openspec%2Fchanges%2Fbind-scenario-record-codecs%2Fcorgi%2Ftraceability.yaml#sha256:9a01e14f918d7433e9cae1d044413a36bba7821e2cc44e9e61f928230ff90fd8",
+      "sourcePath": "openspec/changes/bind-scenario-record-codecs/corgi/traceability.yaml",
+      "digest": "sha256:9a01e14f918d7433e9cae1d044413a36bba7821e2cc44e9e61f928230ff90fd8",
+      "archivePath": "references/blobs/9a01e14f918d7433e9cae1d044413a36bba7821e2cc44e9e61f928230ff90fd8"
+    },
+    {
+      "reference": "file:openspec%2Fchanges%2Fbind-scenario-record-codecs%2Ftasks.md#sha256:82541016c6a847f7b5f8aa21be39eaa3229a202585be27866f2b218397985479",
+      "sourcePath": "openspec/changes/bind-scenario-record-codecs/tasks.md",
+      "digest": "sha256:82541016c6a847f7b5f8aa21be39eaa3229a202585be27866f2b218397985479",
+      "archivePath": "references/blobs/82541016c6a847f7b5f8aa21be39eaa3229a202585be27866f2b218397985479"
+    },
+    {
+      "reference": "file:tools%2Fcheck-in-process-reflection.sh#sha256:bca2729121ce2bde4dfe3e8db2af53d6129ea0db1162eaab0dd982d769ddf3d6",
+      "sourcePath": "tools/check-in-process-reflection.sh",
+      "digest": "sha256:bca2729121ce2bde4dfe3e8db2af53d6129ea0db1162eaab0dd982d769ddf3d6",
+      "archivePath": "references/blobs/bca2729121ce2bde4dfe3e8db2af53d6129ea0db1162eaab0dd982d769ddf3d6"
+    },
+    {
+      "reference": "file:tools%2Ftest-check-in-process-reflection.sh#sha256:0679a80193d81a4ab8836387de8054644fd1569e9b4275506cb3171fdbce9510",
+      "sourcePath": "tools/test-check-in-process-reflection.sh",
+      "digest": "sha256:0679a80193d81a4ab8836387de8054644fd1569e9b4275506cb3171fdbce9510",
+      "archivePath": "references/blobs/0679a80193d81a4ab8836387de8054644fd1569e9b4275506cb3171fdbce9510"
+    }
+  ]
+}

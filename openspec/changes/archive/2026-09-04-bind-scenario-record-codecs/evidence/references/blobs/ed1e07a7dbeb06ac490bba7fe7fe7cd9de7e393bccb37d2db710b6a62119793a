@@ -1,0 +1,29 @@
+schemaVersion: 1
+kind: rfc-slice
+deliveryRef: RFC-0008-simplify-instrument-dependent-apis/S-04-bind-scenario-record-codecs
+rfc:
+  id: RFC-0008-simplify-instrument-dependent-apis
+  path: rfcs/RFC-0008-simplify-instrument-dependent-apis
+  acceptedCommit: bf457296faa7d29aec0840a7e8f48d41ed0f7491
+  digest: sha256:77e1c4ac3d7629334f86695e07ffaf835549c5e0e05612314f0ca193e42139f3
+slice:
+  id: S-04-bind-scenario-record-codecs
+  digest: sha256:13df2b8e6118fc4851045d35fa9ab8905ca8ec0b088e4eb4d31ebeb13f9f3e07
+acceptance:
+  - id: AC-012
+    evidence: automated
+  - id: AC-013
+    evidence: automated
+  - id: AC-014
+    evidence: automated
+  - id: AC-015
+    evidence: automated
+  - id: AC-016
+    evidence: automated
+deliveryBindingDigest: sha256:04c1b022c61faba804a1ddb4692e8c57ca7c55209ff66f241f3edccd07020e94
+tracker:
+  provider: github
+  idempotencyKey: 262f787edea20d6a86be068a39522fcc02395d868d0af63328a07797ba1dd308
+  issue:
+    id: '59'
+    url: https://github.com/m2048ws/trading/issues/59

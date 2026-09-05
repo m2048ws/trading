@@ -1,0 +1,89 @@
+{
+  "scope": "Only accepted RFC-0008 S-06, AC-022 through AC-025: consolidate eight direct market-state overload pairs into eight defaulted operations and add a field-only exact-instrument scope with the same eight delegates.",
+  "nonGoals": [
+    "No changed market/conversion/PnL math or validation ownership.",
+    "No cache, live catalog, mutable context, effect/runtime dependency, or universal facade.",
+    "No per-operation inputs captured implicitly.",
+    "No promise of Java source compatibility, binary compatibility, or new null support.",
+    "SettlementConversion remains separately owned; Instrument gains no market-state behavior."
+  ],
+  "review": "Read the accepted RFC, proposal/design/specs/source/traceability, implementation diff, all new fixtures/tests, benchmark, build classpath change, and the frozen commit. No actionable implementation or contract findings.",
+  "checks": [
+    "Six mechanical source assertions passed including exact direct-body and checked-kernel equality with planning baseline.",
+    "Javap confirms exactly one private final instrument field, field-only initialization, and eight one-call delegates, with no additional per-call new instruction or traversal.",
+    "Foreign-value tests use two test-only endpoint casts only after DimensionHandle reconciliation or SameDimension evidence; no new production or positive-client casts.",
+    "Unchanged existing MarketState public representation and calculation/error owners. No equality change.",
+    "All 96 positive positional/named, direct/scoped, omitted/empty/nonempty calls compile and run; six incompatible inputs fail independently with relevant diagnostics.",
+    "32 calls through four test threads validate immutable scope reuse against direct sequential results."
+  ],
+  "performance": {
+    "newShortRun": "JMH 1.37, JDK 26.0.2.1; three 500ms warmups, five 500ms measurements, one fork, one thread, GC profiler. Four direct/scoped quote/third settlement pairs with zero or one additional conversion.",
+    "timeNsPerOperation": [
+      {
+        "additional": 0,
+        "settlement": "quote",
+        "direct": "711.800 +/- 9.590",
+        "scoped": "665.346 +/- 63.206"
+      },
+      {
+        "additional": 0,
+        "settlement": "third",
+        "direct": "800.405 +/- 40.158",
+        "scoped": "832.125 +/- 5.946"
+      },
+      {
+        "additional": 1,
+        "settlement": "quote",
+        "direct": "881.609 +/- 22.696",
+        "scoped": "864.807 +/- 8.136"
+      },
+      {
+        "additional": 1,
+        "settlement": "third",
+        "direct": "984.544 +/- 39.439",
+        "scoped": "965.201 +/- 11.032"
+      }
+    ],
+    "allocationBytesPerOperation": [
+      {
+        "additional": 0,
+        "settlement": "quote",
+        "direct": 3768.013,
+        "scoped": 3744.012
+      },
+      {
+        "additional": 0,
+        "settlement": "third",
+        "direct": 3912.014,
+        "scoped": 3896.014
+      },
+      {
+        "additional": 1,
+        "settlement": "quote",
+        "direct": 4224.015,
+        "scoped": 4112.015
+      },
+      {
+        "additional": 1,
+        "settlement": "third",
+        "direct": 4328.016,
+        "scoped": 4360.016
+      }
+    ],
+    "priorInvestigation": "Apply's short run showed a 288 B/op increase in the third/nonempty case; the retained three-fork, 1s iteration follow-up did not reproduce that increase (direct 4349.342 +/- 16.693 B/op; scoped 4274.675 +/- 133.542 B/op). Current short run varies by -112 to +32 B/op across pairs. No structural extra allocation or traversal in the delegation.",
+    "interpretation": "Indicative representative measurements, not deterministic performance evidence, throughput guarantee, or proof of zero JIT allocation overhead."
+  },
+  "limitations": [
+    "Local verification targets release 25 on a JDK 26 host; separate GitHub CI reports its JDK 25 setup and build/test steps succeeded.",
+    "Two historical evidence files are retained from pre-commit Apply: baseline characterization and three-fork allocation follow-up. Fresh Verify tests were rerun at the exact final HEAD.",
+    "The scope retains its captured instrument; application ownership and lifetime remain caller concerns, and no global cache is introduced.",
+    "The supported source API is Scala 3. Removed redundant overloads change JVM descriptors; downstream binaries need recompilation.",
+    "Third-party Scala/JMH Unsafe deprecation warnings remain visible on JDK 26; production/benchmark reflection guard is clean.",
+    "Human Review, Human QA, and Archive remain separate gates and were not run during Verify."
+  ],
+  "materialRisks": [
+    "Dependent default inference and singleton widening: addressed by explicit default element types plus positive/negative completed-artifact fixtures.",
+    "Runtime identity/lineage and validation order: addressed by independent expected-value/error tests and byte-for-byte unchanged kernels.",
+    "Hot-loop allocation: reusable one-field scope plus source/bytecode inspection and indicative JMH; production-like workload performance remains unproven."
+  ]
+}

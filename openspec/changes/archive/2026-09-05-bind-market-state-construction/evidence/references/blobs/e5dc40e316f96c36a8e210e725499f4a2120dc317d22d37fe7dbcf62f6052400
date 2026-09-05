@@ -1,0 +1,1066 @@
+[info] welcome to sbt 1.12.15 (Homebrew Java 26.0.2.1)
+[info] loading settings for project bind-market-state-construction-build from plugins.sbt...
+[info] loading project definition from /Users/m/src/money/.worktrees/bind-market-state-construction/project
+[info] loading settings for project root from build.sbt...
+[info] resolving key references (12514 settings) ...
+[info] set current project to trading (in build file:/Users/m/src/money/.worktrees/bind-market-state-construction/)
+[info] scalafmt: Checking 2 Scala sources (/Users/m/src/money/.worktrees/bind-market-state-construction/application)...
+[info] scalafmt: Checking 4 Scala sources (/Users/m/src/money/.worktrees/bind-market-state-construction/instrument-economics)...
+[info] scalafmt: Checking 8 Scala sources (/Users/m/src/money/.worktrees/bind-market-state-construction/instrument-economics)...
+[info] scalafmt: Checking 1 Scala sources (/Users/m/src/money/.worktrees/bind-market-state-construction/application)...
+[info] scalafmt: Checking 2 Scala sources (/Users/m/src/money/.worktrees/bind-market-state-construction/reference-data)...
+[info] scalafmt: Checking 20 Scala sources (/Users/m/src/money/.worktrees/bind-market-state-construction/quantities)...
+[info] scalafmt: Checking 51 Scala sources (/Users/m/src/money/.worktrees/bind-market-state-construction/quantities)...
+[info] scalafmt: Checking 2 Scala sources (/Users/m/src/money/.worktrees/bind-market-state-construction/reference-data)...
+[info] scalafmt: Checking 6 Scala sources (/Users/m/src/money/.worktrees/bind-market-state-construction/risk)...
+[info] scalafmt: Checking 8 Scala sources (/Users/m/src/money/.worktrees/bind-market-state-construction/risk)...
+[info] scalafmt: Checking 2 Scala sources (/Users/m/src/money/.worktrees/bind-market-state-construction/runtime)...
+[info] scalafmt: Checking 4 Scala sources (/Users/m/src/money/.worktrees/bind-market-state-construction/runtime)...
+[info] scalafmt: Checking 2 Scala sources (/Users/m/src/money/.worktrees/bind-market-state-construction/order-model)...
+[info] scalafmt: Checking 3 Scala sources (/Users/m/src/money/.worktrees/bind-market-state-construction/order-model)...
+[info] scalafmt: Checking 13 Scala sources (/Users/m/src/money/.worktrees/bind-market-state-construction/execution-lifecycle)...
+[info] scalafmt: Checking 10 Scala sources (/Users/m/src/money/.worktrees/bind-market-state-construction/execution-lifecycle)...
+[info] scalafmt: Checking 4 Scala sources (/Users/m/src/money/.worktrees/bind-market-state-construction/execution-scenario)...
+[info] scalafmt: Checking 3 Scala sources (/Users/m/src/money/.worktrees/bind-market-state-construction/execution-scenario)...
+[info] scalafmt: Checking 4 Scala sources (/Users/m/src/money/.worktrees/bind-market-state-construction/fee-policy)...
+[info] scalafmt: Checking 6 Scala sources (/Users/m/src/money/.worktrees/bind-market-state-construction/fee-policy)...
+[info] scalafmt: Checking 23 Scala sources (/Users/m/src/money/.worktrees/bind-market-state-construction/boundary-codecs)...
+[info] scalafmt: Checking 17 Scala sources (/Users/m/src/money/.worktrees/bind-market-state-construction/boundary-codecs)...
+[info] scalafmt: Checking 11 Scala sources (/Users/m/src/money/.worktrees/bind-market-state-construction/adversarial-boundary)...
+[success] Total time: 5 s, completed Sep 4, 2026, 11:47:53 PM
+[info] scalafmt: Checking 2 Scala sources (/Users/m/src/money/.worktrees/bind-market-state-construction)...
+[success] Total time: 0 s, completed Sep 4, 2026, 11:47:53 PM
+[success] Total time: 0 s, completed Sep 4, 2026, 11:47:54 PM
+[info] compiling 20 Scala sources to /Users/m/src/money/.worktrees/bind-market-state-construction/quantities/target/scala-3.8.4/classes ...
+[info] done compiling
+[info] compiling 51 Scala sources to /Users/m/src/money/.worktrees/bind-market-state-construction/quantities/target/scala-3.8.4/test-classes ...
+[info] done compiling
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by scala.runtime.LazyVals$ (file:/Users/m/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/scala-library/3.8.4/scala-library-3.8.4.jar)
+WARNING: Please consider reporting this to the maintainers of class scala.runtime.LazyVals$
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+Test run trading.quantity.grid.GridProjectionSuite started
+trading.quantity.grid.GridProjectionSuite: finished 0.116s
+Test run trading.quantity.grid.GridProjectionSuite finished: 0 failed, 0 ignored, 4 total 0.124s
+Test run trading.quantity.examples.NormalizedArithmeticExamplesSuite started
+trading.quantity.examples.NormalizedArithmeticExamplesSuite: finished 0.008s
+Test run trading.quantity.examples.NormalizedArithmeticExamplesSuite finished: 0 failed, 0 ignored, 4 total 0.008s
+Test run trading.quantity.examples.FoundationExamplesSuite started
+trading.quantity.examples.FoundationExamplesSuite: finished 0.014s
+Test run trading.quantity.examples.FoundationExamplesSuite finished: 0 failed, 0 ignored, 4 total 0.014s
+Test run trading.quantity.laws.DimensionDisciplineSuite started
+trading.quantity.laws.DimensionDisciplineSuite: finished 4.484s
+Test run trading.quantity.laws.DimensionDisciplineSuite finished: 0 failed, 0 ignored, 28 total 4.484s
+Test run trading.quantity.DimensionLawsSuite started
+trading.quantity.DimensionLawsSuite: finished 0.093s
+Test run trading.quantity.DimensionLawsSuite finished: 0 failed, 0 ignored, 7 total 0.093s
+Test run trading.quantity.grid.QuotRemSuite started
+trading.quantity.grid.QuotRemSuite: finished 0.005s
+Test run trading.quantity.grid.QuotRemSuite finished: 0 failed, 0 ignored, 2 total 0.005s
+Test run trading.quantity.RationalInvariantSuite started
+trading.quantity.RationalInvariantSuite: finished 0.024s
+Test run trading.quantity.RationalInvariantSuite finished: 0 failed, 0 ignored, 6 total 0.024s
+Test run trading.quantity.laws.DivisionAndAllocationDisciplineSuite started
+trading.quantity.laws.DivisionAndAllocationDisciplineSuite: finished 0.018s
+Test run trading.quantity.laws.DivisionAndAllocationDisciplineSuite finished: 0 failed, 0 ignored, 2 total 0.018s
+Test run trading.quantity.grid.ConversionLawsSuite started
+trading.quantity.grid.ConversionLawsSuite: finished 0.006s
+Test run trading.quantity.grid.ConversionLawsSuite finished: 0 failed, 0 ignored, 4 total 0.007s
+Test run trading.quantity.grid.SameGridArithmeticSuite started
+trading.quantity.grid.SameGridArithmeticSuite: finished 0.004s
+Test run trading.quantity.grid.SameGridArithmeticSuite finished: 0 failed, 0 ignored, 3 total 0.005s
+Test run trading.quantity.MultiplicativeArithmeticSuite started
+trading.quantity.MultiplicativeArithmeticSuite: finished 0.003s
+Test run trading.quantity.MultiplicativeArithmeticSuite finished: 0 failed, 0 ignored, 10 total 0.003s
+Test run trading.quantity.grid.CrossGridArithmeticSuite started
+trading.quantity.grid.CrossGridArithmeticSuite: finished 0.005s
+Test run trading.quantity.grid.CrossGridArithmeticSuite finished: 0 failed, 0 ignored, 4 total 0.006s
+Test run trading.quantity.laws.RefinementDisciplineSuite started
+trading.quantity.laws.RefinementDisciplineSuite: finished 0.01s
+Test run trading.quantity.laws.RefinementDisciplineSuite finished: 0 failed, 0 ignored, 9 total 0.01s
+Test run trading.quantity.algebra.AlgebraInstancesSuite started
+trading.quantity.algebra.AlgebraInstancesSuite: finished 0.009s
+Test run trading.quantity.algebra.AlgebraInstancesSuite finished: 0 failed, 0 ignored, 8 total 0.009s
+Test run trading.quantity.refinement.RefinementClosureBytecodeSuite started
+trading.quantity.refinement.RefinementClosureBytecodeSuite: finished 1.113s
+Test run trading.quantity.refinement.RefinementClosureBytecodeSuite finished: 0 failed, 0 ignored, 2 total 1.113s
+Test run trading.quantity.DimensionExponentBoundarySuite started
+trading.quantity.DimensionExponentBoundarySuite: finished 0.002s
+Test run trading.quantity.DimensionExponentBoundarySuite finished: 0 failed, 0 ignored, 3 total 0.002s
+Test run trading.quantity.grid.GridEvidenceSuite started
+trading.quantity.grid.GridEvidenceSuite: finished 0.002s
+Test run trading.quantity.grid.GridEvidenceSuite finished: 0 failed, 0 ignored, 7 total 0.002s
+Test run external.QuantityPublicTypeShapeSuite started
+external.QuantityPublicTypeShapeSuite: finished 0.001s
+Test run external.QuantityPublicTypeShapeSuite finished: 0 failed, 0 ignored, 6 total 0.001s
+Test run trading.quantity.laws.QuantityDisciplineSuite started
+trading.quantity.laws.QuantityDisciplineSuite: finished 0.449s
+Test run trading.quantity.laws.QuantityDisciplineSuite finished: 0 failed, 0 ignored, 99 total 0.449s
+Test run external.ConstructionAndProvenanceBoundarySuite started
+external.ConstructionAndProvenanceBoundarySuite: finished 0.0s
+Test run external.ConstructionAndProvenanceBoundarySuite finished: 0 failed, 0 ignored, 2 total 0.0s
+Test run trading.quantity.AdversarialConstructionBoundarySuite started
+trading.quantity.AdversarialConstructionBoundarySuite: finished 0.001s
+Test run trading.quantity.AdversarialConstructionBoundarySuite finished: 0 failed, 0 ignored, 6 total 0.001s
+Test run trading.quantity.ExactScalarDivisionSuite started
+trading.quantity.ExactScalarDivisionSuite: finished 0.002s
+Test run trading.quantity.ExactScalarDivisionSuite finished: 0 failed, 0 ignored, 4 total 0.002s
+Test run trading.quantity.testkit.TestSupportSuite started
+trading.quantity.testkit.TestSupportSuite: finished 0.002s
+Test run trading.quantity.testkit.TestSupportSuite finished: 0 failed, 0 ignored, 5 total 0.002s
+Test run trading.quantity.StaticDimensionNormalizationSuite started
+trading.quantity.StaticDimensionNormalizationSuite: finished 0.006s
+Test run trading.quantity.StaticDimensionNormalizationSuite finished: 0 failed, 0 ignored, 13 total 0.006s
+Test run trading.quantity.grid.QuantizationPolicySuite started
+trading.quantity.grid.QuantizationPolicySuite: finished 0.002s
+Test run trading.quantity.grid.QuantizationPolicySuite finished: 0 failed, 0 ignored, 3 total 0.002s
+Test run trading.quantity.laws.GridQuantityDisciplineSuite started
+trading.quantity.laws.GridQuantityDisciplineSuite: finished 0.037s
+Test run trading.quantity.laws.GridQuantityDisciplineSuite finished: 0 failed, 0 ignored, 103 total 0.038s
+Test run trading.quantity.laws.RationalDisciplineSuite started
+trading.quantity.laws.RationalDisciplineSuite: finished 0.342s
+Test run trading.quantity.laws.RationalDisciplineSuite finished: 0 failed, 0 ignored, 132 total 0.342s
+Test run trading.quantity.grid.QuantizationSuite started
+trading.quantity.grid.QuantizationSuite: finished 0.005s
+Test run trading.quantity.grid.QuantizationSuite finished: 0 failed, 0 ignored, 5 total 0.005s
+Test run trading.quantity.QuantitySuite started
+trading.quantity.QuantitySuite: finished 0.002s
+Test run trading.quantity.QuantitySuite finished: 0 failed, 0 ignored, 5 total 0.002s
+Test run trading.quantity.testkit.PublicApiSafetySuite started
+trading.quantity.testkit.PublicApiSafetySuite: finished 0.0s
+Test run trading.quantity.testkit.PublicApiSafetySuite finished: 0 failed, 0 ignored, 6 total 0.0s
+Test run trading.quantity.laws.RateDisciplineSuite started
+trading.quantity.laws.RateDisciplineSuite: finished 0.005s
+Test run trading.quantity.laws.RateDisciplineSuite finished: 0 failed, 0 ignored, 4 total 0.005s
+Test run trading.quantity.CompileTimeArithmeticSuite started
+trading.quantity.CompileTimeArithmeticSuite: finished 0.0s
+Test run trading.quantity.CompileTimeArithmeticSuite finished: 0 failed, 0 ignored, 4 total 0.0s
+Test run trading.quantity.runtime.JavaSerializationPolicySuite started
+trading.quantity.runtime.JavaSerializationPolicySuite: finished 0.006s
+Test run trading.quantity.runtime.JavaSerializationPolicySuite finished: 0 failed, 0 ignored, 1 total 0.006s
+Test run trading.quantity.laws.ProjectionDisciplineSuite started
+trading.quantity.laws.ProjectionDisciplineSuite: finished 0.017s
+Test run trading.quantity.laws.ProjectionDisciplineSuite finished: 0 failed, 0 ignored, 44 total 0.017s
+Test run trading.quantity.grid.AllocationSuite started
+trading.quantity.grid.AllocationSuite: finished 0.003s
+Test run trading.quantity.grid.AllocationSuite finished: 0 failed, 0 ignored, 3 total 0.003s
+Test run external.PublicApiBoundarySuite started
+external.PublicApiBoundarySuite: finished 0.0s
+Test run external.PublicApiBoundarySuite finished: 0 failed, 0 ignored, 3 total 0.0s
+Test run trading.quantity.refinementtests.RefinedOperationsSuite started
+trading.quantity.refinementtests.RefinedOperationsSuite: finished 0.002s
+Test run trading.quantity.refinementtests.RefinedOperationsSuite finished: 0 failed, 0 ignored, 8 total 0.002s
+Test run trading.quantity.GridQuantitySuite started
+trading.quantity.GridQuantitySuite: finished 0.002s
+Test run trading.quantity.GridQuantitySuite finished: 0 failed, 0 ignored, 6 total 0.002s
+Test run external.GridOperationImportBoundarySuite started
+external.GridOperationImportBoundarySuite: finished 0.0s
+Test run external.GridOperationImportBoundarySuite finished: 0 failed, 0 ignored, 4 total 0.0s
+Test run trading.quantity.refinement.RefinementSuite started
+trading.quantity.refinement.RefinementSuite: finished 0.003s
+Test run trading.quantity.refinement.RefinementSuite finished: 0 failed, 0 ignored, 6 total 0.003s
+Test run trading.quantity.QuantityDivisionSuite started
+trading.quantity.QuantityDivisionSuite: finished 0.002s
+Test run trading.quantity.QuantityDivisionSuite finished: 0 failed, 0 ignored, 8 total 0.003s
+Test run trading.quantity.WholeScalarsSuite started
+trading.quantity.WholeScalarsSuite: finished 0.001s
+Test run trading.quantity.WholeScalarsSuite finished: 0 failed, 0 ignored, 5 total 0.001s
+Test run external.GridQuantityPublicTypeShapeSuite started
+external.GridQuantityPublicTypeShapeSuite: finished 0.001s
+Test run external.GridQuantityPublicTypeShapeSuite finished: 0 failed, 0 ignored, 4 total 0.001s
+[info] Passed: Total 596, Failed 0, Errors 0, Passed 596
+[info] compiling 2 Scala sources to /Users/m/src/money/.worktrees/bind-market-state-construction/reference-data/target/scala-3.8.4/classes ...
+[info] done compiling
+[info] compiling 2 Scala sources to /Users/m/src/money/.worktrees/bind-market-state-construction/reference-data/target/scala-3.8.4/test-classes ...
+[info] done compiling
+Test run trading.reference.ReferenceDataSuite started
+trading.reference.ReferenceDataSuite: finished 0.104s
+Test run trading.reference.ReferenceDataSuite finished: 0 failed, 0 ignored, 11 total 0.114s
+Test run trading.reference.CatalogPropertiesSuite started
+trading.reference.CatalogPropertiesSuite: finished 0.193s
+Test run trading.reference.CatalogPropertiesSuite finished: 0 failed, 0 ignored, 2 total 0.202s
+[info] Passed: Total 13, Failed 0, Errors 0, Passed 13
+[info] compiling 1 Scala source to /Users/m/src/money/.worktrees/bind-market-state-construction/application/target/scala-3.8.4/classes ...
+[info] done compiling
+[info] compiling 2 Scala sources to /Users/m/src/money/.worktrees/bind-market-state-construction/application/target/scala-3.8.4/test-classes ...
+[info] done compiling
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by scala.runtime.LazyVals$ (file:/Users/m/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/scala-library/3.8.4/scala-library-3.8.4.jar)
+WARNING: Please consider reporting this to the maintainers of class scala.runtime.LazyVals$
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+Test run trading.application.LiveCatalogContractRejectionSuite started
+trading.application.LiveCatalogContractRejectionSuite: finished 0.116s
+Test run trading.application.LiveCatalogContractRejectionSuite finished: 0 failed, 0 ignored, 4 total 0.128s
+Test run trading.application.LiveCatalogContractSuite started
+trading.application.LiveCatalogContractSuite: finished 0.02s
+Test run trading.application.LiveCatalogContractSuite finished: 0 failed, 0 ignored, 5 total 0.02s
+[info] Passed: Total 9, Failed 0, Errors 0, Passed 9
+[info] compiling 2 Scala sources to /Users/m/src/money/.worktrees/bind-market-state-construction/runtime/target/scala-3.8.4/classes ...
+[info] done compiling
+[info] compiling 4 Scala sources to /Users/m/src/money/.worktrees/bind-market-state-construction/runtime/target/scala-3.8.4/test-classes ...
+[info] done compiling
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by scala.runtime.LazyVals$ (file:/Users/m/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/scala-library/3.8.4/scala-library-3.8.4.jar)
+WARNING: Please consider reporting this to the maintainers of class scala.runtime.LazyVals$
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+Test run trading.runtime.InMemoryLiveCatalogConcurrencySuite started
+trading.runtime.InMemoryLiveCatalogConcurrencySuite: finished 0.371s
+Test run trading.runtime.InMemoryLiveCatalogConcurrencySuite finished: 0 failed, 0 ignored, 4 total 0.375s
+Test run trading.runtime.InMemoryLiveCatalogContractSuite started
+trading.runtime.InMemoryLiveCatalogContractSuite: finished 0.034s
+Test run trading.runtime.InMemoryLiveCatalogContractSuite finished: 0 failed, 0 ignored, 7 total 0.035s
+Test run trading.runtime.InMemoryLiveCatalogConstructionSuite started
+trading.runtime.InMemoryLiveCatalogConstructionSuite: finished 0.011s
+Test run trading.runtime.InMemoryLiveCatalogConstructionSuite finished: 0 failed, 0 ignored, 5 total 0.011s
+Test run trading.runtime.InMemoryLiveCatalogAtomicSuite started
+trading.runtime.InMemoryLiveCatalogAtomicSuite: finished 0.013s
+Test run trading.runtime.InMemoryLiveCatalogAtomicSuite finished: 0 failed, 0 ignored, 2 total 0.013s
+[info] Passed: Total 18, Failed 0, Errors 0, Passed 18
+[info] compiling 8 Scala sources to /Users/m/src/money/.worktrees/bind-market-state-construction/instrument-economics/target/scala-3.8.4/classes ...
+[info] done compiling
+[info] compiling 4 Scala sources to /Users/m/src/money/.worktrees/bind-market-state-construction/instrument-economics/target/scala-3.8.4/test-classes ...
+[info] done compiling
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by scala.runtime.LazyVals$ (file:/Users/m/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/scala-library/3.8.4/scala-library-3.8.4.jar)
+WARNING: Please consider reporting this to the maintainers of class scala.runtime.LazyVals$
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+Test run trading.economics.instrument.PureInstrumentEconomicsSuite started
+trading.economics.instrument.PureInstrumentEconomicsSuite: finished 0.074s
+Test run trading.economics.instrument.PureInstrumentEconomicsSuite finished: 0 failed, 0 ignored, 12 total 0.083s
+Test run trading.economics.instrument.EconomicsPropertiesSuite started
+trading.economics.instrument.EconomicsPropertiesSuite: finished 0.204s
+Test run trading.economics.instrument.EconomicsPropertiesSuite finished: 0 failed, 0 ignored, 6 total 0.205s
+Test run trading.economics.instrument.MarketStateInstrumentScopeSuite started
+trading.economics.instrument.MarketStateInstrumentScopeSuite: finished 0.024s
+Test run trading.economics.instrument.MarketStateInstrumentScopeSuite finished: 0 failed, 0 ignored, 10 total 0.024s
+[info] Passed: Total 28, Failed 0, Errors 0, Passed 28
+[info] compiling 6 Scala sources to /Users/m/src/money/.worktrees/bind-market-state-construction/risk/target/scala-3.8.4/classes ...
+[info] done compiling
+[info] compiling 8 Scala sources to /Users/m/src/money/.worktrees/bind-market-state-construction/risk/target/scala-3.8.4/test-classes ...
+[info] done compiling
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by scala.runtime.LazyVals$ (file:/Users/m/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/scala-library/3.8.4/scala-library-3.8.4.jar)
+WARNING: Please consider reporting this to the maintainers of class scala.runtime.LazyVals$
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+Test run trading.risk.RiskCurvePropertiesSuite started
+trading.risk.RiskCurvePropertiesSuite: finished 0.192s
+Test run trading.risk.RiskCurvePropertiesSuite finished: 0 failed, 0 ignored, 3 total 0.197s
+Test run trading.risk.ExhaustiveLotSizingSuite started
+trading.risk.ExhaustiveLotSizingSuite: finished 0.108s
+Test run trading.risk.ExhaustiveLotSizingSuite finished: 0 failed, 0 ignored, 9 total 0.108s
+Test run trading.risk.RiskCurveSuite started
+trading.risk.RiskCurveSuite: finished 0.02s
+Test run trading.risk.RiskCurveSuite finished: 0 failed, 0 ignored, 11 total 0.02s
+Test run trading.risk.MaximumAffordablePropertiesSuite started
+trading.risk.MaximumAffordablePropertiesSuite: finished 0.01s
+Test run trading.risk.MaximumAffordablePropertiesSuite finished: 0 failed, 0 ignored, 1 total 0.01s
+Test run trading.risk.RiskInstrumentScopeSuite started
+trading.risk.RiskInstrumentScopeSuite: finished 0.025s
+Test run trading.risk.RiskInstrumentScopeSuite finished: 0 failed, 0 ignored, 5 total 0.025s
+Test run trading.risk.RiskModelBoundarySuite started
+trading.risk.RiskModelBoundarySuite: finished 0.004s
+Test run trading.risk.RiskModelBoundarySuite finished: 0 failed, 0 ignored, 5 total 0.004s
+Test run trading.risk.MaximumAffordableSuite started
+trading.risk.MaximumAffordableSuite: finished 0.019s
+Test run trading.risk.MaximumAffordableSuite finished: 0 failed, 0 ignored, 7 total 0.02s
+Test run trading.risk.RiskDownsideSuite started
+trading.risk.RiskDownsideSuite: finished 0.002s
+Test run trading.risk.RiskDownsideSuite finished: 0 failed, 0 ignored, 4 total 0.002s
+[info] Passed: Total 45, Failed 0, Errors 0, Passed 45
+[info] compiling 2 Scala sources to /Users/m/src/money/.worktrees/bind-market-state-construction/order-model/target/scala-3.8.4/classes ...
+[info] done compiling
+[info] compiling 3 Scala sources to /Users/m/src/money/.worktrees/bind-market-state-construction/order-model/target/scala-3.8.4/test-classes ...
+[info] done compiling
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by scala.runtime.LazyVals$ (file:/Users/m/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/scala-library/3.8.4/scala-library-3.8.4.jar)
+WARNING: Please consider reporting this to the maintainers of class scala.runtime.LazyVals$
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+Test run trading.order.OrderInstructionSuite started
+trading.order.OrderInstructionSuite: finished 0.046s
+Test run trading.order.OrderInstructionSuite finished: 0 failed, 0 ignored, 6 total 0.057s
+Test run trading.order.OrderPropertiesSuite started
+trading.order.OrderPropertiesSuite: finished 0.068s
+Test run trading.order.OrderPropertiesSuite finished: 0 failed, 0 ignored, 1 total 0.068s
+Test run trading.order.InstrumentOrderScopeSuite started
+trading.order.InstrumentOrderScopeSuite: finished 0.023s
+Test run trading.order.InstrumentOrderScopeSuite finished: 0 failed, 0 ignored, 3 total 0.023s
+[info] Passed: Total 10, Failed 0, Errors 0, Passed 10
+[info] compiling 13 Scala sources to /Users/m/src/money/.worktrees/bind-market-state-construction/execution-lifecycle/target/scala-3.8.4/classes ...
+[info] done compiling
+[info] compiling 10 Scala sources to /Users/m/src/money/.worktrees/bind-market-state-construction/execution-lifecycle/target/scala-3.8.4/test-classes ...
+[info] done compiling
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by scala.runtime.LazyVals$ (file:/Users/m/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/scala-library/3.8.4/scala-library-3.8.4.jar)
+WARNING: Please consider reporting this to the maintainers of class scala.runtime.LazyVals$
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+Test run trading.execution.EffectiveFillLedgerSuite started
+trading.execution.EffectiveFillLedgerSuite: finished 0.246s
+Test run trading.execution.EffectiveFillLedgerSuite finished: 0 failed, 0 ignored, 9 total 0.253s
+Test run trading.execution.CancellationSuite started
+trading.execution.CancellationSuite: finished 0.06s
+Test run trading.execution.CancellationSuite finished: 0 failed, 0 ignored, 10 total 0.06s
+Test run trading.execution.SourceFactSuite started
+trading.execution.SourceFactSuite: finished 0.027s
+Test run trading.execution.SourceFactSuite finished: 0 failed, 0 ignored, 9 total 0.027s
+Test run trading.execution.SourceFactScopeSuite started
+trading.execution.SourceFactScopeSuite: finished 0.015s
+Test run trading.execution.SourceFactScopeSuite finished: 0 failed, 0 ignored, 4 total 0.015s
+Test run trading.execution.ExecutionIdentitySuite started
+trading.execution.ExecutionIdentitySuite: finished 0.008s
+Test run trading.execution.ExecutionIdentitySuite finished: 0 failed, 0 ignored, 4 total 0.009s
+Test run trading.execution.ExecutionStateSuite started
+trading.execution.ExecutionStateSuite: finished 0.057s
+Test run trading.execution.ExecutionStateSuite finished: 0 failed, 0 ignored, 11 total 0.057s
+Test run trading.execution.CommandStateSuite started
+trading.execution.CommandStateSuite: finished 0.022s
+Test run trading.execution.CommandStateSuite finished: 0 failed, 0 ignored, 9 total 0.022s
+Test run trading.execution.ExecutionOrderingsSuite started
+trading.execution.ExecutionOrderingsSuite: finished 0.003s
+Test run trading.execution.ExecutionOrderingsSuite finished: 0 failed, 0 ignored, 3 total 0.003s
+Test run trading.execution.ExecutionAuthoritySuite started
+trading.execution.ExecutionAuthoritySuite: finished 0.008s
+Test run trading.execution.ExecutionAuthoritySuite finished: 0 failed, 0 ignored, 5 total 0.008s
+Test run trading.execution.SubmissionKnowledgeSuite started
+trading.execution.SubmissionKnowledgeSuite: finished 0.045s
+Test run trading.execution.SubmissionKnowledgeSuite finished: 0 failed, 0 ignored, 8 total 0.045s
+[info] Passed: Total 72, Failed 0, Errors 0, Passed 72
+[info] compiling 4 Scala sources to /Users/m/src/money/.worktrees/bind-market-state-construction/execution-scenario/target/scala-3.8.4/classes ...
+[info] done compiling
+[info] compiling 3 Scala sources to /Users/m/src/money/.worktrees/bind-market-state-construction/execution-scenario/target/scala-3.8.4/test-classes ...
+[info] done compiling
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by scala.runtime.LazyVals$ (file:/Users/m/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/scala-library/3.8.4/scala-library-3.8.4.jar)
+WARNING: Please consider reporting this to the maintainers of class scala.runtime.LazyVals$
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+Test run trading.scenario.ScenarioPropertiesSuite started
+trading.scenario.ScenarioPropertiesSuite: finished 0.173s
+Test run trading.scenario.ScenarioPropertiesSuite finished: 0 failed, 0 ignored, 1 total 0.179s
+Test run trading.scenario.OrderScenarioSuite started
+trading.scenario.OrderScenarioSuite: finished 0.018s
+Test run trading.scenario.OrderScenarioSuite finished: 0 failed, 0 ignored, 8 total 0.018s
+Test run trading.scenario.ScenarioValuationSuite started
+trading.scenario.ScenarioValuationSuite: finished 0.015s
+Test run trading.scenario.ScenarioValuationSuite finished: 0 failed, 0 ignored, 6 total 0.015s
+[info] Passed: Total 15, Failed 0, Errors 0, Passed 15
+[info] compiling 17 Scala sources to /Users/m/src/money/.worktrees/bind-market-state-construction/boundary-codecs/target/scala-3.8.4/classes ...
+[info] done compiling
+[info] compiling 23 Scala sources to /Users/m/src/money/.worktrees/bind-market-state-construction/boundary-codecs/target/scala-3.8.4/test-classes ...
+[info] done compiling
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by scala.runtime.LazyVals$ (file:/Users/m/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/scala-library/3.8.4/scala-library-3.8.4.jar)
+WARNING: Please consider reporting this to the maintainers of class scala.runtime.LazyVals$
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+Test run trading.codec.BoundaryDependencyScopeSuite started
+trading.codec.BoundaryDependencyScopeSuite: finished 0.034s
+Test run trading.codec.BoundaryDependencyScopeSuite finished: 0 failed, 0 ignored, 1 total 0.045s
+Test run trading.codec.CanonicalJsonSuite started
+trading.codec.CanonicalJsonSuite: finished 0.058s
+Test run trading.codec.CanonicalJsonSuite finished: 0 failed, 0 ignored, 4 total 0.058s
+Test run trading.codec.WireDiagnosticsSuite started
+trading.codec.WireDiagnosticsSuite: finished 0.007s
+Test run trading.codec.WireDiagnosticsSuite finished: 0 failed, 0 ignored, 3 total 0.007s
+Test run trading.codec.GridCoordinateRecordPropertiesSuite started
+trading.codec.GridCoordinateRecordPropertiesSuite: finished 0.253s
+Test run trading.codec.GridCoordinateRecordPropertiesSuite finished: 0 failed, 0 ignored, 1 total 0.253s
+SLF4J(W): No SLF4J providers were found.
+SLF4J(W): Defaulting to no-operation (NOP) logger implementation
+SLF4J(W): See https://www.slf4j.org/codes.html#noProviders for further details.
+Test run trading.codec.WireSchemaLawsSuite started
+trading.codec.WireSchemaLawsSuite: finished 0.264s
+Test run trading.codec.WireSchemaLawsSuite finished: 0 failed, 0 ignored, 8 total 0.264s
+Test run trading.codec.OrderRecordPropertiesSuite started
+trading.codec.OrderRecordPropertiesSuite: finished 0.071s
+Test run trading.codec.OrderRecordPropertiesSuite finished: 0 failed, 0 ignored, 1 total 0.071s
+Test run trading.codec.RecordEnvelopeSuite started
+trading.codec.RecordEnvelopeSuite: finished 0.031s
+Test run trading.codec.RecordEnvelopeSuite finished: 0 failed, 0 ignored, 7 total 0.031s
+Test run trading.codec.ScenarioRecordScopeSuite started
+trading.codec.ScenarioRecordScopeSuite: finished 0.094s
+Test run trading.codec.ScenarioRecordScopeSuite finished: 0 failed, 0 ignored, 3 total 0.094s
+Test run trading.codec.OrderRecordSuite started
+trading.codec.OrderRecordSuite: finished 0.194s
+Test run trading.codec.OrderRecordSuite finished: 0 failed, 0 ignored, 6 total 0.194s
+Test run trading.codec.StrictJsonSuite started
+trading.codec.StrictJsonSuite: finished 0.005s
+Test run trading.codec.StrictJsonSuite finished: 0 failed, 0 ignored, 6 total 0.005s
+Test run trading.codec.DecodeLimitsSuite started
+trading.codec.DecodeLimitsSuite: finished 0.003s
+Test run trading.codec.DecodeLimitsSuite finished: 0 failed, 0 ignored, 4 total 0.003s
+Test run trading.codec.ExactPrimitivesSuite started
+trading.codec.ExactPrimitivesSuite: finished 0.016s
+Test run trading.codec.ExactPrimitivesSuite finished: 0 failed, 0 ignored, 9 total 0.016s
+Test run trading.codec.GridCoordinateRecordSuite started
+trading.codec.GridCoordinateRecordSuite: finished 0.019s
+Test run trading.codec.GridCoordinateRecordSuite finished: 0 failed, 0 ignored, 8 total 0.019s
+Test run trading.codec.BoundaryCodecRobustnessPropertiesSuite started
+trading.codec.BoundaryCodecRobustnessPropertiesSuite: finished 0.059s
+Test run trading.codec.BoundaryCodecRobustnessPropertiesSuite finished: 0 failed, 0 ignored, 6 total 0.059s
+Test run trading.codec.ScenarioRecordSuite started
+trading.codec.ScenarioRecordSuite: finished 0.03s
+Test run trading.codec.ScenarioRecordSuite finished: 0 failed, 0 ignored, 7 total 0.032s
+Test run trading.codec.CatalogJournalPropertiesSuite started
+trading.codec.CatalogJournalPropertiesSuite: finished 0.049s
+Test run trading.codec.CatalogJournalPropertiesSuite finished: 0 failed, 0 ignored, 1 total 0.049s
+Test run trading.codec.CatalogJournalSuite started
+trading.codec.CatalogJournalSuite: finished 0.027s
+Test run trading.codec.CatalogJournalSuite finished: 0 failed, 0 ignored, 8 total 0.027s
+Test run trading.codec.InstrumentDefinitionRecordPropertiesSuite started
+trading.codec.InstrumentDefinitionRecordPropertiesSuite: finished 0.02s
+Test run trading.codec.InstrumentDefinitionRecordPropertiesSuite finished: 0 failed, 0 ignored, 1 total 0.02s
+Test run trading.codec.InstrumentDefinitionRecordSuite started
+trading.codec.InstrumentDefinitionRecordSuite: finished 0.031s
+Test run trading.codec.InstrumentDefinitionRecordSuite finished: 0 failed, 0 ignored, 6 total 0.032s
+Test run trading.codec.ScenarioRecordPropertiesSuite started
+trading.codec.ScenarioRecordPropertiesSuite: finished 0.084s
+Test run trading.codec.ScenarioRecordPropertiesSuite finished: 0 failed, 0 ignored, 1 total 0.084s
+Test run trading.codec.BoundaryCodecCompatibilitySuite started
+trading.codec.BoundaryCodecCompatibilitySuite: finished 0.089s
+Test run trading.codec.BoundaryCodecCompatibilitySuite finished: 0 failed, 0 ignored, 6 total 0.089s
+[info] Passed: Total 97, Failed 0, Errors 0, Passed 97
+[info] compiling 4 Scala sources to /Users/m/src/money/.worktrees/bind-market-state-construction/fee-policy/target/scala-3.8.4/classes ...
+[info] done compiling
+[info] compiling 6 Scala sources to /Users/m/src/money/.worktrees/bind-market-state-construction/fee-policy/target/scala-3.8.4/test-classes ...
+[info] done compiling
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by scala.runtime.LazyVals$ (file:/Users/m/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/scala-library/3.8.4/scala-library-3.8.4.jar)
+WARNING: Please consider reporting this to the maintainers of class scala.runtime.LazyVals$
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+Test run trading.fee.FeeAssessmentSuite started
+trading.fee.FeeAssessmentSuite: finished 0.061s
+Test run trading.fee.FeeAssessmentSuite finished: 0 failed, 0 ignored, 7 total 0.072s
+Test run trading.FeePolicyIntegrationSuite started
+trading.FeePolicyIntegrationSuite: finished 0.122s
+Test run trading.FeePolicyIntegrationSuite finished: 0 failed, 0 ignored, 11 total 0.122s
+Test run trading.fee.FeeInclusivePnlSuite started
+trading.fee.FeeInclusivePnlSuite: finished 0.018s
+Test run trading.fee.FeeInclusivePnlSuite finished: 0 failed, 0 ignored, 7 total 0.018s
+Test run trading.fee.FeeCalculationSuite started
+trading.fee.FeeCalculationSuite: finished 0.064s
+Test run trading.fee.FeeCalculationSuite finished: 0 failed, 0 ignored, 6 total 0.064s
+Test run trading.fee.FeePolicyStrategySuite started
+trading.fee.FeePolicyStrategySuite: finished 0.016s
+Test run trading.fee.FeePolicyStrategySuite finished: 0 failed, 0 ignored, 7 total 0.016s
+[info] Passed: Total 38, Failed 0, Errors 0, Passed 38
+[info] compiling 11 Scala sources to /Users/m/src/money/.worktrees/bind-market-state-construction/adversarial-boundary/target/scala-3.8.4/test-classes ...
+[info] done compiling
+Test run external.BoundaryCodecCompilerBoundarySuite started
+external.BoundaryCodecCompilerBoundarySuite: finished 13.495s
+Test run external.BoundaryCodecCompilerBoundarySuite finished: 0 failed, 0 ignored, 18 total 13.503s
+Test run external.QuantityArtifactBoundarySuite started
+external.QuantityArtifactBoundarySuite: finished 0.451s
+Test run external.QuantityArtifactBoundarySuite finished: 0 failed, 0 ignored, 2 total 0.452s
+Test run external.StaticDimensionCompilerBoundarySuite started
+external.StaticDimensionCompilerBoundarySuite: finished 7.245s
+Test run external.StaticDimensionCompilerBoundarySuite finished: 0 failed, 0 ignored, 40 total 7.245s
+Test run external.ConstructionAndProvenanceBoundarySuite started
+external.ConstructionAndProvenanceBoundarySuite: finished 0.01s
+Test run external.ConstructionAndProvenanceBoundarySuite finished: 0 failed, 0 ignored, 4 total 0.01s
+Test run external.RiskCompilerBoundarySuite started
+external.RiskCompilerBoundarySuite: finished 1.741s
+Test run external.RiskCompilerBoundarySuite finished: 0 failed, 0 ignored, 8 total 1.741s
+Test run external.ExecutionLifecycleCompilerBoundarySuite started
+external.ExecutionLifecycleCompilerBoundarySuite: finished 2.471s
+Test run external.ExecutionLifecycleCompilerBoundarySuite finished: 0 failed, 0 ignored, 8 total 2.471s
+Test run external.EconomicsCompilerBoundarySuite started
+external.EconomicsCompilerBoundarySuite: finished 12.116s
+Test run external.EconomicsCompilerBoundarySuite finished: 0 failed, 0 ignored, 39 total 12.117s
+Test run external.ReferenceDataCompilerBoundarySuite started
+external.ReferenceDataCompilerBoundarySuite: finished 2.183s
+Test run external.ReferenceDataCompilerBoundarySuite finished: 0 failed, 0 ignored, 13 total 2.183s
+Test run external.ApplicationRuntimeBoundarySuite started
+external.ApplicationRuntimeBoundarySuite: finished 0.428s
+Test run external.ApplicationRuntimeBoundarySuite finished: 0 failed, 0 ignored, 5 total 0.428s
+Test run external.ReferenceDataRuntimeBoundarySuite started
+external.ReferenceDataRuntimeBoundarySuite: finished 0.017s
+Test run external.ReferenceDataRuntimeBoundarySuite finished: 0 failed, 0 ignored, 6 total 0.017s
+[info] Passed: Total 143, Failed 0, Errors 0, Passed 143
+[success] Total time: 88 s (0:01:28.0), completed Sep 4, 2026, 11:49:22 PM
+[info] compiling 2 Scala sources to /Users/m/src/money/.worktrees/bind-market-state-construction/benchmarks/target/scala-3.8.4/classes ...
+[info] done compiling
+[success] Total time: 2 s, completed Sep 4, 2026, 11:49:24 PM
+[info] running (fork) org.openjdk.jmh.Main -wi 3 -w 500ms -i 5 -r 500ms -f 1 -t 1 -prof gc .*MarketStateConstructionBenchmark.*
+[error] WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+[error] WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.openjdk.jmh.util.Utils (file:/Users/m/src/money/.worktrees/bind-market-state-construction/target/bg-jobs/sbt_4f00cfd9/target/0a592882/1296d6b9/jmh-core-1.37.jar)
+[error] WARNING: Please consider reporting this to the maintainers of class org.openjdk.jmh.util.Utils
+[error] WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+[info] # JMH version: 1.37
+[info] # VM version: JDK 26.0.2.1, OpenJDK 64-Bit Server VM, 26.0.2.1
+[info] # VM invoker: /opt/homebrew/Cellar/openjdk/26.0.2.1/libexec/openjdk.jdk/Contents/Home/bin/java
+[info] # VM options: <none>
+[info] # Blackhole mode: compiler (auto-detected, use -Djmh.blackhole.autoDetect=false to disable)
+[info] # Warmup: 3 iterations, 500 ms each
+[info] # Measurement: 5 iterations, 500 ms each
+[info] # Timeout: 10 min per iteration
+[info] # Threads: 1 thread, will synchronize iterations
+[info] # Benchmark mode: Average time, time/op
+[info] # Benchmark: trading.benchmark.MarketStateConstructionBenchmark.direct
+[info] # Parameters: (additionalCount = 0, settlement = quote)
+[info] # Run progress: 0.00% complete, ETA 00:00:32
+[info] # Fork: 1 of 1
+[info] WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+[info] WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.openjdk.jmh.util.Utils (file:/Users/m/src/money/.worktrees/bind-market-state-construction/target/bg-jobs/sbt_4f00cfd9/target/0a592882/1296d6b9/jmh-core-1.37.jar)
+[info] WARNING: Please consider reporting this to the maintainers of class org.openjdk.jmh.util.Utils
+[info] WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+[info] # Warmup Iteration   1: 2853.858 ns/op
+[info] # Warmup Iteration   2: 953.223 ns/op
+[info] # Warmup Iteration   3: 711.199 ns/op
+[info] Iteration   1: 708.191 ns/op
+[info]                  gc.alloc.rate:      5071.534 MB/sec
+[info]                  gc.alloc.rate.norm: 3768.013 B/op
+[info]                  gc.count:           5.000 counts
+[info]                  gc.time:            4.000 ms
+[info] Iteration   2: 710.549 ns/op
+[info]                  gc.alloc.rate:      5055.631 MB/sec
+[info]                  gc.alloc.rate.norm: 3768.013 B/op
+[info]                  gc.count:           5.000 counts
+[info]                  gc.time:            4.000 ms
+[info] Iteration   3: 714.496 ns/op
+[info]                  gc.alloc.rate:      5027.349 MB/sec
+[info]                  gc.alloc.rate.norm: 3768.013 B/op
+[info]                  gc.count:           5.000 counts
+[info]                  gc.time:            4.000 ms
+[info] Iteration   4: 713.433 ns/op
+[info]                  gc.alloc.rate:      5034.872 MB/sec
+[info]                  gc.alloc.rate.norm: 3768.013 B/op
+[info]                  gc.count:           5.000 counts
+[info]                  gc.time:            3.000 ms
+[info] Iteration   5: 712.333 ns/op
+[info]                  gc.alloc.rate:      5042.840 MB/sec
+[info]                  gc.alloc.rate.norm: 3768.013 B/op
+[info]                  gc.count:           6.000 counts
+[info]                  gc.time:            5.000 ms
+[info] Result "trading.benchmark.MarketStateConstructionBenchmark.direct":
+[info]   711.800 ±(99.9%) 9.590 ns/op [Average]
+[info]   (min, avg, max) = (708.191, 711.800, 714.496), stdev = 2.491
+[info]   CI (99.9%): [702.210, 721.390] (assumes normal distribution)
+[info] Secondary result "trading.benchmark.MarketStateConstructionBenchmark.direct:gc.alloc.rate":
+[info]   5046.445 ±(99.9%) 67.399 MB/sec [Average]
+[info]   (min, avg, max) = (5027.349, 5046.445, 5071.534), stdev = 17.503
+[info]   CI (99.9%): [4979.047, 5113.844] (assumes normal distribution)
+[info] Secondary result "trading.benchmark.MarketStateConstructionBenchmark.direct:gc.alloc.rate.norm":
+[info]   3768.013 ±(99.9%) 0.001 B/op [Average]
+[info]   (min, avg, max) = (3768.013, 3768.013, 3768.013), stdev = 0.001
+[info]   CI (99.9%): [3768.012, 3768.014] (assumes normal distribution)
+[info] Secondary result "trading.benchmark.MarketStateConstructionBenchmark.direct:gc.count":
+[info]   26.000 ±(99.9%) 0.001 counts [Sum]
+[info]   (min, avg, max) = (5.000, 5.200, 6.000), stdev = 0.447
+[info]   CI (99.9%): [26.000, 26.000] (assumes normal distribution)
+[info] Secondary result "trading.benchmark.MarketStateConstructionBenchmark.direct:gc.time":
+[info]   20.000 ±(99.9%) 0.001 ms [Sum]
+[info]   (min, avg, max) = (3.000, 4.000, 5.000), stdev = 0.707
+[info]   CI (99.9%): [20.000, 20.000] (assumes normal distribution)
+[info] # JMH version: 1.37
+[info] # VM version: JDK 26.0.2.1, OpenJDK 64-Bit Server VM, 26.0.2.1
+[info] # VM invoker: /opt/homebrew/Cellar/openjdk/26.0.2.1/libexec/openjdk.jdk/Contents/Home/bin/java
+[info] # VM options: <none>
+[info] # Blackhole mode: compiler (auto-detected, use -Djmh.blackhole.autoDetect=false to disable)
+[info] # Warmup: 3 iterations, 500 ms each
+[info] # Measurement: 5 iterations, 500 ms each
+[info] # Timeout: 10 min per iteration
+[info] # Threads: 1 thread, will synchronize iterations
+[info] # Benchmark mode: Average time, time/op
+[info] # Benchmark: trading.benchmark.MarketStateConstructionBenchmark.direct
+[info] # Parameters: (additionalCount = 0, settlement = third)
+[info] # Run progress: 12.50% complete, ETA 00:00:31
+[info] # Fork: 1 of 1
+[info] WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+[info] WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.openjdk.jmh.util.Utils (file:/Users/m/src/money/.worktrees/bind-market-state-construction/target/bg-jobs/sbt_4f00cfd9/target/0a592882/1296d6b9/jmh-core-1.37.jar)
+[info] WARNING: Please consider reporting this to the maintainers of class org.openjdk.jmh.util.Utils
+[info] WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+[info] # Warmup Iteration   1: 1744.378 ns/op
+[info] # Warmup Iteration   2: 927.379 ns/op
+[info] # Warmup Iteration   3: 801.886 ns/op
+[info] Iteration   1: 795.175 ns/op
+[info]                  gc.alloc.rate:      4689.980 MB/sec
+[info]                  gc.alloc.rate.norm: 3912.013 B/op
+[info]                  gc.count:           4.000 counts
+[info]                  gc.time:            3.000 ms
+[info] Iteration   2: 817.551 ns/op
+[info]                  gc.alloc.rate:      4561.874 MB/sec
+[info]                  gc.alloc.rate.norm: 3912.014 B/op
+[info]                  gc.count:           4.000 counts
+[info]                  gc.time:            4.000 ms
+[info] Iteration   3: 802.798 ns/op
+[info]                  gc.alloc.rate:      4645.612 MB/sec
+[info]                  gc.alloc.rate.norm: 3912.014 B/op
+[info]                  gc.count:           5.000 counts
+[info]                  gc.time:            3.000 ms
+[info] Iteration   4: 791.575 ns/op
+[info]                  gc.alloc.rate:      4711.100 MB/sec
+[info]                  gc.alloc.rate.norm: 3912.013 B/op
+[info]                  gc.count:           4.000 counts
+[info]                  gc.time:            3.000 ms
+[info] Iteration   5: 794.926 ns/op
+[info]                  gc.alloc.rate:      4691.526 MB/sec
+[info]                  gc.alloc.rate.norm: 3912.013 B/op
+[info]                  gc.count:           4.000 counts
+[info]                  gc.time:            3.000 ms
+[info] Result "trading.benchmark.MarketStateConstructionBenchmark.direct":
+[info]   800.405 ±(99.9%) 40.158 ns/op [Average]
+[info]   (min, avg, max) = (791.575, 800.405, 817.551), stdev = 10.429
+[info]   CI (99.9%): [760.247, 840.563] (assumes normal distribution)
+[info] Secondary result "trading.benchmark.MarketStateConstructionBenchmark.direct:gc.alloc.rate":
+[info]   4660.018 ±(99.9%) 230.555 MB/sec [Average]
+[info]   (min, avg, max) = (4561.874, 4660.018, 4711.100), stdev = 59.874
+[info]   CI (99.9%): [4429.464, 4890.573] (assumes normal distribution)
+[info] Secondary result "trading.benchmark.MarketStateConstructionBenchmark.direct:gc.alloc.rate.norm":
+[info]   3912.014 ±(99.9%) 0.001 B/op [Average]
+[info]   (min, avg, max) = (3912.013, 3912.014, 3912.014), stdev = 0.001
+[info]   CI (99.9%): [3912.012, 3912.015] (assumes normal distribution)
+[info] Secondary result "trading.benchmark.MarketStateConstructionBenchmark.direct:gc.count":
+[info]   21.000 ±(99.9%) 0.001 counts [Sum]
+[info]   (min, avg, max) = (4.000, 4.200, 5.000), stdev = 0.447
+[info]   CI (99.9%): [21.000, 21.000] (assumes normal distribution)
+[info] Secondary result "trading.benchmark.MarketStateConstructionBenchmark.direct:gc.time":
+[info]   16.000 ±(99.9%) 0.001 ms [Sum]
+[info]   (min, avg, max) = (3.000, 3.200, 4.000), stdev = 0.447
+[info]   CI (99.9%): [16.000, 16.000] (assumes normal distribution)
+[info] # JMH version: 1.37
+[info] # VM version: JDK 26.0.2.1, OpenJDK 64-Bit Server VM, 26.0.2.1
+[info] # VM invoker: /opt/homebrew/Cellar/openjdk/26.0.2.1/libexec/openjdk.jdk/Contents/Home/bin/java
+[info] # VM options: <none>
+[info] # Blackhole mode: compiler (auto-detected, use -Djmh.blackhole.autoDetect=false to disable)
+[info] # Warmup: 3 iterations, 500 ms each
+[info] # Measurement: 5 iterations, 500 ms each
+[info] # Timeout: 10 min per iteration
+[info] # Threads: 1 thread, will synchronize iterations
+[info] # Benchmark mode: Average time, time/op
+[info] # Benchmark: trading.benchmark.MarketStateConstructionBenchmark.direct
+[info] # Parameters: (additionalCount = 1, settlement = quote)
+[info] # Run progress: 25.00% complete, ETA 00:00:27
+[info] # Fork: 1 of 1
+[info] WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+[info] WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.openjdk.jmh.util.Utils (file:/Users/m/src/money/.worktrees/bind-market-state-construction/target/bg-jobs/sbt_4f00cfd9/target/0a592882/1296d6b9/jmh-core-1.37.jar)
+[info] WARNING: Please consider reporting this to the maintainers of class org.openjdk.jmh.util.Utils
+[info] WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+[info] # Warmup Iteration   1: 2294.607 ns/op
+[info] # Warmup Iteration   2: 1022.481 ns/op
+[info] # Warmup Iteration   3: 877.501 ns/op
+[info] Iteration   1: 876.701 ns/op
+[info]                  gc.alloc.rate:      4592.601 MB/sec
+[info]                  gc.alloc.rate.norm: 4224.015 B/op
+[info]                  gc.count:           4.000 counts
+[info]                  gc.time:            3.000 ms
+[info] Iteration   2: 880.265 ns/op
+[info]                  gc.alloc.rate:      4574.525 MB/sec
+[info]                  gc.alloc.rate.norm: 4224.015 B/op
+[info]                  gc.count:           4.000 counts
+[info]                  gc.time:            4.000 ms
+[info] Iteration   3: 891.831 ns/op
+[info]                  gc.alloc.rate:      4515.244 MB/sec
+[info]                  gc.alloc.rate.norm: 4224.015 B/op
+[info]                  gc.count:           4.000 counts
+[info]                  gc.time:            2.000 ms
+[info] Iteration   4: 880.219 ns/op
+[info]                  gc.alloc.rate:      4574.701 MB/sec
+[info]                  gc.alloc.rate.norm: 4224.015 B/op
+[info]                  gc.count:           4.000 counts
+[info]                  gc.time:            3.000 ms
+[info] Iteration   5: 879.031 ns/op
+[info]                  gc.alloc.rate:      4580.958 MB/sec
+[info]                  gc.alloc.rate.norm: 4224.016 B/op
+[info]                  gc.count:           5.000 counts
+[info]                  gc.time:            4.000 ms
+[info] Result "trading.benchmark.MarketStateConstructionBenchmark.direct":
+[info]   881.609 ±(99.9%) 22.696 ns/op [Average]
+[info]   (min, avg, max) = (876.701, 881.609, 891.831), stdev = 5.894
+[info]   CI (99.9%): [858.914, 904.305] (assumes normal distribution)
+[info] Secondary result "trading.benchmark.MarketStateConstructionBenchmark.direct:gc.alloc.rate":
+[info]   4567.606 ±(99.9%) 116.207 MB/sec [Average]
+[info]   (min, avg, max) = (4515.244, 4567.606, 4592.601), stdev = 30.179
+[info]   CI (99.9%): [4451.399, 4683.813] (assumes normal distribution)
+[info] Secondary result "trading.benchmark.MarketStateConstructionBenchmark.direct:gc.alloc.rate.norm":
+[info]   4224.015 ±(99.9%) 0.001 B/op [Average]
+[info]   (min, avg, max) = (4224.015, 4224.015, 4224.016), stdev = 0.001
+[info]   CI (99.9%): [4224.014, 4224.016] (assumes normal distribution)
+[info] Secondary result "trading.benchmark.MarketStateConstructionBenchmark.direct:gc.count":
+[info]   21.000 ±(99.9%) 0.001 counts [Sum]
+[info]   (min, avg, max) = (4.000, 4.200, 5.000), stdev = 0.447
+[info]   CI (99.9%): [21.000, 21.000] (assumes normal distribution)
+[info] Secondary result "trading.benchmark.MarketStateConstructionBenchmark.direct:gc.time":
+[info]   16.000 ±(99.9%) 0.001 ms [Sum]
+[info]   (min, avg, max) = (2.000, 3.200, 4.000), stdev = 0.837
+[info]   CI (99.9%): [16.000, 16.000] (assumes normal distribution)
+[info] # JMH version: 1.37
+[info] # VM version: JDK 26.0.2.1, OpenJDK 64-Bit Server VM, 26.0.2.1
+[info] # VM invoker: /opt/homebrew/Cellar/openjdk/26.0.2.1/libexec/openjdk.jdk/Contents/Home/bin/java
+[info] # VM options: <none>
+[info] # Blackhole mode: compiler (auto-detected, use -Djmh.blackhole.autoDetect=false to disable)
+[info] # Warmup: 3 iterations, 500 ms each
+[info] # Measurement: 5 iterations, 500 ms each
+[info] # Timeout: 10 min per iteration
+[info] # Threads: 1 thread, will synchronize iterations
+[info] # Benchmark mode: Average time, time/op
+[info] # Benchmark: trading.benchmark.MarketStateConstructionBenchmark.direct
+[info] # Parameters: (additionalCount = 1, settlement = third)
+[info] # Run progress: 37.50% complete, ETA 00:00:22
+[info] # Fork: 1 of 1
+[info] WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+[info] WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.openjdk.jmh.util.Utils (file:/Users/m/src/money/.worktrees/bind-market-state-construction/target/bg-jobs/sbt_4f00cfd9/target/0a592882/1296d6b9/jmh-core-1.37.jar)
+[info] WARNING: Please consider reporting this to the maintainers of class org.openjdk.jmh.util.Utils
+[info] WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+[info] # Warmup Iteration   1: 2676.028 ns/op
+[info] # Warmup Iteration   2: 1147.596 ns/op
+[info] # Warmup Iteration   3: 977.491 ns/op
+[info] Iteration   1: 984.571 ns/op
+[info]                  gc.alloc.rate:      4190.645 MB/sec
+[info]                  gc.alloc.rate.norm: 4328.016 B/op
+[info]                  gc.count:           3.000 counts
+[info]                  gc.time:            3.000 ms
+[info] Iteration   2: 989.548 ns/op
+[info]                  gc.alloc.rate:      4166.802 MB/sec
+[info]                  gc.alloc.rate.norm: 4328.017 B/op
+[info]                  gc.count:           4.000 counts
+[info]                  gc.time:            3.000 ms
+[info] Iteration   3: 974.958 ns/op
+[info]                  gc.alloc.rate:      4232.021 MB/sec
+[info]                  gc.alloc.rate.norm: 4328.016 B/op
+[info]                  gc.count:           4.000 counts
+[info]                  gc.time:            3.000 ms
+[info] Iteration   4: 998.911 ns/op
+[info]                  gc.alloc.rate:      4130.621 MB/sec
+[info]                  gc.alloc.rate.norm: 4328.017 B/op
+[info]                  gc.count:           4.000 counts
+[info]                  gc.time:            3.000 ms
+[info] Iteration   5: 974.733 ns/op
+[info]                  gc.alloc.rate:      4232.927 MB/sec
+[info]                  gc.alloc.rate.norm: 4328.016 B/op
+[info]                  gc.count:           4.000 counts
+[info]                  gc.time:            3.000 ms
+[info] Result "trading.benchmark.MarketStateConstructionBenchmark.direct":
+[info]   984.544 ±(99.9%) 39.439 ns/op [Average]
+[info]   (min, avg, max) = (974.733, 984.544, 998.911), stdev = 10.242
+[info]   CI (99.9%): [945.105, 1023.983] (assumes normal distribution)
+[info] Secondary result "trading.benchmark.MarketStateConstructionBenchmark.direct:gc.alloc.rate":
+[info]   4190.603 ±(99.9%) 168.628 MB/sec [Average]
+[info]   (min, avg, max) = (4130.621, 4190.603, 4232.927), stdev = 43.792
+[info]   CI (99.9%): [4021.975, 4359.231] (assumes normal distribution)
+[info] Secondary result "trading.benchmark.MarketStateConstructionBenchmark.direct:gc.alloc.rate.norm":
+[info]   4328.016 ±(99.9%) 0.001 B/op [Average]
+[info]   (min, avg, max) = (4328.016, 4328.016, 4328.017), stdev = 0.001
+[info]   CI (99.9%): [4328.015, 4328.018] (assumes normal distribution)
+[info] Secondary result "trading.benchmark.MarketStateConstructionBenchmark.direct:gc.count":
+[info]   19.000 ±(99.9%) 0.001 counts [Sum]
+[info]   (min, avg, max) = (3.000, 3.800, 4.000), stdev = 0.447
+[info]   CI (99.9%): [19.000, 19.000] (assumes normal distribution)
+[info] Secondary result "trading.benchmark.MarketStateConstructionBenchmark.direct:gc.time":
+[info]   15.000 ±(99.9%) 0.001 ms [Sum]
+[info]   (min, avg, max) = (3.000, 3.000, 3.000), stdev = 0.001
+[info]   CI (99.9%): [15.000, 15.000] (assumes normal distribution)
+[info] # JMH version: 1.37
+[info] # VM version: JDK 26.0.2.1, OpenJDK 64-Bit Server VM, 26.0.2.1
+[info] # VM invoker: /opt/homebrew/Cellar/openjdk/26.0.2.1/libexec/openjdk.jdk/Contents/Home/bin/java
+[info] # VM options: <none>
+[info] # Blackhole mode: compiler (auto-detected, use -Djmh.blackhole.autoDetect=false to disable)
+[info] # Warmup: 3 iterations, 500 ms each
+[info] # Measurement: 5 iterations, 500 ms each
+[info] # Timeout: 10 min per iteration
+[info] # Threads: 1 thread, will synchronize iterations
+[info] # Benchmark mode: Average time, time/op
+[info] # Benchmark: trading.benchmark.MarketStateConstructionBenchmark.reusedScope
+[info] # Parameters: (additionalCount = 0, settlement = quote)
+[info] # Run progress: 50.00% complete, ETA 00:00:17
+[info] # Fork: 1 of 1
+[info] WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+[info] WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.openjdk.jmh.util.Utils (file:/Users/m/src/money/.worktrees/bind-market-state-construction/target/bg-jobs/sbt_4f00cfd9/target/0a592882/1296d6b9/jmh-core-1.37.jar)
+[info] WARNING: Please consider reporting this to the maintainers of class org.openjdk.jmh.util.Utils
+[info] WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+[info] # Warmup Iteration   1: 1686.294 ns/op
+[info] # Warmup Iteration   2: 761.509 ns/op
+[info] # Warmup Iteration   3: 657.462 ns/op
+[info] Iteration   1: 657.812 ns/op
+[info]                  gc.alloc.rate:      5424.905 MB/sec
+[info]                  gc.alloc.rate.norm: 3744.012 B/op
+[info]                  gc.count:           5.000 counts
+[info]                  gc.time:            4.000 ms
+[info] Iteration   2: 657.320 ns/op
+[info]                  gc.alloc.rate:      5430.118 MB/sec
+[info]                  gc.alloc.rate.norm: 3744.012 B/op
+[info]                  gc.count:           5.000 counts
+[info]                  gc.time:            3.000 ms
+[info] Iteration   3: 658.725 ns/op
+[info]                  gc.alloc.rate:      5418.578 MB/sec
+[info]                  gc.alloc.rate.norm: 3744.012 B/op
+[info]                  gc.count:           5.000 counts
+[info]                  gc.time:            4.000 ms
+[info] Iteration   4: 658.177 ns/op
+[info]                  gc.alloc.rate:      5422.928 MB/sec
+[info]                  gc.alloc.rate.norm: 3744.012 B/op
+[info]                  gc.count:           5.000 counts
+[info]                  gc.time:            4.000 ms
+[info] Iteration   5: 694.695 ns/op
+[info]                  gc.alloc.rate:      5137.646 MB/sec
+[info]                  gc.alloc.rate.norm: 3744.012 B/op
+[info]                  gc.count:           5.000 counts
+[info]                  gc.time:            4.000 ms
+[info] Result "trading.benchmark.MarketStateConstructionBenchmark.reusedScope":
+[info]   665.346 ±(99.9%) 63.206 ns/op [Average]
+[info]   (min, avg, max) = (657.320, 665.346, 694.695), stdev = 16.414
+[info]   CI (99.9%): [602.140, 728.552] (assumes normal distribution)
+[info] Secondary result "trading.benchmark.MarketStateConstructionBenchmark.reusedScope:gc.alloc.rate":
+[info]   5366.835 ±(99.9%) 493.604 MB/sec [Average]
+[info]   (min, avg, max) = (5137.646, 5366.835, 5430.118), stdev = 128.188
+[info]   CI (99.9%): [4873.231, 5860.440] (assumes normal distribution)
+[info] Secondary result "trading.benchmark.MarketStateConstructionBenchmark.reusedScope:gc.alloc.rate.norm":
+[info]   3744.012 ±(99.9%) 0.001 B/op [Average]
+[info]   (min, avg, max) = (3744.012, 3744.012, 3744.012), stdev = 0.001
+[info]   CI (99.9%): [3744.011, 3744.013] (assumes normal distribution)
+[info] Secondary result "trading.benchmark.MarketStateConstructionBenchmark.reusedScope:gc.count":
+[info]   25.000 ±(99.9%) 0.001 counts [Sum]
+[info]   (min, avg, max) = (5.000, 5.000, 5.000), stdev = 0.001
+[info]   CI (99.9%): [25.000, 25.000] (assumes normal distribution)
+[info] Secondary result "trading.benchmark.MarketStateConstructionBenchmark.reusedScope:gc.time":
+[info]   19.000 ±(99.9%) 0.001 ms [Sum]
+[info]   (min, avg, max) = (3.000, 3.800, 4.000), stdev = 0.447
+[info]   CI (99.9%): [19.000, 19.000] (assumes normal distribution)
+[info] # JMH version: 1.37
+[info] # VM version: JDK 26.0.2.1, OpenJDK 64-Bit Server VM, 26.0.2.1
+[info] # VM invoker: /opt/homebrew/Cellar/openjdk/26.0.2.1/libexec/openjdk.jdk/Contents/Home/bin/java
+[info] # VM options: <none>
+[info] # Blackhole mode: compiler (auto-detected, use -Djmh.blackhole.autoDetect=false to disable)
+[info] # Warmup: 3 iterations, 500 ms each
+[info] # Measurement: 5 iterations, 500 ms each
+[info] # Timeout: 10 min per iteration
+[info] # Threads: 1 thread, will synchronize iterations
+[info] # Benchmark mode: Average time, time/op
+[info] # Benchmark: trading.benchmark.MarketStateConstructionBenchmark.reusedScope
+[info] # Parameters: (additionalCount = 0, settlement = third)
+[info] # Run progress: 62.50% complete, ETA 00:00:13
+[info] # Fork: 1 of 1
+[info] WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+[info] WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.openjdk.jmh.util.Utils (file:/Users/m/src/money/.worktrees/bind-market-state-construction/target/bg-jobs/sbt_4f00cfd9/target/0a592882/1296d6b9/jmh-core-1.37.jar)
+[info] WARNING: Please consider reporting this to the maintainers of class org.openjdk.jmh.util.Utils
+[info] WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+[info] # Warmup Iteration   1: 1956.731 ns/op
+[info] # Warmup Iteration   2: 960.988 ns/op
+[info] # Warmup Iteration   3: 830.165 ns/op
+[info] Iteration   1: 833.855 ns/op
+[info]                  gc.alloc.rate:      4454.001 MB/sec
+[info]                  gc.alloc.rate.norm: 3896.014 B/op
+[info]                  gc.count:           4.000 counts
+[info]                  gc.time:            4.000 ms
+[info] Iteration   2: 829.827 ns/op
+[info]                  gc.alloc.rate:      4476.060 MB/sec
+[info]                  gc.alloc.rate.norm: 3896.014 B/op
+[info]                  gc.count:           4.000 counts
+[info]                  gc.time:            3.000 ms
+[info] Iteration   3: 832.925 ns/op
+[info]                  gc.alloc.rate:      4459.294 MB/sec
+[info]                  gc.alloc.rate.norm: 3896.014 B/op
+[info]                  gc.count:           4.000 counts
+[info]                  gc.time:            3.000 ms
+[info] Iteration   4: 831.464 ns/op
+[info]                  gc.alloc.rate:      4467.306 MB/sec
+[info]                  gc.alloc.rate.norm: 3896.014 B/op
+[info]                  gc.count:           4.000 counts
+[info]                  gc.time:            3.000 ms
+[info] Iteration   5: 832.556 ns/op
+[info]                  gc.alloc.rate:      4461.028 MB/sec
+[info]                  gc.alloc.rate.norm: 3896.014 B/op
+[info]                  gc.count:           4.000 counts
+[info]                  gc.time:            3.000 ms
+[info] Result "trading.benchmark.MarketStateConstructionBenchmark.reusedScope":
+[info]   832.125 ±(99.9%) 5.946 ns/op [Average]
+[info]   (min, avg, max) = (829.827, 832.125, 833.855), stdev = 1.544
+[info]   CI (99.9%): [826.179, 838.071] (assumes normal distribution)
+[info] Secondary result "trading.benchmark.MarketStateConstructionBenchmark.reusedScope:gc.alloc.rate":
+[info]   4463.538 ±(99.9%) 32.575 MB/sec [Average]
+[info]   (min, avg, max) = (4454.001, 4463.538, 4476.060), stdev = 8.460
+[info]   CI (99.9%): [4430.963, 4496.113] (assumes normal distribution)
+[info] Secondary result "trading.benchmark.MarketStateConstructionBenchmark.reusedScope:gc.alloc.rate.norm":
+[info]   3896.014 ±(99.9%) 0.001 B/op [Average]
+[info]   (min, avg, max) = (3896.014, 3896.014, 3896.014), stdev = 0.001
+[info]   CI (99.9%): [3896.013, 3896.015] (assumes normal distribution)
+[info] Secondary result "trading.benchmark.MarketStateConstructionBenchmark.reusedScope:gc.count":
+[info]   20.000 ±(99.9%) 0.001 counts [Sum]
+[info]   (min, avg, max) = (4.000, 4.000, 4.000), stdev = 0.001
+[info]   CI (99.9%): [20.000, 20.000] (assumes normal distribution)
+[info] Secondary result "trading.benchmark.MarketStateConstructionBenchmark.reusedScope:gc.time":
+[info]   16.000 ±(99.9%) 0.001 ms [Sum]
+[info]   (min, avg, max) = (3.000, 3.200, 4.000), stdev = 0.447
+[info]   CI (99.9%): [16.000, 16.000] (assumes normal distribution)
+[info] # JMH version: 1.37
+[info] # VM version: JDK 26.0.2.1, OpenJDK 64-Bit Server VM, 26.0.2.1
+[info] # VM invoker: /opt/homebrew/Cellar/openjdk/26.0.2.1/libexec/openjdk.jdk/Contents/Home/bin/java
+[info] # VM options: <none>
+[info] # Blackhole mode: compiler (auto-detected, use -Djmh.blackhole.autoDetect=false to disable)
+[info] # Warmup: 3 iterations, 500 ms each
+[info] # Measurement: 5 iterations, 500 ms each
+[info] # Timeout: 10 min per iteration
+[info] # Threads: 1 thread, will synchronize iterations
+[info] # Benchmark mode: Average time, time/op
+[info] # Benchmark: trading.benchmark.MarketStateConstructionBenchmark.reusedScope
+[info] # Parameters: (additionalCount = 1, settlement = quote)
+[info] # Run progress: 75.00% complete, ETA 00:00:08
+[info] # Fork: 1 of 1
+[info] WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+[info] WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.openjdk.jmh.util.Utils (file:/Users/m/src/money/.worktrees/bind-market-state-construction/target/bg-jobs/sbt_4f00cfd9/target/0a592882/1296d6b9/jmh-core-1.37.jar)
+[info] WARNING: Please consider reporting this to the maintainers of class org.openjdk.jmh.util.Utils
+[info] WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+[info] # Warmup Iteration   1: 2489.556 ns/op
+[info] # Warmup Iteration   2: 1021.785 ns/op
+[info] # Warmup Iteration   3: 867.968 ns/op
+[info] Iteration   1: 861.877 ns/op
+[info]                  gc.alloc.rate:      4547.985 MB/sec
+[info]                  gc.alloc.rate.norm: 4112.015 B/op
+[info]                  gc.count:           4.000 counts
+[info]                  gc.time:            4.000 ms
+[info] Iteration   2: 865.193 ns/op
+[info]                  gc.alloc.rate:      4530.574 MB/sec
+[info]                  gc.alloc.rate.norm: 4112.015 B/op
+[info]                  gc.count:           4.000 counts
+[info]                  gc.time:            3.000 ms
+[info] Iteration   3: 863.857 ns/op
+[info]                  gc.alloc.rate:      4537.477 MB/sec
+[info]                  gc.alloc.rate.norm: 4112.015 B/op
+[info]                  gc.count:           4.000 counts
+[info]                  gc.time:            3.000 ms
+[info] Iteration   4: 867.583 ns/op
+[info]                  gc.alloc.rate:      4518.348 MB/sec
+[info]                  gc.alloc.rate.norm: 4112.015 B/op
+[info]                  gc.count:           5.000 counts
+[info]                  gc.time:            4.000 ms
+[info] Iteration   5: 865.526 ns/op
+[info]                  gc.alloc.rate:      4529.035 MB/sec
+[info]                  gc.alloc.rate.norm: 4112.015 B/op
+[info]                  gc.count:           4.000 counts
+[info]                  gc.time:            3.000 ms
+[info] Result "trading.benchmark.MarketStateConstructionBenchmark.reusedScope":
+[info]   864.807 ±(99.9%) 8.136 ns/op [Average]
+[info]   (min, avg, max) = (861.877, 864.807, 867.583), stdev = 2.113
+[info]   CI (99.9%): [856.671, 872.943] (assumes normal distribution)
+[info] Secondary result "trading.benchmark.MarketStateConstructionBenchmark.reusedScope:gc.alloc.rate":
+[info]   4532.684 ±(99.9%) 42.198 MB/sec [Average]
+[info]   (min, avg, max) = (4518.348, 4532.684, 4547.985), stdev = 10.959
+[info]   CI (99.9%): [4490.486, 4574.882] (assumes normal distribution)
+[info] Secondary result "trading.benchmark.MarketStateConstructionBenchmark.reusedScope:gc.alloc.rate.norm":
+[info]   4112.015 ±(99.9%) 0.001 B/op [Average]
+[info]   (min, avg, max) = (4112.015, 4112.015, 4112.015), stdev = 0.001
+[info]   CI (99.9%): [4112.014, 4112.016] (assumes normal distribution)
+[info] Secondary result "trading.benchmark.MarketStateConstructionBenchmark.reusedScope:gc.count":
+[info]   21.000 ±(99.9%) 0.001 counts [Sum]
+[info]   (min, avg, max) = (4.000, 4.200, 5.000), stdev = 0.447
+[info]   CI (99.9%): [21.000, 21.000] (assumes normal distribution)
+[info] Secondary result "trading.benchmark.MarketStateConstructionBenchmark.reusedScope:gc.time":
+[info]   17.000 ±(99.9%) 0.001 ms [Sum]
+[info]   (min, avg, max) = (3.000, 3.400, 4.000), stdev = 0.548
+[info]   CI (99.9%): [17.000, 17.000] (assumes normal distribution)
+[info] # JMH version: 1.37
+[info] # VM version: JDK 26.0.2.1, OpenJDK 64-Bit Server VM, 26.0.2.1
+[info] # VM invoker: /opt/homebrew/Cellar/openjdk/26.0.2.1/libexec/openjdk.jdk/Contents/Home/bin/java
+[info] # VM options: <none>
+[info] # Blackhole mode: compiler (auto-detected, use -Djmh.blackhole.autoDetect=false to disable)
+[info] # Warmup: 3 iterations, 500 ms each
+[info] # Measurement: 5 iterations, 500 ms each
+[info] # Timeout: 10 min per iteration
+[info] # Threads: 1 thread, will synchronize iterations
+[info] # Benchmark mode: Average time, time/op
+[info] # Benchmark: trading.benchmark.MarketStateConstructionBenchmark.reusedScope
+[info] # Parameters: (additionalCount = 1, settlement = third)
+[info] # Run progress: 87.50% complete, ETA 00:00:04
+[info] # Fork: 1 of 1
+[info] WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+[info] WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.openjdk.jmh.util.Utils (file:/Users/m/src/money/.worktrees/bind-market-state-construction/target/bg-jobs/sbt_4f00cfd9/target/0a592882/1296d6b9/jmh-core-1.37.jar)
+[info] WARNING: Please consider reporting this to the maintainers of class org.openjdk.jmh.util.Utils
+[info] WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+[info] # Warmup Iteration   1: 2527.136 ns/op
+[info] # Warmup Iteration   2: 1128.832 ns/op
+[info] # Warmup Iteration   3: 967.458 ns/op
+[info] Iteration   1: 963.335 ns/op
+[info]                  gc.alloc.rate:      4314.181 MB/sec
+[info]                  gc.alloc.rate.norm: 4360.016 B/op
+[info]                  gc.count:           4.000 counts
+[info]                  gc.time:            3.000 ms
+[info] Iteration   2: 968.883 ns/op
+[info]                  gc.alloc.rate:      4289.850 MB/sec
+[info]                  gc.alloc.rate.norm: 4360.016 B/op
+[info]                  gc.count:           4.000 counts
+[info]                  gc.time:            3.000 ms
+[info] Iteration   3: 962.264 ns/op
+[info]                  gc.alloc.rate:      4319.504 MB/sec
+[info]                  gc.alloc.rate.norm: 4360.016 B/op
+[info]                  gc.count:           3.000 counts
+[info]                  gc.time:            2.000 ms
+[info] Iteration   4: 967.570 ns/op
+[info]                  gc.alloc.rate:      4296.109 MB/sec
+[info]                  gc.alloc.rate.norm: 4360.017 B/op
+[info]                  gc.count:           5.000 counts
+[info]                  gc.time:            4.000 ms
+[info] Iteration   5: 963.952 ns/op
+[info]                  gc.alloc.rate:      4311.684 MB/sec
+[info]                  gc.alloc.rate.norm: 4360.016 B/op
+[info]                  gc.count:           4.000 counts
+[info]                  gc.time:            3.000 ms
+[info] Result "trading.benchmark.MarketStateConstructionBenchmark.reusedScope":
+[info]   965.201 ±(99.9%) 11.032 ns/op [Average]
+[info]   (min, avg, max) = (962.264, 965.201, 968.883), stdev = 2.865
+[info]   CI (99.9%): [954.169, 976.233] (assumes normal distribution)
+[info] Secondary result "trading.benchmark.MarketStateConstructionBenchmark.reusedScope:gc.alloc.rate":
+[info]   4306.265 ±(99.9%) 48.703 MB/sec [Average]
+[info]   (min, avg, max) = (4289.850, 4306.265, 4319.504), stdev = 12.648
+[info]   CI (99.9%): [4257.563, 4354.968] (assumes normal distribution)
+[info] Secondary result "trading.benchmark.MarketStateConstructionBenchmark.reusedScope:gc.alloc.rate.norm":
+[info]   4360.016 ±(99.9%) 0.002 B/op [Average]
+[info]   (min, avg, max) = (4360.016, 4360.016, 4360.017), stdev = 0.001
+[info]   CI (99.9%): [4360.014, 4360.018] (assumes normal distribution)
+[info] Secondary result "trading.benchmark.MarketStateConstructionBenchmark.reusedScope:gc.count":
+[info]   20.000 ±(99.9%) 0.001 counts [Sum]
+[info]   (min, avg, max) = (3.000, 4.000, 5.000), stdev = 0.707
+[info]   CI (99.9%): [20.000, 20.000] (assumes normal distribution)
+[info] Secondary result "trading.benchmark.MarketStateConstructionBenchmark.reusedScope:gc.time":
+[info]   15.000 ±(99.9%) 0.001 ms [Sum]
+[info]   (min, avg, max) = (2.000, 3.000, 4.000), stdev = 0.707
+[info]   CI (99.9%): [15.000, 15.000] (assumes normal distribution)
+[info] # Run complete. Total time: 00:00:35
+[info] REMEMBER: The numbers below are just data. To gain reusable insights, you need to follow up on
+[info] why the numbers are the way they are. Use profilers (see -prof, -lprof), design factorial
+[info] experiments, perform baseline and negative tests that provide experimental control, make sure
+[info] the benchmarking environment is safe on JVM/OS/HW level, ask for reviews from the domain experts.
+[info] Do not assume the numbers tell you what you want them to tell.
+[info] NOTE: Current JVM experimentally supports Compiler Blackholes, and they are in use. Please exercise
+[info] extra caution when trusting the results, look into the generated code to check the benchmark still
+[info] works, and factor in a small probability of new VM bugs. Additionally, while comparisons between
+[info] different JVMs are already problematic, the performance difference caused by different Blackhole
+[info] modes can be very significant. Please make sure you use the consistent Blackhole mode for comparisons.
+[info] Benchmark                                                        (additionalCount)  (settlement)  Mode  Cnt     Score     Error   Units
+[info] MarketStateConstructionBenchmark.direct                                          0         quote  avgt    5   711.800 ±   9.590   ns/op
+[info] MarketStateConstructionBenchmark.direct:gc.alloc.rate                            0         quote  avgt    5  5046.445 ±  67.399  MB/sec
+[info] MarketStateConstructionBenchmark.direct:gc.alloc.rate.norm                       0         quote  avgt    5  3768.013 ±   0.001    B/op
+[info] MarketStateConstructionBenchmark.direct:gc.count                                 0         quote  avgt    5    26.000            counts
+[info] MarketStateConstructionBenchmark.direct:gc.time                                  0         quote  avgt    5    20.000                ms
+[info] MarketStateConstructionBenchmark.direct                                          0         third  avgt    5   800.405 ±  40.158   ns/op
+[info] MarketStateConstructionBenchmark.direct:gc.alloc.rate                            0         third  avgt    5  4660.018 ± 230.555  MB/sec
+[info] MarketStateConstructionBenchmark.direct:gc.alloc.rate.norm                       0         third  avgt    5  3912.014 ±   0.001    B/op
+[info] MarketStateConstructionBenchmark.direct:gc.count                                 0         third  avgt    5    21.000            counts
+[info] MarketStateConstructionBenchmark.direct:gc.time                                  0         third  avgt    5    16.000                ms
+[info] MarketStateConstructionBenchmark.direct                                          1         quote  avgt    5   881.609 ±  22.696   ns/op
+[info] MarketStateConstructionBenchmark.direct:gc.alloc.rate                            1         quote  avgt    5  4567.606 ± 116.207  MB/sec
+[info] MarketStateConstructionBenchmark.direct:gc.alloc.rate.norm                       1         quote  avgt    5  4224.015 ±   0.001    B/op
+[info] MarketStateConstructionBenchmark.direct:gc.count                                 1         quote  avgt    5    21.000            counts
+[info] MarketStateConstructionBenchmark.direct:gc.time                                  1         quote  avgt    5    16.000                ms
+[info] MarketStateConstructionBenchmark.direct                                          1         third  avgt    5   984.544 ±  39.439   ns/op
+[info] MarketStateConstructionBenchmark.direct:gc.alloc.rate                            1         third  avgt    5  4190.603 ± 168.628  MB/sec
+[info] MarketStateConstructionBenchmark.direct:gc.alloc.rate.norm                       1         third  avgt    5  4328.016 ±   0.001    B/op
+[info] MarketStateConstructionBenchmark.direct:gc.count                                 1         third  avgt    5    19.000            counts
+[info] MarketStateConstructionBenchmark.direct:gc.time                                  1         third  avgt    5    15.000                ms
+[info] MarketStateConstructionBenchmark.reusedScope                                     0         quote  avgt    5   665.346 ±  63.206   ns/op
+[info] MarketStateConstructionBenchmark.reusedScope:gc.alloc.rate                       0         quote  avgt    5  5366.835 ± 493.604  MB/sec
+[info] MarketStateConstructionBenchmark.reusedScope:gc.alloc.rate.norm                  0         quote  avgt    5  3744.012 ±   0.001    B/op
+[info] MarketStateConstructionBenchmark.reusedScope:gc.count                            0         quote  avgt    5    25.000            counts
+[info] MarketStateConstructionBenchmark.reusedScope:gc.time                             0         quote  avgt    5    19.000                ms
+[info] MarketStateConstructionBenchmark.reusedScope                                     0         third  avgt    5   832.125 ±   5.946   ns/op
+[info] MarketStateConstructionBenchmark.reusedScope:gc.alloc.rate                       0         third  avgt    5  4463.538 ±  32.575  MB/sec
+[info] MarketStateConstructionBenchmark.reusedScope:gc.alloc.rate.norm                  0         third  avgt    5  3896.014 ±   0.001    B/op
+[info] MarketStateConstructionBenchmark.reusedScope:gc.count                            0         third  avgt    5    20.000            counts
+[info] MarketStateConstructionBenchmark.reusedScope:gc.time                             0         third  avgt    5    16.000                ms
+[info] MarketStateConstructionBenchmark.reusedScope                                     1         quote  avgt    5   864.807 ±   8.136   ns/op
+[info] MarketStateConstructionBenchmark.reusedScope:gc.alloc.rate                       1         quote  avgt    5  4532.684 ±  42.198  MB/sec
+[info] MarketStateConstructionBenchmark.reusedScope:gc.alloc.rate.norm                  1         quote  avgt    5  4112.015 ±   0.001    B/op
+[info] MarketStateConstructionBenchmark.reusedScope:gc.count                            1         quote  avgt    5    21.000            counts
+[info] MarketStateConstructionBenchmark.reusedScope:gc.time                             1         quote  avgt    5    17.000                ms
+[info] MarketStateConstructionBenchmark.reusedScope                                     1         third  avgt    5   965.201 ±  11.032   ns/op
+[info] MarketStateConstructionBenchmark.reusedScope:gc.alloc.rate                       1         third  avgt    5  4306.265 ±  48.703  MB/sec
+[info] MarketStateConstructionBenchmark.reusedScope:gc.alloc.rate.norm                  1         third  avgt    5  4360.016 ±   0.002    B/op
+[info] MarketStateConstructionBenchmark.reusedScope:gc.count                            1         third  avgt    5    20.000            counts
+[info] MarketStateConstructionBenchmark.reusedScope:gc.time                             1         third  avgt    5    15.000                ms
+[success] Total time: 36 s, completed Sep 4, 2026, 11:50:00 PM

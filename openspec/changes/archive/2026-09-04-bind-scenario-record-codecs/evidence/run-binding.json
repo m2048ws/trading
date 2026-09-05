@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 3,
+  "changeName": "bind-scenario-record-codecs",
+  "runId": "run-293dbbc0-3b95-49ff-9ab8-826ece5d44a7",
+  "finalRevision": "fa010240f300abf02ccd0c13b24253674c8d6f35",
+  "planningRevision": "sha256:3b41082b634f9a9dad638aff39276756523aded846256d9b42492e22813a58bb",
+  "contract": {
+    "kind": "rfc-slice",
+    "deliveryRef": "RFC-0008-simplify-instrument-dependent-apis/S-04-bind-scenario-record-codecs",
+    "rfcId": "RFC-0008-simplify-instrument-dependent-apis",
+    "rfcDigest": "sha256:77e1c4ac3d7629334f86695e07ffaf835549c5e0e05612314f0ca193e42139f3",
+    "acceptedCommit": "bf457296faa7d29aec0840a7e8f48d41ed0f7491",
+    "sliceId": "S-04-bind-scenario-record-codecs",
+    "sourcePath": "openspec/changes/bind-scenario-record-codecs/corgi/source.yaml",
+    "sourceDigest": "sha256:ed1e07a7dbeb06ac490bba7fe7fe7cd9de7e393bccb37d2db710b6a62119793a",
+    "traceabilityPath": "openspec/changes/bind-scenario-record-codecs/corgi/traceability.yaml",
+    "traceabilityDigest": "sha256:9a01e14f918d7433e9cae1d044413a36bba7821e2cc44e9e61f928230ff90fd8",
+    "acceptance": [
+      {
+        "id": "AC-012",
+        "evidence": "automated",
+        "taskGroups": [
+          "1"
+        ]
+      },
+      {
+        "id": "AC-013",
+        "evidence": "automated",
+        "taskGroups": [
+          "1"
+        ]
+      },
+      {
+        "id": "AC-014",
+        "evidence": "automated",
+        "taskGroups": [
+          "1"
+        ]
+      },
+      {
+        "id": "AC-015",
+        "evidence": "automated",
+        "taskGroups": [
+          "1"
+        ]
+      },
+      {
+        "id": "AC-016",
+        "evidence": "automated",
+        "taskGroups": [
+          "1"
+        ]
+      }
+    ],
+    "tracker": {
+      "provider": "github",
+      "idempotencyKey": "262f787edea20d6a86be068a39522fcc02395d868d0af63328a07797ba1dd308",
+      "issue": {
+        "id": "59",
+        "url": "https://github.com/m2048ws/trading/issues/59"
+      }
+    }
+  },
+  "archiveIntentId": "archive-b4f9caec-2f19-4aff-aad9-b42f299dbbae"
+}

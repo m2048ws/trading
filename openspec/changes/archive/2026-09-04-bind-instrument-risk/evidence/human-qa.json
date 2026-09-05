@@ -1,0 +1,18 @@
+{
+  "verdict": "skipped",
+  "reviewer": "m2048ws",
+  "reason": "The human requester explicitly directed Human QA to be skipped and approved this no-runtime-impact rationale. The verified delivery changes only the pure risk-library convenience API: its immutable instrument-bound scope delegates to existing checked operations and adds no runnable application/runtime interpreter, service, UI, API, CLI, live-data, or wire-format user path. All Slice acceptance criteria require automated evidence only.",
+  "noRuntimeImpact": true,
+  "finalRevision": "819a4c8dc3fc601655790a512ad24df2df7aee91",
+  "planningRevision": "sha256:53448d9f2f8a5104643a82456824a1e6cca2da96556c0f51e7282d82c1cd2b78",
+  "reportHash": "sha256:0e4c014ef2e1e5c56dc5ae8143282ae43ada670ade53ff0e72c9fba81ecf2208",
+  "acceptance": [],
+  "evidenceRefs": [
+    "file:risk%2Fsrc%2Fmain%2Fscala%2Ftrading%2Frisk%2FRisk.scala#sha256:ff46a9fa93df61f52c397e2c4f9cbf6e8c9cb121f8026335f55581a63bfd7221",
+    "file:risk%2Fsrc%2Ftest%2Fscala%2Ftrading%2Frisk%2FRiskInstrumentScopeSuite.scala#sha256:eed28ba67c16b6c92435c2ce7cf9c20e8e899cd2592c8ef1dade7282ce81bded",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Frisk-compiler%2Fpositive%2FRiskInstrumentScopeClient.scala#sha256:ae2e94ad40bde3c450d1cf7531192dce86707477b8975ae20d9313a3c936df53",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Frisk-compiler%2Fnegative%2FRiskInstrumentScopeMismatch.scala#sha256:63f44ea83fe72454b411ae468c98f59f981f89aa12d2704b3823be280f82fd80",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FRiskCompilerBoundarySuite.scala#sha256:a81602943cad15bf19922e1cc472d4de0f126f0576daeed7e3e336a72e37adaa"
+  ],
+  "reviewedAt": "2026-09-04T20:05:33.178Z"
+}

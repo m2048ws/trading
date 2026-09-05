@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 3,
+  "changeName": "bind-market-state-construction",
+  "runId": "run-4874b9a2-be9a-4d0d-8a20-b391ae7a185b",
+  "finalRevision": "7012636e9ff868ec14daa1be58c0cc59ac426b67",
+  "planningRevision": "sha256:d71b55691b5e80ce8f028afe42202975d786dabf515eebc33b2d930a83c60827",
+  "contract": {
+    "kind": "rfc-slice",
+    "deliveryRef": "RFC-0008-simplify-instrument-dependent-apis/S-06-bind-market-state-construction",
+    "rfcId": "RFC-0008-simplify-instrument-dependent-apis",
+    "rfcDigest": "sha256:77e1c4ac3d7629334f86695e07ffaf835549c5e0e05612314f0ca193e42139f3",
+    "acceptedCommit": "bf457296faa7d29aec0840a7e8f48d41ed0f7491",
+    "sliceId": "S-06-bind-market-state-construction",
+    "sourcePath": "openspec/changes/bind-market-state-construction/corgi/source.yaml",
+    "sourceDigest": "sha256:7228b2dcc47996a30649f1192bf82b83a696dacc62686de4ab86fffbe432c0ae",
+    "traceabilityPath": "openspec/changes/bind-market-state-construction/corgi/traceability.yaml",
+    "traceabilityDigest": "sha256:48f87427d1fb0087946a8d66eea30fcaee5a1f24a3c33d3d8de0c79e9c306c78",
+    "acceptance": [
+      {
+        "id": "AC-022",
+        "evidence": "automated",
+        "taskGroups": [
+          "1"
+        ]
+      },
+      {
+        "id": "AC-023",
+        "evidence": "automated",
+        "taskGroups": [
+          "1"
+        ]
+      },
+      {
+        "id": "AC-024",
+        "evidence": "automated",
+        "taskGroups": [
+          "1"
+        ]
+      },
+      {
+        "id": "AC-025",
+        "evidence": "automated",
+        "taskGroups": [
+          "1"
+        ]
+      }
+    ],
+    "tracker": {
+      "provider": "github",
+      "idempotencyKey": "0278b383657b8c7e5345145d2b0c103640d79983db46494c11e0cf81c0dda367",
+      "issue": {
+        "id": "63",
+        "url": "https://github.com/m2048ws/trading/issues/63"
+      }
+    }
+  },
+  "archiveIntentId": "archive-0d956391-aa2b-43c0-b464-3840ff409675"
+}

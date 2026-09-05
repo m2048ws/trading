@@ -1,0 +1,18 @@
+{
+  "verdict": "skipped",
+  "reviewer": "requesting-user",
+  "reason": "The human requester explicitly directed Human QA to be skipped. The verified delivery changes only the pure execution-lifecycle library construction API: its immutable lifecycle-bound SourceFact scope delegates to existing checked constructors and adds no application/runtime interpreter, service, UI, API, CLI, live-catalog, or wire-format user path. All Slice acceptance criteria require automated evidence only.",
+  "noRuntimeImpact": true,
+  "finalRevision": "ad69a9adf84eb56a80a5e09d07da1e487502530a",
+  "planningRevision": "sha256:9f9819e1e62fef4ad282579ea4e3d376b69068d3c2bde3be4ecffbedd47bbc2c",
+  "reportHash": "sha256:b8c42db36b393f00e8213a6a57b5bac95be987827cef8f564a8ec073143b8e07",
+  "acceptance": [],
+  "evidenceRefs": [
+    "file:execution-lifecycle%2Fsrc%2Fmain%2Fscala%2Ftrading%2Fexecution%2FSourceFacts.scala#sha256:f59e9d5cd97fe7d6a8f28ab57b9b450b8642fdbec8f80266cebddadd7c660fd4",
+    "file:execution-lifecycle%2Fsrc%2Ftest%2Fscala%2Ftrading%2Fexecution%2FSourceFactScopeSuite.scala#sha256:ee2ac9a4a7dfd72d5235e1342a26644d2aa876216141ac8f2bcf3efb2e55419c",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fexecution-lifecycle-compiler%2Fpositive%2FLifecycleSourceFactScopeClient.scala#sha256:19ee7cfedada2b5903c469beb9f177d01d6a2ab3a992c54f43b31428c160d1d3",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fresources%2Fexecution-lifecycle-compiler%2Fnegative%2FLifecycleSourceFactScopeMismatch.scala#sha256:0b71242c80c2d0b6b84424bb8efdf216b8f2d08b1decb3374048dd01e2378509",
+    "file:adversarial-boundary%2Fsrc%2Ftest%2Fscala%2Fexternal%2FExecutionLifecycleCompilerBoundarySuite.scala#sha256:6e97cd6638a4420cb4403963a5892e3f367f91700bea8a038bd7f4e6f3bdfcdb"
+  ],
+  "reviewedAt": "2026-09-04T15:05:54.664Z"
+}

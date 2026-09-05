@@ -37,6 +37,11 @@ Add an entry only after a human accepts it or a verified delivery proves it. Eve
 - [[wiki/deliveries/RFC-0005-simplify-post-trust-boundary-S-04-use-scala-first-quantity-and-reference-data|RFC-0005-simplify-post-trust-boundary/S-04-use-scala-first-quantity-and-reference-data]] — verified by sha256:95f7a7ae69b6481f23ea39097a3533e1ad73ee57563f054d6581379a78567432
 - [[wiki/deliveries/RFC-0005-simplify-post-trust-boundary-S-05-remove-java-api-compatibility|RFC-0005-simplify-post-trust-boundary/S-05-remove-java-api-compatibility]] — verified by sha256:60fca10695ecec821f321730ede792e35d7310ca94e497504462a719c001b84b
 - [[wiki/deliveries/RFC-0008-simplify-instrument-dependent-apis-S-01-name-instrument-dimensions|RFC-0008-simplify-instrument-dependent-apis/S-01-name-instrument-dimensions]] — verified by sha256:f51be78a9c5b67c22ac29adfeebbb80bdbddd712d4c29f51933da3fbad945e3f
+- [[wiki/deliveries/RFC-0008-simplify-instrument-dependent-apis-S-02-bind-standard-order-construction|RFC-0008-simplify-instrument-dependent-apis/S-02-bind-standard-order-construction]] — verified by sha256:e0cb40a5a2bbfb4b3c5ae954d21e7be212433eab7114ed6adbfd81038d228a35
+- [[wiki/deliveries/RFC-0008-simplify-instrument-dependent-apis-S-03-bind-source-fact-construction|RFC-0008-simplify-instrument-dependent-apis/S-03-bind-source-fact-construction]] — verified by sha256:336f9805040785ac5aea98745d63ded1121da6e23cab778dd0de44d489250a9e
+- [[wiki/deliveries/RFC-0008-simplify-instrument-dependent-apis-S-04-bind-scenario-record-codecs|RFC-0008-simplify-instrument-dependent-apis/S-04-bind-scenario-record-codecs]] — verified by sha256:db11f417b9b2b52e876c9e618045c0ea2bac19033a63d234ad7cb44c75c8f1f9
+- [[wiki/deliveries/RFC-0008-simplify-instrument-dependent-apis-S-05-bind-instrument-risk|RFC-0008-simplify-instrument-dependent-apis/S-05-bind-instrument-risk]] — verified by sha256:a512c2e68318d9b39f26cb899009f9d524de936ec6d6bbb2151c910f78fb3f5b
+- [[wiki/deliveries/RFC-0008-simplify-instrument-dependent-apis-S-06-bind-market-state-construction|RFC-0008-simplify-instrument-dependent-apis/S-06-bind-market-state-construction]] — verified by sha256:bb970e1c554cb05bb7dee15c534853753af47e55c5339d4c6aefb796b290c36c
 <!-- corgi:managed:end verified-deliveries -->
 
 ## Working Preferences

@@ -35,6 +35,11 @@ pinned: true
 - [[wiki/deliveries/RFC-0005-simplify-post-trust-boundary-S-05-remove-java-api-compatibility|RFC-0005-simplify-post-trust-boundary/S-05-remove-java-api-compatibility]]
 - [[wiki/deliveries/RFC-0005-simplify-post-trust-boundary-S-04-use-scala-first-quantity-and-reference-data|RFC-0005-simplify-post-trust-boundary/S-04-use-scala-first-quantity-and-reference-data]]
 - [[wiki/deliveries/RFC-0008-simplify-instrument-dependent-apis-S-01-name-instrument-dimensions|RFC-0008-simplify-instrument-dependent-apis/S-01-name-instrument-dimensions]]
+- [[wiki/deliveries/RFC-0008-simplify-instrument-dependent-apis-S-02-bind-standard-order-construction|RFC-0008-simplify-instrument-dependent-apis/S-02-bind-standard-order-construction]]
+- [[wiki/deliveries/RFC-0008-simplify-instrument-dependent-apis-S-03-bind-source-fact-construction|RFC-0008-simplify-instrument-dependent-apis/S-03-bind-source-fact-construction]]
+- [[wiki/deliveries/RFC-0008-simplify-instrument-dependent-apis-S-04-bind-scenario-record-codecs|RFC-0008-simplify-instrument-dependent-apis/S-04-bind-scenario-record-codecs]]
+- [[wiki/deliveries/RFC-0008-simplify-instrument-dependent-apis-S-05-bind-instrument-risk|RFC-0008-simplify-instrument-dependent-apis/S-05-bind-instrument-risk]]
+- [[wiki/deliveries/RFC-0008-simplify-instrument-dependent-apis-S-06-bind-market-state-construction|RFC-0008-simplify-instrument-dependent-apis/S-06-bind-market-state-construction]]
 <!-- corgi:managed:end recently-shipped -->
 
 ## Research Queue
