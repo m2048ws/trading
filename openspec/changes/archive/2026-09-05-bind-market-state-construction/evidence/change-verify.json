@@ -1,0 +1,211 @@
+{
+  "verdict": "pass",
+  "finalRevision": "7012636e9ff868ec14daa1be58c0cc59ac426b67",
+  "planningRevision": "sha256:d71b55691b5e80ce8f028afe42202975d786dabf515eebc33b2d930a83c60827",
+  "sourceDigest": "sha256:7228b2dcc47996a30649f1192bf82b83a696dacc62686de4ab86fffbe432c0ae",
+  "traceabilityDigest": "sha256:48f87427d1fb0087946a8d66eea30fcaee5a1f24a3c33d3d8de0c79e9c306c78",
+  "reportHash": "sha256:7db5ce2cfaf1998048cfc21019173a6eeaeebae3f42721c36dfce67ef4b90e9f",
+  "checks": [
+    {
+      "name": "Frozen final HEAD, completed Task Group, and exact source binding",
+      "command": "git status --porcelain; git rev-parse HEAD; corgispec status bind-market-state-construction --json",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "Clean final acknowledged HEAD 7012636e9ff868ec14daa1be58c0cc59ac426b67; Group 1 complete; awaiting_verify revision 2; accepted RFC commit, single Issue 63, planning/source/traceability digests and workspace fingerprint all match the retained Apply handoff.",
+      "evidenceRefs": [
+        "file:target%2Fcorgi-evidence%2Fs06-verify%2Fbinding-and-tracker.json#sha256:0eb8ce9b6f2613daa968d7b6ff642f2ba33f3b2bbe27c63621e2685a1373e1e9",
+        "file:target%2Fcorgi-evidence%2Fs06-verify%2Fsource-review.json#sha256:b2d70601772ce3b4ef252893b8b0cd9e6731cf3679f52df01af451e643c898c7"
+      ]
+    },
+    {
+      "name": "Strict planning and provenance readiness",
+      "command": "corgispec ready bind-market-state-construction --strict --json",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "All twelve checks pass, including exact AC-to-planning-anchor-to-Task-Group traceability, RFC acceptance, source provenance and canonical Archive delta compatibility.",
+      "evidenceRefs": [
+        "file:target%2Fcorgi-evidence%2Fs06-verify%2Fready.json#sha256:a9463ef55d1e400ddb9b6e7ba8686fb59b0c0edc86874eef8db29649fc0873b0"
+      ]
+    },
+    {
+      "name": "Clean full-project formatting, build, test and benchmark compilation",
+      "command": "sbt -batch scalafmtCheckAll scalafmtSbtCheck clean test benchmarks/Jmh/compile \"benchmarks/Jmh/run -wi 3 -w 500ms -i 5 -r 500ms -f 1 -t 1 -prof gc .*MarketStateConstructionBenchmark.*\"",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "Fresh whole-project clean gate passed with 1084 tests in 12 modules, including interpreter contracts, concurrency, codec/integration and compiler boundaries. Host JDK 26.0.2.1; Java --release 25 and Scala -release 25; Scala 3.8.4 and SBT 1.12.15.",
+      "evidenceRefs": [
+        "file:target%2Fcorgi-evidence%2Fs06-verify%2Ffull-gate.log#sha256:e5dc40e316f96c36a8e210e725499f4a2120dc317d22d37fe7dbcf62f6052400"
+      ]
+    },
+    {
+      "name": "Market-state characterization, exact laws and scope reuse",
+      "command": "sbt -batch scalafmtCheckAll scalafmtSbtCheck clean test benchmarks/Jmh/compile \"benchmarks/Jmh/run -wi 3 -w 500ms -i 5 -r 500ms -f 1 -t 1 -prof gc .*MarketStateConstructionBenchmark.*\"",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "All 28 economics tests pass, including the 10-case MarketStateInstrumentScopeSuite and six EconomicsPropertiesSuite properties. All eight modes, exact outcomes, ordered errors, conditional coherence, foreign identity/lineage, grid boundaries, conversion order, independent state allocation and 32 concurrent calls are covered. Retained pre-production characterization supplies the baseline.",
+      "evidenceRefs": [
+        "file:target%2Fcorgi-evidence%2Fs06-verify%2Ffull-gate.log#sha256:e5dc40e316f96c36a8e210e725499f4a2120dc317d22d37fe7dbcf62f6052400",
+        "file:target%2Fcorgi-evidence%2Fs06-verify%2Fapply-baseline-pass.log#sha256:d384da983090a3b7b04a374c6912c6a93013a49fd17edecb5aaf7a4c6d98f6b4"
+      ]
+    },
+    {
+      "name": "Completed-artifact positive/negative compiler and dependency boundaries",
+      "command": "sbt -batch scalafmtCheckAll scalafmtSbtCheck clean test benchmarks/Jmh/compile \"benchmarks/Jmh/run -wi 3 -w 500ms -i 5 -r 500ms -f 1 -t 1 -prof gc .*MarketStateConstructionBenchmark.*\"",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "All 39 EconomicsCompilerBoundarySuite tests pass, including 96 direct/scoped positional/named/default argument forms, six independently rejected incompatible inputs, exact dependent results, pure core-only classpath and independent SettlementConversion ownership. Includes a reusable precisely typed Price.exact(instrument) function.",
+      "evidenceRefs": [
+        "file:target%2Fcorgi-evidence%2Fs06-verify%2Ffull-gate.log#sha256:e5dc40e316f96c36a8e210e725499f4a2120dc317d22d37fe7dbcf62f6052400",
+        "file:target%2Fcorgi-evidence%2Fs06-verify%2Fsource-review.json#sha256:b2d70601772ce3b4ef252893b8b0cd9e6731cf3679f52df01af451e643c898c7"
+      ]
+    },
+    {
+      "name": "Source semantics, ownership and structural complexity",
+      "command": "node /private/tmp/market-state-s06-verify.8XSC3E/verify-source.cjs; javap -private -c -classpath instrument-economics/target/scala-3.8.4/classes 'trading.economics.instrument.MarketState$InstrumentScope'",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "Six source assertions pass. Eight direct operation bodies, checked validation kernel and existing representation are unchanged from baseline. Scope bytecode is one final field and eight one-call delegates with no added traversal or allocation instructions. Manual whole-change inspection found no actionable finding.",
+      "evidenceRefs": [
+        "file:target%2Fcorgi-evidence%2Fs06-verify%2Fsource-review.json#sha256:b2d70601772ce3b4ef252893b8b0cd9e6731cf3679f52df01af451e643c898c7",
+        "file:target%2Fcorgi-evidence%2Fs06-verify%2Fverify-source.cjs#sha256:05a3e588e8a87f477b329e7c84c39b8d9a1497b54c837ec9314ae4c88736d4b8",
+        "file:target%2Fcorgi-evidence%2Fs06-verify%2Fscope-bytecode.txt#sha256:0935a09698094e8cae15b040f16a92bb2737329bfa401477c91bd1c660d2fe55",
+        "file:target%2Fcorgi-evidence%2Fs06-verify%2Fwhole-change-assessment.json#sha256:56ffef771937ed1dcf095e04df184e7579f8795cb156310d3006bfb6d4e6c8fe"
+      ]
+    },
+    {
+      "name": "Production and benchmark reflection policy",
+      "command": "tools/check-in-process-reflection.sh",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "Pass: no production or benchmark reflection sites.",
+      "evidenceRefs": [
+        "file:target%2Fcorgi-evidence%2Fs06-verify%2Freflection-guard.log#sha256:c0b99e32f07b7e69753e224c23149bf8589ed9a027202ee82c4be2cabc231b3d"
+      ]
+    },
+    {
+      "name": "Reflection-policy regression harness",
+      "command": "tools/test-check-in-process-reflection.sh",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "Pass: deterministic regression fixture confirms guard behavior.",
+      "evidenceRefs": [
+        "file:target%2Fcorgi-evidence%2Fs06-verify%2Freflection-regression.log#sha256:eb6658545773b5377bc49220f2c819304dfba1b9e738b527917744a24991037b"
+      ]
+    },
+    {
+      "name": "Representative JMH measurement and structural cost review",
+      "command": "sbt -batch scalafmtCheckAll scalafmtSbtCheck clean test benchmarks/Jmh/compile \"benchmarks/Jmh/run -wi 3 -w 500ms -i 5 -r 500ms -f 1 -t 1 -prof gc .*MarketStateConstructionBenchmark.*\"",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "Fresh eight-case short JMH comparison passed. Retained three-fork Apply follow-up investigated the initial allocation signal; no structural additional per-call work was introduced. Timing and allocation results are indicative, not deterministic performance evidence or a no-regression guarantee.",
+      "evidenceRefs": [
+        "file:target%2Fcorgi-evidence%2Fs06-verify%2Ffull-gate.log#sha256:e5dc40e316f96c36a8e210e725499f4a2120dc317d22d37fe7dbcf62f6052400",
+        "file:target%2Fcorgi-evidence%2Fs06-verify%2Fapply-allocation-followup.log#sha256:96130578b1ee9fc07348532bc49219267ecbfd8ab18ca14ba5eff747d33eee5f",
+        "file:target%2Fcorgi-evidence%2Fs06-verify%2Fscope-bytecode.txt#sha256:0935a09698094e8cae15b040f16a92bb2737329bfa401477c91bd1c660d2fe55",
+        "file:target%2Fcorgi-evidence%2Fs06-verify%2Fwhole-change-assessment.json#sha256:56ffef771937ed1dcf095e04df184e7579f8795cb156310d3006bfb6d4e6c8fe"
+      ]
+    },
+    {
+      "name": "Provider tracker, draft PR head and JDK 25 CI",
+      "command": "GitHub read-only connector: fetch issue 63; get PR 64; fetch commit workflow runs and CI run 33922136224 jobs",
+      "exitCode": null,
+      "status": "pass",
+      "summary": "Issue 63 remains open with 7/7 tasks and 1/1 Task Group checkpoint. PR 64 is draft at exact final HEAD. Associated CI run 33922136224 succeeded, including Set up JDK 25 and Check formatting, build, and test. No human review or QA is claimed.",
+      "evidenceRefs": [
+        "file:target%2Fcorgi-evidence%2Fs06-verify%2Fbinding-and-tracker.json#sha256:0eb8ce9b6f2613daa968d7b6ff642f2ba33f3b2bbe27c63621e2685a1373e1e9"
+      ]
+    },
+    {
+      "name": "Final diff hygiene and unchanged planning/source/RFC",
+      "command": "git diff --check a5f97ca2d1f745005bf93abb1c9dab30b483f722..HEAD; git diff --name-only a5f97ca2d1f745005bf93abb1c9dab30b483f722..HEAD -- openspec/changes/bind-market-state-construction rfcs",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "Diff hygiene passes; no planning, source, traceability, RFC, or delivery-sidecar changes since baseline. Implementation diff is 9 files, 891 insertions, 78 deletions.",
+      "evidenceRefs": [
+        "file:target%2Fcorgi-evidence%2Fs06-verify%2Fsource-review.json#sha256:b2d70601772ce3b4ef252893b8b0cd9e6731cf3679f52df01af451e643c898c7",
+        "file:target%2Fcorgi-evidence%2Fs06-verify%2Fwhole-change-assessment.json#sha256:56ffef771937ed1dcf095e04df184e7579f8795cb156310d3006bfb6d4e6c8fe"
+      ]
+    }
+  ],
+  "acceptance": [
+    {
+      "id": "AC-022",
+      "automated": "pass",
+      "summary": "Exactly one direct operation per eight modes, typed empty defaults, and equal observable results/full errors for omitted versus explicit-empty conversions; nonempty inputs retain established behavior. All positional/named forms compile.",
+      "planningRefs": [
+        {
+          "path": "specs/instrument-economics/spec.md",
+          "anchor": "requirement-market-state-modes-accept-optional-additional-conversions"
+        }
+      ],
+      "taskGroups": [
+        "1"
+      ],
+      "evidenceRefs": [
+        "file:target%2Fcorgi-evidence%2Fs06-verify%2Fsource-review.json#sha256:b2d70601772ce3b4ef252893b8b0cd9e6731cf3679f52df01af451e643c898c7",
+        "file:target%2Fcorgi-evidence%2Fs06-verify%2Ffull-gate.log#sha256:e5dc40e316f96c36a8e210e725499f4a2120dc317d22d37fe7dbcf62f6052400",
+        "file:target%2Fcorgi-evidence%2Fs06-verify%2Fapply-baseline-pass.log#sha256:d384da983090a3b7b04a374c6912c6a93013a49fd17edecb5aaf7a4c6d98f6b4"
+      ]
+    },
+    {
+      "id": "AC-023",
+      "automated": "pass",
+      "summary": "Immutable one-instrument scope exposes eight delegates and exact dependent aliases. Singleton-returning factory preserves callsite results. Independent allocation and bounded concurrent reuse pass.",
+      "planningRefs": [
+        {
+          "path": "specs/instrument-economics/spec.md",
+          "anchor": "requirement-market-state-construction-binds-one-exact-instrument"
+        }
+      ],
+      "taskGroups": [
+        "1"
+      ],
+      "evidenceRefs": [
+        "file:target%2Fcorgi-evidence%2Fs06-verify%2Ffull-gate.log#sha256:e5dc40e316f96c36a8e210e725499f4a2120dc317d22d37fe7dbcf62f6052400",
+        "file:target%2Fcorgi-evidence%2Fs06-verify%2Fsource-review.json#sha256:b2d70601772ce3b4ef252893b8b0cd9e6731cf3679f52df01af451e643c898c7",
+        "file:target%2Fcorgi-evidence%2Fs06-verify%2Fscope-bytecode.txt#sha256:0935a09698094e8cae15b040f16a92bb2737329bfa401477c91bd1c660d2fe55"
+      ]
+    },
+    {
+      "id": "AC-024",
+      "automated": "pass",
+      "summary": "Baseline characterization and fresh rational/coherence properties preserve exact derivation, all observed identity/lineage/grid boundaries, additional conversions, validation accumulation/order and first-error projection. Direct bodies and checked kernel remain byte-for-byte unchanged.",
+      "planningRefs": [
+        {
+          "path": "specs/instrument-economics/spec.md",
+          "anchor": "requirement-bound-market-state-construction-preserves-exact-checked-semantics"
+        }
+      ],
+      "taskGroups": [
+        "1"
+      ],
+      "evidenceRefs": [
+        "file:target%2Fcorgi-evidence%2Fs06-verify%2Fapply-baseline-pass.log#sha256:d384da983090a3b7b04a374c6912c6a93013a49fd17edecb5aaf7a4c6d98f6b4",
+        "file:target%2Fcorgi-evidence%2Fs06-verify%2Ffull-gate.log#sha256:e5dc40e316f96c36a8e210e725499f4a2120dc317d22d37fe7dbcf62f6052400",
+        "file:target%2Fcorgi-evidence%2Fs06-verify%2Fsource-review.json#sha256:b2d70601772ce3b4ef252893b8b0cd9e6731cf3679f52df01af451e643c898c7",
+        "file:target%2Fcorgi-evidence%2Fs06-verify%2Fwhole-change-assessment.json#sha256:56ffef771937ed1dcf095e04df184e7579f8795cb156310d3006bfb6d4e6c8fe"
+      ]
+    },
+    {
+      "id": "AC-025",
+      "automated": "pass",
+      "summary": "96 concise completed-artifact call forms compile/run; six incompatible price/rate/conversion expressions independently fail with relevant diagnostics; dependency/class scans keep the scope pure and SettlementConversion separately owned. Representative JMH is indicative only.",
+      "planningRefs": [
+        {
+          "path": "specs/instrument-economics/spec.md",
+          "anchor": "requirement-market-state-scopes-preserve-compiler-boundaries-and-ownership"
+        }
+      ],
+      "taskGroups": [
+        "1"
+      ],
+      "evidenceRefs": [
+        "file:target%2Fcorgi-evidence%2Fs06-verify%2Ffull-gate.log#sha256:e5dc40e316f96c36a8e210e725499f4a2120dc317d22d37fe7dbcf62f6052400",
+        "file:target%2Fcorgi-evidence%2Fs06-verify%2Fsource-review.json#sha256:b2d70601772ce3b4ef252893b8b0cd9e6731cf3679f52df01af451e643c898c7",
+        "file:target%2Fcorgi-evidence%2Fs06-verify%2Fscope-bytecode.txt#sha256:0935a09698094e8cae15b040f16a92bb2737329bfa401477c91bd1c660d2fe55",
+        "file:target%2Fcorgi-evidence%2Fs06-verify%2Fwhole-change-assessment.json#sha256:56ffef771937ed1dcf095e04df184e7579f8795cb156310d3006bfb6d4e6c8fe"
+      ]
+    }
+  ],
+  "verifiedAt": "2026-09-04T22:16:42.742Z"
+}

@@ -1,0 +1,212 @@
+{
+  "schemaVersion": 1,
+  "changeName": "bind-market-state-construction",
+  "schemaName": "spec-driven",
+  "planningRevision": "sha256:d71b55691b5e80ce8f028afe42202975d786dabf515eebc33b2d930a83c60827",
+  "status": "ready",
+  "taskArtifactId": "tasks",
+  "artifactPaths": {
+    "design": {
+      "outputPath": "design.md",
+      "resolvedOutputPath": "/Users/m/src/money/.worktrees/bind-market-state-construction/openspec/changes/bind-market-state-construction/design.md",
+      "existingOutputPaths": [
+        "/Users/m/src/money/.worktrees/bind-market-state-construction/openspec/changes/bind-market-state-construction/design.md"
+      ]
+    },
+    "proposal": {
+      "outputPath": "proposal.md",
+      "resolvedOutputPath": "/Users/m/src/money/.worktrees/bind-market-state-construction/openspec/changes/bind-market-state-construction/proposal.md",
+      "existingOutputPaths": [
+        "/Users/m/src/money/.worktrees/bind-market-state-construction/openspec/changes/bind-market-state-construction/proposal.md"
+      ]
+    },
+    "specs": {
+      "outputPath": "specs/**/*.md",
+      "resolvedOutputPath": "/Users/m/src/money/.worktrees/bind-market-state-construction/openspec/changes/bind-market-state-construction/specs/**/*.md",
+      "existingOutputPaths": [
+        "/Users/m/src/money/.worktrees/bind-market-state-construction/openspec/changes/bind-market-state-construction/specs/instrument-economics/spec.md"
+      ]
+    },
+    "tasks": {
+      "outputPath": "tasks.md",
+      "resolvedOutputPath": "/Users/m/src/money/.worktrees/bind-market-state-construction/openspec/changes/bind-market-state-construction/tasks.md",
+      "existingOutputPaths": [
+        "/Users/m/src/money/.worktrees/bind-market-state-construction/openspec/changes/bind-market-state-construction/tasks.md"
+      ]
+    }
+  },
+  "checks": [
+    {
+      "code": "ARTIFACTS_COMPLETE",
+      "status": "pass",
+      "severity": "info",
+      "message": "All planning artifacts are complete"
+    },
+    {
+      "code": "OPENSPEC_STRICT_VALIDATION",
+      "status": "pass",
+      "severity": "info",
+      "message": "OpenSpec strict validation passed"
+    },
+    {
+      "code": "TASK_ARTIFACT_CONFIGURED",
+      "status": "pass",
+      "severity": "info",
+      "message": "Task artifact 'tasks' exists in the schema"
+    },
+    {
+      "code": "TASK_ARTIFACT_UNIQUE",
+      "status": "pass",
+      "severity": "info",
+      "message": "Exactly one concrete task artifact was resolved",
+      "paths": [
+        "/Users/m/src/money/.worktrees/bind-market-state-construction/openspec/changes/bind-market-state-construction/tasks.md"
+      ]
+    },
+    {
+      "code": "TASK_GROUP_STRUCTURE",
+      "status": "pass",
+      "severity": "info",
+      "message": "1 Task Group(s) have stable unique ids",
+      "paths": [
+        "/Users/m/src/money/.worktrees/bind-market-state-construction/openspec/changes/bind-market-state-construction/tasks.md"
+      ]
+    },
+    {
+      "code": "NO_PLACEHOLDERS",
+      "status": "pass",
+      "severity": "info",
+      "message": "Planning artifacts contain no unresolved placeholders"
+    },
+    {
+      "code": "NO_OPEN_QUESTIONS",
+      "status": "pass",
+      "severity": "info",
+      "message": "No unresolved Open Questions sections remain"
+    },
+    {
+      "code": "CAPABILITY_SPEC_PARITY",
+      "status": "pass",
+      "severity": "info",
+      "message": "Proposal capability names match concrete delta specs",
+      "paths": [
+        "/Users/m/src/money/.worktrees/bind-market-state-construction/openspec/changes/bind-market-state-construction/proposal.md",
+        "/Users/m/src/money/.worktrees/bind-market-state-construction/openspec/changes/bind-market-state-construction/specs/instrument-economics/spec.md"
+      ]
+    },
+    {
+      "code": "ARCHIVE_DELTA_COMPATIBLE",
+      "status": "pass",
+      "severity": "info",
+      "message": "Every MODIFIED requirement preserves canonical scenario identities"
+    },
+    {
+      "code": "CHANGE_CONTRACT_PRESENT",
+      "status": "pass",
+      "severity": "info",
+      "message": "Change is bound to RFC-0008-simplify-instrument-dependent-apis/S-06-bind-market-state-construction",
+      "paths": [
+        "/Users/m/src/money/.worktrees/bind-market-state-construction/openspec/changes/bind-market-state-construction/corgi/source.yaml",
+        "/Users/m/src/money/.worktrees/bind-market-state-construction/openspec/changes/bind-market-state-construction/corgi/traceability.yaml"
+      ]
+    },
+    {
+      "code": "TRACEABILITY_COMPLETE",
+      "status": "pass",
+      "severity": "info",
+      "message": "Every acceptance criterion maps to planning artifacts and Task Groups",
+      "paths": [
+        "/Users/m/src/money/.worktrees/bind-market-state-construction/openspec/changes/bind-market-state-construction/corgi/traceability.yaml"
+      ]
+    },
+    {
+      "code": "SOURCE_PROVENANCE_CURRENT",
+      "status": "pass",
+      "severity": "info",
+      "message": "RFC acceptance, branch ancestry, Slice binding, and tracker source are current",
+      "paths": []
+    }
+  ],
+  "taskGroups": [
+    {
+      "number": 1,
+      "name": "Consolidate and bind market-state construction",
+      "tasks": [
+        {
+          "id": "1.1",
+          "description": "Add baseline characterization in `MarketStateInstrumentScopeSuite` for the current eight direct modes, omitted/explicit-empty/non-empty conversions, exact public state observations, and complete ordered `MarketStateViolations`; verify with `instrumentEconomics/test` before changing production implementations (AC-022, AC-024).",
+          "done": false,
+          "line": 3
+        },
+        {
+          "id": "1.2",
+          "description": "Consolidate the eight overload pairs in `Market.scala` into one direct operation each with `additional = Vector.empty`, preserving parameter names, shared validation, and typed calculation; verify the baseline tests and one direct definition per mode (AC-022, AC-024).",
+          "done": false,
+          "line": 4
+        },
+        {
+          "id": "1.3",
+          "description": "Add the final field-only `MarketState.InstrumentScope`, exact aliases, singleton-returning `forInstrument` factory, and eight one-call delegates; verify exact instrument-dependent input/result assignments, all eight mode results, and default/explicit additional conversions with focused scope tests (AC-023, AC-024).",
+          "done": false,
+          "line": 5
+        },
+        {
+          "id": "1.4",
+          "description": "Complete scoped/direct characterization and `EconomicsPropertiesSuite` laws for rational anchor/rate coherence, supported foreign identity/lineage rejection, price-grid boundary preservation, invalid anchors, additional conversion order/duplicates, first-error projection, independent state allocation, and concurrent scope reuse; verify all instrument-economics tests pass with independently specified expected results (AC-023, AC-024).",
+          "done": false,
+          "line": 6
+        },
+        {
+          "id": "1.5",
+          "description": "Add runnable `MarketStateScopeClient.scala` and independently valid `MarketStateScopeMismatch.scala` fixtures under `economics-core-compiler`, wiring them through `EconomicsCompilerBoundarySuite`'s core-only classpath; verify all eight direct/scoped modes and vector argument forms compile without repeated dimensions, each incompatible price/rate/conversion fails at its intended expression, and existing dependency/ownership checks pass (AC-022, AC-023, AC-025).",
+          "done": false,
+          "line": 7
+        },
+        {
+          "id": "1.6",
+          "description": "Add `MarketStateConstructionBenchmark` in the existing benchmarks module comparing direct and reused-scope construction with empty/non-empty conversions; verify JMH compilation and record representative timing/allocation, host JDK and release target, while source review confirms no new traversal, cached result, shared coordination, or dependency (AC-025 and the RFC-wide allocation risk).",
+          "done": false,
+          "line": 8
+        },
+        {
+          "id": "1.7",
+          "description": "Run formatting, clean aggregate tests, benchmark compilation/measurement, both reflection-policy scripts, strict readiness, `git diff --check`, and the automated Task Group review loop against the complete diff; resolve actionable findings within the accepted contract and retain the checks/review evidence before this group's dedicated commit and canonical acknowledgement (AC-022–AC-025).",
+          "done": false,
+          "line": 9
+        }
+      ],
+      "totalTasks": 7,
+      "completedTasks": 0,
+      "status": "pending",
+      "line": 1
+    }
+  ],
+  "contract": {
+    "schemaVersion": 1,
+    "pathConvention": "project-relative-posix",
+    "kind": "rfc-slice",
+    "deliveryRef": "RFC-0008-simplify-instrument-dependent-apis/S-06-bind-market-state-construction",
+    "rfcId": "RFC-0008-simplify-instrument-dependent-apis",
+    "rfcDigest": "sha256:77e1c4ac3d7629334f86695e07ffaf835549c5e0e05612314f0ca193e42139f3",
+    "acceptedCommit": "bf457296faa7d29aec0840a7e8f48d41ed0f7491",
+    "sliceId": "S-06-bind-market-state-construction",
+    "acceptanceIds": [
+      "AC-022",
+      "AC-023",
+      "AC-024",
+      "AC-025"
+    ],
+    "sourcePath": "openspec/changes/bind-market-state-construction/corgi/source.yaml",
+    "sourceDigest": "sha256:7228b2dcc47996a30649f1192bf82b83a696dacc62686de4ab86fffbe432c0ae",
+    "traceabilityPath": "openspec/changes/bind-market-state-construction/corgi/traceability.yaml",
+    "traceabilityDigest": "sha256:48f87427d1fb0087946a8d66eea30fcaee5a1f24a3c33d3d8de0c79e9c306c78",
+    "tracker": {
+      "provider": "github",
+      "idempotencyKey": "0278b383657b8c7e5345145d2b0c103640d79983db46494c11e0cf81c0dda367",
+      "issue": {
+        "id": "63",
+        "url": "https://github.com/m2048ws/trading/issues/63"
+      }
+    }
+  }
+}

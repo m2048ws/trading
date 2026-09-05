@@ -10,23 +10,25 @@ updated: 2026-09-04
 ## Delivery Pointer
 - **RFC**: RFC-0008-simplify-instrument-dependent-apis
 - **RFC Revision**: bf457296faa7d29aec0840a7e8f48d41ed0f7491
-- **Slice**: S-05-bind-instrument-risk
-- **Issue**: 61 https://github.com/m2048ws/trading/issues/61
-- **Change**: bind-instrument-risk
-- **Worktree**: /Users/m/src/money/.worktrees/bind-instrument-risk
+- **Slice**: S-06-bind-market-state-construction
+- **Issue**: 63 https://github.com/m2048ws/trading/issues/63
+- **Change**: bind-market-state-construction
+- **Worktree**: /Users/m/src/money/.worktrees/bind-market-state-construction
 - **Phase at Checkpoint**: archiving
 - **Task Group at Checkpoint**: none
 - **Observed Run Revision**: 7
-- **Last Verified HEAD**: 819a4c8dc3fc601655790a512ad24df2df7aee91
+- **Last Verified HEAD**: 7012636e9ff868ec14daa1be58c0cc59ac426b67
 
 ## Next Action
-- Consult Run Contract v3: resume tracker closeout for `bind-instrument-risk` only if pending; otherwise select the next accepted Slice. Local delivery: `wiki/deliveries/RFC-0008-simplify-instrument-dependent-apis-S-05-bind-instrument-risk.md`.
+- Consult Run Contract v3: resume tracker closeout for `bind-market-state-construction` only if pending; otherwise select the next accepted Slice. Local delivery: `wiki/deliveries/RFC-0008-simplify-instrument-dependent-apis-S-06-bind-market-state-construction.md`.
+  open its draft PR through the guarded adapter, then run the separate whole-change Verify gate.
+  Run: `run-4874b9a2-be9a-4d0d-8a20-b391ae7a185b`; session: `rfc0008-s06-20260904`.
 
 ## Blockers
 - none
 
 ## Uncommitted Work
-- none
+- none after the dedicated Task Group 1 commit; this bridge records the next canonical acknowledgement checkpoint.
 
 ## Discoveries
 - RFC-0008/S-02 Task Group 1 adds a final `Order`-owned scope that retains only one exact instrument and delegates all
@@ -106,6 +108,14 @@ updated: 2026-09-04
   and strict readiness.
 
 ## Promotion Queue
+- RFC-0008/S-06 Task Group 1 consolidates all eight direct market-state constructors and adds a final field-only
+  MarketState-owned scope with exact instrument-dependent aliases and one-call delegates. The checked kernel and
+  SettlementConversion owner remain unchanged. Explicit default element types preserve dependent-call inference.
+  Baseline characterization passed before production edits; 1,084 clean aggregate tests and 96 packaged-client call
+  forms preserve exact math, failures, runtime identity/lineage, grids, and concurrent reuse. Six independent negative
+  fixtures reject wrong prices/rates/conversions. The economics compiler classpath now excludes aggregate effect
+  dependencies. Local checks targeted release 25 on JDK 26.0.2.1; short and three-fork JMH comparisons are indicative,
+  not deterministic performance guarantees. Evidence: `/private/tmp/market-state-s06.rMryWt`.
 - RFC-0008/S-05 Task Group 1 adds one final field-only `Risk` scope whose exact aliases and six delegates bind downside,
   checked monotone-model construction, and explicit exhaustive sizing to one instrument; focused and completed-artifact
   evidence preserves broad existential validation, typed failures, exact costs and decisions, incompatible-input

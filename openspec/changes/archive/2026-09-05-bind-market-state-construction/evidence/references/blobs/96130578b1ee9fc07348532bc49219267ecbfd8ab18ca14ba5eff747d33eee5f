@@ -1,0 +1,302 @@
+[info] welcome to sbt 1.12.15 (Homebrew Java 26.0.2.1)
+[info] loading settings for project bind-market-state-construction-build from plugins.sbt...
+[info] loading project definition from /Users/m/src/money/.worktrees/bind-market-state-construction/project
+[info] loading settings for project root from build.sbt...
+[info] resolving key references (12514 settings) ...
+[info] set current project to trading (in build file:/Users/m/src/money/.worktrees/bind-market-state-construction/)
+[info] running (fork) org.openjdk.jmh.Main -wi 3 -w 1s -i 5 -r 1s -f 3 -t 1 -p additionalCount=1 -p settlement=third -prof gc .*MarketStateConstructionBenchmark.*
+[error] WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+[error] WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.openjdk.jmh.util.Utils (file:/Users/m/src/money/.worktrees/bind-market-state-construction/target/bg-jobs/sbt_10d2257e/target/0a592882/1296d6b9/jmh-core-1.37.jar)
+[error] WARNING: Please consider reporting this to the maintainers of class org.openjdk.jmh.util.Utils
+[error] WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+[info] # JMH version: 1.37
+[info] # VM version: JDK 26.0.2.1, OpenJDK 64-Bit Server VM, 26.0.2.1
+[info] # VM invoker: /opt/homebrew/Cellar/openjdk/26.0.2.1/libexec/openjdk.jdk/Contents/Home/bin/java
+[info] # VM options: <none>
+[info] # Blackhole mode: compiler (auto-detected, use -Djmh.blackhole.autoDetect=false to disable)
+[info] # Warmup: 3 iterations, 1 s each
+[info] # Measurement: 5 iterations, 1 s each
+[info] # Timeout: 10 min per iteration
+[info] # Threads: 1 thread, will synchronize iterations
+[info] # Benchmark mode: Average time, time/op
+[info] # Benchmark: trading.benchmark.MarketStateConstructionBenchmark.direct
+[info] # Parameters: (additionalCount = 1, settlement = third)
+[info] # Run progress: 0.00% complete, ETA 00:00:48
+[info] # Fork: 1 of 3
+[info] WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+[info] WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.openjdk.jmh.util.Utils (file:/Users/m/src/money/.worktrees/bind-market-state-construction/target/bg-jobs/sbt_10d2257e/target/0a592882/1296d6b9/jmh-core-1.37.jar)
+[info] WARNING: Please consider reporting this to the maintainers of class org.openjdk.jmh.util.Utils
+[info] WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+[info] # Warmup Iteration   1: 1330.660 ns/op
+[info] # Warmup Iteration   2: 733.441 ns/op
+[info] # Warmup Iteration   3: 730.372 ns/op
+[info] Iteration   1: 732.493 ns/op
+[info]                  gc.alloc.rate:      5633.859 MB/sec
+[info]                  gc.alloc.rate.norm: 4328.008 B/op
+[info]                  gc.count:           11.000 counts
+[info]                  gc.time:            7.000 ms
+[info] Iteration   2: 738.028 ns/op
+[info]                  gc.alloc.rate:      5591.676 MB/sec
+[info]                  gc.alloc.rate.norm: 4328.008 B/op
+[info]                  gc.count:           11.000 counts
+[info]                  gc.time:            8.000 ms
+[info] Iteration   3: 735.114 ns/op
+[info]                  gc.alloc.rate:      5613.703 MB/sec
+[info]                  gc.alloc.rate.norm: 4328.008 B/op
+[info]                  gc.count:           12.000 counts
+[info]                  gc.time:            8.000 ms
+[info] Iteration   4: 733.045 ns/op
+[info]                  gc.alloc.rate:      5629.832 MB/sec
+[info]                  gc.alloc.rate.norm: 4328.008 B/op
+[info]                  gc.count:           12.000 counts
+[info]                  gc.time:            8.000 ms
+[info] Iteration   5: 733.974 ns/op
+[info]                  gc.alloc.rate:      5622.338 MB/sec
+[info]                  gc.alloc.rate.norm: 4328.009 B/op
+[info]                  gc.count:           13.000 counts
+[info]                  gc.time:            9.000 ms
+[info] # Run progress: 16.67% complete, ETA 00:00:42
+[info] # Fork: 2 of 3
+[info] WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+[info] WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.openjdk.jmh.util.Utils (file:/Users/m/src/money/.worktrees/bind-market-state-construction/target/bg-jobs/sbt_10d2257e/target/0a592882/1296d6b9/jmh-core-1.37.jar)
+[info] WARNING: Please consider reporting this to the maintainers of class org.openjdk.jmh.util.Utils
+[info] WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+[info] # Warmup Iteration   1: 1109.668 ns/op
+[info] # Warmup Iteration   2: 766.609 ns/op
+[info] # Warmup Iteration   3: 763.903 ns/op
+[info] Iteration   1: 764.177 ns/op
+[info]                  gc.alloc.rate:      5440.359 MB/sec
+[info]                  gc.alloc.rate.norm: 4360.008 B/op
+[info]                  gc.count:           10.000 counts
+[info]                  gc.time:            7.000 ms
+[info] Iteration   2: 775.471 ns/op
+[info]                  gc.alloc.rate:      5361.066 MB/sec
+[info]                  gc.alloc.rate.norm: 4360.009 B/op
+[info]                  gc.count:           11.000 counts
+[info]                  gc.time:            8.000 ms
+[info] Iteration   3: 764.790 ns/op
+[info]                  gc.alloc.rate:      5435.632 MB/sec
+[info]                  gc.alloc.rate.norm: 4360.008 B/op
+[info]                  gc.count:           11.000 counts
+[info]                  gc.time:            7.000 ms
+[info] Iteration   4: 764.781 ns/op
+[info]                  gc.alloc.rate:      5436.037 MB/sec
+[info]                  gc.alloc.rate.norm: 4360.009 B/op
+[info]                  gc.count:           12.000 counts
+[info]                  gc.time:            8.000 ms
+[info] Iteration   5: 765.736 ns/op
+[info]                  gc.alloc.rate:      5428.908 MB/sec
+[info]                  gc.alloc.rate.norm: 4360.009 B/op
+[info]                  gc.count:           12.000 counts
+[info]                  gc.time:            8.000 ms
+[info] # Run progress: 33.33% complete, ETA 00:00:33
+[info] # Fork: 3 of 3
+[info] WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+[info] WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.openjdk.jmh.util.Utils (file:/Users/m/src/money/.worktrees/bind-market-state-construction/target/bg-jobs/sbt_10d2257e/target/0a592882/1296d6b9/jmh-core-1.37.jar)
+[info] WARNING: Please consider reporting this to the maintainers of class org.openjdk.jmh.util.Utils
+[info] WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+[info] # Warmup Iteration   1: 1089.337 ns/op
+[info] # Warmup Iteration   2: 754.383 ns/op
+[info] # Warmup Iteration   3: 754.740 ns/op
+[info] Iteration   1: 752.722 ns/op
+[info]                  gc.alloc.rate:      5523.080 MB/sec
+[info]                  gc.alloc.rate.norm: 4360.008 B/op
+[info]                  gc.count:           11.000 counts
+[info]                  gc.time:            8.000 ms
+[info] Iteration   2: 765.696 ns/op
+[info]                  gc.alloc.rate:      5429.650 MB/sec
+[info]                  gc.alloc.rate.norm: 4360.008 B/op
+[info]                  gc.count:           10.000 counts
+[info]                  gc.time:            7.000 ms
+[info] Iteration   3: 756.195 ns/op
+[info]                  gc.alloc.rate:      5497.149 MB/sec
+[info]                  gc.alloc.rate.norm: 4360.009 B/op
+[info]                  gc.count:           12.000 counts
+[info]                  gc.time:            8.000 ms
+[info] Iteration   4: 752.386 ns/op
+[info]                  gc.alloc.rate:      5525.670 MB/sec
+[info]                  gc.alloc.rate.norm: 4360.009 B/op
+[info]                  gc.count:           12.000 counts
+[info]                  gc.time:            9.000 ms
+[info] Iteration   5: 746.125 ns/op
+[info]                  gc.alloc.rate:      5571.853 MB/sec
+[info]                  gc.alloc.rate.norm: 4360.009 B/op
+[info]                  gc.count:           12.000 counts
+[info]                  gc.time:            8.000 ms
+[info] Result "trading.benchmark.MarketStateConstructionBenchmark.direct":
+[info]   752.049 ±(99.9%) 15.650 ns/op [Average]
+[info]   (min, avg, max) = (732.493, 752.049, 775.471), stdev = 14.639
+[info]   CI (99.9%): [736.399, 767.699] (assumes normal distribution)
+[info] Secondary result "trading.benchmark.MarketStateConstructionBenchmark.direct:gc.alloc.rate":
+[info]   5516.054 ±(99.9%) 96.752 MB/sec [Average]
+[info]   (min, avg, max) = (5361.066, 5516.054, 5633.859), stdev = 90.502
+[info]   CI (99.9%): [5419.302, 5612.806] (assumes normal distribution)
+[info] Secondary result "trading.benchmark.MarketStateConstructionBenchmark.direct:gc.alloc.rate.norm":
+[info]   4349.342 ±(99.9%) 16.693 B/op [Average]
+[info]   (min, avg, max) = (4328.008, 4349.342, 4360.009), stdev = 15.614
+[info]   CI (99.9%): [4332.649, 4366.035] (assumes normal distribution)
+[info] Secondary result "trading.benchmark.MarketStateConstructionBenchmark.direct:gc.count":
+[info]   172.000 ±(99.9%) 0.001 counts [Sum]
+[info]   (min, avg, max) = (10.000, 11.467, 13.000), stdev = 0.834
+[info]   CI (99.9%): [172.000, 172.000] (assumes normal distribution)
+[info] Secondary result "trading.benchmark.MarketStateConstructionBenchmark.direct:gc.time":
+[info]   118.000 ±(99.9%) 0.001 ms [Sum]
+[info]   (min, avg, max) = (7.000, 7.867, 9.000), stdev = 0.640
+[info]   CI (99.9%): [118.000, 118.000] (assumes normal distribution)
+[info] # JMH version: 1.37
+[info] # VM version: JDK 26.0.2.1, OpenJDK 64-Bit Server VM, 26.0.2.1
+[info] # VM invoker: /opt/homebrew/Cellar/openjdk/26.0.2.1/libexec/openjdk.jdk/Contents/Home/bin/java
+[info] # VM options: <none>
+[info] # Blackhole mode: compiler (auto-detected, use -Djmh.blackhole.autoDetect=false to disable)
+[info] # Warmup: 3 iterations, 1 s each
+[info] # Measurement: 5 iterations, 1 s each
+[info] # Timeout: 10 min per iteration
+[info] # Threads: 1 thread, will synchronize iterations
+[info] # Benchmark mode: Average time, time/op
+[info] # Benchmark: trading.benchmark.MarketStateConstructionBenchmark.reusedScope
+[info] # Parameters: (additionalCount = 1, settlement = third)
+[info] # Run progress: 50.00% complete, ETA 00:00:25
+[info] # Fork: 1 of 3
+[info] WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+[info] WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.openjdk.jmh.util.Utils (file:/Users/m/src/money/.worktrees/bind-market-state-construction/target/bg-jobs/sbt_10d2257e/target/0a592882/1296d6b9/jmh-core-1.37.jar)
+[info] WARNING: Please consider reporting this to the maintainers of class org.openjdk.jmh.util.Utils
+[info] WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+[info] # Warmup Iteration   1: 1054.550 ns/op
+[info] # Warmup Iteration   2: 727.221 ns/op
+[info] # Warmup Iteration   3: 727.102 ns/op
+[info] Iteration   1: 726.668 ns/op
+[info]                  gc.alloc.rate:      5385.117 MB/sec
+[info]                  gc.alloc.rate.norm: 4104.008 B/op
+[info]                  gc.count:           11.000 counts
+[info]                  gc.time:            8.000 ms
+[info] Iteration   2: 746.476 ns/op
+[info]                  gc.alloc.rate:      5242.253 MB/sec
+[info]                  gc.alloc.rate.norm: 4104.008 B/op
+[info]                  gc.count:           10.000 counts
+[info]                  gc.time:            6.000 ms
+[info] Iteration   3: 732.744 ns/op
+[info]                  gc.alloc.rate:      5340.437 MB/sec
+[info]                  gc.alloc.rate.norm: 4104.008 B/op
+[info]                  gc.count:           11.000 counts
+[info]                  gc.time:            8.000 ms
+[info] Iteration   4: 728.734 ns/op
+[info]                  gc.alloc.rate:      5370.022 MB/sec
+[info]                  gc.alloc.rate.norm: 4104.008 B/op
+[info]                  gc.count:           12.000 counts
+[info]                  gc.time:            7.000 ms
+[info] Iteration   5: 728.362 ns/op
+[info]                  gc.alloc.rate:      5372.637 MB/sec
+[info]                  gc.alloc.rate.norm: 4104.008 B/op
+[info]                  gc.count:           12.000 counts
+[info]                  gc.time:            8.000 ms
+[info] # Run progress: 66.67% complete, ETA 00:00:16
+[info] # Fork: 2 of 3
+[info] WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+[info] WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.openjdk.jmh.util.Utils (file:/Users/m/src/money/.worktrees/bind-market-state-construction/target/bg-jobs/sbt_10d2257e/target/0a592882/1296d6b9/jmh-core-1.37.jar)
+[info] WARNING: Please consider reporting this to the maintainers of class org.openjdk.jmh.util.Utils
+[info] WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+[info] # Warmup Iteration   1: 1160.029 ns/op
+[info] # Warmup Iteration   2: 755.110 ns/op
+[info] # Warmup Iteration   3: 755.170 ns/op
+[info] Iteration   1: 756.176 ns/op
+[info]                  gc.alloc.rate:      5497.935 MB/sec
+[info]                  gc.alloc.rate.norm: 4360.008 B/op
+[info]                  gc.count:           10.000 counts
+[info]                  gc.time:            6.000 ms
+[info] Iteration   2: 753.742 ns/op
+[info]                  gc.alloc.rate:      5515.270 MB/sec
+[info]                  gc.alloc.rate.norm: 4360.008 B/op
+[info]                  gc.count:           11.000 counts
+[info]                  gc.time:            8.000 ms
+[info] Iteration   3: 753.373 ns/op
+[info]                  gc.alloc.rate:      5518.295 MB/sec
+[info]                  gc.alloc.rate.norm: 4360.008 B/op
+[info]                  gc.count:           11.000 counts
+[info]                  gc.time:            7.000 ms
+[info] Iteration   4: 753.578 ns/op
+[info]                  gc.alloc.rate:      5517.014 MB/sec
+[info]                  gc.alloc.rate.norm: 4360.009 B/op
+[info]                  gc.count:           13.000 counts
+[info]                  gc.time:            9.000 ms
+[info] Iteration   5: 753.095 ns/op
+[info]                  gc.alloc.rate:      5520.312 MB/sec
+[info]                  gc.alloc.rate.norm: 4360.009 B/op
+[info]                  gc.count:           12.000 counts
+[info]                  gc.time:            8.000 ms
+[info] # Run progress: 83.33% complete, ETA 00:00:08
+[info] # Fork: 3 of 3
+[info] WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+[info] WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.openjdk.jmh.util.Utils (file:/Users/m/src/money/.worktrees/bind-market-state-construction/target/bg-jobs/sbt_10d2257e/target/0a592882/1296d6b9/jmh-core-1.37.jar)
+[info] WARNING: Please consider reporting this to the maintainers of class org.openjdk.jmh.util.Utils
+[info] WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+[info] # Warmup Iteration   1: 1094.346 ns/op
+[info] # Warmup Iteration   2: 763.072 ns/op
+[info] # Warmup Iteration   3: 750.008 ns/op
+[info] Iteration   1: 766.084 ns/op
+[info]                  gc.alloc.rate:      5425.798 MB/sec
+[info]                  gc.alloc.rate.norm: 4360.008 B/op
+[info]                  gc.count:           10.000 counts
+[info]                  gc.time:            7.000 ms
+[info] Iteration   2: 752.175 ns/op
+[info]                  gc.alloc.rate:      5527.201 MB/sec
+[info]                  gc.alloc.rate.norm: 4360.008 B/op
+[info]                  gc.count:           11.000 counts
+[info]                  gc.time:            8.000 ms
+[info] Iteration   3: 749.977 ns/op
+[info]                  gc.alloc.rate:      5543.214 MB/sec
+[info]                  gc.alloc.rate.norm: 4360.009 B/op
+[info]                  gc.count:           12.000 counts
+[info]                  gc.time:            8.000 ms
+[info] Iteration   4: 755.314 ns/op
+[info]                  gc.alloc.rate:      5504.270 MB/sec
+[info]                  gc.alloc.rate.norm: 4360.009 B/op
+[info]                  gc.count:           12.000 counts
+[info]                  gc.time:            8.000 ms
+[info] Iteration   5: 753.955 ns/op
+[info]                  gc.alloc.rate:      5513.831 MB/sec
+[info]                  gc.alloc.rate.norm: 4360.009 B/op
+[info]                  gc.count:           12.000 counts
+[info]                  gc.time:            8.000 ms
+[info] Result "trading.benchmark.MarketStateConstructionBenchmark.reusedScope":
+[info]   747.364 ±(99.9%) 12.980 ns/op [Average]
+[info]   (min, avg, max) = (726.668, 747.364, 766.084), stdev = 12.142
+[info]   CI (99.9%): [734.383, 760.344] (assumes normal distribution)
+[info] Secondary result "trading.benchmark.MarketStateConstructionBenchmark.reusedScope:gc.alloc.rate":
+[info]   5452.907 ±(99.9%) 96.697 MB/sec [Average]
+[info]   (min, avg, max) = (5242.253, 5452.907, 5543.214), stdev = 90.451
+[info]   CI (99.9%): [5356.210, 5549.604] (assumes normal distribution)
+[info] Secondary result "trading.benchmark.MarketStateConstructionBenchmark.reusedScope:gc.alloc.rate.norm":
+[info]   4274.675 ±(99.9%) 133.542 B/op [Average]
+[info]   (min, avg, max) = (4104.008, 4274.675, 4360.009), stdev = 124.915
+[info]   CI (99.9%): [4141.133, 4408.217] (assumes normal distribution)
+[info] Secondary result "trading.benchmark.MarketStateConstructionBenchmark.reusedScope:gc.count":
+[info]   170.000 ±(99.9%) 0.001 counts [Sum]
+[info]   (min, avg, max) = (10.000, 11.333, 13.000), stdev = 0.900
+[info]   CI (99.9%): [170.000, 170.000] (assumes normal distribution)
+[info] Secondary result "trading.benchmark.MarketStateConstructionBenchmark.reusedScope:gc.time":
+[info]   114.000 ±(99.9%) 0.001 ms [Sum]
+[info]   (min, avg, max) = (6.000, 7.600, 9.000), stdev = 0.828
+[info]   CI (99.9%): [114.000, 114.000] (assumes normal distribution)
+[info] # Run complete. Total time: 00:00:50
+[info] REMEMBER: The numbers below are just data. To gain reusable insights, you need to follow up on
+[info] why the numbers are the way they are. Use profilers (see -prof, -lprof), design factorial
+[info] experiments, perform baseline and negative tests that provide experimental control, make sure
+[info] the benchmarking environment is safe on JVM/OS/HW level, ask for reviews from the domain experts.
+[info] Do not assume the numbers tell you what you want them to tell.
+[info] NOTE: Current JVM experimentally supports Compiler Blackholes, and they are in use. Please exercise
+[info] extra caution when trusting the results, look into the generated code to check the benchmark still
+[info] works, and factor in a small probability of new VM bugs. Additionally, while comparisons between
+[info] different JVMs are already problematic, the performance difference caused by different Blackhole
+[info] modes can be very significant. Please make sure you use the consistent Blackhole mode for comparisons.
+[info] Benchmark                                                        (additionalCount)  (settlement)  Mode  Cnt     Score     Error   Units
+[info] MarketStateConstructionBenchmark.direct                                          1         third  avgt   15   752.049 ±  15.650   ns/op
+[info] MarketStateConstructionBenchmark.direct:gc.alloc.rate                            1         third  avgt   15  5516.054 ±  96.752  MB/sec
+[info] MarketStateConstructionBenchmark.direct:gc.alloc.rate.norm                       1         third  avgt   15  4349.342 ±  16.693    B/op
+[info] MarketStateConstructionBenchmark.direct:gc.count                                 1         third  avgt   15   172.000            counts
+[info] MarketStateConstructionBenchmark.direct:gc.time                                  1         third  avgt   15   118.000                ms
+[info] MarketStateConstructionBenchmark.reusedScope                                     1         third  avgt   15   747.364 ±  12.980   ns/op
+[info] MarketStateConstructionBenchmark.reusedScope:gc.alloc.rate                       1         third  avgt   15  5452.907 ±  96.697  MB/sec
+[info] MarketStateConstructionBenchmark.reusedScope:gc.alloc.rate.norm                  1         third  avgt   15  4274.675 ± 133.542    B/op
+[info] MarketStateConstructionBenchmark.reusedScope:gc.count                            1         third  avgt   15   170.000            counts
+[info] MarketStateConstructionBenchmark.reusedScope:gc.time                             1         third  avgt   15   114.000                ms
+[success] Total time: 52 s, completed Sep 4, 2026, 11:28:19 PM

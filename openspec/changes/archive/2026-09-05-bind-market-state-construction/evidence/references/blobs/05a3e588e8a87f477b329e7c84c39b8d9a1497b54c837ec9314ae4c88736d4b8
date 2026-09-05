@@ -1,0 +1,67 @@
+const fs = require("node:fs");
+const cp = require("node:child_process");
+const crypto = require("node:crypto");
+const assert = require("node:assert/strict");
+const baseline = "a5f97ca2d1f745005bf93abb1c9dab30b483f722";
+const head = "7012636e9ff868ec14daa1be58c0cc59ac426b67";
+const git = (...args) => cp.execFileSync("git", args, {encoding:"utf8"});
+const path = "instrument-economics/src/main/scala/trading/economics/instrument/Market.scala";
+const before = git("show", baseline + ":" + path);
+const after = fs.readFileSync(path, "utf8");
+const modes = ["quoteSettled","baseSettled","fromQuoteAnchor","fromBaseAnchor","fromAnchors","fromQuoteRate","fromBaseRate","fromRates"];
+const declarations = source => [...source.matchAll(/^  (?:private )?def \w+/gm)].map((m,i,all)=>source.slice(m.index,all[i+1]?.index ?? source.length));
+const checks = [];
+function check(name, fn) { fn(); checks.push({name,status:"pass"}); }
+check("Clean unchanged final acknowledged HEAD and one-parent Task Group commit",()=>{
+  assert.equal(git("status","--porcelain"),"");
+  assert.equal(git("rev-parse","HEAD").trim(),head);
+  assert.equal(git("show","-s","--format=%P",head).trim(),baseline);
+});
+check("Planning, RFC, and source/traceability files unchanged since planning baseline",()=>{
+  assert.equal(git("diff","--name-only",baseline+"..HEAD","--","openspec/changes/bind-market-state-construction","rfcs"),"");
+});
+check("Eight direct operation bodies preserved; sixteen declarations consolidated to eight defaults",()=>{
+  for(const mode of modes) {
+    const select = source => declarations(source).filter(x=>x.startsWith("  def "+mode+"("));
+    const original = select(before);
+    const current = select(after);
+    assert.equal(original.length,2,mode);
+    assert.equal(current.length,1,mode);
+    const full = original.find(x=>x.includes("additional:"));
+    const marker = "): Either[MarketStateViolations, instrument.MarketState] =\n";
+    const body = source => { assert(source.includes(marker)); return source.slice(source.indexOf(marker)+marker.length).trimEnd(); };
+    assert.equal(body(current[0]),body(full),mode);
+    assert(current[0].includes("Vector.empty[SettlementConversion[instrument.SettleD]]"),mode);
+  }
+});
+check("Checked kernel, existing MarketState representation, and separate SettlementConversion owner unchanged",()=>{
+  const kernel = "  private def checked(";
+  assert.equal(before.slice(before.indexOf(kernel)),after.slice(after.indexOf(kernel)));
+  assert.equal(before.split("object MarketState:")[0],after.split("object MarketState:")[0]);
+  assert.equal(git("diff",baseline+"..HEAD","--","instrument-economics/src/main/scala/trading/economics/instrument/Instrument.scala"),"");
+});
+check("Singleton-preserving field-only scope has eight one-call delegates and no new cast, state, cache, or coordination",()=>{
+  const scope = after.slice(after.indexOf("  final class InstrumentScope"),after.indexOf("  end InstrumentScope"));
+  assert(scope.includes("(val instrument: I)"));
+  assert(after.includes("InstrumentScope[instrument.type]"));
+  assert(!/\bvar\b|\blazy val\b|asInstanceOf|synchronized|ThreadLocal|Catalog|cache|memoiz/.test(scope));
+  for(const mode of modes) assert.equal([...scope.matchAll(new RegExp("MarketState\\."+mode+"\\(","g"))].length,1,mode);
+});
+check("Packaged positive fixture exercises 96 direct/scoped positional/named argument forms without casts",()=>{
+  const fixture = fs.readFileSync("adversarial-boundary/src/test/resources/economics-core-compiler/MarketStateScopeClient.scala","utf8");
+  const construction = fixture.split("  def run()")[0];
+  const calls = [...construction.matchAll(/(?:markets|MarketState)\.(?:quoteSettled|baseSettled|fromQuoteAnchor|fromBaseAnchor|fromAnchors|fromQuoteRate|fromBaseRate|fromRates)\(/g)];
+  assert.equal(calls.length,96);
+  assert(!fixture.includes("asInstanceOf"));
+  assert(fixture.includes("val makePrice: Rational => Either[PriceError, instrument.Price] = Price.exact(instrument)"));
+});
+const fingerprint = crypto.createHash("sha256").update("corgispec-git-workspace-v2\0");
+const entries = git("ls-files","--stage","-z").split("\0").filter(Boolean).map(x=>{
+  const match=x.match(/^(\d+) ([0-9a-f]+) 0\t([\s\S]*)$/);
+  assert(match);
+  return {mode:match[1],blob:match[2],path:match[3]};
+}).filter(x=>!x.path.startsWith(".corgi/loop/")).sort((a,b)=>a.path < b.path ? -1 : a.path > b.path ? 1 : 0);
+for(const e of entries) fingerprint.update(e.mode+"\0"+e.path+"\0"+e.blob+"\0");
+const workspaceFingerprint = "sha256:"+fingerprint.digest("hex");
+assert.equal(workspaceFingerprint,"sha256:db08831f15c3529c0de68b3763e31e5a29d29347c4f3455af4b519e2c19b0725");
+process.stdout.write(JSON.stringify({head,baseline,workspaceFingerprint,checks},null,2)+"\n");

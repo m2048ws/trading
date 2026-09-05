@@ -1,0 +1,58 @@
+{
+  "verdict": "pass",
+  "reviewer": "m2048ws",
+  "reason": "Human explicitly reported QA passed for the retained S-06 guided consumer walkthrough; reviewer identity was supplied in this conversation. This is a QA pass, not a skip or waiver.",
+  "noRuntimeImpact": false,
+  "finalRevision": "7012636e9ff868ec14daa1be58c0cc59ac426b67",
+  "planningRevision": "sha256:d71b55691b5e80ce8f028afe42202975d786dabf515eebc33b2d930a83c60827",
+  "reportHash": "sha256:e2421639185889da4cc94f3e44f5a5a6252c609d318adac8293af75fd0b28d1b",
+  "acceptance": [
+    {
+      "id": "AC-022",
+      "human": "pass",
+      "summary": "QA-02 and QA-07: omitted/explicit-empty/direct observations agree; all eight construction modes yield expected exact observations.",
+      "evidenceRefs": [
+        "file:target%2Fcorgi-evidence%2Fs06-human-qa%2Fhuman-confirmation.json#sha256:16639a3d3c3fba86cc287652795fc884beb8fb099e249dea5119a5f75fb8618d",
+        "file:target%2Fcorgi-evidence%2Fs06-human-qa%2Fqa-observations.json#sha256:42597138c4390fcad41d336a7e629347a5a36bcb62431fd7c6576b70bd0da609",
+        "file:target%2Fcorgi-evidence%2Fs06-human-qa%2Fwalkthrough.txt#sha256:cc10a3af2e279a50e783667fe9e91d94fca657dbe7dc232b39fc450b568875f0"
+      ]
+    },
+    {
+      "id": "AC-023",
+      "human": "pass",
+      "summary": "QA-01, QA-03, QA-04 and QA-07: exact dependent Price.exact function and scope results, changing inputs, independent immutable results, and all modes behave as expected.",
+      "evidenceRefs": [
+        "file:target%2Fcorgi-evidence%2Fs06-human-qa%2Fhuman-confirmation.json#sha256:16639a3d3c3fba86cc287652795fc884beb8fb099e249dea5119a5f75fb8618d",
+        "file:target%2Fcorgi-evidence%2Fs06-human-qa%2Fqa-observations.json#sha256:42597138c4390fcad41d336a7e629347a5a36bcb62431fd7c6576b70bd0da609",
+        "file:target%2Fcorgi-evidence%2Fs06-human-qa%2Fwalkthrough.txt#sha256:cc10a3af2e279a50e783667fe9e91d94fca657dbe7dc232b39fc450b568875f0"
+      ]
+    },
+    {
+      "id": "AC-024",
+      "human": "pass",
+      "summary": "QA-01, QA-03 through QA-08: rational derivation, additional conversions, incoherence, ordered independent failures and unsupported settlement rejection behave as expected. Broader identity/grid and law coverage remains in canonical automated Verify.",
+      "evidenceRefs": [
+        "file:target%2Fcorgi-evidence%2Fs06-human-qa%2Fhuman-confirmation.json#sha256:16639a3d3c3fba86cc287652795fc884beb8fb099e249dea5119a5f75fb8618d",
+        "file:target%2Fcorgi-evidence%2Fs06-human-qa%2Fqa-observations.json#sha256:42597138c4390fcad41d336a7e629347a5a36bcb62431fd7c6576b70bd0da609",
+        "file:target%2Fcorgi-evidence%2Fs06-human-qa%2Fwalkthrough.txt#sha256:cc10a3af2e279a50e783667fe9e91d94fca657dbe7dc232b39fc450b568875f0"
+      ]
+    },
+    {
+      "id": "AC-025",
+      "human": "pass",
+      "summary": "QA-04 and QA-09: separately owned settlement conversion returns exact 14/3 and an incompatible reversed rate fails at the intended E007 boundary. Broader packaged-client and dependency coverage remains in canonical automated Verify.",
+      "evidenceRefs": [
+        "file:target%2Fcorgi-evidence%2Fs06-human-qa%2Fhuman-confirmation.json#sha256:16639a3d3c3fba86cc287652795fc884beb8fb099e249dea5119a5f75fb8618d",
+        "file:target%2Fcorgi-evidence%2Fs06-human-qa%2Fqa-observations.json#sha256:42597138c4390fcad41d336a7e629347a5a36bcb62431fd7c6576b70bd0da609",
+        "file:target%2Fcorgi-evidence%2Fs06-human-qa%2Fwalkthrough.txt#sha256:cc10a3af2e279a50e783667fe9e91d94fca657dbe7dc232b39fc450b568875f0"
+      ]
+    }
+  ],
+  "evidenceRefs": [
+    "file:target%2Fcorgi-evidence%2Fs06-human-qa%2Fhuman-confirmation.json#sha256:16639a3d3c3fba86cc287652795fc884beb8fb099e249dea5119a5f75fb8618d",
+    "file:target%2Fcorgi-evidence%2Fs06-human-qa%2Fqa-observations.json#sha256:42597138c4390fcad41d336a7e629347a5a36bcb62431fd7c6576b70bd0da609",
+    "file:target%2Fcorgi-evidence%2Fs06-human-qa%2Fwalkthrough.txt#sha256:cc10a3af2e279a50e783667fe9e91d94fca657dbe7dc232b39fc450b568875f0",
+    "file:target%2Fcorgi-evidence%2Fs06-human-qa%2Fconsole-session.json#sha256:51a3dd11a9274115df41df450ab92b6283ec018ecdbdb7cdf9dc1967cacc04f7"
+  ],
+  "reviewedAt": "2026-09-05T13:33:42.470Z"
+}

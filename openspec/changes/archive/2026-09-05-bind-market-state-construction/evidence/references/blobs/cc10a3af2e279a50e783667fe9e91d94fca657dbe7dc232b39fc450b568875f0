@@ -1,0 +1,243 @@
+S-06 guided Scala-client walkthrough — agent-operated console; human QA decision pending.
+Final HEAD: 7012636e9ff868ec14daa1be58c0cc59ac426b67
+
+=== 1 ===
+COMMAND: sbt -batch "instrumentEconomics/Test/console"
+
+=== 2 ===
+[info] welcome to sbt 1.12.15 (Homebrew Java 26.0.2.1)
+[info] loading settings for project bind-market-state-construction-build from plugins.sbt...
+[info] loading project definition from /Users/m/src/money/.worktrees/bind-market-state-construction/project
+[info] loading settings for project root from build.sbt...
+[info] resolving key references (12514 settings) ...
+[info] set current project to trading (in build file:/Users/m/src/money/.worktrees/bind-market-state-construction/)
+Sep 05, 2026 12:26:23 AM org.jline.utils.Log logr
+WARNING: The Parser of class dotty.tools.repl.JLineTerminal$$anon$2 does not support the CompletingParsedLine interface. Completion with escaped or quoted words won't work correctly.
+Welcome to Scala 3.8.4 (26.0.2.1, Java OpenJDK 64-Bit Server VM).
+Type in expressions for evaluation. Or try :help.
+
+scala> 
+[success] Total time: 3 s, completed Sep 5, 2026, 12:26:23 AM
+
+PROCESS EXIT: 0
+
+=== 3 ===
+COMMAND: sbt "instrumentEconomics/Test/console"
+
+=== 4 ===
+[info] welcome to sbt 1.12.15 (Homebrew Java 26.0.2.1)
+[info] loading settings for project bind-market-state-construction-build from plugins.sbt...
+[info] loading project definition from /Users/m/src/money/.worktrees/bind-market-state-construction/project
+[info] loading settings for project root from build.sbt...
+[info] resolving key references (12514 settings) ...
+[info] set current project to trading (in build file:/Users/m/src/money/.worktrees/bind-market-state-construction/)
+Sep 05, 2026 3:00:44 PM org.jline.utils.Log logr
+WARNING: The Parser of class dotty.tools.repl.JLineTerminal$$anon$2 does not support the CompletingParsedLine interface. Completion with escaped or quoted words won't work correctly.
+Welcome to Scala 3.8.4 (26.0.2.1, Java OpenJDK 64-Bit Server VM).
+Type in expressions for evaluation. Or try :help.
+
+scala> 
+=== 5 ===
+INPUT:
+import trading.economics.instrument.*
+import trading.quantity.*
+val fixtures = new InstrumentFixtures
+val instrument = fixtures.quanto
+val markets = MarketState.forInstrument(instrument)
+val makePrice: Rational => Either[PriceError, instrument.Price] = Price.exact(instrument)
+val price100 = makePrice(Rational(100)).toOption.get
+import trading.economics.instrument.*
+import trading.quantity.*
+val fixtures = new InstrumentFixtures
+val instrument = fixtures.quanto
+val markets = MarketState.forInstrument(instrument)
+val makePrice: Rational => Either[PriceError, instrument.Price] = Price.exact(instrument)
+val price100 = makePrice(Rational(100)).toOption.get
+
+scala> 
+=== 6 ===
+
+=== 7 ===
+INPUT:
+println("QA console ready")
+println("QA console ready")
+QA console ready
+
+scala> 
+=== 8 ===
+INPUT:
+import trading.quantity.*; val fixtures = new InstrumentFixtures; val instrument = fixtures.quanto; val markets = MarketState.forInstrument(instrument); val makePrice: Rational => Either[PriceError, instrument.Price] = Price.exact(instrument); val price100 = makePrice(Rational(100)).toOption.get
+import trading.quantity.*; val fixtures = new InstrumentFixtures; val instrument = fixtures.quanto; val markets = MarketState.forInstrument(instrument); val makePrice: Rational => Either[PriceError, instrument.Price] = Price.exact(instrument); val price100 = makePrice(Rational(100)).toOption.get
+val fixtures: InstrumentFixtures = trading.economics.instrument.InstrumentFixtures@7e992d8a
+val instrument: Instrument = trading.economics.instrument.Instrument@3e0f6d37
+val markets: MarketState.InstrumentScope[instrument.type] = trading.economics.instrument.MarketState$InstrumentScope@9cde4f9
+val makePrice: Rational => Either[PriceError, instrument.Price] = Lambda/0x000000c002405e80@457b54f1
+val price100: instrument.Price = trading.economics.instrument.Price@ccad2f92
+
+scala> 
+=== 9 ===
+INPUT:
+val state100: instrument.MarketState = markets.fromQuoteAnchor(price100, Rational(9, 10)).toOption.get; (state100.price.coefficient, state100.baseToSettle.coefficient, state100.quoteToSettle.coefficient, state100.additionalConversions.size)
+val state100: instrument.MarketState = markets.fromQuoteAnchor(price100, Rational(9, 10)).toOption.get; (state100.price.coefficient, state100.baseToSettle.coefficient, state100.quoteToSettle.coefficient, state100.additionalConversions.size)
+val state100: instrument.MarketState = trading.economics.instrument.MarketState@f9bf2bd
+val res0: (Rational, Rational, Rational, Int) = (100, 90, 9/10, 0)
+
+scala> 
+=== 10 ===
+INPUT:
+def observe(s: instrument.MarketState) = (s.instrumentId, s.price.coefficient, s.baseToSettle.coefficient, s.quoteToSettle.coefficient, s.conversionSources, s.additionalConversions.map(_.coefficient)); val explicitEmpty = markets.fromQuoteAnchor(price100, Rational(9, 10), Vector.empty).toOption.get; val direct = MarketState.fromQuoteAnchor(instrument)(price100, Rational(9, 10)).toOption.get; (observe(state100) == observe(explicitEmpty), observe(state100) == observe(direct))
+def observe(s: instrument.MarketState) = (s.instrumentId, s.price.coefficient, s.baseToSettle.coefficient, s.quoteToSettle.coefficient, s.conversionSources, s.additionalConversions.map(_.coefficient)); val explicitEmpty = markets.fromQuoteAnchor(price100, Rational(9, 10), Vector.empty).toOption.get; val direct = MarketState.fromQuoteAnchor(instrument)(price100, Rational(9, 10)).toOption.get; (observe(state100) == observe(explicitEmpty), observe(state100) == observe(direct))
+def observe
+  (s: instrument.MarketState): (InstrumentId, Rational, Rational, Rational,
+    Vector[trading.reference.AssetId], Vector[Rational])
+val explicitEmpty: markets.State = trading.economics.instrument.MarketState@6c8260a9
+val direct: instrument.MarketState = trading.economics.instrument.MarketState@79546876
+val res1: (Boolean, Boolean) = (true, true)
+
+scala> 
+=== 11 ===
+INPUT:
+val price101 = makePrice(Rational(101)).toOption.get; val state101 = markets.fromQuoteAnchor(price101, Rational(9, 10)).toOption.get; val again100 = markets.fromQuoteAnchor(price100, Rational(9, 10)).toOption.get; (state101.baseToSettle.coefficient, state100.baseToSettle.coefficient, state100.eq(again100), observe(state100) == observe(again100))
+val price101 = makePrice(Rational(101)).toOption.get; val state101 = markets.fromQuoteAnchor(price101, Rational(9, 10)).toOption.get; val again100 = markets.fromQuoteAnchor(price100, Rational(9, 10)).toOption.get; (state101.baseToSettle.coefficient, state100.baseToSettle.coefficient, state100.eq(again100), observe(state100) == observe(again100))
+val price101: instrument.Price = trading.economics.instrument.Price@4c4a2a17
+val state101: markets.State = trading.economics.instrument.MarketState@5f4a8b3f
+val again100: markets.State = trading.economics.instrument.MarketState@3a99eaf6
+val res2: (Rational, Rational, Boolean, Boolean) = (909/10, 90, false, true)
+
+scala> 
+=== 12 ===
+INPUT:
+val quoteRate: markets.QuoteRate = Rate(instrument.roles.quote.dimension.ref, instrument.roles.settle.dimension.ref, Rational(9, 10)); markets.fromQuoteRate(price100, quoteRate).map(s => observe(s) == observe(state100))
+val quoteRate: markets.QuoteRate = Rate(instrument.roles.quote.dimension.ref, instrument.roles.settle.dimension.ref, Rational(9, 10)); markets.fromQuoteRate(price100, quoteRate).map(s => observe(s) == observe(state100))
+val quoteRate: markets.QuoteRate = 9/10
+val res3: Either[markets.Violations, Boolean] = Right(true)
+
+scala> 
+=== 13 ===
+INPUT:
+val conversion = SettlementConversion.exact(instrument)(fixtures.token)(Rational(2)).toOption.get; val withToken = markets.fromQuoteRate(price100, quoteRate, Vector(conversion)).toOption.get; (withToken.additionalConversions.map(_.coefficient), withToken.convertToSettle(fixtures.token)(Quantity(fixtures.token.dimension.ref, Rational(7, 3))).map(_.coefficient))
+val conversion = SettlementConversion.exact(instrument)(fixtures.token)(Rational(2)).toOption.get; val withToken = markets.fromQuoteRate(price100, quoteRate, Vector(conversion)).toOption.get; (withToken.additionalConversions.map(_.coefficient), withToken.convertToSettle(fixtures.token)(Quantity(fixtures.token.dimension.ref, Rational(7, 3))).map(_.coefficient))
+val conversion: SettlementConversion[instrument.roles.settle.D] = trading.economics.instrument.SettlementConversion@3292d478
+val withToken: markets.State = trading.economics.instrument.MarketState@68ac09a4
+val res4: (Vector[Rational], Either[ConversionError, Rational]) = (
+  Vector(2),
+  Right(14/3)
+)
+
+scala> 
+=== 14 ===
+INPUT:
+markets.fromAnchors(price100, Rational(89), Rational(9, 10)).left.map(_.violations)
+markets.fromAnchors(price100, Rational(89), Rational(9, 10)).left.map(_.violations)
+val res5: Either[Vector[MarketStateViolation], markets.State] = Left(
+  Vector(
+    IncoherentAnchors(price = 100, baseToSettle = 89, quoteToSettle = 9/10)
+  )
+)
+
+scala> 
+=== 15 ===
+INPUT:
+markets.fromAnchors(price100, Rational(-1), Rational.zero, Vector(conversion, conversion)).left.map(_.violations)
+markets.fromAnchors(price100, Rational(-1), Rational.zero, Vector(conversion, conversion)).left.map(_.violations)
+val res6: Either[Vector[MarketStateViolation], markets.State] = Left(
+  Vector(
+    InvalidConversion(
+      source = AssetId("btc"),
+      target = AssetId("eur"),
+      coefficient = -1,
+      reason = NonPositive
+    ),
+    InvalidConversion(
+      source = AssetId("usd"),
+      target = AssetId("eur"),
+      coefficient = 0,
+      reason = NonPositive
+    ),
+    DuplicateSource(AssetId("fee-token"))
+  )
+)
+
+scala> 
+=== 16 ===
+INPUT:
+val baseRate: markets.BaseRate = Rate(instrument.roles.base.dimension.ref, instrument.roles.settle.dimension.ref, Rational(90)); Vector(markets.fromQuoteAnchor(price100, Rational(9,10)), markets.fromBaseAnchor(price100, Rational(90)), markets.fromAnchors(price100, Rational(90), Rational(9,10)), markets.fromQuoteRate(price100, quoteRate), markets.fromBaseRate(price100, baseRate), markets.fromRates(price100, baseRate, quoteRate)).map(_.map(s => observe(s) == observe(state100)))
+val baseRate: markets.BaseRate = Rate(instrument.roles.base.dimension.ref, instrument.roles.settle.dimension.ref, Rational(90)); Vector(markets.fromQuoteAnchor(price100, Rational(9,10)), markets.fromBaseAnchor(price100, Rational(90)), markets.fromAnchors(price100, Rational(90), Rational(9,10)), markets.fromQuoteRate(price100, quoteRate), markets.fromBaseRate(price100, baseRate), markets.fromRates(price100, baseRate, quoteRate)).map(_.map(s => observe(s) == observe(state100)))
+val baseRate: markets.BaseRate = 90
+val res7: Vector[Either[markets.Violations, Boolean]] = Vector(
+  Right(true),
+  Right(true),
+  Right(true),
+  Right(true),
+  Right(true),
+  Right(true)
+)
+
+scala> 
+=== 17 ===
+INPUT:
+val linear = fixtures.linear; val inverse = fixtures.inverse; val linearMarkets = MarketState.forInstrument(linear); val inverseMarkets = MarketState.forInstrument(inverse); val linearPrice = Price.exact(linear)(Rational(100)).toOption.get; val inversePrice = Price.exact(inverse)(Rational(100)).toOption.get; (linearMarkets.quoteSettled(linearPrice).map(s => (s.baseToSettle.coefficient, s.quoteToSettle.coefficient)), inverseMarkets.baseSettled(inversePrice).map(s => (s.baseToSettle.coefficient, s.quoteToSettle.coefficient)))
+val linear = fixtures.linear; val inverse = fixtures.inverse; val linearMarkets = MarketState.forInstrument(linear); val inverseMarkets = MarketState.forInstrument(inverse); val linearPrice = Price.exact(linear)(Rational(100)).toOption.get; val inversePrice = Price.exact(inverse)(Rational(100)).toOption.get; (linearMarkets.quoteSettled(linearPrice).map(s => (s.baseToSettle.coefficient, s.quoteToSettle.coefficient)), inverseMarkets.baseSettled(inversePrice).map(s => (s.baseToSettle.coefficient, s.quoteToSettle.coefficient)))
+val linear: Instrument = trading.economics.instrument.Instrument@1b520393
+val inverse: Instrument = trading.economics.instrument.Instrument@65ec45da
+val linearMarkets: MarketState.InstrumentScope[linear.type] = trading.economics.instrument.MarketState$InstrumentScope@67ba7772
+val inverseMarkets: MarketState.InstrumentScope[inverse.type] = trading.economics.instrument.MarketState$InstrumentScope@2e9d3ba6
+val linearPrice: linear.Price = trading.economics.instrument.Price@4d819d4b
+val inversePrice: inverse.Price = trading.economics.instrument.Price@c75a7928
+val res8: (Either[linearMarkets.Violations, (Rational, Rational)],
+  Either[inverseMarkets.Violations, (Rational, Rational)]) = (
+  Right((100, 1)),
+  Right((1, 1/100))
+)
+
+scala> 
+=== 18 ===
+INPUT:
+markets.quoteSettled(price100).left.map(_.violations)
+markets.quoteSettled(price100).left.map(_.violations)
+val res9: Either[Vector[MarketStateViolation], markets.State] = Left(
+  Vector(
+    InvalidConversion(
+      source = AssetId("usd"),
+      target = AssetId("eur"),
+      coefficient = 1,
+      reason = SettleIsNotQuote
+    )
+  )
+)
+
+scala> 
+=== 19 ===
+INPUT:
+val reversed = Rate(instrument.roles.settle.dimension.ref, instrument.roles.quote.dimension.ref, Rational(9, 10))
+val reversed = Rate(instrument.roles.settle.dimension.ref, instrument.roles.quote.dimension.ref, Rational(9, 10))
+val reversed:
+  Rate[instrument.roles.settle.dimensionBasis.D0,
+    instrument.roles.quote.dimensionBasis.D0] = 9/10
+
+scala> 
+=== 20 ===
+INPUT:
+markets.fromQuoteRate(price100, reversed, Vector.empty)
+markets.fromQuoteRate(price100, reversed, Vector.empty)
+-- [E007] Type Mismatch Error: -------------------------------------------------
+1 |markets.fromQuoteRate(price100, reversed, Vector.empty)
+  |                                ^^^^^^^^
+  |        Found:    (reversed :
+  |          trading.quantity.Rate[instrument.roles.settle.dimensionBasis.D0,
+  |            instrument.roles.quote.dimensionBasis.D0]
+  |        )
+  |        Required: markets.QuoteRate
+  |
+  | longer explanation available when compiling with `-explain`
+1 error found
+
+scala> 
+=== 21 ===
+INPUT:
+:quit
+:quit
+
+[success] Total time: 277 s (0:04:37.0), completed Sep 5, 2026, 3:05:18 PM
+
+PROCESS EXIT: 0

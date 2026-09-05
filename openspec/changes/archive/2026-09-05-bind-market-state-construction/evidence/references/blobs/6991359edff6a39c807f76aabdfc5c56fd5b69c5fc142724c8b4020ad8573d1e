@@ -1,0 +1,21 @@
+[info] welcome to sbt 1.12.15 (Homebrew Java 26.0.2.1)
+[info] loading settings for project bind-market-state-construction-build from plugins.sbt...
+[info] loading project definition from /Users/m/src/money/.worktrees/bind-market-state-construction/project
+[info] loading settings for project root from build.sbt...
+[info] resolving key references (12514 settings) ...
+[info] set current project to trading (in build file:/Users/m/src/money/.worktrees/bind-market-state-construction/)
+[info] scalafmt: Formatting 2 Scala sources (/Users/m/src/money/.worktrees/bind-market-state-construction)...
+[success] Total time: 2 s, completed Sep 4, 2026, 11:12:28 PM
+Test run external.EconomicsCompilerBoundarySuite started
+external.EconomicsCompilerBoundarySuite: finished 17.318s
+Test run external.EconomicsCompilerBoundarySuite finished: 0 failed, 0 ignored, 39 total 17.33s
+[info] Passed: Total 39, Failed 0, Errors 0, Passed 39
+[success] Total time: 19 s, completed Sep 4, 2026, 11:12:46 PM
+[info] compiling 5 Scala sources to /Users/m/src/money/.worktrees/bind-market-state-construction/benchmarks/target/scala-3.8.4/classes ...
+[info] done compiling
+[info] running (fork) org.openjdk.jmh.generators.bytecode.JmhBytecodeGenerator /Users/m/src/money/.worktrees/bind-market-state-construction/benchmarks/target/scala-3.8.4/classes /Users/m/src/money/.worktrees/bind-market-state-construction/benchmarks/target/scala-3.8.4/src_managed/jmh /Users/m/src/money/.worktrees/bind-market-state-construction/benchmarks/target/scala-3.8.4/resource_managed/jmh default
+[info] Processing 20 classes from /Users/m/src/money/.worktrees/bind-market-state-construction/benchmarks/target/scala-3.8.4/classes with "reflection" generator
+[info] Writing out Java source to /Users/m/src/money/.worktrees/bind-market-state-construction/benchmarks/target/scala-3.8.4/src_managed/jmh and resources to /Users/m/src/money/.worktrees/bind-market-state-construction/benchmarks/target/scala-3.8.4/resource_managed/jmh
+[info] compiling 71 Java sources to /Users/m/src/money/.worktrees/bind-market-state-construction/benchmarks/target/scala-3.8.4/classes ...
+[info] done compiling
+[success] Total time: 5 s, completed Sep 4, 2026, 11:12:52 PM

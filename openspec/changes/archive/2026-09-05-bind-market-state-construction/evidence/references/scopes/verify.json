@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 3,
+  "scope": "verify",
+  "runId": "run-4874b9a2-be9a-4d0d-8a20-b391ae7a185b",
+  "references": [
+    {
+      "reference": "file:target%2Fcorgi-evidence%2Fs06-verify%2Fapply-allocation-followup.log#sha256:96130578b1ee9fc07348532bc49219267ecbfd8ab18ca14ba5eff747d33eee5f",
+      "sourcePath": "target/corgi-evidence/s06-verify/apply-allocation-followup.log",
+      "digest": "sha256:96130578b1ee9fc07348532bc49219267ecbfd8ab18ca14ba5eff747d33eee5f",
+      "archivePath": "references/blobs/96130578b1ee9fc07348532bc49219267ecbfd8ab18ca14ba5eff747d33eee5f"
+    },
+    {
+      "reference": "file:target%2Fcorgi-evidence%2Fs06-verify%2Fapply-baseline-pass.log#sha256:d384da983090a3b7b04a374c6912c6a93013a49fd17edecb5aaf7a4c6d98f6b4",
+      "sourcePath": "target/corgi-evidence/s06-verify/apply-baseline-pass.log",
+      "digest": "sha256:d384da983090a3b7b04a374c6912c6a93013a49fd17edecb5aaf7a4c6d98f6b4",
+      "archivePath": "references/blobs/d384da983090a3b7b04a374c6912c6a93013a49fd17edecb5aaf7a4c6d98f6b4"
+    },
+    {
+      "reference": "file:target%2Fcorgi-evidence%2Fs06-verify%2Fbinding-and-tracker.json#sha256:0eb8ce9b6f2613daa968d7b6ff642f2ba33f3b2bbe27c63621e2685a1373e1e9",
+      "sourcePath": "target/corgi-evidence/s06-verify/binding-and-tracker.json",
+      "digest": "sha256:0eb8ce9b6f2613daa968d7b6ff642f2ba33f3b2bbe27c63621e2685a1373e1e9",
+      "archivePath": "references/blobs/0eb8ce9b6f2613daa968d7b6ff642f2ba33f3b2bbe27c63621e2685a1373e1e9"
+    },
+    {
+      "reference": "file:target%2Fcorgi-evidence%2Fs06-verify%2Ffull-gate.log#sha256:e5dc40e316f96c36a8e210e725499f4a2120dc317d22d37fe7dbcf62f6052400",
+      "sourcePath": "target/corgi-evidence/s06-verify/full-gate.log",
+      "digest": "sha256:e5dc40e316f96c36a8e210e725499f4a2120dc317d22d37fe7dbcf62f6052400",
+      "archivePath": "references/blobs/e5dc40e316f96c36a8e210e725499f4a2120dc317d22d37fe7dbcf62f6052400"
+    },
+    {
+      "reference": "file:target%2Fcorgi-evidence%2Fs06-verify%2Fready.json#sha256:a9463ef55d1e400ddb9b6e7ba8686fb59b0c0edc86874eef8db29649fc0873b0",
+      "sourcePath": "target/corgi-evidence/s06-verify/ready.json",
+      "digest": "sha256:a9463ef55d1e400ddb9b6e7ba8686fb59b0c0edc86874eef8db29649fc0873b0",
+      "archivePath": "references/blobs/a9463ef55d1e400ddb9b6e7ba8686fb59b0c0edc86874eef8db29649fc0873b0"
+    },
+    {
+      "reference": "file:target%2Fcorgi-evidence%2Fs06-verify%2Freflection-guard.log#sha256:c0b99e32f07b7e69753e224c23149bf8589ed9a027202ee82c4be2cabc231b3d",
+      "sourcePath": "target/corgi-evidence/s06-verify/reflection-guard.log",
+      "digest": "sha256:c0b99e32f07b7e69753e224c23149bf8589ed9a027202ee82c4be2cabc231b3d",
+      "archivePath": "references/blobs/c0b99e32f07b7e69753e224c23149bf8589ed9a027202ee82c4be2cabc231b3d"
+    },
+    {
+      "reference": "file:target%2Fcorgi-evidence%2Fs06-verify%2Freflection-regression.log#sha256:eb6658545773b5377bc49220f2c819304dfba1b9e738b527917744a24991037b",
+      "sourcePath": "target/corgi-evidence/s06-verify/reflection-regression.log",
+      "digest": "sha256:eb6658545773b5377bc49220f2c819304dfba1b9e738b527917744a24991037b",
+      "archivePath": "references/blobs/eb6658545773b5377bc49220f2c819304dfba1b9e738b527917744a24991037b"
+    },
+    {
+      "reference": "file:target%2Fcorgi-evidence%2Fs06-verify%2Fscope-bytecode.txt#sha256:0935a09698094e8cae15b040f16a92bb2737329bfa401477c91bd1c660d2fe55",
+      "sourcePath": "target/corgi-evidence/s06-verify/scope-bytecode.txt",
+      "digest": "sha256:0935a09698094e8cae15b040f16a92bb2737329bfa401477c91bd1c660d2fe55",
+      "archivePath": "references/blobs/0935a09698094e8cae15b040f16a92bb2737329bfa401477c91bd1c660d2fe55"
+    },
+    {
+      "reference": "file:target%2Fcorgi-evidence%2Fs06-verify%2Fsource-review.json#sha256:b2d70601772ce3b4ef252893b8b0cd9e6731cf3679f52df01af451e643c898c7",
+      "sourcePath": "target/corgi-evidence/s06-verify/source-review.json",
+      "digest": "sha256:b2d70601772ce3b4ef252893b8b0cd9e6731cf3679f52df01af451e643c898c7",
+      "archivePath": "references/blobs/b2d70601772ce3b4ef252893b8b0cd9e6731cf3679f52df01af451e643c898c7"
+    },
+    {
+      "reference": "file:target%2Fcorgi-evidence%2Fs06-verify%2Fverify-source.cjs#sha256:05a3e588e8a87f477b329e7c84c39b8d9a1497b54c837ec9314ae4c88736d4b8",
+      "sourcePath": "target/corgi-evidence/s06-verify/verify-source.cjs",
+      "digest": "sha256:05a3e588e8a87f477b329e7c84c39b8d9a1497b54c837ec9314ae4c88736d4b8",
+      "archivePath": "references/blobs/05a3e588e8a87f477b329e7c84c39b8d9a1497b54c837ec9314ae4c88736d4b8"
+    },
+    {
+      "reference": "file:target%2Fcorgi-evidence%2Fs06-verify%2Fwhole-change-assessment.json#sha256:56ffef771937ed1dcf095e04df184e7579f8795cb156310d3006bfb6d4e6c8fe",
+      "sourcePath": "target/corgi-evidence/s06-verify/whole-change-assessment.json",
+      "digest": "sha256:56ffef771937ed1dcf095e04df184e7579f8795cb156310d3006bfb6d4e6c8fe",
+      "archivePath": "references/blobs/56ffef771937ed1dcf095e04df184e7579f8795cb156310d3006bfb6d4e6c8fe"
+    }
+  ]
+}
