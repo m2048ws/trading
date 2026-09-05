@@ -1,6 +1,6 @@
 schemaVersion: 1
 rfcId: RFC-0009-recover-post-local-archive-conflicts
-revision: 0
+revision: 1
 slices:
   S-01-recover-post-local-archive-conflicts:
     status: unbound

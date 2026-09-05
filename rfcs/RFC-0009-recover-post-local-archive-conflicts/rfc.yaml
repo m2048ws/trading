@@ -1,6 +1,10 @@
 schemaVersion: 1
 id: RFC-0009-recover-post-local-archive-conflicts
 type: feature
-status: draft
+status: accepted
 author: m@2048.ws
 createdAt: '2026-09-04T13:12:04.611Z'
+acceptance:
+  approver: m2048ws
+  approvedAt: '2026-09-05T18:14:11.646Z'
+  digest: 42b75e168761d349909e1cf5a18dc80b793138efc0eb9f6ab8278b67c9aa7a25
