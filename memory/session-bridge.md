@@ -14,13 +14,13 @@ updated: 2026-09-04
 - **Issue**: 63 https://github.com/m2048ws/trading/issues/63
 - **Change**: bind-market-state-construction
 - **Worktree**: /Users/m/src/money/.worktrees/bind-market-state-construction
-- **Phase at Checkpoint**: awaiting_verify
-- **Task Group at Checkpoint**: 1
-- **Observed Run Revision**: 2
-- **Last Verified HEAD**: a5f97ca2d1f745005bf93abb1c9dab30b483f722
+- **Phase at Checkpoint**: archiving
+- **Task Group at Checkpoint**: none
+- **Observed Run Revision**: 7
+- **Last Verified HEAD**: 7012636e9ff868ec14daa1be58c0cc59ac426b67
 
 ## Next Action
-- Consult Run Contract v3 for `bind-market-state-construction`; complete Task Group 1 acknowledgement if pending,
+- Consult Run Contract v3: resume tracker closeout for `bind-market-state-construction` only if pending; otherwise select the next accepted Slice. Local delivery: `wiki/deliveries/RFC-0008-simplify-instrument-dependent-apis-S-06-bind-market-state-construction.md`.
   open its draft PR through the guarded adapter, then run the separate whole-change Verify gate.
   Run: `run-4874b9a2-be9a-4d0d-8a20-b391ae7a185b`; session: `rfc0008-s06-20260904`.
 

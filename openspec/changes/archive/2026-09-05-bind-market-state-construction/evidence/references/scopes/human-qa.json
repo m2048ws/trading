@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 3,
+  "scope": "human-qa",
+  "runId": "run-4874b9a2-be9a-4d0d-8a20-b391ae7a185b",
+  "references": [
+    {
+      "reference": "file:target%2Fcorgi-evidence%2Fs06-human-qa%2Fconsole-session.json#sha256:51a3dd11a9274115df41df450ab92b6283ec018ecdbdb7cdf9dc1967cacc04f7",
+      "sourcePath": "target/corgi-evidence/s06-human-qa/console-session.json",
+      "digest": "sha256:51a3dd11a9274115df41df450ab92b6283ec018ecdbdb7cdf9dc1967cacc04f7",
+      "archivePath": "references/blobs/51a3dd11a9274115df41df450ab92b6283ec018ecdbdb7cdf9dc1967cacc04f7"
+    },
+    {
+      "reference": "file:target%2Fcorgi-evidence%2Fs06-human-qa%2Fhuman-confirmation.json#sha256:16639a3d3c3fba86cc287652795fc884beb8fb099e249dea5119a5f75fb8618d",
+      "sourcePath": "target/corgi-evidence/s06-human-qa/human-confirmation.json",
+      "digest": "sha256:16639a3d3c3fba86cc287652795fc884beb8fb099e249dea5119a5f75fb8618d",
+      "archivePath": "references/blobs/16639a3d3c3fba86cc287652795fc884beb8fb099e249dea5119a5f75fb8618d"
+    },
+    {
+      "reference": "file:target%2Fcorgi-evidence%2Fs06-human-qa%2Fqa-observations.json#sha256:42597138c4390fcad41d336a7e629347a5a36bcb62431fd7c6576b70bd0da609",
+      "sourcePath": "target/corgi-evidence/s06-human-qa/qa-observations.json",
+      "digest": "sha256:42597138c4390fcad41d336a7e629347a5a36bcb62431fd7c6576b70bd0da609",
+      "archivePath": "references/blobs/42597138c4390fcad41d336a7e629347a5a36bcb62431fd7c6576b70bd0da609"
+    },
+    {
+      "reference": "file:target%2Fcorgi-evidence%2Fs06-human-qa%2Fwalkthrough.txt#sha256:cc10a3af2e279a50e783667fe9e91d94fca657dbe7dc232b39fc450b568875f0",
+      "sourcePath": "target/corgi-evidence/s06-human-qa/walkthrough.txt",
+      "digest": "sha256:cc10a3af2e279a50e783667fe9e91d94fca657dbe7dc232b39fc450b568875f0",
+      "archivePath": "references/blobs/cc10a3af2e279a50e783667fe9e91d94fca657dbe7dc232b39fc450b568875f0"
+    }
+  ]
+}

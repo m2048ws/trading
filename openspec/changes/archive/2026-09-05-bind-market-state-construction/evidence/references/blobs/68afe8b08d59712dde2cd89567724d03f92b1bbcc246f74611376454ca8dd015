@@ -1,0 +1,43 @@
+{
+  "runId": "run-4874b9a2-be9a-4d0d-8a20-b391ae7a185b",
+  "groupId": "1",
+  "stateRevision": 1,
+  "findings": [],
+  "axes": {
+    "codeQuality": "Eight one-call delegates and exact aliases; explicit dependent default element types; no added production casts.",
+    "coverage": "AC-022–AC-025: all eight modes, 96 positive client forms, six isolated negative cases; characterized error order and equality; rational properties; checked foreign identity/lineage transport; allocation/concurrency.",
+    "behavior": "Existing checked kernel and SettlementConversion ownership byte-for-byte unchanged; 1084 clean aggregate tests passed.",
+    "architecture": "One field-only pure MarketState-owned scope; completed core classpath restricted to production dependencies plus compiler; no higher-layer imports or live state.",
+    "performance": "Short 8-case JMH recorded; longer 3-fork third-asset/non-empty follow-up investigated allocation variation; bytecode has no new per-call allocation or traversal. Measurements indicative, not a deterministic guarantee.",
+    "security": "No new external ingress, effects, production reflection, or weakening of identity/lineage checks."
+  },
+  "noFileChanged": true,
+  "noFindingHumanTriaged": true,
+  "notCanonicalVerifyOrHumanReview": true,
+  "performanceFollowup": "[info] MarketStateConstructionBenchmark.direct                                          1         third  avgt   15   752.049 ±  15.650   ns/op\n[info] MarketStateConstructionBenchmark.direct:gc.alloc.rate.norm                       1         third  avgt   15  4349.342 ±  16.693    B/op\n[info] MarketStateConstructionBenchmark.reusedScope                                     1         third  avgt   15   747.364 ±  12.980   ns/op\n[info] MarketStateConstructionBenchmark.reusedScope:gc.alloc.rate.norm                  1         third  avgt   15  4274.675 ± 133.542    B/op\n",
+  "staticChecks": {
+    "checkedKernelUnchanged": true,
+    "conversionOwnerUnchanged": true,
+    "directDefinitions": {
+      "quoteSettled": 1,
+      "baseSettled": 1,
+      "fromQuoteAnchor": 1,
+      "fromBaseAnchor": 1,
+      "fromAnchors": 1,
+      "fromQuoteRate": 1,
+      "fromBaseRate": 1,
+      "fromRates": 1
+    },
+    "scopeDefinitions": {
+      "quoteSettled": 1,
+      "baseSettled": 1,
+      "fromQuoteAnchor": 1,
+      "fromBaseAnchor": 1,
+      "fromAnchors": 1,
+      "fromQuoteRate": 1,
+      "fromBaseRate": 1,
+      "fromRates": 1
+    },
+    "noProductionCasts": true
+  }
+}

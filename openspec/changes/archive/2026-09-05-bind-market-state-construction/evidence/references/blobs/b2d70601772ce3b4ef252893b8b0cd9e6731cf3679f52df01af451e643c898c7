@@ -1,0 +1,31 @@
+{
+  "head": "7012636e9ff868ec14daa1be58c0cc59ac426b67",
+  "baseline": "a5f97ca2d1f745005bf93abb1c9dab30b483f722",
+  "workspaceFingerprint": "sha256:db08831f15c3529c0de68b3763e31e5a29d29347c4f3455af4b519e2c19b0725",
+  "checks": [
+    {
+      "name": "Clean unchanged final acknowledged HEAD and one-parent Task Group commit",
+      "status": "pass"
+    },
+    {
+      "name": "Planning, RFC, and source/traceability files unchanged since planning baseline",
+      "status": "pass"
+    },
+    {
+      "name": "Eight direct operation bodies preserved; sixteen declarations consolidated to eight defaults",
+      "status": "pass"
+    },
+    {
+      "name": "Checked kernel, existing MarketState representation, and separate SettlementConversion owner unchanged",
+      "status": "pass"
+    },
+    {
+      "name": "Singleton-preserving field-only scope has eight one-call delegates and no new cast, state, cache, or coordination",
+      "status": "pass"
+    },
+    {
+      "name": "Packaged positive fixture exercises 96 direct/scoped positional/named argument forms without casts",
+      "status": "pass"
+    }
+  ]
+}
